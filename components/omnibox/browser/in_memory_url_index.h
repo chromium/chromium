@@ -101,15 +101,19 @@ class InMemoryURLIndex : public KeyedService,
   void Init();
 
   // Scans the history index and returns a vector with all scored, matching
-  // history items. This entry point simply forwards the call on to the
-  // URLIndexPrivateData class. For a complete description of this function
-  // refer to that class.  If |cursor_position| is std::u16string::npos, the
-  // function doesn't do anything special with the cursor; this is equivalent
-  // to the cursor being at the end.  In total, |max_matches| of items will be
-  // returned in the |ScoredHistoryMatches| vector.
+  // history items. This entry point simply forwards the call to
+  // `URLIndexPrivateData`. For a complete description of this function refer to
+  // that class. If `cursor_position` is `npos`, the function doesn't do
+  // anything special with the cursor; this is equivalent to the cursor being at
+  // the end. If `host_filter` is not empty, filters matches by host. In total,
+  // `max_matches` of items will be returned.
   ScoredHistoryMatches HistoryItemsForTerms(const std::u16string& term_string,
                                             size_t cursor_position,
+                                            const std::string& host_filter,
                                             size_t max_matches);
+
+  // Returns URL hosts that have been visited more than a threshold.
+  std::vector<std::string> HighlyVisitedHosts() const;
 
   // Deletes the index entry, if any, for the given |url|.
   void DeleteURL(const GURL& url);

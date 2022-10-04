@@ -594,6 +594,29 @@ extern const base::FeatureParam<bool>
 // (e.g. @bookmarks, @history) provided by the Builtin Provider.
 extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
 
+// Domain suggestions.
+// The minimum number of unique URLs a domain needs to be considered highly
+// visited.
+extern const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold;
+// The minimum number of typed visits a URL needs to count for
+// `kDomainSuggestionsTypedUrlsThreshold`
+extern const base::FeatureParam<int> kDomainSuggestionsTypedUrlsOffset;
+// The minimum number of typed visits a domain needs to be considered highly
+// visited.
+extern const base::FeatureParam<int> kDomainSuggestionsTypedVisitThreshold;
+// The value to subtract from each URL's typed visits before contributing to
+// `kDomainSuggestionsTypedVisitThreshold`.
+extern const base::FeatureParam<int> kDomainSuggestionsTypedVisitOffset;
+// The max each visit can contribute to `kDomainSuggestionsTypedVisitThreshold`.
+// E.g. if 2, 'google.com/x' is typed-visited 5 times, and 'google.com/y' is
+// typed visited 1 time, then 'google.com' will be scored min(5,2) + min(1,2) =
+// 3, rather than 5+1 = 6.
+extern const base::FeatureParam<int> kDomainSuggestionsTypedVisitCapPerVisit;
+// The input inclusive minimum length to trigger domain suggestions.
+extern const base::FeatureParam<int> kDomainSuggestionsMinInputLength;
+// The maximum number of matches per domain to suggest.
+extern const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain;
+
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
 // - Short comment categorizing the relevant features & params.

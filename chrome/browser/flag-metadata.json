@@ -4914,9 +4914,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "omnibox-domain-suggestions",
+    "owners": ["manukh", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-drive-suggestions",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-dynamic-max-autocomplete",

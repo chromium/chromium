@@ -3572,6 +3572,31 @@
             ]
         }
     ],
+    "DesktopOmniboxDomainSuggestions": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "DomainSuggestionsMaxMatchesPerDomain": "2",
+                        "DomainSuggestionsMinInputLength": "4",
+                        "DomainSuggestionsVisitCapPerVisit": "2",
+                        "DomainSuggestionsVisitThreshold": "4"
+                    },
+                    "enable_features": [
+                        "OmniboxDomainSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxPostAutocompletion": [
         {
             "platforms": [

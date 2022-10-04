@@ -961,6 +961,41 @@ const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
     "SiteSearchStarterPackRelevanceScore",
     1350);
 
+const base::FeatureParam<int> kDomainSuggestionsTypedUrlsThreshold(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsTypedUrlsThreshold",
+    7);
+
+const base::FeatureParam<int> kDomainSuggestionsTypedUrlsOffset(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsTypedUrlsOffset",
+    1);
+
+const base::FeatureParam<int> kDomainSuggestionsTypedVisitThreshold(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsTypedVisitThreshold",
+    4);
+
+const base::FeatureParam<int> kDomainSuggestionsTypedVisitOffset(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsTypedVisitOffset",
+    1);
+
+const base::FeatureParam<int> kDomainSuggestionsTypedVisitCapPerVisit(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsTypedVisitCapPerVisit",
+    2);
+
+const base::FeatureParam<int> kDomainSuggestionsMinInputLength(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsMinInputLength",
+    4);
+
+const base::FeatureParam<int> kDomainSuggestionsMaxMatchesPerDomain(
+    &omnibox::kDomainSuggestions,
+    "DomainSuggestionsMaxMatchesPerDomain",
+    2);
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

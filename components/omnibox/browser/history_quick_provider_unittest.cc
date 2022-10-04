@@ -15,6 +15,7 @@
 
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -190,6 +191,8 @@ class HistoryQuickProviderTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_{omnibox::kDomainSuggestions};
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
@@ -1000,6 +1003,112 @@ TEST_F(HistoryQuickProviderTest, MaxMatches) {
 
   matches = provider().matches();
   EXPECT_EQ(matches.size(), provider().provider_max_matches_in_keyword_mode());
+}
+
+class HQPDomainSuggestionsTest : public HistoryQuickProviderTest {
+ protected:
+  std::vector<TestURLInfo> GetTestData() override {
+    return {
+        // Popular domain spread across 4 2-typed and 3 1-typed visits.
+        {"http://www.Dilijan.com/1", "Dilijan 1", 100, 2, 101},
+        {"http://www.Dilijan.com/2", "Dilijan 2", 100, 2, 102},
+        {"http://www.Dilijan.com/3", "Dilijan 3", 100, 2, 103},
+        {"http://www.Dilijan.com/4", "Dilijan 4", 100, 2, 104},
+        {"http://www.Dilijan.com/5", "Dilijan 5", 100, 1, 105},
+        {"http://www.Dilijan.com/6", "Dilijan 6", 100, 1, 106},
+        {"http://www.Dilijan.com/7", "Dilijan 7", 100, 1, 107},
+        // Popular domain spread across 2 3-typed and 5 1-typed visits.
+        {"http://www.Geghard.com/1", "Geghard 1", 100, 3, 101},
+        {"http://www.Geghard.com/2", "Geghard 2", 100, 3, 102},
+        {"http://www.Geghard.com/3", "Geghard 3", 100, 1, 103},
+        {"http://www.Geghard.com/4", "Geghard 4", 100, 1, 104},
+        {"http://www.Geghard.com/5", "Geghard 5", 100, 1, 105},
+        {"http://www.Geghard.com/6", "Geghard 6", 100, 1, 106},
+        {"http://www.Geghard.com/7", "Geghard 7", 100, 1, 107},
+        // Unpopular domain despite a 100-typed and 6 1-typed visits. Popular
+        // domains require at least 4 capped & offset typed visits, where each
+        // URL's typed visits are offset by 1 and capped at 2.
+        {"http://www.Tatev.com/1", "Tatev 1", 100, 100, 101},
+        {"http://www.Tatev.com/2", "Tatev 2", 100, 1, 102},
+        {"http://www.Tatev.com/3", "Tatev 3", 100, 1, 103},
+        {"http://www.Tatev.com/4", "Tatev 4", 100, 1, 104},
+        {"http://www.Tatev.com/5", "Tatev 5", 100, 1, 105},
+        {"http://www.Tatev.com/6", "Tatev 6", 100, 1, 106},
+        {"http://www.Tatev.com/7", "Tatev 7", 100, 1, 107},
+        // Unpopular domain despite a 6 100-typed and 1 0-typed visits. Popular
+        // domains require at least 7 1-typed visits.
+        {"http://www.Gyumri.com/1", "Gyumri 1", 100, 100, 101},
+        {"http://www.Gyumri.com/2", "Gyumri 2", 100, 100, 102},
+        {"http://www.Gyumri.com/3", "Gyumri 3", 100, 100, 103},
+        {"http://www.Gyumri.com/4", "Gyumri 4", 100, 100, 104},
+        {"http://www.Gyumri.com/5", "Gyumri 5", 100, 100, 105},
+        {"http://www.Gyumri.com/6", "Gyumri 6", 100, 100, 106},
+        {"http://www.Gyumri.com/7", "Gyumri 7", 100, 0, 107},
+    };
+  }
+};
+
+TEST_F(HQPDomainSuggestionsTest, DomainSuggestions) {
+  const auto test = [&](const std::u16string& input_text, bool input_keyword,
+                        std::vector<std::u16string> expected_matches) {
+    AutocompleteInput input(input_text, metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    input.set_keyword_mode_entry_method(
+        input_keyword
+            ? metrics::OmniboxEventProto_KeywordModeEntryMethod_TAB
+            : metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+    input.set_prefer_keyword(input_keyword);
+
+    provider().Start(input, false);
+    auto matches = provider().matches();
+    std::vector<std::u16string> match_titles;
+    base::ranges::transform(
+        matches, std::back_inserter(match_titles),
+        [](const auto& match) { return match.description; });
+    EXPECT_THAT(match_titles, testing::ElementsAreArray(expected_matches))
+        << "input_text: " << input_text << ", input_keyword: " << input_keyword;
+  };
+
+  // When matching a popular domain, its top 3 suggestions should be suggested
+  // twice: 1st from the overall pass, 2nd from domain pass. They should each be
+  // limited to individually, 3 matches for the 1st, 2 matches for the latter.
+  // Duplicates aren't necessary behavior, just a harmless side effect. The
+  // domain algorithm may change in the future to not add duplicates.
+  test(u"Dilijan", false,
+       {u"Dilijan 1", u"Dilijan 2", u"Dilijan 3", u"Dilijan 1", u"Dilijan 2"});
+
+  // Like above, but when only some of its suggestions match, only those should
+  // be suggested by both the overall and domain passes.
+  test(u"Dilijan 1", false, {u"Dilijan 1", u"Dilijan 1"});
+
+  // Domains with more than 4 typed visits should be considered popular.
+  test(u"Geghard", false,
+       {u"Geghard 1", u"Geghard 2", u"Geghard 3", u"Geghard 1", u"Geghard 2"});
+
+  // Domains with more than 4 typed visits but less than 4 capped typed visits
+  // should not be considered popular.
+  test(u"Tatev", false, {u"Tatev 1", u"Tatev 2", u"Tatev 3"});
+
+  // Domains with more than 7 visits, but less than 7 1-typed visits should not
+  // be considered popular.
+  test(u"Gyumri", false, {u"Gyumri 1", u"Gyumri 2", u"Gyumri 3"});
+
+  // When matching multiple domains, the overall pass should suggest the top
+  // suggestion, even if some of them aren't from a popular domain, then each
+  // domain's suggestions should be appended, each individually limited to 2.
+  test(u"www.", false,
+       {u"Gyumri 1", u"Tatev 1", u"Gyumri 2", u"Geghard 1", u"Geghard 2",
+        u"Dilijan 1", u"Dilijan 2"});
+
+  // Short inputs should not have domain suggestions.
+  test(u"Dil", false, {u"Dilijan 1", u"Dilijan 2", u"Dilijan 3"});
+
+  // Keyword inputs should not have domain suggestions, so we shouldn't see
+  // duplicates. But keyword inputs have a higher provider limit, so we should
+  // see all 7 matching suggestions.
+  test(u"Dilijan", true,
+       {u"Dilijan 1", u"Dilijan 2", u"Dilijan 3", u"Dilijan 4", u"Dilijan 5",
+        u"Dilijan 6", u"Dilijan 7"});
 }
 
 // HQPOrderingTest -------------------------------------------------------------

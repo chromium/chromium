@@ -74,9 +74,10 @@ BASE_DECLARE_FEATURE(kShortcutExpanding);
 BASE_DECLARE_FEATURE(kStoreTitleInContentsAndUrlInDescription);
 BASE_DECLARE_FEATURE(kHistoryQuickProviderSpecificityScoreCountUniqueHosts);
 
-// Document provider
+// Document provider and domain suggestions
 BASE_DECLARE_FEATURE(kDocumentProvider);
 BASE_DECLARE_FEATURE(kDocumentProviderAso);
+BASE_DECLARE_FEATURE(kDomainSuggestions);
 
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);

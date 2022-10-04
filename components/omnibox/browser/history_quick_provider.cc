@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/i18n/break_iterator.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/escape.h"
@@ -31,6 +32,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -92,21 +94,69 @@ void HistoryQuickProvider::DoAutocomplete() {
 
   // Get the matching URLs from the DB.
   ScoredHistoryMatches matches = in_memory_url_index_->HistoryItemsForTerms(
-      autocomplete_input_.text(), autocomplete_input_.cursor_position(),
+      autocomplete_input_.text(), autocomplete_input_.cursor_position(), "",
       max_matches);
   if (matches.empty())
     return;
 
-  // Loop over every result and add it to matches_. In the process, guarantee
-  // that scores are decreasing. `max_match_score` keeps track of the highest
-  // score we can assign to any later results we see.
-  int max_match_score = MaxMatchScore().value_or(matches[0].raw_score);
-  for (const auto& history_match : matches) {
-    // Set max_match_score to the score we'll assign this result.
-    max_match_score = std::min(max_match_score, history_match.raw_score);
-    matches_.push_back(QuickMatchToACMatch(history_match, max_match_score));
-    // Mark this max_match_score as being used.
-    max_match_score--;
+  // `original_max_match_score` keeps track of the potential URL-what-you-typed
+  // suggestion's score; all HQP suggestions should be scored strictly lower.
+  const auto original_max_match_score = MaxMatchScore();
+  const auto add_matches = [&](const ScoredHistoryMatches& matches) {
+    // `max_match_score` keeps track of the scores within `matches` to guarantee
+    // scores are decreasing within each batch. Scores from subsequent batches
+    // may be higher.
+    int max_match_score =
+        original_max_match_score.value_or(matches[0].raw_score);
+    for (const auto& history_match : matches) {
+      // Set max_match_score to the score we'll assign this result.
+      max_match_score = std::min(max_match_score, history_match.raw_score);
+      matches_.push_back(QuickMatchToACMatch(history_match, max_match_score));
+      // Mark this max_match_score as being used.
+      max_match_score--;
+    }
+  };
+
+  add_matches(matches);
+
+  // Add suggestions from the user's highly visited domains bypassing
+  // `provider_max_matches_`.
+
+  // In keyword mode, already have enough matches.
+  if (InKeywordMode(autocomplete_input_))
+    return;
+
+  static const size_t domain_suggestions_min_char =
+      OmniboxFieldTrial::kDomainSuggestionsMinInputLength.Get();
+  if (autocomplete_input_.text().length() < domain_suggestions_min_char)
+    return;
+
+  // Append suggestions for each of the user's highly visited domains. To
+  // determine these domains, the user's visits are aggregated by URL host and
+  // their aggregate info (e.g. sum typed count) are considered. Each highly
+  // visited domain gets its own `max_matches` allowance.
+  for (const auto& host : in_memory_url_index_->HighlyVisitedHosts()) {
+    // TODO(manukh): Calling `HistoryItemsForTerms()` is somewhat wasteful. URLs
+    //  have 1 host, so they'll be re-processed in at most 1 iteration. A
+    //  typical input that triggered this feature will match about 100 history
+    //  items, which are all scored. If the suggestions are from highly visited,
+    //  the number of history items scored will at most double, so about an
+    //  extra 100 items scored. Sorting, deduping, and converting to
+    //  `AutocompleteMatch`es are only done on 6 (or less) history items, so
+    //  those are not as big of a concern. If performance metrics regress, we
+    //  should extract matching and scoring history items from
+    //  `HistoryItemsForTerms()` so it can be done just once.
+    static const int max_host_matches =
+        OmniboxFieldTrial::kDomainSuggestionsMaxMatchesPerDomain.Get();
+    ScoredHistoryMatches host_matches =
+        in_memory_url_index_->HistoryItemsForTerms(
+            autocomplete_input_.text(), autocomplete_input_.cursor_position(),
+            host, max_host_matches);
+    // TODO(manukh): Consider using a new `AutocompleteMatchType` for domain
+    //  suggestions to distinguish them in metrics. Would also help with CF
+    //  logging.
+    if (!host_matches.empty())
+      add_matches(host_matches);
   }
 }
 

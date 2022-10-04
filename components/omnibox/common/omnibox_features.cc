@@ -303,6 +303,13 @@ BASE_FEATURE(kDocumentProviderAso,
              "OmniboxDocumentProviderAso",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to determine if the HQP should double as a domain provider by
+// suggesting up to the provider limit for each of the user's highly visited
+// domains.
+BASE_FEATURE(kDomainSuggestions,
+             "OmniboxDomainSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows Omnibox to dynamically adjust number of offered suggestions to fill in
 // the space between Omnibox and the soft keyboard. The number of suggestions
 // shown will be no less than minimum for the platform (eg. 5 for Android).

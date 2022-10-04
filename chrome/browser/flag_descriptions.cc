@@ -1971,6 +1971,11 @@ const char kOmniboxDocumentProviderAsoDescription[] =
     "If document suggestions are enabled, swaps the backend from cloudsearch "
     "to ASO (Apps Search Overlay) search.";
 
+const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
+const char kOmniboxDomainSuggestionsDescriptions[] =
+    "If enabled, history URL suggestions from hosts visited often bypass the "
+    "per provider limit.";
+
 const char kOmniboxExperimentalSuggestScoringName[] =
     "Omnibox Experimental Suggest Scoring";
 const char kOmniboxExperimentalSuggestScoringDescription[] =
