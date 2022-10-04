@@ -14,6 +14,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -31,7 +33,8 @@ PriceTrackingIconView::PriceTrackingIconView(
                          delegate,
                          "PriceTracking"),
       profile_(profile),
-      bubble_coordinator_(this) {
+      bubble_coordinator_(this),
+      icon_(&omnibox::kPriceTrackingDisabledIcon) {
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
 }
 
@@ -43,10 +46,7 @@ views::BubbleDialogDelegate* PriceTrackingIconView::GetBubble() const {
 
 std::u16string PriceTrackingIconView::GetTextForTooltipAndAccessibleName()
     const {
-  // TODO(meiliang@): Confirm with UXW on the tooltip string.
-  return l10n_util::GetStringUTF16(is_tracking_price_
-                                       ? IDS_OMNIBOX_TRACKING_PRICE
-                                       : IDS_OMNIBOX_TRACK_PRICE);
+  return tooltip_text_and_accessibleName_;
 }
 
 void PriceTrackingIconView::OnExecuting(
@@ -54,53 +54,43 @@ void PriceTrackingIconView::OnExecuting(
   if (profile_->GetPrefs()->GetBoolean(prefs::kShouldShowPriceTrackFUEBubble)) {
     bubble_coordinator_.Show(
         GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
-        base::BindOnce(&PriceTrackingIconView::UpdatePriceTrackingState,
+
+        base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
                        base::Unretained(this)),
         PriceTrackingBubbleDialogView::Type::TYPE_FUE);
   } else {
-    if (!IsPriceTracking()) {
-      UpdatePriceTrackingState(true);
-    }
+    EnablePriceTracking(/*enable=*/true);
     bubble_coordinator_.Show(
         GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
-        base::BindOnce(&PriceTrackingIconView::UpdatePriceTrackingState,
+        base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
                        base::Unretained(this)),
         PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
   }
 }
 
 const gfx::VectorIcon& PriceTrackingIconView::GetVectorIcon() const {
-  return IsPriceTracking() ? omnibox::kPriceTrackingEnabledFilledIcon
-                           : omnibox::kPriceTrackingDisabledIcon;
+  return *icon_;
 }
 
 void PriceTrackingIconView::UpdateImpl() {
-  SetLabel(l10n_util::GetStringUTF16(IsPriceTracking()
-                                         ? IDS_OMNIBOX_TRACKING_PRICE
-                                         : IDS_OMNIBOX_TRACK_PRICE));
-  SetPaintLabelOverSolidBackground(true);
+  SetVisualState(IsPriceTracking());
   SetVisible(is_visible_);
-  UpdateIconImage();
-  vector_icon_for_testing_ = &GetVectorIcon();
-  ResetForceMode();
 }
 
 void PriceTrackingIconView::ForceVisibleForTesting(bool is_tracking_price) {
-  force_mode_ = true;
+  SetVisible(true);
   is_visible_ = true;
-  is_tracking_price_ = is_tracking_price;
-  UpdateImpl();
+  SetVisualState(is_tracking_price);
 }
 
 const std::u16string& PriceTrackingIconView::GetIconLabelForTesting() {
   return label()->GetText();
 }
 
-const gfx::VectorIcon* PriceTrackingIconView::GetVectorIconForTesting() {
-  return vector_icon_for_testing_;
-}
+void PriceTrackingIconView::EnablePriceTracking(bool enable) {
+  if (IsPriceTracking() == enable)
+    return;
 
-void PriceTrackingIconView::UpdatePriceTrackingState(bool enable) {
   if (enable &&
       profile_->GetPrefs()->GetBoolean(prefs::kShouldShowPriceTrackFUEBubble)) {
     profile_->GetPrefs()->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble,
@@ -115,32 +105,38 @@ void PriceTrackingIconView::UpdatePriceTrackingState(bool enable) {
   commerce::SetPriceTrackingStateForBookmark(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
       node, enable,
-      base::BindOnce(&PriceTrackingIconView::OnPriceTrackingStateUpdated,
+      base::BindOnce(&PriceTrackingIconView::OnPriceTrackingServerStateUpdated,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  force_mode_ = true;
-  is_tracking_price_ = enable;
-  UpdateImpl();
+  SetVisualState(enable);
 }
 
-void PriceTrackingIconView::OnPriceTrackingStateUpdated(bool success) {
+void PriceTrackingIconView::SetVisualState(bool enable) {
+  icon_ = enable ? &omnibox::kPriceTrackingEnabledFilledIcon
+                 : &omnibox::kPriceTrackingDisabledIcon;
+  // TODO(meiliang@): Confirm with UXW on the tooltip string. If this expected,
+  // we can return label()->GetText() instead.
+  tooltip_text_and_accessibleName_ = l10n_util::GetStringUTF16(
+      enable ? IDS_OMNIBOX_TRACKING_PRICE : IDS_OMNIBOX_TRACK_PRICE);
+
+  SetLabel(l10n_util::GetStringUTF16(enable ? IDS_OMNIBOX_TRACKING_PRICE
+                                            : IDS_OMNIBOX_TRACK_PRICE));
+  SetPaintLabelOverSolidBackground(true);
+  UpdateIconImage();
+}
+
+void PriceTrackingIconView::OnPriceTrackingServerStateUpdated(bool success) {
   // TODO(crbug.com/1364739): Handles error if |success| is false.
 }
 
 bool PriceTrackingIconView::IsPriceTracking() const {
-  if (force_mode_) {
-    return is_tracking_price_;
-  }
-  if (!GetWebContents())
+  if (!GetWebContents()) {
     return false;
+  }
   bookmarks::BookmarkModel* const bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile_);
   const bookmarks::BookmarkNode* bookmark_node =
       bookmark_model->GetMostRecentlyAddedUserNodeForURL(
           GetWebContents()->GetLastCommittedURL());
   return commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
-}
-
-void PriceTrackingIconView::ResetForceMode() {
-  force_mode_ = false;
 }

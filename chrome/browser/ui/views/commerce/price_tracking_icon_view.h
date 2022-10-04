@@ -30,28 +30,22 @@ class PriceTrackingIconView : public PageActionIconView {
 
   void ForceVisibleForTesting(bool is_tracking_price);
   const std::u16string& GetIconLabelForTesting();
-  const gfx::VectorIcon* GetVectorIconForTesting();
 
  protected:
   // PageActionIconView:
   void UpdateImpl() override;
 
  private:
-  void UpdatePriceTrackingState(bool enable);
-  void OnPriceTrackingStateUpdated(bool success);
+  void EnablePriceTracking(bool enable);
+  void SetVisualState(bool enable);
+  void OnPriceTrackingServerStateUpdated(bool success);
   bool IsPriceTracking() const;
-  void ResetForceMode();
 
   raw_ptr<Profile> profile_;
   PriceTrackingBubbleCoordinator bubble_coordinator_;
-  // This is used to update this icon view immediately without waiting for the
-  // server response. This is also used in test.
-  bool force_mode_ = false;
-  bool is_tracking_price_ = false;
-  // This is needed for test to verify the current icon because |force_mode_|
-  // need to reset immediately after UpdateImpl() which might change the result
-  // of GetVectorIcon().
-  const gfx::VectorIcon* vector_icon_for_testing_;
+
+  raw_ptr<const gfx::VectorIcon> icon_;
+  std::u16string tooltip_text_and_accessibleName_;
 
   // Currently, these are being set by test.
   bool is_visible_ = false;

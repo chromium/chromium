@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/commerce/price_tracking/shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 
 #include "base/bind.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page.h"
@@ -57,6 +62,8 @@ ShoppingListUiTabHelper::ShoppingListUiTabHelper(
   // TODO(1360846): Consider using the in-memory cache instead.
   image_fetcher_ = image_fetcher_service->GetImageFetcher(
       image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  scoped_observation_.Observe(
+      BookmarkModelFactory::GetForBrowserContext(content->GetBrowserContext()));
 }
 
 ShoppingListUiTabHelper::~ShoppingListUiTabHelper() = default;
@@ -78,6 +85,16 @@ void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShoppingListUiTabHelper::BookmarkModelChanged() {}
+
+void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* node) {
+  if (!commerce::IsProductBookmark(model, node))
+    return;
+  UpdatePriceTrackingIconView();
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
@@ -118,6 +135,15 @@ const gfx::Image& ShoppingListUiTabHelper::GetProductImage() {
 
 const GURL& ShoppingListUiTabHelper::GetProductImageURL() {
   return last_fetched_image_url_;
+}
+
+void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {
+  DCHECK(web_contents());
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  DCHECK(browser);
+
+  browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceTracking);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);

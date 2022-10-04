@@ -34,7 +34,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
-const char kTestURL[] = "http://www.google.com";
+const char kTestURL[] = "about:blank";
 }  // namespace
 
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
@@ -57,9 +57,6 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
 
     bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
                                   std::u16string());
-
-    commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
-                                 true);
   }
 
   PriceTrackingIconView* GetChip() {
@@ -83,6 +80,14 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void SimulateServerPriceTrackStateUpdated(bool is_price_tracked) {
+    bookmarks::BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+
+    commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
+                                 is_price_tracked);
   }
 
  private:
@@ -142,13 +147,23 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
       prefs::kShouldShowPriceTrackFUEBubble, false);
   auto* icon_view = GetChip();
   icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+  EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
+               omnibox::kPriceTrackingDisabledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 
   ClickPriceTrackingIconView();
   EXPECT_TRUE(icon_view->GetBubble());
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
   EXPECT_EQ(icon_view->GetIconLabelForTesting(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
-  EXPECT_STREQ(icon_view->GetVectorIconForTesting()->name,
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
 }
 
 class PriceTrackingBubbleInteractiveTest
@@ -170,6 +185,14 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   auto* icon_view = GetChip();
   icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
 
+  // Verify the PriceTackingIconView original state.
+  EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
+               omnibox::kPriceTrackingDisabledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+
   // Click PriceTackingIconView and show the PriceTrackingBubble.
   ClickPriceTrackingIconView();
   auto* bubble =
@@ -180,12 +203,15 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
 
   // Click the Accept(Track price) bubble.
   bubble->Accept();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
 
   // Verify the PriceTackingIconView updates its state.
   EXPECT_EQ(icon_view->GetIconLabelForTesting(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
-  EXPECT_STREQ(icon_view->GetVectorIconForTesting()->name,
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
@@ -204,13 +230,25 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_TRUE(bubble);
   EXPECT_EQ(bubble->GetTypeForTesting(),
             PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+
+  // Verify the PriceTackingIconView state before cancel.
+  EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
+               omnibox::kPriceTrackingEnabledFilledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
 
   // Click the Cancel(Untrack) button.
   bubble->Cancel();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/false);
 
   // Verify the PriceTackingIconView updates its state.
   EXPECT_EQ(icon_view->GetIconLabelForTesting(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
-  EXPECT_STREQ(icon_view->GetVectorIconForTesting()->name,
+  EXPECT_STREQ(icon_view->GetVectorIcon().name,
                omnibox::kPriceTrackingDisabledIcon.name);
+  EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+            l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
 }

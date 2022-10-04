@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
-#define CHROME_BROWSER_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
+#ifndef CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
+#define CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/bookmarks/browser/base_bookmark_model_observer.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -33,7 +36,8 @@ namespace commerce {
 // and price tracking UI on desktop.
 class ShoppingListUiTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<ShoppingListUiTabHelper> {
+      public content::WebContentsUserData<ShoppingListUiTabHelper>,
+      public bookmarks::BaseBookmarkModelObserver {
  public:
   ~ShoppingListUiTabHelper() override;
   ShoppingListUiTabHelper(const ShoppingListUiTabHelper& other) = delete;
@@ -53,6 +57,11 @@ class ShoppingListUiTabHelper
   // content::WebContentsObserver implementation
   void PrimaryPageChanged(content::Page& page) override;
 
+  // bookmarks::BaseBookmarkModelObserver
+  void BookmarkModelChanged() override;
+  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
+                               const bookmarks::BookmarkNode* node) override;
+
  private:
   friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
 
@@ -70,6 +79,8 @@ class ShoppingListUiTabHelper
       const gfx::Image& image,
       const image_fetcher::RequestMetadata& request_metadata);
 
+  void UpdatePriceTrackingIconView();
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService> shopping_service_;
@@ -83,6 +94,11 @@ class ShoppingListUiTabHelper
   // URL that was used.
   gfx::Image last_fetched_image_;
 
+  // Automatically remove this observer from its host when destroyed.
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
+      scoped_observation_{this};
+
   base::WeakPtrFactory<ShoppingListUiTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -90,4 +106,4 @@ class ShoppingListUiTabHelper
 
 }  // namespace commerce
 
-#endif  // CHROME_BROWSER_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
+#endif  // CHROME_BROWSER_UI_COMMERCE_PRICE_TRACKING_SHOPPING_LIST_UI_TAB_HELPER_H_
