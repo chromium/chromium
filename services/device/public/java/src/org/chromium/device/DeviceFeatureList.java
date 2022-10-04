@@ -16,6 +16,7 @@ import org.chromium.build.annotations.MainDex;
 @JNINamespace("features")
 @MainDex
 public class DeviceFeatureList {
+    public static final String ASYNC_SENSOR_CALLS = "AsyncSensorCalls";
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
 
     private DeviceFeatureList() {}

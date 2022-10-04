@@ -5,12 +5,25 @@
 #include "services/device/generic_sensor/platform_sensor_android.h"
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "services/device/generic_sensor/jni_headers/PlatformSensor_jni.h"
+#include "services/device/public/cpp/device_features.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 
 namespace device {
+namespace {
+void StartSensorBlocking(base::android::ScopedJavaGlobalRef<jobject> j_object,
+                         double frequency) {
+  device::Java_PlatformSensor_startSensor2(AttachCurrentThread(), j_object,
+                                           frequency);
+}
+
+void StopSensorBlocking(base::android::ScopedJavaGlobalRef<jobject> j_object) {
+  device::Java_PlatformSensor_stopSensor(AttachCurrentThread(), j_object);
+}
+}  // namespace
 
 // static
 scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
@@ -38,9 +51,11 @@ PlatformSensorAndroid::PlatformSensorAndroid(
     : PlatformSensor(type, reading_buffer, provider) {}
 
 PlatformSensorAndroid::~PlatformSensorAndroid() {
-  JNIEnv* env = AttachCurrentThread();
   if (j_object_) {
-    Java_PlatformSensor_sensorDestroyed(env, j_object_);
+    if (base::FeatureList::IsEnabled(features::kAsyncSensorCalls)) {
+      StopSensor();
+    }
+    Java_PlatformSensor_sensorDestroyed(AttachCurrentThread(), j_object_);
   }
 }
 
@@ -64,14 +79,24 @@ double PlatformSensorAndroid::GetMaximumSupportedFrequency() {
 
 bool PlatformSensorAndroid::StartSensor(
     const PlatformSensorConfiguration& configuration) {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_PlatformSensor_startSensor(env, j_object_,
-                                         configuration.frequency());
+  if (base::FeatureList::IsEnabled(features::kAsyncSensorCalls)) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StartSensorBlocking, j_object_,
+                                  configuration.frequency()));
+    return true;
+  } else {
+    return Java_PlatformSensor_startSensor(AttachCurrentThread(), j_object_,
+                                           configuration.frequency());
+  }
 }
 
 void PlatformSensorAndroid::StopSensor() {
-  JNIEnv* env = AttachCurrentThread();
-  Java_PlatformSensor_stopSensor(env, j_object_);
+  if (base::FeatureList::IsEnabled(features::kAsyncSensorCalls)) {
+    sequenced_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StopSensorBlocking, j_object_));
+  } else {
+    Java_PlatformSensor_stopSensor(AttachCurrentThread(), j_object_);
+  }
 }
 
 bool PlatformSensorAndroid::CheckSensorConfiguration(

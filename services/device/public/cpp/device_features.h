@@ -19,6 +19,7 @@ namespace features {
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kGenericSensorExtraClasses);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWinrtGeolocationImplementation);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kMacCoreLocationBackend);
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kAsyncSensorCalls);
 
 }  // namespace features
 

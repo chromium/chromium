@@ -114,6 +114,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAnonymousUpdateChecks,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,
+    &features::kAsyncSensorCalls,
     &features::kHttpsOnlyMode,
     &features::kMetricsSettingsAndroid,
     &features::kNetworkServiceInProcess,

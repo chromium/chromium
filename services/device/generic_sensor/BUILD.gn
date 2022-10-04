@@ -70,7 +70,10 @@ source_set("generic_sensor") {
       "platform_sensor_provider_android.cc",
       "platform_sensor_provider_android.h",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//services/device/public/cpp:device_feature_list",
+    ]
   }
 
   if (is_mac) {
@@ -174,6 +177,7 @@ if (is_android) {
       "//base:base_java",
       "//base:jni_java",
       "//build/android:build_java",
+      "//services/device/public/java:device_feature_list_java",
       "//services/device/public/mojom:generic_sensor_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
