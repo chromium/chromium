@@ -130,7 +130,7 @@ enum Priority {
   // |MANUAL_BATCH| records are the first to be rate limited, and since there
   // is no automatic transfer, it is important to explicitly flush them often
   // enough to avoid loss of data.
-  // |MANUAL_BATCH| records are the first to be shed.
+  // |MANUAL_BATCH| records are one of the first few ones to be shed.
   MANUAL_BATCH = 5;
 
   // |SECURITY| queues should transfer information indicating potential security
@@ -140,4 +140,15 @@ enum Priority {
   // be exposed to the domain admin. These are the events that will be rate
   // limited last. |SECURITY| records are the last ones to be shed.
   SECURITY = 6;
+
+  // |MANUAL_BATCH_LACROS| queues transfer data only on explicit request in
+  // Lacros. Note that since a queue can hold records submitted by multiple
+  // clients, one client requesting to transfer data will do so for all
+  // collected records of the same priority, including those enqueued by other
+  // clients within Lacros. |MANUAL_BATCH_LACROS| records, like those with
+  // |MANUAL_BATCH|, are the first to be rate limited, and since there
+  // is no automatic transfer, it is important to explicitly flush them often
+  // enough to avoid loss of data.
+  // |MANUAL_BATCH_LACROS| records are one of the first few ones to be shed.
+  MANUAL_BATCH_LACROS = 7;
 }
