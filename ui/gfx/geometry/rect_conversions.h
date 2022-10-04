@@ -10,7 +10,9 @@
 
 namespace gfx {
 
-// Returns the smallest Rect that encloses the given RectF.
+// Returns the smallest Rect that encloses the given RectF if possible.
+// The returned Rect is larger than or equal to the input RectF, unless the
+// the geometry values exceed int range and are clamped to int.
 GEOMETRY_EXPORT Rect ToEnclosingRect(const RectF& rect);
 
 // Similar to ToEnclosingRect(), but for each edge, if the distance between the
@@ -21,7 +23,10 @@ GEOMETRY_EXPORT Rect ToEnclosingRect(const RectF& rect);
 GEOMETRY_EXPORT Rect ToEnclosingRectIgnoringError(const RectF& rect,
                                                   float error);
 
-// Returns the largest Rect that is enclosed by the given RectF.
+// Returns the largest Rect that is enclosed by the given RectF if possible.
+// The returned rect is smaller than or equal to the input rect, but if
+// the input RectF is too small and no enclosed Rect exists, the returned
+// rect is an empty Rect at |ToCeiledPoint(rect.origin())|.
 GEOMETRY_EXPORT Rect ToEnclosedRect(const RectF& rect);
 
 // Similar to ToEnclosedRect(), but for each edge, if the distance between the
