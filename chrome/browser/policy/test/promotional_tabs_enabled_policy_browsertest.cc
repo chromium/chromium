@@ -57,7 +57,7 @@ class PromotionalTabsEnabledPolicyTest
 
  protected:
   PromotionalTabsEnabledPolicyTest() {
-    const std::vector<base::Feature> kEnabledFeatures = {
+    const std::vector<base::test::FeatureRef> kEnabledFeatures = {
       features::kChromeWhatsNewUI,
 #if !BUILDFLAG(IS_CHROMEOS)
       welcome::kForceEnabled,
