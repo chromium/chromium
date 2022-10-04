@@ -171,45 +171,81 @@ TEST(ColorConversions, LchToLab) {
         48.586294664234586f}}};  // green
 
   for (auto& color_pair : colors_tests) {
-    auto [input_l, input_a, input_b] = color_pair.input;
+    auto [input_l, input_c, input_h] = color_pair.input;
     auto [expected_l, expected_a, expected_b] = color_pair.expected;
     auto [output_l, output_a, output_b] =
-        LchToLab(input_l, input_a, absl::optional<float>(input_b));
+        LchToLab(input_l, input_c, absl::optional<float>(input_h));
     EXPECT_NEAR(output_l, expected_l, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_l
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
         << ' ' << output_a << ' ' << output_b;
     EXPECT_NEAR(output_a, expected_a, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_l
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
         << ' ' << output_a << ' ' << output_b;
     EXPECT_NEAR(output_b, expected_b, 0.001f)
-        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << input_l << ' ' << input_c << ' ' << input_h << " to " << expected_l
         << ' ' << expected_a << ' ' << expected_b << " produced " << output_l
         << ' ' << output_a << ' ' << output_b;
   }
 
   // Try with a none hue value (white).
   float input_l = 100.0f;
-  float input_a = 0.000010331815288315629f;
+  float input_c = 0.000010331815288315629f;
   absl::optional<float> input_h = absl::nullopt;
   float expected_l = 100.0f;
   float expected_a = -0.000007807961277528364f;
   float expected_b = 0.000006766250648659877f;
   auto [output_l, output_a, output_b] =
-      LchToLab(input_l, input_a, absl::optional<float>(input_h));
+      LchToLab(input_l, input_c, absl::optional<float>(input_h));
   EXPECT_NEAR(output_l, expected_l, 0.001f)
-      << input_l << ' ' << input_a << ' ' << "none"
+      << input_l << ' ' << input_c << ' ' << "none"
       << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
       << " produced " << output_l << ' ' << output_a << ' ' << output_b;
   EXPECT_NEAR(output_a, expected_a, 0.001f)
-      << input_l << ' ' << input_a << ' ' << "none"
+      << input_l << ' ' << input_c << ' ' << "none"
       << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
       << " produced " << output_l << ' ' << output_a << ' ' << output_b;
   EXPECT_NEAR(output_b, expected_b, 0.001f)
-      << input_l << ' ' << input_a << ' ' << "none"
+      << input_l << ' ' << input_c << ' ' << "none"
       << " to " << expected_l << ' ' << expected_a << ' ' << expected_b
       << " produced " << output_l << ' ' << output_a << ' ' << output_b;
+}
+
+TEST(ColorConversions, LabToLCH) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{100.0f, 0.0f, 0.0f}, {100.0f, 0.0f, 0.0f}},
+      {{89.11f, -65.472265155436f, 21.906713478207564f},
+       {89.11f, 69.04f, 161.5f}},
+      {{29.6915239933531f, 56.11167248735513f, -36.292665028011974f},
+       {29.6915239933531f, 66.82572352143814f,
+        -32.894523620605469f}},  // purple
+      {{38.14895894517021f, 50.38364171345111f, 31.834803335164764f},
+       {38.14895894517021f, 59.598372928277406f,
+        32.286662896162966f}},  // brown
+      {{46.27770902748027f, -47.55240796497723f, 48.586294664234586f},
+       {46.27770902748027f, 67.9842594463414f, 134.3838583288382f}}};  // green
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_l, input_a, input_b] = color_pair.input;
+    auto [expected_l, expected_c, expected_h] = color_pair.expected;
+    auto [output_l, output_c, output_h] = LabToLCH(input_l, input_a, input_b);
+    EXPECT_NEAR(output_l, expected_l, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_c << ' ' << expected_h << " produced " << output_l
+        << ' ' << output_c << ' ' << output_h;
+    EXPECT_NEAR(output_c, expected_c, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_c << ' ' << expected_h << " produced " << output_l
+        << ' ' << output_c << ' ' << output_h;
+    EXPECT_NEAR(output_h, expected_h, 0.001f)
+        << input_l << ' ' << input_a << ' ' << input_b << " to " << expected_l
+        << ' ' << expected_c << ' ' << expected_h << " produced " << output_l
+        << ' ' << output_c << ' ' << output_h;
+  }
 }
 
 TEST(ColorConversions, LchToSkColor4f) {

@@ -64,6 +64,9 @@ GFX_EXPORT std::tuple<float, float, float> LchToLab(float l,
                                                     absl::optional<float> h);
 
 // Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> LabToLCH(float l, float a, float b);
+
+// Method exposed for testing purposes.
 GFX_EXPORT std::tuple<float, float, float> OKLchToLab(float l,
                                                       float c,
                                                       absl::optional<float> h);
