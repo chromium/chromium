@@ -7,7 +7,6 @@
 #include <memory>
 #include "base/feature_list.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
+#include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -38,16 +38,29 @@ namespace blink {
 DedicatedWorkerMessagingProxy::DedicatedWorkerMessagingProxy(
     ExecutionContext* execution_context,
     DedicatedWorker* worker_object)
+    : DedicatedWorkerMessagingProxy(
+          execution_context,
+          worker_object,
+          [](DedicatedWorkerMessagingProxy* messaging_proxy,
+             DedicatedWorker* worker_object,
+             ParentExecutionContextTaskRunners* runners) {
+            return std::make_unique<DedicatedWorkerObjectProxy>(
+                messaging_proxy, runners, worker_object->GetToken());
+          }) {}
+
+DedicatedWorkerMessagingProxy::DedicatedWorkerMessagingProxy(
+    ExecutionContext* execution_context,
+    DedicatedWorker* worker_object,
+    base::FunctionRef<std::unique_ptr<DedicatedWorkerObjectProxy>(
+        DedicatedWorkerMessagingProxy*,
+        DedicatedWorker*,
+        ParentExecutionContextTaskRunners*)> worker_object_proxy_factory)
     : ThreadedMessagingProxyBase(execution_context),
-      worker_object_(worker_object) {
-  if (worker_object) {
-    // Worker object is only nullptr in tests, which subsequently manually
-    // injects a |worker_object_proxy_|.
-    worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxy>(
-        this, GetParentExecutionContextTaskRunners(),
-        worker_object->GetToken());
-  }
-}
+      worker_object_proxy_(
+          worker_object_proxy_factory(this,
+                                      worker_object,
+                                      GetParentExecutionContextTaskRunners())),
+      worker_object_(worker_object) {}
 
 DedicatedWorkerMessagingProxy::~DedicatedWorkerMessagingProxy() = default;
 

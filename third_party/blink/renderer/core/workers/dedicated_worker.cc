@@ -92,11 +92,25 @@ DedicatedWorker* DedicatedWorker::Create(ExecutionContext* context,
 DedicatedWorker::DedicatedWorker(ExecutionContext* context,
                                  const KURL& script_request_url,
                                  const WorkerOptions* options)
+    : DedicatedWorker(
+          context,
+          script_request_url,
+          options,
+          [context](DedicatedWorker* worker) {
+            return MakeGarbageCollected<DedicatedWorkerMessagingProxy>(context,
+                                                                       worker);
+          }) {}
+
+DedicatedWorker::DedicatedWorker(
+    ExecutionContext* context,
+    const KURL& script_request_url,
+    const WorkerOptions* options,
+    base::FunctionRef<DedicatedWorkerMessagingProxy*(DedicatedWorker*)>
+        context_proxy_factory)
     : AbstractWorker(context),
       script_request_url_(script_request_url),
       options_(options),
-      context_proxy_(
-          MakeGarbageCollected<DedicatedWorkerMessagingProxy>(context, this)),
+      context_proxy_(context_proxy_factory(this)),
       factory_client_(
           Platform::Current()->CreateDedicatedWorkerHostFactoryClient(
               this,

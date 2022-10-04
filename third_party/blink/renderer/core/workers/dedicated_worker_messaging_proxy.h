@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_MESSAGING_PROXY_H_
 
 #include <memory>
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -33,6 +35,14 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
     : public ThreadedMessagingProxyBase {
  public:
   DedicatedWorkerMessagingProxy(ExecutionContext*, DedicatedWorker*);
+  // Exposed for testing.
+  DedicatedWorkerMessagingProxy(
+      ExecutionContext*,
+      DedicatedWorker*,
+      base::FunctionRef<std::unique_ptr<DedicatedWorkerObjectProxy>(
+          DedicatedWorkerMessagingProxy*,
+          DedicatedWorker*,
+          ParentExecutionContextTaskRunners*)> worker_object_proxy_factory);
   DedicatedWorkerMessagingProxy(const DedicatedWorkerMessagingProxy&) = delete;
   DedicatedWorkerMessagingProxy& operator=(
       const DedicatedWorkerMessagingProxy&) = delete;
