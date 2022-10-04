@@ -7087,9 +7087,6 @@
                         "OmniboxRemoveSuggestionHeaderChevron",
                         "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches"
-                    ],
-                    "disable_features": [
-                        "UseSharedInstanceForZeroSuggestPrefetching"
                     ]
                 }
             ]

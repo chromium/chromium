@@ -520,13 +520,6 @@ extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
 // Determines the relevance score for the local history zero-prefix suggestions.
 extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
 
-// Whether the same AutocompleteController instance used by the omnibox should
-// be used to prefetch zero-prefix suggestions. For this to be true,
-// omnibox::kZeroSuggestPrefetching must also be true.
-// This is only checked on Android which uses ZeroSuggestPrefetcher by default,
-// which spins off a new throw-away AutocompleteController instance.
-bool UseSharedInstanceForZeroSuggestPrefetching();
-
 // Returns true if any of the zero-suggest prefetching features are enabled.
 bool IsZeroSuggestPrefetchingEnabled();
 

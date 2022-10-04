@@ -55,7 +55,6 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/voice_suggest_provider.h"
-#include "components/omnibox/browser/zero_suggest_prefetcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/search_engines/template_url.h"
@@ -176,17 +175,7 @@ void AutocompleteControllerAndroid::StartPrefetch(JNIEnv* env) {
       ChromeAutocompleteSchemeClassifier(profile_));
   ntp_prefetch_input.set_focus_type(
       metrics::OmniboxFocusType::INTERACTION_FOCUS);
-
-  if (OmniboxFieldTrial::UseSharedInstanceForZeroSuggestPrefetching()) {
-    autocomplete_controller_->StartPrefetch(ntp_prefetch_input);
-  } else {
-    // ZeroSuggestPrefetcher deletes itself after it's done prefetching.
-    new ZeroSuggestPrefetcher(
-        std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-        ntp_prefetch_input,
-        /*use_prefetch_path=*/
-        base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching));
-  }
+  autocomplete_controller_->StartPrefetch(ntp_prefetch_input);
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
