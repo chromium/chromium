@@ -48,7 +48,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     public static final class SearchActivityPreferences {
         /** Name of the Default Search Engine. */
         public final @Nullable String searchEngineName;
-        /** URL of the Default Search Engine. */
+        /**
+         * URL of the Default Search Engine.
+         * TODO(https://crbug.com/1370563): migrate this to GURL.
+         */
         public final @Nullable String searchEngineUrl;
         /** Whether Voice Search functionality is available. */
         public final boolean voiceSearchAvailable;

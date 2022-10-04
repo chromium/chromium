@@ -18,11 +18,13 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferen
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.url.GURL;
 
 class SearchBoxDataProvider implements LocationBarDataProvider {
     private final @ColorInt int mPrimaryColor;
     private boolean mIsFromQuickActionSearchWidget;
     private Tab mTab;
+    private GURL mGurl;
 
     /**
      * @param context The {@link Context} for accessing colors.
@@ -101,6 +103,16 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public String getCurrentUrl() {
         return SearchActivityPreferencesManager.getCurrent().searchEngineUrl;
+    }
+
+    @Override
+    public GURL getCurrentGurl() {
+        if (mGurl == null) {
+            assert LibraryLoader.getInstance().isInitialized();
+            mGurl = new GURL(getCurrentUrl());
+        }
+
+        return mGurl;
     }
 
     @Override

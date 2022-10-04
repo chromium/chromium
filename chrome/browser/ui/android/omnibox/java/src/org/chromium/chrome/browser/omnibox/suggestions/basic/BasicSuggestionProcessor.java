@@ -115,7 +115,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         if (!isSearchSuggestion) {
             if (!suggestion.getUrl().isEmpty()
-                    && UrlBarData.shouldShowUrl(suggestion.getUrl().getSpec(), false)) {
+                    && UrlBarData.shouldShowUrl(suggestion.getUrl(), false)) {
                 SuggestionSpannable str = new SuggestionSpannable(suggestion.getDisplayText());
                 urlHighlighted = applyHighlightToMatchRegions(
                         str, suggestion.getDisplayTextClassifications());

@@ -14,6 +14,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.url.GURL;
 
 /**
  * Interface defining a provider for data needed by the {@link LocationBar}.
@@ -55,6 +56,13 @@ public interface LocationBarDataProvider {
     /** Returns The url for the currently active page.*/
     @NonNull
     String getCurrentUrl();
+
+    /**
+     * Returns the url of the current tab, represented as a GURL. Returns an empty GURL when there
+     * is no tab.
+     */
+    @NonNull
+    GURL getCurrentGurl();
 
     /** Returns the delegate for the NewTabPage shown for the current tab. */
     @NonNull

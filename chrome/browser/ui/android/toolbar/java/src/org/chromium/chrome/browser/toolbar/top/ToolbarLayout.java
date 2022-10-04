@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 /**
  * Layout class that contains the base shared logic for manipulating the toolbar component. For
@@ -276,6 +277,11 @@ public abstract class ToolbarLayout
             @Override
             public String getCurrentUrl() {
                 return "";
+            }
+
+            @Override
+            public GURL getCurrentGurl() {
+                return GURL.emptyGURL();
             }
 
             @Override

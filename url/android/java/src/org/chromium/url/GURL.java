@@ -51,6 +51,12 @@ public class GURL {
         void run(Throwable throwable);
     }
 
+    /**
+     * Exception signalling that a GURL failed to parse due to an unexpected version marker in the
+     * serialized input.
+     */
+    public static class BadSerializerVersionException extends RuntimeException {}
+
     // Right now this is only collecting reports on Canary which has a relatively small population.
     private static final int DEBUG_REPORT_PERCENTAGE = 10;
     private static ReportDebugThrowableCallback sReportCallback;
@@ -292,7 +298,9 @@ public class GURL {
     }
 
     /**
-     * Deserialize a GURL serialized with {@link GURL#serialize()}.
+     * Deserialize a GURL serialized with {@link GURL#serialize()}. This will re-parse in case of
+     * version mismatch, which may trigger undesired native loading. {@see
+     * deserializeLatestVersionOnly} if you want to fail in case of version mismatch.
      *
      * This function should *never* be used on a String coming from an untrusted source.
      *
@@ -300,35 +308,52 @@ public class GURL {
      */
     public static GURL deserialize(@Nullable String gurl) {
         try {
-            if (TextUtils.isEmpty(gurl)) return emptyGURL();
+            return deserializeLatestVersionOnly(gurl);
+        } catch (BadSerializerVersionException be) {
+            // Just re-parse the GURL on version changes.
             String[] tokens = gurl.split(Character.toString(SERIALIZER_DELIMITER));
-
-            // First token MUST always be the length of the serialized data.
-            String length = tokens[0];
-            if (gurl.length() != Integer.parseInt(length) + length.length() + 1) {
-                throw new IllegalArgumentException("Serialized GURL had the wrong length.");
-            }
-
-            // Last token MUST always be the original spec - just re-parse the GURL on version
-            // changes.
-            String spec = tokens[tokens.length - 1];
-            // Special case for empty spec - it won't get its own token.
-            if (gurl.endsWith(Character.toString(SERIALIZER_DELIMITER))) spec = "";
-
-            // Second token MUST always be the version number.
-            int version = Integer.parseInt(tokens[1]);
-            if (version != SERIALIZER_VERSION) return new GURL(spec);
-
-            boolean isValid = Boolean.parseBoolean(tokens[2]);
-            Parsed parsed = Parsed.deserialize(tokens, 3);
-            GURL result = new GURL();
-            result.init(spec, isValid, parsed);
-            return result;
+            return new GURL(getSpecFromTokens(gurl, tokens));
         } catch (Exception e) {
             // This is unexpected, maybe the storage got corrupted somehow?
             Log.w(TAG, "Exception while deserializing a GURL: " + gurl, e);
             return emptyGURL();
         }
+    }
+
+    /**
+     * Deserialize a GURL serialized with {@link #serialize()}, throwing {@code
+     * BadSerializerException} if the serialized input has a version other than the latest. This
+     * function should never be used on a String coming from an untrusted source.
+     */
+    public static GURL deserializeLatestVersionOnly(@Nullable String gurl) {
+        if (TextUtils.isEmpty(gurl)) return emptyGURL();
+        String[] tokens = gurl.split(Character.toString(SERIALIZER_DELIMITER));
+
+        // First token MUST always be the length of the serialized data.
+        String length = tokens[0];
+        if (gurl.length() != Integer.parseInt(length) + length.length() + 1) {
+            throw new IllegalArgumentException("Serialized GURL had the wrong length.");
+        }
+
+        String spec = getSpecFromTokens(gurl, tokens);
+        // Second token MUST always be the version number.
+        int version = Integer.parseInt(tokens[1]);
+        if (version != SERIALIZER_VERSION) {
+            throw new BadSerializerVersionException();
+        }
+
+        boolean isValid = Boolean.parseBoolean(tokens[2]);
+        Parsed parsed = Parsed.deserialize(tokens, 3);
+        GURL result = new GURL();
+        result.init(spec, isValid, parsed);
+        return result;
+    }
+
+    private static String getSpecFromTokens(String gurl, String[] tokens) {
+        // Last token MUST always be the original spec.
+        // Special case for empty spec - it won't get its own token.
+        return gurl.endsWith(Character.toString(SERIALIZER_DELIMITER)) ? ""
+                                                                       : tokens[tokens.length - 1];
     }
 
     /**

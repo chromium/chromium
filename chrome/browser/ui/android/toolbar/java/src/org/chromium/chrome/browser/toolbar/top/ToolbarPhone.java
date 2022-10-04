@@ -1068,9 +1068,9 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // LocationBarMediator#getUrlBarTranslationXForToolbarAnimation() for implementation
         // details.
         if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
-            mUrlBar.setTranslationX(mLocationBar.getUrlBarTranslationXForToolbarAnimation(
-                    mUrlExpansionFraction,
-                    UrlUtilities.isCanonicalizedNTPUrl(getToolbarDataProvider().getCurrentUrl())));
+            mUrlBar.setTranslationX(
+                    mLocationBar.getUrlBarTranslationXForToolbarAnimation(mUrlExpansionFraction,
+                            UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl())));
         } else {
             mUrlBar.setTranslationX(0);
         }
@@ -1705,7 +1705,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private boolean hideShadowForRegularNtpTextureCapture() {
-        return !isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl())
+        return !isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl())
                 && mNtpSearchBoxScrollFraction < 1.f;
     }
 
@@ -2224,7 +2224,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private boolean hideShadowForIncognitoNtp() {
-        return isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentUrl());
+        return isIncognito() && UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl());
     }
 
     private boolean hideShadowForInterstitial() {

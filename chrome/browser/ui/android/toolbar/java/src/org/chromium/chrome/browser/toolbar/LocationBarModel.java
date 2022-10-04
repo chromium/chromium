@@ -283,17 +283,19 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     // TODO(https://crbug.com/1305374): migrate to GURL.
+    @Deprecated
     public String getCurrentUrl() {
-        // Provide NTP url instead of most recent tab url for searches in overview mode (when Start
-        // Surface is enabled).
-        String url = getTab() != null && getTab().isInitialized()
-                ? getTab().getUrl().getSpec().trim()
-                : "";
+        return getCurrentGurl().getSpec().trim();
+    }
+
+    @Override
+    public GURL getCurrentGurl() {
         if (isInOverviewAndShowingOmnibox()) {
-            return UrlConstants.NTP_URL;
+            return UrlConstants.ntpGurl();
         }
 
-        return url;
+        Tab tab = getTab();
+        return tab != null && tab.isInitialized() ? tab.getUrl() : GURL.emptyGURL();
     }
 
     public void notifyUrlChanged() {
@@ -324,15 +326,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // Part of scroll jank investigation http://crbug.com/905461. Will remove TraceEvent after
         // the investigation is complete.
         try (TraceEvent te = TraceEvent.scoped("LocationBarModel.getUrlBarData")) {
-            String url = getCurrentUrl();
             if (!hasTab()) {
                 return UrlBarData.EMPTY;
             }
 
-            if (!UrlBarData.shouldShowUrl(url, isIncognito())) {
+            GURL gurl = getCurrentGurl();
+            if (!UrlBarData.shouldShowUrl(gurl, isIncognito())) {
                 return UrlBarData.EMPTY;
             }
 
+            String url = gurl.getSpec().trim();
             String formattedUrl = getFormattedFullUrl();
             if (mTab.isFrozen()) return buildUrlBarData(url, formattedUrl);
 
