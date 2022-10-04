@@ -87,7 +87,7 @@ class SharedArrayBufferTest
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   SharedArrayBufferTest() {
-    std::vector<base::Feature> enabled_features, disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
     const bool is_sab_allowed_unconditionally = std::get<0>(GetParam());
     if (is_sab_allowed_unconditionally) {
       enabled_features.push_back(

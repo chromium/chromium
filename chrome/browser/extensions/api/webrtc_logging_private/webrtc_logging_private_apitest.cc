@@ -687,8 +687,8 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   }
 
   void SetUpFeatures() {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
 
     if (WebRtcEventLogCollectionFeature()) {
       enabled.push_back(features::kWebRtcRemoteEventLog);
