@@ -163,6 +163,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   void SetCanLockManagedGuestSession(bool can_lock_managed_guest_session);
   void SetSessionAuthFactors(SessionAuthFactors keys);
   void SetAuthFactorsConfiguration(AuthFactorsConfiguration auth_factors);
+  void ClearAuthFactorsConfiguration();
   // We need to pull input method used to log in into the user session to make
   // it consistent. This method will remember given input method to be used
   // when session starts.

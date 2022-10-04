@@ -315,6 +315,10 @@ void UserContext::SetAuthFactorsConfiguration(
   auth_factors_configuration_ = std::move(auth_factors);
 }
 
+void UserContext::ClearAuthFactorsConfiguration() {
+  auth_factors_configuration_ = absl::nullopt;
+}
+
 const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
   DCHECK(features::IsUseAuthFactorsEnabled());
   if (!auth_factors_configuration_.has_value()) {

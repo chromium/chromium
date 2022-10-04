@@ -376,6 +376,7 @@ void AuthFactorEditor::OnAddCredentials(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added credentials";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
   // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
   // context after such operation.
@@ -393,6 +394,7 @@ void AuthFactorEditor::OnAddAuthFactor(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added auth factor";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
   // TODO(crbug.com/1310312): Think if we should update SessionAuthFactors in
   // context after such operation.
@@ -410,6 +412,7 @@ void AuthFactorEditor::OnUpdateCredential(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully updated credential";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
@@ -425,6 +428,7 @@ void AuthFactorEditor::OnUpdateAuthFactor(
   }
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully updated auth factor";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
@@ -441,6 +445,7 @@ void AuthFactorEditor::OnRecoveryFactorAdded(
 
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully added recovery key";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
@@ -457,6 +462,7 @@ void AuthFactorEditor::OnRecoveryFactorRemoved(
 
   CHECK(reply.has_value());
   LOGIN_LOG(EVENT) << "Successfully removed recovery key";
+  context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
