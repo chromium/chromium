@@ -44,8 +44,17 @@ class DIPSDatabase {
 
   // DIPS Bounce table functions -----------------------------------------------
   bool Write(const std::string& site,
-             absl::optional<base::Time> storage_time,
-             absl::optional<base::Time> interaction_time);
+             absl::optional<base::Time> first_storage_time,
+             absl::optional<base::Time> first_interaction_time) {
+    return Write(site, first_storage_time, first_storage_time,
+                 first_interaction_time, first_interaction_time);
+  }
+
+  bool Write(const std::string& site,
+             absl::optional<base::Time> first_storage_time,
+             absl::optional<base::Time> last_storage_time,
+             absl::optional<base::Time> first_interaction_time,
+             absl::optional<base::Time> last_interaction_time);
 
   absl::optional<StateValue> Read(const std::string& site);
 

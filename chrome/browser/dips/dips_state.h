@@ -48,18 +48,25 @@ class DIPSState {
   // default-initialized for a new site).
   bool was_loaded() const { return was_loaded_; }
 
-  absl::optional<base::Time> site_storage_time() const {
-    return site_storage_time_;
+  absl::optional<base::Time> first_site_storage_time() const {
+    return first_site_storage_time_;
   }
-  void set_site_storage_time(absl::optional<base::Time> time);
+  absl::optional<base::Time> last_site_storage_time() const {
+    return last_site_storage_time_;
+  }
+  void update_site_storage_time(base::Time time);
 
-  absl::optional<base::Time> user_interaction_time() const {
-    return user_interaction_time_;
+  absl::optional<base::Time> first_user_interaction_time() const {
+    return first_user_interaction_time_;
   }
-  void set_user_interaction_time(absl::optional<base::Time> time);
+  absl::optional<base::Time> last_user_interaction_time() const {
+    return last_user_interaction_time_;
+  }
+  void update_user_interaction_time(base::Time time);
 
   StateValue ToStateValue() const {
-    return {site_storage_time_, user_interaction_time_};
+    return {first_site_storage_time_, last_site_storage_time_,
+            first_user_interaction_time_, last_user_interaction_time_};
   }
 
  private:
@@ -67,8 +74,10 @@ class DIPSState {
   std::string site_;
   bool was_loaded_;
   DirtyBit dirty_;
-  absl::optional<base::Time> site_storage_time_;
-  absl::optional<base::Time> user_interaction_time_;
+  absl::optional<base::Time> first_site_storage_time_;
+  absl::optional<base::Time> last_site_storage_time_;
+  absl::optional<base::Time> first_user_interaction_time_;
+  absl::optional<base::Time> last_user_interaction_time_;
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_STATE_H_

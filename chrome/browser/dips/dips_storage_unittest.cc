@@ -64,31 +64,31 @@ TEST(DIPSUtilsTest, GetSiteForDIPS) {
 TEST_F(DIPSStorageTest, NewURL) {
   DIPSState state = storage_.Read(GURL("http://example.com/"));
   EXPECT_FALSE(state.was_loaded());
-  EXPECT_FALSE(state.site_storage_time().has_value());
-  EXPECT_FALSE(state.user_interaction_time().has_value());
+  EXPECT_FALSE(state.first_site_storage_time().has_value());
+  EXPECT_FALSE(state.first_user_interaction_time().has_value());
 }
 
 TEST_F(DIPSStorageTest, SetValues) {
   GURL url("https://example.com");
-  auto time1 = absl::make_optional(base::Time::FromDoubleT(1));
-  auto time2 = absl::make_optional(base::Time::FromDoubleT(2));
+  auto time1 = base::Time::FromDoubleT(1);
+  auto time2 = base::Time::FromDoubleT(2);
 
   {
     DIPSState state = storage_.Read(url);
-    state.set_site_storage_time(time1);
-    state.set_user_interaction_time(time2);
+    state.update_site_storage_time(time1);
+    state.update_user_interaction_time(time2);
 
     // Before flushing `state`, reads for the same URL won't include its
     // changes.
     DIPSState state2 = storage_.Read(url);
-    EXPECT_FALSE(state2.site_storage_time().has_value());
-    EXPECT_FALSE(state2.user_interaction_time().has_value());
+    EXPECT_FALSE(state2.first_site_storage_time().has_value());
+    EXPECT_FALSE(state2.first_user_interaction_time().has_value());
   }
 
   DIPSState state = storage_.Read(url);
   EXPECT_TRUE(state.was_loaded());
-  EXPECT_EQ(state.site_storage_time(), time1);
-  EXPECT_EQ(state.user_interaction_time(), time2);
+  EXPECT_EQ(state.first_site_storage_time(), absl::make_optional(time1));
+  EXPECT_EQ(state.first_user_interaction_time(), absl::make_optional(time2));
 }
 
 TEST_F(DIPSStorageTest, SameSiteSameState) {
@@ -96,28 +96,30 @@ TEST_F(DIPSStorageTest, SameSiteSameState) {
   // while the other is HTTP.
   GURL url1("https://subdomain1.example.com");
   GURL url2("http://subdomain2.example.com");
-  auto time = absl::make_optional(base::Time::FromDoubleT(1));
+  auto time = base::Time::FromDoubleT(1);
 
-  storage_.Read(url1).set_site_storage_time(time);
+  storage_.Read(url1).update_site_storage_time(time);
 
   DIPSState state = storage_.Read(url2);
   // State was recorded for url1, but can be read for url2.
-  EXPECT_EQ(time, state.site_storage_time());
-  EXPECT_FALSE(state.user_interaction_time().has_value());
+  EXPECT_EQ(time, state.first_site_storage_time());
+  EXPECT_FALSE(state.first_user_interaction_time().has_value());
 }
 
 TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
   GURL url1("https://example1.com");
   GURL url2("https://example2.com");
-  auto time1 = absl::make_optional(base::Time::FromDoubleT(1));
-  auto time2 = absl::make_optional(base::Time::FromDoubleT(2));
+  auto time1 = base::Time::FromDoubleT(1);
+  auto time2 = base::Time::FromDoubleT(2);
 
-  storage_.Read(url1).set_site_storage_time(time1);
-  storage_.Read(url2).set_site_storage_time(time2);
+  storage_.Read(url1).update_site_storage_time(time1);
+  storage_.Read(url2).update_site_storage_time(time2);
 
   // Verify that url1 and url2 have independent state:
-  EXPECT_EQ(storage_.Read(url1).site_storage_time(), time1);
-  EXPECT_EQ(storage_.Read(url2).site_storage_time(), time2);
+  EXPECT_EQ(storage_.Read(url1).first_site_storage_time(),
+            absl::make_optional(time1));
+  EXPECT_EQ(storage_.Read(url2).first_site_storage_time(),
+            absl::make_optional(time2));
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
@@ -147,8 +149,8 @@ TEST(DIPSStoragePrepopulateTest, NoExistingTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_time, time);  // written
-  EXPECT_EQ(state->site_storage_time, time);      // written
+  EXPECT_EQ(state->first_user_interaction_time, time);  // written
+  EXPECT_EQ(state->first_site_storage_time, time);      // written
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
@@ -175,8 +177,8 @@ TEST(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
 
   // Prepopulate() didn't overwrite the previous timestamps.
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_time, interaction_time);  // no change
-  EXPECT_EQ(state->site_storage_time, storage_time);          // no change
+  EXPECT_EQ(state->first_user_interaction_time, interaction_time);  // no change
+  EXPECT_EQ(state->first_site_storage_time, storage_time);          // no change
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingStorageTime) {
@@ -198,8 +200,8 @@ TEST(DIPSStoragePrepopulateTest, ExistingStorageTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->site_storage_time, storage_time);          // no change
-  EXPECT_EQ(state->user_interaction_time, prepopulate_time);  // written
+  EXPECT_EQ(state->first_site_storage_time, storage_time);          // no change
+  EXPECT_EQ(state->first_user_interaction_time, prepopulate_time);  // written
 }
 
 TEST(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
@@ -222,8 +224,8 @@ TEST(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
   storage.FlushPostedTasksForTesting();
 
   ASSERT_TRUE(state.has_value());
-  EXPECT_EQ(state->user_interaction_time, interaction_time);  // no change
-  EXPECT_EQ(state->site_storage_time, absl::nullopt);         // no change
+  EXPECT_EQ(state->first_user_interaction_time, interaction_time);  // no change
+  EXPECT_EQ(state->first_site_storage_time, absl::nullopt);         // no change
 }
 
 TEST(DIPSStoragePrepopulateTest, WorksOnChunks) {

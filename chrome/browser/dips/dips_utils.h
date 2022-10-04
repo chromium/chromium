@@ -62,13 +62,17 @@ std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
 // StateValue:
 struct StateValue {
-  absl::optional<base::Time> site_storage_time;
-  absl::optional<base::Time> user_interaction_time;
+  absl::optional<base::Time> first_site_storage_time;
+  absl::optional<base::Time> last_site_storage_time;
+  absl::optional<base::Time> first_user_interaction_time;
+  absl::optional<base::Time> last_user_interaction_time;
 };
 
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
-  return (lhs.site_storage_time == rhs.site_storage_time) &&
-         (lhs.user_interaction_time == rhs.user_interaction_time);
+  return (lhs.first_site_storage_time == rhs.first_site_storage_time) &&
+         (lhs.last_site_storage_time == rhs.last_site_storage_time) &&
+         (lhs.first_user_interaction_time == rhs.first_user_interaction_time) &&
+         (lhs.last_user_interaction_time == rhs.last_user_interaction_time);
 }
 
 // Return the number of seconds in `td`, clamped to [0, 10].

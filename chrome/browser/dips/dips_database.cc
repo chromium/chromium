@@ -100,8 +100,10 @@ bool DIPSDatabase::InitTables() {
       // clang-format off
       "CREATE TABLE IF NOT EXISTS bounces("
           "site TEXT PRIMARY KEY NOT NULL,"
-          "site_storage_time INTEGER NOT NULL,"
-          "user_interaction_time INTEGER NOT NULL)";
+          "first_site_storage_time INTEGER NOT NULL,"
+          "last_site_storage_time INTEGER NOT NULL,"
+          "first_user_interaction_time INTEGER NOT NULL,"
+          "last_user_interaction_time INTEGER NOT NULL)";
   // clang-format on
 
   DCHECK(db_->IsSQLValid(kBounceSql));
@@ -152,22 +154,28 @@ sql::InitStatus DIPSDatabase::Init() {
 }
 
 bool DIPSDatabase::Write(const std::string& site,
-                         absl::optional<base::Time> storage_time,
-                         absl::optional<base::Time> interaction_time) {
+                         absl::optional<base::Time> first_storage_time,
+                         absl::optional<base::Time> last_storage_time,
+                         absl::optional<base::Time> first_interaction_time,
+                         absl::optional<base::Time> last_interaction_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kWriteSql[] =  // clang-format off
       "INSERT OR REPLACE INTO bounces("
           "site,"
-          "site_storage_time,"
-          "user_interaction_time) "
-          "VALUES (?,?,?)";
+          "first_site_storage_time,"
+          "last_site_storage_time,"
+          "first_user_interaction_time,"
+          "last_user_interaction_time) "
+          "VALUES (?,?,?,?,?)";
   // clang-format on
   DCHECK(db_->IsSQLValid(kWriteSql));
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kWriteSql));
   statement.BindString(0, site);
-  statement.BindTime(1, storage_time.value_or(base::Time()));
-  statement.BindTime(2, interaction_time.value_or(base::Time()));
+  statement.BindTime(1, first_storage_time.value_or(base::Time()));
+  statement.BindTime(2, last_storage_time.value_or(base::Time()));
+  statement.BindTime(3, first_interaction_time.value_or(base::Time()));
+  statement.BindTime(4, last_interaction_time.value_or(base::Time()));
 
   return statement.Run();
 }
@@ -176,8 +184,10 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kReadSql[] =  // clang-format off
       "SELECT site,"
-          "site_storage_time,"
-          "user_interaction_time "
+          "first_site_storage_time,"
+          "last_site_storage_time,"
+          "first_user_interaction_time,"
+          "last_user_interaction_time "
           "FROM bounces WHERE site=?";
   // clang-format on
   DCHECK(db_->IsSQLValid(kReadSql));
@@ -190,7 +200,9 @@ absl::optional<StateValue> DIPSDatabase::Read(const std::string& site) {
   }
 
   return StateValue{ToOptionalTime(statement.ColumnTime(1)),
-                    ToOptionalTime(statement.ColumnTime(2))};
+                    ToOptionalTime(statement.ColumnTime(2)),
+                    ToOptionalTime(statement.ColumnTime(3)),
+                    ToOptionalTime(statement.ColumnTime(4))};
 }
 
 bool DIPSDatabase::RemoveRow(const std::string& site) {

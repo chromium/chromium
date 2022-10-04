@@ -95,8 +95,10 @@ DIPSState DIPSStorage::ReadSite(std::string site) {
 
 void DIPSStorage::Write(const DIPSState& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  db_->Write(state.site(), state.site_storage_time(),
-             state.user_interaction_time());
+  db_->Write(state.site(), state.first_site_storage_time(),
+             state.last_site_storage_time(),
+             state.first_user_interaction_time(),
+             state.last_user_interaction_time());
 }
 
 // DIPSTabHelper Function Impls ------------------------------------------------
@@ -108,19 +110,14 @@ void DIPSStorage::RecordStorage(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (state.site_storage_time()) {
-    // We want the time that storage was first written, so don't overwrite the
-    // existing timestamp.
-    return;
-  }
-
-  if (state.user_interaction_time()) {
+  if (!state.first_site_storage_time().has_value() &&
+      state.last_user_interaction_time().has_value()) {
     // First storage, but previous interaction.
-    UmaHistogramTimeToStorage(time - state.user_interaction_time().value(),
+    UmaHistogramTimeToStorage(time - state.last_user_interaction_time().value(),
                               mode);
   }
 
-  state.set_site_storage_time(time);
+  state.update_site_storage_time(time);
 }
 
 void DIPSStorage::RecordInteraction(const GURL& url,
@@ -130,20 +127,15 @@ void DIPSStorage::RecordInteraction(const GURL& url,
   DCHECK(db_);
 
   DIPSState state = Read(url);
-  if (!state.user_interaction_time()) {
-    // First interaction on site.
-    if (state.site_storage_time()) {
-      // Site previously wrote to storage. Record metric for the time delay
-      // between storage and interaction.
-      UmaHistogramTimeToInteraction(time - state.site_storage_time().value(),
-                                    mode);
-    }
+  if (!state.first_user_interaction_time().has_value() &&
+      state.first_site_storage_time().has_value()) {
+    // Site previously wrote to storage. Record metric for the time delay
+    // between first storage and interaction.
+    UmaHistogramTimeToInteraction(
+        time - state.first_site_storage_time().value(), mode);
   }
 
-  // Unlike for storage, we want to know the time of the most recent user
-  // interaction, so overwrite any existing timestamp. (If interaction happened
-  // a long time ago, it may no longer be relevant.)
-  state.set_user_interaction_time(time);
+  state.update_user_interaction_time(time);
 }
 
 /* static */
@@ -159,17 +151,17 @@ void DIPSStorage::PrepopulateChunk(PrepopulateArgs args) {
       std::min(args.sites.size() - args.offset, g_prepopulate_chunk_size);
   for (size_t i = 0; i < chunk_size; i++) {
     DIPSState state = ReadSite(args.sites[args.offset + i]);
-    if (state.user_interaction_time()) {
+    if (state.first_user_interaction_time()) {
       continue;
     }
 
-    state.set_user_interaction_time(args.time);
+    state.update_user_interaction_time(args.time);
 
-    if (!state.site_storage_time()) {
+    if (!state.first_site_storage_time()) {
       // If we set a fake interaction time but no storage time, then when
       // storage does happen we'll report an incorrect
       // TimeFromInteractionToStorage metric. So set the storage time too.
-      state.set_site_storage_time(args.time);
+      state.update_site_storage_time(args.time);
     }
   }
 

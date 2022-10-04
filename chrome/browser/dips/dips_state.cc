@@ -18,8 +18,10 @@ DIPSState::DIPSState(DIPSStorage* storage,
     : storage_(storage),
       site_(std::move(site)),
       was_loaded_(true),
-      site_storage_time_(state.site_storage_time),
-      user_interaction_time_(state.user_interaction_time) {}
+      first_site_storage_time_(state.first_site_storage_time),
+      last_site_storage_time_(state.last_site_storage_time),
+      first_user_interaction_time_(state.first_user_interaction_time),
+      last_user_interaction_time_(state.last_user_interaction_time) {}
 
 DIPSState::DIPSState(DIPSState&&) = default;
 
@@ -29,20 +31,29 @@ DIPSState::~DIPSState() {
   }
 }
 
-void DIPSState::set_site_storage_time(absl::optional<base::Time> time) {
-  if (time == site_storage_time_) {
+void DIPSState::update_site_storage_time(base::Time time) {
+  if (time == first_site_storage_time_ || time == last_site_storage_time_) {
     return;
   }
 
-  site_storage_time_ = time;
+  if (!first_site_storage_time_.has_value())
+    first_site_storage_time_ = time;
+
+  DCHECK_GE(time, first_site_storage_time_.value());
+  last_site_storage_time_ = time;
   dirty_ = true;
 }
 
-void DIPSState::set_user_interaction_time(absl::optional<base::Time> time) {
-  if (time == user_interaction_time_) {
+void DIPSState::update_user_interaction_time(base::Time time) {
+  if (time == first_user_interaction_time_ ||
+      time == last_user_interaction_time_) {
     return;
   }
 
-  user_interaction_time_ = time;
+  if (!first_user_interaction_time_.has_value())
+    first_user_interaction_time_ = time;
+
+  DCHECK_GE(time, first_user_interaction_time_.value());
+  last_user_interaction_time_ = time;
   dirty_ = true;
 }
