@@ -2149,6 +2149,28 @@
     'name': 'chromium.dawn',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
+      'Dawn Android arm DEPS Release (Pixel 4)': {
+        'os_type': 'android',
+        'browser_config': 'android-chromium',
+        'mixins': [
+          'android_r',
+          'has_native_resultdb_integration',
+          'flame',
+          'gpu-swarming-pool',
+        ],
+        'test_suites': {},
+      },
+      'Dawn Android arm Release (Pixel 4)': {
+        'os_type': 'android',
+        'browser_config': 'android-chromium',
+        'mixins': [
+          'android_r',
+          'has_native_resultdb_integration',
+          'flame',
+          'gpu-swarming-pool',
+        ],
+        'test_suites': {},
+      },
       'Dawn Linux x64 Builder' : {},
       'Dawn Linux x64 DEPS Builder' : {},
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {

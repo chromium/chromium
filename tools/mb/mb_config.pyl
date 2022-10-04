@@ -230,6 +230,9 @@
     },
 
     'chromium.dawn': {
+      'Dawn Android arm DEPS Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
+      'Dawn Android arm Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
+
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
@@ -1119,6 +1122,8 @@
     },
 
     'tryserver.chromium.dawn': {
+      'android-dawn-arm-rel': 'dawn_tests_android_release_trybot',
+      'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
@@ -2466,6 +2471,14 @@
 
     'codesearch_gen_chromium_webview_bot': [
       'codesearch', 'android_without_codecs', 'static', 'goma',
+    ],
+
+    'dawn_tests_android_release_trybot': [
+      'dawn_tests', 'android', 'release_trybot_minimal_symbols',
+    ],
+
+    'dawn_tests_android_release_trybot_reclient': [
+      'dawn_tests', 'android', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'dawn_tests_asan_release_bot_dcheck_always_on_reclient': [

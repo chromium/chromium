@@ -1,4 +1,34 @@
 {
+  "android-dawn-arm-rel": {
+    "gn_args": {
+      "dawn_enable_opengles": true,
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
+  "dawn-android-arm-deps-rel": {
+    "gn_args": {
+      "dawn_enable_opengles": true,
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_dawn": true,
+      "use_goma": true
+    }
+  },
   "dawn-linux-x64-deps-rel": {
     "gn_args": {
       "dawn_enable_desktop_gl": true,
