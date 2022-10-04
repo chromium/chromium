@@ -52,12 +52,8 @@ BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     : BrowserAccessibilityManager(delegate),
       web_contents_accessibility_(std::move(web_contents_accessibility)),
       prune_tree_for_screen_reader_(true) {
-  // The Java layer handles the root scroll offset and image descriptions.
+  // The Java layer handles the root scroll offset.
   use_root_scroll_offsets_when_computing_bounds_ = false;
-  if (web_contents_accessibility_) {
-    allow_image_descriptions_ =
-        web_contents_accessibility_.get()->should_allow_image_descriptions();
-  }
 
   Initialize(initial_tree);
 }
@@ -75,6 +71,12 @@ ui::AXTreeUpdate BrowserAccessibilityManagerAndroid::GetEmptyDocument() {
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
+}
+
+bool BrowserAccessibilityManagerAndroid::ShouldAllowImageDescriptions() {
+  WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
+  return (wcax && wcax->should_allow_image_descriptions()) ||
+         allow_image_descriptions_for_testing_;
 }
 
 bool BrowserAccessibilityManagerAndroid::ShouldRespectDisplayedPasswordText() {

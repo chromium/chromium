@@ -348,7 +348,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   bool frame_info_initialized_;
 
   // True if this instance should allow image descriptions, false if the
-  // feature should be disabled (for example in CCT or WebView). Default false.
+  // feature should be disabled (dependent on embedder behavior). Default false.
   bool allow_image_descriptions_ = false;
 
   // True if this instance should respect the displayed password text (available

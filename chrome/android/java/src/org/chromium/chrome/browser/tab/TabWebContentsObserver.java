@@ -112,7 +112,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         // Enable image descriptions feature normally, but not for Chrome Custom Tabs.
         WebContentsAccessibility.fromWebContents(webContents)
-                .setAllowImageDescriptions(!mTab.isCustomTab());
+                .setIsImageDescriptionsCandidate(!mTab.isCustomTab());
 
         for (Callback<WebContents> callback : mInitObservers) callback.onResult(webContents);
     }

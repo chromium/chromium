@@ -1275,7 +1275,9 @@ public class WebContentsAccessibilityTest {
         // would be generated if spelling correction was enabled. Clear our cache for this node.
         int textNodeVirtualViewId =
                 waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
-        mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivityTestRule.mWcax.addSpellingErrorForTesting(textNodeVirtualViewId, 4, 9);
+        });
         mActivityTestRule.mWcax.clearNodeInfoCacheForGivenId(textNodeVirtualViewId);
 
         // Get |AccessibilityNodeInfo| object and confirm it is not null.

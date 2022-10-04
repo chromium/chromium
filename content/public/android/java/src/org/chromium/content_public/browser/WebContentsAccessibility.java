@@ -117,9 +117,11 @@ public interface WebContentsAccessibility {
     void setShouldFocusOnPageLoad(boolean on);
 
     /**
-     * Sets whether or not the image descriptions feature should be allowed.
+     * Sets whether or not this instance is a candidate for the image descriptions feature to be
+     * enabled. This feature is dependent on embedder behavior and screen reader state.
+     * See BrowserAccessibilityState.java.
      */
-    void setAllowImageDescriptions(boolean allowImageDescriptions);
+    void setIsImageDescriptionsCandidate(boolean isImageDescriptionsCandidate);
 
     /**
      * Called when autofill popup is displayed. Used to upport navigation through the view.

@@ -219,8 +219,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // WebView.
     private boolean mShouldFocusOnPageLoad;
 
-    // Whether the image descriptions feature is allowed for this instance.
-    private boolean mAllowImageDescriptions;
+    // True if this instance is a candidate to have the image descriptions feature enabled. The
+    // feature is dependent on embedder behavior and screen reader state. Default false.
+    private boolean mIsImageDescriptionsCandidate;
 
     // If true, the web contents are obscured by another view and we shouldn't
     // return an AccessibilityNodeProvider or process touch exploration events.
@@ -417,11 +418,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             };
             mView.post(serviceMaskRunnable);
         }
-
-        // Set whether image descriptions should be enabled for this instance. We do not want
-        // the feature to run in certain cases (e.g. WebView or Chrome Custom Tab).
-        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
-                mNativeObj, mAllowImageDescriptions);
     }
 
     @CalledByNative
@@ -749,7 +745,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState) {
-        if (!isAccessibilityEnabled()) return;
+        if (!isNativeInitialized()) return;
 
         // Update the AXMode based on screen reader status.
         WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj, newScreenReaderEnabledState,
@@ -759,6 +755,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         WebContentsAccessibilityImplJni.get().setPasswordRules(mNativeObj,
                 AccessibilityAutofillHelper.shouldRespectDisplayedPasswordText(),
                 AccessibilityAutofillHelper.shouldExposePasswordText());
+
+        // Update the state of enabling/disabling the image descriptions feature. To enable the
+        // feature, this instance must be a candidate and a screen reader must be enabled.
+        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
+                mNativeObj, mIsImageDescriptionsCandidate && newScreenReaderEnabledState);
 
         // Update the list of events we dispatch to enabled services.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
@@ -812,8 +813,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @Override
-    public void setAllowImageDescriptions(boolean allowImageDescriptions) {
-        mAllowImageDescriptions = allowImageDescriptions;
+    public void setIsImageDescriptionsCandidate(boolean isImageDescriptionsCandidate) {
+        mIsImageDescriptionsCandidate = isImageDescriptionsCandidate;
     }
 
     @Override
