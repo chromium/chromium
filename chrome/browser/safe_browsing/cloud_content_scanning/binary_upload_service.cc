@@ -170,6 +170,10 @@ void BinaryUploadService::Request::set_content_type(const std::string& type) {
   content_analysis_request_.mutable_request_data()->set_content_type(type);
 }
 
+void BinaryUploadService::Request::set_tab_title(const std::string& tab_title) {
+  content_analysis_request_.mutable_request_data()->set_tab_title(tab_title);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
 

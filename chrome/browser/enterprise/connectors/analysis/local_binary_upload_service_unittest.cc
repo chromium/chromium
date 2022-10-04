@@ -55,7 +55,7 @@ class LocalBinaryUploadServiceTest : public testing::Test {
             },
             scanning_result, scanning_response),
         settings);
-
+    request->set_tab_title("tab_title");
     ON_CALL(*request, GetRequestData(_))
         .WillByDefault(
             Invoke([](BinaryUploadService::Request::DataCallback callback) {
@@ -156,6 +156,25 @@ TEST_F(LocalBinaryUploadServiceTest,
   EXPECT_EQ(result, BinaryUploadService::Result::SUCCESS);
   EXPECT_TRUE(sdk_request.has_request_token());
   EXPECT_EQ(sdk_request.request_token(), response.request_token());
+}
+
+TEST_F(LocalBinaryUploadServiceTest, VerifyTabTitleIsSet) {
+  LocalBinaryUploadService lbus;
+
+  BinaryUploadService::Result result;
+  ContentAnalysisResponse response;
+  lbus.MaybeUploadForDeepScanning(MakeRequest(&result, &response));
+
+  task_environment_.RunUntilIdle();
+
+  FakeContentAnalysisSdkClient* fake_client_ptr =
+      fake_sdk_manager_.GetFakeClient({"local_system_path", false});
+  ASSERT_THAT(fake_client_ptr, NotNull());
+
+  const content_analysis::sdk::ContentAnalysisRequest& sdk_request =
+      fake_client_ptr->GetRequest();
+
+  EXPECT_EQ(sdk_request.request_data().tab_title(), "tab_title");
 }
 
 TEST_F(LocalBinaryUploadServiceTest, SomeRequestsArePending) {

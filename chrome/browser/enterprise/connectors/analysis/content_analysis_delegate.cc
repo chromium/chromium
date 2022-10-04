@@ -565,6 +565,12 @@ void ContentAnalysisDelegate::PrepareRequest(
     request->set_device_token(
         data_.settings.cloud_or_local_settings.dm_token());
   }
+
+  // Include tab page title in local content analysis requests.
+  if (data_.settings.cloud_or_local_settings.is_local_analysis()) {
+    request->set_tab_title(title_);
+  }
+
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(data_.url.spec());

@@ -52,6 +52,9 @@ message ContentMetaData {
 
   // Destination information, e.g., url or path.
   optional string destination = 8;
+
+  // Name of tab title.
+  optional string tab_title = 9;
 }
 
 message ClientMetadata {

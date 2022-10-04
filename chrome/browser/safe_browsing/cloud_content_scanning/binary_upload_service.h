@@ -154,6 +154,7 @@ class BinaryUploadService : public KeyedService {
     void clear_dlp_scan_request();
     void set_client_metadata(enterprise_connectors::ClientMetadata metadata);
     void set_content_type(const std::string& type);
+    void set_tab_title(const std::string& tab_title);
 
     std::string SetRandomRequestToken();
 
