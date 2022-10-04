@@ -313,6 +313,8 @@ IN_PROC_BROWSER_TEST_F(LockScreenNoteTakingTest, AppLaunchActionDataParams) {
       session_manager::SessionState::ACTIVE);
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
+  LockScreenAppsEnabledWaiter().WaitForState(
+      ash::mojom::TrayActionState::kAvailable);
 
   profile()->GetPrefs()->SetBoolean(prefs::kRestoreLastLockScreenNote, false);
 

@@ -1341,6 +1341,8 @@ source_set("ash") {
     "lock_screen_apps/app_manager.h",
     "lock_screen_apps/app_manager_impl.cc",
     "lock_screen_apps/app_manager_impl.h",
+    "lock_screen_apps/app_registry_cache_observer_with_profile.cc",
+    "lock_screen_apps/app_registry_cache_observer_with_profile.h",
     "lock_screen_apps/app_window_metrics_tracker.cc",
     "lock_screen_apps/app_window_metrics_tracker.h",
     "lock_screen_apps/first_app_run_toast_manager.cc",
