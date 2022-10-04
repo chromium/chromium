@@ -18,8 +18,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
-// Responsible for initialing the access token workflow. Executes the consuming
-// callback when the fetch is done, and then becomes disposable.
+// Responsible for initialising the access token workflow. Executes the
+// consuming callback when the fetch is done, and then becomes disposable.
 class KidsAccessTokenFetcher {
  public:
   // For convenience, the interface of signin::PrimaryAccountAccessTokenFetcher
