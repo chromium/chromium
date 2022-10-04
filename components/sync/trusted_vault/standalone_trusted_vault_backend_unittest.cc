@@ -1502,6 +1502,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const int kMethodTypeHint = 7;
 
   backend()->StoreKeys(account_info.gaia, kVaultKeys, kLastKeyVersion);
+  ASSERT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
 
   // No request should be issued while there is no primary account.
   base::MockCallback<base::OnceClosure> completion_callback;
@@ -1509,6 +1510,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
                                       kMethodTypeHint,
                                       completion_callback.Get());
+  EXPECT_TRUE(backend()->HasPendingTrustedRecoveryMethodForTesting());
 
   // Upon setting a primary account, RegisterAuthenticationFactor() should be
   // invoked. It should in fact be called twice: one for device registration,
@@ -1541,6 +1543,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                                /*has_persistent_auth_error=*/false);
 
   // The operation should be in flight.
+  EXPECT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
   ASSERT_FALSE(registration_callback.is_null());
 
   // Mimic successful completion of the request.

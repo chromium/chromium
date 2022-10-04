@@ -132,7 +132,7 @@ class StandaloneTrustedVaultBackend
 
   void SetClockForTesting(base::Clock* clock);
 
-  void OnAuthErrorResolvedForAccount(const CoreAccountInfo& account_info);
+  bool HasPendingTrustedRecoveryMethodForTesting() const;
 
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
@@ -152,8 +152,12 @@ class StandaloneTrustedVaultBackend
   // registration is desirable (i.e. feature toggle enabled and user signed in),
   // it returns an enum representing the registration state, intended to be used
   // for metric recording. Otherwise it returns nullopt.
-  absl::optional<TrustedVaultDeviceRegistrationStateForUMA> MaybeRegisterDevice(
-      bool has_persistent_auth_error_for_uma);
+  absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
+  MaybeRegisterDevice();
+
+  // Attempts to honor the pending operation stored in
+  // |pending_trusted_recovery_method_|.
+  void MaybeProcessPendingTrustedRecoveryMethod();
 
   // Called when device registration for |gaia_id| is completed (either
   // successfully or not). |data_| must contain LocalTrustedVaultPerUser for
@@ -207,6 +211,9 @@ class StandaloneTrustedVaultBackend
   // Only current |primary_account_| can be used for communication with trusted
   // vault server.
   absl::optional<CoreAccountInfo> primary_account_;
+
+  // Whether |primary_account_| has a persistent auth error.
+  bool has_persistent_auth_error_ = false;
 
   // If AddTrustedRecoveryMethod() gets invoked before SetPrimaryAccount(), the
   // execution gets deferred until SetPrimaryAccount() is invoked.
