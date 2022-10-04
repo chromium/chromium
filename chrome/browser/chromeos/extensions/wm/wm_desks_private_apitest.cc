@@ -25,13 +25,7 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
 };
 
 // TODO(crbug.com/1370233): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_WmDesksPrivateApiTest DISABLED_WmDesksPrivateApiTest
-#else
-#define MAYBE_WmDesksPrivateApiTest WmDesksPrivateApiTest
-#endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WmDesksPrivateApiTest,
-                       MAYBE_WmDesksPrivateApiTest) {
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_WmDesksPrivateApiTest) {
   // This loads and runs an extension from
   // chrome/test/data/extensions/api_test/wm_desks_private.
   ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
