@@ -5,8 +5,5 @@
 import("//build/config/android/rules.gni")
 
 java_cpp_enum("browser_services_enums_srcjar") {
-  sources = [
-    "installed_webapp_geolocation_bridge.cc",
-    "quality_enforcer.cc",
-  ]
+  sources = [ "quality_enforcer.cc" ]
 }

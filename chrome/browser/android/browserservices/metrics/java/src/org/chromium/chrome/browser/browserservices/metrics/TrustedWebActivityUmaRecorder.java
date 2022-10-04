@@ -11,7 +11,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.constants.QualityEnforcementViolationType;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.ukm.UkmRecorder;
@@ -233,11 +232,6 @@ public class TrustedWebActivityUmaRecorder {
     public void recordLocationPermissionRequestResult(boolean enabled) {
         RecordHistogram.recordBooleanHistogram(
                 "TrustedWebActivity.LocationPermissionRequestIsGranted", enabled);
-    }
-
-    public void recordLocationUpdateError(@LocationUpdateError int error) {
-        RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.LocationUpdateErrorCode",
-                error, LocationUpdateError.MAX_VALUE + 1);
     }
 
     public void recordQualityEnforcementViolation(

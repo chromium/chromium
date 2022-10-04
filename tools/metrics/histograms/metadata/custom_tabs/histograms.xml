@@ -625,6 +625,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.LocationUpdateErrorCode"
     enum="TrustedWebActivityLocationErrorCode" expires_after="2022-10-23">
+  <obsolete>
+    Deprecated 2022-09. no longer needed.
+  </obsolete>
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>

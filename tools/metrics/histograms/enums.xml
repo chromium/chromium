@@ -98201,6 +98201,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="TrustedWebActivityLocationErrorCode">
+  <obsolete>
+    Deprecated 2022/10.
+  </obsolete>
   <int value="0" label="No error"/>
   <int value="1" label="Location Error">
     Error when getting location from client app.
