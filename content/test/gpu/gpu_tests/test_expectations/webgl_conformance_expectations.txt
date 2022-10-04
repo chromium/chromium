@@ -526,6 +526,9 @@ crbug.com/1336736 [ win angle-d3d11 ] conformance/textures/misc/texture-video-tr
 
 crbug.com/982294 [ win debug passthrough nvidia ] conformance/uniforms/uniform-samplers-test.html [ RetryOnFailure ]
 
+crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+
 ####################
 # Mac failures     #
 ####################
@@ -568,6 +571,7 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough ] conformance/uniforms
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/acos/acos_001_to_006.html [ Failure ]
 crbug.com/angleproject/5505 [ mac angle-metal passthrough ] conformance/ogles/GL/asin/asin_001_to_006.html [ Failure ]
 crbug.com/angleproject/6489 [ mac angle-metal passthrough ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
+crbug.com/1363349 [ mac passthrough angle-metal ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
 
 # Mac / Passthrough command decoder / Metal / Intel
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
