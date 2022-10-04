@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -251,21 +252,17 @@ void AppInstall::RegisterUpdater() {
   request.app_id = kUpdaterAppId;
   request.version = base::Version(kUpdaterVersion);
   update_service_->RegisterApp(
-      request,
-      base::BindOnce(
-          [](scoped_refptr<AppInstall> app_install,
-             const RegistrationResponse& registration_response) {
-            if (registration_response.status_code != kRegistrationSuccess &&
-                registration_response.status_code !=
-                    kRegistrationAlreadyRegistered) {
-              VLOG(2) << "Updater registration failed: "
-                      << registration_response.status_code;
-              app_install->Shutdown(kErrorRegistrationFailed);
-              return;
-            }
-            app_install->MaybeInstallApp();
-          },
-          base::WrapRefCounted(this)));
+      request, base::BindOnce(
+                   [](scoped_refptr<AppInstall> app_install, int result) {
+                     if (result != kRegistrationSuccess &&
+                         result != kRegistrationAlreadyRegistered) {
+                       VLOG(2) << "Updater registration failed: " << result;
+                       app_install->Shutdown(kErrorRegistrationFailed);
+                       return;
+                     }
+                     app_install->MaybeInstallApp();
+                   },
+                   base::WrapRefCounted(this)));
 }
 
 void AppInstall::MaybeInstallApp() {

@@ -50,13 +50,6 @@ struct RegistrationRequest {
   base::FilePath existence_checker_path;
 };
 
-struct RegistrationResponse {
-  explicit RegistrationResponse(int status_code) : status_code(status_code) {}
-
-  // Status code of the registration.
-  int status_code = kRegistrationSuccess;
-};
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_REGISTRATION_DATA_H_

@@ -191,12 +191,11 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id) {
   registration.app_id = app_id;
   registration.version = base::Version("0.1");
   base::RunLoop loop;
-  update_service->RegisterApp(
-      registration,
-      base::BindLambdaForTesting([&loop](const RegistrationResponse& response) {
-        EXPECT_EQ(response.status_code, 0);
-        loop.Quit();
-      }));
+  update_service->RegisterApp(registration,
+                              base::BindLambdaForTesting([&loop](int result) {
+                                EXPECT_EQ(result, 0);
+                                loop.Quit();
+                              }));
   loop.Run();
 }
 

@@ -19,7 +19,6 @@
 namespace updater {
 
 struct RegistrationRequest;
-struct RegistrationResponse;
 
 enum class UpdaterScope;
 
@@ -203,8 +202,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
   using Callback = base::OnceCallback<void(Result)>;
   using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
-  using RegisterAppCallback =
-      base::OnceCallback<void(const RegistrationResponse&)>;
+  using RegisterAppCallback = base::OnceCallback<void(int)>;
   using InstallerResult = update_client::CrxInstaller::Result;
 
   // Returns the version of the active updater. The version object is invalid

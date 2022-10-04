@@ -32,7 +32,6 @@ namespace updater {
 class Configurator;
 class PersistedData;
 struct RegistrationRequest;
-struct RegistrationResponse;
 
 using AppClientInstallData = base::flat_map<std::string, std::string>;
 using AppInstallDataIndex = base::flat_map<std::string, std::string>;
@@ -46,9 +45,8 @@ class UpdateServiceImpl : public UpdateService {
   void GetVersion(
       base::OnceCallback<void(const base::Version&)> callback) override;
   void FetchPolicies(base::OnceCallback<void(int)> callback) override;
-  void RegisterApp(
-      const RegistrationRequest& request,
-      base::OnceCallback<void(const RegistrationResponse&)> callback) override;
+  void RegisterApp(const RegistrationRequest& request,
+                   base::OnceCallback<void(int)> callback) override;
   void GetAppStates(
       base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;

@@ -302,18 +302,15 @@ void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
   [client_ fetchPoliciesWithReply:reply];
 }
 
-void UpdateServiceProxy::RegisterApp(
-    const RegistrationRequest& request,
-    base::OnceCallback<void(const RegistrationResponse&)> callback) {
+void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
+                                     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
-  __block base::OnceCallback<void(const RegistrationResponse&)> block_callback =
-      std::move(callback);
+  __block base::OnceCallback<void(int)> block_callback = std::move(callback);
 
   auto reply = ^(int error) {
-    RegistrationResponse response(error);
     callback_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(block_callback), response));
+        FROM_HERE, base::BindOnce(std::move(block_callback), error));
   };
 
   [client_

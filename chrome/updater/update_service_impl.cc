@@ -248,9 +248,8 @@ void UpdateServiceImpl::FetchPolicies(base::OnceCallback<void(int)> callback) {
   config_->GetPolicyService()->FetchPolicies(std::move(callback));
 }
 
-void UpdateServiceImpl::RegisterApp(
-    const RegistrationRequest& request,
-    base::OnceCallback<void(const RegistrationResponse&)> callback) {
+void UpdateServiceImpl::RegisterApp(const RegistrationRequest& request,
+                                    base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (request.app_id != kUpdaterAppId) {
@@ -262,12 +261,11 @@ void UpdateServiceImpl::RegisterApp(
       current_version.CompareTo(request.version) == 1) {
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       RegistrationResponse(kRegistrationAlreadyRegistered)));
+        base::BindOnce(std::move(callback), kRegistrationAlreadyRegistered));
     return;
   }
   persisted_data_->RegisterApp(request);
-  std::move(callback).Run(RegistrationResponse(kRegistrationSuccess));
+  std::move(callback).Run(kRegistrationSuccess);
 }
 
 void UpdateServiceImpl::GetAppStates(

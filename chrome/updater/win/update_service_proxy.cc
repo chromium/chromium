@@ -247,7 +247,7 @@ class UpdaterRegisterAppCallback
   ~UpdaterRegisterAppCallback() override {
     CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
     if (callback_)
-      std::move(callback_).Run(RegistrationResponse(status_code_));
+      std::move(callback_).Run(status_code_);
   }
 
   // The reference of the thread this object is bound to.
@@ -435,12 +435,11 @@ class UpdateServiceProxyImpl
     }
   }
 
-  void RegisterAppOnSTA(
-      const RegistrationRequest& request,
-      base::OnceCallback<void(const RegistrationResponse&)> callback) {
+  void RegisterAppOnSTA(const RegistrationRequest& request,
+                        base::OnceCallback<void(int)> callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!ConnectToServer()) {
-      std::move(callback).Run(RegistrationResponse(hresult()));
+      std::move(callback).Run(hresult());
       return;
     }
     std::wstring app_id_w;
@@ -470,7 +469,7 @@ class UpdateServiceProxyImpl
           existence_checker_path_w = request.existence_checker_path.value();
           return true;
         }()) {
-      std::move(callback).Run(RegistrationResponse(E_INVALIDARG));
+      std::move(callback).Run(E_INVALIDARG);
       return;
     }
 
@@ -482,7 +481,7 @@ class UpdateServiceProxyImpl
             callback_wrapper.Get());
         FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdater::RegisterApp" << std::hex << hr;
-      callback_wrapper->Disconnect().Run(RegistrationResponse(hr));
+      callback_wrapper->Disconnect().Run(hr);
       return;
     }
   }

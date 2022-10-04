@@ -228,15 +228,13 @@
   request.existence_checker_path =
       base::mac::NSStringToFilePath(existenceCheckerPath);
 
-  auto cb = base::BindOnce(
-      base::RetainBlock(^(const updater::RegistrationResponse& response) {
-        VLOG(0) << "Registration complete: status code = "
-                << response.status_code;
-        if (reply)
-          reply(response.status_code);
+  auto cb = base::BindOnce(base::RetainBlock(^(int result) {
+    VLOG(0) << "Registration complete: status code = " << result;
+    if (reply)
+      reply(result);
 
-        _appServer->TaskCompleted();
-      }));
+    _appServer->TaskCompleted();
+  }));
 
   _appServer->TaskStarted();
   _callbackRunner->PostTask(

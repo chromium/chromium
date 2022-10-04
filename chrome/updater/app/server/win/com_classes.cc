@@ -251,12 +251,11 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                 request,
                 base::BindOnce(
                     [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterRegisterAppCallbackPtr callback,
-                       const RegistrationResponse& response) {
+                       IUpdaterRegisterAppCallbackPtr callback, int result) {
                       task_runner->PostTaskAndReplyWithResult(
                           FROM_HERE,
                           base::BindOnce(&IUpdaterRegisterAppCallback::Run,
-                                         callback, response.status_code),
+                                         callback, result),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::RegisterApp "
                                     << "callback returned " << std::hex << hr;

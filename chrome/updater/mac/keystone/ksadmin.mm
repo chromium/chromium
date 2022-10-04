@@ -382,13 +382,12 @@ void KSAdminApp::Register() {
   MaybeInstallUpdater(scope);
   ServiceProxy(scope)->RegisterApp(
       registration, base::BindOnce(
-                        [](base::OnceCallback<void(int)> cb,
-                           const RegistrationResponse& response) {
-                          if (response.status_code == kRegistrationSuccess) {
+                        [](base::OnceCallback<void(int)> cb, int result) {
+                          if (result == kRegistrationSuccess) {
                             std::move(cb).Run(0);
                           } else {
-                            LOG(ERROR) << "Updater registration error: "
-                                       << response.status_code;
+                            LOG(ERROR)
+                                << "Updater registration error: " << result;
                             std::move(cb).Run(1);
                           }
                         },

@@ -809,11 +809,10 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                  const base::FilePath& installer_path,
                  const std::string& install_args,
                  const std::string& install_data,
-                 const std::string& install_settings,
-                 const RegistrationResponse& response) {
-                if (response.status_code != kRegistrationSuccess &&
-                    response.status_code != kRegistrationAlreadyRegistered) {
-                  VLOG(1) << "Registration failed: " << response.status_code;
+                 const std::string& install_settings, int result) {
+                if (result != kRegistrationSuccess &&
+                    result != kRegistrationAlreadyRegistered) {
+                  VLOG(1) << "Registration failed: " << result;
                   self->InstallComplete(UpdateService::Result::kServiceFailed);
                   return;
                 }
