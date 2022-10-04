@@ -41,8 +41,8 @@ class TranslateRankerImplTest : public ::testing::Test {
   TranslateRankerImplTest& operator=(const TranslateRankerImplTest&) = delete;
 
   // Initializes the explicitly |enabled| and |disabled| features for this test.
-  void InitFeatures(const std::initializer_list<base::Feature>& enabled,
-                    const std::initializer_list<base::Feature>& disabled);
+  void InitFeatures(const std::vector<base::test::FeatureRef>& enabled,
+                    const std::vector<base::test::FeatureRef>& disabled);
 
   // Returns a TranslateRankerImpl object with |threshold| for testing. The
   // returned ranker is configured with an empty cache path and URL and will not
@@ -85,8 +85,8 @@ class TranslateRankerImplTest : public ::testing::Test {
 TranslateRankerImplTest::TranslateRankerImplTest() = default;
 
 void TranslateRankerImplTest::InitFeatures(
-    const std::initializer_list<base::Feature>& enabled,
-    const std::initializer_list<base::Feature>& disabled) {
+    const std::vector<base::test::FeatureRef>& enabled,
+    const std::vector<base::test::FeatureRef>& disabled) {
   scoped_feature_list_.InitWithFeatures(enabled, disabled);
 }
 
