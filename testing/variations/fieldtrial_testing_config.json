@@ -3580,25 +3580,6 @@
             ]
         }
     ],
-    "DesktopNtpRemoveScrim": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NtpRemoveScrim",
-                    "enable_features": [
-                        "NtpRemoveScrim"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxBookmarkPaths": [
         {
             "platforms": [
@@ -7065,6 +7046,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NtpRealboxPedals"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NtpRemoveScrim": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpRemoveScrim"
                     ]
                 }
             ]
