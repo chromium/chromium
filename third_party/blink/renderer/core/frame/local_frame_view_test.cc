@@ -713,5 +713,23 @@ TEST_F(LocalFrameViewTest, DarkModeDocumentBackground) {
   EXPECT_EQ(frame_view->DocumentBackgroundColor(), Color(18, 18, 18));
 }
 
+class FencedFrameLocalFrameViewTest : private ScopedFencedFramesForTest,
+                                      public SimTest {
+ public:
+  FencedFrameLocalFrameViewTest() : ScopedFencedFramesForTest(true) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(FencedFrameLocalFrameViewTest, DoNotDeferCommitsInFencedFrames) {
+  InitializeFencedFrameRoot(mojom::blink::FencedFrameMode::kDefault);
+  GetDocument().SetDeferredCompositorCommitIsAllowed(true);
+  EXPECT_FALSE(GetDocument().View()->WillDoPaintHoldingForFCP());
+}
+
 }  // namespace
 }  // namespace blink

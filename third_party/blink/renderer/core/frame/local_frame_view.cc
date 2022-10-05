@@ -4626,7 +4626,8 @@ void LocalFrameView::BeginLifecycleUpdates() {
 bool LocalFrameView::WillDoPaintHoldingForFCP() const {
   Document* document = GetFrame().GetDocument();
   return document && document->DeferredCompositorCommitIsAllowed() &&
-         !have_deferred_main_frame_commits_ && GetFrame().IsMainFrame();
+         !have_deferred_main_frame_commits_ &&
+         GetFrame().IsOutermostMainFrame();
 }
 
 MainThreadScrollingReasons LocalFrameView::MainThreadScrollingReasonsPerFrame()
