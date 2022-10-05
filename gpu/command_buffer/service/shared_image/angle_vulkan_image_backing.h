@@ -35,8 +35,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
                           uint32_t usage);
   ~AngleVulkanImageBacking() override;
 
-  bool Initialize(const GLCommonImageBackingFactory::FormatInfo& format_info,
-                  const base::span<const uint8_t>& data);
+  bool Initialize(const base::span<const uint8_t>& data);
 
  protected:
   // SharedImageBacking implementation.

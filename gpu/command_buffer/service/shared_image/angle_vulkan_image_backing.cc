@@ -173,7 +173,6 @@ AngleVulkanImageBacking::~AngleVulkanImageBacking() {
 }
 
 bool AngleVulkanImageBacking::Initialize(
-    const GLCommonImageBackingFactory::FormatInfo& format_info,
     const base::span<const uint8_t>& data) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
   VkFormat vk_format = ToVkFormat(format());

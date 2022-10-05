@@ -43,7 +43,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
-  if (!backing->Initialize(format_info_[format], {}))
+  if (!backing->Initialize({}))
     return nullptr;
 
   return backing;
@@ -63,7 +63,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
-  if (!backing->Initialize(format_info_[format], data))
+  if (!backing->Initialize(data))
     return nullptr;
 
   return backing;
