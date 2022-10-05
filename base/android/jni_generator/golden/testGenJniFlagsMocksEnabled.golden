@@ -13,40 +13,40 @@ public class GEN_JNI {
     public static final boolean REQUIRE_MOCK = false;
 
 
-      // Hashed name: MygCV2jQ
+      // Hashed name: Java_J_N_MygCV2jQ
       public static native void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_foo();
-      // Hashed name: MHuqnmXT
+      // Hashed name: Java_J_N_MHuqnmXT
       public static native Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_bar(Object sample);
-      // Hashed name: MM5Xkwyy
+      // Hashed name: Java_J_N_MM5Xkwyy
       public static native String org_chromium_example_jni_1generator_SampleForAnnotationProcessor_revString(String stringToReverse);
-      // Hashed name: MAC2QhR9
+      // Hashed name: Java_J_N_MAC2QhR9
       public static native String[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendToNative(String[] strs);
-      // Hashed name: MGhRh4Nd
+      // Hashed name: Java_J_N_MGhRh4Nd
       public static native Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_sendSamplesToNative(Object[] strs);
-      // Hashed name: MW0aEs4h
+      // Hashed name: Java_J_N_MW0aEs4h
       public static native boolean org_chromium_example_jni_1generator_SampleForAnnotationProcessor_hasPhalange();
-      // Hashed name: MlVFI4RX
+      // Hashed name: Java_J_N_MlVFI4RX
       public static native int[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testAllPrimitives(int zint, int[] ints, long zlong, long[] longs, short zshort, short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble, double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
-      // Hashed name: MqOnlud7
+      // Hashed name: Java_J_N_MqOnlud7
       public static native void org_chromium_example_jni_1generator_SampleForAnnotationProcessor_testSpecialTypes(Class clazz, Class[] classes, Throwable throwable, Throwable[] throwables, String string, String[] strings, Object tStruct, Object[] structs, Object obj, Object[] objects);
-      // Hashed name: MuZc76Vt
+      // Hashed name: Java_J_N_MuZc76Vt
       public static native Throwable org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowable();
-      // Hashed name: MAD53J7V
+      // Hashed name: Java_J_N_MAD53J7V
       public static native Throwable[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnThrowables();
-      // Hashed name: M$ZgOi4g
+      // Hashed name: Java_J_N_M$ZgOi4g
       public static native Class org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClass();
-      // Hashed name: M$hL1577
+      // Hashed name: Java_J_N_M$hL1577
       public static native Class[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnClasses();
-      // Hashed name: M0k1OjBK
+      // Hashed name: Java_J_N_M0k1OjBK
       public static native String org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnString();
-      // Hashed name: Mssfs54E
+      // Hashed name: Java_J_N_Mssfs54E
       public static native String[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStrings();
-      // Hashed name: MSzcel_H
+      // Hashed name: Java_J_N_MSzcel_H
       public static native Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStruct();
-      // Hashed name: MIBrQLK4
+      // Hashed name: Java_J_N_MIBrQLK4
       public static native Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnStructs();
-      // Hashed name: M$hPywjv
+      // Hashed name: Java_J_N_M$hPywjv
       public static native Object org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObject();
-      // Hashed name: MPpCU1l5
+      // Hashed name: Java_J_N_MPpCU1l5
       public static native Object[] org_chromium_example_jni_1generator_SampleForAnnotationProcessor_returnObjects();
 }

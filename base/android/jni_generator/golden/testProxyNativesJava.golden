@@ -13,10 +13,10 @@ public class GEN_JNI {
     public static final boolean REQUIRE_MOCK = false;
 
 
-      // Hashed name: MfuvK7$r
+      // Hashed name: Java_J_N_MfuvK7$r
       public static native void org_chromium_example_SampleProxyJni_foo(long nativePtr);
-      // Hashed name: MB1mTV9a
+      // Hashed name: Java_J_N_MB1mTV9a
       public static native int org_chromium_example_SampleProxyJni_bar(int x, int y);
-      // Hashed name: Me7X4JzV
+      // Hashed name: Java_J_N_Me7X4JzV
       public static native String org_chromium_example_SampleProxyJni_foobar(String x, String y);
 }

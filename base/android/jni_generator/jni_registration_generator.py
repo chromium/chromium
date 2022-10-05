@@ -846,7 +846,9 @@ def _MakeProxySignature(proxy_native,
     signature_template = string.Template("""
       // Hashed name: ${ALT_NAME}""" + native_method_line)
 
-    alt_name = proxy_native.hashed_proxy_name
+    # We add the prefix that is sometimes used so that codesearch can find it if
+    # someone searches a full method name from the stacktrace.
+    alt_name = f'Java_J_N_{proxy_native.hashed_proxy_name}'
     proxy_name = proxy_native.proxy_name
 
   return signature_template.substitute({
