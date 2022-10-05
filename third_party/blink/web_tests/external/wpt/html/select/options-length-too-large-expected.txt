@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS select options.length too large
+FAIL select options.length too large 1 assert_equals: Length of <select> should remain unchanged expected 3 but got 10001
+PASS select options.length too large 2
+Harness: the test ran to completion.
+
