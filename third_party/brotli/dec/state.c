@@ -4,12 +4,13 @@
    See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 */
 
-#include "./state.h"
+#include "state.h"
 
 #include <stdlib.h>  /* free, malloc */
 
+#include "../common/dictionary.h"
 #include <brotli/types.h>
-#include "./huffman.h"
+#include "huffman.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -81,8 +82,10 @@ BROTLI_BOOL BrotliDecoderStateInit(BrotliDecoderState* s,
 
   s->mtf_upper_bound = 63;
 
-  s->dictionary = BrotliGetDictionary();
-  s->transforms = BrotliGetTransforms();
+  s->compound_dictionary = NULL;
+  s->dictionary =
+      BrotliSharedDictionaryCreateInstance(alloc_func, free_func, opaque);
+  if (!s->dictionary) return BROTLI_FALSE;
 
   return BROTLI_TRUE;
 }
@@ -129,6 +132,9 @@ void BrotliDecoderStateCleanupAfterMetablock(BrotliDecoderState* s) {
 void BrotliDecoderStateCleanup(BrotliDecoderState* s) {
   BrotliDecoderStateCleanupAfterMetablock(s);
 
+  BROTLI_DECODER_FREE(s, s->compound_dictionary);
+  BrotliSharedDictionaryDestroyInstance(s->dictionary);
+  s->dictionary = NULL;
   BROTLI_DECODER_FREE(s, s->ringbuffer);
   BROTLI_DECODER_FREE(s, s->block_type_trees);
 }

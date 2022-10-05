@@ -12,7 +12,7 @@
 #include "../common/dictionary.h"
 #include "../common/platform.h"
 #include <brotli/types.h>
-#include "./encoder_dict.h"
+#include "encoder_dict.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {

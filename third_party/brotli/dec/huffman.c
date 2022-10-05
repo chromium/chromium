@@ -6,7 +6,7 @@
 
 /* Utilities for building Huffman decoding tables. */
 
-#include "./huffman.h"
+#include "huffman.h"
 
 #include <string.h>  /* memcpy, memset */
 

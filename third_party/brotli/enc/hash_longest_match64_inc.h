@@ -71,8 +71,8 @@ static void FN(Initialize)(
   self->block_mask_ = (uint32_t)(self->block_size_ - 1);
   self->num_last_distances_to_check_ =
       common->params.num_last_distances_to_check;
-  self->num_ = (uint16_t*)common->extra;
-  self->buckets_ = (uint32_t*)&self->num_[self->bucket_size_];
+  self->num_ = (uint16_t*)common->extra[0];
+  self->buckets_ = (uint32_t*)common->extra[1];
 }
 
 static void FN(Prepare)(
@@ -93,15 +93,15 @@ static void FN(Prepare)(
   }
 }
 
-static BROTLI_INLINE size_t FN(HashMemAllocInBytes)(
+static BROTLI_INLINE void FN(HashMemAllocInBytes)(
     const BrotliEncoderParams* params, BROTLI_BOOL one_shot,
-    size_t input_size) {
+    size_t input_size, size_t* alloc_size) {
   size_t bucket_size = (size_t)1 << params->hasher.bucket_bits;
   size_t block_size = (size_t)1 << params->hasher.block_bits;
   BROTLI_UNUSED(one_shot);
   BROTLI_UNUSED(input_size);
-  return sizeof(uint16_t) * bucket_size +
-         sizeof(uint32_t) * bucket_size * block_size;
+  alloc_size[0] = sizeof(uint16_t) * bucket_size;
+  alloc_size[1] = sizeof(uint32_t) * bucket_size * block_size;
 }
 
 /* Look at 4 bytes at &data[ix & mask].
