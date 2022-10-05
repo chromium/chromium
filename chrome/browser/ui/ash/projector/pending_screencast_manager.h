@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_PROJECTOR_PENDING_SCREENCAST_MANAGER_H_
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PENDING_SCREENCAST_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -14,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
@@ -56,10 +58,26 @@ class PendingScreencastManager : public drivefs::DriveFsHostObserver {
   // Maybe reset `drivefs_observation_` and observe the current active profile.
   void MaybeSwitchDriveFsObservation();
 
+  // Adds `screencast_paths` to `paths_notifications_suppressors_` and
+  // suppresses notification for these paths if `suppress` is true. Removes
+  // `screencast_paths` from `paths_notifications_suppressors_` when
+  // `suppress` is false.
+  void ToggleFileSyncingNotificationForPaths(
+      const std::vector<base::FilePath>& screencast_paths,
+      bool suppress);
+
+  // Resets (`is_active` is false) or creates (`is_active` is true) values for
+  // all keys stored in `paths_notifications_suppressors_`.
+  void OnAppActiveStatusChanged(bool is_active);
+
   // Test only:
   base::TimeTicks last_pending_screencast_change_tick() const {
     return last_pending_screencast_change_tick_;
   }
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner() {
+    return blocking_task_runner_;
+  }
+
   bool IsDriveFsObservationObservingSource(drivefs::DriveFsHost* source) const;
   using OnGetFileIdCallback =
       base::OnceCallback<void(const base::FilePath& local_file_path,
@@ -131,6 +149,16 @@ class PendingScreencastManager : public drivefs::DriveFsHostObserver {
   OnGetFileIdCallback on_get_file_id_callback_;
 
   ProjectorDriveFsProvider drive_helper_;
+
+  // A map to store `file_manager::ScopedSuppressDriveNotificationsForPath`. The
+  // entries get created/destroyed on calling
+  // `ToggleFileSyncingNotificationForPaths`, or when files whose paths are
+  // stored in this map are uploaded completely. All unique pointers get reset
+  // on app UI destroyed and re-created on app UI active.
+  std::map<
+      base::FilePath,
+      std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>>
+      paths_notifications_suppressors_;
 
   base::WeakPtrFactory<PendingScreencastManager> weak_ptr_factory_{this};
 };

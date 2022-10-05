@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_CLIENT_H_
 #define ASH_PUBLIC_CPP_PROJECTOR_PROJECTOR_CLIENT_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 
 namespace base {
@@ -45,6 +47,10 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   // Notifies the Projector SWA if it can trigger a new Projector session.
   virtual void OnNewScreencastPreconditionChanged(
       const NewScreencastPrecondition& precondition) const = 0;
+  // Toggles to suppress/resume the system notification for `screencast_paths`.
+  virtual void ToggleFileSyncingNotificationForPaths(
+      const std::vector<base::FilePath>& screencast_paths,
+      bool suppress) = 0;
 };
 
 }  // namespace ash

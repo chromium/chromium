@@ -38,6 +38,8 @@ class MockProjectorClient : public ProjectorClient,
   MOCK_CONST_METHOD0(CloseProjectorApp, void());
   MOCK_CONST_METHOD1(OnNewScreencastPreconditionChanged,
                      void(const NewScreencastPrecondition&));
+  MOCK_METHOD2(ToggleFileSyncingNotificationForPaths,
+               void(const std::vector<base::FilePath>&, bool));
 
   // ProjectorAnnotatorController:
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));

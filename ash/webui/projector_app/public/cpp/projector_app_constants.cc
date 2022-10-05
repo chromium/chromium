@@ -34,4 +34,7 @@ const base::FilePath::CharType kProjectorMediaFileExtension[] =
 
 const char kProjectorMediaMimeType[] = "video/webm";
 
+const base::FilePath::CharType kScreencastDefaultThumbnailFileName[] =
+    FILE_PATH_LITERAL("thumbnail.png");
+
 }  // namespace ash

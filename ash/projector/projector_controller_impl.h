@@ -188,6 +188,10 @@ class ASH_EXPORT ProjectorControllerImpl
   // restriction check is not completed.
   void MaybeWrapUpRecording();
 
+  // Returns all file paths related to current recording. Paths are calculated
+  // from the container folder.
+  std::vector<base::FilePath> GetScreencastFilePaths() const;
+
   ProjectorClient* client_ = nullptr;
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;

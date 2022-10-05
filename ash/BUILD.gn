@@ -3167,6 +3167,7 @@ test("ash_unittests") {
     "//ash/system/machine_learning:user_settings_event_proto",
     "//ash/webui/diagnostics_ui/mojom",
     "//ash/webui/personalization_app/proto",
+    "//ash/webui/projector_app/public/cpp",
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",

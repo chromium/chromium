@@ -64,9 +64,15 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void SetTool(const ash::AnnotatorTool& tool) override;
   void Clear() override;
   void NotifyAppUIActive(bool active) override;
+  void ToggleFileSyncingNotificationForPaths(
+      const std::vector<base::FilePath>& screencast_paths,
+      bool suppress) override;
 
   ash::AnnotatorMessageHandler* get_annotator_message_handler_for_test() {
     return annotator_message_handler_;
+  }
+  PendingScreencastManager* get_pending_screencast_manager_for_test() {
+    return &pending_screencast_manager_;
   }
 
  private:

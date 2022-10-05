@@ -30,6 +30,9 @@ extern const base::FilePath::CharType kProjectorMediaFileExtension[];
 
 extern const char kProjectorMediaMimeType[];
 
+// Default name of screencast thumbnail file.
+extern const base::FilePath::CharType kScreencastDefaultThumbnailFileName[];
+
 }  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PUBLIC_CPP_PROJECTOR_APP_CONSTANTS_H_

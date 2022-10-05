@@ -55,6 +55,9 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void CloseProjectorApp() const override;
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) const override;
+  void ToggleFileSyncingNotificationForPaths(
+      const std::vector<base::FilePath>& screencast_paths,
+      bool suppress) override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(

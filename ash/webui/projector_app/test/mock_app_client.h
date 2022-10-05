@@ -60,6 +60,8 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));
   MOCK_METHOD0(Clear, void());
   MOCK_METHOD1(NotifyAppUIActive, void(bool active));
+  MOCK_METHOD2(ToggleFileSyncingNotificationForPaths,
+               void(const std::vector<base::FilePath>&, bool));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

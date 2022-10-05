@@ -4,6 +4,8 @@
 
 #include "ash/projector/projector_controller_impl.h"
 
+#include <vector>
+
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/constants/ash_pref_names.h"
@@ -16,7 +18,9 @@
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
@@ -33,8 +37,6 @@
 namespace ash {
 
 namespace {
-
-constexpr char kScreencastDefaultThumbnailFileName[] = "thumbnail.png";
 
 // Create directory. Returns true if saving succeeded, or false otherwise.
 bool CreateDirectory(const base::FilePath& path) {
@@ -485,6 +487,12 @@ void ProjectorControllerImpl::OnContainerFolderCreated(
   }
 
   projector_session_->set_screencast_container_path(path);
+  // Suppresses system notification for media file, metadata file and thumbnail
+  // even they haven't been saved yet. Once any file gets saved, syncing will
+  // start immediately, we want to make sure the notifications are suppressed
+  // before the sync.
+  client_->ToggleFileSyncingNotificationForPaths(GetScreencastFilePaths(),
+                                                 /*suppress=*/true);
   std::move(callback).Run(
       projector_session_->GetScreencastFilePathNoExtension());
 }
@@ -539,7 +547,8 @@ void ProjectorControllerImpl::CleanupContainerFolder() {
 
   if (!screencast_container_path.has_value())
     return;
-
+  client_->ToggleFileSyncingNotificationForPaths(GetScreencastFilePaths(),
+                                                 /*suppress=*/false);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::DeletePathRecursively, *screencast_container_path),
@@ -552,6 +561,18 @@ void ProjectorControllerImpl::CleanupContainerFolder() {
                     LOG(ERROR) << "Failed to delete the folder: " << path;
                 },
                 *screencast_container_path));
+}
+
+std::vector<base::FilePath> ProjectorControllerImpl::GetScreencastFilePaths()
+    const {
+  const auto& container_folder =
+      projector_session_->screencast_container_path();
+  DCHECK(container_folder);
+  const base::FilePath path_with_no_extension =
+      projector_session_->GetScreencastFilePathNoExtension();
+  return {path_with_no_extension.AddExtension(kProjectorMetadataFileExtension),
+          path_with_no_extension.AddExtension(kProjectorMediaFileExtension),
+          container_folder->Append(kScreencastDefaultThumbnailFileName)};
 }
 
 }  // namespace ash

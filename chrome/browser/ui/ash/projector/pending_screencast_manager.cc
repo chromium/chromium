@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
-#include <map>
+#include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -23,6 +23,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -476,6 +478,45 @@ void PendingScreencastManager::MaybeSwitchDriveFsObservation() {
   drivefs_observation_.Observe(drivefs_host);
 }
 
+void PendingScreencastManager::ToggleFileSyncingNotificationForPaths(
+    const std::vector<base::FilePath>& paths,
+    bool suppress) {
+  auto* drivefs_integration =
+      ProjectorDriveFsProvider::GetActiveDriveIntegrationService();
+  if (!drivefs_integration)
+    return;
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  for (const auto& path : paths) {
+    base::FilePath drive_path;
+    drivefs_integration->GetRelativeDrivePath(path, &drive_path);
+    if (suppress) {
+      paths_notifications_suppressors_[drive_path] = std::make_unique<
+          file_manager::ScopedSuppressDriveNotificationsForPath>(profile,
+                                                                 drive_path);
+    } else {
+      paths_notifications_suppressors_.erase(drive_path);
+    }
+  }
+}
+
+void PendingScreencastManager::OnAppActiveStatusChanged(bool is_active) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  for (auto& [path, suppressor] : paths_notifications_suppressors_) {
+    if (is_active) {
+      if (!suppressor) {
+        // Suppresses notification on app active.
+        suppressor = std::make_unique<
+            file_manager::ScopedSuppressDriveNotificationsForPath>(profile,
+                                                                   path);
+      }
+    } else {
+      // Resumes notification on app inactive.
+      suppressor.reset();
+    }
+  }
+}
+
 void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
     const base::TimeTicks task_start_tick,
     const ash::PendingScreencastSet& screencasts) {
@@ -501,6 +542,9 @@ void PendingScreencastManager::OnProcessAndGenerateNewScreencastsFinished(
 
 void PendingScreencastManager::OnFileSyncedCompletely(
     const base::FilePath& event_file) {
+  // Clean up the system notification suppression for `event_file`.
+  paths_notifications_suppressors_.erase(event_file);
+
   // If observes a error uploaded file is now successfully uploaded, removes
   // it from `error_syncing_files_`:
   error_syncing_files_.erase(event_file);

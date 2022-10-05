@@ -193,6 +193,14 @@ void ProjectorAppClientImpl::Clear() {
 }
 
 void ProjectorAppClientImpl::NotifyAppUIActive(bool active) {
+  pending_screencast_manager_.OnAppActiveStatusChanged(active);
   if (!active)
     screencast_manager_.ResetScopeSuppressDriveNotifications();
+}
+
+void ProjectorAppClientImpl::ToggleFileSyncingNotificationForPaths(
+    const std::vector<base::FilePath>& screencast_paths,
+    bool suppress) {
+  pending_screencast_manager_.ToggleFileSyncingNotificationForPaths(
+      screencast_paths, suppress);
 }

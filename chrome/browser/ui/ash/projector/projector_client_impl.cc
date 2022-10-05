@@ -158,6 +158,15 @@ void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
     app_client->OnNewScreencastPreconditionChanged(precondition);
 }
 
+void ProjectorClientImpl::ToggleFileSyncingNotificationForPaths(
+    const std::vector<base::FilePath>& screencast_paths,
+    bool suppress) {
+  if (auto* app_client = ash::ProjectorAppClient::Get()) {
+    app_client->ToggleFileSyncingNotificationForPaths(screencast_paths,
+                                                      suppress);
+  }
+}
+
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,

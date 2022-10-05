@@ -180,6 +180,11 @@ class ProjectorAppClient {
   // projector trusted UI .
   virtual void NotifyAppUIActive(bool active) = 0;
 
+  // Toggles to suppress/resume the system notification for `screencast_paths`.
+  virtual void ToggleFileSyncingNotificationForPaths(
+      const std::vector<base::FilePath>& screencast_paths,
+      bool suppress) = 0;
+
  protected:
   ProjectorAppClient();
   virtual ~ProjectorAppClient();
