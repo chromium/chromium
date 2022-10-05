@@ -232,8 +232,9 @@ function createOSSettingsRoutes() {
         r.OS_ACCESSIBILITY, routesMojomWebui.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
         Subpage.kAudioAndCaptions);
     r.MANAGE_TTS_SETTINGS = createSubpage(
-        r.A11Y_TEXT_TO_SPEECH, routesMojomWebui.TEXT_TO_SPEECH_SUBPAGE_PATH,
-        Subpage.kTextToSpeech);
+        loadTimeData.getBoolean('isKioskModeActive') ? r.MANAGE_ACCESSIBILITY :
+                                                       r.A11Y_TEXT_TO_SPEECH,
+        routesMojomWebui.TEXT_TO_SPEECH_SUBPAGE_PATH, Subpage.kTextToSpeech);
     r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
         r.A11Y_KEYBOARD_AND_TEXT_INPUT,
         routesMojomWebui.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
