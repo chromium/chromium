@@ -5,12 +5,12 @@
 #include "ash/bubble/bubble_utils.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -48,7 +48,68 @@ class LabelWithThemeChangedCallback : public views::Label {
   ThemeChangedCallback theme_changed_callback_;
 };
 
+std::string GetFontName(const absl::optional<FontName>& font) {
+  switch (font.value_or(FontName::kRoboto)) {
+    case FontName::kGoogleSans:
+      return "Google Sans";
+    case FontName::kRoboto:
+      return "Roboto";
+  }
+}
+
+gfx::FontList GetFontList(LabelStyle style,
+                          const absl::optional<FontName>& font) {
+  std::string font_name = GetFontName(font);
+
+  switch (style) {
+    case LabelStyle::kBadge:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 14,
+                           gfx::Font::Weight::MEDIUM);
+    case LabelStyle::kBody:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 14,
+                           gfx::Font::Weight::NORMAL);
+    case LabelStyle::kChipBody:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 10,
+                           gfx::Font::Weight::MEDIUM);
+    case LabelStyle::kChipTitle:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 13,
+                           gfx::Font::Weight::NORMAL);
+    case LabelStyle::kHeader:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 16,
+                           gfx::Font::Weight::MEDIUM);
+    case LabelStyle::kSubheader:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 13,
+                           gfx::Font::Weight::MEDIUM);
+    case LabelStyle::kSubtitle:
+      return gfx::FontList({font_name}, gfx::Font::NORMAL, 12,
+                           gfx::Font::Weight::NORMAL);
+  }
+}
+
+AshColorProvider::ContentLayerType GetTextColor(LabelStyle style) {
+  switch (style) {
+    case LabelStyle::kBadge:
+    case LabelStyle::kBody:
+    case LabelStyle::kChipBody:
+    case LabelStyle::kChipTitle:
+    case LabelStyle::kHeader:
+      return AshColorProvider::ContentLayerType::kTextColorPrimary;
+    case LabelStyle::kSubheader:
+    case LabelStyle::kSubtitle:
+      return AshColorProvider::ContentLayerType::kTextColorSecondary;
+  }
+}
+
 }  // namespace
+
+LabelStyleOverrides::LabelStyleOverrides() = default;
+
+LabelStyleOverrides::LabelStyleOverrides(
+    absl::optional<FontName> font,
+    absl::optional<AshColorProvider::ContentLayerType> text_color)
+    : font_name(font), text_color(text_color) {}
+
+LabelStyleOverrides::~LabelStyleOverrides() = default;
 
 bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
   // Should only be called for "press" type events.
@@ -94,66 +155,33 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
   return true;
 }
 
-void ApplyStyle(views::Label* label, LabelStyle style) {
+void ApplyStyle(views::Label* label,
+                LabelStyle style,
+                const LabelStyleOverrides& overrides) {
+  const auto font_list = GetFontList(style, overrides.font_name);
+  const auto text_color = overrides.text_color.value_or(GetTextColor(style));
+
   label->SetAutoColorReadabilityEnabled(false);
-  AshColorProvider::ContentLayerType text_color;
-
-  switch (style) {
-    case LabelStyle::kBadge:
-      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case LabelStyle::kBody:
-      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case LabelStyle::kChipBody:
-      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case LabelStyle::kChipTitle:
-      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-    case LabelStyle::kHeader:
-      text_color = AshColorProvider::ContentLayerType::kTextColorPrimary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 16,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case LabelStyle::kSubheader:
-      text_color = AshColorProvider::ContentLayerType::kTextColorSecondary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 13,
-                                       gfx::Font::Weight::MEDIUM));
-      break;
-    case LabelStyle::kSubtitle:
-      text_color = AshColorProvider::ContentLayerType::kTextColorSecondary;
-      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 12,
-                                       gfx::Font::Weight::NORMAL));
-      break;
-  }
-
+  label->SetFontList(font_list);
   label->SetEnabledColor(
       AshColorProvider::Get()->GetContentLayerColor(text_color));
 }
 
-std::unique_ptr<views::Label> CreateLabel(LabelStyle style,
-                                          const std::u16string& text) {
+std::unique_ptr<views::Label> CreateLabel(
+    LabelStyle style,
+    const std::u16string& text,
+    const LabelStyleOverrides& overrides) {
   auto label = std::make_unique<LabelWithThemeChangedCallback>(
       text,
       /*theme_changed_callback=*/base::BindRepeating(
-          [](LabelStyle style, views::Label* label) {
-            ApplyStyle(label, style);
-          },
-          style));
+          [](LabelStyle style, const LabelStyleOverrides& overrides,
+             views::Label* label) { ApplyStyle(label, style, overrides); },
+          style, overrides));
   // Apply `style` to `label` manually in case the view is painted without ever
   // having being added to the view hierarchy. In such cases, the `label` will
   // not receive an `OnThemeChanged()` event. This occurs, for example, with
   // holding space drag images.
-  ApplyStyle(label.get(), style);
+  ApplyStyle(label.get(), style, overrides);
   return label;
 }
 

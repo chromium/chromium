@@ -21,8 +21,8 @@ namespace ash {
 namespace {
 
 const gfx::Insets kPlaceholderPadding =
-    gfx::Insets::TLBR(24, 48, 40, 48) - kHoldingSpaceChildBubblePadding;
-const int kPlaceholderChildSpacing = 8;
+    gfx::Insets::TLBR(36, 50, 36, 50) - kHoldingSpaceChildBubblePadding;
+constexpr int kPlaceholderChildSpacing = 16;
 
 }  // namespace
 
@@ -51,15 +51,13 @@ std::unique_ptr<views::View> RecentFilesBubble::CreatePlaceholder() {
               IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE)))
       .AddChild(
           views::Builder<views::Label>(
-              bubble_utils::CreateLabel(bubble_utils::LabelStyle::kHeader,
-                                        u"[i18n]Nothing to show here"))
-              .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER))
-      .AddChild(
-          views::Builder<views::Label>(
               bubble_utils::CreateLabel(
-                  bubble_utils::LabelStyle::kSubheader,
+                  bubble_utils::LabelStyle::kHeader,
                   l10n_util::GetStringUTF16(
-                      IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER)))
+                      IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER),
+                  bubble_utils::LabelStyleOverrides{
+                      bubble_utils::FontName::kGoogleSans,
+                      AshColorProvider::ContentLayerType::kTextColorSecondary}))
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
               .SetMultiLine(true))
       .Build();
