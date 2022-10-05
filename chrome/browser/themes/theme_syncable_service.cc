@@ -38,8 +38,9 @@ bool IsTheme(const extensions::Extension* extension,
 
 }  // namespace
 
-const char ThemeSyncableService::kCurrentThemeClientTag[] = "current_theme";
-const char ThemeSyncableService::kCurrentThemeNodeTitle[] = "Current Theme";
+// "Current" is part of the name for historical reasons, shouldn't be changed.
+const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
+const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
 ThemeSyncableService::ThemeSyncableService(Profile* profile,
                                            ThemeService* theme_service)
@@ -157,9 +158,8 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
   syncer::SyncDataList list;
   sync_pb::EntitySpecifics entity_specifics;
   if (GetThemeSpecificsFromCurrentTheme(entity_specifics.mutable_theme())) {
-    list.push_back(syncer::SyncData::CreateLocalData(kCurrentThemeClientTag,
-                                                     kCurrentThemeNodeTitle,
-                                                     entity_specifics));
+    list.push_back(syncer::SyncData::CreateLocalData(
+        kSyncEntityClientTag, kSyncEntityTitle, entity_specifics));
   }
   return list;
 }
@@ -400,11 +400,10 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   sync_pb::EntitySpecifics entity_specifics;
   entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
 
-  changes.push_back(
-      syncer::SyncChange(FROM_HERE, change_type,
-                         syncer::SyncData::CreateLocalData(
-                             kCurrentThemeClientTag, kCurrentThemeNodeTitle,
-                             entity_specifics)));
+  changes.emplace_back(
+      FROM_HERE, change_type,
+      syncer::SyncData::CreateLocalData(kSyncEntityClientTag, kSyncEntityTitle,
+                                        entity_specifics));
 
   DVLOG(1) << "Update theme specifics from current theme: "
       << changes.back().ToString();

@@ -85,9 +85,9 @@ class ThemeSyncableService : public syncer::SyncableService,
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
-  // Client tag and tile of theme node in sync.
-  static const char kCurrentThemeClientTag[];
-  static const char kCurrentThemeNodeTitle[];
+  // Client tag and title of the single theme sync_pb::SyncEntity of an account.
+  static const char kSyncEntityClientTag[];
+  static const char kSyncEntityTitle[];
 
  private:
   static bool AreThemeSpecificsEqual(

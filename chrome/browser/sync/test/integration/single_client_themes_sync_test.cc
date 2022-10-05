@@ -42,8 +42,8 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateDefaultThemeEntity() {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_theme();
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-      ThemeSyncableService::kCurrentThemeNodeTitle,
-      ThemeSyncableService::kCurrentThemeClientTag, specifics,
+      ThemeSyncableService::kSyncEntityClientTag,
+      ThemeSyncableService::kSyncEntityTitle, specifics,
       /*creation_time=*/0, /*last_modified_time=*/0);
 }
 
@@ -51,8 +51,8 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateSystemThemeEntity() {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_theme()->set_use_system_theme_by_default(true);
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-      ThemeSyncableService::kCurrentThemeNodeTitle,
-      ThemeSyncableService::kCurrentThemeClientTag, specifics,
+      ThemeSyncableService::kSyncEntityClientTag,
+      ThemeSyncableService::kSyncEntityTitle, specifics,
       /*creation_time=*/0, /*last_modified_time=*/0);
 }
 
@@ -63,8 +63,8 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateCustomThemeEntity(
   specifics.mutable_theme()->set_custom_theme_id(theme_id);
   specifics.mutable_theme()->set_custom_theme_name("custom theme");
   return syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
-      ThemeSyncableService::kCurrentThemeNodeTitle,
-      ThemeSyncableService::kCurrentThemeClientTag, specifics,
+      ThemeSyncableService::kSyncEntityClientTag,
+      ThemeSyncableService::kSyncEntityTitle, specifics,
       /*creation_time=*/0, /*last_modified_time=*/0);
 }
 

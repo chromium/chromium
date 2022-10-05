@@ -275,9 +275,8 @@ class ThemeSyncableServiceTest : public testing::Test,
     sync_pb::EntitySpecifics entity_specifics;
     entity_specifics.mutable_theme()->CopyFrom(theme_specifics);
     list.push_back(syncer::SyncData::CreateLocalData(
-        ThemeSyncableService::kCurrentThemeClientTag,
-        ThemeSyncableService::kCurrentThemeNodeTitle,
-        entity_specifics));
+        ThemeSyncableService::kSyncEntityClientTag,
+        ThemeSyncableService::kSyncEntityTitle, entity_specifics));
     return list;
   }
 
