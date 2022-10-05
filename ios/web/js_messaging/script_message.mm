@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <memory>
+
 #import "ios/web/public/js_messaging/script_message.h"
 #import "base/memory/ptr_util.h"
 #import "base/values.h"
@@ -27,7 +29,7 @@ ScriptMessage::ScriptMessage(const ScriptMessage& other)
       is_main_frame_(other.is_main_frame_),
       request_url_(other.request_url_) {
   if (other.body_) {
-    body_ = other.body_->CreateDeepCopy();
+    body_ = std::make_unique<base::Value>(other.body_->Clone());
   }
 }
 
