@@ -141,10 +141,12 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
     const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
         certificate,
     net::NSSCertDatabase* nssdb) {
+  PRBool is_perm;
   net::ScopedCERTCertificate x509_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           certificate.certificate().get());
-  if (!x509_cert.get()) {
+  if (!x509_cert ||
+      net::x509_util::GetCertIsPerm(x509_cert.get(), &is_perm) != SECSuccess) {
     NET_LOG(ERROR) << "Unable to create certificate: " << certificate.guid();
     return false;
   }
@@ -156,7 +158,7 @@ bool CertificateImporterImpl::StoreServerOrCaCertificateUserInitiated(
       (certificate.web_trust_requested() ? net::NSSCertDatabase::TRUSTED_SSL
                                          : net::NSSCertDatabase::TRUST_DEFAULT);
 
-  if (x509_cert.get()->isperm) {
+  if (is_perm) {
     net::CertType net_cert_type =
         certificate.type() == chromeos::onc::OncParsedCertificates::
                                   ServerOrAuthorityCertificate::Type::kServer
