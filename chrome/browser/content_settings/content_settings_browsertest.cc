@@ -659,11 +659,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksIndexedDB) {
       "    });"
       "  }"
       "  try {"
-      "    let promiselike = indexedDB.%s%s;"
-      "    if (typeof promiselike.then !== 'undefined') {"
-      "      await promiselike;"
-      "    }"
-      "    await wrap(promiselike);"
+      "    await wrap(indexedDB.%s%s);"
       "  } catch(e) {"
       "    return `${name} - ${e.toString()}`;"
       "  }"
@@ -688,19 +684,45 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookiesAlsoBlocksIndexedDB) {
         base::StringPrintf(kBaseExpected, op.cmd),
         EvalJs(tab, base::StringPrintf(kBaseScript, op.cmd, op.cmd, op.args)));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(CookieSettingsTest,
+                       BlockCookiesAlsoBlocksIndexedDBPromiseBased) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetPageURL()));
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(GetPageURL(), CONTENT_SETTING_BLOCK);
+
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const char kPromiseBaseScript[] =
+      "(async function() {"
+      "  const name = `%s`;"
+      "  try {"
+      "    await indexedDB.%s%s;"
+      "  } catch(e) {"
+      "    return `${name} - ${e.toString()}`;"
+      "  }"
+      "  return `${name} - success`;"
+      "}())";
+
+  struct TestOp {
+    const char* cmd;
+    const char* args;
+  };
 
   const TestOp kPromiseTestOps[] = {
       {.cmd = "databases", .args = "()"},
   };
 
-  const char kPromiseBaseExpected[] =
-      "%s - UnknownError: Failed to execute '%s' on 'IDBFactory': The user "
-      "denied permission to access the database.";
+  const char kBaseExpected[] =
+      "%s - UnknownError: The user denied permission to access the database.";
 
   for (auto& op : kPromiseTestOps) {
-    EXPECT_EQ(
-        base::StringPrintf(kPromiseBaseExpected, op.cmd, op.cmd),
-        EvalJs(tab, base::StringPrintf(kBaseScript, op.cmd, op.cmd, op.args)));
+    EXPECT_EQ(base::StringPrintf(kBaseExpected, op.cmd),
+              EvalJs(tab, base::StringPrintf(kPromiseBaseScript, op.cmd, op.cmd,
+                                             op.args)));
   }
 }
 
