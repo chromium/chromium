@@ -9,7 +9,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {ProfileData, Tab, TabAlertState, TabSearchApiProxyImpl, TabSearchAppElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/metrics_reporter/mocked_metrics_reporter.js';
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createProfileData, createTab, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB, SAMPLE_WINDOW_HEIGHT} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';

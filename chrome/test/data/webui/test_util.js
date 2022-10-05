@@ -4,7 +4,6 @@
 
 // clang-format off
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
-import {afterNextRender, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
 // Do not depend on the Chai Assertion Library in this file. Some consumers of
@@ -77,40 +76,6 @@ export function eventToPromise(eventType, target) {
 }
 
 /**
- * Data-binds two Polymer properties using the property-changed events and
- * set/notifyPath API. Useful for testing components which would normally be
- * used together.
- * @param {!Element} el1
- * @param {!Element} el2
- * @param {string} property
- */
-export function fakeDataBind(el1, el2, property) {
-  const forwardChange = function(el, event) {
-    if (event.detail.hasOwnProperty('path')) {
-      el.notifyPath(event.detail.path, event.detail.value);
-    } else {
-      el.set(property, event.detail.value);
-    }
-  };
-  // Add the listeners symmetrically. Polymer will prevent recursion.
-  el1.addEventListener(property + '-changed', forwardChange.bind(null, el2));
-  el2.addEventListener(property + '-changed', forwardChange.bind(null, el1));
-}
-
-/*
- * Waits for queued up tasks to finish before proceeding. Inspired by:
- * https://github.com/Polymer/web-component-tester/blob/master/browser/environment/helpers.js#L97
- */
-export function flushTasks() {
-  flush();
-  // Promises have microtask timing, so we use setTimeout to explicitly force
-  // a new task.
-  return new Promise(function(resolve, reject) {
-    window.setTimeout(resolve, 1);
-  });
-}
-
-/**
  * Returns whether or not the element specified is visible.
  * @param {?Element} element
  * @return {boolean}
@@ -132,15 +97,4 @@ export function isChildVisible(parentEl, selector, checkLightDom) {
   const element = checkLightDom ? parentEl.querySelector(selector) :
                                   parentEl.shadowRoot.querySelector(selector);
   return isVisible(element);
-}
-
-/**
- * @param {!HTMLElement} element
- * @return {!Promise} Promise that resolves when an afterNextRender()
- *     callback on |element| is run.
- */
-export function waitAfterNextRender(element) {
-  return new Promise(resolve => {
-    afterNextRender(element, resolve);
-  });
 }
