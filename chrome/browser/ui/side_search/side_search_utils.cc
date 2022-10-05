@@ -135,6 +135,11 @@ bool IsSearchWebInSidePanelSupported(const Browser* browser) {
          base::FeatureList::IsEnabled(features::kUnifiedSidePanel);
 }
 
+bool ShouldUseUnifiedSidePanel() {
+  return base::FeatureList::IsEnabled(features::kSideSearchDSESupport) &&
+         base::FeatureList::IsEnabled(features::kUnifiedSidePanel);
+}
+
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile) {

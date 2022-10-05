@@ -933,14 +933,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  if (side_search::IsEnabledForBrowser(browser_.get())) {
-    if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-      side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(this));
-      left_aligned_side_panel_separator_ =
-          AddChildView(std::make_unique<ContentsSeparator>());
-      side_search_controller_ = std::make_unique<SideSearchBrowserController>(
-          side_search_side_panel_, this);
-    }
+  if (side_search::IsEnabledForBrowser(browser_.get()) &&
+      !side_search::ShouldUseUnifiedSidePanel()) {
+    bool dse_support =
+        base::FeatureList::IsEnabled(features::kSideSearchDSESupport);
+    side_search_side_panel_ = AddChildView(std::make_unique<SidePanel>(
+        this, dse_support ? SidePanel::HorizontalAlignment::kAlignRight
+                          : SidePanel::HorizontalAlignment::kAlignLeft));
+    left_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+    side_search_controller_ = std::make_unique<SideSearchBrowserController>(
+        side_search_side_panel_, this);
   }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
