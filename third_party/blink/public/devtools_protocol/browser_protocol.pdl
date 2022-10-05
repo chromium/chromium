@@ -7166,7 +7166,7 @@ domain Page
       geolocation
       gyroscope
       hid
-      identity-credential-get
+      identity-credentials-get
       idle-detection
       interest-cohort
       join-ad-interest-group

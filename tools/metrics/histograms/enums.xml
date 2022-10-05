@@ -41602,7 +41602,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="99" label="ClientHintSaveData"/>
   <int value="100" label="LocalFonts"/>
   <int value="101" label="Bluetooth"/>
-  <int value="102" label="IdentityCredentialGet"/>
+  <int value="102" label="IdentityCredentialsGet"/>
   <int value="103" label="SharedStorage"/>
   <int value="104" label="Unload"/>
   <int value="105" label="ClientHintPrefersReducedMotion"/>

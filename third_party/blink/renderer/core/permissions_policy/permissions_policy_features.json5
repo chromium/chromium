@@ -235,8 +235,8 @@
       depends_on: ["FreezeFramesOnVisibility"],
     },
     {
-      name: "IdentityCredentialGet",
-      permissions_policy_name: "identity-credential-get",
+      name: "IdentityCredentialsGet",
+      permissions_policy_name: "identity-credentials-get",
       depends_on: ["FedCmIframeSupport"],
     },
     {

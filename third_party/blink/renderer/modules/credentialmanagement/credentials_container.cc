@@ -118,8 +118,8 @@ enum class RequiredOriginType {
   kSecureAndPermittedByWebAuthGetAssertionPermissionsPolicy,
   // Similar to the enum above, checks the "otp-credentials" permissions policy.
   kSecureAndPermittedByWebOTPAssertionPermissionsPolicy,
-  // Similar to the enum above, checks the "identity-credential-get" permissions
-  // policy.
+  // Similar to the enum above, checks the "identity-credentials-get"
+  // permissions policy.
   kSecureAndPermittedByFederatedPermissionsPolicy,
   // Must be a secure origin with allowed payment permission policy.
   kSecureWithPaymentPermissionPolicy,
@@ -254,10 +254,11 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
       if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-              mojom::blink::PermissionsPolicyFeature::kIdentityCredentialGet)) {
+              mojom::blink::PermissionsPolicyFeature::
+                  kIdentityCredentialsGet)) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
-            "The 'identity-credential-get` feature is not enabled in this "
+            "The 'identity-credentials-get` feature is not enabled in this "
             "document."));
         return false;
       }
@@ -317,7 +318,7 @@ void AssertSecurityRequirementsBeforeResponse(
 
     case RequiredOriginType::kSecureAndPermittedByFederatedPermissionsPolicy:
       SECURITY_CHECK(resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialGet));
+          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet));
       break;
 
     case RequiredOriginType::kSecureWithPaymentPermissionPolicy:
