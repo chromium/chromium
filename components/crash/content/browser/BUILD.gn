@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 if (is_android) {
@@ -21,25 +22,20 @@ source_set("browser") {
     "//content/public/common",
   ]
 
-  if (is_linux || is_chromeos || is_android) {
-    # Want this file on both Linux and Android.
+  if (is_castos || is_chromeos || is_android) {
     sources += [
       "crash_handler_host_linux.cc",
       "crash_handler_host_linux.h",
     ]
-
-    deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (!is_chromeos_ash) {
-    deps += [ "//third_party/crashpad/crashpad/client" ]
-  }
-
-  # This is not in the GYP build but this target includes breakpad client
-  # headers, so add the dependency here.
-  if ((is_posix && !is_ios) || is_fuchsia) {
+  if (is_castos || is_chromeos) {
     configs += [ "//third_party/breakpad:client_config" ]
     public_configs = [ "//third_party/breakpad:client_config" ]
+    deps += [
+      "//build:chromeos_buildflags",
+      "//third_party/breakpad:client",
+    ]
   }
 
   if (is_android) {
@@ -58,9 +54,8 @@ source_set("browser") {
     deps += [
       "//components/crash/android:jni_headers",
       "//mojo/public/cpp/bindings",
+      "//third_party/crashpad/crashpad/client",
     ]
-  } else {
-    deps += [ "//third_party/breakpad:client" ]
   }
 }
 

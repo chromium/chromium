@@ -142,6 +142,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_paths.h"
+#include "components/crash/core/app/breakpad_linux.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -174,7 +175,6 @@
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
-#include "components/crash/core/app/breakpad_linux.h"
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #include "v8/include/v8.h"
 #endif
@@ -845,8 +845,8 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
       (channel == version_info::Channel::CANARY ||
        channel == version_info::Channel::DEV);
   // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
-  // not always enabled on Linux/ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // not always enabled on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
   bool enable_gwp_asan = crash_reporter::IsCrashpadEnabled();
 #else
   bool enable_gwp_asan = true;
@@ -997,7 +997,7 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   v8_crashpad_support::SetUp();
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!crash_reporter::IsCrashpadEnabled()) {
     breakpad::SetFirstChanceExceptionHandler(v8::TryHandleWebAssemblyTrapPosix);
   }
@@ -1451,7 +1451,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     } else {
       base::android::InitJavaExceptionReporterForChildProcess();
     }
-#else   // !BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_CHROMEOS)
     if (crash_reporter::IsCrashpadEnabled()) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
       crash_reporter::SetFirstChanceExceptionHandler(
@@ -1459,6 +1459,10 @@ void ChromeMainDelegate::PreSandboxStartup() {
     } else {
       breakpad::InitCrashReporter(process_type);
     }
+#else
+    crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
+    crash_reporter::SetFirstChanceExceptionHandler(
+        v8::TryHandleWebAssemblyTrapPosix);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -1576,6 +1580,7 @@ void ChromeMainDelegate::ZygoteForked() {
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
+#if BUILDFLAG(IS_CHROMEOS)
   if (crash_reporter::IsCrashpadEnabled()) {
     crash_reporter::InitializeCrashpad(false, process_type);
     crash_reporter::SetFirstChanceExceptionHandler(
@@ -1583,6 +1588,11 @@ void ChromeMainDelegate::ZygoteForked() {
   } else {
     breakpad::InitCrashReporter(process_type);
   }
+#else
+  crash_reporter::InitializeCrashpad(false, process_type);
+  crash_reporter::SetFirstChanceExceptionHandler(
+      v8::TryHandleWebAssemblyTrapPosix);
+#endif
 
   // Reset the command line for the newly spawned process.
   crash_keys::SetCrashKeysFromCommandLine(*command_line);

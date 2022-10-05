@@ -181,7 +181,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-#include "third_party/crashpad/crashpad/client/crashpad_info.h"
+#include "third_party/crashpad/crashpad/client/crashpad_info.h"  // nogncheck
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

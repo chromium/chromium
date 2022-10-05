@@ -42,7 +42,7 @@ class CrashReportDatabase;
 
 namespace crash_reporter {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsCrashpadEnabled();
 #endif
 

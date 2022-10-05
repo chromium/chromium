@@ -22,7 +22,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -32,17 +31,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-namespace {
-
-#if !BUILDFLAG(IS_MAC)
-void InitCrashReporterIfEnabled(bool enabled) {
-  if (!crash_reporter::IsCrashpadEnabled() && enabled)
-    breakpad::InitCrashReporter(std::string());
-}
-#endif
-
-}  // namespace
 
 namespace first_run {
 
@@ -127,13 +115,7 @@ bool FirstRunDialog::Accept() {
   GetWidget()->Hide();
   closed_through_accept_button_ = true;
 
-#if BUILDFLAG(IS_MAC)
   ChangeMetricsReportingState(report_crashes_->GetChecked());
-#else
-  ChangeMetricsReportingStateWithReply(
-      report_crashes_->GetChecked(),
-      base::BindOnce(&InitCrashReporterIfEnabled));
-#endif
 
   if (make_default_->GetChecked())
     shell_integration::SetAsDefaultBrowser();

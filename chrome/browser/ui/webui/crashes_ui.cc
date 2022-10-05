@@ -186,17 +186,6 @@ void CrashesDOMHandler::UpdateUI() {
   system_crash_reporter = true;
 #endif
 
-  bool using_crashpad = false;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  using_crashpad = true;
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // ChromeOS uses crash_sender instead of Crashpad for uploads even when
-  // Crashpad is enabled for dump generation.
-  using_crashpad = crash_reporter::IsCrashpadEnabled();
-#endif
-
   bool is_internal = false;
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
@@ -206,15 +195,18 @@ void CrashesDOMHandler::UpdateUI() {
             .email);
   }
 
-  // Manual uploads currently are supported only for Crashpad-using platforms
-  // and only if crash uploads are not disabled by policy.
-  bool support_manual_uploads =
-      using_crashpad &&
+  bool manual_uploads_supported = false;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID)
+  manual_uploads_supported = true;
+#endif
+  bool allow_manual_uploads =
+      manual_uploads_supported &&
       (crash_reporting_enabled || !IsMetricsReportingPolicyManaged());
 
-  // Show crash reports regardless of |crash_reporting_enabled| when using
-  // Crashpad so that users can manually upload those reports.
-  bool upload_list = using_crashpad || crash_reporting_enabled;
+  // Show crash reports regardless of |crash_reporting_enabled| when it is
+  // possible to manually upload reports.
+  bool upload_list = manual_uploads_supported || crash_reporting_enabled;
 
   base::Value::List crash_list;
   if (upload_list)
@@ -223,7 +215,7 @@ void CrashesDOMHandler::UpdateUI() {
   base::Value::Dict result;
   result.Set("enabled", crash_reporting_enabled);
   result.Set("dynamicBackend", system_crash_reporter);
-  result.Set("manualUploads", support_manual_uploads);
+  result.Set("manualUploads", allow_manual_uploads);
   result.Set("crashes", std::move(crash_list));
   result.Set("version", version_info::GetVersionNumber());
   result.Set("os", base::SysInfo::OperatingSystemName() + " " +

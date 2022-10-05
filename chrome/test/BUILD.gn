@@ -335,6 +335,10 @@ static_library("test_support") {
     data_deps += [ "//chrome:chrome(//build/toolchain/linux:lacros_clang_x64)" ]
   }
 
+  if (is_linux) {
+    data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+  }
+
   if (is_android) {
     public_deps += [
       ":test_support_ui_android",

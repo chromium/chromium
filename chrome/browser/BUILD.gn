@@ -4677,6 +4677,10 @@ static_library("browser") {
       ]
     }
 
+    if (!is_fuchsia) {
+      deps += [ "//third_party/crashpad/crashpad/client:common" ]
+    }
+
     # On Windows, the hashes are embedded in //chrome:chrome_initial rather
     # than here in :chrome_dll.
     if (!is_win) {

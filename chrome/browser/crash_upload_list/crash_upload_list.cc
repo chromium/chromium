@@ -33,9 +33,7 @@
 #endif
 
 scoped_refptr<UploadList> CreateCrashUploadList() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  return new CrashUploadListCrashpad();
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath cache_dir;
   base::android::GetCacheDirectory(&cache_dir);
   base::FilePath upload_log_path =
@@ -44,17 +42,7 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
   return new CrashUploadListAndroid(upload_log_path);
 #elif BUILDFLAG(IS_FUCHSIA)
   return new CrashUploadListFuchsia();
-#else
-
-// ChromeOS uses crash_sender as its uploader even when Crashpad is enabled,
-// which isn't compatible with CrashUploadListCrashpad. crash_sender continues
-// to log uploads in CrashUploadList::kReporterLogFilename.
-// Linux is handled below.
-#if !(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX))
-  if (crash_reporter::IsCrashpadEnabled()) {
-    return new CrashUploadListCrashpad();
-  }
-#endif
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
   base::FilePath crash_dir_path;
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
@@ -64,16 +52,17 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
       base::MakeRefCounted<TextLogUploadList>(upload_log_path);
 
 #if BUILDFLAG(IS_LINUX)
-  if (crash_reporter::IsCrashpadEnabled()) {
-    // Crashpad keeps the records of C++ crashes (segfaults, etc) in its
-    // internal database. The JavaScript error reporter writes JS error upload
-    // records to the older text format. Combine the two to present a complete
-    // list to the user.
-    std::vector<scoped_refptr<UploadList>> uploaders = {
-        base::MakeRefCounted<CrashUploadListCrashpad>(), std::move(result)};
-    result = base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
-  }
-#endif
+  // Crashpad keeps the records of C++ crashes (segfaults, etc) in its
+  // internal database. The JavaScript error reporter writes JS error upload
+  // records to the older text format. Combine the two to present a complete
+  // list to the user.
+  std::vector<scoped_refptr<UploadList>> uploaders = {
+      base::MakeRefCounted<CrashUploadListCrashpad>(), std::move(result)};
+  result = base::MakeRefCounted<CombiningUploadList>(std::move(uploaders));
+#endif  // BUILDFLAG(IS_LINUX)
   return result;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+#else
+  return new CrashUploadListCrashpad();
+#endif  // BUILDFLAG(IS_ANDROID)
 }

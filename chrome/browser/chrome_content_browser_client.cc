@@ -436,11 +436,13 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/debug/leak_annotations.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
+#include "components/crash/core/app/breakpad_linux.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif
 
@@ -484,11 +486,7 @@
 #include "components/crash/core/app/crashpad.h"
 #endif
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/debug/leak_annotations.h"
-#include "components/crash/core/app/breakpad_linux.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #endif
 
@@ -943,7 +941,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
 int GetCrashSignalFD(const base::CommandLine& command_line) {
   return crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
 }
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_CHROMEOS)
 breakpad::CrashHandlerHostLinux* CreateCrashHandlerHost(
     const std::string& process_type) {
   base::FilePath dumps_path;
@@ -1005,6 +1003,11 @@ int GetCrashSignalFD(const base::CommandLine& command_line) {
   }
 
   return -1;
+}
+#elif BUILDFLAG(IS_LINUX)
+int GetCrashSignalFD(const base::CommandLine& command_line) {
+  int fd;
+  return crash_reporter::GetHandlerSocket(&fd, nullptr) ? fd : -1;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -2392,7 +2395,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #elif BUILDFLAG(IS_POSIX)
 #if BUILDFLAG(IS_ANDROID)
   bool enable_crash_reporter = true;
-#else
+#elif BUILDFLAG(IS_CHROMEOS)
   bool enable_crash_reporter = false;
   if (crash_reporter::IsCrashpadEnabled()) {
     command_line->AppendSwitch(switches::kEnableCrashpad);
@@ -2407,6 +2410,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     }
   } else {
     enable_crash_reporter = breakpad::IsCrashReporterEnabled();
+  }
+#else
+  bool enable_crash_reporter = true;
+  pid_t pid;
+  if (crash_reporter::GetHandlerSocket(nullptr, &pid)) {
+    command_line->AppendSwitchASCII(
+        crash_reporter::switches::kCrashpadHandlerPid,
+        base::NumberToString(pid));
   }
 #endif
   if (enable_crash_reporter) {
@@ -4230,10 +4241,14 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   base::PathService::Get(base::DIR_ANDROID_APP_DATA, &app_data_path);
   DCHECK(!app_data_path.empty());
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int crash_signal_fd = GetCrashSignalFD(command_line);
   if (crash_signal_fd >= 0) {
     mappings->Share(kCrashDumpSignal, crash_signal_fd);
   }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 

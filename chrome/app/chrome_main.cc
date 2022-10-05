@@ -163,13 +163,6 @@ int ChromeMain(int argc, const char** argv) {
         // BUILDFLAG(IS_WIN)
   }
 
-#if BUILDFLAG(IS_LINUX)
-  // TODO(https://crbug.com/1176772): Remove when Chrome Linux is fully migrated
-  // to Crashpad.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableCrashpad);
-#endif
-
 #if BUILDFLAG(IS_MAC)
   // Gracefully exit if the system tried to launch the macOS notification helper
   // app when a user clicked on a notification.

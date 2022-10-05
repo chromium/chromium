@@ -3332,16 +3332,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeOriginVerifierData) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCrashData) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // This test applies only when using a logfile of Crash uploads. Chrome Linux
-  // will use Crashpad's database instead of the logfile. Chrome Chrome OS
-  // continues to use the logfile even when Crashpad is enabled.
-  if (crash_reporter::IsCrashpadEnabled()) {
-    GTEST_SKIP();
-  }
-#endif
   base::ScopedPathOverride override_crash_dumps(chrome::DIR_CRASH_DUMPS);
   base::FilePath crash_dir_path;
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);

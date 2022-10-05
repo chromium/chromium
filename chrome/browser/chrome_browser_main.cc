@@ -220,6 +220,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
+#include "components/crash/core/app/breakpad_linux.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -243,7 +244,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/crash/core/app/breakpad_linux.h"
 #include "components/crash/core/app/crashpad.h"
 #endif
 
@@ -1058,14 +1058,13 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
+#if BUILDFLAG(IS_CHROMEOS)
   // Set the product channel for crash reports.
   if (!crash_reporter::IsCrashpadEnabled()) {
     breakpad::SetChannelCrashKey(
         chrome::GetChannelName(chrome::WithExtendedStable(true)));
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_OPENBSD)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_X86_64)
