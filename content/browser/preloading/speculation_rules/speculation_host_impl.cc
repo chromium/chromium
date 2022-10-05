@@ -218,6 +218,10 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
                      &blink::mojom::SpeculationCandidate::url);
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_to_start;
 
+  // Collects the host ids corresponding to the URLs that are removed from the
+  // speculation rules. These hosts are cancelled later.
+  std::vector<int> removed_prerender_rules;
+
   // Compare the sorted candidate and started prerender lists to one another.
   // Since they are sorted, we process the lexicographically earlier of the two
   // URLs pointed at by the iterators, and compare the range of entries in each
@@ -262,7 +266,7 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
       // want to cancel if there are candidates which match by URL but none of
       // which permit this prerender.
       if (matching_candidates.empty()) {
-        registry_->OnTriggerDestroyed(prerender.prerender_host_id);
+        removed_prerender_rules.push_back(prerender.prerender_host_id);
         prerender.prerender_host_id = RenderFrameHost::kNoFrameTreeNodeId;
       }
     }
@@ -279,6 +283,9 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     candidate_it = equal_candidate_end;
     started_it = equal_prerender_end;
   }
+
+  registry_->CancelHosts(removed_prerender_rules,
+                         PrerenderHost::FinalStatus::kTriggerDestroyed);
 
   // Actually start the candidates once the diffing is done.
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host());
@@ -389,14 +396,16 @@ void SpeculationHostImpl::CancelStartedPrerenders() {
           started_prerenders_.size());
 
   if (registry_) {
-    for (const auto& prerender : started_prerenders_) {
-      int host_id = prerender.prerender_host_id;
-      if (host_id != RenderFrameHost::kNoFrameTreeNodeId)
-        registry_->OnTriggerDestroyed(host_id);
+    std::vector<int> started_prerender_ids;
+    for (auto& prerender_info : started_prerenders_) {
+      started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
-    started_prerenders_.clear();
-    observers_.clear();
+    registry_->CancelHosts(started_prerender_ids,
+                           PrerenderHost::FinalStatus::kTriggerDestroyed);
   }
+
+  started_prerenders_.clear();
+  observers_.clear();
 }
 
 void SpeculationHostImpl::OnStartSinglePrefetch(

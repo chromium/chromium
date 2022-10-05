@@ -89,6 +89,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   bool CancelHost(int frame_tree_node_id,
                   PrerenderHost::FinalStatus final_status);
 
+  // Cancels the existing hosts specified in the vector with the same final
+  // status.
+  void CancelHosts(const std::vector<int>& frame_tree_node_ids,
+                   PrerenderHost::FinalStatus final_status);
+
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderHost::FinalStatus final_status);
 
@@ -124,12 +129,6 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   RenderFrameHostImpl* GetRenderFrameHostForReservedHost(
       int frame_tree_node_id);
-
-  // For triggers.
-  // Called from the triggers (e.g., SpeculationHostImpl) when they are
-  // destroyed. `frame_tree_node_id` should be the id returned by
-  // CreateAndStartHost().
-  void OnTriggerDestroyed(int frame_tree_node_id);
 
   // For activators.
   // Called from the destructor of NavigationRequest that reserved the host.
