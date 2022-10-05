@@ -88,28 +88,26 @@ constexpr int kGridVerticalMargin = 8;
 // The horizontal spacing between apps grid view and the page switcher.
 constexpr int kPageSwitcherSpacing = 8;
 
-// The min margins for contents within the fullscreen productivity launcher.
-constexpr int kMinProductivityLauncherMargin = 24;
+// The min margins for contents within the fullscreen launcher.
+constexpr int kMinLauncherMargin = 24;
 
-// The min horizontal margin for apps grid in fullscreen productivity launcher.
-// In addition to min productivity launcher margin, reserves 32 dip for page
+// The min horizontal margin for apps grid in fullscreen launcher.
+// In addition to min launcher margin, reserves 32 dip for page
 // switcher UI.
-constexpr int kMinProductivityLauncherGridHorizontalMargin =
-    kMinProductivityLauncherMargin + 32;
+constexpr int kMinLauncherGridHorizontalMargin = kMinLauncherMargin + 32;
 
 // The amount of the screen height that should be taken up by the vertical
 // margin for the apps container view.
-constexpr float kProductivityLauncherVerticalMarginRatio = 1.0f / 24.0f;
-constexpr float kProductivityLauncherVerticalMarginRatioLargeHeight =
-    1.0f / 16.0f;
+constexpr float kLauncherVerticalMarginRatio = 1.0f / 24.0f;
+constexpr float kLauncherVerticalMarginRatioLargeHeight = 1.0f / 16.0f;
 
 // `is_large_height` should be set depending on whether the screen height is
 // expected to be greater than 800. This is set so that the correct vertical
 // margin ratio is used depending on the expected screen height.
-int GetExpectedScreenSizeForProductivityLauncher(int row_count,
-                                                 int tile_height,
-                                                 int tile_margins,
-                                                 bool is_large_height) {
+int GetExpectedScreenSize(int row_count,
+                          int tile_height,
+                          int tile_margins,
+                          bool is_large_height) {
   // The vertical margins are calculated as a ratio of the total screen height.
 
   // Below we solve for the screen_height where vertical AppsContainerView
@@ -125,9 +123,9 @@ int GetExpectedScreenSizeForProductivityLauncher(int row_count,
   // Solving for h results in the following, which is used below:
   // h = (grid_size + space_above_grid + shelf_size) / (1 - 2 * r)
 
-  float margin_ratio = kProductivityLauncherVerticalMarginRatio;
+  float margin_ratio = kLauncherVerticalMarginRatio;
   if (is_large_height)
-    margin_ratio = kProductivityLauncherVerticalMarginRatioLargeHeight;
+    margin_ratio = kLauncherVerticalMarginRatioLargeHeight;
 
   const float shelf_size = 56;
   const float grid_size =
@@ -142,9 +140,9 @@ int GetExpectedScreenSizeForProductivityLauncher(int row_count,
 
   // If the margins would be less than the minimum allowed margin, then add back
   // the necessary amount to account for the minimum margin.
-  if (screen_height * margin_ratio < kMinProductivityLauncherMargin) {
-    return screen_height + 2 * (kMinProductivityLauncherMargin -
-                                (screen_height * margin_ratio));
+  if (screen_height * margin_ratio < kMinLauncherMargin) {
+    return screen_height +
+           2 * (kMinLauncherMargin - (screen_height * margin_ratio));
   }
 
   return screen_height;
@@ -385,24 +383,21 @@ class AppListViewTest : public views::ViewsTestBase {
     return delegate_->show_wallpaper_context_menu_count();
   }
 
-  void VerifyAppsContainerLayoutForProductivityLauncher(
-      const gfx::Size& container_size,
-      int row_count,
-      int expected_horizontal_margin,
-      const gfx::Size& expected_item_size,
-      bool has_recent_apps) {
+  void VerifyAppsContainerLayout(const gfx::Size& container_size,
+                                 int row_count,
+                                 int expected_horizontal_margin,
+                                 const gfx::Size& expected_item_size,
+                                 bool has_recent_apps) {
     const int column_count = 5;
     ASSERT_EQ(column_count, apps_grid_view()->cols());
     ASSERT_EQ(row_count, apps_grid_view()->GetFirstPageRowsForTesting());
 
-    const float ratio =
-        (container_size.height() > 800)
-            ? kProductivityLauncherVerticalMarginRatioLargeHeight
-            : kProductivityLauncherVerticalMarginRatio;
+    const float ratio = (container_size.height() > 800)
+                            ? kLauncherVerticalMarginRatioLargeHeight
+                            : kLauncherVerticalMarginRatio;
 
-    const int expected_vertical_margin =
-        std::max(static_cast<int>(container_size.height() * ratio),
-                 kMinProductivityLauncherMargin);
+    const int expected_vertical_margin = std::max(
+        static_cast<int>(container_size.height() * ratio), kMinLauncherMargin);
     const int expected_grid_width =
         container_size.width() - 2 * expected_horizontal_margin;
 
@@ -563,17 +558,9 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
  public:
-  explicit AppListViewScalableLayoutTest(bool enable_productivity_launcher) {
-    if (enable_productivity_launcher) {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kEnableBackgroundBlur,
-           ash::features::kProductivityLauncher},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kEnableBackgroundBlur},
-          {ash::features::kProductivityLauncher});
-    }
+  AppListViewScalableLayoutTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kEnableBackgroundBlur}, {});
   }
   ~AppListViewScalableLayoutTest() override = default;
 
@@ -587,22 +574,14 @@ class AppListViewScalableLayoutTest : public AppListViewTest {
     AppListViewTest::TearDown();
     AppListConfigProvider::Get().ResetForTesting();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class ProductivityLauncherAppListViewLayoutTest
-    : public AppListViewScalableLayoutTest {
- public:
-  ProductivityLauncherAppListViewLayoutTest()
-      : AppListViewScalableLayoutTest(/*enable_productivity_launcher=*/true) {}
-
   void InitializeAppList() {
     Initialize(true /*is_tablet_mode*/);
     delegate_->GetTestModel()->PopulateApps(kInitialItems);
     Show();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests of focus, optionally parameterized by RTL.
@@ -2147,22 +2126,21 @@ TEST_F(AppListViewPeekingTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
   EXPECT_FALSE(search_box_view()->GetWidget()->IsVisible());
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularLandscapeScreen) {
+TEST_F(AppListViewScalableLayoutTest, RegularLandscapeScreen) {
   const gfx::Size window_size = gfx::Size(1000, 800);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2171,15 +2149,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularLandscapeScreen) {
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularLandscapeScreenAtMinPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/8,
       /*is_large_height=*/false);
   EXPECT_EQ(689, window_height);
@@ -2188,16 +2166,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2206,15 +2183,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 2 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 2 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       RegularLandscapeScreenWithRemovedRows) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+TEST_F(AppListViewScalableLayoutTest, RegularLandscapeScreenWithRemovedRows) {
+  const int window_height = GetExpectedScreenSize(
                                 /*row_count=*/4, /*tile_height=*/120,
                                 /*tile_margins=*/8, /*is_large_height=*/false) -
                             4;
@@ -2224,16 +2200,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2242,15 +2217,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 2 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 2 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularLandscapeScreenAtMaxPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/4, /*tile_height=*/120, /*tile_margins=*/96,
       /*is_large_height=*/true);
   EXPECT_EQ(1024, window_height);
@@ -2259,16 +2234,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2277,15 +2251,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 4 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 4 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       RegularLandscapeScreenWithAddedRows) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+TEST_F(AppListViewScalableLayoutTest, RegularLandscapeScreenWithAddedRows) {
+  const int window_height = GetExpectedScreenSize(
                                 /*row_count=*/4, /*tile_height=*/120,
                                 /*tile_margins=*/96, /*is_large_height=*/true) +
                             6;
@@ -2295,16 +2268,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2313,28 +2285,27 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 4 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 4 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularPortraitScreen) {
+TEST_F(AppListViewScalableLayoutTest, RegularPortraitScreen) {
   const gfx::Size window_size = gfx::Size(800, 1000);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2343,15 +2314,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularPortraitScreen) {
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularPortraitScreenAtMinPreferredVerticalMargin) {
-  int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  int window_height = GetExpectedScreenSize(
       /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8,
       /*is_large_height=*/true);
   // window_height = 860;
@@ -2361,16 +2332,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2379,16 +2349,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       RegularPortraitScreenWithRemovedRows) {
+TEST_F(AppListViewScalableLayoutTest, RegularPortraitScreenWithRemovedRows) {
   const int window_height =
-      GetExpectedScreenSizeForProductivityLauncher(
+      GetExpectedScreenSize(
           /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/8,
           /*is_large_height=*/true) -
       8;
@@ -2398,16 +2367,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2416,15 +2384,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularPortraitScreenAtMaxPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96,
       /*is_large_height=*/true);
   EXPECT_EQ(1270, window_height);
@@ -2439,9 +2407,9 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2450,16 +2418,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       RegularPortraitScreenWithExtraRows) {
+TEST_F(AppListViewScalableLayoutTest, RegularPortraitScreenWithExtraRows) {
   const int window_height =
-      GetExpectedScreenSizeForProductivityLauncher(
+      GetExpectedScreenSize(
           /*row_count=*/5, /*tile_height=*/120, /*tile_margins=*/96,
           /*is_large_height=*/true) +
       4;
@@ -2475,9 +2442,9 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/6, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/6,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2486,28 +2453,27 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest, DenseLandscapeScreen) {
+TEST_F(AppListViewScalableLayoutTest, DenseLandscapeScreen) {
   const gfx::Size window_size = gfx::Size(800, 600);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2516,15 +2482,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DenseLandscapeScreen) {
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DenseLandscapeScreenAtMinPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/4, /*tile_height=*/88, /*tile_margins=*/8,
       /*is_large_height=*/false);
   EXPECT_EQ(552, window_height);
@@ -2533,16 +2499,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2551,16 +2516,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 2 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 2 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       DenseLandscapeScreenWithRemovedRows) {
+TEST_F(AppListViewScalableLayoutTest, DenseLandscapeScreenWithRemovedRows) {
   const int window_height =
-      GetExpectedScreenSizeForProductivityLauncher(
+      GetExpectedScreenSize(
           /*row_count=*/4, /*tile_height=*/88, /*tile_margins=*/8,
           /*large_height*/ false) -
       4;
@@ -2570,16 +2534,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2588,28 +2551,27 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 2 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 2 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest, DensePortraitScreen) {
+TEST_F(AppListViewScalableLayoutTest, DensePortraitScreen) {
   const gfx::Size window_size = gfx::Size(600, 800);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2618,15 +2580,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, DensePortraitScreen) {
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DensePortraitScreenAtMinPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/8,
       /*large_height*/ false);
   EXPECT_EQ(654, window_height);
@@ -2635,16 +2597,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2653,15 +2614,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       DensePortraitScreenWithRemovedRows) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+TEST_F(AppListViewScalableLayoutTest, DensePortraitScreenWithRemovedRows) {
+  const int window_height = GetExpectedScreenSize(
                                 /*row_count=*/5, /*tile_height=*/88,
                                 /*tile_margins=*/8, /*large_height*/ false) -
                             8;
@@ -2671,16 +2631,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2689,15 +2648,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, 3 /*row_count*/, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, 3 /*row_count*/,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DensePortraitScreenAtMaxPreferredVerticalMargin) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+  const int window_height = GetExpectedScreenSize(
       /*row_count=*/5, /*tile_height=*/88, /*tile_margins=*/96,
       /*large_height*/ true);
   EXPECT_EQ(1088, window_height);
@@ -2706,16 +2665,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/5, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2724,15 +2682,14 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       DensePortraitScreenWithExtraRows) {
-  const int window_height = GetExpectedScreenSizeForProductivityLauncher(
+TEST_F(AppListViewScalableLayoutTest, DensePortraitScreenWithExtraRows) {
+  const int window_height = GetExpectedScreenSize(
                                 /*row_count=*/5, /*tile_height=*/88,
                                 /*tile_margins=*/96, /*large_height*/ true) +
                             4;
@@ -2742,16 +2699,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
 
   {
     SCOPED_TRACE("Only apps grid");
     EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/6, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/false);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/6,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/false);
   }
 
   AddRecentApps(4);
@@ -2760,13 +2716,13 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   {
     SCOPED_TRACE("With recent apps");
     EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
-    VerifyAppsContainerLayoutForProductivityLauncher(
-        window_size, /*row_count=*/4, expected_horizontal_margin,
-        expected_item_size, /*has_recent_apps=*/true);
+    VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                              expected_horizontal_margin, expected_item_size,
+                              /*has_recent_apps=*/true);
   }
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DenseAppsGridPaddingScaledDownToMakeRoomForPageSwitcher) {
   // Select window width so using non-zero horizontal padding would result in
   // lack of space for the page switcher.
@@ -2775,16 +2731,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/5, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DenseAppsGridScaledDownToMakeRoomForPageSwitcher) {
   // Select window width so using default icon width would result in lack of
   // space for the page switcher.
@@ -2793,16 +2748,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(66, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/5, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DenseAppsGridWithMaxHorizontalItemMargins) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128): 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 80
@@ -2811,16 +2765,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/4, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        DenseAppsGridHorizontalItemMarginsBounded) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128), i.e. larger than
@@ -2833,12 +2786,12 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   const int expected_horizontal_margin = 64;
   const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/4, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularAppsGridWithMaxHorizontalItemMargins) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128):
@@ -2848,16 +2801,15 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(96, 120);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/5, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
+TEST_F(AppListViewScalableLayoutTest,
        RegularAppsGridHorizontalItemMarginsBounded) {
   // Select window width that results in apps grid layout with max allowed
   // horizontal margin (128), i.e. larger than
@@ -2870,24 +2822,23 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   const int expected_horizontal_margin = 62;
   const gfx::Size expected_item_size(96, 120);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/5, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest, LayoutAfterConfigChange) {
+TEST_F(AppListViewScalableLayoutTest, LayoutAfterConfigChange) {
   const gfx::Size window_size = gfx::Size(600, 800);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
   InitializeAppList();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/5, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/false);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/5,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/false);
 
   const gfx::Size updated_window_size = gfx::Size(1000, 800);
   GetContext()->SetBounds(gfx::Rect(updated_window_size));
@@ -2895,13 +2846,12 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest, LayoutAfterConfigChange) {
 
   const gfx::Size expected_updated_item_size(96, 120);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
+  VerifyAppsContainerLayout(
       updated_window_size, /*row_count=*/4, expected_horizontal_margin,
       expected_updated_item_size, /*has_recent_apps=*/false);
 }
 
-TEST_F(ProductivityLauncherAppListViewLayoutTest,
-       LayoutAfterConfigChangeWithRecentApps) {
+TEST_F(AppListViewScalableLayoutTest, LayoutAfterConfigChangeWithRecentApps) {
   const gfx::Size window_size = gfx::Size(600, 800);
   GetContext()->SetBounds(gfx::Rect(window_size));
 
@@ -2909,13 +2859,12 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   AddRecentApps(4);
   contents_view()->ResetForShow();
 
-  const int expected_horizontal_margin =
-      kMinProductivityLauncherGridHorizontalMargin;
+  const int expected_horizontal_margin = kMinLauncherGridHorizontalMargin;
   const gfx::Size expected_item_size(80, 88);
   EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
-      window_size, /*row_count=*/4, expected_horizontal_margin,
-      expected_item_size, /*has_recent_apps=*/true);
+  VerifyAppsContainerLayout(window_size, /*row_count=*/4,
+                            expected_horizontal_margin, expected_item_size,
+                            /*has_recent_apps=*/true);
 
   const gfx::Size updated_window_size = gfx::Size(1000, 800);
   GetContext()->SetBounds(gfx::Rect(updated_window_size));
@@ -2923,7 +2872,7 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
 
   const gfx::Size expected_updated_item_size(96, 120);
   EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
-  VerifyAppsContainerLayoutForProductivityLauncher(
+  VerifyAppsContainerLayout(
       updated_window_size, /*row_count=*/3, expected_horizontal_margin,
       expected_updated_item_size, /*has_recent_apps=*/true);
 }
