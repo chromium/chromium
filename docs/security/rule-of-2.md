@@ -156,8 +156,7 @@ for Chrome, an [Alphabet](https://abc.xyz) company).
 Such cryptographic proof can potentially be obtained by:
 
   * Component Updater;
-  * The variations framework (on some platforms; see [1078056](https://crbug.com/1078056)
-    for Android and iOS limitations)
+  * The variations framework.
   * Pinned TLS (see below).
 
 Pinned TLS needs to meet all these criteria to be effective:
@@ -165,10 +164,10 @@ Pinned TLS needs to meet all these criteria to be effective:
   * communication happens via validly-authenticated TLS, HTTPS, or QUIC;
   * the peer's keys are [pinned in Chrome](https://cs.chromium.org/chromium/src/net/http/transport_security_state_static.json?sq=package:chromium&g=0); and
   * pinning is active on all platforms where the feature will launch.
+    (Currently pinning is not enabled in iOS or Android WebView).
 
-At present pinning is not enabled for all Chrome platforms. On other platforms,
-pinning may be disabled or rendered ineffective by enterprise security products.
-It is generally much better to use the Component Updater.
+It is generally preferred to use Component Updater if possible because pinning
+may be disabled by locally installed root certificates.
 
 One common pattern is to deliver a cryptographic hash of some content via such
 a trustworthy channel, but deliver the content itself via an untrustworthy
