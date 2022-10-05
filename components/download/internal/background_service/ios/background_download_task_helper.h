@@ -53,6 +53,10 @@ class BackgroundDownloadTaskHelper {
                              const SchedulingParams& scheduling_params,
                              CompletionCallback completion_callback,
                              UpdateCallback update_callback) = 0;
+
+  // Called to handle events for background download.
+  virtual void HandleEventsForBackgroundURLSession(
+      base::OnceClosure completion_handler) {}
 };
 
 }  // namespace download

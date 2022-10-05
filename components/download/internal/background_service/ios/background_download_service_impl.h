@@ -64,6 +64,8 @@ class BackgroundDownloadServiceImpl
   void ChangeDownloadCriteria(const std::string& guid,
                               const SchedulingParams& params) override;
   Logger* GetLogger() override;
+  void HandleEventsForBackgroundURLSession(
+      base::OnceClosure completion_handler) override;
 
   // Model::Client implementation.
   void OnModelReady(bool success) override;
