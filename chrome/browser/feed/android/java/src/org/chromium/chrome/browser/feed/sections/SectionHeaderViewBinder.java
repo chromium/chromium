@@ -97,7 +97,17 @@ public class SectionHeaderViewBinder
                 boolean hasUnreadContent = tabModel.get(SectionHeaderProperties.UNREAD_CONTENT_KEY);
 
                 view.setHeaderAt(tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY),
-                        hasUnreadContent, tabModel.get(SectionHeaderProperties.BADGE_TEXT_KEY), i);
+                        hasUnreadContent, tabModel.get(SectionHeaderProperties.BADGE_TEXT_KEY),
+                        tabModel.get(SectionHeaderProperties.ANIMATION_START_KEY), i);
+            }
+        }
+        if (payload == null || payload == SectionHeaderProperties.ANIMATION_START_KEY) {
+            for (int i = index; i < index + count; i++) {
+                boolean animationStart =
+                        headers.get(i).get(SectionHeaderProperties.ANIMATION_START_KEY);
+                if (animationStart) {
+                    view.startAnimationForHeader(i);
+                }
             }
         }
         if (payload == null

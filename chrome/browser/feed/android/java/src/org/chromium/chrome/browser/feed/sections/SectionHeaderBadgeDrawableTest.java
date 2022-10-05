@@ -6,23 +6,36 @@ package org.chromium.chrome.browser.feed.sections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.any;
 
 import android.app.Activity;
+import android.graphics.Rect;
+import android.widget.LinearLayout;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+/**
+ * Tests for the {@link SectionHeaderBadgeDrawabe} class.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SectionHeaderBadgeDrawableTest {
     private Activity mActivity;
     private SectionHeaderBadgeDrawable mDrawable;
 
+    @Mock
+    LinearLayout mMockAnchor;
+
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_MaterialComponents);
 
@@ -32,6 +45,7 @@ public class SectionHeaderBadgeDrawableTest {
     @Test
     public void pendingAnimationWhenNonNullTextAndNotAttached() {
         mDrawable.setText("new");
+        mDrawable.startAnimation();
         assertTrue(mDrawable.getHasPendingAnimationForTest());
     }
 
@@ -41,15 +55,19 @@ public class SectionHeaderBadgeDrawableTest {
     }
 
     @Test
-    public void pendingAnimationFalseForNoTextChange() {
-        mDrawable.setText(null);
-        assertFalse(mDrawable.getHasPendingAnimationForTest());
-    }
-
-    @Test
-    public void pendingAnimationFalseForNullText() {
+    public void animationStartsWhenNonNullTextAndAttached() {
         mDrawable.setText("new");
-        mDrawable.setText(null);
+        doAnswer((invocation) -> {
+            Rect r = invocation.getArgument(0);
+            r.left = 0;
+            r.top = 0;
+            r.right = 300;
+            r.bottom = 200;
+            return null;
+        }).when(mMockAnchor).getDrawingRect(any());
+        mDrawable.attach(new LinearLayout(mActivity));
+        mDrawable.startAnimation();
         assertFalse(mDrawable.getHasPendingAnimationForTest());
+        assertTrue(mDrawable.getAnimatorForTest().isStarted());
     }
 }

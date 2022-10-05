@@ -68,6 +68,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -540,10 +541,26 @@ public class FeedSurfaceMediator
             addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
                     mCoordinator.createFeedStream(StreamKind.FOLLOWING));
             if (FeedFeatures.shouldUseNewIndicator()) {
-                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
-                        .get(getTabIdForSection(StreamKind.FOLLOWING))
-                        .set(SectionHeaderProperties.BADGE_TEXT_KEY,
-                                mContext.getResources().getString(R.string.ntp_new));
+                PropertyModel followingHeaderModel =
+                        mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                                .get(getTabIdForSection(StreamKind.FOLLOWING));
+                followingHeaderModel.set(SectionHeaderProperties.BADGE_TEXT_KEY,
+                        mContext.getResources().getString(R.string.ntp_new));
+
+                // Set up a content changed listener on the main feed to start animation
+                // after main feed loads more than 1 feed card.
+                Stream mainFeedStream = mTabToStreamMap.get(getTabIdForSection(StreamKind.FOR_YOU));
+                mainFeedStream.addOnContentChangedListener(new ContentChangedListener() {
+                    @Override
+                    public void onContentChanged(
+                            List<NtpListContentManager.FeedContent> feedContents) {
+                        if (feedContents.size() > mHeaderCount + 1) {
+                            followingHeaderModel.set(
+                                    SectionHeaderProperties.ANIMATION_START_KEY, true);
+                            mainFeedStream.removeOnContentChangedListener(this);
+                        }
+                    }
+                });
             }
         }
     }

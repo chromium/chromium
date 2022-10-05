@@ -32,7 +32,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
  */
 public class SectionHeaderBadgeDrawable extends Drawable {
     private static final int ANIMATION_DURATION_MS = 400;
-    private static final int ANIMATION_START_DELAY_MS = 500;
+    private static final int ANIMATION_START_DELAY_MS = 1500;
 
     private final Paint mPaint;
     private final MaterialShapeDrawable mShapeDrawable;
@@ -79,23 +79,8 @@ public class SectionHeaderBadgeDrawable extends Drawable {
         // Do nothing if no change.
         if (mText.equals(finalText)) return;
         mText = finalText;
-        // Text -> empty animation. Otherwise, don't animate.
-        if (!mText.isEmpty()) {
-            // Stop previous animation if there is one.
-            if (mAnimator != null && mAnimator.isStarted()) {
-                mAnimator.pause();
-            }
-            // Don't animate if we aren't attached to an anchor.
-            // Set pending animation to true so that we will start the
-            // pending animation after attaching to an anchor.
-            if (mAnchor == null) {
-                mHasPendingAnimation = true;
-                return;
-            }
-            mHasPendingAnimation = false;
-            setUpAndRunAnimation();
-        } else {
-            // Restore alpha and text sizes, in case we had an animation before.
+        // If mText is empty, restore alpha and text sizes, in case we had an animation before.
+        if (mText.isEmpty()) {
             mPaint.setAlpha(255);
             mPaint.setTextSize(mTextSize);
             mHasPendingAnimation = false; // Turn off any pending animation.
@@ -105,6 +90,21 @@ public class SectionHeaderBadgeDrawable extends Drawable {
                 invalidateSelf();
             }
         }
+    }
+
+    public void startAnimation() {
+        // Don't animate if nothing to animate.
+        if (mText.isEmpty()) {
+            return;
+        }
+        if (mAnimator != null && mAnimator.isStarted()) {
+            mAnimator.pause();
+        }
+        if (mAnchor == null) {
+            mHasPendingAnimation = true;
+            return;
+        }
+        setUpAndRunAnimation();
     }
 
     @Override
@@ -258,5 +258,10 @@ public class SectionHeaderBadgeDrawable extends Drawable {
     @VisibleForTesting
     boolean getHasPendingAnimationForTest() {
         return mHasPendingAnimation;
+    }
+
+    @VisibleForTesting
+    ValueAnimator getAnimatorForTest() {
+        return mAnimator;
     }
 }
