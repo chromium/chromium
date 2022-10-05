@@ -1224,7 +1224,7 @@
       "http/tests/inspector-protocol/prefetch"
     ],
     "args": [
-      "--enable-blink-features=SpeculationRulesPrefetchProxy",
+      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader",
       "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--isolated-prerender-allow-all-domains"

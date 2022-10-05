@@ -2501,6 +2501,14 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
+  if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled()) {
+    auto& speculation_rules_header =
+        response_.HttpHeaderField(http_names::kSpeculationRules);
+    PreloadHelper::LoadSpeculationRuleLinkFromHeader(
+        speculation_rules_header, response_.CurrentRequestUrl(),
+        GetFrame()->GetDocument(), *GetFrame());
+  }
+
   // DidObserveLoadingBehavior() must be called after DispatchDidCommitLoad() is
   // called for the metrics tracking logic to handle it properly.
   if (service_worker_network_provider_ &&

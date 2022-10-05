@@ -1155,6 +1155,8 @@ const char* Resource::ResourceTypeToString(
       return "Video";
     case ResourceType::kManifest:
       return "Manifest";
+    case ResourceType::kSpeculationRules:
+      return "SpeculationRule";
     case ResourceType::kMock:
       return "Mock";
   }
@@ -1180,6 +1182,7 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kVideo:
     case ResourceType::kManifest:
     case ResourceType::kMock:
+    case ResourceType::kSpeculationRules:
       return false;
   }
   NOTREACHED();

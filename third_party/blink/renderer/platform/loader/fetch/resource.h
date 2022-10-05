@@ -89,6 +89,7 @@ enum class ResourceType : uint8_t {
   kAudio,
   kVideo,
   kManifest,
+  kSpeculationRules,
   kMock,  // Only for testing
   kMaxValue = kMock
 };

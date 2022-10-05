@@ -142,9 +142,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input, const KURL& base_url) {
 }  // namespace
 
 // static
-SpeculationRuleSet* SpeculationRuleSet::ParseInline(const String& source_text,
-                                                    const KURL& base_url,
-                                                    String* out_error) {
+SpeculationRuleSet* SpeculationRuleSet::Parse(const String& source_text,
+                                              const KURL& base_url,
+                                              String* out_error) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-speculation-rules
 
   // Let parsed be the result of parsing a JSON string to an Infra value given

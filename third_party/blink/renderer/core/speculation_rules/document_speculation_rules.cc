@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -91,10 +92,21 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::AddSpeculationRuleLoader(
+    SpeculationRuleLoader* speculation_rule_loader) {
+  speculation_rule_loaders_.insert(speculation_rule_loader);
+}
+
+void DocumentSpeculationRules::RemoveSpeculationRuleLoader(
+    SpeculationRuleLoader* speculation_rule_loader) {
+  speculation_rule_loaders_.erase(speculation_rule_loader);
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
   visitor->Trace(host_);
+  visitor->Trace(speculation_rule_loaders_);
 }
 
 mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {

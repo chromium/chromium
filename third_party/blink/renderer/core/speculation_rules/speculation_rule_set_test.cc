@@ -88,7 +88,7 @@ MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
 
 SpeculationRuleSet* CreateSpeculationRuleSetWithTargetHint(
     const char* target_hint) {
-  return SpeculationRuleSet::ParseInline(
+  return SpeculationRuleSet::Parse(
       String::Format(R"({
         "prefetch": [{
           "source": "list",
@@ -118,14 +118,14 @@ class SpeculationRuleSetTest : public ::testing::Test {
 
 TEST_F(SpeculationRuleSetTest, Empty) {
   auto* rule_set =
-      SpeculationRuleSet::ParseInline("{}", KURL("https://example.com/"));
+      SpeculationRuleSet::Parse("{}", KURL("https://example.com/"));
   ASSERT_TRUE(rule_set);
   EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "prefetch": [{
           "source": "list",
@@ -142,7 +142,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "prerender": [{
           "source": "list",
@@ -159,7 +159,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "prefetch_with_subresources": [{
           "source": "list",
@@ -176,7 +176,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
 }
 
 TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "prefetch": [{
           "source": "list",
@@ -197,7 +197,7 @@ TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
 }
 
 TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "prefetch": [{
           "source": "list",
@@ -220,7 +220,7 @@ TEST_F(SpeculationRuleSetTest, RequiresAnonymousClientIPWhenCrossOrigin) {
 
 TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
   String parse_error;
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       "[invalid]", KURL("https://example.com"), &parse_error);
   EXPECT_FALSE(rule_set);
   EXPECT_TRUE(parse_error.Contains("Syntax error"));
@@ -228,14 +228,14 @@ TEST_F(SpeculationRuleSetTest, RejectsInvalidJSON) {
 
 TEST_F(SpeculationRuleSetTest, RejectsNonObject) {
   String parse_error;
-  auto* rule_set = SpeculationRuleSet::ParseInline(
-      "42", KURL("https://example.com"), &parse_error);
+  auto* rule_set = SpeculationRuleSet::Parse("42", KURL("https://example.com"),
+                                             &parse_error);
   EXPECT_FALSE(rule_set);
   EXPECT_TRUE(parse_error.Contains("must be an object"));
 }
 
 TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({
         "unrecognized_key": true,
         "prefetch": 42,
@@ -248,7 +248,7 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
-  auto* rule_set = SpeculationRuleSet::ParseInline(
+  auto* rule_set = SpeculationRuleSet::Parse(
       R"({"prefetch": [)"
 
       // A rule that doesn't elaborate on its source.

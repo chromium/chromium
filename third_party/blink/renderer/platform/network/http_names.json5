@@ -68,6 +68,7 @@
     "Require-Document-Policy",
     "Save-Data",
     "Server-Timing",
+    "Speculation-Rules",
     "SourceMap",
     "Timing-Allow-Origin",
     "Upgrade-Insecure-Requests",

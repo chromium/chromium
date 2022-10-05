@@ -116,21 +116,22 @@ static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
     break;                                                                     \
   }
 
-#define DEFINE_RESOURCE_HISTOGRAM(prefix)                   \
-  switch (factory.GetType()) {                              \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet) \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)         \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)  \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)      \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)         \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Video)         \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Mock)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Raw)           \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Script)        \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SVGDocument)   \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, TextTrack)     \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, XSLStyleSheet) \
+#define DEFINE_RESOURCE_HISTOGRAM(prefix)                      \
+  switch (factory.GetType()) {                                 \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet)    \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)             \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)            \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)     \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)         \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)            \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Video)            \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Mock)             \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Raw)              \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Script)           \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SVGDocument)      \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, TextTrack)        \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SpeculationRules) \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, XSLStyleSheet)    \
   }
 
 ResourceLoadPriority TypeToPriority(ResourceType type) {
@@ -157,6 +158,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       // Also async scripts (set explicitly in loadPriority)
       return ResourceLoadPriority::kLow;
     case ResourceType::kLinkPrefetch:
+    case ResourceType::kSpeculationRules:
       return ResourceLoadPriority::kVeryLow;
   }
 
@@ -349,6 +351,8 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
       return mojom::blink::RequestContextType::MANIFEST;
     case ResourceType::kMock:
       return mojom::blink::RequestContextType::SUBRESOURCE;
+    case ResourceType::kSpeculationRules:
+      return mojom::blink::RequestContextType::SUBRESOURCE;
   }
   NOTREACHED();
   return mojom::blink::RequestContextType::SUBRESOURCE;
@@ -360,6 +364,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
     case ResourceType::kXSLStyleSheet:
     case ResourceType::kCSSStyleSheet:
       return network::mojom::RequestDestination::kStyle;
+    case ResourceType::kSpeculationRules:
     case ResourceType::kScript:
       return network::mojom::RequestDestination::kScript;
     case ResourceType::kFont:

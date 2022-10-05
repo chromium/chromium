@@ -16,6 +16,8 @@
 
 namespace blink {
 
+class SpeculationRuleLoader;
+
 // This corresponds to the document's list of speculation rule sets.
 //
 // Updates are pushed asynchronously.
@@ -40,6 +42,9 @@ class CORE_EXPORT DocumentSpeculationRules
   // Removes a rule set from consideration.
   void RemoveRuleSet(SpeculationRuleSet*);
 
+  void AddSpeculationRuleLoader(SpeculationRuleLoader*);
+  void RemoveSpeculationRuleLoader(SpeculationRuleLoader*);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -56,6 +61,8 @@ class CORE_EXPORT DocumentSpeculationRules
 
   HeapVector<Member<SpeculationRuleSet>> rule_sets_;
   HeapMojoRemote<mojom::blink::SpeculationHost> host_;
+  HeapHashSet<Member<SpeculationRuleLoader>> speculation_rule_loaders_;
+
   bool has_pending_update_ = false;
 };
 

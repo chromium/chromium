@@ -34,6 +34,11 @@ class PreloadHelper final {
   // can be preloaded at commit time.
   enum MediaPreloadPolicy { kLoadAll, kOnlyLoadNonMedia, kOnlyLoadMedia };
 
+  static void LoadSpeculationRuleLinkFromHeader(const String& header_value,
+                                                const KURL& base_url,
+                                                Document* document,
+                                                LocalFrame& frame);
+
   static void LoadLinksFromHeader(
       const String& header_value,
       const KURL& base_url,

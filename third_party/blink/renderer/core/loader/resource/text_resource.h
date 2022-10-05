@@ -53,6 +53,7 @@ struct DowncastTraits<TextResource> {
     return resource.GetType() == ResourceType::kCSSStyleSheet ||
            resource.GetType() == ResourceType::kScript ||
            resource.GetType() == ResourceType::kXSLStyleSheet ||
+           resource.GetType() == ResourceType::kSpeculationRules ||
            resource.GetType() == ResourceType::kSVGDocument;
   }
 };

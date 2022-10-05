@@ -2443,6 +2443,9 @@
       implied_by: ["SpeculationRulesPrefetchProxy", "SpeculationRulesPrefetchWithSubresources", "Prerender2"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
     },
+    {
+      name: "SpeculationRulesFetchFromHeader"
+    },
     // Origin trial to enable Speculation Rules for access to the prefetch proxy.
     // https://crbug.com/1190167
     {
