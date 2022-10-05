@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -16,9 +14,7 @@ namespace app_list {
 // Drive file search in the launcher.
 class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
  public:
-  AppListDriveSearchBrowserTest() {
-    feature_list_.InitWithFeatures({ash::features::kProductivityLauncher}, {});
-  }
+  AppListDriveSearchBrowserTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     create_drive_integration_service_ = base::BindRepeating(
@@ -43,7 +39,6 @@ class AppListDriveSearchBrowserTest : public AppListSearchBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;
   std::unique_ptr<drive::DriveIntegrationServiceFactory::ScopedFactoryForTest>

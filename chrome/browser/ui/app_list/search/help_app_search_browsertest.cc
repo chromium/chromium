@@ -38,10 +38,8 @@ namespace app_list {
 class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
  public:
   HelpAppSearchBrowserTestBase() {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kHelpAppLauncherSearch,
-         ash::features::kProductivityLauncher},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kHelpAppLauncherSearch);
   }
 
   ~HelpAppSearchBrowserTestBase() override = default;

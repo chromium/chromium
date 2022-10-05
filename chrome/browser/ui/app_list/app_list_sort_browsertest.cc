@@ -165,13 +165,6 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
         profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
   }
 
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
-        /*disabled_features=*/{});
-    extensions::ExtensionBrowserTest::SetUp();
-  }
-
   // extensions::ExtensionBrowserTest:
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
@@ -235,7 +228,6 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
   std::string app2_id_;
   std::string app3_id_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  base::test::ScopedFeatureList feature_list_;
 
   base::WeakPtrFactory<AppListSortBrowserTest> weak_factory_{this};
 };
@@ -1389,10 +1381,6 @@ class AppListSortLoginTest
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
-
-    feature_list_.InitWithFeatures(
-        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
-        /*disabled_features=*/{});
   }
   ~AppListSortLoginTest() override = default;
 
@@ -1404,7 +1392,6 @@ class AppListSortLoginTest
   AccountId account_id1_;
   AccountId account_id2_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppListSortLoginTest, testing::Bool());
@@ -1471,10 +1458,6 @@ class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
     login_mixin_.AppendRegularUsers(2);
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
-
-    feature_list_.InitWithFeatures(
-        {ash::features::kProductivityLauncher, ash::features::kLauncherAppSort},
-        /*disabled_features=*/{});
   }
   AppListSortLoginTalbetTest(const AppListSortLoginTalbetTest&) = delete;
   AppListSortLoginTalbetTest& operator=(const AppListSortLoginTalbetTest&) =
@@ -1493,7 +1476,6 @@ class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
   AccountId account_id1_;
   AccountId account_id2_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
