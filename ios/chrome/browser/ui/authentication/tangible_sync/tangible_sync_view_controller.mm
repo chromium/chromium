@@ -103,8 +103,9 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
         constraintEqualToAnchor:self.specificContentView.leadingAnchor],
     [instructionView.trailingAnchor
         constraintEqualToAnchor:self.specificContentView.trailingAnchor],
-    [self.specificContentView.bottomAnchor
-        constraintGreaterThanOrEqualToAnchor:instructionView.bottomAnchor],
+    [instructionView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
   ]];
   [super viewDidLoad];
 }

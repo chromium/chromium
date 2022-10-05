@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
@@ -22,7 +23,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TangibleSyncMediator () <ChromeAccountManagerServiceObserver>
+@interface TangibleSyncMediator () <ChromeAccountManagerServiceObserver,
+                                    IdentityManagerObserverBridgeDelegate>
 
 @end
 
@@ -35,6 +37,9 @@
   consent_auditor::ConsentAuditor* _consentAuditor;
   // Manager for user's Google identities.
   signin::IdentityManager* _identityManager;
+  // Observer for `IdentityManager`.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   // Manager for the authentication flow.
   AuthenticationFlow* _authenticationFlow;
   // Sync service.
@@ -65,6 +70,9 @@
             self, _accountManagerService);
     _consentAuditor = consentAuditor;
     _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     _syncService = syncService;
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
@@ -74,9 +82,13 @@
 
 - (void)disconnect {
   _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
   self.consumer = nil;
   _authenticationService = nil;
   _accountManagerService = nil;
+  _identityManager = nil;
+  _syncService = nil;
+  _syncSetupService = nil;
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
@@ -122,10 +134,12 @@
   }
 }
 
-- (void)identityListChanged {
-  ChromeIdentity* identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (!identity) {
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
     [self.delegate tangibleSyncMediatorUserRemoved:self];
   }
 }

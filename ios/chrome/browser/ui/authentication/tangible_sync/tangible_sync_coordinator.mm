@@ -6,7 +6,6 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/sync/driver/sync_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
@@ -27,8 +26,6 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -49,7 +46,8 @@
   BOOL _advancedSettingsRequested;
   // Coordinator that handles the advanced settings sign-in UI.
   SigninCoordinator* _advancedSettingsSigninCoordinator;
-  // The consent string ids of texts on the sync screen.
+  // This array contains the exaustive list of string ids displayed on the
+  // sync tangible screen. This list is recorded when the screen is confirmed.
   NSMutableArray* _consentStringIDs;
   // `YES` if coordinator used during the first run.
   BOOL _firstRun;
@@ -58,26 +56,22 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
+- (instancetype)initFirstRunWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                                 browser:(Browser*)browser {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
     _baseNavigationController = navigationController;
     _consentStringIDs = [NSMutableArray array];
+    _firstRun = YES;
   }
   return self;
 }
 
 - (void)start {
   [super start];
-  // Determine if it is currently in the First Run context.
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  AppState* appState = sceneState.appState;
-  _firstRun = appState.initStage == InitStageFirstRun;
   _viewController = [[TangibleSyncViewController alloc] init];
   _viewController.delegate = self;
   _viewController.modalInPresentation = YES;
@@ -200,7 +194,8 @@
 
 #pragma mark - Private
 
-// Starts syncing or opens `advancedSettings`.
+// Starts sign-in flow. If `advancedSettings` is `NO`, sync is started with the
+// sign-in.
 - (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
   _advancedSettingsRequested = advancedSettings;
 

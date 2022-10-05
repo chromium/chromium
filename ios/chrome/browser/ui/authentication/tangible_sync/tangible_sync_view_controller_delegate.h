@@ -10,10 +10,10 @@
 // View controller for tangible sync.
 @protocol TangibleSyncViewControllerDelegate <PromoStyleViewControllerDelegate>
 
-// Adds consent string ID.
+// Adds string ID in the consent string list.
 - (void)addConsentStringID:(const int)stringID;
 
-// Logs scrollability metric on view appears.
+// Logs scrollability metric when the view appears.
 - (void)logScrollButtonVisible:(BOOL)scrollButtonVisible;
 
 @end

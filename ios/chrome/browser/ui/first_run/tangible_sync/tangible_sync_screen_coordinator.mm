@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/tangible_sync/tangible_sync_screen_coordinator.h"
 
 #import "components/sync/driver/sync_service.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,9 +69,14 @@
     [_delegate screenWillFinishPresenting];
     return;
   }
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  AppState* appState = sceneState.appState;
+  // This screen can only be used for First Run.
+  DCHECK(appState.initStage == InitStageFirstRun);
   _tangibleSyncCoordinator = [[TangibleSyncCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
+      initFirstRunWithBaseNavigationController:self.baseNavigationController
+                                       browser:self.browser];
   __weak __typeof(self) weakSelf = self;
   _tangibleSyncCoordinator.coordinatorCompleted = ^(bool success) {
     [weakSelf tangibleSyncCoordinatorCompletedWithSuccess:success];
