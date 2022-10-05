@@ -303,15 +303,15 @@ bool CRLSet::ParseAndStoreUnparsedData(std::string data,
   return true;
 }
 
-CRLSet::Result CRLSet::CheckSPKI(const base::StringPiece& spki_hash) const {
+CRLSet::Result CRLSet::CheckSPKI(base::StringPiece spki_hash) const {
   if (std::binary_search(blocked_spkis_.begin(), blocked_spkis_.end(),
                          spki_hash))
     return REVOKED;
   return GOOD;
 }
 
-CRLSet::Result CRLSet::CheckSubject(const base::StringPiece& encoded_subject,
-                                    const base::StringPiece& spki_hash) const {
+CRLSet::Result CRLSet::CheckSubject(base::StringPiece encoded_subject,
+                                    base::StringPiece spki_hash) const {
   const std::string digest(crypto::SHA256HashString(encoded_subject));
   const auto i = limited_subjects_.find(digest);
   if (i == limited_subjects_.end()) {
@@ -327,9 +327,8 @@ CRLSet::Result CRLSet::CheckSubject(const base::StringPiece& encoded_subject,
   return REVOKED;
 }
 
-CRLSet::Result CRLSet::CheckSerial(
-    const base::StringPiece& serial_number,
-    const base::StringPiece& issuer_spki_hash) const {
+CRLSet::Result CRLSet::CheckSerial(base::StringPiece serial_number,
+                                   base::StringPiece issuer_spki_hash) const {
   base::StringPiece serial(serial_number);
 
   if (!serial.empty() && (serial[0] & 0x80) != 0) {
@@ -403,9 +402,9 @@ scoped_refptr<CRLSet> CRLSet::ExpiredCRLSetForTesting() {
 scoped_refptr<CRLSet> CRLSet::ForTesting(
     bool is_expired,
     const SHA256HashValue* issuer_spki,
-    const std::string& serial_number,
-    const std::string utf8_common_name,
-    const std::vector<std::string> acceptable_spki_hashes_for_cn) {
+    base::StringPiece serial_number,
+    base::StringPiece utf8_common_name,
+    const std::vector<std::string>& acceptable_spki_hashes_for_cn) {
   std::string subject_hash;
   if (!utf8_common_name.empty()) {
     CBB cbb, top_level, set, inner_seq, oid, cn;
@@ -445,7 +444,7 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
                            sizeof(issuer_spki->data));
     std::vector<std::string> serials;
     if (!serial_number.empty()) {
-      serials.push_back(serial_number);
+      serials.push_back(std::string(serial_number));
       // |serial_number| is in DER-encoded form, which means it may have a
       // leading 0x00 to indicate it is a positive INTEGER. CRLSets are stored
       // without these leading 0x00, as handled in CheckSerial(), so remove
