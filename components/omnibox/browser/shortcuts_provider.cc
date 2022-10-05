@@ -417,7 +417,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input) {
 
         // Set the `suggestion_group_id` to guarantee ordering last.
         match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-        // Insert a corresponding omnibox::SuggestionGroup with default values
+        // Insert a corresponding omnibox::GroupConfig with default values
         // in the suggestion groups map; otherwise the group ID will get
         // dropped.
         suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];

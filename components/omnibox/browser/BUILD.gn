@@ -19,12 +19,6 @@ buildflag_header("buildflags") {
   flags = [ "ENABLE_VR=$enable_vr" ]
 }
 
-proto_library("omnibox_proto") {
-  sources = [ "suggestion_group.proto" ]
-  proto_in_dir = "//"
-  deps = [ "//third_party/omnibox_proto" ]
-}
-
 aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
@@ -254,7 +248,6 @@ static_library("browser") {
   public_deps = [
     ":buildflags",
     ":location_bar",
-    ":omnibox_proto",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",

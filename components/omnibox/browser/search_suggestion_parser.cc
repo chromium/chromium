@@ -887,11 +887,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     chrome_group_ids_map[suggestion_group_id] = chrome_group_id;
 
     // Store the associated suggestion group information in the results.
-    results->suggestion_groups_map[chrome_group_id]
-        .mutable_group_config()
-        ->MergeFrom(group_config);
-    results->suggestion_groups_map[chrome_group_id].set_original_group_id(
-        suggestion_group_id);
+    results->suggestion_groups_map[chrome_group_id].MergeFrom(group_config);
     results->suggestion_groups_map[chrome_group_id].set_section(
         ChromeGroupSectionForRemoteGroupIndex(group_index));
   };

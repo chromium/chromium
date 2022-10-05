@@ -394,12 +394,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         "Recent Searches",
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .group_config()
             .header_text());
-    ASSERT_EQ(
-        40000,
-        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .original_group_id());
     ASSERT_EQ(
         omnibox::SECTION_REMOTE_ZPS_1,
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
@@ -407,25 +402,17 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         omnibox::GroupConfig_Visibility_HIDDEN,
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .group_config()
             .visibility());
 
     ASSERT_EQ("Recommended for you",
               results
                   .suggestion_groups_map
                       [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .group_config()
                   .header_text());
-    ASSERT_EQ(40008,
-              results
-                  .suggestion_groups_map
-                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .original_group_id());
     ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
               results
                   .suggestion_groups_map
                       [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .group_config()
                   .visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_2,
               results
@@ -500,16 +487,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         "Recommended for you",
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .group_config()
             .header_text());
-    ASSERT_EQ(
-        40008,
-        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .original_group_id());
     ASSERT_EQ(
         omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .group_config()
             .visibility());
     ASSERT_EQ(
         omnibox::SECTION_REMOTE_ZPS_1,
@@ -519,12 +500,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         "Recent Searches",
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .group_config()
             .header_text());
-    ASSERT_EQ(
-        40000,
-        results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .original_group_id());
     ASSERT_EQ(
         omnibox::SECTION_REMOTE_ZPS_2,
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
@@ -532,7 +508,6 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         omnibox::GroupConfig_Visibility_HIDDEN,
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST]
-            .group_config()
             .visibility());
 
     ASSERT_EQ(u"los angeles", results.suggest_results[0].suggestion());
@@ -602,12 +577,7 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         "Recommended for you",
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .group_config()
             .header_text());
-    ASSERT_EQ(
-        40008,
-        results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .original_group_id());
     ASSERT_EQ(
         omnibox::SECTION_REMOTE_ZPS_1,
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
@@ -615,25 +585,17 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(
         omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED]
-            .group_config()
             .visibility());
 
     ASSERT_EQ("Related Searches",
               results
                   .suggestion_groups_map
                       [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .group_config()
                   .header_text());
-    ASSERT_EQ(40007,
-              results
-                  .suggestion_groups_map
-                      [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .original_group_id());
     ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN,
               results
                   .suggestion_groups_map
                       [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
-                  .group_config()
                   .visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_2,
               results
@@ -641,16 +603,12 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
                       [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS]
                   .section());
 
-    ASSERT_EQ("NOT RECOMMENDED FOR YOU",
-              results.suggestion_groups_map[omnibox::GROUP_TRENDS]
-                  .group_config()
-                  .header_text());
-    ASSERT_EQ(40009, results.suggestion_groups_map[omnibox::GROUP_TRENDS]
-                         .original_group_id());
-    ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
-              results.suggestion_groups_map[omnibox::GROUP_TRENDS]
-                  .group_config()
-                  .visibility());
+    ASSERT_EQ(
+        "NOT RECOMMENDED FOR YOU",
+        results.suggestion_groups_map[omnibox::GROUP_TRENDS].header_text());
+    ASSERT_EQ(
+        omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
+        results.suggestion_groups_map[omnibox::GROUP_TRENDS].visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_3,
               results.suggestion_groups_map[omnibox::GROUP_TRENDS].section());
 
@@ -846,18 +804,14 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
     const auto& group_1 =
         results.suggestion_groups_map
             [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS];
-    ASSERT_EQ("Related Entities", group_1.group_config().header_text());
+    ASSERT_EQ("Related Entities", group_1.header_text());
     ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
-              group_1.group_config().visibility());
-    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
-              group_1.original_group_id());
+              group_1.visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_1, group_1.section());
 
     const auto& group_2 = results.suggestion_groups_map[omnibox::GROUP_TRENDS];
-    ASSERT_EQ("Trending Searches", group_2.group_config().header_text());
-    ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN,
-              group_2.group_config().visibility());
-    ASSERT_EQ(omnibox::GROUP_TRENDS, group_2.original_group_id());
+    ASSERT_EQ("Trending Searches", group_2.header_text());
+    ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN, group_2.visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_2, group_2.section());
 
     // Ensure suggestion group IDs are correctly set in the suggestions.
@@ -938,27 +892,21 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
     ASSERT_EQ(3U, results.suggestion_groups_map.size());
 
     const auto& group_1 = results.suggestion_groups_map[omnibox::GROUP_TRENDS];
-    ASSERT_EQ("Trending Searches", group_1.group_config().header_text());
-    ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN,
-              group_1.group_config().visibility());
-    ASSERT_EQ(omnibox::GROUP_TRENDS, group_1.original_group_id());
+    ASSERT_EQ("Trending Searches", group_1.header_text());
+    ASSERT_EQ(omnibox::GroupConfig_Visibility_HIDDEN, group_1.visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_1, group_1.section());
 
     const auto& group_2 =
         results.suggestion_groups_map
             [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS];
-    ASSERT_EQ("Related Entities", group_2.group_config().header_text());
+    ASSERT_EQ("Related Entities", group_2.header_text());
     ASSERT_EQ(omnibox::GroupConfig_Visibility_DEFAULT_VISIBLE,
-              group_2.group_config().visibility());
-    ASSERT_EQ(omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
-              group_2.original_group_id());
+              group_2.visibility());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_2, group_2.section());
 
     const auto& group_3 =
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST];
-    ASSERT_EQ("Recent Searches", group_3.group_config().header_text());
-    ASSERT_EQ(omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST,
-              group_3.original_group_id());
+    ASSERT_EQ("Recent Searches", group_3.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_3, group_3.section());
 
     // Ensure suggestion group IDs are correctly set in the suggestions.
@@ -1095,42 +1043,42 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo_FromProto) {
 
     const auto& group_1 =
         results.suggestion_groups_map[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
-    ASSERT_EQ("Related Searches", group_1.group_config().header_text());
+    ASSERT_EQ("Related Searches", group_1.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_1, group_1.section());
 
     const auto& group_2 =
         results.suggestion_groups_map
             [omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS];
-    ASSERT_EQ("Related Entities", group_2.group_config().header_text());
+    ASSERT_EQ("Related Entities", group_2.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_2, group_2.section());
 
     const auto& group_3 = results.suggestion_groups_map[omnibox::GROUP_TRENDS];
-    ASSERT_EQ("Trending Searches", group_3.group_config().header_text());
+    ASSERT_EQ("Trending Searches", group_3.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_3, group_3.section());
 
     const auto& group_4 =
         results.suggestion_groups_map[omnibox::GROUP_TRENDS_ENTITY_CHIPS];
-    ASSERT_EQ("Trending Entities", group_4.group_config().header_text());
+    ASSERT_EQ("Trending Entities", group_4.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_4, group_4.section());
 
     const auto& group_5 =
         results.suggestion_groups_map[omnibox::GROUP_RELATED_QUERIES];
-    ASSERT_EQ("Related Questions", group_5.group_config().header_text());
+    ASSERT_EQ("Related Questions", group_5.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_5, group_5.section());
 
     const auto& group_6 =
         results.suggestion_groups_map[omnibox::GROUP_VISITED_DOC_RELATED];
-    ASSERT_EQ("Related To Websites", group_6.group_config().header_text());
+    ASSERT_EQ("Related To Websites", group_6.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_6, group_6.section());
 
     const auto& group_7 =
         results.suggestion_groups_map[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST];
-    ASSERT_EQ("Recent Searches", group_7.group_config().header_text());
+    ASSERT_EQ("Recent Searches", group_7.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_7, group_7.section());
 
     const auto& group_8 =
         results.suggestion_groups_map[omnibox::GROUP_POLARIS_RESERVED_MAX];
-    ASSERT_EQ("Uknown Group", group_8.group_config().header_text());
+    ASSERT_EQ("Uknown Group", group_8.header_text());
     ASSERT_EQ(omnibox::SECTION_REMOTE_ZPS_8, group_8.section());
 
     // Ensure suggestion group IDs are correctly set in the suggestions.

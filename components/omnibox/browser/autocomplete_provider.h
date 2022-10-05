@@ -287,7 +287,7 @@ class AutocompleteProvider
 
   // Returns a map of suggestion group IDs to suggestion group information
   // corresponding to |matches_|.
-  const omnibox::SuggestionGroupsMap& suggestion_groups_map() const {
+  const omnibox::GroupConfigMap& suggestion_groups_map() const {
     return suggestion_groups_map_;
   }
 
@@ -421,7 +421,7 @@ class AutocompleteProvider
   ACMatches matches_;
   // A map of suggestion group IDs to suggestion group information corresponding
   // to |matches_|.
-  omnibox::SuggestionGroupsMap suggestion_groups_map_{};
+  omnibox::GroupConfigMap suggestion_groups_map_{};
   bool done_{true};
 
   Type type_;

@@ -101,10 +101,9 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   for (const auto& suggestion_group : suggestion_groups_map()) {
     group_ids[index] = suggestion_group.first;
     group_names[index] =
-        base::UTF8ToUTF16(suggestion_group.second.group_config().header_text());
-    group_collapsed_states[index] =
-        suggestion_group.second.group_config().visibility() ==
-        omnibox::GroupConfig_Visibility_HIDDEN;
+        base::UTF8ToUTF16(suggestion_group.second.header_text());
+    group_collapsed_states[index] = suggestion_group.second.visibility() ==
+                                    omnibox::GroupConfig_Visibility_HIDDEN;
     ++index;
   }
 

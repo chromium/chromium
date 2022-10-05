@@ -123,13 +123,12 @@ base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
     PrefService* prefs,
-    const omnibox::SuggestionGroupsMap& suggestion_groups_map) {
+    const omnibox::GroupConfigMap& suggestion_groups_map) {
   base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
     realbox::mojom::SuggestionGroupPtr suggestion_group =
         realbox::mojom::SuggestionGroup::New();
-    suggestion_group->header =
-        base::UTF8ToUTF16(pair.second.group_config().header_text());
+    suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(

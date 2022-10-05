@@ -118,14 +118,14 @@ class AutocompleteResult {
   // the groups should appear in the result set. This is done for two reasons:
   //
   // 1) Certain groups of remote zero-prefix matches need to appear under a
-  // header as specified in omnibox::SuggestionGroup. SuggestionGroups are
+  // header as specified in omnibox::GroupConfig. GroupConfigs are
   // uniquely identified by the group IDs in |suggestion_groups_map_|. It is
   // also possible for zero-prefix matches to mix and match while belonging to
   // the same groups (e.g., bad server data or mixing of local and remote
   // suggestions from different providers). Hence, after mixing, deduping, and
   // sorting the matches, we group the ones with the same group ID and demote
   // them to the bottom of the result set based on a predetermined order. This
-  // ensures matches without group IDs or omnibox::SuggestionGroup to appear at
+  // ensures matches without group IDs or omnibox::GroupConfig to appear at
   // the top of the result set, and two, there are no interleaving of groups or
   // headers;
   //
@@ -192,7 +192,7 @@ class AutocompleteResult {
       const ACMatches& matches,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
-  const omnibox::SuggestionGroupsMap& suggestion_groups_map() const {
+  const omnibox::GroupConfigMap& suggestion_groups_map() const {
     return suggestion_groups_map_;
   }
 
@@ -270,7 +270,7 @@ class AutocompleteResult {
   // appear while preserving the existing order of matches within the same
   // group.
   void MergeSuggestionGroupsMap(
-      const omnibox::SuggestionGroupsMap& suggeston_groups_map);
+      const omnibox::GroupConfigMap& suggeston_groups_map);
 
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
@@ -358,7 +358,7 @@ class AutocompleteResult {
   ACMatches matches_;
 
   // The map of suggestion group IDs to suggestion group information.
-  omnibox::SuggestionGroupsMap suggestion_groups_map_;
+  omnibox::GroupConfigMap suggestion_groups_map_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

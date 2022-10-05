@@ -120,12 +120,12 @@ void RecordDeletingClipboardSuggestionMetrics(
   }
 }
 
-// Builds SuggestionGroup data used to decide where and how to present related
+// Builds GroupConfig data used to decide where and how to present related
 // suggestions.
-omnibox::SuggestionGroup BuildSuggestionGroup() {
-  omnibox::SuggestionGroup suggestion_group;
-  suggestion_group.set_section(omnibox::SECTION_MOBILE_VERBATIM);
-  return suggestion_group;
+omnibox::GroupConfig BuildGroupConfig() {
+  omnibox::GroupConfig group_config;
+  group_config.set_section(omnibox::SECTION_MOBILE_VERBATIM);
+  return group_config;
 }
 }  // namespace
 
@@ -264,7 +264,7 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
 
   matches_.push_back(match);
   suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_CLIPBOARD,
-                                 BuildSuggestionGroup());
+                                 BuildGroupConfig());
 }
 
 bool ClipboardProvider::TemplateURLSupportsTextSearch() {

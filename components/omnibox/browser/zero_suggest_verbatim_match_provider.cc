@@ -33,12 +33,12 @@ bool IsVerbatimMatchEligible(
          context == metrics::OmniboxEventProto::OTHER;
 }
 
-// Builds SuggestionGroup data used to decide where and how to present related
+// Builds GroupConfig data used to decide where and how to present related
 // suggestions.
-omnibox::SuggestionGroup BuildSuggestionGroup() {
-  omnibox::SuggestionGroup group_details;
-  group_details.set_section(omnibox::SECTION_MOBILE_VERBATIM);
-  return group_details;
+omnibox::GroupConfig BuildGroupConfig() {
+  omnibox::GroupConfig group_config;
+  group_config.set_section(omnibox::SECTION_MOBILE_VERBATIM);
+  return group_config;
 }
 }  // namespace
 
@@ -104,5 +104,5 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   match.provider = this;
   matches_.push_back(match);
   suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX,
-                                 BuildSuggestionGroup());
+                                 BuildGroupConfig());
 }

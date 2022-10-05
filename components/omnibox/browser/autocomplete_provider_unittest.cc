@@ -334,7 +334,7 @@ class AutocompleteProviderTest : public testing::Test {
   };
 
   struct SuggestionGroupsTestData {
-    omnibox::SuggestionGroupsMap suggestion_groups_map;
+    omnibox::GroupConfigMap suggestion_groups_map;
     std::vector<absl::optional<omnibox::GroupId>> suggestion_group_ids;
   };
 
@@ -899,10 +899,8 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   }
   {
     // Headers are optional for suggestion groups.
-    omnibox::SuggestionGroupsMap suggestion_groups_map;
-    suggestion_groups_map[kRecommendedGroupId]
-        .mutable_group_config()
-        ->set_header_text(kRecommended);
+    omnibox::GroupConfigMap suggestion_groups_map;
+    suggestion_groups_map[kRecommendedGroupId].set_header_text(kRecommended);
     suggestion_groups_map[kRecommendedGroupId].set_section(
         omnibox::SECTION_REMOTE_ZPS_4);
 
@@ -935,15 +933,12 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   }
   {
     // Suggestion groups are ordered based on their priories.
-    omnibox::SuggestionGroupsMap suggestion_groups_map;
-    suggestion_groups_map[kRecommendedGroupId]
-        .mutable_group_config()
-        ->set_header_text(kRecommended);
+    omnibox::GroupConfigMap suggestion_groups_map;
+    suggestion_groups_map[kRecommendedGroupId].set_header_text(kRecommended);
     suggestion_groups_map[kRecommendedGroupId].set_section(
         omnibox::SECTION_REMOTE_ZPS_3);
-    suggestion_groups_map[kRecentSearchesGroupId]
-        .mutable_group_config()
-        ->set_header_text(kRecentSearches);
+    suggestion_groups_map[kRecentSearchesGroupId].set_header_text(
+        kRecentSearches);
     suggestion_groups_map[kRecentSearchesGroupId].set_section(
         omnibox::SECTION_REMOTE_ZPS_4);
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
@@ -977,13 +972,10 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   {
     // suggestion group IDs without associated suggestion group information are
     // stripped away.
-    omnibox::SuggestionGroupsMap suggestion_groups_map;
-    suggestion_groups_map[kRecommendedGroupId]
-        .mutable_group_config()
-        ->set_header_text(kRecommended);
-    suggestion_groups_map[kRecentSearchesGroupId]
-        .mutable_group_config()
-        ->set_header_text(kRecentSearches);
+    omnibox::GroupConfigMap suggestion_groups_map;
+    suggestion_groups_map[kRecommendedGroupId].set_header_text(kRecommended);
+    suggestion_groups_map[kRecentSearchesGroupId].set_header_text(
+        kRecentSearches);
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
                                                {
                                                    {kBadGroupId},

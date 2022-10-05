@@ -995,7 +995,7 @@ std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
   if (it == suggestion_groups_map().end()) {
     return u"";
   }
-  return base::UTF8ToUTF16(it->second.group_config().header_text());
+  return base::UTF8ToUTF16(it->second.header_text());
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
@@ -1005,13 +1005,10 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
   if (it == suggestion_groups_map().end()) {
     return false;
   }
-  if (!it->second.has_original_group_id()) {
-    return false;
-  }
 
   omnibox::SuggestionGroupVisibility user_preference =
       omnibox::GetUserPreferenceForSuggestionGroupVisibility(
-          prefs, it->second.original_group_id());
+          prefs, suggestion_group_id);
 
   if (user_preference == omnibox::SuggestionGroupVisibility::HIDDEN)
     return true;
@@ -1019,8 +1016,7 @@ bool AutocompleteResult::IsSuggestionGroupHidden(
     return false;
 
   DCHECK_EQ(user_preference, omnibox::SuggestionGroupVisibility::DEFAULT);
-  return it->second.group_config().visibility() ==
-         omnibox::GroupConfig_Visibility_HIDDEN;
+  return it->second.visibility() == omnibox::GroupConfig_Visibility_HIDDEN;
 }
 
 void AutocompleteResult::SetSuggestionGroupHidden(
@@ -1031,12 +1027,9 @@ void AutocompleteResult::SetSuggestionGroupHidden(
   if (it == suggestion_groups_map().end()) {
     return;
   }
-  if (!it->second.has_original_group_id()) {
-    return;
-  }
 
   omnibox::SetUserPreferenceForSuggestionGroupVisibility(
-      prefs, it->second.original_group_id(),
+      prefs, suggestion_group_id,
       hidden ? omnibox::SuggestionGroupVisibility::HIDDEN
              : omnibox::SuggestionGroupVisibility::SHOWN);
 }
@@ -1052,7 +1045,7 @@ omnibox::GroupSection AutocompleteResult::GetSectionForSuggestionGroup(
 }
 
 void AutocompleteResult::MergeSuggestionGroupsMap(
-    const omnibox::SuggestionGroupsMap& suggestion_groups_map) {
+    const omnibox::GroupConfigMap& suggestion_groups_map) {
   for (const auto& entry : suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }

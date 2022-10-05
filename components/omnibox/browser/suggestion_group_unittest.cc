@@ -9,10 +9,7 @@
 // Ensures that accessing unset fields is safe and verifies the default values.
 // https://developers.google.com/protocol-buffers/docs/reference/cpp-generated
 TEST(SuggestionGroupTest, DefaultValuesForUnsetFields) {
-  omnibox::SuggestionGroup suggestion_group;
-
-  ASSERT_FALSE(suggestion_group.has_group_config());
-  const omnibox::GroupConfig& group_config = suggestion_group.group_config();
+  omnibox::GroupConfig group_config;
 
   ASSERT_FALSE(group_config.has_header_text());
   ASSERT_EQ("", group_config.header_text());
@@ -32,11 +29,8 @@ TEST(SuggestionGroupTest, DefaultValuesForUnsetFields) {
   ASSERT_FALSE(group_config.has_why_this_result_reason());
   ASSERT_EQ(0U, group_config.why_this_result_reason());
 
-  ASSERT_FALSE(suggestion_group.has_section());
-  ASSERT_EQ(omnibox::SECTION_DEFAULT, suggestion_group.section());
-
-  ASSERT_FALSE(suggestion_group.has_original_group_id());
-  ASSERT_EQ(0, suggestion_group.original_group_id());
+  ASSERT_FALSE(group_config.has_section());
+  ASSERT_EQ(omnibox::SECTION_DEFAULT, group_config.section());
 }
 
 // Ensures that omnibox::GroupIdForNumber() returns the omnibox::GroupId enum

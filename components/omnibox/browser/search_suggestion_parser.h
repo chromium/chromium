@@ -344,7 +344,7 @@ class SearchSuggestionParser {
     bool relevances_from_server;
 
     // The map of suggestion group IDs to suggestion group information.
-    omnibox::SuggestionGroupsMap suggestion_groups_map;
+    omnibox::GroupConfigMap suggestion_groups_map;
   };
 
   // Converts JSON loaded by a SimpleURLLoader into UTF-8 and returns the

@@ -43,6 +43,12 @@ message GroupConfig {
 
   // Indicates the reason why this suggestion shows up.
   optional uint32 why_this_result_reason = 5;
+
+  // The section of the list where the group belongs.
+  // This field is set by Chrome and should not be populated in GWS.
+  optional GroupSection section = 6;
+
+  // Next ID: 7
 }
 
 // Contains information about the suggestion groups supported by Chrome Omnibox.
@@ -75,4 +81,39 @@ enum GroupId {
   GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;
   // Produced by HistoryClusterProvider.
   GROUP_HISTORY_CLUSTER = 50000;
+}
+
+// Suggestion group sections determine the order in which suggestion groups
+// appear in the result list relative to one another. A group with a section of
+// a lower numeric value comes before a group with a section of a higher value.
+enum GroupSection {
+  // The default section. Any group with this section is placed above all other
+  // groups. Must not be removed or renumbered and must have the lowest value.
+  SECTION_DEFAULT = 0;
+
+  // Mobile-specific auxiliary suggestions. These suggestions are sourced on
+  // device, and appear above any other content.
+  // SECTION_MOBILE_VERBATIM hosts:
+  // - Search Ready Omnibox / Verbatim match
+  // - Clipboard suggestions
+  SECTION_MOBILE_VERBATIM = 1;
+  // SECTION_MOBILE_MOST_VISITED hosts a horizontal carousel with:
+  // - Most Visited Tiles
+  // - Organic Repeatable Queries
+  SECTION_MOBILE_MOST_VISITED = 2;
+
+  // A contiguous range reserved for remote zero-prefix suggestions.
+  // The sections are dynamically assigned to the groups found in the server
+  // response based on the order in which they appear in the results.
+  // Accommodates up to 10 distinct suggestion groups in the server response.
+  SECTION_REMOTE_ZPS_1 = 3;
+  SECTION_REMOTE_ZPS_2 = 4;
+  SECTION_REMOTE_ZPS_3 = 5;
+  SECTION_REMOTE_ZPS_4 = 6;
+  SECTION_REMOTE_ZPS_5 = 7;
+  SECTION_REMOTE_ZPS_6 = 8;
+  SECTION_REMOTE_ZPS_7 = 9;
+  SECTION_REMOTE_ZPS_8 = 10;
+  SECTION_REMOTE_ZPS_9 = 11;
+  SECTION_REMOTE_ZPS_10 = 12;
 }

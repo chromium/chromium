@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_GROUP_UTIL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_GROUP_UTIL_H_
 
-#include "components/omnibox/browser/suggestion_group.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 
 namespace omnibox {
 
-// A map of omnibox::GroupId to omnibox::SuggestionGroup.
-using SuggestionGroupsMap = std::unordered_map<GroupId, SuggestionGroup>;
+using GroupConfigMap = std::unordered_map<GroupId, GroupConfig>;
 
 // Returns the omnibox::GroupId enum object corresponding to |value|, or
 // omnibox::GROUP_INVALID when there is no corresponding enum object.

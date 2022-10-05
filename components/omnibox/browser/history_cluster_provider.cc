@@ -154,7 +154,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
       ACMatchClassification(0, ACMatchClassification::URL));
 
   match.suggestion_group_id = omnibox::GROUP_HISTORY_CLUSTER;
-  // Insert a corresponding omnibox::SuggestionGroup with default values in the
+  // Insert a corresponding omnibox::GroupConfig with default values in the
   // suggestion groups map; otherwise the group ID will get dropped.
   suggestion_groups_map_[omnibox::GROUP_HISTORY_CLUSTER];
 

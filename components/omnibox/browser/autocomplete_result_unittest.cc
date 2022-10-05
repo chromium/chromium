@@ -1877,9 +1877,9 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
   // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
-  omnibox::SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].mutable_group_config()->set_header_text("1");
-  suggestion_groups_map[group_2].mutable_group_config()->set_header_text("2");
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group_1].set_header_text("1");
+  suggestion_groups_map[group_2].set_header_text("2");
 
   {
     AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -2013,9 +2013,9 @@ TEST_F(AutocompleteResultTest,
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
   // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
-  omnibox::SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].mutable_group_config()->set_header_text("1");
-  suggestion_groups_map[group_2].mutable_group_config()->set_header_text("2");
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group_1].set_header_text("1");
+  suggestion_groups_map[group_2].set_header_text("2");
 
   {
     AutocompleteInput typed_input(u"a", metrics::OmniboxEventProto::OTHER,
@@ -2090,10 +2090,10 @@ TEST_F(AutocompleteResultTest,
   PopulateAutocompleteMatches(data, std::size(data), &matches);
 
   // Set sections that contradict the scores of the matches in groups.
-  omnibox::SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[group_1].mutable_group_config()->set_header_text("1");
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group_1].set_header_text("1");
   suggestion_groups_map[group_1].set_section(omnibox::SECTION_REMOTE_ZPS_2);
-  suggestion_groups_map[group_2].mutable_group_config()->set_header_text("2");
+  suggestion_groups_map[group_2].set_header_text("2");
   suggestion_groups_map[group_2].set_section(omnibox::SECTION_REMOTE_ZPS_1);
 
   {
