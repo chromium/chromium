@@ -295,6 +295,7 @@ enum LaunchSource {
   kFromOsLogin = 29,                  // Run on OS login.
   kFromProtocolHandler = 30,          // Protocol handler.
   kFromUrlHandler = 31,               // Url handler.
+  kFromLockScreen = 32,               // Lock screen app launcher.
 };
 
 enum TriState {

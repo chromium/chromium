@@ -142,6 +142,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromUrlHandler",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromLockScreen:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromLockScreen",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
       NOTREACHED();
@@ -192,6 +196,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::LaunchSource::kFromOsLogin:
     case apps::LaunchSource::kFromProtocolHandler:
     case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
       break;
   }
 }

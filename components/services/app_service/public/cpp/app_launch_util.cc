@@ -75,6 +75,8 @@ LaunchSource ConvertMojomLaunchSourceToLaunchSource(
       return LaunchSource::kFromProtocolHandler;
     case apps::mojom::LaunchSource::kFromUrlHandler:
       return LaunchSource::kFromUrlHandler;
+    case apps::mojom::LaunchSource::kFromLockScreen:
+      return LaunchSource::kFromLockScreen;
   }
 }
 
@@ -145,6 +147,8 @@ apps::mojom::LaunchSource ConvertLaunchSourceToMojomLaunchSource(
       return apps::mojom::LaunchSource::kFromProtocolHandler;
     case LaunchSource::kFromUrlHandler:
       return apps::mojom::LaunchSource::kFromUrlHandler;
+    case LaunchSource::kFromLockScreen:
+      return apps::mojom::LaunchSource::kFromLockScreen;
   }
 }
 

@@ -100,6 +100,7 @@ enum ApplicationLaunchSource {
   APPLICATION_LAUNCH_SOURCE_OS_LOGIN = 29;
   APPLICATION_LAUNCH_SOURCE_PROTOCOL_HANDLER = 30;
   APPLICATION_LAUNCH_SOURCE_URL_HANDLER = 31;
+  APPLICATION_LAUNCH_SOURCE_LOCK_SCREEN = 32;
 }
 
 // Describes the app uninstall source. Should be kept in sync with

@@ -121,6 +121,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromOsLogin:
     case apps::LaunchSource::kFromProtocolHandler:
     case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }
@@ -479,6 +480,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromOsLogin:
     case apps::LaunchSource::kFromProtocolHandler:
     case apps::LaunchSource::kFromUrlHandler:
+    case apps::LaunchSource::kFromLockScreen:
       break;
   }
 
@@ -677,6 +679,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::mojom::LaunchSource::kFromOsLogin:
     case apps::mojom::LaunchSource::kFromProtocolHandler:
     case apps::mojom::LaunchSource::kFromUrlHandler:
+    case apps::mojom::LaunchSource::kFromLockScreen:
       break;
   }
 

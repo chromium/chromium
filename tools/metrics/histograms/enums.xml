@@ -55031,6 +55031,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="29" label="Run on OS login"/>
   <int value="30" label="Protocol handler"/>
   <int value="31" label="URL handler"/>
+  <int value="32" label="Lock screen"/>
 </enum>
 
 <enum name="LaunchType">

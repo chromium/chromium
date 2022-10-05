@@ -938,6 +938,8 @@ EnumTraits<crosapi::mojom::LaunchSource, apps::LaunchSource>::ToMojom(
       return crosapi::mojom::LaunchSource::kFromProtocolHandler;
     case apps::LaunchSource::kFromUrlHandler:
       return crosapi::mojom::LaunchSource::kFromUrlHandler;
+    // TODO(crbug.com/1343692): Make lock screen apps use lacros browser.
+    case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
       NOTREACHED();

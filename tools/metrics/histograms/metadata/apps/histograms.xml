@@ -1952,6 +1952,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromKeyboard" summary="From keyboard shortcut."/>
     <variant name=".FromKiosk" summary="From Kiosk."/>
     <variant name=".FromLink" summary="From Link."/>
+    <variant name=".FromLockScreen" summary="From lock screen app launcher."/>
     <variant name=".FromManagementApi" summary="From management API."/>
     <variant name=".FromMenu" summary="From menu."/>
     <variant name=".FromNewTabPage" summary="From new tab page."/>

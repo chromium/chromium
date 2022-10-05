@@ -53,10 +53,11 @@ enum class LaunchSource {
   kFromOsLogin = 29,                   // Run on OS login.
   kFromProtocolHandler = 30,           // Protocol handler.
   kFromUrlHandler = 31,                // Url handler.
+  kFromLockScreen = 32,                // Lock screen app launcher.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromUrlHandler,
+  kMaxValue = kFromLockScreen,
 };
 
 // Don't remove items or change the order of this enum.  It's used in
