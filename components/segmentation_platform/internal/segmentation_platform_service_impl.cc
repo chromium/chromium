@@ -83,7 +83,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
         init_params->storage_dir, init_params->db_provider,
         init_params->task_runner, init_params->clock,
         init_params->ukm_data_manager, all_segment_ids_,
-        model_provider_factory_.get());
+        model_provider_factory_.get(), profile_prefs_);
   }
 
   // Construct signal processors.
@@ -273,6 +273,8 @@ void SegmentationPlatformServiceImpl::RunDailyTasks(bool is_startup) {
 void SegmentationPlatformService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSegmentationResultPref);
+  registry->RegisterTimePref(kSegmentationLastDBCompactionTimePref,
+                             base::Time());
 }
 
 // static

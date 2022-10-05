@@ -21,4 +21,7 @@ const char kSegmentationLastCollectionTimePref[] =
 const char kSegmentationPlatformRefreshResultsSwitch[] =
     "segmentation-platform-refresh-results";
 
+const char kSegmentationLastDBCompactionTimePref[] =
+    "segmentation_platform.last_db_compaction_time";
+
 }  // namespace segmentation_platform

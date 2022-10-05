@@ -15,6 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
@@ -24,6 +26,7 @@
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -98,12 +101,31 @@ class TestDefaultModelManager : public DefaultModelManager {
   }
 };
 
+std::set<DatabaseMaintenanceImpl::SignalIdentifier> GetSignalIds(
+    std::vector<SignalData> signal_datas) {
+  std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids;
+  for (auto& sd : signal_datas)
+    signal_ids.emplace(sd.name_hash, sd.signal_type);
+
+  return signal_ids;
+}
+
+std::vector<CleanupItem> GetCleanupItems(std::vector<SignalData> signal_datas) {
+  std::vector<CleanupItem> cleanup_items;
+  for (auto& sd : signal_datas) {
+    cleanup_items.emplace_back(sd.name_hash, sd.signal_type,
+                               sd.earliest_needed_timestamp);
+  }
+  return cleanup_items;
+}
+
 class DatabaseMaintenanceImplTest : public testing::Test {
  public:
   DatabaseMaintenanceImplTest() = default;
   ~DatabaseMaintenanceImplTest() override = default;
 
   void SetUp() override {
+    SegmentationPlatformService::RegisterProfilePrefs(prefs_.registry());
     segment_info_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     signal_database_ = std::make_unique<MockSignalDatabase>();
     signal_storage_config_ = std::make_unique<MockSignalStorageConfig>();
@@ -114,8 +136,7 @@ class DatabaseMaintenanceImplTest : public testing::Test {
     database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
         segment_ids, &clock_, segment_info_database_.get(),
         signal_database_.get(), signal_storage_config_.get(),
-        default_model_manager_.get());
-
+        default_model_manager_.get(), &prefs_);
     clock_.SetNow(base::Time::Now());
   }
 
@@ -149,6 +170,64 @@ class DatabaseMaintenanceImplTest : public testing::Test {
     }
   }
 
+  void TestMaintenanceTasksScheduling(uint64_t earliest_days_ago) {
+    std::vector<SignalData> signal_datas = {
+        {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+         SignalType::HISTOGRAM_VALUE, "Foo", base::HashMetricName("Foo"), 44, 1,
+         Aggregation::COUNT, clock_.Now() - base::Days(10), true},
+        {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+         SignalType::HISTOGRAM_ENUM, "Bar", base::HashMetricName("Bar"), 33, 1,
+         Aggregation::COUNT, clock_.Now() - base::Days(5), true},
+        {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+         SignalType::USER_ACTION, "Failed", base::HashMetricName("Failed"), 22,
+         1, Aggregation::COUNT, clock_.Now() - base::Days(1), false},
+    };
+
+    // Prepare test setup.
+    AddFeatures(signal_datas);
+    std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids =
+        GetSignalIds(signal_datas);
+    std::vector<CleanupItem> cleanup_items = GetCleanupItems(signal_datas);
+
+    // Ensure we return the correct signals.
+    ON_CALL(*signal_storage_config_, GetSignalsForCleanup(_, _))
+        .WillByDefault(SetArgReferee<1>(cleanup_items));
+
+    // We should try to delete each signal.
+    for (auto& sd : signal_datas) {
+      EXPECT_CALL(*signal_database_,
+                  DeleteSamples(sd.signal_type, sd.name_hash,
+                                sd.earliest_needed_timestamp, _))
+          .WillOnce(RunOnceCallback<3>(sd.success));
+    }
+
+    // The Failed signal failed to clean up, so we should not be updating it,
+    // but the rest should be updated.
+    cleanup_items.erase(
+        std::remove_if(cleanup_items.begin(), cleanup_items.end(),
+                       [](CleanupItem item) {
+                         return std::get<0>(item) ==
+                                base::HashMetricName("Failed");
+                       }),
+        cleanup_items.end());
+    EXPECT_CALL(*signal_storage_config_,
+                UpdateSignalsForCleanup(cleanup_items));
+
+    // Verify that for each of the signal data, we get a compaction request for
+    // each day within the correct range.
+    for (auto& sd : signal_datas) {
+      for (uint64_t days_ago = kLatestCompactionDaysAgo;
+           days_ago <= earliest_days_ago; ++days_ago) {
+        EXPECT_CALL(
+            *signal_database_,
+            CompactSamplesForDay(sd.signal_type, sd.name_hash,
+                                 clock_.Now().UTCMidnight() + base::Days(1) -
+                                     base::Seconds(1) - base::Days(days_ago),
+                                 _))
+            .WillOnce(RunOnceCallback<3>(/*success=*/sd.success));
+      }
+    }
+  }
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<Config> config_;
@@ -159,79 +238,20 @@ class DatabaseMaintenanceImplTest : public testing::Test {
   std::unique_ptr<TestDefaultModelManager> default_model_manager_;
 
   std::unique_ptr<DatabaseMaintenanceImpl> database_maintenance_;
+  TestingPrefServiceSimple prefs_;
 };
 
-std::set<DatabaseMaintenanceImpl::SignalIdentifier> GetSignalIds(
-    std::vector<SignalData> signal_datas) {
-  std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids;
-  for (auto& sd : signal_datas)
-    signal_ids.emplace(std::make_pair(sd.name_hash, sd.signal_type));
-
-  return signal_ids;
-}
-
-std::vector<CleanupItem> GetCleanupItems(std::vector<SignalData> signal_datas) {
-  std::vector<CleanupItem> cleanup_items;
-  for (auto& sd : signal_datas) {
-    cleanup_items.emplace_back(std::make_tuple(sd.name_hash, sd.signal_type,
-                                               sd.earliest_needed_timestamp));
-  }
-  return cleanup_items;
-}
-
 TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
-  std::vector<SignalData> signal_datas = {
-      {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-       SignalType::HISTOGRAM_VALUE, "Foo", base::HashMetricName("Foo"), 44, 1,
-       Aggregation::COUNT, clock_.Now() - base::Days(10), true},
-      {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-       SignalType::HISTOGRAM_ENUM, "Bar", base::HashMetricName("Bar"), 33, 1,
-       Aggregation::COUNT, clock_.Now() - base::Days(5), true},
-      {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
-       SignalType::USER_ACTION, "Failed", base::HashMetricName("Failed"), 22, 1,
-       Aggregation::COUNT, clock_.Now() - base::Days(1), false},
-  };
+  TestMaintenanceTasksScheduling(kEarliestCompactionDaysAgo);
+  // Kick off all tasks.
+  database_maintenance_->ExecuteMaintenanceTasks();
+}
 
-  // Prepare test setup.
-  AddFeatures(signal_datas);
-  std::set<DatabaseMaintenanceImpl::SignalIdentifier> signal_ids =
-      GetSignalIds(signal_datas);
-  std::vector<CleanupItem> cleanup_items = GetCleanupItems(signal_datas);
-
-  // Ensure we return the correct signals.
-  ON_CALL(*signal_storage_config_, GetSignalsForCleanup(_, _))
-      .WillByDefault(SetArgReferee<1>(cleanup_items));
-
-  // We should try to delete each signal.
-  for (auto& sd : signal_datas) {
-    EXPECT_CALL(*signal_database_,
-                DeleteSamples(sd.signal_type, sd.name_hash,
-                              sd.earliest_needed_timestamp, _))
-        .WillOnce(RunOnceCallback<3>(sd.success));
-  }
-
-  // The Failed signal failed to clean up, so we should not be updating it, but
-  // the rest should be updated.
-  cleanup_items.erase(std::remove_if(cleanup_items.begin(), cleanup_items.end(),
-                                     [](CleanupItem item) {
-                                       return std::get<0>(item) ==
-                                              base::HashMetricName("Failed");
-                                     }),
-                      cleanup_items.end());
-  EXPECT_CALL(*signal_storage_config_, UpdateSignalsForCleanup(cleanup_items));
-
-  // Verify that for each of the signal data, we get a compaction request for
-  // each day within the correct range.
-  for (auto& sd : signal_datas) {
-    for (uint64_t days_ago = kLatestCompactionDaysAgo;
-         days_ago <= kEarliestCompactionDaysAgo; ++days_ago) {
-      EXPECT_CALL(*signal_database_,
-                  CompactSamplesForDay(sd.signal_type, sd.name_hash,
-                                       clock_.Now() - base::Days(days_ago), _))
-          .WillOnce(RunOnceCallback<3>(/*success=*/sd.success));
-    }
-  }
-
+TEST_F(DatabaseMaintenanceImplTest, NoCompactionForDataAlreadyCompacted) {
+  // Simulate that a maintenance task has compacted all samples 4 days ago.
+  prefs_.SetTime(kSegmentationLastDBCompactionTimePref,
+                 clock_.Now().UTCMidnight() - base::Days(3) - base::Seconds(1));
+  TestMaintenanceTasksScheduling(3);
   // Kick off all tasks.
   database_maintenance_->ExecuteMaintenanceTasks();
 }

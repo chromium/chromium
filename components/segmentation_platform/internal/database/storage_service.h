@@ -15,6 +15,8 @@
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
+
 namespace base {
 class Clock;
 class FilePath;
@@ -66,7 +68,8 @@ class StorageService {
                  base::Clock* clock,
                  UkmDataManager* ukm_data_manager,
                  const base::flat_set<proto::SegmentId>& all_segment_ids,
-                 ModelProviderFactory* model_provider_factory);
+                 ModelProviderFactory* model_provider_factory,
+                 PrefService* profile_prefs);
 
   // For tests:
   StorageService(
@@ -79,7 +82,8 @@ class StorageService {
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
       const base::flat_set<proto::SegmentId>& all_segment_ids,
-      ModelProviderFactory* model_provider_factory);
+      ModelProviderFactory* model_provider_factory,
+      PrefService* profile_prefs);
 
   // For tests:
   StorageService(std::unique_ptr<SegmentInfoDatabase> segment_info_database,

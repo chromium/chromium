@@ -109,7 +109,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   auto storage_service = std::make_unique<StorageService>(
       std::move(segment_db), std::move(signal_db),
       std::move(segment_storage_config_db), &test_clock_, ukm_data_manager,
-      all_segment_ids, model_provider_factory.get());
+      all_segment_ids, model_provider_factory.get(), &pref_service_);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->storage_service = std::move(storage_service);

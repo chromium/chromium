@@ -33,7 +33,8 @@ StorageService::StorageService(
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
     const base::flat_set<proto::SegmentId>& all_segment_ids,
-    ModelProviderFactory* model_provider_factory)
+    ModelProviderFactory* model_provider_factory,
+    PrefService* profile_prefs)
     : StorageService(
           db_provider->GetDB<proto::SegmentInfo>(
               leveldb_proto::ProtoDbType::SEGMENT_INFO_DATABASE,
@@ -50,7 +51,8 @@ StorageService::StorageService(
           clock,
           ukm_data_manager,
           all_segment_ids,
-          model_provider_factory) {}
+          model_provider_factory,
+          profile_prefs) {}
 
 StorageService::StorageService(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SegmentInfo>>
@@ -61,7 +63,8 @@ StorageService::StorageService(
     base::Clock* clock,
     UkmDataManager* ukm_data_manager,
     const base::flat_set<proto::SegmentId>& all_segment_ids,
-    ModelProviderFactory* model_provider_factory)
+    ModelProviderFactory* model_provider_factory,
+    PrefService* profile_prefs)
     : default_model_manager_(
           std::make_unique<DefaultModelManager>(model_provider_factory,
                                                 all_segment_ids)),
@@ -81,7 +84,8 @@ StorageService::StorageService(
           segment_info_database_.get(),
           signal_database_.get(),
           signal_storage_config_.get(),
-          default_model_manager_.get())) {
+          default_model_manager_.get(),
+          profile_prefs)) {
   ukm_data_manager_->AddRef();
 }
 

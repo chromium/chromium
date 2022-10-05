@@ -18,6 +18,9 @@ extern const char kSegmentationLastCollectionTimePref[];
 
 extern const char kSegmentationPlatformRefreshResultsSwitch[];
 
+// The timestamp before which all samples were compacted and future compactions
+// need to only check for days after it.
+extern const char kSegmentationLastDBCompactionTimePref[];
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_CONSTANTS_H_

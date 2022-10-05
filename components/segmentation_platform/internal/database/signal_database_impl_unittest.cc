@@ -209,6 +209,10 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
       base::Time::Now().UTCMidnight() + base::Hours(8) - base::Days(2);
   base::Time day2 = day1 + base::Days(1);
   base::Time day3 = day2 + base::Days(1);
+  base::Time end_of_day1 =
+      day1.UTCMidnight() + base::Days(1) - base::Seconds(1);
+  base::Time end_of_day2 = end_of_day1 + base::Days(1);
+  base::Time end_of_day3 = end_of_day2 + base::Days(1);
 
   SetUpDB();
   EXPECT_EQ(0u, db_entries_.size());
@@ -249,14 +253,14 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Compact samples for the day1 and verify. We will have two samples, but one
   // less entry.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
                                    base::DoNothing());
   db_->LoadCallback(true);
   db_->UpdateCallback(true);
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
                                    base::DoNothing());
   db_->LoadCallback(true);
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day1,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day1,
                                    base::DoNothing());
   db_->LoadCallback(true);
 
@@ -271,7 +275,7 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
   EXPECT_EQ(2u, db_entries_.size());
 
   // Compact samples for the day2 and verify.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day2,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day2,
                                    base::DoNothing());
   db_->LoadCallback(true);
 
@@ -286,10 +290,10 @@ TEST_F(SignalDatabaseImplTest, WriteMultipleSamplesAndRunCompaction) {
 
   // Compact samples for the day3 and verify. There should be no change since
   // there are no samples.
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day3,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day3,
                                    base::DoNothing());
   db_->LoadCallback(true);
-  signal_db_->CompactSamplesForDay(signal_type, name_hash, day3,
+  signal_db_->CompactSamplesForDay(signal_type, name_hash, end_of_day3,
                                    base::DoNothing());
   db_->LoadCallback(true);
 
