@@ -74,9 +74,7 @@ base::flat_map<std::string, std::string> CreateScriptParameters(
            kCaller},
           {autofill_assistant::public_script_parameters::kSourceParameterName,
            kSource},
-          {kIsNoRoundTrip, run_consentless ? kTrue : kFalse},
-          // TODO(b/247072871): Remove once RPC signing works.
-          {"DISABLE_RPC_SIGNING", kTrue}};
+          {kIsNoRoundTrip, run_consentless ? kTrue : kFalse}};
 }
 
 }  // namespace
