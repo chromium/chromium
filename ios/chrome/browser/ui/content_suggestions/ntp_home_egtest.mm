@@ -874,7 +874,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
-- (void)testToggleFeedEnabled {
+// TODO(crbug.com/1194106): Failing on official ios canary.
+- (void)DISABLED_testToggleFeedEnabled {
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
   [self checkFeedLabelForFeedVisible:YES];
