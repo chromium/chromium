@@ -21,8 +21,6 @@ class AutomationTreeManagerOwner;
 // Class that creates V8 bindings for Automation. This class should contain
 // logic about converting to/from V8 values but should not contain logic about
 // accessibility.
-// TODO(crbug.com/1357889): Refactor logic in V8 routes into
-// AutomationTreeManagerOwner so that the above statement is true.
 class AX_EXPORT AutomationV8Bindings {
  public:
   AutomationV8Bindings(AutomationTreeManagerOwner* owner,
@@ -113,38 +111,38 @@ class AX_EXPORT AutomationV8Bindings {
   void GetParentID(v8::Isolate* isolate,
                    v8::ReturnValue<v8::Value> result,
                    AutomationAXTreeWrapper* tree_wrapper,
-                   AXNode* node);
+                   AXNode* node) const;
   void GetChildCount(v8::Isolate* isolate,
                      v8::ReturnValue<v8::Value> result,
                      AutomationAXTreeWrapper* tree_wrapper,
-                     AXNode* node);
+                     AXNode* node) const;
   void GetLocation(v8::Isolate* isolate,
                    v8::ReturnValue<v8::Value> result,
                    AutomationAXTreeWrapper* tree_wrapper,
-                   AXNode* node);
+                   AXNode* node) const;
   void GetUnclippedLocation(v8::Isolate* isolate,
                             v8::ReturnValue<v8::Value> result,
                             AutomationAXTreeWrapper* tree_wrapper,
-                            AXNode* node);
+                            AXNode* node) const;
   void GetChildIDs(v8::Isolate* isolate,
                    v8::ReturnValue<v8::Value> result,
                    AutomationAXTreeWrapper* tree_wrapper,
-                   AXNode* node);
+                   AXNode* node) const;
   void GetSentenceStartOffsets(v8::Isolate* isolate,
                                v8::ReturnValue<v8::Value> result,
                                AutomationAXTreeWrapper* tree_wrapper,
-                               AXNode* node);
+                               AXNode* node) const;
   void GetSentenceEndOffsets(v8::Isolate* isolate,
                              v8::ReturnValue<v8::Value> result,
                              AutomationAXTreeWrapper* tree_wrapper,
-                             AXNode* node);
+                             AXNode* node) const;
   void GetBoundsForRange(v8::Isolate* isolate,
                          v8::ReturnValue<v8::Value> result,
                          AutomationAXTreeWrapper* tree_wrapper,
                          AXNode* node,
                          int start,
                          int end,
-                         bool clipped);
+                         bool clipped) const;
   void ComputeGlobalBounds(v8::Isolate* isolate,
                            v8::ReturnValue<v8::Value> result,
                            AutomationAXTreeWrapper* tree_wrapper,
@@ -152,17 +150,17 @@ class AX_EXPORT AutomationV8Bindings {
                            int x,
                            int y,
                            int width,
-                           int height);
+                           int height) const;
   void GetName(v8::Isolate* isolate,
                v8::ReturnValue<v8::Value> result,
                AutomationAXTreeWrapper* tree_wrapper,
-               AXNode* node);
+               AXNode* node) const;
   void GetNextTextMatch(v8::Isolate* isolate,
                         v8::ReturnValue<v8::Value> result,
                         AutomationAXTreeWrapper* tree_wrapper,
                         AXNode* node,
                         const std::string& search_str,
-                        bool backward);
+                        bool backward) const;
   void SetAccessibilityFocus(v8::Isolate* isolate,
                              v8::ReturnValue<v8::Value> result,
                              AutomationAXTreeWrapper* tree_wrapper,
@@ -182,26 +180,27 @@ class AX_EXPORT AutomationV8Bindings {
   void GetMarkers(v8::Isolate* isolate,
                   v8::ReturnValue<v8::Value> result,
                   ui::AutomationAXTreeWrapper* tree_wrapper,
-                  ui::AXNode* node);
-  void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
+                  ui::AXNode* node) const;
+  void GetFocus(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   //
   // Access the cached accessibility trees and properties of their nodes.
   //
 
   // Args: string ax_tree_id, int node_id, Returns: int child_id.
-  void GetChildIDAtIndex(const v8::FunctionCallbackInfo<v8::Value>& args);
+  void GetChildIDAtIndex(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Returns: string tree_id and int node_id of a node which has global
   // accessibility focus.
-  void GetAccessibilityFocus(const v8::FunctionCallbackInfo<v8::Value>& args);
+  void GetAccessibilityFocus(
+      const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Args: string ax_tree_id.
   void SetDesktopID(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a map from html attribute key to value.
-  void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args);
+  void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Called when an accessibility tree is destroyed and needs to be
   // removed from our cache.
@@ -221,16 +220,17 @@ class AX_EXPORT AutomationV8Bindings {
   void CreateAutomationPosition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  void IsInteractPermitted(const v8::FunctionCallbackInfo<v8::Value>& args);
+  void IsInteractPermitted(
+      const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a string key for each state flag that's set.
-  void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
+  void GetState(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   void GetImageAnnotation(v8::Isolate* isolate,
                           v8::ReturnValue<v8::Value> result,
                           ui::AutomationAXTreeWrapper* tree_wrapper,
-                          ui::AXNode* node);
+                          ui::AXNode* node) const;
 
   // This is called by automation_internal_custom_bindings.js to indicate
   // that an API was called that needs access to accessibility trees.

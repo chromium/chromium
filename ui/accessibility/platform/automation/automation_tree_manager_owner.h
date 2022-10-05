@@ -97,24 +97,37 @@ class AX_EXPORT AutomationTreeManagerOwner {
                                     gfx::RectF local_bounds = gfx::RectF(),
                                     bool* offscreen = nullptr,
                                     bool clip_bounds = true) const;
-  // Gets the root(s) of a node's child tree. Multiple roots can occur when the
-  // child tree uses ax::mojom::StringAttribute::kAppId.
-  std::vector<AXNode*> GetRootsOfChildTree(AXNode* node) const;
-
-  AXNode* GetNextInTreeOrder(
-      AXNode* start,
-      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
-
-  AXNode* GetPreviousInTreeOrder(
-      AXNode* start,
-      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
 
   std::vector<int> CalculateSentenceBoundary(
       AutomationAXTreeWrapper* tree_wrapper,
       AXNode* node,
       bool start_boundary);
 
-  bool GetFocus(AXTreeID* focused_tree_id, int* node_id);
+  bool GetFocus(AXTreeID* focused_tree_id, int* node_id) const;
+
+  size_t GetChildCount(AXNode* node) const;
+
+  // Gets the child IDs of the given node, and finds the AXTreeID that the node
+  // belongs to and sets |result_tree_id|.
+  std::vector<int> GetChildIDs(AXNode* node, AXTreeID* result_tree_id) const;
+
+  // Returns false unable to get bounds for range on this node, for
+  // example if it is not an inline text box.
+  bool GetBoundsForRange(AutomationAXTreeWrapper* tree_wrapper,
+                         AXNode* node,
+                         int start,
+                         int end,
+                         bool clipped,
+                         gfx::Rect* result) const;
+
+  const char* GetName(AXNode* node) const;
+
+  bool GetNextTextMatch(AutomationAXTreeWrapper* tree_wrapper,
+                        AXNode* node,
+                        const std::string& search_str,
+                        bool backward,
+                        AXTreeID* result_tree_id,
+                        int* result_node_id) const;
 
   //
   // Access the cached accessibility trees and properties of their nodes.
@@ -125,15 +138,15 @@ class AX_EXPORT AutomationTreeManagerOwner {
                          int node_id,
                          int index,
                          AXTreeID* child_tree_id,
-                         int* child_node_id);
+                         int* child_node_id) const;
 
   // Sets the |node_id| and |tree_id| for the node which has global
   // accessibility focus, or returns false if it cannot find the focus.
-  bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id);
+  bool GetAccessibilityFocus(AXTreeID* tree_id, int* node_id) const;
 
   // Find the node with the given ID in the tree with the given ID, or
   // returns nullptr if not found.
-  AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id);
+  AXNode* GetNodeFromTree(const AXTreeID& tree_id, int node_id) const;
 
   void AddTreeChangeObserver(int observer_id, TreeChangeObserverFilter filter);
   void RemoveTreeChangeObserver(int observer_id);
@@ -152,12 +165,8 @@ class AX_EXPORT AutomationTreeManagerOwner {
                           bool* offscreen,
                           bool* focused) const;
 
-  const AXTreeID& accessibility_focused_tree_id() const {
-    return accessibility_focused_tree_id_;
-  }
-  void SetAccessibilityFocusedTreeID(AXTreeID tree_id) {
-    accessibility_focused_tree_id_ = tree_id;
-  }
+  void SetAccessibilityFocus(AXTreeID tree_id);
+
   void SetDesktopTreeId(AXTreeID tree_id) { desktop_tree_id_ = tree_id; }
 
  protected:
@@ -176,17 +185,29 @@ class AX_EXPORT AutomationTreeManagerOwner {
   // Invalidates this AutomationTreeManagerOnwer.
   void Invalidate();
 
-  bool HasTreesWithEventListeners();
+  bool HasTreesWithEventListeners() const;
 
   void MaybeSendOnAllAutomationEventListenersRemoved();
 
  private:
+  // Gets the root(s) of a node's child tree. Multiple roots can occur when the
+  // child tree uses ax::mojom::StringAttribute::kAppId.
+  std::vector<AXNode*> GetRootsOfChildTree(AXNode* node) const;
+
+  AXNode* GetNextInTreeOrder(
+      AXNode* start,
+      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+
+  AXNode* GetPreviousInTreeOrder(
+      AXNode* start,
+      AutomationAXTreeWrapper** in_out_tree_wrapper) const;
+
   // Given an initial AutomationAXTreeWrapper, return the
   // AutomationAXTreeWrapper and node of the focused node within this tree
   // or a focused descendant tree.
   bool GetFocusInternal(AutomationAXTreeWrapper* top_tree,
                         AutomationAXTreeWrapper** out_tree,
-                        AXNode** out_node);
+                        AXNode** out_node) const;
 
   void CacheAutomationTreeWrapperForTreeID(
       const AXTreeID& tree_id,
