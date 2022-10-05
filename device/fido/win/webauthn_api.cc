@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util_win.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -25,10 +26,18 @@
 
 namespace device {
 
+namespace {
+
 // Time out all Windows API requests after 5 minutes. We maintain our own
 // timeout and cancel the operation when it expires, so this value simply needs
 // to be larger than the largest internal request timeout.
 constexpr uint32_t kWinWebAuthnTimeoutMilliseconds = 1000 * 60 * 5;
+
+std::string HresultToHex(HRESULT hr) {
+  return base::StringPrintf("0x%0lX", hr);
+}
+
+}  // namespace
 
 class WinWebAuthnApiImpl : public WinWebAuthnApi {
  public:
@@ -198,9 +207,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
 
   decltype(&WebAuthNIsUserVerifyingPlatformAuthenticatorAvailable)
       is_user_verifying_platform_authenticator_available_ = nullptr;
-  decltype(
-      &WebAuthNAuthenticatorMakeCredential) authenticator_make_credential_ =
-      nullptr;
+  decltype(&WebAuthNAuthenticatorMakeCredential)
+      authenticator_make_credential_ = nullptr;
   decltype(&WebAuthNAuthenticatorGetAssertion) authenticator_get_assertion_ =
       nullptr;
   decltype(&WebAuthNCancelCurrentOperation) cancel_current_operation_ = nullptr;
@@ -253,7 +261,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   WEBAUTHN_USER_ENTITY_INFORMATION user_info{
       WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
       base::checked_cast<DWORD>(user_id.size()),
-      const_cast<unsigned char*>(user_id.data()), base::as_wcstr(user_name),
+      const_cast<unsigned char*>(user_id.data()),
+      base::as_wcstr(user_name),
       /*pwszIcon=*/base::as_wcstr(base::EmptyString16()),
       base::as_wcstr(user_display_name),
   };
@@ -423,7 +432,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
 
   if (hresult != S_OK) {
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
-                    << webauthn_api->GetErrorName(hresult);
+                    << HresultToHex(hresult) << " ("
+                    << webauthn_api->GetErrorName(hresult) << ")";
     return {WinErrorNameToCtapDeviceResponseCode(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             absl::nullopt};
@@ -536,7 +546,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
 
   if (hresult != S_OK) {
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()="
-                    << webauthn_api->GetErrorName(hresult);
+                    << HresultToHex(hresult) << " ("
+                    << webauthn_api->GetErrorName(hresult) << ")";
     return {WinErrorNameToCtapDeviceResponseCode(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             absl::nullopt};
