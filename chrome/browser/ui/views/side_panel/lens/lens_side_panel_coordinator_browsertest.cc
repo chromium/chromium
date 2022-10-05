@@ -257,6 +257,58 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
   EXPECT_FALSE(GetUnifiedSidePanel()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
+                       UserClickToSameDomainProceedsInSidePanel) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+
+  // Simulate a user click
+  GURL nav_url = embedded_test_server()->GetURL("/new_path");
+  lens::GetLensUnifiedSidePanelWebContentsForTesting(browser())
+      ->GetController()
+      .LoadURL(nav_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+               std::string());
+
+  // Wait for the side panel to finish loading web contents.
+  content::TestNavigationObserver nav_observer(
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser()));
+  nav_observer.Wait();
+
+  content::WebContents* contents =
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+  auto side_panel_url = contents->GetLastCommittedURL();
+
+  EXPECT_EQ(side_panel_url, nav_url);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
+                       UserClickToSeperateDomainOpensNewTab) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  GURL nav_url = GURL("http://new.domain.com/");
+  auto* side_panel_contents =
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+
+  // Simulate a user click
+  lens::GetLensUnifiedSidePanelWebContentsForTesting(browser())
+      ->GetController()
+      .LoadURL(nav_url, content::Referrer(), ui::PAGE_TRANSITION_LINK,
+               std::string());
+
+  // Get the result URL in the new tab to verify.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+
+  GURL side_panel_content = side_panel_contents->GetLastCommittedURL();
+  GURL new_tab_contents = new_tab->GetLastCommittedURL();
+
+  EXPECT_NE(side_panel_content, nav_url);
+  EXPECT_EQ(GetImageSearchURL().host(), side_panel_content.host());
+  EXPECT_EQ(new_tab_contents, nav_url);
+}
+
 class SearchImageWithUnifiedSidePanelFooterDisabled
     : public SearchImageWithUnifiedSidePanel {
  protected:
