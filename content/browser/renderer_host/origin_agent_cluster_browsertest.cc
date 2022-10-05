@@ -69,7 +69,7 @@ class OriginAgentClusterBrowserTest : public ContentBrowserTest {
 
     // InitWithFeatures needs to be called in the constructor in multi-threaded
     // tests.
-    std::vector<base::Feature> enabled, disabled;
+    std::vector<base::test::FeatureRef> enabled, disabled;
     (origin_cluster_default_enabled_ ? enabled : disabled)
         .push_back(blink::features::kOriginAgentClusterDefaultEnabled);
     (origin_cluster_absent_warning_ ? enabled : disabled)

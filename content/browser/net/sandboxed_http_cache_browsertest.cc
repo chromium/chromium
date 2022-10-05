@@ -63,7 +63,7 @@ using FileEnumerationEntry =
 class NonSandboxedNetworkServiceBrowserTest : public ContentBrowserTest {
  public:
   NonSandboxedNetworkServiceBrowserTest() {
-    std::vector<base::Feature> kDisabledFeatures = {
+    std::vector<base::test::FeatureRef> kDisabledFeatures = {
         sandbox::policy::features::kNetworkServiceSandbox,
         features::kNetworkServiceInProcess,
     };
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(NonSandboxedNetworkServiceBrowserTest,
 class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
   SandboxedHttpCacheBrowserTest() {
-    std::vector<base::Feature> enabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features = {
       features::kBrokerFileOperationsOnDiskCacheInNetworkService,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these

@@ -73,7 +73,8 @@ DefaultEnabledBackForwardCacheParametersForTests(
 
 // Returns a vector of features to disable by default when testing with the
 // BackForwardCache.
-std::vector<base::Feature> DefaultDisabledBackForwardCacheParametersForTests();
+std::vector<base::test::FeatureRef>
+DefaultDisabledBackForwardCacheParametersForTests();
 
 }  // namespace content
 

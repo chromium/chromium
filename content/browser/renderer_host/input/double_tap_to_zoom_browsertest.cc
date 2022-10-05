@@ -73,10 +73,10 @@ class DoubleTapToZoomBrowserTest
           std::tuple<std::string, bool, std::string>> {
  public:
   DoubleTapToZoomBrowserTest() {
-    std::vector<base::Feature> enable_features;
+    std::vector<base::test::FeatureRef> enable_features;
     enable_features.push_back(features::kRemoveMobileViewportDoubleTap);
     feature_list_.InitWithFeatures(enable_features,
-                                   std::vector<base::Feature>());
+                                   std::vector<base::test::FeatureRef>());
   }
   ~DoubleTapToZoomBrowserTest() override = default;
 

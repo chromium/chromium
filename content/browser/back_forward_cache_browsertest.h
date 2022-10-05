@@ -179,7 +179,7 @@ class BackForwardCacheBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::map<base::test::FeatureRef, std::map<std::string, std::string>>
       features_with_params_;
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;

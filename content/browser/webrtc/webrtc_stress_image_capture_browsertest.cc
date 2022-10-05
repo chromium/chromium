@@ -43,8 +43,8 @@ class WebRtcImageCaptureStressBrowserTest
       public testing::WithParamInterface<TargetVideoCaptureImplementation> {
  public:
   WebRtcImageCaptureStressBrowserTest() {
-    std::vector<base::Feature> features_to_enable;
-    std::vector<base::Feature> features_to_disable;
+    std::vector<base::test::FeatureRef> features_to_enable;
+    std::vector<base::test::FeatureRef> features_to_disable;
 #if BUILDFLAG(IS_WIN)
     if (GetParam() == TargetVideoCaptureImplementation::WIN_MEDIA_FOUNDATION) {
       features_to_enable.push_back(media::kMediaFoundationVideoCapture);

@@ -462,8 +462,8 @@ class PrivateNetworkAccessBrowserTestBase : public ContentBrowserTest {
  protected:
   // Allows subclasses to construct instances with different features enabled.
   explicit PrivateNetworkAccessBrowserTestBase(
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features)
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features)
       : insecure_local_server_(
             net::EmbeddedTestServer::TYPE_HTTP,
             net::test_server::HttpConnection::Protocol::kHttp1,

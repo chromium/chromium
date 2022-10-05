@@ -91,8 +91,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 
  protected:
   // Choose which feature flags to enable or disable.
-  virtual void ChooseFeatures(std::vector<base::Feature>* enabled_features,
-                              std::vector<base::Feature>* disabled_features);
+  virtual void ChooseFeatures(
+      std::vector<base::test::FeatureRef>* enabled_features,
+      std::vector<base::test::FeatureRef>* disabled_features);
 
   void ExecuteScript(const char* script) {
     shell()->web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
@@ -218,8 +219,8 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 };
 
 void CrossPlatformAccessibilityBrowserTest::SetUp() {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   ChooseFeatures(&enabled_features, &disabled_features);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -233,8 +234,8 @@ void CrossPlatformAccessibilityBrowserTest::SetUp() {
 }
 
 void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
-    std::vector<base::Feature>* enabled_features,
-    std::vector<base::Feature>* disabled_features) {
+    std::vector<base::test::FeatureRef>* enabled_features,
+    std::vector<base::test::FeatureRef>* disabled_features) {
   enabled_features->emplace_back(
       features::kEnableAccessibilityExposeHTMLElement);
 }

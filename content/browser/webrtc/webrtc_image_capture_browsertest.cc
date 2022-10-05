@@ -152,8 +152,8 @@ class WebRtcImageCaptureSucceedsBrowserTest
                      TargetVideoCaptureImplementation>> {
  public:
   WebRtcImageCaptureSucceedsBrowserTest() {
-    std::vector<base::Feature> features_to_enable;
-    std::vector<base::Feature> features_to_disable;
+    std::vector<base::test::FeatureRef> features_to_enable;
+    std::vector<base::test::FeatureRef> features_to_disable;
     if (std::get<1>(GetParam()).use_video_capture_service)
       features_to_enable.push_back(features::kMojoVideoCapture);
     else

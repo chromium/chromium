@@ -405,10 +405,10 @@ class SplitCacheContentBrowserTestEnabled
       public ::testing::WithParamInterface<bool> {
  public:
   SplitCacheContentBrowserTestEnabled() {
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
 
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     disabled_features.push_back(
         net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
 
@@ -985,7 +985,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 class ScopeBlinkMemoryCachePerContext : public SplitCacheContentBrowserTest {
  public:
   ScopeBlinkMemoryCachePerContext() {
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     enabled_features.push_back(blink::features::kScopeMemoryCachePerContext);
 

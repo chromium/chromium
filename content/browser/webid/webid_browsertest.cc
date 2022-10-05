@@ -164,7 +164,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::Feature> features;
+    std::vector<base::test::FeatureRef> features;
 
     // kSplitCacheByNetworkIsolationKey feature is needed to verify
     // that the network shard for fetching the fedcm manifest file is different

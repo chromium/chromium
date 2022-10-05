@@ -1495,10 +1495,10 @@ INSTANTIATE_TEST_SUITE_P(
 class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceInProcessBrowserTest() {
-    std::vector<base::Feature> features;
+    std::vector<base::test::FeatureRef> features;
     features.push_back(features::kNetworkServiceInProcess);
-    scoped_feature_list_.InitWithFeatures(features,
-                                          std::vector<base::Feature>());
+    scoped_feature_list_.InitWithFeatures(
+        features, std::vector<base::test::FeatureRef>());
   }
 
   NetworkServiceInProcessBrowserTest(

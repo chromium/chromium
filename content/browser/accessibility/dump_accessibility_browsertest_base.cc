@@ -125,8 +125,8 @@ void DumpAccessibilityTestBase::SetUpOnMainThread() {
 }
 
 void DumpAccessibilityTestBase::SetUp() {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   ChooseFeatures(&enabled_features, &disabled_features);
 
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -145,8 +145,8 @@ void DumpAccessibilityTestBase::SignalRunTestOnMainThread(int) {
 }
 
 void DumpAccessibilityTestBase::ChooseFeatures(
-    std::vector<base::Feature>* enabled_features,
-    std::vector<base::Feature>* disabled_features) {
+    std::vector<base::test::FeatureRef>* enabled_features,
+    std::vector<base::test::FeatureRef>* disabled_features) {
   // For the best test coverage during development of this feature, enable the
   // code that expposes document markers on AXInlineTextBox objects and the
   // corresponding code in AXPosition on the browser that collects those

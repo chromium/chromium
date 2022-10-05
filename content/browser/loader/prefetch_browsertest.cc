@@ -55,8 +55,8 @@ class PrefetchBrowserTest
   }
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     (signed_exchange_enabled_ ? enable_features : disabled_features)
         .push_back(features::kSignedHTTPExchange);
@@ -95,8 +95,8 @@ class PrefetchBrowserTestPrivacyChanges
   ~PrefetchBrowserTestPrivacyChanges() override = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (privacy_changes_enabled_) {
       enable_features.push_back(blink::features::kPrefetchPrivacyChanges);
     } else {

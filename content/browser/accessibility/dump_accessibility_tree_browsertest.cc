@@ -118,8 +118,8 @@ std::vector<std::string> DumpAccessibilityTreeTest::Dump() {
 }
 
 void DumpAccessibilityTreeTest::ChooseFeatures(
-    std::vector<base::Feature>* enabled_features,
-    std::vector<base::Feature>* disabled_features) {
+    std::vector<base::test::FeatureRef>* enabled_features,
+    std::vector<base::test::FeatureRef>* disabled_features) {
   // http://crbug.com/1063155 - temporary until this is enabled
   // everywhere.
   enabled_features->emplace_back(
@@ -131,8 +131,8 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
 }
 
 void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
-    std::vector<base::Feature>* enabled_features,
-    std::vector<base::Feature>* disabled_features) {
+    std::vector<base::test::FeatureRef>* enabled_features,
+    std::vector<base::test::FeatureRef>* disabled_features) {
   // http://crbug.com/1063155 - temporary until this is enabled
   // everywhere.
   enabled_features->emplace_back(

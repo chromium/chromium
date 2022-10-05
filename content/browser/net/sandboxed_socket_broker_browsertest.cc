@@ -49,7 +49,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
     // prior to R.
     const int sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
     if (sdk_version >= base::android::SdkVersion::SDK_VERSION_R) {
-      std::vector<base::Feature> enabled_features = {
+      std::vector<base::test::FeatureRef> enabled_features = {
           sandbox::policy::features::kNetworkServiceSandbox,
       };
       scoped_feature_list_.InitWithFeatures(
@@ -62,7 +62,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
     if (!sandbox::features::IsAppContainerSandboxSupported())
       check_sandbox_ = false;
 #endif  // BUILDFLAG(IS_WIN)
-    std::vector<base::Feature> enabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features = {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.

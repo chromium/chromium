@@ -230,7 +230,7 @@ bool PrerenderHostObserver::was_activated() const {
 }
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList() {
-  std::vector<base::Feature> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
 #if !BUILDFLAG(IS_ANDROID)
   // Prerender2 for Speculation Rules should be enabled by default on Android.
   // To test the default behavior on Android, explicitly enable the feature only

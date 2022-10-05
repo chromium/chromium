@@ -3314,7 +3314,7 @@ class MediaSessionImplWithBackForwardCacheBrowserTest
 #endif
     enabled_features.emplace_back(features::kBackForwardCache, params);
 
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         features::kBackForwardCacheMemoryControls,
     };
 

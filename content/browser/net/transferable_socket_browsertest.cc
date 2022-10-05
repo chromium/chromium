@@ -41,7 +41,7 @@ namespace {
 class TransferableSocketBrowserTest : public ContentBrowserTest {
  public:
   TransferableSocketBrowserTest() {
-    std::vector<base::Feature> enabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features = {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.

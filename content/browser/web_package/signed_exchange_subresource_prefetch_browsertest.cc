@@ -213,8 +213,8 @@ class SignedExchangePrefetchBrowserTest : public PrefetchBrowserTestBase {
   ~SignedExchangePrefetchBrowserTest() override = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     enable_features.push_back(features::kSignedHTTPExchange);
     // Need to run the network service in process for testing cache expirity
     // (PrefetchMainResourceSXG_ExceedPrefetchReuseMins) using MockClock.
@@ -750,8 +750,8 @@ class SignedExchangeSubresourcePrefetchBrowserTest
   }
 
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     enable_features.push_back(features::kSignedHTTPExchange);
     // Need to run the network service in process for testing cache expirity
     // (PrefetchMainResourceSXG_ExceedPrefetchReuseMins) using MockClock.

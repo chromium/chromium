@@ -285,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
 class SavePackageWebBundleBrowserTest : public SavePackageBrowserTest {
  public:
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     enable_features.push_back(features::kSavePageAsWebBundle);
     enable_features.push_back(features::kWebBundles);
     feature_list_.InitWithFeatures(enable_features, disabled_features);

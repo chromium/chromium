@@ -107,7 +107,8 @@ DefaultEnabledBackForwardCacheParametersForTests(
   return final_params;
 }
 
-std::vector<base::Feature> DefaultDisabledBackForwardCacheParametersForTests() {
+std::vector<base::test::FeatureRef>
+DefaultDisabledBackForwardCacheParametersForTests() {
   return {features::kBackForwardCacheMemoryControls};
 }
 

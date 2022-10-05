@@ -5803,7 +5803,7 @@ class PrerenderWithBackForwardCacheBrowserTest
     feature_params["TimeToLiveInBackForwardCacheInSeconds"] = "3600";
 
     // Allow the BFCache for all devices regardless of their memory.
-    std::vector<base::Feature> disabled_features{
+    std::vector<base::test::FeatureRef> disabled_features{
         features::kBackForwardCacheMemoryControls};
 
     switch (GetParam()) {
