@@ -44,7 +44,7 @@ const std::u16string kDeniedTitle = u"Denied";
 
 const base::FilePath kEmptyDataPath = kTestDataPath.AppendASCII("empty.pb");
 
-const std::vector<base::Feature> kFeatures = {
+const std::vector<base::test::FeatureRef> kFeatures = {
     media::kMediaEngagementBypassAutoplayPolicies,
     media::kPreloadMediaEngagementData};
 

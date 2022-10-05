@@ -313,8 +313,8 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
 
     // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
         features::kChromeWhatsNewUI};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)

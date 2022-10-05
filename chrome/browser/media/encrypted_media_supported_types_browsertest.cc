@@ -471,8 +471,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
  protected:
   // Features to enable or disable for the test. Must be updated in the test
   // constructor (before SetUpDefaultCommandLine()) to take effect.
-  std::vector<base::Feature> enabled_features_;
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> enabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
   base::test::ScopedFeatureList feature_list_;
 
  private:
