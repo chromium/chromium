@@ -30,7 +30,6 @@ Other resources that belong in this file:
       <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="${root_gen_dir}/content/browser/resources/histograms/tsc/histograms_internals.js" resource_path="histograms_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_CSS" file="browser/resources/histograms/histograms_internals.css" type="BINDATA" />
       <if expr="chromeos_ash">
-        <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" resource_path="mojo/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" />
         <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" resource_path="mojo/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
       <include name="IDR_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />
@@ -44,9 +43,7 @@ Other resources that belong in this file:
       <include name="IDR_UKM_INTERNALS_JS" file="${root_gen_dir}/components/ukm/debug/tsc/ukm_internals.js" use_base_dir="false" resource_path="ukm_internals.js" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" type="BINDATA" />
       <if expr="chromeos_ash">
-        <include name="IDR_UNGUESSABLE_TOKEN_MOJO_HTML" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom.html" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom.html" use_base_dir="false" type="BINDATA" />
         <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" resource_path="mojo/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" />
         <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom-lite.js" resource_path="mojo/url/mojom/url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
       </if>
       <include name="IDR_URL_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/url.mojom-webui.js" resource_path="mojo/url/mojom/url.mojom-webui.js" use_base_dir="false" type="BINDATA" />
