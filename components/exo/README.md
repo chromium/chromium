@@ -6,7 +6,6 @@ https://wayland-book.com/.
 Current clients of Exo include:
 
 * ARC++ (Android apps on Chrome OS)
-* [Chromecast](https://chromium.googlesource.com/chromium/src/+/main/chromecast/README.md)
 * Crostini (Linux apps on Chrome OS)
 * [Lacros](https://chromium.googlesource.com/chromium/src/+/main/docs/lacros.md)
 * PluginVM
