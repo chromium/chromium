@@ -86,7 +86,7 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
   SchemefulSite site_with_opaque_origin;
   return NetworkAnonymizationKey(site_with_opaque_origin,
-                                 site_with_opaque_origin, false);
+                                 site_with_opaque_origin);
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
@@ -94,9 +94,7 @@ std::string NetworkAnonymizationKey::ToDebugString() const {
   str += " " + GetSiteDebugString(frame_site_);
   std::string cross_site_str =
       IsCrossSiteFlagSchemeEnabled()
-          ? (!GetIsCrossSite().has_value() ? " with empty is_cross_site value"
-             : GetIsCrossSite().value()    ? " cross_site"
-                                           : " same_site")
+          ? (GetIsCrossSite() ? " cross_site" : " same_site")
           : "";
   str += cross_site_str;
 
@@ -128,9 +126,9 @@ bool NetworkAnonymizationKey::IsTransient() const {
          (IsFrameSiteEnabled() && frame_site_->opaque()) || nonce_.has_value();
 }
 
-absl::optional<bool> NetworkAnonymizationKey::GetIsCrossSite() const {
-  DCHECK(IsCrossSiteFlagSchemeEnabled());
-  return is_cross_site_;
+bool NetworkAnonymizationKey::GetIsCrossSite() const {
+  DCHECK(IsCrossSiteFlagSchemeEnabled() && is_cross_site_.has_value());
+  return is_cross_site_.value();
 }
 
 const absl::optional<SchemefulSite>& NetworkAnonymizationKey::GetFrameSite()
@@ -190,10 +188,8 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
     }
     list.Append(std::move(frame_value).value());
   } else if (IsCrossSiteFlagSchemeEnabled()) {
-    const absl::optional<bool> is_cross_site = GetIsCrossSite();
-    if (is_cross_site.has_value()) {
-      list.Append(is_cross_site.value());
-    }
+    const bool is_cross_site = GetIsCrossSite();
+    list.Append(is_cross_site);
   }
 
   *out_value = base::Value(std::move(list));
