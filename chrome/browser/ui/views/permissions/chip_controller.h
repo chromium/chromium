@@ -7,10 +7,12 @@
 
 #include <cstddef>
 #include <memory>
+#include "base/check_is_test.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_util.h"
 #include "ui/views/widget/widget_observer.h"
 
 class PermissionPromptChipModel;
@@ -44,6 +46,15 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // PermissionRequestManager::Observer
   void OnPermissionRequestManagerDestructed() override;
 
+  void OnBubbleRemoved() override;
+
+  // OnBubbleRemoved only triggers when a request chip (bubble) is removed, when
+  // the user navigates while a confirmation chip is showing, the request is
+  // already finished and hence OnBubbleRemoved is not triggered. Thus we need
+  // to handle chip cleanup on navigation events separately.
+  void OnNavigation(content::NavigationHandle* navigation_handle) override;
+  void OnRequestDecided(permissions::PermissionAction permissions) override;
+
   // BubbleOwnerDelegate
   bool IsBubbleShowing() override;
   bool IsAnimating() const override;
@@ -53,34 +64,41 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Displays a permission prompt using the chip UI.
-  void ShowPermissionPrompt(permissions::PermissionPrompt::Delegate* delegate);
+  void ShowPermissionPrompt(content::WebContents* web_contents,
+                            permissions::PermissionPrompt::Delegate* delegate);
 
-  // Chip View
+  // Chip View.
   OmniboxChipButton* chip() { return chip_; }
 
-  // Hide and clean up the entire chip
-  void FinalizeChip();
+  // Hide and clean up the entire chip and associated observers, callback timers
+  // and callbacks.
+  void ResetChip();
 
-  // Hide and clean up permission parts of the chip
-  void FinalizePermissionPromptChip();
+  // Hide and clean up permission parts of the chip.
+  void ResetPermissionPromptChip();
 
   // State
   bool IsPermissionPromptChipVisible() {
     return chip_ && chip_->GetVisible() && permission_prompt_model_;
   }
 
-  // Update Browser
+  // Update browser.
   void UpdateBrowser(Browser* browser) { browser_ = browser; }
 
-  views::Widget* GetPromptBubbleWidget();
+  views::Widget* GetBubbleWidget();
 
-  // Testing helpers
+  // Testing helpers.
   bool should_start_open_for_testing();
   bool should_expand_for_testing();
 
   bool is_collapse_timer_running_for_testing() {
     CHECK_IS_TEST();
     return collapse_timer_.IsRunning();
+  }
+
+  void fire_collapse_timer_for_testing() {
+    CHECK_IS_TEST();
+    collapse_timer_.FireNow();
   }
 
   bool is_dismiss_timer_running_for_testing() {
@@ -96,28 +114,40 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   views::View* get_prompt_bubble_view_for_testing() {
     CHECK_IS_TEST();
-    return prompt_bubble_tracker_.view();
+    return bubble_tracker.view();
+  }
+
+  absl::optional<permissions::PermissionRequestManager*>
+  active_permission_request_manager_for_testing() {
+    CHECK_IS_TEST();
+    return active_chip_permission_request_manager_;
   }
 
  private:
-  // Animations
+  // Animations.
   void AnimateExpand(
       base::RepeatingCallback<void()> expand_anmiation_ended_callback);
-  void AnimateCollapse() { chip_->AnimateCollapse(); }
 
-  // Permission prompt chip functionality
+  // Confirmation chip.
+  void HandleConfirmation(permissions::PermissionAction permission_action);
+  void CollapseConfirmation();
+
+  // Permission prompt chip functionality.
   void AnnouncePermissionRequestForAccessibility(const std::u16string& text);
-  void CollapseChip(bool allow_restart);
+  void CollapsePrompt(bool allow_restart);
 
-  // Permission prompt bubble functiontionality
+  // Hides the chip and invalidates the layout.
+  void HideChip();
+
+  // Permission prompt bubble functiontionality.
   void OpenPermissionPromptBubble();
   void ClosePermissionPromptBubbleWithReason(
       views::Widget::ClosedReason reason);
 
-  // Statistics
+  // Statistics.
   void RecordChipButtonPressed(const char* recordKey);
 
-  // Event handling
+  // Event handling.
   void ObservePromptBubble();
   void OnPromptBubbleDismissed();
   void OnPromptExpired();
@@ -125,15 +155,37 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnExpandAnimationEnded();
   void OnChipVisibilityChanged();
 
-  // Timer functionality
+  // Updates chip icon, text and theme with model.
+  void SyncChipWithModel();
+
+  // NOP method used for callbacks.
+  void DoNothing() {}
+
+  // Opens the Page Info Dialog.
+  void ShowPageInfoDialog();
+
+  // Actions executed when the user closes the page info dialog.
+  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
+                              bool reload_prompt);
+
+  // Resets all chip callbacks such as click callback, but also
+  // animation-related callbacks.
+  void ResetChipCallbacks();
+
+  // Clean up utility.
+  void RemoveBubbleObserverAndResetTimersAndChipCallbacks();
+
+  // Timer functionality.
   void StartCollapseTimer();
   void StartDismissTimer();
   void ResetTimers();
 
-  // The location bar view to which the chip is attached
+  // The location bar view to which the chip is attached.
   LocationBarView* GetLocationBarView();
 
-  // The chip view this controller modifies
+  bool is_confirmation_showing_ = false;
+
+  // The chip view this controller modifies.
   raw_ptr<OmniboxChipButton> chip_;
 
   raw_ptr<Browser> browser_;
@@ -151,7 +203,10 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // The model of a permission prompt if one is present.
   std::unique_ptr<PermissionPromptChipModel> permission_prompt_model_;
 
-  views::ViewTracker prompt_bubble_tracker_;
+  absl::optional<permissions::PermissionRequestManager*>
+      active_chip_permission_request_manager_;
+
+  views::ViewTracker bubble_tracker;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_CONTROLLER_H_

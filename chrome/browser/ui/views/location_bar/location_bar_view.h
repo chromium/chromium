@@ -369,6 +369,10 @@ class LocationBarView : public LocationBar,
 
   void OnTouchUiChanged();
 
+  // Determines whether the location icon should be overridden while a chip is
+  // being displayed
+  bool ShouldChipOverrideLocationIcon();
+
   // Called with an async fetched for the keyword view.
   void OnKeywordFaviconFetched(const gfx::Image& icon);
 

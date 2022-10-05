@@ -38,7 +38,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   ~PermissionPromptAndroid() override;
 
   // PermissionPrompt:
-  void UpdateAnchor() override;
+  bool UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
 
   void Closing();

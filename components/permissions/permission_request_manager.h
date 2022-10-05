@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -81,6 +82,9 @@ class PermissionRequestManager
     virtual void OnRequestsFinalized() {}
 
     virtual void OnPermissionRequestManagerDestructed() {}
+    virtual void OnNavigation(content::NavigationHandle* navigation_handle) {}
+
+    virtual void OnRequestDecided(permissions::PermissionAction action) {}
 
    protected:
     virtual ~Observer() = default;
@@ -210,6 +214,11 @@ class PermissionRequestManager
     enabled_app_level_notification_permission_for_testing_ = enabled;
   }
 
+  base::ObserverList<Observer>::Unchecked* get_observer_list_for_testing() {
+    CHECK_IS_TEST();
+    return &observer_list_;
+  }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
@@ -284,6 +293,7 @@ class PermissionRequestManager
 
   void NotifyBubbleAdded();
   void NotifyBubbleRemoved();
+  void NotifyRequestDecided(permissions::PermissionAction permission_action);
 
   void OnPermissionUiSelectorDone(size_t selector_index,
                                   const UiDecision& decision);

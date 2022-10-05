@@ -27,6 +27,11 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 
+enum ChipFeatureConfig {
+  REQUEST_CHIP,
+  REQUEST_CHIP_LOCATION_BAR_ICON_OVERRIDE
+};
+
 class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
  public:
   PermissionBubbleInteractiveUITest() {

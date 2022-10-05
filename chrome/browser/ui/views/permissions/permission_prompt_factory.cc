@@ -68,7 +68,10 @@ bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
   std::vector<permissions::PermissionRequest*> requests = delegate->Requests();
   return base::ranges::all_of(
       requests, [](permissions::PermissionRequest* request) {
-        return request->GetRequestChipText().has_value();
+        return request
+            ->GetRequestChipText(
+                permissions::PermissionRequest::ChipTextType::LOUD_REQUEST)
+            .has_value();
       });
 }
 

@@ -43,16 +43,13 @@ void PermissionPromptBubble::OnWidgetDestroying(views::Widget* widget) {
   prompt_bubble_ = nullptr;
 }
 
-void PermissionPromptBubble::UpdateAnchor() {
+bool PermissionPromptBubble::UpdateAnchor() {
   bool was_browser_changed = UpdateBrowser();
-  LocationBarView* lbv = GetLocationBarView();
-  DCHECK(!lbv->chip_controller() ||
-         !lbv->chip_controller()->IsPermissionPromptChipVisible());
   // TODO(crbug.com/1175231): Investigate why prompt_bubble_ can be null
   // here. Early return is preventing the crash from happening but we still
   // don't know the reason why it is null here and cannot reproduce it.
   if (!prompt_bubble_)
-    return;
+    return true;
 
   // If |browser_| changed, recreate bubble for correct browser.
   if (was_browser_changed) {
@@ -61,6 +58,7 @@ void PermissionPromptBubble::UpdateAnchor() {
   } else {
     prompt_bubble_->UpdateAnchorPosition();
   }
+  return true;
 }
 
 permissions::PermissionPromptDisposition

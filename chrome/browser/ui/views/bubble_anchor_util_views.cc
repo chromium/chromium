@@ -5,13 +5,14 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/permissions/features.h"
+#include "ui/views/bubble/bubble_border.h"
 
 // This file contains the bubble_anchor_util implementation for a Views
 // browser window (BrowserView).
@@ -21,6 +22,12 @@ namespace bubble_anchor_util {
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (anchor == kLocationBar &&
+      browser_view->GetLocationBarView()->ShouldHideContentSettingImage()) {
+    return {browser_view->GetLocationBarView()->chip_controller()->chip(),
+            browser_view->GetLocationBarView()->chip_controller()->chip(),
+            views::BubbleBorder::TOP_LEFT};
+  }
 
   if (anchor == kLocationBar && browser_view->GetLocationBarView()->IsDrawn())
     return {browser_view->GetLocationBarView(),

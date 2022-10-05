@@ -4,6 +4,7 @@
 
 #include "components/permissions/permission_request.h"
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_util.h"
@@ -111,58 +112,50 @@ IconId PermissionRequest::GetBlockedIconForChip() {
   return permissions::GetBlockedIconId(request_type_);
 }
 
-absl::optional<std::u16string> PermissionRequest::GetRequestChipText() const {
-  int message_id;
-  switch (request_type_) {
-    case RequestType::kArSession:
-      message_id = IDS_AR_PERMISSION_CHIP;
-      break;
-    case RequestType::kCameraStream:
-      message_id = IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_CHIP;
-      break;
-    case RequestType::kClipboard:
-      message_id = IDS_CLIPBOARD_PERMISSION_CHIP;
-      break;
-    case RequestType::kGeolocation:
-      message_id = IDS_GEOLOCATION_PERMISSION_CHIP;
-      break;
-    case RequestType::kIdleDetection:
-      message_id = IDS_IDLE_DETECTION_PERMISSION_CHIP;
-      break;
-    case RequestType::kMicStream:
-      message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_CHIP;
-      break;
-    case RequestType::kMidiSysex:
-      message_id = IDS_MIDI_SYSEX_PERMISSION_CHIP;
-      break;
-    case RequestType::kNotifications:
-      message_id = IDS_NOTIFICATION_PERMISSIONS_CHIP;
-      break;
-    case RequestType::kVrSession:
-      message_id = IDS_VR_PERMISSION_CHIP;
-      break;
-    default:
-      // TODO(bsep): We don't actually want to support having no string in the
-      // long term, but writing them takes time. In the meantime, we fall back
-      // to the existing UI when the string is missing.
-      return absl::nullopt;
-  }
-  return l10n_util::GetStringUTF16(message_id);
-}
+absl::optional<std::u16string> PermissionRequest::GetRequestChipText(
+    ChipTextType type) const {
+  static base::NoDestructor<std::map<RequestType, std::vector<int>>> kMessageIds(
+      {{RequestType::kArSession, {IDS_AR_PERMISSION_CHIP, -1, -1, -1, -1, -1}},
+       {RequestType::kCameraStream,
+        {IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_CHIP, -1,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_CAMERA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_CAMERA_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kClipboard,
+        {IDS_CLIPBOARD_PERMISSION_CHIP, -1, -1, -1, -1, -1}},
+       {RequestType::kGeolocation,
+        {IDS_GEOLOCATION_PERMISSION_CHIP,
+         IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kIdleDetection,
+        {IDS_IDLE_DETECTION_PERMISSION_CHIP, -1, -1, -1, -1, -1}},
+       {RequestType::kMicStream,
+        {IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_CHIP, -1,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kMidiSysex,
+        {IDS_MIDI_SYSEX_PERMISSION_CHIP, -1, -1, -1, -1, -1}},
+       {RequestType::kNotifications,
+        {IDS_NOTIFICATION_PERMISSIONS_CHIP,
+         IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_NOTIFICATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         IDS_PERMISSIONS_NOTIFICATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kVrSession,
+        {IDS_VR_PERMISSION_CHIP, -1, -1, -1, -1, -1}}});
 
-absl::optional<std::u16string> PermissionRequest::GetQuietChipText() const {
-  int message_id;
-  switch (request_type_) {
-    case RequestType::kGeolocation:
-      message_id = IDS_GEOLOCATION_PERMISSION_BLOCKED_CHIP;
-      break;
-    case RequestType::kNotifications:
-      message_id = IDS_NOTIFICATION_PERMISSIONS_BLOCKED_CHIP;
-      break;
-    default:
-      return absl::nullopt;
-  }
-  return l10n_util::GetStringUTF16(message_id);
+  auto messages = kMessageIds->find(request_type_);
+  if (messages != kMessageIds->end() && messages->second[type] != -1)
+    return l10n_util::GetStringUTF16(messages->second[type]);
+
+  return absl::nullopt;
 }
 
 std::u16string PermissionRequest::GetMessageTextFragment() const {

@@ -14,11 +14,13 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/browser/open_tab_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -199,6 +201,98 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
                                content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
                    .value.GetBool());
 }
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
+                       ShouldUpdateActiverPRMAndObservations) {
+  constexpr char kRequestNotifications[] = R"(
+    new Promise(resolve => {
+      Notification.requestPermission().then(function (permission) {
+        resolve(permission)
+      });
+    })
+    )";
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+
+  // Setup: open 2 tabs at the same origin
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  content::WebContents* embedder_contents_tab_0 =
+      tab_strip->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents_tab_0);
+  content::RenderFrameHost* rfh_tab_0 =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(rfh_tab_0)->Focus();
+  embedder_contents_tab_0 = tab_strip->GetActiveWebContents();
+  auto* manager_tab_0 = permissions::PermissionRequestManager::FromWebContents(
+      embedder_contents_tab_0);
+  permissions::PermissionRequestObserver observer_tab_0(
+      embedder_contents_tab_0);
+
+  chrome::NewTabToRight(browser());
+  EXPECT_EQ(2, tab_strip->count());
+
+  tab_strip->ActivateTabAt(1);
+  content::RenderFrameHost* rfh_tab_1 =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents* embedder_contents_tab_1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* manager_tab_1 = permissions::PermissionRequestManager::FromWebContents(
+      embedder_contents_tab_1);
+  permissions::PermissionRequestObserver observer_tab_1(
+      embedder_contents_tab_1);
+
+  tab_strip->ActivateTabAt(0);
+
+  // Obtain the chip controller instance. The chip controller instance is tied
+  // to the location bar view instance. Since the location bar view instance is
+  // reused across multiple tabs, this in turn also means that the chip
+  // controller instance is the same across multiple tabs.
+  LocationBarView* location_bar =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  ASSERT_TRUE(location_bar);
+  ChipController* chip_controller = location_bar->chip_controller();
+
+  // Trigger permission request on first tab
+  EXPECT_FALSE(manager_tab_0->IsRequestInProgress());
+  EXPECT_TRUE(content::ExecJs(
+      rfh_tab_0, kRequestNotifications,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  observer_tab_0.Wait();
+  EXPECT_TRUE(manager_tab_0->IsRequestInProgress());
+
+  // Close first tab
+  tab_strip->CloseWebContentsAt(0, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_FALSE(manager_tab_1->IsRequestInProgress());
+
+  // After closing the first tab, the chip controller should no longer be
+  // observing any permission request manager. It should also no longer hold a
+  // reference to a Permission Request Manager instance.
+  ASSERT_FALSE(chip_controller->IsInObserverList());
+  ASSERT_FALSE(chip_controller->active_permission_request_manager_for_testing()
+                   .has_value());
+
+  // Trigger a request on the second (the now only remaining) tab.
+  EXPECT_TRUE(content::ExecJs(
+      rfh_tab_1, kRequestNotifications,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  observer_tab_1.Wait();
+
+  // During the request, the chip controller should be observing the correct
+  // permission request manager instance, and have a reference to the same.
+  EXPECT_TRUE(manager_tab_1->IsRequestInProgress());
+  ASSERT_TRUE(chip_controller->active_permission_request_manager_for_testing()
+                  .has_value());
+  ASSERT_EQ(
+      chip_controller->active_permission_request_manager_for_testing().value(),
+      manager_tab_1);
+  ASSERT_TRUE(manager_tab_1->get_observer_list_for_testing()->HasObserver(
+      chip_controller));
+}
+
 class PermissionRequestChipGestureInsensitiveBrowserTest
     : public InProcessBrowserTest {
  public:

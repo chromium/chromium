@@ -31,8 +31,9 @@ bool PermissionPromptDesktop::UpdateBrowser() {
   return was_browser_changed;
 }
 
-void PermissionPromptDesktop::UpdateAnchor() {
+bool PermissionPromptDesktop::UpdateAnchor() {
   UpdateBrowser();
+  return true;
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior
