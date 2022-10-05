@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 
 #include <string>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_page_handler.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,7 +32,7 @@
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 void AddStringResources(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kStrings[] = {
@@ -121,8 +121,7 @@ bool CrostiniUpgraderUI::RequestClosePage() {
 }
 
 void CrostiniUpgraderUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::crostini_upgrader::mojom::PageHandlerFactory>
+    mojo::PendingReceiver<crostini_upgrader::mojom::PageHandlerFactory>
         pending_receiver) {
   if (page_factory_receiver_.is_bound()) {
     page_factory_receiver_.reset();
@@ -132,8 +131,8 @@ void CrostiniUpgraderUI::BindInterface(
 }
 
 void CrostiniUpgraderUI::CreatePageHandler(
-    mojo::PendingRemote<chromeos::crostini_upgrader::mojom::Page> pending_page,
-    mojo::PendingReceiver<chromeos::crostini_upgrader::mojom::PageHandler>
+    mojo::PendingRemote<crostini_upgrader::mojom::Page> pending_page,
+    mojo::PendingReceiver<crostini_upgrader::mojom::PageHandler>
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
 
@@ -156,4 +155,4 @@ void CrostiniUpgraderUI::OnPageClosed() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrostiniUpgraderUI)
 
-}  // namespace chromeos
+}  // namespace ash

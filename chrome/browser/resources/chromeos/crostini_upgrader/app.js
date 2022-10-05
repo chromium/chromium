@@ -109,7 +109,7 @@ Polymer({
     /** @private */
     precheckStatus_: {
       type: Number,
-      value: chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK,
+      value: ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK,
     },
 
     /**
@@ -159,8 +159,7 @@ Polymer({
         this.state_ = State.BACKUP_ERROR;
       }),
       callbackRouter.precheckStatus.addListener((status) => {
-        if (status ===
-            chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK) {
+        if (status === ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.OK) {
           this.precheckSuccessCallback_();
           this.precheckStatus_ = status;
         } else {
@@ -494,11 +493,10 @@ Polymer({
         break;
       case State.PRECHECKS_FAILED:
         switch (precheckStatus) {
-          case chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus
-              .NETWORK_FAILURE:
+          case ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.NETWORK_FAILURE:
             messageId = 'precheckNoNetwork';
             break;
-          case chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER:
+          case ash.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER:
             messageId = 'precheckNoPower';
             break;
           default:

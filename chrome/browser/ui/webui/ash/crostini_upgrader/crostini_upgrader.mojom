@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.crostini_upgrader.mojom;
+module ash.crostini_upgrader.mojom;
 
 enum UpgradePrecheckStatus {
   // Good to continue

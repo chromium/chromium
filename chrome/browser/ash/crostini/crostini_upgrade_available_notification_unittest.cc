@@ -13,7 +13,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -66,9 +66,9 @@ class CrostiniUpgradeAvailableNotificationTest
     ash::ChunneldClient::Shutdown();
   }
 
-  chromeos::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
+  ash::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
     auto url = GURL{chrome::kChromeUICrostiniUpgraderUrl};
-    return static_cast<chromeos::CrostiniUpgraderDialog*>(
+    return static_cast<ash::CrostiniUpgraderDialog*>(
         chromeos::SystemWebDialogDelegate::FindInstance(url.spec()));
   }
 

@@ -29,7 +29,7 @@ js_library("app") {
 
 js_library("browser_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

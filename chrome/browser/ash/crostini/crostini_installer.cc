@@ -25,7 +25,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -193,7 +193,7 @@ void CrostiniInstaller::ShowDialog(CrostiniUISurface ui_surface) {
 
   // TODO(lxj): We should pass the dialog |this| here instead of letting the
   // webui to call |GetForProfile()| later.
-  chromeos::CrostiniInstallerDialog::Show(profile_);
+  ash::CrostiniInstallerDialog::Show(profile_);
 }
 
 void CrostiniInstaller::Install(CrostiniManager::RestartOptions options,

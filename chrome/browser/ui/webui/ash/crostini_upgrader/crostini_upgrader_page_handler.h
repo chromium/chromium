@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_upgrader_ui_delegate.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,19 +18,18 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class CrostiniUpgraderPageHandler
-    : public chromeos::crostini_upgrader::mojom::PageHandler,
+    : public crostini_upgrader::mojom::PageHandler,
       public crostini::CrostiniUpgraderUIObserver {
  public:
   CrostiniUpgraderPageHandler(
       content::WebContents* web_contents,
       crostini::CrostiniUpgraderUIDelegate* upgrader_ui_delegate,
-      mojo::PendingReceiver<chromeos::crostini_upgrader::mojom::PageHandler>
+      mojo::PendingReceiver<crostini_upgrader::mojom::PageHandler>
           pending_page_handler,
-      mojo::PendingRemote<chromeos::crostini_upgrader::mojom::Page>
-          pending_page,
+      mojo::PendingRemote<crostini_upgrader::mojom::Page> pending_page,
       base::OnceClosure on_page_closed,
       base::OnceCallback<void(bool)> launch_callback);
 
@@ -43,7 +42,7 @@ class CrostiniUpgraderPageHandler
   // Send a close request to the web page.
   void RequestClosePage();
 
-  // chromeos::crostini_upgrader::mojom::PageHandler:
+  // crostini_upgrader::mojom::PageHandler:
   void Backup(bool show_file_chooser) override;
   void StartPrechecks() override;
   void Upgrade() override;
@@ -58,8 +57,8 @@ class CrostiniUpgraderPageHandler
   void OnBackupProgress(int percent) override;
   void OnBackupSucceeded(bool was_cancelled) override;
   void OnBackupFailed() override;
-  void PrecheckStatus(chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus
-                          status) override;
+  void PrecheckStatus(
+      crostini_upgrader::mojom::UpgradePrecheckStatus status) override;
   void OnUpgradeProgress(const std::vector<std::string>& messages) override;
   void OnUpgradeSucceeded() override;
   void OnUpgradeFailed() override;
@@ -74,8 +73,8 @@ class CrostiniUpgraderPageHandler
   // Used to parent open/save dialogs.
   content::WebContents* web_contents_;                          // Not owned.
   crostini::CrostiniUpgraderUIDelegate* upgrader_ui_delegate_;  // Not owned.
-  mojo::Receiver<chromeos::crostini_upgrader::mojom::PageHandler> receiver_;
-  mojo::Remote<chromeos::crostini_upgrader::mojom::Page> page_;
+  mojo::Receiver<crostini_upgrader::mojom::PageHandler> receiver_;
+  mojo::Remote<crostini_upgrader::mojom::Page> page_;
   base::OnceClosure on_page_closed_;
   base::OnceCallback<void(bool)> launch_callback_;
   // Will we need to restart the container as part of launch_callback?
@@ -86,6 +85,6 @@ class CrostiniUpgraderPageHandler
   base::WeakPtrFactory<CrostiniUpgraderPageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_PAGE_HANDLER_H_

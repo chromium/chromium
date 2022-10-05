@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/crostini/crostini_dialogue_browser_test_util.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "content/public/browser/web_ui.h"
@@ -40,13 +40,13 @@ class CrostiniUpgraderDialogBrowserTest : public CrostiniDialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    chromeos::CrostiniUpgraderDialog::Show(browser()->profile(),
-                                           base::DoNothing(), false);
+    ash::CrostiniUpgraderDialog::Show(browser()->profile(), base::DoNothing(),
+                                      false);
   }
 
-  chromeos::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
+  ash::CrostiniUpgraderDialog* GetCrostiniUpgraderDialog() {
     auto url = GURL{chrome::kChromeUICrostiniUpgraderUrl};
-    return static_cast<chromeos::CrostiniUpgraderDialog*>(
+    return static_cast<ash::CrostiniUpgraderDialog*>(
         chromeos::SystemWebDialogDelegate::FindInstance(url.spec()));
   }
 
@@ -135,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniUpgraderDialogBrowserTest, ShowsOnAppLaunch) {
   DowngradeOSRelease();
   RegisterApp();
 
-  chromeos::CrostiniUpgraderDialog::Show(browser()->profile(),
-                                         base::DoNothing());
+  ash::CrostiniUpgraderDialog::Show(browser()->profile(), base::DoNothing());
   ExpectDialog();
 
   base::RunLoop run_loop;

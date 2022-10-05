@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/crostini/crostini_expired_container_warning_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,7 +60,7 @@ CrostiniExpiredContainerWarningView::CrostiniExpiredContainerWarningView(
   // Show upgrade dialog on accept, and pass in the callback.
   SetAcceptCallback(base::BindOnce(
       [](base::WeakPtr<CrostiniExpiredContainerWarningView> weak_this) {
-        chromeos::CrostiniUpgraderDialog::Show(
+        ash::CrostiniUpgraderDialog::Show(
             weak_this->profile_,
             base::BindOnce(
                 [](std::vector<base::OnceClosure> callbacks) {

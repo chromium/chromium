@@ -66,8 +66,7 @@ class FakePageHandler extends TestBrowserProxy {
 class FakeBrowserProxy {
   constructor() {
     this.handler = new FakePageHandler();
-    this.callbackRouter =
-        new chromeos.crostiniInstaller.mojom.PageCallbackRouter();
+    this.callbackRouter = new ash.crostiniInstaller.mojom.PageCallbackRouter();
     /** @type {appManagement.mojom.PageRemote} */
     this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
   }

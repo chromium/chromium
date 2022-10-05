@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 
 #include <string>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_page_handler.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -131,7 +131,7 @@ void AddStringResources(content::WebUIDataSource* source) {
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI{web_ui} {
@@ -142,7 +142,7 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
   AddStringResources(source);
   source->AddBoolean(
       "diskResizingEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kCrostiniDiskResizing));
+      base::FeatureList::IsEnabled(features::kCrostiniDiskResizing));
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
 
@@ -184,8 +184,7 @@ void CrostiniInstallerUI::ClickInstallForTesting() {
 }
 
 void CrostiniInstallerUI::BindInterface(
-    mojo::PendingReceiver<
-        chromeos::crostini_installer::mojom::PageHandlerFactory>
+    mojo::PendingReceiver<crostini_installer::mojom::PageHandlerFactory>
         pending_receiver) {
   if (page_factory_receiver_.is_bound()) {
     page_factory_receiver_.reset();
@@ -195,8 +194,8 @@ void CrostiniInstallerUI::BindInterface(
 }
 
 void CrostiniInstallerUI::CreatePageHandler(
-    mojo::PendingRemote<chromeos::crostini_installer::mojom::Page> pending_page,
-    mojo::PendingReceiver<chromeos::crostini_installer::mojom::PageHandler>
+    mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
+    mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
 
@@ -218,4 +217,4 @@ void CrostiniInstallerUI::OnPageClosed() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(CrostiniInstallerUI)
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,7 +30,7 @@ GURL GetUrl() {
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 void CrostiniUpgraderDialog::Show(Profile* profile,
                                   base::OnceClosure launch_closure,
@@ -97,11 +97,11 @@ void CrostiniUpgraderDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
 
-  const ash::ShelfID shelf_id(Id());
-  params->init_properties_container.SetProperty(ash::kShelfIDKey,
+  const ShelfID shelf_id(Id());
+  params->init_properties_container.SetProperty(kShelfIDKey,
                                                 shelf_id.Serialize());
-  params->init_properties_container.SetProperty<int>(ash::kShelfItemTypeKey,
-                                                     ash::TYPE_DIALOG);
+  params->init_properties_container.SetProperty<int>(kShelfItemTypeKey,
+                                                     TYPE_DIALOG);
 
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   params->init_properties_container.SetProperty(
@@ -174,4 +174,4 @@ void CrostiniUpgraderDialog::OnWebContentsFinishedLoad() {
       l10n_util::GetStringUTF16(IDS_CROSTINI_UPGRADER_TITLE));
 }
 
-}  // namespace chromeos
+}  // namespace ash

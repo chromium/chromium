@@ -24,7 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -416,7 +416,7 @@ void CrostiniHandler::LaunchTerminal(apps::IntentPtr intent) {
 void CrostiniHandler::HandleRequestContainerUpgradeView(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
-  chromeos::CrostiniUpgraderDialog::Show(
+  CrostiniUpgraderDialog::Show(
       profile_,
       base::BindOnce(&CrostiniHandler::LaunchTerminal,
                      handler_weak_ptr_factory_.GetWeakPtr(),

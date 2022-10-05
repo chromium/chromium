@@ -258,11 +258,11 @@
 #include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
@@ -1083,12 +1083,12 @@ void PopulateChromeWebUIFrameBinders(
       ash::GuestOSInstallerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::crostini_installer::mojom::PageHandlerFactory,
-      chromeos::CrostiniInstallerUI>(map);
+      ash::crostini_installer::mojom::PageHandlerFactory,
+      ash::CrostiniInstallerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::crostini_upgrader::mojom::PageHandlerFactory,
-      chromeos::CrostiniUpgraderUI>(map);
+      ash::crostini_upgrader::mojom::PageHandlerFactory,
+      ash::CrostiniUpgraderUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,

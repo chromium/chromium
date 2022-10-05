@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -287,15 +287,14 @@ void CrostiniUpgrader::PowerChanged(
 }
 
 void CrostiniUpgrader::DoPrechecks() {
-  chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus status;
+  ash::crostini_upgrader::mojom::UpgradePrecheckStatus status;
   if (content::GetNetworkConnectionTracker()->IsOffline()) {
-    status = chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus::
-        NETWORK_FAILURE;
-  } else if (!power_status_good_) {
     status =
-        chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus::LOW_POWER;
+        ash::crostini_upgrader::mojom::UpgradePrecheckStatus::NETWORK_FAILURE;
+  } else if (!power_status_good_) {
+    status = ash::crostini_upgrader::mojom::UpgradePrecheckStatus::LOW_POWER;
   } else {
-    status = chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus::OK;
+    status = ash::crostini_upgrader::mojom::UpgradePrecheckStatus::OK;
   }
 
   for (auto& observer : upgrader_observers_) {

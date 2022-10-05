@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
@@ -11,7 +11,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class CrostiniUpgraderUI;
 
@@ -53,12 +53,17 @@ class CrostiniUpgraderDialog : public SystemWebDialogDelegate {
   void OnWebContentsFinishedLoad() override;
 
   base::WeakPtr<CrostiniUpgraderUI> upgrader_ui_ = nullptr;  // Not owned.
-  Profile* profile_;                           // Not owned
+  Profile* profile_;                                         // Not owned
   const bool only_run_launch_closure_on_restart_;
   base::OnceClosure launch_closure_;
   base::OnceClosure deletion_closure_for_testing_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CrostiniUpgraderDialog;
+}
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_UPGRADER_CROSTINI_UPGRADER_DIALOG_H_

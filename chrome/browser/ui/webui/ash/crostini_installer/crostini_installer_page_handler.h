@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer.mojom.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,17 +18,16 @@ namespace crostini {
 class CrostiniInstallerUIDelegate;
 }  // namespace crostini
 
-namespace chromeos {
+namespace ash {
 
 class CrostiniInstallerPageHandler
-    : public chromeos::crostini_installer::mojom::PageHandler {
+    : public crostini_installer::mojom::PageHandler {
  public:
   CrostiniInstallerPageHandler(
       crostini::CrostiniInstallerUIDelegate* installer_ui_delegate,
-      mojo::PendingReceiver<chromeos::crostini_installer::mojom::PageHandler>
+      mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
           pending_page_handler,
-      mojo::PendingRemote<chromeos::crostini_installer::mojom::Page>
-          pending_page,
+      mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
       base::OnceClosure on_page_closed);
 
   CrostiniInstallerPageHandler(const CrostiniInstallerPageHandler&) = delete;
@@ -37,7 +36,7 @@ class CrostiniInstallerPageHandler
 
   ~CrostiniInstallerPageHandler() override;
 
-  // chromeos::crostini_installer::mojom::PageHandler:
+  // crostini_installer::mojom::PageHandler:
   void Install(int64_t disk_size_bytes, const std::string& username) override;
   void Cancel() override;
   void CancelBeforeStart() override;
@@ -55,13 +54,13 @@ class CrostiniInstallerPageHandler
   void OnCanceled();
 
   crostini::CrostiniInstallerUIDelegate* installer_ui_delegate_;
-  mojo::Receiver<chromeos::crostini_installer::mojom::PageHandler> receiver_;
-  mojo::Remote<chromeos::crostini_installer::mojom::Page> page_;
+  mojo::Receiver<crostini_installer::mojom::PageHandler> receiver_;
+  mojo::Remote<crostini_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;
 
   base::WeakPtrFactory<CrostiniInstallerPageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_CROSTINI_INSTALLER_CROSTINI_INSTALLER_PAGE_HANDLER_H_

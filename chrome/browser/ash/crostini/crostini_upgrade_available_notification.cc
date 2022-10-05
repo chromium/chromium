@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -54,7 +54,7 @@ class CrostiniUpgradeAvailableNotificationDelegate
   }
 
   void HandleButtonClick() {
-    chromeos::CrostiniUpgraderDialog::Show(profile_, base::DoNothing());
+    ash::CrostiniUpgraderDialog::Show(profile_, base::DoNothing());
     if (notification_) {
       notification_->UpgradeDialogShown();
     }

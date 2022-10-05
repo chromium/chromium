@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_page_handler.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
 
 #include <algorithm>
 #include <utility>
@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -55,9 +55,9 @@ void OnAmountOfFreeDiskSpace(
 
 CrostiniInstallerPageHandler::CrostiniInstallerPageHandler(
     crostini::CrostiniInstallerUIDelegate* installer_ui_delegate,
-    mojo::PendingReceiver<chromeos::crostini_installer::mojom::PageHandler>
+    mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
         pending_page_handler,
-    mojo::PendingRemote<chromeos::crostini_installer::mojom::Page> pending_page,
+    mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
     base::OnceClosure on_page_closed)
     : installer_ui_delegate_{installer_ui_delegate},
       receiver_{this, std::move(pending_page_handler)},
@@ -69,7 +69,7 @@ CrostiniInstallerPageHandler::~CrostiniInstallerPageHandler() = default;
 void CrostiniInstallerPageHandler::Install(int64_t disk_size_bytes,
                                            const std::string& username) {
   crostini::CrostiniManager::RestartOptions options{};
-  if (base::FeatureList::IsEnabled(chromeos::features::kCrostiniDiskResizing)) {
+  if (base::FeatureList::IsEnabled(features::kCrostiniDiskResizing)) {
     options.disk_size_bytes = disk_size_bytes;
   }
   options.container_username = username;
@@ -125,4 +125,4 @@ void CrostiniInstallerPageHandler::RequestClosePage() {
   page_->RequestClose();
 }
 
-}  // namespace chromeos
+}  // namespace ash

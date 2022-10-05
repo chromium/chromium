@@ -139,8 +139,8 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -2543,12 +2543,11 @@ AutotestPrivateRunCrostiniInstallerFunction::Run() {
   // start terminal app on completion.  After starting the installer,
   // we call RestartCrostini and we will be put in the pending restarters
   // queue and be notified on success/otherwise of installation.
-  chromeos::CrostiniInstallerDialog::Show(
+  ash::CrostiniInstallerDialog::Show(
       profile,
-      base::BindOnce(
-          [](base::WeakPtr<chromeos::CrostiniInstallerUI> installer_ui) {
-            installer_ui->ClickInstallForTesting();
-          }));
+      base::BindOnce([](base::WeakPtr<ash::CrostiniInstallerUI> installer_ui) {
+        installer_ui->ClickInstallForTesting();
+      }));
   crostini::CrostiniManager::GetForProfile(profile)->RestartCrostini(
       crostini::DefaultContainerId(),
       base::BindOnce(

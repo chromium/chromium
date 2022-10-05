@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom-forward.h"
 
 namespace base {
 class FilePath;
@@ -31,7 +31,7 @@ class CrostiniUpgraderUIObserver {
   virtual void OnBackupSucceeded(bool was_cancelled) = 0;
   virtual void OnBackupFailed() = 0;
   virtual void PrecheckStatus(
-      chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus status) = 0;
+      ash::crostini_upgrader::mojom::UpgradePrecheckStatus status) = 0;
   virtual void OnUpgradeProgress(const std::vector<std::string>& messages) = 0;
   virtual void OnUpgradeSucceeded() = 0;
   virtual void OnUpgradeFailed() = 0;

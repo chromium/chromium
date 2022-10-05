@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_page_handler.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_page_handler.h"
 
 #include <utility>
 
@@ -11,17 +11,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ui/webui/chromeos/crostini_upgrader/crostini_upgrader_dialog.h"
+#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
 #include "content/public/browser/web_contents.h"
 
-namespace chromeos {
+namespace ash {
 
 CrostiniUpgraderPageHandler::CrostiniUpgraderPageHandler(
     content::WebContents* web_contents,
     crostini::CrostiniUpgraderUIDelegate* upgrader_ui_delegate,
-    mojo::PendingReceiver<chromeos::crostini_upgrader::mojom::PageHandler>
+    mojo::PendingReceiver<crostini_upgrader::mojom::PageHandler>
         pending_page_handler,
-    mojo::PendingRemote<chromeos::crostini_upgrader::mojom::Page> pending_page,
+    mojo::PendingRemote<crostini_upgrader::mojom::Page> pending_page,
     base::OnceClosure on_page_closed,
     base::OnceCallback<void(bool)> launch_callback)
     : web_contents_{web_contents},
@@ -147,7 +147,7 @@ void CrostiniUpgraderPageHandler::OnBackupFailed() {
 }
 
 void CrostiniUpgraderPageHandler::PrecheckStatus(
-    chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus status) {
+    crostini_upgrader::mojom::UpgradePrecheckStatus status) {
   page_->PrecheckStatus(status);
 }
 
@@ -177,4 +177,4 @@ void CrostiniUpgraderPageHandler::OnLogFileCreated(const base::FilePath& path) {
   page_->OnLogFileCreated(path.AsUTF8Unsafe());
 }
 
-}  // namespace chromeos
+}  // namespace ash
