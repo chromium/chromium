@@ -6,6 +6,7 @@
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -18,7 +19,8 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
       network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kNever,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone);
+      /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
+      network::mojom::blink::IPAddressSpace::kUnknown);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 
@@ -32,7 +34,8 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
       network::mojom::blink::CrossOriginEmbedderPolicyValue::kNone,
       network::mojom::blink::ReferrerPolicy::kAlways,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone);
+      /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
+      network::mojom::blink::IPAddressSpace::kUnknown);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 

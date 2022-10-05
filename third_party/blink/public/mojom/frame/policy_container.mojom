@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
 
@@ -22,6 +23,11 @@ struct PolicyContainerPolicies {
   bool is_anonymous = false;
   network.mojom.WebSandboxFlags sandbox_flags =
     network.mojom.WebSandboxFlags.kNone;
+
+  // This is necessary for service worker restored from database to perform
+  // Private Network Access checks.
+  network.mojom.IPAddressSpace ip_address_space =
+      network.mojom.IPAddressSpace.kUnknown;
 };
 
 // This interface is implemented in the browser process. It defines methods to

@@ -167,7 +167,8 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
                 network::mojom::CrossOriginEmbedderPolicyValue::kNone,
                 network::mojom::ReferrerPolicy::kAlways,
                 Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone),
+                /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
+                network::mojom::blink::IPAddressSpace::kUnknown),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
 }
 

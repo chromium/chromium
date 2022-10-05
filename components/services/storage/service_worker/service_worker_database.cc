@@ -21,6 +21,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1621,6 +1622,44 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationData(
   return status;
 }
 
+network::mojom::ReferrerPolicy ConvertReferrerPolicyFromProtocolBufferToMojom(
+    ServiceWorkerRegistrationData::ReferrerPolicyValue value) {
+  switch (value) {
+    case ServiceWorkerRegistrationData::DEFAULT:
+      return network::mojom::ReferrerPolicy::kDefault;
+    case ServiceWorkerRegistrationData::ALWAYS:
+      return network::mojom::ReferrerPolicy::kAlways;
+    case ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE:
+      return network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+    case ServiceWorkerRegistrationData::NEVER:
+      return network::mojom::ReferrerPolicy::kNever;
+    case ServiceWorkerRegistrationData::ORIGIN:
+      return network::mojom::ReferrerPolicy::kOrigin;
+    case ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN:
+      return network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+    case ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN:
+      return network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+    case ServiceWorkerRegistrationData::SAME_ORIGIN:
+      return network::mojom::ReferrerPolicy::kSameOrigin;
+    case ServiceWorkerRegistrationData::STRICT_ORIGIN:
+      return network::mojom::ReferrerPolicy::kStrictOrigin;
+  }
+}
+
+network::mojom::IPAddressSpace ConvertIPAddressSpaceFromProtocolBufferToMojom(
+    ServiceWorkerRegistrationData::IPAddressSpace value) {
+  switch (value) {
+    case ServiceWorkerRegistrationData::LOCAL:
+      return network::mojom::IPAddressSpace::kLocal;
+    case ServiceWorkerRegistrationData::PRIVATE:
+      return network::mojom::IPAddressSpace::kPrivate;
+    case ServiceWorkerRegistrationData::PUBLIC:
+      return network::mojom::IPAddressSpace::kPublic;
+    case ServiceWorkerRegistrationData::UNKNOWN:
+      return network::mojom::IPAddressSpace::kUnknown;
+  }
+}
+
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     const std::string& serialized,
     const blink::StorageKey& key,
@@ -1834,56 +1873,32 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
           blink::mojom::PolicyContainerPolicies::New();
     }
     auto& policies = data.policy_container_policies();
-    if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
-            policies.referrer_policy())) {
-      DLOG(ERROR) << "Referrer policy in policy container policies '"
-                  << policies.referrer_policy() << "' is not valid.";
-      return Status::kErrorCorrupted;
-    }
     if (policies.has_referrer_policy()) {
-      switch (policies.referrer_policy()) {
-        case ServiceWorkerRegistrationData::DEFAULT:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kDefault;
-          break;
-        case ServiceWorkerRegistrationData::ALWAYS:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kAlways;
-          break;
-        case ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
-          break;
-        case ServiceWorkerRegistrationData::NEVER:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kNever;
-          break;
-        case ServiceWorkerRegistrationData::ORIGIN:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kOrigin;
-          break;
-        case ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
-          break;
-        case ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
-          break;
-        case ServiceWorkerRegistrationData::SAME_ORIGIN:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kSameOrigin;
-          break;
-        case ServiceWorkerRegistrationData::STRICT_ORIGIN:
-          (*out)->policy_container_policies->referrer_policy =
-              network::mojom::ReferrerPolicy::kStrictOrigin;
-          break;
+      if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
+              policies.referrer_policy())) {
+        DLOG(ERROR) << "Referrer policy in policy container policies '"
+                    << policies.referrer_policy() << "' is not valid.";
+        return Status::kErrorCorrupted;
       }
+      (*out)->policy_container_policies->referrer_policy =
+          ConvertReferrerPolicyFromProtocolBufferToMojom(
+              policies.referrer_policy());
     }
     if (policies.has_sandbox_flags()) {
       (*out)->policy_container_policies->sandbox_flags =
           static_cast<network::mojom::WebSandboxFlags>(
               policies.sandbox_flags());
+    }
+    if (policies.has_ip_address_space()) {
+      if (!ServiceWorkerRegistrationData_IPAddressSpace_IsValid(
+              policies.ip_address_space())) {
+        DLOG(ERROR) << "IP address space in policy container policies '"
+                    << policies.ip_address_space() << "' is not valid.";
+        return Status::kErrorCorrupted;
+      }
+      (*out)->policy_container_policies->ip_address_space =
+          ConvertIPAddressSpaceFromProtocolBufferToMojom(
+              policies.ip_address_space());
     }
   }
 
@@ -1900,6 +1915,46 @@ ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
       return ServiceWorkerRegistrationData::REQUIRE_CORP;
     case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
       return ServiceWorkerRegistrationData::CREDENTIALLESS;
+  }
+}
+
+ServiceWorkerRegistrationData::ReferrerPolicyValue
+ConvertReferrerPolicyFromMojomToProtocolBuffer(
+    network::mojom::ReferrerPolicy value) {
+  switch (value) {
+    case network::mojom::ReferrerPolicy::kDefault:
+      return ServiceWorkerRegistrationData::DEFAULT;
+    case network::mojom::ReferrerPolicy::kAlways:
+      return ServiceWorkerRegistrationData::ALWAYS;
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+      return ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE;
+    case network::mojom::ReferrerPolicy::kNever:
+      return ServiceWorkerRegistrationData::NEVER;
+    case network::mojom::ReferrerPolicy::kOrigin:
+      return ServiceWorkerRegistrationData::ORIGIN;
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      return ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN;
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+      return ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN;
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+      return ServiceWorkerRegistrationData::SAME_ORIGIN;
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      return ServiceWorkerRegistrationData::STRICT_ORIGIN;
+  }
+}
+
+ServiceWorkerRegistrationData::IPAddressSpace
+ConvertIPAddressSpaceFromMojomToProtocolBuffer(
+    network::mojom::IPAddressSpace value) {
+  switch (value) {
+    case network::mojom::IPAddressSpace::kLocal:
+      return ServiceWorkerRegistrationData::LOCAL;
+    case network::mojom::IPAddressSpace::kPrivate:
+      return ServiceWorkerRegistrationData::PRIVATE;
+    case network::mojom::IPAddressSpace::kPublic:
+      return ServiceWorkerRegistrationData::PUBLIC;
+    case network::mojom::IPAddressSpace::kUnknown:
+      return ServiceWorkerRegistrationData::UNKNOWN;
   }
 }
 
@@ -2008,42 +2063,14 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   if (registration.policy_container_policies) {
     ServiceWorkerRegistrationData::PolicyContainerPolicies* policies =
         data.mutable_policy_container_policies();
-    switch (registration.policy_container_policies->referrer_policy) {
-      case network::mojom::ReferrerPolicy::kDefault:
-        policies->set_referrer_policy(ServiceWorkerRegistrationData::DEFAULT);
-        break;
-      case network::mojom::ReferrerPolicy::kAlways:
-        policies->set_referrer_policy(ServiceWorkerRegistrationData::ALWAYS);
-        break;
-      case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
-        policies->set_referrer_policy(
-            ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE);
-        break;
-      case network::mojom::ReferrerPolicy::kNever:
-        policies->set_referrer_policy(ServiceWorkerRegistrationData::NEVER);
-        break;
-      case network::mojom::ReferrerPolicy::kOrigin:
-        policies->set_referrer_policy(ServiceWorkerRegistrationData::ORIGIN);
-        break;
-      case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
-        policies->set_referrer_policy(
-            ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN);
-        break;
-      case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
-        policies->set_referrer_policy(
-            ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
-        break;
-      case network::mojom::ReferrerPolicy::kSameOrigin:
-        policies->set_referrer_policy(
-            ServiceWorkerRegistrationData::SAME_ORIGIN);
-        break;
-      case network::mojom::ReferrerPolicy::kStrictOrigin:
-        policies->set_referrer_policy(
-            ServiceWorkerRegistrationData::STRICT_ORIGIN);
-        break;
-    }
+    policies->set_referrer_policy(
+        ConvertReferrerPolicyFromMojomToProtocolBuffer(
+            registration.policy_container_policies->referrer_policy));
     policies->set_sandbox_flags(static_cast<int>(
         registration.policy_container_policies->sandbox_flags));
+    policies->set_ip_address_space(
+        ConvertIPAddressSpaceFromMojomToProtocolBuffer(
+            registration.policy_container_policies->ip_address_space));
   }
 
   std::string value;

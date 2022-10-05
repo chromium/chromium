@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_POLICY_CONTAINER_H_
 
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-shared.h"
@@ -26,6 +27,8 @@ struct WebPolicyContainerPolicies {
   bool is_anonymous = false;
   network::mojom::WebSandboxFlags sandbox_flags =
       network::mojom::WebSandboxFlags::kNone;
+  network::mojom::IPAddressSpace ip_address_space =
+      network::mojom::IPAddressSpace::kUnknown;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled

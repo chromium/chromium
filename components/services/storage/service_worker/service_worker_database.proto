@@ -59,9 +59,18 @@ message ServiceWorkerRegistrationData {
     STRICT_ORIGIN = 8;
   }
 
+  // https://wicg.github.io/private-network-access/#framework
+  enum IPAddressSpace {
+    UNKNOWN = 0;
+    LOCAL = 1;
+    PRIVATE = 2;
+    PUBLIC = 3;
+  }
+
   message PolicyContainerPolicies {
     optional ReferrerPolicyValue referrer_policy = 1 [default = DEFAULT];
     optional int32 sandbox_flags = 2 [default = 0];
+    optional IPAddressSpace ip_address_space = 3 [default = UNKNOWN];
     // TODO(https://crbug.com/1177199): add content security policies
   }
 

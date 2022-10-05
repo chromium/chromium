@@ -131,12 +131,14 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       is_anonymous(is_anonymous) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
-    const blink::mojom::PolicyContainerPolicies& policies) {
+    const blink::mojom::PolicyContainerPolicies& policies)
+    : referrer_policy(policies.referrer_policy),
+      ip_address_space(policies.ip_address_space),
+      content_security_policies(
+          mojo::Clone(policies.content_security_policies)),
+      sandbox_flags(policies.sandbox_flags),
+      is_anonymous(policies.is_anonymous) {
   cross_origin_embedder_policy.value = policies.cross_origin_embedder_policy;
-  referrer_policy = policies.referrer_policy;
-  content_security_policies = mojo::Clone(policies.content_security_policies);
-  is_anonymous = policies.is_anonymous;
-  sandbox_flags = policies.sandbox_flags;
 }
 
 PolicyContainerPolicies::PolicyContainerPolicies(
@@ -189,7 +191,8 @@ blink::mojom::PolicyContainerPoliciesPtr
 PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
   return blink::mojom::PolicyContainerPolicies::New(
       cross_origin_embedder_policy.value, referrer_policy,
-      mojo::Clone(content_security_policies), is_anonymous, sandbox_flags);
+      mojo::Clone(content_security_policies), is_anonymous, sandbox_flags,
+      ip_address_space);
 }
 
 PolicyContainerHost::PolicyContainerHost() = default;

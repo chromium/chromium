@@ -32,6 +32,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/service_worker/payment_handler_support.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -53,6 +54,7 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
@@ -1789,6 +1791,8 @@ void ServiceWorkerVersion::set_cross_origin_embedder_policy(
     network::CrossOriginEmbedderPolicy cross_origin_embedder_policy) {
   // Once it is set, the CrossOriginEmbedderPolicy is immutable.
   DCHECK(!client_security_state_ ||
+         client_security_state_->cross_origin_embedder_policy.value ==
+             network::mojom::CrossOriginEmbedderPolicyValue::kNone ||
          client_security_state_->cross_origin_embedder_policy ==
              cross_origin_embedder_policy);
   if (!client_security_state_) {
@@ -2026,6 +2030,16 @@ void ServiceWorkerVersion::StartWorkerInternal() {
   if (policy_container_host_) {
     params->policy_container =
         policy_container_host_->CreatePolicyContainerForBlink();
+
+    if (!client_security_state_) {
+      client_security_state_ = network::mojom::ClientSecurityState::New();
+    }
+    client_security_state_->ip_address_space =
+        policy_container_host_->ip_address_space();
+    client_security_state_->is_web_secure_context =
+        policy_container_host_->policies().is_web_secure_context;
+    client_security_state_->private_network_request_policy =
+        DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
   }
 
   embedded_worker_->Start(std::move(params),

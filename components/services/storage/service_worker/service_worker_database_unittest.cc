@@ -2847,6 +2847,20 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
       }
     }
   }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto ip_address_space : {
+             network::mojom::IPAddressSpace::kLocal,
+             network::mojom::IPAddressSpace::kPrivate,
+             network::mojom::IPAddressSpace::kPublic,
+             network::mojom::IPAddressSpace::kUnknown,
+         }) {
+      policies->ip_address_space = ip_address_space;
+      store_and_restore(policies->Clone());
+    }
+  }
 }
 
 // As part of crbug.com/1199077 ServiceWorkerDataBase was refactored to use
