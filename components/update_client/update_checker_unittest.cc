@@ -249,69 +249,110 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       << post_interceptor_->GetRequestsAsString();
 
   // Check the request.
-  const auto root =
+  const auto root_value =
       base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
+  ASSERT_TRUE(root_value);
+  const base::Value::Dict* root = root_value->GetIfDict();
   ASSERT_TRUE(root);
-  const auto* request = root->FindKey("request");
+  const auto* request = root->FindDict("request");
   ASSERT_TRUE(request);
-  EXPECT_TRUE(request->FindKey("@os"));
-  EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-  EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
-  EXPECT_TRUE(request->FindKey("arch"));
-  EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
-  EXPECT_EQ("params", request->FindKey("extra")->GetString());
-  EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
-  EXPECT_TRUE(request->FindKey("nacl_arch"));
-  EXPECT_EQ("fake_channel_string",
-            request->FindKey("prodchannel")->GetString());
-  EXPECT_EQ("30.0", request->FindKey("prodversion")->GetString());
-  EXPECT_EQ("3.1", request->FindKey("protocol")->GetString());
-  EXPECT_TRUE(request->FindKey("requestid"));
-  EXPECT_TRUE(request->FindKey("sessionid"));
-  EXPECT_EQ("1", request->FindKey("testrequest")->GetString());
-  EXPECT_EQ("fake_channel_string",
-            request->FindKey("updaterchannel")->GetString());
-  EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
-  EXPECT_TRUE(request->FindKey("domainjoined")->GetBool());
+  EXPECT_TRUE(request->contains("@os"));
+  ASSERT_TRUE(request->FindString("@updater"));
+  EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
+  ASSERT_TRUE(request->FindString("acceptformat"));
+  EXPECT_EQ("crx3", *request->FindString("acceptformat"));
+  EXPECT_TRUE(request->contains("arch"));
+  ASSERT_TRUE(request->FindString("dedup"));
+  EXPECT_EQ("cr", *request->FindString("dedup"));
+  ASSERT_TRUE(request->FindString("extra"));
+  EXPECT_EQ("params", *request->FindString("extra"));
+  ASSERT_TRUE(request->FindIntByDottedPath("hw.physmemory").has_value());
+  EXPECT_LT(0, *request->FindIntByDottedPath("hw.physmemory"));
+  EXPECT_TRUE(request->contains("nacl_arch"));
+  ASSERT_TRUE(request->FindString("prodchannel"));
+  EXPECT_EQ("fake_channel_string", *request->FindString("prodchannel"));
+  ASSERT_TRUE(request->FindString("prodversion"));
+  EXPECT_EQ("30.0", *request->FindString("prodversion"));
+  ASSERT_TRUE(request->FindString("protocol"));
+  EXPECT_EQ("3.1", *request->FindString("protocol"));
+  EXPECT_TRUE(request->contains("requestid"));
+  EXPECT_TRUE(request->contains("sessionid"));
+  ASSERT_TRUE(request->FindString("testrequest"));
+  EXPECT_EQ("1", *request->FindString("testrequest"));
+  ASSERT_TRUE(request->FindString("updaterchannel"));
+  EXPECT_EQ("fake_channel_string", *request->FindString("updaterchannel"));
+  ASSERT_TRUE(request->FindString("updaterversion"));
+  EXPECT_EQ("30.0", *request->FindString("updaterversion"));
+  ASSERT_TRUE(request->FindBool("domainjoined").has_value());
+  EXPECT_TRUE(request->FindBool("domainjoined").value());
 
   // No "dlpref" is sent by default.
-  EXPECT_FALSE(request->FindKey("dlpref"));
+  EXPECT_FALSE(request->contains("dlpref"));
 
-  EXPECT_TRUE(request->FindPath({"os", "arch"})->is_string());
+  EXPECT_TRUE(request->FindStringByDottedPath("os.arch"));
+  ASSERT_TRUE(request->FindStringByDottedPath("os.platform"));
   EXPECT_EQ("Fake Operating System",
-            request->FindPath({"os", "platform"})->GetString());
-  EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
+            *request->FindStringByDottedPath("os.platform"));
+  ASSERT_TRUE(request->FindStringByDottedPath("os.version"));
 
-  const auto& app = request->FindKey("app")->GetList()[0];
-  EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-  EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-  EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-  EXPECT_EQ("fake_lang", app.FindKey("lang")->GetString());
+  ASSERT_TRUE(request->FindList("app"));
+  ASSERT_FALSE(request->FindList("app")->empty());
+  const auto* app = request->FindList("app")->front().GetIfDict();
+  ASSERT_TRUE(app);
+  ASSERT_TRUE(app->FindString("appid"));
+  EXPECT_EQ(kUpdateItemId, *app->FindString("appid"));
+  ASSERT_TRUE(app->FindString("version"));
+  EXPECT_EQ("0.9", *app->FindString("version"));
+  ASSERT_TRUE(app->FindString("brand"));
+  EXPECT_EQ("TEST", *app->FindString("brand"));
+  ASSERT_TRUE(app->FindString("lang"));
+  EXPECT_EQ("fake_lang", *app->FindString("lang"));
 
-  const auto& data = app.FindKey("data")->GetIfList()->front();
-  EXPECT_EQ("install", data.FindKey("name")->GetString());
-  EXPECT_EQ("foobar_install_data_index", data.FindKey("index")->GetString());
-  EXPECT_FALSE(data.FindKey("text"));
+  ASSERT_TRUE(app->FindList("data"));
+  ASSERT_FALSE(app->FindList("data")->empty());
+  const auto* data = app->FindList("data")->front().GetIfDict();
+  ASSERT_TRUE(data);
+  ASSERT_TRUE(data->FindString("name"));
+  EXPECT_EQ("install", *data->FindString("name"));
+  ASSERT_TRUE(data->FindString("index"));
+  EXPECT_EQ("foobar_install_data_index", *data->FindString("index"));
+  EXPECT_FALSE(data->contains("text"));
 
-  if (is_foreground_)
-    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-  EXPECT_EQ("some_ap", app.FindKey("ap")->GetString());
-  EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-  EXPECT_TRUE(app.FindKey("updatecheck"));
-  EXPECT_TRUE(app.FindKey("ping"));
-  EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-  EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                       ->GetList()[0]
-                       .FindKey("fp")
-                       ->GetString());
+  if (is_foreground_) {
+    ASSERT_TRUE(app->FindString("installsource"));
+    EXPECT_EQ("ondemand", *app->FindString("installsource"));
+  }
+  ASSERT_TRUE(app->FindString("ap"));
+  EXPECT_EQ("some_ap", *app->FindString("ap"));
+  ASSERT_TRUE(app->FindBool("enabled").has_value());
+  EXPECT_EQ(true, app->FindBool("enabled").value());
+  EXPECT_TRUE(app->contains("updatecheck"));
+  EXPECT_TRUE(app->contains("ping"));
+  ASSERT_TRUE(app->FindIntByDottedPath("ping.r").has_value());
+  EXPECT_EQ(-2, app->FindIntByDottedPath("ping.r").value());
+
+  ASSERT_TRUE(app->FindListByDottedPath("packages.package"));
+  ASSERT_FALSE(app->FindListByDottedPath("packages.package")->empty());
+  ASSERT_TRUE(
+      app->FindListByDottedPath("packages.package")->front().GetIfDict());
+  ASSERT_TRUE(app->FindListByDottedPath("packages.package")
+                  ->front()
+                  .GetIfDict()
+                  ->FindString("fp"));
+  EXPECT_EQ("fp1", *app->FindListByDottedPath("packages.package")
+                        ->front()
+                        .GetIfDict()
+                        ->FindString("fp"));
+
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const auto* updater = request->FindKey("updater");
-  EXPECT_TRUE(updater);
-  EXPECT_EQ("Omaha", updater->FindKey("name")->GetString());
-  EXPECT_TRUE(updater->FindKey("autoupdatecheckenabled")->is_bool());
-  EXPECT_TRUE(updater->FindKey("ismachine")->is_bool());
-  EXPECT_TRUE(updater->FindKey("updatepolicy")->is_int());
+  const auto* updater = request->FindDict("updater");
+  ASSERT_TRUE(updater);
+  ASSERT_TRUE(updater->FindString("name"));
+  EXPECT_EQ("Omaha", *updater->FindString("name"));
+  EXPECT_TRUE(updater->FindBool("autoupdatecheckenabled"));
+  EXPECT_TRUE(updater->FindBool("ismachine"));
+  EXPECT_TRUE(updater->FindInt("updatepolicy"));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // IS_WIN
 
