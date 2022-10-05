@@ -1244,7 +1244,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
                   ->quad_list.back()
                   ->shared_quad_state->clip_rect);
 
-    auto testing_rect = gfx::RectF(gfx::PointF(0, 0), gfx::SizeF(256, 256));
+    gfx::Rect testing_rect(256, 256);
     // To get 32,32 -> 160,160 into the correct position it must be translated
     // backwards and scaled 0.5x in Y, then everything is scaled by the scale
     // factor.
@@ -1258,8 +1258,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
     if (gfx::Transform() == frame.render_pass_list.back()
                                 ->quad_list.back()
                                 ->shared_quad_state->quad_to_target_transform) {
-      expected_transform.TransformRect(&testing_rect);
-      auto expected_rect = gfx::ToNearestRect(testing_rect);
+      auto expected_rect = expected_transform.MapRect(testing_rect);
       EXPECT_EQ(expected_rect,
                 frame.render_pass_list.back()->quad_list.back()->rect);
     } else {
@@ -1267,7 +1266,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
                 frame.render_pass_list.back()
                     ->quad_list.back()
                     ->shared_quad_state->quad_to_target_transform);
-      EXPECT_EQ(gfx::ToNearestRect(testing_rect),
+      EXPECT_EQ(testing_rect,
                 frame.render_pass_list.back()->quad_list.back()->rect);
     }
   }

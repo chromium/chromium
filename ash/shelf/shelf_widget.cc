@@ -1024,9 +1024,8 @@ void ShelfWidget::UpdateLayout(bool animate) {
     // When the |shelf_widget_| needs to reverse the direction of the current
     // animation, we must take into account the transform when calculating the
     // current shelf widget bounds.
-    gfx::RectF transformed_bounds(current_shelf_bounds);
-    GetLayer()->transform().TransformRect(&transformed_bounds);
-    current_shelf_bounds = gfx::ToEnclosedRect(transformed_bounds);
+    current_shelf_bounds =
+        GetLayer()->transform().MapRect(current_shelf_bounds);
   }
 
   gfx::Transform shelf_widget_target_transform;

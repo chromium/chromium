@@ -3763,11 +3763,8 @@ bool TransformPointAndRectToRootView(RenderWidgetHostViewBase* view,
   if (transformed_point)
     *transformed_point = transform_to_main_frame.MapPoint(*transformed_point);
 
-  if (transformed_rect) {
-    gfx::RectF transformed_rect_f(*transformed_rect);
-    transform_to_main_frame.TransformRect(&transformed_rect_f);
-    *transformed_rect = gfx::ToEnclosingRect(transformed_rect_f);
-  }
+  if (transformed_rect)
+    *transformed_rect = transform_to_main_frame.MapRect(*transformed_rect);
 
   return true;
 }

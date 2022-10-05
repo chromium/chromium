@@ -952,16 +952,14 @@ void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {
 
 gfx::Rect DesktopWindowTreeHostPlatform::ToDIPRect(
     const gfx::Rect& rect_in_pixels) const {
-  gfx::RectF rect_in_dip = gfx::RectF(rect_in_pixels);
-  GetRootTransform().TransformRectReverse(&rect_in_dip);
-  return gfx::ToEnclosingRect(rect_in_dip);
+  return GetRootTransform()
+      .InverseMapRect(rect_in_pixels)
+      .value_or(rect_in_pixels);
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::ToPixelRect(
     const gfx::Rect& rect_in_dip) const {
-  gfx::RectF rect_in_pixels = gfx::RectF(rect_in_dip);
-  GetRootTransform().TransformRect(&rect_in_pixels);
-  return gfx::ToEnclosingRect(rect_in_pixels);
+  return GetRootTransform().MapRect(rect_in_dip);
 }
 
 Widget* DesktopWindowTreeHostPlatform::GetWidget() {

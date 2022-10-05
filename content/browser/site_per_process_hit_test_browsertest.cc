@@ -6938,9 +6938,7 @@ class SitePerProcessHitTestDataGenerationBrowserTest
   gfx::Rect AxisAlignedLayoutRectFromHitTest(
       const viz::AggregatedHitTestRegion& hit_test_region) {
     DCHECK(hit_test_region.transform.Preserves2dAxisAlignment());
-    gfx::RectF rect(hit_test_region.rect);
-    hit_test_region.transform.TransformRect(&rect);
-    return gfx::ToEnclosingRect(rect);
+    return hit_test_region.transform.MapRect(hit_test_region.rect);
   }
 
  public:

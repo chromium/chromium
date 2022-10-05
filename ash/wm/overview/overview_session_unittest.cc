@@ -4797,9 +4797,8 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
     EXPECT_FALSE(preview_layer->clip_rect().IsEmpty());
     EXPECT_FALSE(preview_layer->transform().IsIdentity());
     // The clip rect is affected by |preview_layer|'s transform so apply it.
-    gfx::RectF clip_rect3_f(preview_layer->clip_rect());
-    preview_layer->transform().TransformRect(&clip_rect3_f);
-    const gfx::Rect clip_rects3 = gfx::ToEnclosedRect(clip_rect3_f);
+    const gfx::Rect clip_rects3 =
+        preview_layer->transform().MapRect(preview_layer->clip_rect());
     EXPECT_TRUE(aspect_ratio_near(clip_rects3, split_view_bounds_right));
     EXPECT_TRUE(aspect_ratio_near(
         gfx::ToEnclosedRect(item3->GetWindowTargetBoundsWithInsets()),

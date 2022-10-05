@@ -145,9 +145,7 @@ gfx::Rect OverlayProcessorSurfaceControl::GetOverlayDamageRectForOutputSurface(
                                                 viewport_size_.width());
   auto transform = gfx::OverlayTransformToTransform(
       display_transform_, gfx::SizeF(viewport_size_pre_display_transform));
-  gfx::RectF transformed_rect(candidate.display_rect);
-  transform.TransformRect(&transformed_rect);
-  return gfx::ToEnclosedRect(transformed_rect);
+  return transform.MapRect(gfx::ToEnclosingRect(candidate.display_rect));
 }
 
 void OverlayProcessorSurfaceControl::SetDisplayTransformHint(

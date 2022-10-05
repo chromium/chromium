@@ -568,15 +568,11 @@ bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
     visual_transform->PostTranslate(-new_origin.OffsetFromOrigin());
   }
 
-#if DCHECK_IS_ON()
   // The new transform matrix should transform the swap chain to the monitor
   // rect.
-  gfx::Rect new_swap_chain_rect = gfx::Rect(*swap_chain_size);
-  new_swap_chain_rect.set_origin(params.quad_rect.origin());
-  gfx::RectF new_onscreen_rect(new_swap_chain_rect);
-  visual_transform->TransformRect(&new_onscreen_rect);
-  DCHECK_EQ(gfx::ToEnclosingRect(new_onscreen_rect), gfx::Rect(monitor_size));
-#endif
+  DCHECK_EQ(visual_transform->MapRect(
+                gfx::Rect(params.quad_rect.origin(), *swap_chain_size)),
+            gfx::Rect(monitor_size));
 
   return true;
 }
@@ -655,11 +651,8 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
 
 #if DCHECK_IS_ON()
   // The new transform matrix should transform the swap chain correctly
-  gfx::Rect new_swap_chain_rect = gfx::Rect(*swap_chain_size);
-  new_swap_chain_rect.set_origin(params.quad_rect.origin());
-  gfx::RectF new_onscreen_rect(new_swap_chain_rect);
-  visual_transform->TransformRect(&new_onscreen_rect);
-  gfx::Rect result_rect = gfx::ToEnclosingRect(new_onscreen_rect);
+  gfx::Rect new_swap_chain_rect(params.quad_rect.origin(), *swap_chain_size);
+  gfx::Rect result_rect = visual_transform->MapRect(new_swap_chain_rect);
   if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
     DCHECK_EQ(result_rect.x(), 0);
     DCHECK_EQ(result_rect.width(), monitor_size.width());
@@ -683,11 +676,9 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   gfx::Size swap_chain_size = params.content_rect.size();
   if (swap_chain_size.IsEmpty())
     return gfx::Size();
-  gfx::RectF bounds(params.quad_rect);
-  if (bounds.IsEmpty())
+  if (params.quad_rect.IsEmpty())
     return gfx::Size();
-  params.transform.TransformRect(&bounds);
-  gfx::Rect overlay_onscreen_rect = gfx::ToEnclosingRect(bounds);
+  gfx::Rect overlay_onscreen_rect = params.transform.MapRect(params.quad_rect);
 
   // If transform isn't a scale or translation then swap chain can't be promoted
   // to an overlay so avoid blitting to a large surface unnecessarily.  Also,
@@ -1266,9 +1257,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(
   dcomp_surface_proxy->SetParentWindow(layer_tree_->window());
 
   // Apply transform to video and notify DCOMPTexture.
-  gfx::RectF on_screen_bounds(params.quad_rect);
-  params.transform.TransformRect(&on_screen_bounds);
-  dcomp_surface_proxy->SetRect(gfx::ToEnclosingRect(on_screen_bounds));
+  dcomp_surface_proxy->SetRect(params.transform.MapRect(params.quad_rect));
 
   // If |dcomp_surface_proxy| size is {1, 1}, the texture was initialized
   // without knowledge of output size; reset |content_| so it's not added to the

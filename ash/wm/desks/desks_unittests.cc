@@ -3256,9 +3256,9 @@ TEST_F(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
 
   // Since the layer transform animation is just starting, the transformed
   // bounds should still be hidden. If this fails, the change was not animated.
-  gfx::RectF transformed_bounds(shelf_widget->GetWindowBoundsInScreen());
-  shelf_widget->GetLayer()->transform().TransformRect(&transformed_bounds);
-  EXPECT_EQ(gfx::ToEnclosedRect(transformed_bounds), hidden_shelf_bounds);
+  gfx::Rect transformed_bounds = shelf_widget->GetLayer()->transform().MapRect(
+      shelf_widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(transformed_bounds, hidden_shelf_bounds);
   EXPECT_EQ(shelf_widget->GetWindowBoundsInScreen(), shown_shelf_bounds);
 
   // Let's wait until the shelf animates to a fully shown state.

@@ -2123,9 +2123,7 @@ TEST_P(WaylandWindowTest, WaylandPopupInitialBufferScale) {
         const int32_t effective_scale = entered_output.output->GetScale();
         gfx::Transform transform;
         transform.Scale(effective_scale, effective_scale);
-        gfx::RectF rect_in_pixels = gfx::RectF(bounds_dip);
-        transform.TransformRect(&rect_in_pixels);
-        gfx::Rect wayland_popup_bounds = gfx::ToEnclosingRect(rect_in_pixels);
+        gfx::Rect wayland_popup_bounds = transform.MapRect(bounds_dip);
 
         std::unique_ptr<WaylandWindow> wayland_popup =
             CreateWaylandWindowWithParams(PlatformWindowType::kMenu,

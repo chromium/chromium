@@ -248,10 +248,7 @@ gfx::Rect GetLayerWorldBoundsAfterTransform(ui::Layer* layer,
   gfx::Transform in_world = transform;
   GetTransformRelativeToRoot(layer, &in_world);
 
-  gfx::RectF transformed = gfx::RectF(layer->bounds());
-  in_world.TransformRect(&transformed);
-
-  return gfx::ToEnclosingRect(transformed);
+  return in_world.MapRect(layer->bounds());
 }
 
 // Augment the host window so that the enclosing bounds of the full

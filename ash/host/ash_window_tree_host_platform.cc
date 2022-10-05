@@ -90,9 +90,8 @@ void AshWindowTreeHostPlatform::ConfineCursorToBoundsInRoot(
   if (!allow_confine_cursor())
     return;
 
-  gfx::RectF bounds_f(bounds_in_root);
-  GetRootTransform().TransformRect(&bounds_f);
-  last_cursor_confine_bounds_in_pixels_ = gfx::ToEnclosingRect(bounds_f);
+  last_cursor_confine_bounds_in_pixels_ =
+      GetRootTransform().MapRect(bounds_in_root);
   platform_window()->ConfineCursorToBounds(
       last_cursor_confine_bounds_in_pixels_);
 }

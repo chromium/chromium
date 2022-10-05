@@ -2104,13 +2104,8 @@ void LocalFrame::SetViewportIntersectionFromParent(
           intersection_state.main_frame_intersection ||
       intersection_state_.main_frame_transform !=
           intersection_state.main_frame_transform) {
-    gfx::RectF transform_rect =
-        gfx::RectF(gfx::Rect(intersection_state.main_frame_intersection));
-
-    intersection_state.main_frame_transform.TransformRect(&transform_rect);
-    gfx::Rect rect = ToEnclosingRect(
-        gfx::RectF(transform_rect.x(), transform_rect.y(),
-                   transform_rect.width(), transform_rect.height()));
+    gfx::Rect rect = intersection_state.main_frame_transform.MapRect(
+        intersection_state.main_frame_intersection);
 
     // Return <0, 0, 0, 0> if there is no area.
     if (rect.IsEmpty())

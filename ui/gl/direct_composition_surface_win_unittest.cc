@@ -1232,9 +1232,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   // chain to |new_on_screen_rect| which fits the monitor.
   surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
                                              &clip_rect);
-  gfx::RectF new_on_screen_rect = gfx::RectF(100, 100);
-  transform.TransformRect(&new_on_screen_rect);
-  EXPECT_EQ(gfx::Rect(monitor_size), gfx::ToEnclosingRect(new_on_screen_rect));
+  EXPECT_EQ(gfx::Rect(monitor_size), transform.MapRect(gfx::Rect(100, 100)));
 }
 
 TEST_F(DirectCompositionPixelTest, SwapChainImage) {

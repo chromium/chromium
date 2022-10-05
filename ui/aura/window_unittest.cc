@@ -3752,9 +3752,7 @@ class WindowActualScreenBoundsTest
 
   void OnTranslationAnimationProgressed(const gfx::Rect& child_initial_bounds,
                                         const gfx::Transform& transform) const {
-    gfx::RectF current_screen_bounds(child_initial_bounds);
-    transform.TransformRect(&current_screen_bounds);
-    EXPECT_EQ(gfx::ToEnclosedRect(current_screen_bounds),
+    EXPECT_EQ(transform.MapRect(child_initial_bounds),
               child_->GetActualBoundsInScreen());
   }
 

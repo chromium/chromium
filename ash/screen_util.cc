@@ -108,14 +108,11 @@ gfx::Rect GetDisplayBoundsWithShelf(aura::Window* window) {
           ->display_configuration_controller()
           ->GetPrimaryMirroringDisplayForUnifiedDesktop();
   DCHECK_NE(shelf_display.id(), display::kInvalidDisplayId);
-  gfx::RectF shelf_display_screen_bounds(shelf_display.bounds());
 
   // Transform the bounds back to the unified host's coordinates.
   auto inverse_unified_transform =
       window->GetRootWindow()->GetHost()->GetInverseRootTransform();
-  inverse_unified_transform.TransformRect(&shelf_display_screen_bounds);
-
-  return gfx::ToEnclosingRect(shelf_display_screen_bounds);
+  return inverse_unified_transform.MapRect(shelf_display.bounds());
 }
 
 gfx::Rect SnapBoundsToDisplayEdge(const gfx::Rect& bounds,

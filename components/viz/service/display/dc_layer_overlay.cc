@@ -152,9 +152,8 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
-    gfx::RectF clip_rect = gfx::RectF(*quad->shared_quad_state->clip_rect);
-    transform_to_root_target.TransformRect(&clip_rect);
-    dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
+    dc_layer->clip_rect =
+        transform_to_root_target.MapRect(*quad->shared_quad_state->clip_rect);
   }
   dc_layer->color_space = quad->video_color_space;
   dc_layer->protected_video_type = quad->protected_video_type;
@@ -214,10 +213,8 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   if (quad->shared_quad_state->clip_rect) {
     // Clip rect is in quad target space, and must be transformed to root target
     // space.
-    gfx::RectF clip_rect =
-        gfx::RectF(quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
-    transform_to_root_target.TransformRect(&clip_rect);
-    dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
+    dc_layer->clip_rect = transform_to_root_target.MapRect(
+        quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
   }
 
   dc_layer->color_space = gfx::ColorSpace::CreateSRGB();
@@ -627,10 +624,9 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
 
   // Add debug borders for overlays/underlays
   for (const auto& dc_layer : *dc_layer_overlays) {
-    gfx::RectF overlay_rect(dc_layer.quad_rect);
-    dc_layer.transform.TransformRect(&overlay_rect);
+    gfx::Rect overlay_rect = dc_layer.transform.MapRect(dc_layer.quad_rect);
     if (dc_layer.clip_rect)
-      overlay_rect.Intersect(gfx::RectF(*dc_layer.clip_rect));
+      overlay_rect.Intersect(*dc_layer.clip_rect);
 
     // Overlay:red, Underlay:blue.
     SkColor4f border_color =
@@ -640,10 +636,9 @@ void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
             quad_list.begin(), 1u);
     auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
 
-    gfx::Rect rect = gfx::ToEnclosingRect(overlay_rect);
-    rect.Inset(kDCLayerDebugBorderInsets);
-    debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
-                       kDCLayerDebugBorderWidth);
+    overlay_rect.Inset(kDCLayerDebugBorderInsets);
+    debug_quad->SetNew(shared_quad_state, overlay_rect, overlay_rect,
+                       border_color, kDCLayerDebugBorderWidth);
   }
 
   // Mark the entire output as damaged because the border quads might not be

@@ -13,6 +13,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -496,6 +497,15 @@ void Transform::TransformRect(RectF* rect) const {
   *rect = SkRectToRectF(src);
 }
 
+Rect Transform::MapRect(const Rect& rect) const {
+  if (IsIdentity())
+    return rect;
+
+  RectF rect_f(rect);
+  TransformRect(&rect_f);
+  return ToEnclosingRect(rect_f);
+}
+
 bool Transform::TransformRectReverse(RectF* rect) const {
   if (IsIdentity())
     return true;
@@ -508,6 +518,16 @@ bool Transform::TransformRectReverse(RectF* rect) const {
   TransformToFlattenedSkMatrix(inverse).mapRect(&src);
   *rect = SkRectToRectF(src);
   return true;
+}
+
+absl::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
+  if (IsIdentity())
+    return rect;
+
+  RectF rect_f(rect);
+  if (TransformRectReverse(&rect_f))
+    return ToEnclosingRect(rect_f);
+  return absl::nullopt;
 }
 
 bool Transform::TransformRRectF(RRectF* rrect) const {

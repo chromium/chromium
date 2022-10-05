@@ -18,6 +18,7 @@ namespace gfx {
 
 class AxisTransform2d;
 class BoxF;
+class Rect;
 class RectF;
 class RRectF;
 class Point;
@@ -334,12 +335,14 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // |rect| will be the smallest axis aligned bounding rect containing the
   // transformed rect.
   void TransformRect(RectF* rect) const;
+  [[nodiscard]] Rect MapRect(const Rect& rect) const;
 
   // Applies the reverse transformation on the given rect. After the function
   // completes, |rect| will be the smallest axis aligned bounding rect
   // containing the transformed rect. Returns false if the matrix cannot be
   // inverted.
   bool TransformRectReverse(RectF* rect) const;
+  [[nodiscard]] absl::optional<Rect> InverseMapRect(const Rect& rect) const;
 
   // Applies transformation on the given |rrect|. Returns false if the transform
   // matrix cannot be applied to rrect.

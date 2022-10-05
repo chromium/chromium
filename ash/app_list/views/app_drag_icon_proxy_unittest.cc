@@ -28,17 +28,15 @@ class AppDragIconProxyTest : public AshTestBase {
   ~AppDragIconProxyTest() override = default;
 
   gfx::Rect GetTargetAppDragIconImageBounds(AppDragIconProxy* drag_icon_proxy) {
-    gfx::RectF layer_target_position(
-        drag_icon_proxy->GetImageLayerForTesting()->GetTargetBounds());
-    drag_icon_proxy->GetImageLayerForTesting()
-        ->GetTargetTransform()
-        .TransformRect(&layer_target_position);
+    gfx::Rect layer_target_position =
+        drag_icon_proxy->GetImageLayerForTesting()
+            ->GetTargetTransform()
+            .MapRect(
+                drag_icon_proxy->GetImageLayerForTesting()->GetTargetBounds());
     gfx::Rect widget_target_bounds =
         drag_icon_proxy->GetWidgetForTesting()->GetLayer()->GetTargetBounds();
-    layer_target_position.set_origin(
-        gfx::PointF(layer_target_position.x() + widget_target_bounds.x(),
-                    layer_target_position.y() + widget_target_bounds.y()));
-    return gfx::ToNearestRect(layer_target_position);
+    layer_target_position.Offset(widget_target_bounds.OffsetFromOrigin());
+    return layer_target_position;
   }
 };
 

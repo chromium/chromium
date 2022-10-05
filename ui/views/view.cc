@@ -514,11 +514,10 @@ gfx::Rect View::GetVisibleBounds() const {
   }
   if (vis_bounds.IsEmpty())
     return vis_bounds;
-  // Convert back to this views coordinate system.
-  gfx::RectF views_vis_bounds(vis_bounds);
-  transform.TransformRectReverse(&views_vis_bounds);
-  // Partially visible pixels should be considered visible.
-  return gfx::ToEnclosingRect(views_vis_bounds);
+  // Convert back to this views coordinate system. This mapping returns the
+  // enclosing rect, which is good because partially visible pixels should
+  // be considered visible.
+  return transform.InverseMapRect(vis_bounds).value_or(vis_bounds);
 }
 
 gfx::Rect View::GetBoundsInScreen() const {
@@ -1114,11 +1113,11 @@ void View::ConvertRectToScreen(const View* src, gfx::Rect* rect) {
 }
 
 gfx::Rect View::ConvertRectToParent(const gfx::Rect& rect) const {
-  gfx::RectF x_rect = gfx::RectF(rect);
-  GetTransform().TransformRect(&x_rect);
+  // This mapping returns the enclosing rect, which is good because pixels that
+  // partially occupy in the parent should be included.
+  gfx::Rect x_rect = GetTransform().MapRect(rect);
   x_rect.Offset(GetMirroredPosition().OffsetFromOrigin());
-  // Pixels we partially occupy in the parent should be included.
-  return gfx::ToEnclosingRect(x_rect);
+  return x_rect;
 }
 
 gfx::Rect View::ConvertRectToWidget(const gfx::Rect& rect) const {

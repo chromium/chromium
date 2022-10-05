@@ -130,16 +130,14 @@ class HomeToOverviewNudgeControllerTest : public AshTestBase {
     ASSERT_TRUE(nudge_widget);
     EXPECT_TRUE(nudge_widget->IsVisible());
 
-    gfx::RectF nudge_bounds_f(
-        nudge_widget->GetNativeWindow()->GetTargetBounds());
-    nudge_widget->GetLayer()->transform().TransformRect(&nudge_bounds_f);
-    const gfx::Rect nudge_bounds = gfx::ToEnclosingRect(nudge_bounds_f);
+    const gfx::Rect nudge_bounds =
+        nudge_widget->GetLayer()->transform().MapRect(
+            nudge_widget->GetNativeWindow()->GetTargetBounds());
 
     HotseatWidget* const hotseat = GetHotseatWidget();
-    gfx::RectF hotseat_bounds_f(hotseat->GetNativeWindow()->GetTargetBounds());
-    hotseat->GetLayerForNudgeAnimation()->transform().TransformRect(
-        &hotseat_bounds_f);
-    const gfx::Rect hotseat_bounds = gfx::ToEnclosingRect(hotseat_bounds_f);
+    const gfx::Rect hotseat_bounds =
+        hotseat->GetLayerForNudgeAnimation()->transform().MapRect(
+            hotseat->GetNativeWindow()->GetTargetBounds());
 
     // Nudge and hotseat should have the same transform.
     EXPECT_EQ(hotseat->GetLayerForNudgeAnimation()->transform(),

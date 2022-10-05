@@ -2752,25 +2752,54 @@ TEST(XFormTest, To2dTranslation) {
 }
 
 TEST(XFormTest, TransformRect) {
-  Transform translation;
-  translation.Translate(3.f, 7.f);
-  RectF rect(1.f, 2.f, 3.f, 4.f);
-  RectF expected(4.f, 9.f, 3.f, 4.f);
+  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+  RectF rect(1.25f, 2.5f, 3.75f, 4.f);
+  RectF expected(4.5f, 10.25f, 3.75f, 4.f);
   translation.TransformRect(&rect);
-  EXPECT_EQ(expected.ToString(), rect.ToString());
+  EXPECT_EQ(expected, rect);
+
+  expected = rect;
+  Transform().TransformRect(&rect);
+  EXPECT_EQ(expected, rect);
+
+  auto singular = Transform::MakeScale(0.f);
+  singular.TransformRect(&rect);
+  EXPECT_EQ(RectF(0, 0, 0, 0), rect);
+}
+
+TEST(XFormTest, MapIntRect) {
+  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+  EXPECT_EQ(Rect(4, 9, 4, 5), translation.MapRect(Rect(1, 2, 3, 4)));
+
+  EXPECT_EQ(Rect(1, 2, 3, 4), Transform().MapRect(Rect(1, 2, 3, 4)));
+
+  auto singular = Transform::MakeScale(0.f);
+  EXPECT_EQ(Rect(0, 0, 0, 0), singular.MapRect(Rect(1, 2, 3, 4)));
 }
 
 TEST(XFormTest, TransformRectReverse) {
-  Transform translation;
-  translation.Translate(3.f, 7.f);
-  RectF rect(1.f, 2.f, 3.f, 4.f);
-  RectF expected(-2.f, -5.f, 3.f, 4.f);
+  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+  RectF rect(1.25f, 2.5f, 3.75f, 4.f);
+  RectF expected(-2.f, -5.25f, 3.75f, 4.f);
   EXPECT_TRUE(translation.TransformRectReverse(&rect));
   EXPECT_EQ(expected.ToString(), rect.ToString());
 
-  Transform singular;
-  singular.Scale3d(0.f, 0.f, 0.f);
+  expected = rect;
+  EXPECT_TRUE(Transform().TransformRectReverse(&rect));
+  EXPECT_EQ(expected, rect);
+
+  auto singular = Transform::MakeScale(0.f);
   EXPECT_FALSE(singular.TransformRectReverse(&rect));
+}
+
+TEST(XFormTest, InverseMapIntRect) {
+  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+  EXPECT_EQ(Rect(-3, -6, 4, 5), translation.InverseMapRect(Rect(1, 2, 3, 4)));
+
+  EXPECT_EQ(Rect(1, 2, 3, 4), Transform().InverseMapRect(Rect(1, 2, 3, 4)));
+
+  auto singular = Transform::MakeScale(0.f);
+  EXPECT_FALSE(singular.InverseMapRect(Rect(1, 2, 3, 4)));
 }
 
 TEST(XFormTest, TransformRRectF) {
