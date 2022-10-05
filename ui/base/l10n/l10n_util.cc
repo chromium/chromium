@@ -793,27 +793,23 @@ std::u16string FormatString(const std::u16string& format_string,
                             const std::vector<std::u16string>& replacements,
                             std::vector<size_t>* offsets) {
 #if DCHECK_IS_ON()
-  // Make sure every replacement string is being used, so we don't just
-  // silently fail to insert one. If |offsets| is non-NULL, then don't do this
-  // check as the code may simply want to find the placeholders rather than
-  // actually replacing them.
-  if (!offsets) {
-    // $9 is the highest allowed placeholder.
-    for (size_t i = 0; i < 9; ++i) {
-      bool placeholder_should_exist = i < replacements.size();
+  // Make sure every replacement string is being used, so we don't just silently
+  // fail to insert one.
+  //
+  // $9 is the highest allowed placeholder.
+  for (size_t i = 0; i < 9; ++i) {
+    bool placeholder_should_exist = i < replacements.size();
 
-      std::u16string placeholder = u"$";
-      placeholder += static_cast<char16_t>('1' + static_cast<char>(i));
-      size_t pos = format_string.find(placeholder);
-      if (placeholder_should_exist) {
-        DCHECK_NE(std::string::npos, pos) << " Didn't find a " << placeholder
-                                          << " placeholder in "
-                                          << format_string;
-      } else {
-        DCHECK_EQ(std::string::npos, pos) << " Unexpectedly found a "
-                                          << placeholder << " placeholder in "
-                                          << format_string;
-      }
+    std::u16string placeholder = u"$";
+    placeholder += static_cast<char16_t>('1' + static_cast<char>(i));
+    size_t pos = format_string.find(placeholder);
+    if (placeholder_should_exist) {
+      DCHECK_NE(std::string::npos, pos) << " Didn't find a " << placeholder
+                                        << " placeholder in " << format_string;
+    } else {
+      DCHECK_EQ(std::string::npos, pos)
+          << " Unexpectedly found a " << placeholder << " placeholder in "
+          << format_string;
     }
   }
 #endif
