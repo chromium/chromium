@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -38,6 +40,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -103,8 +106,6 @@ class BorealisInstallerView::TitleLabel : public views::Label {
 BEGIN_METADATA(BorealisInstallerView, TitleLabel, views::Label)
 END_METADATA
 
-// TODO(danielng):revisit UI elements when UX input is provided.
-// Currently using the UI specs that the Plugin VM installer use.
 BorealisInstallerView::BorealisInstallerView(Profile* profile)
     : app_name_(l10n_util::GetStringUTF16(IDS_BOREALIS_APP_NAME)),
       profile_(profile),
@@ -187,6 +188,11 @@ BorealisInstallerView::BorealisInstallerView(Profile* profile)
   lower_container_layout_->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   layout->SetFlexForView(lower_container_view, 1, true);
+
+  ash::DarkLightModeController* dark_light_controller =
+      ash::DarkLightModeController::Get();
+  if (dark_light_controller)
+    dark_light_controller->AddObserver(this);
 }
 
 BorealisInstallerView::~BorealisInstallerView() {
@@ -195,6 +201,11 @@ BorealisInstallerView::~BorealisInstallerView() {
   if (state_ == State::kConfirmInstall || state_ == State::kInstalling) {
     installer.Cancel();
   }
+  ash::DarkLightModeController* dark_light_controller =
+      ash::DarkLightModeController::Get();
+  if (dark_light_controller)
+    dark_light_controller->RemoveObserver(this);
+
   g_borealis_installer_view = nullptr;
 }
 
@@ -290,8 +301,7 @@ std::u16string BorealisInstallerView::GetPrimaryMessage() const {
       return l10n_util::GetStringUTF16(
           IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE);
     case State::kInstalling:
-      return l10n_util::GetStringUTF16(
-          IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE);
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_TITLE);
 
     case State::kCompleted:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_TITLE);
@@ -304,11 +314,25 @@ std::u16string BorealisInstallerView::GetSecondaryMessage() const {
       return l10n_util::GetStringUTF16(
           IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE);
     case State::kInstalling:
-      return l10n_util::GetStringUTF16(
-          IDS_BOREALIS_INSTALLER_IMPORTING_MESSAGE);
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE);
 
     case State::kCompleted:
-      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_IMPORTED_MESSAGE);
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE);
+  }
+}
+
+std::u16string BorealisInstallerView::GetProgressMessage() const {
+  if (state_ != State::kInstalling)
+    return {};
+  switch (installing_state_) {
+    case InstallingState::kInactive:
+    case InstallingState::kCheckingIfAllowed:
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE);
+    case InstallingState::kInstallingDlc:
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_DLC);
+    case InstallingState::kStartingUp:
+    case InstallingState::kAwaitingApplications:
+      return l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_DRYRUN);
   }
 }
 
@@ -360,6 +384,7 @@ void BorealisInstallerView::OnErrorDialogDismissed(
 void BorealisInstallerView::OnStateUpdated() {
   SetPrimaryMessageLabel();
   SetSecondaryMessageLabel();
+  SetProgressMessageLabel();
   SetImage();
 
   // todo(danielng): ensure button labels meet a11y requirements.
@@ -391,6 +416,11 @@ void BorealisInstallerView::AddedToWidget() {
   OnStateUpdated();
 }
 
+void BorealisInstallerView::OnColorModeChanged(bool dark_mode_enabled) {
+  // We check dark-mode ourselves, so no need to propagate the param.
+  OnStateUpdated();
+}
+
 void BorealisInstallerView::SetPrimaryMessageLabel() {
   primary_message_label_->SetText(GetPrimaryMessage());
   primary_message_label_->SetVisible(true);
@@ -405,21 +435,45 @@ void BorealisInstallerView::SetSecondaryMessageLabel() {
       ax::mojom::Event::kTextChanged, true);
 }
 
-void BorealisInstallerView::SetImage() {
-  constexpr gfx::Size kRegularImageSize(314, 191);
-  constexpr int kRegularImageBottomInset = 52 + 57;
+void BorealisInstallerView::SetProgressMessageLabel() {
+  std::u16string message = GetProgressMessage();
+  installation_progress_message_label_->SetText(message);
+  installation_progress_message_label_->SetVisible(!message.empty());
+  installation_progress_message_label_->NotifyAccessibilityEvent(
+      ax::mojom::Event::kTextChanged, true);
+}
 
-  auto setImage = [this](int image_id, gfx::Size size, int bottom_inset) {
-    big_image_->SetImageSize(size);
+void BorealisInstallerView::SetImage() {
+  // These values are adjusted from the mocks in b/246659720, to account for
+  // differences in image resolution.
+  constexpr int kStartBottomInsetDp = 70;
+  constexpr int kCompleteBottomInsetDp = 64;
+
+  auto set_image = [this](int image_id, int bottom_inset_dp) {
     lower_container_layout_->set_inside_border_insets(
-        gfx::Insets::TLBR(0, 0, bottom_inset, 0));
-    big_image_->SetImage(
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id));
+        gfx::Insets::TLBR(0, 0, bottom_inset_dp, 0));
+    gfx::ImageSkia* s =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(image_id);
+    // The image assets are sized so that we can display them at half their
+    // resolution in DP.
+    big_image_->SetImageSize({s->width() / 2, s->height() / 2});
+    big_image_->SetImage(s);
   };
 
-  // todo(danielng):Use Borealis images.
-  setImage(IDR_PLUGIN_VM_INSTALLER, kRegularImageSize,
-           kRegularImageBottomInset);
+  ash::DarkLightModeController* dark_light_mode_controller =
+      ash::DarkLightModeController::Get();
+  bool dark_mode = dark_light_mode_controller &&
+                   dark_light_mode_controller->IsDarkModeEnabled();
+
+  if (state_ == State::kCompleted) {
+    set_image(dark_mode ? IDR_BOREALIS_INSTALLER_COMPLETE_DARK
+                        : IDR_BOREALIS_INSTALLER_COMPLETE_LIGHT,
+              kCompleteBottomInsetDp);
+    return;
+  }
+  set_image(dark_mode ? IDR_BOREALIS_INSTALLER_START_DARK
+                      : IDR_BOREALIS_INSTALLER_START_LIGHT,
+            kStartBottomInsetDp);
 }
 
 void BorealisInstallerView::StartInstallation() {

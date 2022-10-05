@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -26,7 +27,8 @@ class Profile;
 // The front end for the Borealis installation process, works closely with
 // "chrome/browser/ash/borealis/borealis_installer.h".
 class BorealisInstallerView : public views::DialogDelegateView,
-                              public borealis::BorealisInstaller::Observer {
+                              public borealis::BorealisInstaller::Observer,
+                              public ash::ColorModeObserver {
  public:
   METADATA_HEADER(BorealisInstallerView);
 
@@ -58,6 +60,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // Public for testing purposes.
   std::u16string GetPrimaryMessage() const;
   std::u16string GetSecondaryMessage() const;
+  std::u16string GetProgressMessage() const;
 
   void SetInstallingStateForTesting(InstallingState new_state);
 
@@ -87,8 +90,12 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // views::DialogDelegateView implementation.
   void AddedToWidget() override;
 
+  // ash::ColorModeObserver overrides.
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
   void SetPrimaryMessageLabel();
   void SetSecondaryMessageLabel();
+  void SetProgressMessageLabel();
   void SetImage();
 
   void StartInstallation();

@@ -5814,6 +5814,9 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_APP_NAME" desc="Name of app, noun, video game distribution service" translateable="false">
     Steam
   </message>
+  <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
+    Steam is either not installed or not running. Please run Steam to view credits.
+  </message>
   <message name="IDS_BOREALIS_DISALLOWED_TITLE" desc="Title of the dialog shown to users who are unable to install Steam on Chromebook (Steam is a video game distribution service)">
     Steam cannot be installed
   </message>
@@ -5847,11 +5850,8 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
     Steam Installer
   </message>
-  <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
-    Steam is either not installed or not running. Please run Steam to view credits.
-  </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title for installer for Steam (noun, name of app).">
-    Welcome to Steam for Chromebook
+    Welcome to Steam on Chromebook
   </message>
   <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE" desc="Body for installer for Steam (noun, name of app).">
     Let’s get started
@@ -5859,20 +5859,29 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_INSTALLER_INSTALL_BUTTON" desc="Button on installer to install Steam (noun, name of app).">
     Install
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE" desc="Title for installer while Steam (noun, name of app) is installing.">
-    Setting up Steam
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_TITLE" desc="Title for installer while Steam (noun, name of app) is installing.">
+    Setting up Steam on Chromebook
+  </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body for Steam (noun, name of app) installer while Steam is installing.">
+    This may take a few minutes
+  </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_INACTIVE" desc="Message shown while the steam installer is initializing.">
+    Starting installation
+  </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DLC" desc="Message shown while the steam installer is downloading its content.">
+    Downloading
+  </message>
+  <message name="IDS_BOREALIS_INSTALLER_ONGOING_DRYRUN" desc="Message shown while the steam installer is performing a post-installation trial.">
+    Performing setup
   </message>
   <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for Steam (noun, name of app) completes succesfully.">
     You’re all set!
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_IMPORTING_MESSAGE" desc="Body for Steam (noun, name of app) installer while Steam is installing.">
-    This may take a few minutes
-  </message>
-  <message name="IDS_BOREALIS_INSTALLER_IMPORTED_MESSAGE" desc="Title for Steam (noun, name of app) installer when installation suceeded.">
-    Enjoy your gaming on your Chromebook
+  <message name="IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE" desc="Title for Steam (noun, name of app) installer when installation suceeded.">
+    Enjoy gaming on your Chromebook
   </message>
   <message name="IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON" desc="Button in Steam (noun, name of app) installer to launch Steam.">
-    Launch
+    Launch Steam
   </message>
   <message name="IDS_BOREALIS_INSTALLER_ERROR_TITLE" desc="Title for installer when Steam (noun, name of app) fails to install.">
     There was a problem setting up Steam on Chromebook

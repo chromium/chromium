@@ -98,14 +98,18 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
     EXPECT_EQ(
         view_->GetPrimaryMessage(),
         l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE));
+    EXPECT_EQ(view_->GetProgressMessage(), u"");
   }
 
   void ExpectInstallationInProgress() {
     EXPECT_FALSE(HasAcceptButton());
     EXPECT_TRUE(HasCancelButton());
     EXPECT_EQ(view_->GetPrimaryMessage(),
-              l10n_util::GetStringUTF16(
-                  IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE));
+              l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_TITLE));
+    EXPECT_EQ(
+        view_->GetSecondaryMessage(),
+        l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE));
+    EXPECT_NE(view_->GetProgressMessage(), u"");
   }
 
   void ExpectInstallationFailed() {
@@ -122,6 +126,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
               l10n_util::GetStringUTF16(IDS_APP_CLOSE));
     EXPECT_EQ(view_->GetPrimaryMessage(),
               l10n_util::GetStringUTF16(IDS_BOREALIS_INSTALLER_FINISHED_TITLE));
+    EXPECT_EQ(view_->GetProgressMessage(), u"");
   }
 
   void AcceptInstallation() {
