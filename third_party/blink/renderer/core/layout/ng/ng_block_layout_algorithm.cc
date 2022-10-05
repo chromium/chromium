@@ -720,8 +720,9 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
       NGLayoutResult::EStatus status;
       if (child.CreatesNewFormattingContext()) {
-        status = HandleNewFormattingContext(child, child_break_token,
-                                            &previous_inflow_position);
+        status = HandleNewFormattingContext(
+            child, To<NGBlockBreakToken>(child_break_token),
+            &previous_inflow_position);
         previous_inline_break_token = nullptr;
       } else {
         status = HandleInflow(
@@ -1262,7 +1263,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
 
 NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     NGLayoutInputNode child,
-    const NGBreakToken* child_break_token,
+    const NGBlockBreakToken* child_break_token,
     NGPreviousInflowPosition* previous_inflow_position) {
   DCHECK(child);
   DCHECK(!child.IsFloating());
@@ -1498,7 +1499,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
 
 const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     NGLayoutInputNode child,
-    const NGBreakToken* child_break_token,
+    const NGBlockBreakToken* child_break_token,
     const NGInflowChildData& child_data,
     NGBfcOffset origin_offset,
     bool abort_if_cleared,
@@ -1507,11 +1508,13 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
   const TextDirection direction = ConstraintSpace().Direction();
   const auto writing_direction = ConstraintSpace().GetWritingDirection();
 
-  // The origin offset is where we should start looking for layout
-  // opportunities. It needs to be adjusted by the child's clearance.
-  AdjustToClearance(
-      ExclusionSpace().ClearanceOffset(child_style.Clear(Style())),
-      &origin_offset);
+  if (!IsResumingLayout(child_break_token)) {
+    // The origin offset is where we should start looking for layout
+    // opportunities. It needs to be adjusted by the child's clearance.
+    AdjustToClearance(
+        ExclusionSpace().ClearanceOffset(child_style.Clear(Style())),
+        &origin_offset);
+  }
   DCHECK(container_builder_.BfcBlockOffset());
 
   LayoutOpportunityVector opportunities =
@@ -2711,13 +2714,15 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (has_clearance_past_adjoining_floats)
     builder.SetAncestorHasClearancePastAdjoiningFloats();
 
-  LayoutUnit clearance_offset = ConstraintSpace().IsNewFormattingContext()
-                                    ? LayoutUnit::Min()
-                                    : ConstraintSpace().ClearanceOffset();
-  if (child.IsBlock()) {
-    LayoutUnit child_clearance_offset =
-        ExclusionSpace().ClearanceOffset(child_style.Clear(Style()));
-    clearance_offset = std::max(clearance_offset, child_clearance_offset);
+  LayoutUnit clearance_offset = LayoutUnit::Min();
+  if (!IsResumingLayout(DynamicTo<NGBlockBreakToken>(child_break_token))) {
+    if (!ConstraintSpace().IsNewFormattingContext())
+      clearance_offset = ConstraintSpace().ClearanceOffset();
+    if (child.IsBlock()) {
+      LayoutUnit child_clearance_offset =
+          ExclusionSpace().ClearanceOffset(child_style.Clear(Style()));
+      clearance_offset = std::max(clearance_offset, child_clearance_offset);
+    }
   }
   builder.SetClearanceOffset(clearance_offset);
   builder.SetBaselineAlgorithmType(ConstraintSpace().BaselineAlgorithmType());

@@ -177,14 +177,14 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // block offset has now been resolved.
   NGLayoutResult::EStatus HandleNewFormattingContext(
       NGLayoutInputNode child,
-      const NGBreakToken* child_break_token,
+      const NGBlockBreakToken* child_break_token,
       NGPreviousInflowPosition*);
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
   const NGLayoutResult* LayoutNewFormattingContext(
       NGLayoutInputNode child,
-      const NGBreakToken* child_break_token,
+      const NGBlockBreakToken* child_break_token,
       const NGInflowChildData&,
       NGBfcOffset origin_offset,
       bool abort_if_cleared,

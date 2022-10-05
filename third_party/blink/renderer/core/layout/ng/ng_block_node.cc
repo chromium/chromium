@@ -829,6 +829,11 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   // up in a state where the layout-object tree doesn't match fragment tree
   // referenced by this layout-result.
   if (layout_result->Status() != NGLayoutResult::kSuccess) {
+    // This would be really dangerous to do if we're not at the first fragment,
+    // though, as it would mean that we'd also clear the first successful
+    // result(s).
+    DCHECK(!IsResumingLayout(break_token));
+
     box_->ClearLayoutResults();
     return;
   }
