@@ -677,7 +677,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
 
   properties.Set("editable", params.is_editable);
 
-  WebViewGuest* webview_guest = WebViewGuest::FromWebContents(web_contents);
+  WebViewGuest* webview_guest =
+      WebViewGuest::FromRenderFrameHost(render_frame_host);
   if (webview_guest) {
     // This is used in web_view_internalcustom_bindings.js.
     // The property is not exposed to developer API.
