@@ -249,9 +249,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   int context_id() const { return context_id_; }
 
-  void set_profile_id(void* profile_id) { profile_id_ = profile_id; }
-  void* profile_id() const { return profile_id_; }
-
   void set_extension(
       const scoped_refptr<const extensions::Extension>& extension) {
     extension_ = extension;
@@ -544,9 +541,6 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
 
   // Id of this request, used to map the response back to the caller.
   int request_id_ = -1;
-
-  // The id of the profile of this function's extension.
-  raw_ptr<void> profile_id_ = nullptr;
 
   // The name of this function.
   const char* name_ = nullptr;

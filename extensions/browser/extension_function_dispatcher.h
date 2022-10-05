@@ -138,7 +138,6 @@ class ExtensionFunctionDispatcher
       const GURL* rfh_url,
       const ProcessMap& process_map,
       ExtensionAPI* api,
-      void* profile_id,
       ExtensionFunction::ResponseCallback callback);
 
   void DispatchWithCallbackInternal(

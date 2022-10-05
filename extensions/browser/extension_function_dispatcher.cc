@@ -491,8 +491,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       params, extension, render_process_id, is_worker_request, rfh_url,
-      *process_map, ExtensionAPI::GetSharedInstance(), browser_context_,
-      std::move(callback));
+      *process_map, ExtensionAPI::GetSharedInstance(), std::move(callback));
   if (!function.get())
     return;
 
@@ -666,7 +665,6 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
     const GURL* rfh_url,
     const ProcessMap& process_map,
     ExtensionAPI* api,
-    void* profile_id,
     ExtensionFunction::ResponseCallback callback) {
   constexpr char kCreationFailed[] = "Access to extension API denied.";
 
@@ -702,7 +700,6 @@ ExtensionFunctionDispatcher::CreateExtensionFunction(
   function->set_has_callback(params.has_callback);
   function->set_user_gesture(params.user_gesture);
   function->set_extension(extension);
-  function->set_profile_id(profile_id);
   function->set_response_callback(std::move(callback));
   function->set_source_context_type(context_type);
   function->set_source_process_id(requesting_process_id);
