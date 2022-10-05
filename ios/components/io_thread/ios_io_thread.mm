@@ -322,7 +322,7 @@ IOSIOThread::ConstructSystemRequestContext() {
   // In-memory cookie store.
   // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
   builder.SetCookieStore(std::make_unique<net::CookieMonster>(
-      nullptr /* store */, nullptr /* netlog */, net::kFirstPartySetsEnabled));
+      nullptr /* store */, nullptr /* netlog */));
   builder.set_network_delegate(std::move(network_delegate));
   builder.set_user_agent(
       web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));

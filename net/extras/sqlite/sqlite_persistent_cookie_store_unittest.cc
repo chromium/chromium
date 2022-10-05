@@ -1389,8 +1389,7 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // Create a cookie on a scheme that doesn't handle cookies by default,
   // and save it.
   std::unique_ptr<CookieMonster> cookie_monster =
-      std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr,
-                                      /*first_party_sets_enabled=*/false);
+      std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
   ResultSavingCookieCallback<bool> cookie_scheme_callback1;
   cookie_monster->SetCookieableSchemes({"ftp", "http"},
                                        cookie_scheme_callback1.MakeCallback());
@@ -1434,8 +1433,8 @@ TEST_F(SQLitePersistentCookieStoreTest, KeyInconsistency) {
   // instances, so they should complete before the new PersistentCookieStore
   // starts looking at the state on disk.
   Create(false, false, true /* want current thread to invoke cookie monster */);
-  cookie_monster = std::make_unique<CookieMonster>(
-      store_.get(), /*net_log=*/nullptr, /*first_party_sets_enabled=*/false);
+  cookie_monster =
+      std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
   ResultSavingCookieCallback<bool> cookie_scheme_callback2;
   cookie_monster->SetCookieableSchemes({"ftp", "http"},
                                        cookie_scheme_callback2.MakeCallback());
@@ -1465,8 +1464,7 @@ TEST_F(SQLitePersistentCookieStoreTest, OpsIfInitFailed) {
       base::CreateDirectory(temp_dir_.GetPath().Append(kCookieFilename)));
   Create(false, false, true /* want current thread to invoke cookie monster */);
   std::unique_ptr<CookieMonster> cookie_monster =
-      std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr,
-                                      /*first_party_sets_enabled=*/false);
+      std::make_unique<CookieMonster>(store_.get(), /*net_log=*/nullptr);
 
   ResultSavingCookieCallback<CookieAccessResult> set_cookie_callback;
   GURL url("http://www.example.com/");

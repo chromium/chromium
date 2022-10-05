@@ -58,8 +58,7 @@ std::unique_ptr<net::CookieMonster> CreateCookieMonster(
     net::NetLog* net_log) {
   if (config.path.empty()) {
     // Empty path means in-memory store.
-    return std::make_unique<net::CookieMonster>(nullptr /* store */, net_log,
-                                                net::kFirstPartySetsEnabled);
+    return std::make_unique<net::CookieMonster>(nullptr /* store */, net_log);
   }
 
   const bool restore_old_session_cookies =
@@ -67,8 +66,8 @@ std::unique_ptr<net::CookieMonster> CreateCookieMonster(
   scoped_refptr<net::SQLitePersistentCookieStore> persistent_store =
       CreatePersistentCookieStore(config.path, restore_old_session_cookies,
                                   config.crypto_delegate);
-  std::unique_ptr<net::CookieMonster> cookie_monster(new net::CookieMonster(
-      persistent_store.get(), net_log, net::kFirstPartySetsEnabled));
+  std::unique_ptr<net::CookieMonster> cookie_monster(
+      new net::CookieMonster(persistent_store.get(), net_log));
   if (restore_old_session_cookies)
     cookie_monster->SetPersistSessionCookies(true);
   return cookie_monster;

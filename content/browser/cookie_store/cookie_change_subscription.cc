@@ -188,9 +188,8 @@ bool CookieChangeSubscription::ShouldObserveChangeTo(
               network::IsUrlPotentiallyTrustworthy(url_),
               net::cookie_util::GetSamePartyStatus(
                   cookie, net_options,
-                  GetContentClient()->browser()->IsFirstPartySetsEnabled() &&
-                      base::FeatureList::IsEnabled(
-                          net::features::kSamePartyAttributeEnabled)),
+                  base::FeatureList::IsEnabled(
+                      net::features::kSamePartyAttributeEnabled)),
           })
       .status.IsInclude();
 }

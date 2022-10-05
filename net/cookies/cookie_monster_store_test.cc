@@ -239,8 +239,7 @@ std::unique_ptr<CookieMonster> CreateMonsterFromStoreForGC(
     store->AddCookie(*cc);
   }
 
-  return std::make_unique<CookieMonster>(store.get(), /*net_log=*/nullptr,
-                                         /*first_party_sets_enabled=*/false);
+  return std::make_unique<CookieMonster>(store.get(), /*net_log=*/nullptr);
 }
 
 MockSimplePersistentCookieStore::~MockSimplePersistentCookieStore() = default;

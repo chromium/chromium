@@ -79,7 +79,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      bool first_party_sets_enabled,
       net::FirstPartySetMetadata first_party_set_metadata);
 
   RestrictedCookieManager(const RestrictedCookieManager&) = delete;
@@ -263,7 +262,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // update filtering.
   CookieAccessesByURLAndSite recent_cookie_accesses_;
 
-  const bool first_party_sets_enabled_;
   bool same_party_attribute_enabled_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};

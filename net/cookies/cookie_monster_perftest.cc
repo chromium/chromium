@@ -29,7 +29,6 @@ namespace {
 
 const int kNumCookies = 20000;
 const char kCookieLine[] = "A  = \"b=;\\\"\"  ;secure;;; samesite=none";
-const bool kFirstPartySetsEnabled = false;
 
 static constexpr char kMetricPrefixParsedCookie[] = "ParsedCookie.";
 static constexpr char kMetricPrefixCookieMonster[] = "CookieMonster.";
@@ -177,8 +176,7 @@ TEST(ParsedCookieTest, TestParseBigCookies) {
 }
 
 TEST_F(CookieMonsterTest, TestAddCookiesOnSingleHost) {
-  auto cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr, kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   std::vector<std::string> cookies;
   for (int i = 0; i < kNumCookies; i++) {
     cookies.push_back(base::StringPrintf("a%03d=b; SameSite=None; Secure", i));
@@ -215,8 +213,7 @@ TEST_F(CookieMonsterTest, TestAddCookiesOnSingleHost) {
 }
 
 TEST_F(CookieMonsterTest, TestAddCookieOnManyHosts) {
-  auto cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr, kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   std::string cookie(kCookieLine);
   std::vector<GURL> gurls;  // just wanna have ffffuunnn
   for (int i = 0; i < kNumCookies; ++i) {
@@ -252,8 +249,7 @@ TEST_F(CookieMonsterTest, TestAddCookieOnManyHosts) {
 }
 
 TEST_F(CookieMonsterTest, TestDomainTree) {
-  auto cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr, kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   GetCookieListCallback getCookieListCallback;
   SetCookieCallback setCookieCallback;
   const char domain_cookie_format_tree[] =
@@ -312,8 +308,7 @@ TEST_F(CookieMonsterTest, TestDomainTree) {
 }
 
 TEST_F(CookieMonsterTest, TestDomainLine) {
-  auto cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr, kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   SetCookieCallback setCookieCallback;
   GetCookieListCallback getCookieListCallback;
   std::vector<std::string> domain_list;
@@ -377,8 +372,7 @@ TEST_F(CookieMonsterTest, TestImport) {
 
   store->SetLoadExpectation(true, std::move(initial_cookies));
 
-  auto cm = std::make_unique<CookieMonster>(store.get(), nullptr,
-                                            kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(store.get(), nullptr);
 
   // Import will happen on first access.
   GURL gurl("www.foo.com");
@@ -394,8 +388,7 @@ TEST_F(CookieMonsterTest, TestImport) {
 }
 
 TEST_F(CookieMonsterTest, TestGetKey) {
-  auto cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr, kFirstPartySetsEnabled);
+  auto cm = std::make_unique<CookieMonster>(nullptr, nullptr);
   auto reporter = SetUpCookieMonsterReporter("baseline_story");
   base::ElapsedTimer get_key_timer;
   for (int i = 0; i < kNumCookies; i++)

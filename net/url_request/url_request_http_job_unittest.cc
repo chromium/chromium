@@ -1600,8 +1600,7 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(std::make_unique<CookieMonster>(
-      /*store=*/nullptr, /*net_log=*/nullptr,
-      /*first_party_sets_enabled=*/false));
+      /*store=*/nullptr, /*net_log=*/nullptr));
   auto context = context_builder->Build();
 
   auto* cookie_store = static_cast<CookieMonster*>(context->cookie_store());
@@ -1695,8 +1694,7 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(std::make_unique<CookieMonster>(
-      /*store=*/nullptr, /*net_log=*/nullptr,
-      /*first_party_sets_enabled=*/false));
+      /*store=*/nullptr, /*net_log=*/nullptr));
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<FilteringTestNetworkDelegate>());
   auto context = context_builder->Build();
@@ -1767,8 +1765,7 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
   network_delegate->SetCookieFilter("blocked_");
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(std::make_unique<CookieMonster>(
-      /*store=*/nullptr, /*net_log=*/nullptr,
-      /*first_party_sets_enabled=*/false));
+      /*store=*/nullptr, /*net_log=*/nullptr));
   context_builder->set_network_delegate(std::move(network_delegate));
   auto context = context_builder->Build();
 
@@ -1843,8 +1840,7 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(std::make_unique<CookieMonster>(
-      /*store=*/nullptr, /*net_log=*/nullptr,
-      /*first_party_sets_enabled=*/false));
+      /*store=*/nullptr, /*net_log=*/nullptr));
   auto context = context_builder->Build();
 
   const url::Origin kTopFrameOrigin =
@@ -1926,8 +1922,7 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto cookie_monster = std::make_unique<CookieMonster>(
-      /*store=*/nullptr, /*net_log=*/nullptr,
-      /*first_party_sets_enabled=*/false);
+      /*store=*/nullptr, /*net_log=*/nullptr);
   auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
   cookie_access_delegate->SetFirstPartySets({
       {kOwnerSite, net::FirstPartySetEntry(kOwnerSite, net::SiteType::kPrimary,
@@ -2031,8 +2026,7 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, PrivacyMode) {
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(
-      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr,
-                                      /*first_party_sets_enabled=*/false));
+      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr));
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<FilteringTestNetworkDelegate>());
   auto context = context_builder->Build();
@@ -2144,8 +2138,7 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
 
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCookieStore(
-      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr,
-                                      /*first_party_sets_enabled=*/false));
+      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr));
   auto context = context_builder->Build();
 
   const url::Origin kTopFrameOrigin =

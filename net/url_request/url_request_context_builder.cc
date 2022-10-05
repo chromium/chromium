@@ -383,8 +383,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   if (cookie_store_set_by_client_) {
     context->set_cookie_store(std::move(cookie_store_));
   } else {
-    auto cookie_store = std::make_unique<CookieMonster>(
-        nullptr /* store */, context->net_log(), first_party_sets_enabled_);
+    auto cookie_store = std::make_unique<CookieMonster>(nullptr /* store */,
+                                                        context->net_log());
     context->set_cookie_store(std::move(cookie_store));
   }
 

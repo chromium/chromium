@@ -341,7 +341,7 @@ class CookieManagerTest : public testing::Test {
 
     connection_error_seen_ = false;
     auto cookie_monster = std::make_unique<net::CookieMonster>(
-        std::move(store), nullptr /* netlog */, first_party_sets_enabled_);
+        std::move(store), nullptr /* netlog */);
     auto context_builder = net::CreateTestURLRequestContextBuilder();
     context_builder->SetCookieStore(std::move(cookie_monster));
     url_request_context_ = context_builder->Build();
@@ -364,7 +364,6 @@ class CookieManagerTest : public testing::Test {
   void OnConnectionError() { connection_error_seen_ = true; }
 
   bool connection_error_seen_;
-  const bool first_party_sets_enabled_ = true;
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;

@@ -32,8 +32,6 @@
 
 namespace net {
 
-extern bool const kFirstPartySetsEnabled;
-
 class NetLog;
 
 // Observer for changes on |NSHTTPCookieStorge sharedHTTPCookieStorage|.

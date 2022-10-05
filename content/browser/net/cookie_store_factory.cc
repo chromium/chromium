@@ -23,19 +23,16 @@ namespace content {
 CookieStoreConfig::CookieStoreConfig()
     : restore_old_session_cookies(false),
       persist_session_cookies(false),
-      first_party_sets_enabled(false),
       crypto_delegate(nullptr) {
   // Default to an in-memory cookie store.
 }
 
 CookieStoreConfig::CookieStoreConfig(const base::FilePath& path,
                                      bool restore_old_session_cookies,
-                                     bool persist_session_cookies,
-                                     bool first_party_sets_enabled)
+                                     bool persist_session_cookies)
     : path(path),
       restore_old_session_cookies(restore_old_session_cookies),
       persist_session_cookies(persist_session_cookies),
-      first_party_sets_enabled(first_party_sets_enabled),
       crypto_delegate(nullptr) {
   CHECK(!path.empty() ||
         (!restore_old_session_cookies && !persist_session_cookies));
@@ -50,8 +47,8 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
 
   if (config.path.empty()) {
     // Empty path means in-memory store.
-    cookie_monster = std::make_unique<net::CookieMonster>(
-        nullptr /* store */, net_log, config.first_party_sets_enabled);
+    cookie_monster =
+        std::make_unique<net::CookieMonster>(nullptr /* store */, net_log);
   } else {
     scoped_refptr<base::SequencedTaskRunner> client_task_runner =
         config.client_task_runner;
@@ -73,8 +70,8 @@ std::unique_ptr<net::CookieStore> CreateCookieStore(
             config.path, client_task_runner, background_task_runner,
             config.restore_old_session_cookies, config.crypto_delegate));
 
-    cookie_monster = std::make_unique<net::CookieMonster>(
-        std::move(sqlite_store), net_log, config.first_party_sets_enabled);
+    cookie_monster =
+        std::make_unique<net::CookieMonster>(std::move(sqlite_store), net_log);
     if (config.persist_session_cookies)
       cookie_monster->SetPersistSessionCookies(true);
   }

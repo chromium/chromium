@@ -99,10 +99,6 @@ class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
   FirstPartySetsAccessDelegate delegate_;
 };
 
-TEST_F(NoopFirstPartySetsAccessDelegateTest, IsEnabled) {
-  EXPECT_TRUE(delegate().is_enabled());
-}
-
 TEST_F(NoopFirstPartySetsAccessDelegateTest, ComputeMetadata) {
   EXPECT_THAT(
       delegate()

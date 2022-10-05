@@ -156,16 +156,13 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // this class, but it must remain valid for the duration of the cookie
   // monster's existence. If |store| is NULL, then no backing store will be
   // updated. |net_log| must outlive the CookieMonster and can be null.
-  CookieMonster(scoped_refptr<PersistentCookieStore> store,
-                NetLog* net_log,
-                bool first_party_sets_enabled);
+  CookieMonster(scoped_refptr<PersistentCookieStore> store, NetLog* net_log);
 
   // Only used during unit testing.
   // |net_log| must outlive the CookieMonster.
   CookieMonster(scoped_refptr<PersistentCookieStore> store,
                 base::TimeDelta last_access_threshold,
-                NetLog* net_log,
-                bool first_party_sets_enabled);
+                NetLog* net_log);
 
   CookieMonster(const CookieMonster&) = delete;
   CookieMonster& operator=(const CookieMonster&) = delete;
@@ -797,8 +794,6 @@ class NET_EXPORT CookieMonster : public CookieStore {
   base::Time last_statistic_record_time_;
 
   bool persist_session_cookies_ = false;
-
-  bool first_party_sets_enabled_;
 
   THREAD_CHECKER(thread_checker_);
 

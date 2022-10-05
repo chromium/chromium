@@ -274,8 +274,7 @@ class RestrictedCookieManagerTest
  public:
   RestrictedCookieManagerTest()
       : cookie_monster_(/*store=*/nullptr,
-                        /*net_log=*/nullptr,
-                        kFirstPartySetsEnabled),
+                        /*net_log=*/nullptr),
         isolation_info_(kDefaultIsolationInfo),
         service_(std::make_unique<RestrictedCookieManager>(
             GetParam(),
@@ -284,7 +283,6 @@ class RestrictedCookieManagerTest
             kDefaultOrigin,
             isolation_info_,
             recording_client_.GetRemote(),
-            kFirstPartySetsEnabled,
             ComputeFirstPartySetMetadataSync(kDefaultOrigin,
                                              &cookie_monster_,
                                              isolation_info_))),
@@ -434,7 +432,6 @@ class RestrictedCookieManagerTest
                                  kDefaultOrigin,
                                  kDefaultOrigin,
                                  net::SiteForCookies());
-  const bool kFirstPartySetsEnabled = true;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};

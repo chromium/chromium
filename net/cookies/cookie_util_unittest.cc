@@ -1588,7 +1588,6 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
 }
 
 TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
-  const bool first_party_sets_enabled = true;
   CookieOptions options;
   options.set_is_in_nontrivial_first_party_set(true);
 
@@ -1614,8 +1613,9 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
 
           options.set_same_party_context(SamePartyContext(party_context_type));
           EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
-                    cookie_util::GetSamePartyStatus(*cookie, options,
-                                                    first_party_sets_enabled));
+                    cookie_util::GetSamePartyStatus(
+                        *cookie, options,
+                        /*same_party_attribute_enabled=*/true));
         }
       }
     }
@@ -1623,7 +1623,6 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
 }
 
 TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
-  const bool first_party_sets_enabled = true;
   CookieOptions options;
   options.set_is_in_nontrivial_first_party_set(true);
 
@@ -1672,14 +1671,16 @@ TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
           options.set_same_party_context(
               SamePartyContext(SamePartyContext::Type::kCrossParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyExclude,
-                    cookie_util::GetSamePartyStatus(*cookie, options,
-                                                    first_party_sets_enabled));
+                    cookie_util::GetSamePartyStatus(
+                        *cookie, options,
+                        /*same_party_attribute_enabled=*/true));
 
           options.set_same_party_context(
               SamePartyContext(SamePartyContext::Type::kSameParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyInclude,
-                    cookie_util::GetSamePartyStatus(*cookie, options,
-                                                    first_party_sets_enabled));
+                    cookie_util::GetSamePartyStatus(
+                        *cookie, options,
+                        /*same_party_attribute_enabled=*/true));
         }
       }
     }

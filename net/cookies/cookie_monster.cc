@@ -363,27 +363,21 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
 }  // namespace
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
-                             NetLog* net_log,
-                             bool first_party_sets_enabled)
+                             NetLog* net_log)
     : CookieMonster(std::move(store),
                     base::Seconds(kDefaultAccessUpdateThresholdSeconds),
-                    net_log,
-                    first_party_sets_enabled) {}
+                    net_log) {}
 
 CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
                              base::TimeDelta last_access_threshold,
-                             NetLog* net_log,
-                             bool first_party_sets_enabled)
+                             NetLog* net_log)
     : same_party_attribute_enabled_(base::FeatureList::IsEnabled(
           net::features::kSamePartyAttributeEnabled)),
-      change_dispatcher_(this,
-                         first_party_sets_enabled,
-                         same_party_attribute_enabled_),
+      change_dispatcher_(this, same_party_attribute_enabled_),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::COOKIE_STORE)),
       store_(std::move(store)),
       last_access_threshold_(last_access_threshold),
-      last_statistic_record_time_(base::Time::Now()),
-      first_party_sets_enabled_(first_party_sets_enabled) {
+      last_statistic_record_time_(base::Time::Now()) {
   cookieable_schemes_.insert(
       cookieable_schemes_.begin(), kDefaultCookieableSchemes,
       kDefaultCookieableSchemes + kDefaultCookieableSchemesCount);
@@ -1209,9 +1203,8 @@ void CookieMonster::FilterCookiesWithOptions(
         CookieAccessParams{
             GetAccessSemanticsForCookie(*cookie_ptr),
             delegate_treats_url_as_trustworthy,
-            cookie_util::GetSamePartyStatus(
-                *cookie_ptr, options,
-                first_party_sets_enabled_ && same_party_attribute_enabled_)});
+            cookie_util::GetSamePartyStatus(*cookie_ptr, options,
+                                            same_party_attribute_enabled_)});
 
     if (!access_result.status.IsInclude()) {
       UMA_HISTOGRAM_BOOLEAN(
@@ -1503,11 +1496,10 @@ void CookieMonster::SetCanonicalCookie(
 
   CookieAccessResult access_result = cc->IsSetPermittedInContext(
       source_url, options,
-      CookieAccessParams(
-          GetAccessSemanticsForCookie(*cc), delegate_treats_url_as_trustworthy,
-          cookie_util::GetSamePartyStatus(
-              *cc, options,
-              first_party_sets_enabled_ && same_party_attribute_enabled_)),
+      CookieAccessParams(GetAccessSemanticsForCookie(*cc),
+                         delegate_treats_url_as_trustworthy,
+                         cookie_util::GetSamePartyStatus(
+                             *cc, options, same_party_attribute_enabled_)),
       cookieable_schemes_, cookie_access_result);
 
   const std::string key(GetKey(cc->Domain()));
@@ -2587,9 +2579,8 @@ void CookieMonster::ConvertPartitionedCookie(const net::CanonicalCookie& cookie,
       CookieAccessParams(
           GetAccessSemanticsForCookie(*new_cookie),
           delegate_treats_url_as_trustworthy,
-          cookie_util::GetSamePartyStatus(
-              *new_cookie, options,
-              first_party_sets_enabled_ && same_party_attribute_enabled_)),
+          cookie_util::GetSamePartyStatus(*new_cookie, options,
+                                          same_party_attribute_enabled_)),
       cookieable_schemes_);
   auto key = GetKey(new_cookie->Domain());
   InternalInsertCookie(key, std::move(new_cookie), /*sync_to_store=*/true,

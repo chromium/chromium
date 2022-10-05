@@ -84,10 +84,8 @@ std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder() {
   builder->SetHttpAuthHandlerFactory(HttpAuthHandlerFactory::CreateDefault());
   builder->SetHttpServerProperties(std::make_unique<HttpServerProperties>());
   builder->set_quic_context(std::make_unique<QuicContext>());
-  builder->SetCookieStore(
-      std::make_unique<CookieMonster>(/*store=*/nullptr,
-                                      /*netlog=*/nullptr,
-                                      /*first_party_sets_enabled=*/false));
+  builder->SetCookieStore(std::make_unique<CookieMonster>(/*store=*/nullptr,
+                                                          /*netlog=*/nullptr));
   builder->set_http_user_agent_settings(
       std::make_unique<StaticHttpUserAgentSettings>("en-us,fr", std::string()));
   return builder;

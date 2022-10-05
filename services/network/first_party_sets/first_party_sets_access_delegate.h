@@ -51,11 +51,6 @@ class FirstPartySetsAccessDelegate
   void NotifyReady(mojom::FirstPartySetsReadyEventPtr ready_event) override;
   void SetEnabled(bool enabled) override;
 
-  bool is_enabled() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return enabled_ && manager_->is_enabled();
-  }
-
   // Computes the First-Party Set metadata related to the given context.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
