@@ -80,6 +80,7 @@ class UserImageManagerImpl : public UserImageManager,
   static const char kImagePathNodeName[];
   static const char kImageIndexNodeName[];
   static const char kImageURLNodeName[];
+  static const char kImageCacheUpdated[];
 
  private:
   friend class UserImageManagerTestBase;

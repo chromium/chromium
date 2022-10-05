@@ -54,7 +54,7 @@ extern const int kHistogramImagesCount;
 GURL GetDefaultImageUrl(int index);
 
 // Returns bitmap of default user image with specified index.
-const gfx::ImageSkia& GetDefaultImage(int index);
+const gfx::ImageSkia& GetDefaultImageDeprecated(int index);
 
 // Returns ID of default user image with specified index.
 int GetDefaultImageResourceId(int index);

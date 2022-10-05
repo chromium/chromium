@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "url/gurl.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -48,6 +49,11 @@ void StartWithData(
     ImageDecoder::ImageCodec image_codec,
     int pixels_per_side,
     LoadedCallback loaded_cb);
+
+// Loads the default image fetched from `default_image_url` and calls
+// `loaded_cb` with the resulting UserImage (which may be empty in case of
+// error).
+void StartWithGURL(const GURL& default_image_url, LoadedCallback loaded_cb);
 
 }  // namespace user_image_loader
 }  // namespace ash

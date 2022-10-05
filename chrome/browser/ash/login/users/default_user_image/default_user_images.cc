@@ -334,7 +334,10 @@ GURL GetDefaultImageUrl(int index) {
   return GURL(base::StringPrintf("%s%d", kDefaultUrlPrefix, index));
 }
 
-const gfx::ImageSkia& GetDefaultImage(int index) {
+// DEPRECATED: after the full migration of the avatar images to cloud,
+// this function should be removed since default images will no longer
+// be available in device resources.
+const gfx::ImageSkia& GetDefaultImageDeprecated(int index) {
   DCHECK(index >= 0 && index < kDefaultImagesCount);
   return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       kDefaultImageInfo[index].resource_id);

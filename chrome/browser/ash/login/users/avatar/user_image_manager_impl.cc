@@ -9,6 +9,9 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/image_downloader.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -113,6 +116,7 @@ const char UserImageManagerImpl::kUserImageProperties[] = "user_image_info";
 const char UserImageManagerImpl::kImagePathNodeName[] = "path";
 const char UserImageManagerImpl::kImageIndexNodeName[] = "index";
 const char UserImageManagerImpl::kImageURLNodeName[] = "url";
+const char UserImageManagerImpl::kImageCacheUpdated[] = "cache_updated";
 
 // static
 int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
@@ -229,6 +233,17 @@ class UserImageManagerImpl::Job {
   // Notifies the `parent_` that the Job is done.
   void NotifyJobDone();
 
+  const base::Value::Dict* GetImageProperties() {
+    PrefService* local_state = g_browser_process->local_state();
+    const base::Value::Dict& prefs_images =
+        local_state->GetDict(kUserImageProperties);
+
+    const base::Value::Dict* image_properties =
+        prefs_images.FindDict(account_id().GetUserEmail());
+
+    return image_properties;
+  }
+
   const AccountId& account_id() const { return parent_->account_id_; }
 
   UserImageManagerImpl* parent_;
@@ -260,15 +275,43 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
-    gfx::ImageSkia default_image =
-        default_user_image::GetDefaultImage(image_index_);
-    std::unique_ptr<user_manager::UserImage> user_image(
-        user_manager::UserImage::CreateAndEncode(
-            default_image, user_manager::UserImage::ChooseImageFormat(
-                               *default_image.bitmap())));
-    // Cache the in-use default image as part of the migration of avatar
-    // images to cloud.
-    UpdateUserAndSaveImage(std::move(user_image));
+    if (ash::features::IsAvatarsCloudMigrationEnabled()) {
+      bool image_cache_updated = false;
+      if (const base::Value::Dict* image_properties = GetImageProperties()) {
+        image_cache_updated =
+            image_properties->FindBool(kImageCacheUpdated).value_or(false);
+      }
+      // Load default image from local cached version if available,
+      // otherwise download from gstatic resources if possible.
+      if (!image_path_.empty() && image_cache_updated &&
+          base::PathExists(image_path_) &&
+          !base::DirectoryExists(image_path_)) {
+        // Will refactor to remove this redundant call after the feature flag
+        // IsAvatarsCloudMigrationEnabled is no longer needed.
+        user_image_loader::StartWithFilePath(
+            parent_->background_task_runner_, image_path_,
+            ChooseCodecFromPath(image_path_),
+            0,  // Do not crop.
+            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                           false));
+      } else {
+        // Fetch the default image from cloud before caching it.
+        image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+        user_image_loader::StartWithGURL(
+            image_url_, base::BindOnce(&Job::OnLoadImageDone,
+                                       weak_factory_.GetWeakPtr(), true));
+      }
+    } else {
+      gfx::ImageSkia default_image =
+          default_user_image::GetDefaultImageDeprecated(image_index_);
+      std::unique_ptr<user_manager::UserImage> user_image(
+          user_manager::UserImage::CreateAndEncode(
+              default_image, user_manager::UserImage::ChooseImageFormat(
+                                 *default_image.bitmap())));
+      // Cache the in-use default image as part of the migration of avatar
+      // images to cloud.
+      UpdateUserAndSaveImage(std::move(user_image));
+    }
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
@@ -295,17 +338,25 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   DCHECK(default_user_image::IsValidIndex(default_image_index));
 
   image_index_ = default_image_index;
-  gfx::ImageSkia default_image =
-      default_user_image::GetDefaultImage(image_index_);
-  std::unique_ptr<user_manager::UserImage> user_image(
-      user_manager::UserImage::CreateAndEncode(
-          default_image,
-          user_manager::UserImage::ChooseImageFormat(*default_image.bitmap())));
+  if (ash::features::IsAvatarsCloudMigrationEnabled()) {
+    // Fetch the default image from cloud before caching it.
+    image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+    user_image_loader::StartWithGURL(
+        image_url_, base::BindOnce(&Job::OnLoadImageDone,
+                                   weak_factory_.GetWeakPtr(), true));
+  } else {
+    gfx::ImageSkia default_image =
+        default_user_image::GetDefaultImageDeprecated(image_index_);
+    std::unique_ptr<user_manager::UserImage> user_image(
+        user_manager::UserImage::CreateAndEncode(
+            default_image, user_manager::UserImage::ChooseImageFormat(
+                               *default_image.bitmap())));
 
-  // Now that default images are served from the cloud, the current in-use
-  // user avatar image needs to be saved and cached in local state for
-  // offline usage.
-  UpdateUserAndSaveImage(std::move(user_image));
+    // Now that default images are served from the cloud, the current in-use
+    // user avatar image needs to be saved and cached in local state for
+    // offline usage.
+    UpdateUserAndSaveImage(std::move(user_image));
+  }
 }
 
 void UserImageManagerImpl::Job::SetToImage(
@@ -436,13 +487,7 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   base::FilePath old_image_path;
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& prefs_images =
-      local_state->GetDict(kUserImageProperties);
-
-  const base::Value::Dict* image_properties =
-      prefs_images.FindDict(account_id().GetUserEmail());
-  if (image_properties) {
+  if (const base::Value::Dict* image_properties = GetImageProperties()) {
     const std::string* value = image_properties->FindString(kImagePathNodeName);
     if (value)
       old_image_path = base::FilePath::FromUTF8Unsafe(*value);
@@ -470,10 +515,12 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   PrefService* local_state = g_browser_process->local_state();
 
   base::Value::Dict entry;
-  entry.Set(kImagePathNodeName, base::Value(image_path_.value()));
-  entry.Set(kImageIndexNodeName, base::Value(image_index_));
+  entry.Set(kImagePathNodeName, image_path_.value());
+  entry.Set(kImageIndexNodeName, image_index_);
+  // Change to set to true after fixing caching of animated avatars
+  entry.Set(kImageCacheUpdated, false);
   if (!image_url_.is_empty())
-    entry.Set(kImageURLNodeName, base::Value(image_url_.spec()));
+    entry.Set(kImageURLNodeName, image_url_.spec());
 
   const base::Value::Dict* existing_value =
       local_state->GetDict(kUserImageProperties)

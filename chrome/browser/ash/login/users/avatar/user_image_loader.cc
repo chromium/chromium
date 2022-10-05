@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/image_downloader.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -17,11 +18,14 @@
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "components/user_manager/user_image/user_image.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace user_image_loader {
@@ -232,6 +236,13 @@ void DecodeImage(
   ImageDecoder::StartWithOptions(image_request, *data, codec, false);
 }
 
+void OnImageDownloaded(LoadedCallback loaded_cb,
+                       const gfx::ImageSkia& image_skia) {
+  std::move(loaded_cb).Run(user_manager::UserImage::CreateAndEncode(
+      image_skia,
+      user_manager::UserImage::ChooseImageFormat(*image_skia.bitmap())));
+}
+
 }  // namespace
 
 void StartWithFilePath(
@@ -261,5 +272,40 @@ void StartWithData(
               background_task_runner, data.get(), true /* data_is_ready */);
 }
 
+// Used to load user images from GURL, specifically in the case of
+// retrieving images from the cloud.
+void StartWithGURL(const GURL& default_image_url, LoadedCallback loaded_cb) {
+  if (!ash::ImageDownloader::Get()) {
+    LOG(ERROR) << "Could not retrieve image downloader for user image";
+    return;
+  }
+
+  ash::ImageDownloader::DownloadCallback download_callback =
+      base::BindOnce(&OnImageDownloaded, std::move(loaded_cb));
+  constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
+      net::DefineNetworkTrafficAnnotation("user_image_downloader", R"(
+            semantics: {
+              sender: "User Image Downloader"
+              description:
+                "Google default user images are loaded from cloud avatar image "
+                "resources. Images are downloaded on an as-needed basis."
+              trigger:
+                "Triggered when the user opens the avatar image picker or "
+                "when the current default user image needs to be cached."
+              data: "The URL for which to retrieve a user image."
+              destination: GOOGLE_OWNED_SERVICE
+            }
+            policy: {
+              cookies_allowed: NO
+              setting:
+                "This request cannot be disabled, but it is only triggered "
+                "by user action."
+              policy_exception_justification: "Not implemented."
+            })");
+
+  ash::ImageDownloader::Get()->Download(default_image_url,
+                                        kNetworkTrafficAnnotationTag,
+                                        std::move(download_callback));
+}
 }  // namespace user_image_loader
 }  // namespace ash

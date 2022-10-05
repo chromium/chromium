@@ -395,4 +395,5 @@ Refer to README.md for content description and update process.
  <item id="supervised_user_favicon_request" added_in_milestone="108" content_hash_code="06636c2a" os_list="chromeos,android" file_path="chrome/browser/supervised_user/supervised_user_favicon_request_handler.cc" />
  <item id="app_preload_service" added_in_milestone="108" content_hash_code="00720713" os_list="chromeos" file_path="chrome/browser/apps/app_preload_service/app_preload_server_connector.cc" />
  <item id="search_and_assistant_enabled_checker" added_in_milestone="106" content_hash_code="003a5b64" os_list="chromeos" file_path="chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc" />
+ <item id="user_image_downloader" added_in_milestone="108" content_hash_code="07c2217f" os_list="chromeos" file_path="chrome/browser/ash/login/users/avatar/user_image_loader.cc" />
 </annotations>
