@@ -283,7 +283,9 @@ export class TabSearchAppElement extends PolymerElement {
             .then(
                 e => this.metricsReporter.umaReportTime(
                     'Tabs.TabSearch.WebUI.TabListDataReceived2', e))
-            .then(() => this.metricsReporter.clearMark('TabListDataReceived'));
+            .then(() => this.metricsReporter.clearMark('TabListDataReceived'))
+            // Ignore silently if mark 'TabListDataReceived' is missing.
+            .catch(() => {});
       }
       // The infinite-list produces viewport-filled events whenever a data or
       // scroll position change triggers the the viewport fill logic.
@@ -324,7 +326,9 @@ export class TabSearchAppElement extends PolymerElement {
           .then(
               e => this.metricsReporter.umaReportTime(
                   'Tabs.TabSearch.Mojo.TabUpdated', e))
-          .then(() => this.metricsReporter.clearMark('TabUpdated'));
+          .then(() => this.metricsReporter.clearMark('TabUpdated'))
+          // Ignore silently if mark 'TabUpdated' is missing.
+          .catch(() => {});
     }
   }
 

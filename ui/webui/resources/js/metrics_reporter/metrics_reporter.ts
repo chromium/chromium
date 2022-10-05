@@ -48,15 +48,21 @@ function timeToMojo(mark: bigint): TimeDelta {
  *
  * Caveats:
  *   1. measure() will assert if the mark is not available. You can use
- *      the following code to prevent execution from being interrupted.
+ *      catch() to prevent execution from being interrupted, e.g.
  *
- *     metricsReporter.measure('StartMark').then(duration =>
- *       metricsReporter.umaReportTime('Your.Histogram', duration))
+ *      metricsReporter.measure('StartMark').then(duration =>
+ *         metricsReporter.umaReportTime('Your.Histogram', duration))
+ *      .catch(() => {})
  *
  *   2. measure() will record inaccurate time if a mark is reused for
- *      overlapping measurements. To prevent this from happening, you
- *      can use hasLocalMark() to test before calling mark() and use
- *      clearMark() to erase the mark after measure().
+ *      overlapping measurements. To prevent this, you can:
+ *
+ *      a. check if a mark exists using hasLocalMark() before calling mark().
+ *      b. check if a mark exists using hasMark() before calling measure().
+ *      c. erase a mark using clearMark() after calling measure().
+ *
+ *      Alternative to b., you can use an empty catch() to ignore
+ *      missing marks (due to the mark deletion by c.).
  */
 
 export interface MetricsReporter {
