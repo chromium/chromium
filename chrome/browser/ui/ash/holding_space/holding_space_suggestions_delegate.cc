@@ -85,9 +85,8 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
       app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           profile()));
 
-  // TODO(https://crbug.com/1369418): also refresh local file suggestion items
-  // when local file suggestions are supported by the service.
   MaybeFetchSuggestions(app_list::FileSuggestionType::kDriveFile);
+  MaybeFetchSuggestions(app_list::FileSuggestionType::kLocalFile);
 }
 
 void HoldingSpaceSuggestionsDelegate::OnFileSuggestionUpdated(

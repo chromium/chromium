@@ -40,6 +40,9 @@ class LocalFileSuggestionProvider
       delete;
   ~LocalFileSuggestionProvider() override;
 
+  // Returns true if the MrfuCache is initialized.
+  bool IsInitialized() const;
+
   // FileSuggestionProvider:
   void GetSuggestFileData(GetSuggestFileDataCallback callback) override;
 
@@ -48,9 +51,6 @@ class LocalFileSuggestionProvider
 
   // Returns true if there is pending fetch on file suggestions.
   bool HasPendingLocalSuggestionFetchForTest() const;
-
-  // Returns true if the MrfuCache is initialized.
-  bool IsInitializedForTest() const;
 
  private:
   void OnProtoInitialized(ReadStatus status);

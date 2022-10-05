@@ -101,6 +101,10 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
 
 LocalFileSuggestionProvider::~LocalFileSuggestionProvider() = default;
 
+bool LocalFileSuggestionProvider::IsInitialized() const {
+  return files_ranker_ && files_ranker_->initialized();
+}
+
 void LocalFileSuggestionProvider::GetSuggestFileData(
     GetSuggestFileDataCallback callback) {
   if (!files_ranker_ || !files_ranker_->initialized()) {
@@ -158,10 +162,6 @@ void LocalFileSuggestionProvider::OnFilesOpened(
 bool LocalFileSuggestionProvider::HasPendingLocalSuggestionFetchForTest()
     const {
   return !on_validation_complete_callback_list_.empty();
-}
-
-bool LocalFileSuggestionProvider::IsInitializedForTest() const {
-  return files_ranker_ && files_ranker_->initialized();
 }
 
 void LocalFileSuggestionProvider::OnProtoInitialized(ReadStatus status) {

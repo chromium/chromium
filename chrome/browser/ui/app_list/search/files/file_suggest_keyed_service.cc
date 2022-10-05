@@ -141,12 +141,14 @@ bool FileSuggestKeyedService::HasPendingSuggestionFetchForTest() const {
 
 void FileSuggestKeyedService::OnSuggestionProviderUpdated(
     FileSuggestionType type) {
-  for (auto& observer : observers_)
-    observer.OnFileSuggestionUpdated(type);
+  if (IsProtoInitialized()) {
+    for (auto& observer : observers_)
+      observer.OnFileSuggestionUpdated(type);
+  }
 }
 
 bool FileSuggestKeyedService::IsReadyForTest() const {
-  return local_file_suggestion_provider_->IsInitializedForTest() &&
+  return local_file_suggestion_provider_->IsInitialized() &&
          IsProtoInitialized();
 }
 
@@ -180,9 +182,8 @@ void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
     ReadStatus read_status) {
   OnSuggestionProviderUpdated(FileSuggestionType::kDriveFile);
 
-  // TODO(https://crbug.com/1369418): check whether local file suggestions are
-  // ready when local file suggestions are supported by the service.
-  OnSuggestionProviderUpdated(FileSuggestionType::kLocalFile);
+  if (local_file_suggestion_provider_->IsInitialized())
+    OnSuggestionProviderUpdated(FileSuggestionType::kLocalFile);
 }
 
 }  // namespace app_list
