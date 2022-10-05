@@ -21,6 +21,8 @@ aggregate_vector_icons("apc_vector_icons") {
     "open_site_settings.icon",
     "open_site_settings_dark.icon",
     "password_change_progress_start.icon",
+    "password_reset_requested.icon",
+    "password_reset_requested_dark.icon",
     "save_new_password.icon",
     "save_new_password_dark.icon",
     "unspecified_state.icon",

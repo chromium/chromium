@@ -33,6 +33,9 @@ TEST(ApcUtilsTest, GetApcTopIconFromEnum) {
             &autofill_assistant::password_change::kSaveNewPasswordIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_CHANGED_PASSWORD, false),
             &autofill_assistant::password_change::kChangedPasswordIcon);
+  EXPECT_EQ(
+      &GetApcTopIconFromEnum(TopIcon::TOP_ICON_PASSWORD_RESET_REQUESTED, false),
+      &autofill_assistant::password_change::kPasswordResetRequestedIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_BAD_NEW_PASSWORD, false),
             &autofill_assistant::password_change::kBadNewPasswordIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_ERROR_OCCURRED, false),
@@ -52,6 +55,9 @@ TEST(ApcUtilsTest, GetApcTopIconFromEnum) {
             &autofill_assistant::password_change::kSaveNewPasswordDarkIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_CHANGED_PASSWORD, true),
             &autofill_assistant::password_change::kChangedPasswordDarkIcon);
+  EXPECT_EQ(
+      &GetApcTopIconFromEnum(TopIcon::TOP_ICON_PASSWORD_RESET_REQUESTED, true),
+      &autofill_assistant::password_change::kPasswordResetRequestedDarkIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_BAD_NEW_PASSWORD, true),
             &autofill_assistant::password_change::kBadNewPasswordDarkIcon);
   EXPECT_EQ(&GetApcTopIconFromEnum(TopIcon::TOP_ICON_ERROR_OCCURRED, true),

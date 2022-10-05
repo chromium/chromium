@@ -35,6 +35,8 @@ const gfx::VectorIcon& GetApcTopIconFromEnum(TopIcon icon, bool dark_mode) {
         return autofill_assistant::password_change::kSaveNewPasswordIcon;
       case TopIcon::TOP_ICON_CHANGED_PASSWORD:
         return autofill_assistant::password_change::kChangedPasswordIcon;
+      case TopIcon::TOP_ICON_PASSWORD_RESET_REQUESTED:
+        return autofill_assistant::password_change::kPasswordResetRequestedIcon;
       case TopIcon::TOP_ICON_BAD_NEW_PASSWORD:
         return autofill_assistant::password_change::kBadNewPasswordIcon;
       case TopIcon::TOP_ICON_ERROR_OCCURRED:
@@ -56,6 +58,9 @@ const gfx::VectorIcon& GetApcTopIconFromEnum(TopIcon icon, bool dark_mode) {
         return autofill_assistant::password_change::kSaveNewPasswordDarkIcon;
       case TopIcon::TOP_ICON_CHANGED_PASSWORD:
         return autofill_assistant::password_change::kChangedPasswordDarkIcon;
+      case TopIcon::TOP_ICON_PASSWORD_RESET_REQUESTED:
+        return autofill_assistant::password_change::
+            kPasswordResetRequestedDarkIcon;
       case TopIcon::TOP_ICON_BAD_NEW_PASSWORD:
         return autofill_assistant::password_change::kBadNewPasswordDarkIcon;
       case TopIcon::TOP_ICON_ERROR_OCCURRED:
