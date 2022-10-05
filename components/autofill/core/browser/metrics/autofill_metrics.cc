@@ -1667,19 +1667,29 @@ void AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
 }
 
 // static
-void AutofillMetrics::LogStoredProfileCount(size_t num_profiles) {
+void AutofillMetrics::LogStoredProfileCountStatistics(
+    size_t num_profiles,
+    size_t num_disused_profiles,
+    size_t num_countryless_profiles) {
   UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileCount", num_profiles);
-}
 
-// static
-void AutofillMetrics::LogStoredProfilesWithoutCountry(size_t num_profiles) {
+  // For users without any profiles do not record the other metrics.
+  if (num_profiles == 0)
+    return;
+
+  DCHECK_LE(num_disused_profiles, num_profiles);
+  size_t num_used_profiles = num_profiles - num_disused_profiles;
+
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileUsedCount",
+                            num_used_profiles);
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileDisusedCount",
+                            num_disused_profiles);
   UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileWithoutCountryCount",
-                          num_profiles);
-}
+                          num_countryless_profiles);
 
-// static
-void AutofillMetrics::LogStoredProfileDisusedCount(size_t num_profiles) {
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileDisusedCount", num_profiles);
+  int use_percentage = (100 * num_used_profiles) / num_profiles;
+  UMA_HISTOGRAM_PERCENTAGE("Autofill.StoredProfileUsedPercentage",
+                           use_percentage);
 }
 
 // static

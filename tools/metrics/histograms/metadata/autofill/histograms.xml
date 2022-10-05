@@ -3449,17 +3449,41 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of stored Autofill address profiles which have not been used in a
     sufficiently long time for autofill to consider them disused. Measured once
-    per Chrome user profile launch.
+    per Chrome user profile launch. This metric is only recorded if the user has
+    at least one profile.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.StoredProfileUsedCount" units="units"
+    expires_after="2023-02-12">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of stored Autofill address profiles which are not in the disused
+    state. Measured once per Chrome user profile launch. This metric is only
+    recorded if the user has at least one profile.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.StoredProfileUsedPercentage" units="units"
+    expires_after="2023-02-12">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The percentage of stored Autofill address profiles which are not in the
+    disused state. Measured once per Chrome user profile launch. This metric is
+    only recorded if the user has at least one profile.
   </summary>
 </histogram>
 
 <histogram name="Autofill.StoredProfileWithoutCountryCount" units="units"
     expires_after="2023-02-05">
   <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-team@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill addresses without a country a user has stored,
-    measured at launch time.
+    measured at launch time. This metric is only recorded if the user has at
+    least one profile.
   </summary>
 </histogram>
 

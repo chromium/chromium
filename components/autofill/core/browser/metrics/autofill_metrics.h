@@ -1315,17 +1315,11 @@ class AutofillMetrics {
   // This should be called each time a new chrome profile is launched.
   static void LogIsAutofillCreditCardEnabledAtStartup(bool enabled);
 
-  // Records the number of stored address profiles. This is called each time a
-  // new Chrome profile is launched.
-  static void LogStoredProfileCount(size_t num_profiles);
-
-  // Records the number of profiles without a country. This is called each time
-  // a new Chrome profile is launched.
-  static void LogStoredProfilesWithoutCountry(size_t num_profiles);
-
-  // Records the number of stored address profiles which have not been used in
-  // a long time. This is be called each time a new chrome profile is launched.
-  static void LogStoredProfileDisusedCount(size_t num_profiles);
+  // Records statistics for the number of used, disused and country-less address
+  // profiles. This is called each time a new chrome profile is launched.
+  static void LogStoredProfileCountStatistics(size_t num_profiles,
+                                              size_t num_disused_profiles,
+                                              size_t num_countryless_profiles);
 
   // Records the number of days since an address profile was last used. This is
   // called once per address profile each time a new chrome profile is launched.

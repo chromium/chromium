@@ -1917,29 +1917,26 @@ std::string PersonalDataManager::SaveImportedCreditCard(
 
 void PersonalDataManager::LogStoredProfileMetrics() const {
   if (!has_logged_stored_profile_metrics_) {
-    // Update the histogram of how many addresses the user has stored.
-    AutofillMetrics::LogStoredProfileCount(web_profiles_.size());
+    // Track the number of disused profiles and profiles without country
+    // information.
+    size_t num_disused_profiles = 0;
+    size_t num_profiles_without_country = 0;
 
-    // If the user has stored addresses, log the distribution of days since
-    // their last use and how many would be considered disused.
-    // Additionally, track the number of profiles without a country.
-    if (!web_profiles_.empty()) {
-      size_t num_disused_profiles = 0;
-      size_t num_profiles_without_country = 0;
-      const base::Time now = AutofillClock::Now();
-      for (const std::unique_ptr<AutofillProfile>& profile : web_profiles_) {
-        const base::TimeDelta time_since_last_use = now - profile->use_date();
-        AutofillMetrics::LogStoredProfileDaysSinceLastUse(
-            time_since_last_use.InDays());
-        if (time_since_last_use > kDisusedDataModelTimeDelta)
-          ++num_disused_profiles;
-        if (profile->GetRawInfo(ADDRESS_HOME_COUNTRY).empty())
-          ++num_profiles_without_country;
-      }
-      AutofillMetrics::LogStoredProfileDisusedCount(num_disused_profiles);
-      AutofillMetrics::LogStoredProfilesWithoutCountry(
-          num_profiles_without_country);
+    // Determine the number of disused and country-less profiles
+    const base::Time now = AutofillClock::Now();
+    for (const std::unique_ptr<AutofillProfile>& profile : web_profiles_) {
+      const base::TimeDelta time_since_last_use = now - profile->use_date();
+      AutofillMetrics::LogStoredProfileDaysSinceLastUse(
+          time_since_last_use.InDays());
+      if (time_since_last_use > kDisusedDataModelTimeDelta)
+        ++num_disused_profiles;
+      if (profile->GetRawInfo(ADDRESS_HOME_COUNTRY).empty())
+        ++num_profiles_without_country;
     }
+
+    AutofillMetrics::LogStoredProfileCountStatistics(
+        web_profiles_.size(), num_disused_profiles,
+        num_profiles_without_country);
 
     // Only log this info once per chrome user profile load.
     has_logged_stored_profile_metrics_ = true;
