@@ -93,6 +93,7 @@ source_set("ui") {
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
+    "//ash/style",
     "//base",
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/services/assistant/public/cpp",

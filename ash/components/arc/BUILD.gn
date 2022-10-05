@@ -121,6 +121,7 @@ static_library("arc") {
     "//ash/keyboard/ui",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc:external_arc",
+    "//ash/style",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/arc",

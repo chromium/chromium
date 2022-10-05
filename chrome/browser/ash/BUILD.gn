@@ -3063,6 +3063,7 @@ source_set("ash") {
     "//ash/services/quick_pair/public/mojom:mojom_headers",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/mojom",
+    "//ash/style",
     "//ash/webui/camera_app_ui",
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/eche_app_ui",
