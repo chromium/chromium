@@ -2314,6 +2314,7 @@ if (!is_android) {
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
+      "../browser/window_placement/screen_details_browsertest.cc",
       "../browser/window_placement/window_placement_browsertest.cc",
       "../browser/window_placement/window_placement_permission_context_browsertest.cc",
       "../common/time_format_browsertest.cc",

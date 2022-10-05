@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "content/public/common/content_switches.h"
+#include "content/browser/screen_enumeration/screen_details_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -18,106 +15,26 @@
 
 namespace content {
 
-namespace {
+using ScreenDetailsTest = ContentBrowserTest;
 
-// Used to get async getScreenDetails() info in a list of dictionary values.
-constexpr char kGetScreensScript[] = R"(
-  (async () => {
-    const screenDetails = await self.getScreenDetails();
-    let result = [];
-    for (let s of screenDetails.screens) {
-      result.push({ availHeight: s.availHeight,
-                    availLeft: s.availLeft,
-                    availTop: s.availTop,
-                    availWidth: s.availWidth,
-                    colorDepth: s.colorDepth,
-                    height: s.height,
-                    id: s.id,
-                    internal: s.internal,
-                    left: s.left,
-                    orientation: s.orientation != null,
-                    pixelDepth: s.pixelDepth,
-                    primary: s.primary,
-                    scaleFactor: s.scaleFactor,
-                    top: s.top,
-                    touchSupport: s.touchSupport,
-                    width: s.width });
-    }
-    return result;
-  })();
-)";
-
-// Returns a list of dictionary values from native screen information, intended
-// for comparison with the result of kGetScreensScript.
-base::Value GetExpectedScreens() {
-  base::Value expected_screens(base::Value::Type::LIST);
-  auto* screen = display::Screen::GetScreen();
-  size_t id = 0;
-  for (const auto& d : screen->GetAllDisplays()) {
-    base::Value s(base::Value::Type::DICTIONARY);
-    s.SetIntKey("availHeight", d.work_area().height());
-    s.SetIntKey("availLeft", d.work_area().x());
-    s.SetIntKey("availTop", d.work_area().y());
-    s.SetIntKey("availWidth", d.work_area().width());
-    s.SetIntKey("colorDepth", d.color_depth());
-    s.SetIntKey("height", d.bounds().height());
-    s.SetStringKey("id", base::NumberToString(id++));
-    s.SetBoolKey("internal", d.IsInternal());
-    s.SetIntKey("left", d.bounds().x());
-    s.SetBoolKey("orientation", false);
-    s.SetIntKey("pixelDepth", d.color_depth());
-    s.SetBoolKey("primary", d.id() == screen->GetPrimaryDisplay().id());
-    // Handle JS's pattern for specifying integer and floating point numbers.
-    int int_scale_factor = base::ClampCeil(d.device_scale_factor());
-    if (int_scale_factor == d.device_scale_factor())
-      s.SetIntKey("scaleFactor", int_scale_factor);
-    else
-      s.SetDoubleKey("scaleFactor", d.device_scale_factor());
-    s.SetIntKey("top", d.bounds().y());
-    s.SetBoolKey("touchSupport", d.touch_support() ==
-                                     display::Display::TouchSupport::AVAILABLE);
-    s.SetIntKey("width", d.bounds().width());
-    expected_screens.Append(std::move(s));
-  }
-  return expected_screens;
-}
-
-}  // namespace
-
-// Tests screen enumeration aspects of the WindowPlacement feature.
-class ScreenEnumerationTest : public ContentBrowserTest {
- public:
-  ScreenEnumerationTest() = default;
-  ~ScreenEnumerationTest() override = default;
-  ScreenEnumerationTest(const ScreenEnumerationTest&) = delete;
-  void operator=(const ScreenEnumerationTest&) = delete;
-
- protected:
-  // ContentBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "WindowPlacement");
-    ContentBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, GetScreensNoPermission) {
+// Test ScreenDetails API promise rejection without permission.
+IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, GetScreensNoPermission) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreenDetails' in self"));
-  // getScreenDetails() rejects its promise without the WindowPlacement
-  // permission.
+  // getScreenDetails() rejects its promise without permission.
   EXPECT_FALSE(EvalJs(shell(), "await getScreenDetails()").error.empty());
 }
 
-// TODO(crbug.com/1119974): Need content_browsertests permission controls.
-IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, DISABLED_GetScreensBasic) {
+// TODO(crbug.com/1119974): Test ScreenDetails API values with permission.
+IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, DISABLED_GetScreensBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'getScreenDetails' in self"));
-  auto result = EvalJs(shell(), kGetScreensScript);
-  EXPECT_EQ(GetExpectedScreens(), result.value);
+  auto result = EvalJs(shell(), content::test::kGetScreenDetailsScript);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
 }
 
-IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsExtendedBasic) {
+// Test that screen.isExtended matches the availability of multiple displays.
+IN_PROC_BROWSER_TEST_F(ScreenDetailsTest, IsExtendedBasic) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(shell(), "'isExtended' in screen"));
   EXPECT_EQ("boolean", EvalJs(shell(), "typeof screen.isExtended"));
@@ -125,37 +42,32 @@ IN_PROC_BROWSER_TEST_F(ScreenEnumerationTest, IsExtendedBasic) {
             EvalJs(shell(), "screen.isExtended"));
 }
 
-// Tests screen enumeration functionality with a fake Screen object.
-class FakeScreenEnumerationTest : public ScreenEnumerationTest {
+// Test ScreenDetails functionality with a fake display::Screen object.
+class FakeScreenDetailsTest : public ScreenDetailsTest {
  public:
-  FakeScreenEnumerationTest() = default;
-  ~FakeScreenEnumerationTest() override = default;
-  FakeScreenEnumerationTest(const FakeScreenEnumerationTest&) = delete;
-  void operator=(const FakeScreenEnumerationTest&) = delete;
+  FakeScreenDetailsTest() = default;
+  ~FakeScreenDetailsTest() override = default;
+  FakeScreenDetailsTest(const FakeScreenDetailsTest&) = delete;
+  void operator=(const FakeScreenDetailsTest&) = delete;
 
  protected:
-  // ScreenEnumerationTest:
-
+  // ScreenDetailsTest:
   void SetUp() override {
     display::Screen::SetScreenInstance(&screen_);
-    // Create a shell that observes the fake screen. A display is required.
     screen()->display_list().AddDisplay({0, gfx::Rect(100, 100, 801, 802)},
                                         display::DisplayList::Type::PRIMARY);
 
-    ScreenEnumerationTest::SetUp();
+    ScreenDetailsTest::SetUp();
   }
   void TearDown() override {
-    ScreenEnumerationTest::TearDown();
+    ScreenDetailsTest::TearDown();
     display::Screen::SetScreenInstance(nullptr);
   }
 
   void SetUpOnMainThread() override {
-    ScreenEnumerationTest::SetUpOnMainThread();
-
+    ScreenDetailsTest::SetUpOnMainThread();
+    // Create a shell that observes the fake screen.
     test_shell_ = CreateBrowser();
-  }
-  void TearDownOnMainThread() override {
-    ScreenEnumerationTest::TearDownOnMainThread();
   }
 
   display::ScreenBase* screen() { return &screen_; }
@@ -174,7 +86,7 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
 #define MAYBE_GetScreensFaked DISABLED_GetScreensFaked
 #endif
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
+IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_GetScreensFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(test_shell(), "'getScreenDetails' in self"));
 
@@ -183,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
 
-  auto result = EvalJs(test_shell(), kGetScreensScript);
-  EXPECT_EQ(GetExpectedScreens(), result.value);
+  EvalJsResult result =
+      EvalJs(test_shell(), content::test::kGetScreenDetailsScript);
+  EXPECT_EQ(content::test::GetExpectedScreenDetails(), result.value);
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -194,16 +107,16 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
 #else
 #define MAYBE_IsExtendedFaked IsExtendedFaked
 #endif
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
+IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest, MAYBE_IsExtendedFaked) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
 
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
 
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
 }
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
@@ -215,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
 #endif
 // Sites with no permission only get an event if screen.isExtended changes.
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
+IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest,
                        MAYBE_ScreenOnchangeNoPermission) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
@@ -224,36 +137,36 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
     document.title = 0;
   )";
   EXPECT_EQ(0, EvalJs(test_shell(), kSetScreenOnchange));
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // screen.isExtended changes from false to true here, so an event is sent.
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // screen.isExtended remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // screen.isExtended remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // screen.isExtended remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // screen.isExtended changes from true to false here, so an event is sent.
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 
@@ -265,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 #define MAYBE_ScreenOnChangeForIsExtended ScreenOnChangeForIsExtended
 #endif
 // Sites should get Screen.change events anytime Screen.isExtended changes.
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
+IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest,
                        MAYBE_ScreenOnChangeForIsExtended) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
@@ -277,32 +190,32 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
   EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // Screen.isExtended changes from false to true here, so an event is sent.
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   screen()->display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   screen()->display_list().AddDisplay({2, gfx::Rect(901, 100, 801, 802)},
                                       display::DisplayList::Type::NOT_PRIMARY);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(
                     {2, gfx::Rect(902, 100, 801, 802)}));
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // The current Screen remains unchanged, so no event is sent.
   screen()->display_list().RemoveDisplay(2);
-  EXPECT_EQ(true, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_TRUE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("1", EvalJs(test_shell(), "document.title"));
 
   // Screen.isExtended changes from true to false here, so an event is sent.
   screen()->display_list().RemoveDisplay(1);
-  EXPECT_EQ(false, EvalJs(test_shell(), "screen.isExtended"));
+  EXPECT_FALSE(EvalJs(test_shell(), "screen.isExtended").ExtractBool());
   EXPECT_EQ("2", EvalJs(test_shell(), "document.title"));
 }
 
@@ -314,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 #define MAYBE_ScreenOnChangeForAttributes ScreenOnChangeForAttributes
 #endif
 // Sites should get Screen.change events anytime other Screen attributes change.
-IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
+IN_PROC_BROWSER_TEST_F(FakeScreenDetailsTest,
                        MAYBE_ScreenOnChangeForAttributes) {
   ASSERT_TRUE(NavigateToURL(test_shell(), GetTestUrl(nullptr, "empty.html")));
   ASSERT_EQ(true, EvalJs(test_shell(), "'onchange' in screen"));
