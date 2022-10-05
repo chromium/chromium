@@ -2456,18 +2456,9 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     }
   }
 
-  bool needs_full_opacity_update = diff.OpacityChanged();
-  if (needs_full_opacity_update) {
-    if (PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
-            GetLayoutObject())) {
-      needs_full_opacity_update = false;
-      SetNeedsDescendantDependentFlagsUpdate();
-    }
-  }
-
   // See also |LayoutObject::SetStyle| which handles these invalidations if a
   // PaintLayer is not present.
-  if (needs_full_transform_update || needs_full_opacity_update ||
+  if (needs_full_transform_update || diff.OpacityChanged() ||
       diff.ZIndexChanged() || diff.FilterChanged() || diff.CssClipChanged() ||
       diff.BlendModeChanged() || diff.MaskChanged() ||
       diff.CompositingReasonsChanged()) {

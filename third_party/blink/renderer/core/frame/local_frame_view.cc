@@ -336,7 +336,6 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(lifecycle_observers_);
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
-  visitor->Trace(pending_opacity_updates_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -5014,52 +5013,17 @@ bool LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
   return true;
 }
 
-bool LocalFrameView::UpdateAllPendingTransforms() {
+void LocalFrameView::UpdateAllPendingTransforms() {
   DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  bool updated = false;
-  ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (frame_view.pending_transform_updates_) {
       for (const LayoutObject* object :
            *frame_view.pending_transform_updates_) {
         PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
-        updated = true;
       }
       frame_view.pending_transform_updates_->clear();
     }
   });
-  return updated;
 }
 
-void LocalFrameView::AddPendingOpacityUpdate(LayoutObject& object) {
-  if (!pending_opacity_updates_) {
-    pending_opacity_updates_ =
-        MakeGarbageCollected<HeapHashSet<Member<LayoutObject>>>();
-  }
-  pending_opacity_updates_->insert(&object);
-}
-
-bool LocalFrameView::RemovePendingOpacityUpdate(const LayoutObject& object) {
-  if (!pending_opacity_updates_)
-    return false;
-  auto it = pending_opacity_updates_->find(const_cast<LayoutObject*>(&object));
-  if (it == pending_opacity_updates_->end())
-    return false;
-  pending_opacity_updates_->erase(it);
-  return true;
-}
-
-bool LocalFrameView::UpdateAllPendingOpacityUpdates() {
-  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  bool updated = false;
-  ForAllNonThrottledLocalFrameViews([&updated](LocalFrameView& frame_view) {
-    if (frame_view.pending_opacity_updates_) {
-      for (const LayoutObject* object : *frame_view.pending_opacity_updates_) {
-        PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(*object);
-        updated = true;
-      }
-      frame_view.pending_opacity_updates_->clear();
-    }
-  });
-  return updated;
-}
 }  // namespace blink
