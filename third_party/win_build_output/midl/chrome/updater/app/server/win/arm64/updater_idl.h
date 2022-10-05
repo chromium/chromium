@@ -60,13 +60,6 @@ typedef interface IUpdateState IUpdateState;
 #endif 	/* __IUpdateState_FWD_DEFINED__ */
 
 
-#ifndef __IUpdaterRegisterAppCallback_FWD_DEFINED__
-#define __IUpdaterRegisterAppCallback_FWD_DEFINED__
-typedef interface IUpdaterRegisterAppCallback IUpdaterRegisterAppCallback;
-
-#endif 	/* __IUpdaterRegisterAppCallback_FWD_DEFINED__ */
-
-
 #ifndef __ICompleteStatus_FWD_DEFINED__
 #define __ICompleteStatus_FWD_DEFINED__
 typedef interface ICompleteStatus ICompleteStatus;
@@ -348,90 +341,6 @@ EXTERN_C const IID IID_IUpdateState;
 
 
 #endif 	/* __IUpdateState_INTERFACE_DEFINED__ */
-
-
-#ifndef __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__
-#define __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__
-
-/* interface IUpdaterRegisterAppCallback */
-/* [unique][helpstring][uuid][dual][object] */ 
-
-
-EXTERN_C const IID IID_IUpdaterRegisterAppCallback;
-
-#if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("3FDEC4CB-8501-4ECD-A4CF-BF70326218D0")
-    IUpdaterRegisterAppCallback : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE Run( 
-            /* [in] */ LONG status_code) = 0;
-        
-    };
-    
-    
-#else 	/* C style interface */
-
-    typedef struct IUpdaterRegisterAppCallbackVtbl
-    {
-        BEGIN_INTERFACE
-        
-        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IUpdaterRegisterAppCallback * This,
-            /* [in] */ REFIID riid,
-            /* [annotation][iid_is][out] */ 
-            _COM_Outptr_  void **ppvObject);
-        
-        DECLSPEC_XFGVIRT(IUnknown, AddRef)
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IUpdaterRegisterAppCallback * This);
-        
-        DECLSPEC_XFGVIRT(IUnknown, Release)
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IUpdaterRegisterAppCallback * This);
-        
-        DECLSPEC_XFGVIRT(IUpdaterRegisterAppCallback, Run)
-        HRESULT ( STDMETHODCALLTYPE *Run )( 
-            IUpdaterRegisterAppCallback * This,
-            /* [in] */ LONG status_code);
-        
-        END_INTERFACE
-    } IUpdaterRegisterAppCallbackVtbl;
-
-    interface IUpdaterRegisterAppCallback
-    {
-        CONST_VTBL struct IUpdaterRegisterAppCallbackVtbl *lpVtbl;
-    };
-
-    
-
-#ifdef COBJMACROS
-
-
-#define IUpdaterRegisterAppCallback_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
-
-#define IUpdaterRegisterAppCallback_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
-
-#define IUpdaterRegisterAppCallback_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
-
-
-#define IUpdaterRegisterAppCallback_Run(This,status_code)	\
-    ( (This)->lpVtbl -> Run(This,status_code) ) 
-
-#endif /* COBJMACROS */
-
-
-#endif 	/* C style interface */
-
-
-
-
-#endif 	/* __IUpdaterRegisterAppCallback_INTERFACE_DEFINED__ */
 
 
 #ifndef __ICompleteStatus_INTERFACE_DEFINED__
@@ -739,7 +648,7 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
-            /* [in] */ IUpdaterRegisterAppCallback *callback) = 0;
+            /* [in] */ IUpdaterCallback *callback) = 0;
         
         virtual HRESULT STDMETHODCALLTYPE RunPeriodicTasks( 
             /* [in] */ IUpdaterCallback *callback) = 0;
@@ -825,7 +734,7 @@ EXTERN_C const IID IID_IUpdater;
             /* [string][in] */ const WCHAR *tag,
             /* [string][in] */ const WCHAR *version,
             /* [string][in] */ const WCHAR *existence_checker_path,
-            /* [in] */ IUpdaterRegisterAppCallback *callback);
+            /* [in] */ IUpdaterCallback *callback);
         
         DECLSPEC_XFGVIRT(IUpdater, RunPeriodicTasks)
         HRESULT ( STDMETHODCALLTYPE *RunPeriodicTasks )( 

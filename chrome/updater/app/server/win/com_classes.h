@@ -103,7 +103,7 @@ class UpdaterImpl
                              const wchar_t* tag,
                              const wchar_t* version,
                              const wchar_t* existence_checker_path,
-                             IUpdaterRegisterAppCallback* callback) override;
+                             IUpdaterCallback* callback) override;
   IFACEMETHODIMP RunPeriodicTasks(IUpdaterCallback* callback) override;
   IFACEMETHODIMP Update(const wchar_t* app_id,
                         const wchar_t* install_data_index,

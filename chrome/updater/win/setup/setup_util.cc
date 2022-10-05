@@ -127,7 +127,6 @@ std::vector<IID> GetActiveInterfaces() {
       __uuidof(IUpdateState),
       __uuidof(IUpdater),
       __uuidof(IUpdaterObserver),
-      __uuidof(IUpdaterRegisterAppCallback),
       __uuidof(IUpdaterCallback),
 
       // legacy interfaces.
@@ -346,7 +345,6 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
           {__uuidof(ICompleteStatus), kUpdaterIndex},
           {__uuidof(IUpdater), kUpdaterIndex},
           {__uuidof(IUpdaterObserver), kUpdaterIndex},
-          {__uuidof(IUpdaterRegisterAppCallback), kUpdaterIndex},
           {__uuidof(IUpdateState), kUpdaterIndex},
           {__uuidof(IUpdaterCallback), kUpdaterIndex},
 

@@ -211,54 +211,6 @@ class UpdaterObserver
   UpdateService::Result result_ = UpdateService::Result::kSuccess;
 };
 
-// This class implements the IUpdaterRegisterAppCallback interface and exposes
-// it as a COM object. The class has thread-affinity for the STA thread.
-class UpdaterRegisterAppCallback
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IUpdaterRegisterAppCallback> {
- public:
-  explicit UpdaterRegisterAppCallback(
-      UpdateService::RegisterAppCallback callback)
-      : callback_(std::move(callback)) {}
-  UpdaterRegisterAppCallback(const UpdaterRegisterAppCallback&) = delete;
-  UpdaterRegisterAppCallback& operator=(const UpdaterRegisterAppCallback&) =
-      delete;
-
-  // Overrides for IUpdaterRegisterAppCallback. This function is called on
-  // the STA thread directly by the COM RPC runtime.
-  IFACEMETHODIMP Run(LONG status_code) override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    VLOG(2) << __func__;
-    status_code_ = status_code;
-    return S_OK;
-  }
-
-  // Disconnects this observer from its subject and ensures the callbacks are
-  // not posted after this function is called. Returns the completion callback
-  // so that the owner of this object can take back the callback ownership.
-  UpdateService::RegisterAppCallback Disconnect() {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    VLOG(2) << __func__;
-    return std::move(callback_);
-  }
-
- private:
-  ~UpdaterRegisterAppCallback() override {
-    CHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
-    if (callback_)
-      std::move(callback_).Run(status_code_);
-  }
-
-  // The reference of the thread this object is bound to.
-  base::PlatformThreadRef com_thread_ref_;
-
-  // Called by IUpdaterObserver::OnComplete when the COM RPC call is done.
-  UpdateService::RegisterAppCallback callback_;
-
-  LONG status_code_ = 0;
-};
-
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
 class UpdaterCallback
@@ -329,7 +281,7 @@ class UpdateServiceProxyImpl
   }
 
   void RegisterApp(const RegistrationRequest& request,
-                   UpdateService::RegisterAppCallback callback) {
+                   base::OnceCallback<void(int)> callback) {
     PostRPCTask(base::BindOnce(&UpdateServiceProxyImpl::RegisterAppOnSTA, this,
                                request, std::move(callback)));
   }
@@ -474,7 +426,11 @@ class UpdateServiceProxyImpl
     }
 
     auto callback_wrapper =
-        Microsoft::WRL::Make<UpdaterRegisterAppCallback>(std::move(callback));
+        Microsoft::WRL::Make<UpdaterCallback>(base::BindOnce(
+            [](base::OnceCallback<void(int)> callback, LONG status_code) {
+              std::move(callback).Run(status_code);
+            },
+            std::move(callback)));
     if (HRESULT hr = get_interface()->RegisterApp(
             app_id_w.c_str(), brand_code_w.c_str(), brand_path_w.c_str(),
             ap_w.c_str(), version_w.c_str(), existence_checker_path_w.c_str(),
@@ -731,7 +687,7 @@ void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
 }
 
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
-                                     RegisterAppCallback callback) {
+                                     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   impl_->RegisterApp(request, OnCurrentSequence(std::move(callback)));

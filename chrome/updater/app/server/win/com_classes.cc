@@ -189,7 +189,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* ap,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
-                                 IUpdaterRegisterAppCallback* callback) {
+                                 IUpdaterCallback* callback) {
   if (!callback)
     return E_INVALIDARG;
 
@@ -232,8 +232,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
   if (!request)
     return E_INVALIDARG;
 
-  using IUpdaterRegisterAppCallbackPtr =
-      Microsoft::WRL::ComPtr<IUpdaterRegisterAppCallback>;
+  using IUpdaterCallbackPtr = Microsoft::WRL::ComPtr<IUpdaterCallback>;
   scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
 
   // This task runner is responsible for sequencing the COM calls and callbacks.
@@ -245,17 +244,16 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
       base::BindOnce(
           [](scoped_refptr<UpdateService> update_service,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const RegistrationRequest& request,
-             IUpdaterRegisterAppCallbackPtr callback) {
+             const RegistrationRequest& request, IUpdaterCallbackPtr callback) {
             update_service->RegisterApp(
                 request,
                 base::BindOnce(
                     [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterRegisterAppCallbackPtr callback, int result) {
+                       IUpdaterCallbackPtr callback, int result) {
                       task_runner->PostTaskAndReplyWithResult(
                           FROM_HERE,
-                          base::BindOnce(&IUpdaterRegisterAppCallback::Run,
-                                         callback, result),
+                          base::BindOnce(&IUpdaterCallback::Run, callback,
+                                         result),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::RegisterApp "
                                     << "callback returned " << std::hex << hr;
@@ -264,7 +262,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                     task_runner, callback));
           },
           com_server->update_service(), task_runner, *request,
-          IUpdaterRegisterAppCallbackPtr(callback)));
+          IUpdaterCallbackPtr(callback)));
 
   return S_OK;
 }

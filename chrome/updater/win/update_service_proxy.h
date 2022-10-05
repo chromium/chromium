@@ -34,7 +34,7 @@ class UpdateServiceProxy : public UpdateService {
       base::OnceCallback<void(const base::Version&)> callback) override;
   void FetchPolicies(base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
-                   RegisterAppCallback callback) override;
+                   base::OnceCallback<void(int)> callback) override;
   void GetAppStates(
       base::OnceCallback<void(const std::vector<AppState>&)>) override;
   void RunPeriodicTasks(base::OnceClosure callback) override;

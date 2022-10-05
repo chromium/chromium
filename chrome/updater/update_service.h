@@ -202,7 +202,6 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
   using Callback = base::OnceCallback<void(Result)>;
   using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
-  using RegisterAppCallback = base::OnceCallback<void(int)>;
   using InstallerResult = update_client::CrxInstaller::Result;
 
   // Returns the version of the active updater. The version object is invalid
@@ -214,7 +213,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
   // Registers given request to the updater.
   virtual void RegisterApp(const RegistrationRequest& request,
-                           RegisterAppCallback callback) = 0;
+                           base::OnceCallback<void(int)> callback) = 0;
 
   // Gets state of all registered apps.
   virtual void GetAppStates(
