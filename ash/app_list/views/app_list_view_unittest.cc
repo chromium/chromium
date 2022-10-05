@@ -538,23 +538,6 @@ class AppListViewPeekingTest : public AppListViewTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests for tablet mode. Parameterized by ProductivityLauncher.
-class AppListViewTabletTest : public AppListViewTest,
-                              public testing::WithParamInterface<bool> {
- public:
-  AppListViewTabletTest() {
-    const bool enable_productivity_launcher = GetParam();
-    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                       enable_productivity_launcher);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
-                         AppListViewTabletTest,
-                         testing::Bool());
-
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
  public:
@@ -1617,7 +1600,7 @@ TEST_F(AppListViewPeekingTest, EscapeKeySideShelfFullscreenToClosed) {
 }
 
 // Tests that pressing escape when in tablet mode keeps app list in fullscreen.
-TEST_P(AppListViewTabletTest, EscapeKeyTabletModeStayFullscreen) {
+TEST_F(AppListViewTest, EscapeKeyTabletModeStayFullscreen) {
   // Put into fullscreen by using tablet mode.
   Initialize(/*is_tablet_mode=*/true);
 
@@ -1734,7 +1717,7 @@ TEST_F(AppListViewPeekingTest, DisplayTest) {
 }
 
 // As above above, but tests tablet mode with and without ProductivityLauncher.
-TEST_P(AppListViewTabletTest, DisplayTest) {
+TEST_F(AppListViewTest, DisplayTest) {
   Initialize(/*is_tablet_mode=*/true);
   EXPECT_EQ(-1, GetPaginationModel()->total_pages());
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
@@ -1862,7 +1845,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
 }
 
 // Tests that a context menu can be shown between app icons in tablet mode.
-TEST_P(AppListViewTabletTest, ShowContextMenuBetweenAppsInTabletMode) {
+TEST_F(AppListViewTest, ShowContextMenuBetweenAppsInTabletMode) {
   Initialize(true /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
@@ -2021,7 +2004,7 @@ TEST_F(AppListViewTest, InitialPageResetClamshellModeTest) {
 
 // Tests that, in tablet mode, the current app list page doesn't immediately
 // reset to the initial page when app list is closed and re-opened.
-TEST_P(AppListViewTabletTest, PagePersistanceTabletModeTest) {
+TEST_F(AppListViewTest, PagePersistanceTabletModeTest) {
   Initialize(true /*is_tablet_mode*/);
 
   AppListTestModel* model = delegate_->GetTestModel();
