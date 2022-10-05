@@ -28,9 +28,6 @@ CN = Duplicate
 O  = Bar
 CN = Duplicate
 
-[req_intranet_dn]
-CN = webmail
-
 [req_localhost_cn]
 C  = US
 ST = California

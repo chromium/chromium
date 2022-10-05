@@ -1990,7 +1990,6 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/redundant-server-chain.pem",
     "data/ssl/certificates/redundant-validated-chain-root.pem",
     "data/ssl/certificates/redundant-validated-chain.pem",
-    "data/ssl/certificates/reject_intranet_hosts.pem",
     "data/ssl/certificates/root_ca_cert.pem",
     "data/ssl/certificates/salesforce_com_test.pem",
     "data/ssl/certificates/self-signed-invalid-name.pem",
