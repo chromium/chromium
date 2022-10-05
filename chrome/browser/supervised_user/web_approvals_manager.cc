@@ -20,6 +20,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -45,15 +46,22 @@ WebApprovalsManager::~WebApprovalsManager() = default;
 void WebApprovalsManager::RequestLocalApproval(
     content::WebContents* web_contents,
     const GURL& url,
+    const std::u16string& child_display_name,
+    const gfx::ImageSkia& favicon,
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(b/195316776): replace this with call to the ParentAccess crosapi with
+  // TODO(b/250954669): replace this with call to the ParentAccess crosapi with
   // appropriate parameters and handle the ParentAccess crosapi result.
+  std::vector<uint8_t> favicon_bytes;
+  gfx::PNGCodec::FastEncodeBGRASkBitmap(*favicon.bitmap(), false,
+                                        &favicon_bytes);
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
-              parent_access_ui::mojom::WebApprovalsParams::New()));
+              parent_access_ui::mojom::WebApprovalsParams::New(
+                  url.GetWithEmptyPath(), child_display_name, favicon_bytes)));
+
   chromeos::ParentAccessDialog::ShowError result =
       chromeos::ParentAccessDialog::Show(
           std::move(params),

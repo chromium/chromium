@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
@@ -48,6 +49,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 using content::WebContents;
@@ -148,17 +154,14 @@ void CleanUpInfoBar(content::WebContents* web_contents) {
   }
 }
 
-const GURL TrimPageUrl(const GURL& url) {
-  if (!url.SchemeIsHTTPOrHTTPS() || url.HostIsIPAddress())
-    return GURL();
-
-  GURL::Replacements replacements;
-  replacements.ClearUsername();
-  replacements.ClearPassword();
-  replacements.ClearQuery();
-  replacements.ClearRef();
-  replacements.ClearPath();
-  return url.ReplaceComponents(replacements);
+// TODO(b/250924204): Implement shared logic to get the user's given name.
+std::u16string GetActiveUserFirstName() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return user_manager::UserManager::Get()->GetActiveUser()->GetGivenName();
+#else
+  // TODO(b/243656773): Implement for LaCrOS.
+  return std::u16string();
+#endif
 }
 }  // namespace
 
@@ -193,7 +196,7 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       frame_id_(frame_id),
       interstitial_navigation_id_(interstitial_navigation_id),
       favicon_handler_(SupervisedUserFaviconRequestHandler(
-          TrimPageUrl(url_),
+          url_.GetWithEmptyPath(),
           LargeIconServiceFactory::GetForBrowserContext(profile_))) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (supervised_users::IsLocalWebApprovalsEnabled()) {
@@ -276,8 +279,10 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
 
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
+  gfx::ImageSkia favicon = favicon_handler_.GetFaviconOrFallback();
   supervised_user_service->web_approvals_manager().RequestLocalApproval(
-      web_contents(), url_, std::move(callback));
+      web_contents(), url_, GetActiveUserFirstName(), favicon,
+      std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {

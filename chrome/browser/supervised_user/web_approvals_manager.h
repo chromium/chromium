@@ -8,10 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/image/image_skia.h"
 
 class GURL;
 class PermissionRequestCreator;
@@ -48,6 +50,8 @@ class WebApprovalsManager {
   // successful.
   void RequestLocalApproval(content::WebContents* web_contents,
                             const GURL& url,
+                            const std::u16string& child_display_name,
+                            const gfx::ImageSkia& favicon,
                             ApprovalRequestInitiatedCallback callback);
 
   // Adds a remote approval request for the `url`.
