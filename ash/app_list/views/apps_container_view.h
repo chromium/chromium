@@ -35,6 +35,7 @@ class AppListNudgeController;
 class ContentsView;
 class ContinueSectionView;
 class FolderBackgroundView;
+class GradientLayerDelegate;
 class PageSwitcher;
 class SearchResultPageAnchoredDialog;
 class SuggestionChipContainerView;
@@ -312,13 +313,12 @@ class ASH_EXPORT AppsContainerView
   // `scrollable_container_`.
   void UpdateGradientMaskBounds();
 
-  // Creates a layer mask for gradient alpha and applies it to the
-  // `scrollable_container_` layer. The gradient appears at the top and bottom
-  // of the `scrollable_container_` to create a "fade out" effect when dragging
-  // the whole page.
+  // Creates a layer mask for gradient alpha when the feature is enabled. The
+  // gradient appears at the top and bottom of the 'scrollable_container_' to
+  // create a "fade out" effect when dragging the whole page.
   void MaybeCreateGradientMask();
 
-  // Removes the gradient mask from the `scrollable_container_`.
+  // Removes the gradient mask from being set as the mask layer.
   void MaybeRemoveGradientMask();
 
   // Called when the animation to fade out app list items is completed.
@@ -393,6 +393,8 @@ class ASH_EXPORT AppsContainerView
   // |cached_container_margins_|, provided the method arguments match the cached
   // arguments (otherwise the margins will be recalculated).
   CachedContainerMargins cached_container_margins_;
+
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
 
   // A closure to update item positions. It should run at the end of the fade
   // out animation when items are reordered.
