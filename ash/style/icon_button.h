@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
@@ -100,26 +101,27 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // states.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
-  // Sets the button's background color. Note, do this only when the button
-  // wants to have a different background color from the default one.
+  // Sets the button's background color or toggled color with color value and
+  // color ID when the button wants to have a different background color from
+  // the default one. When both color value and color ID are set, color ID takes
+  // the precedence.
   void SetBackgroundColor(const SkColor background_color);
-  // Sets the button's toggled background color if the button is togglable.
-  // Note, do this only when the button wants to have a different toggled
-  // background color from the default one.
   void SetBackgroundToggledColor(const SkColor background_toggled_color);
+  void SetBackgroundColorId(ui::ColorId background_color_id);
+  void SetBackgroundToggledColorId(ui::ColorId background_toggled_color_id);
 
   // Sets the button's background image. The |background_image| is resized to
   // fit the button. Note, if set, |background_image| is painted on top of
   // the button's existing background color.
   void SetBackgroundImage(const gfx::ImageSkia& background_image);
 
-  // Sets the icon's color. If the button is togglable, this will be the color
-  // when it's not toggled.
+  // Sets the button's icon color or toggled color with color value and color ID
+  // when the button wants to have a different icon color from the default one.
+  // When both color value and color ID are set, color ID takes the precedence.
   void SetIconColor(const SkColor icon_color);
-  // Sets the button's toggled icon color if the button is toggable. Note, do
-  // this only when the button wants to have a different toggled icon color from
-  // the default one.
   void SetIconToggledColor(const SkColor icon_toggled_color);
+  void SetIconColorId(ui::ColorId icon_color_id);
+  void SetIconToggledColorId(ui::ColorId icon_toggled_color_id);
 
   // Sets the size to use for the vector icon in DIPs.
   void SetIconSize(int size);
@@ -151,11 +153,18 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // True if the button is currently toggled.
   bool toggled_ = false;
 
-  // Customized value for button's background color or icon's color.
+  // Customized value for button's background color and icon color.
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> background_toggled_color_;
   absl::optional<SkColor> icon_color_;
   absl::optional<SkColor> icon_toggled_color_;
+
+  // Customized color ID for button's background color and icon color. The color
+  // ID takes precedence over color values.
+  absl::optional<ui::ColorId> background_color_id_;
+  absl::optional<ui::ColorId> background_toggled_color_id_;
+  absl::optional<ui::ColorId> icon_color_id_;
+  absl::optional<ui::ColorId> icon_toggled_color_id_;
 
   // Custom value for icon size (usually used to make the icon smaller).
   absl::optional<int> icon_size_;

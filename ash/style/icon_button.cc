@@ -98,7 +98,7 @@ IconButton::IconButton(PressedCallback callback,
       type_(type),
       icon_(icon),
       is_togglable_(is_togglable) {
-  int button_size = GetButtonSizeOnType(type);
+  const int button_size = GetButtonSizeOnType(type);
   SetPreferredSize(gfx::Size(button_size, button_size));
 
   SetImageHorizontalAlignment(ALIGN_CENTER);
@@ -167,6 +167,25 @@ void IconButton::SetBackgroundToggledColor(
   SchedulePaint();
 }
 
+void IconButton::SetBackgroundColorId(ui::ColorId background_color_id) {
+  if (background_color_id_ == background_color_id)
+    return;
+
+  background_color_id_ = background_color_id;
+  SchedulePaint();
+}
+
+void IconButton::SetBackgroundToggledColorId(
+    ui::ColorId background_toggled_color_id) {
+  if (!is_togglable_ ||
+      background_toggled_color_id == background_toggled_color_id_) {
+    return;
+  }
+
+  background_toggled_color_id_ = background_toggled_color_id;
+  SchedulePaint();
+}
+
 void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
   background_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
       background_image, skia::ImageOperations::RESIZE_BEST, GetPreferredSize());
@@ -185,6 +204,21 @@ void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
     return;
 
   icon_toggled_color_ = icon_toggled_color;
+  UpdateVectorIcon();
+}
+
+void IconButton::SetIconColorId(ui::ColorId icon_color_id) {
+  if (icon_color_id_ == icon_color_id)
+    return;
+  icon_color_id_ = icon_color_id;
+  UpdateVectorIcon();
+}
+
+void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
+  if (!is_togglable_ || icon_toggled_color_id == icon_toggled_color_id_)
+    return;
+
+  icon_toggled_color_id_ = icon_toggled_color_id;
   UpdateVectorIcon();
 }
 
@@ -223,18 +257,33 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
     const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
     auto* color_provider = GetColorProvider();
 
-    SkColor normal_background_color =
-        background_color_.value_or(color_provider->GetColor(
-            is_jellyroll_enabled
-                ? cros_tokens::kCrosSysSysOnBase
-                : static_cast<ui::ColorId>(
-                      kColorAshControlBackgroundColorInactive)));
+    // The background color IDs set by clients takes precedence over the
+    // background colors. If neither is set, use the default color IDs.
+    SkColor normal_background_color;
+    if (background_color_id_) {
+      normal_background_color =
+          color_provider->GetColor(background_toggled_color_id_.value());
+    } else {
+      normal_background_color =
+          background_color_.value_or(color_provider->GetColor(
+              is_jellyroll_enabled
+                  ? cros_tokens::kCrosSysSysOnBase
+                  : static_cast<ui::ColorId>(
+                        kColorAshControlBackgroundColorInactive)));
+    }
 
-    SkColor toggled_background_color =
-        background_toggled_color_.value_or(color_provider->GetColor(
-            is_jellyroll_enabled ? cros_tokens::kCrosSysSysPrimaryContainer
-                                 : static_cast<ui::ColorId>(
-                                       kColorAshControlBackgroundColorActive)));
+    SkColor toggled_background_color;
+    if (background_toggled_color_id_) {
+      toggled_background_color =
+          color_provider->GetColor(background_toggled_color_id_.value());
+    } else {
+      toggled_background_color =
+          background_toggled_color_.value_or(color_provider->GetColor(
+              is_jellyroll_enabled
+                  ? cros_tokens::kCrosSysSysPrimaryContainer
+                  : static_cast<ui::ColorId>(
+                        kColorAshControlBackgroundColorActive)));
+    }
 
     SkColor color =
         toggled_on ? toggled_background_color : normal_background_color;
@@ -296,16 +345,30 @@ void IconButton::UpdateVectorIcon() {
 
   auto* color_provider = GetColorProvider();
   const bool is_jellyroll_enabled = features::IsJellyrollEnabled();
-  const SkColor normal_icon_color =
-      icon_color_.value_or(color_provider->GetColor(
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysOnSurface
-              : static_cast<ui::ColorId>(kColorAshButtonIconColor)));
-  const SkColor toggled_icon_color =
-      icon_toggled_color_.value_or(color_provider->GetColor(
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysSysOnPrimaryContainer
-              : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
+
+  // The icon color IDs set by clients takes precedence over the icon colors. If
+  // neither is set, use the default color IDs.
+  SkColor normal_icon_color;
+  if (icon_color_id_) {
+    normal_icon_color = color_provider->GetColor(icon_color_id_.value());
+  } else {
+    normal_icon_color = icon_color_.value_or(color_provider->GetColor(
+        is_jellyroll_enabled
+            ? cros_tokens::kCrosSysOnSurface
+            : static_cast<ui::ColorId>(kColorAshButtonIconColor)));
+  }
+
+  SkColor toggled_icon_color;
+  if (icon_toggled_color_id_) {
+    toggled_icon_color =
+        color_provider->GetColor(icon_toggled_color_id_.value());
+  } else {
+    toggled_icon_color = icon_toggled_color_.value_or(color_provider->GetColor(
+        is_jellyroll_enabled
+            ? cros_tokens::kCrosSysSysOnPrimaryContainer
+            : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
+  }
+
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
 
