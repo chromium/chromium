@@ -377,8 +377,14 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
 
 }  // namespace
 
+// TODO(crbug.com/1366531): Fails on Mac 12.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveCardIcon DISABLED_SaveCardIcon
+#else
+#define MAYBE_SaveCardIcon SaveCardIcon
+#endif
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, MAYBE_SaveCardIcon) {
   autofill::TestAutofillManagerFutureInjectors<TestAutofillManager>
       autofill_manager_injectors;
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
