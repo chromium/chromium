@@ -37,156 +37,23 @@
 using gfx::BufferFormat;
 
 namespace gl {
-namespace {
-
-bool ValidInternalFormat(unsigned internalformat) {
-  switch (internalformat) {
-    case GL_RED:
-    case GL_R16_EXT:
-    case GL_RG:
-    case GL_BGRA_EXT:
-    case GL_RGB:
-    case GL_RGB10_A2_EXT:
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-    case GL_RGB_YCBCR_422_CHROMIUM:
-    case GL_RGB_YCBCR_P010_CHROMIUM:
-    case GL_RGBA:
-      return true;
-    default:
-      return false;
-  }
-}
-
-GLenum TextureFormat(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return GL_RED;
-    case gfx::BufferFormat::R_16:
-      return GL_R16_EXT;
-    case gfx::BufferFormat::RG_88:
-      return GL_RG;
-    case gfx::BufferFormat::RG_1616:
-      return GL_RG16_EXT;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:  // See https://crbug.com/595948.
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::RGBA_F16:
-    case gfx::BufferFormat::BGRA_1010102:
-      return GL_RGBA;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return GL_RGB_YCBCR_420V_CHROMIUM;
-    case gfx::BufferFormat::P010:
-      return GL_RGB_YCBCR_P010_CHROMIUM;
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBA_1010102:
-    case gfx::BufferFormat::YVU_420:
-      NOTREACHED() << gfx::BufferFormatToString(format);
-      return 0;
-  }
-
-  NOTREACHED();
-  return 0;
-}
-
-GLenum DataFormat(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return GL_RED;
-    case gfx::BufferFormat::R_16:
-      return GL_R16_EXT;
-    case gfx::BufferFormat::RG_88:
-      return GL_RG;
-    case gfx::BufferFormat::RG_1616:
-      return GL_RG16_EXT;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::RGBA_8888:  // See https://crbug.com/533677#c6.
-    case gfx::BufferFormat::BGRA_1010102:
-      return GL_BGRA;
-    case gfx::BufferFormat::RGBA_F16:
-      return GL_RGBA;
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::RGBA_1010102:
-    case gfx::BufferFormat::YVU_420:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::P010:
-      NOTREACHED() << gfx::BufferFormatToString(format);
-      return 0;
-  }
-
-  NOTREACHED();
-  return 0;
-}
-
-GLenum DataType(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-    case gfx::BufferFormat::RG_88:
-      return GL_UNSIGNED_BYTE;
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_1616:
-      return GL_UNSIGNED_SHORT;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::RGBA_8888:
-      return GL_UNSIGNED_INT_8_8_8_8_REV;
-    case gfx::BufferFormat::BGRA_1010102:
-      return GL_UNSIGNED_INT_2_10_10_10_REV;
-    case gfx::BufferFormat::RGBA_F16:
-      return GL_HALF_APPLE;
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::RGBA_1010102:
-    case gfx::BufferFormat::YVU_420:
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::P010:
-      NOTREACHED() << gfx::BufferFormatToString(format);
-      return 0;
-  }
-
-  NOTREACHED();
-  return 0;
-}
-
-// When an IOSurface is bound to a texture with internalformat "GL_RGB", many
-// OpenGL operations are broken. Therefore, don't allow an IOSurface to be bound
-// with GL_RGB unless overridden via BindTexImageWithInternalformat.
-// https://crbug.com/595948, https://crbug.com/699566.
-GLenum ConvertRequestedInternalFormat(GLenum internalformat) {
-  if (internalformat == GL_RGB)
-    return GL_RGBA;
-  return internalformat;
-}
-
-}  // namespace
 
 // static
-GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size,
-                                           unsigned internalformat) {
+GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size) {
 #if defined(USE_EGL)
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
     case kGLImplementationEGLANGLE:
-      return new GLImageIOSurfaceEGL(size, internalformat);
+      return new GLImageIOSurfaceEGL(size);
     default:
       break;
   }
 #endif  // defined(USE_EGL)
-
-  return new GLImageIOSurface(size, internalformat);
+  NOTREACHED();
+  return nullptr;
 }
 
-GLImageIOSurface::GLImageIOSurface(const gfx::Size& size,
-                                   unsigned internalformat)
-    : size_(size),
-      internalformat_(ConvertRequestedInternalFormat(internalformat)),
-      client_internalformat_(internalformat),
-      format_(gfx::BufferFormat::RGBA_8888) {}
+GLImageIOSurface::GLImageIOSurface(const gfx::Size& size) : size_(size) {}
 
 GLImageIOSurface::~GLImageIOSurface() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -200,12 +67,6 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
   DCHECK(!io_surface_);
   if (!io_surface) {
     LOG(ERROR) << "Invalid IOSurface";
-    return false;
-  }
-
-  if (!ValidInternalFormat(internalformat_)) {
-    LOG(ERROR) << "Invalid internalformat: "
-               << GLEnums::GetStringEnum(internalformat_);
     return false;
   }
 
@@ -252,7 +113,7 @@ gfx::Size GLImageIOSurface::GetSize() {
 }
 
 unsigned GLImageIOSurface::GetInternalFormat() {
-  return internalformat_;
+  return gl::BufferFormatToGLInternalFormat(format_);
 }
 
 unsigned GLImageIOSurface::GetDataType() {
@@ -261,55 +122,6 @@ unsigned GLImageIOSurface::GetDataType() {
 
 GLImageIOSurface::BindOrCopy GLImageIOSurface::ShouldBindOrCopy() {
   return BIND;
-}
-
-bool GLImageIOSurface::BindTexImage(unsigned target) {
-  return BindTexImageWithInternalformat(target, 0);
-}
-
-bool GLImageIOSurface::BindTexImageWithInternalformat(unsigned target,
-                                                      unsigned internalformat) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_EQ(BIND, ShouldBindOrCopy());
-  TRACE_EVENT0("gpu", "GLImageIOSurface::BindTexImage");
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  DCHECK(io_surface_);
-
-  if (!BindTexImageImpl(target, internalformat)) {
-    return false;
-  }
-
-  UMA_HISTOGRAM_TIMES("GPU.IOSurface.TexImageTime",
-                      base::TimeTicks::Now() - start_time);
-  return true;
-}
-
-bool GLImageIOSurface::BindTexImageImpl(unsigned target,
-                                        unsigned internalformat) {
-  if (target != GL_TEXTURE_RECTANGLE_ARB) {
-    // This might be supported in the future. For now, perform strict
-    // validation so we know what's going on.
-    LOG(ERROR) << "IOSurface requires TEXTURE_RECTANGLE_ARB target";
-    return false;
-  }
-
-  CGLContextObj cgl_context =
-      static_cast<CGLContextObj>(GLContext::GetCurrent()->GetHandle());
-
-  GLenum texture_format =
-      internalformat ? internalformat : TextureFormat(format_);
-  CGLError cgl_error = CGLTexImageIOSurface2D(
-      cgl_context, GL_TEXTURE_RECTANGLE_ARB, texture_format, size_.width(),
-      size_.height(), DataFormat(format_), DataType(format_), io_surface_.get(),
-      io_surface_plane_);
-  if (cgl_error != kCGLNoError) {
-    LOG(ERROR) << "Error in CGLTexImageIOSurface2D: "
-               << CGLErrorString(cgl_error);
-    return false;
-  }
-
-  return true;
 }
 
 void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -361,10 +173,6 @@ void GLImageIOSurface::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   }
 }
 
-bool GLImageIOSurface::EmulatingRGB() const {
-  return client_internalformat_ == GL_RGB;
-}
-
 bool GLImageIOSurface::IsInUseByWindowServer() const {
   // IOSurfaceIsInUse() will always return true if the IOSurface is wrapped in
   // a CVPixelBuffer. Ignore the signal for such IOSurfaces (which are the ones
@@ -409,13 +217,6 @@ void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
   // Only if that fails, fall back to IOSurfaceSetColorSpace, which will
   // generate a profile.
   IOSurfaceSetColorSpace(io_surface_, color_space);
-}
-
-// static
-unsigned GLImageIOSurface::GetInternalFormatForTesting(
-    gfx::BufferFormat format) {
-  DCHECK(ValidFormat(format));
-  return TextureFormat(format);
 }
 
 // static

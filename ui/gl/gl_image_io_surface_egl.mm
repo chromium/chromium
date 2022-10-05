@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
@@ -153,9 +155,8 @@ EGLAccess::~EGLAccess() {
   }
 }
 
-GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
-                                         unsigned internalformat)
-    : GLImageIOSurface(size, internalformat) {}
+GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size)
+    : GLImageIOSurface(size) {}
 
 GLImageIOSurfaceEGL::~GLImageIOSurfaceEGL() {
   if (texture_bound_) {
@@ -203,12 +204,11 @@ void GLImageIOSurfaceEGL::ReleaseTexImage(unsigned target) {
   }
 }
 
-bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
-                                           unsigned internalformat) {
-  // TODO(cwallez@chromium.org): internalformat is used by Blink's
-  // DrawingBuffer::SetupRGBEmulationForBlitFramebuffer to bind an RGBA
-  // IOSurface as RGB. We should support this.
-
+bool GLImageIOSurfaceEGL::BindTexImage(unsigned target) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_EQ(BIND, ShouldBindOrCopy());
+  TRACE_EVENT0("gpu", "GLImageIOSurface::BindTexImage");
+  base::TimeTicks start_time = base::TimeTicks::Now();
   CHECK(!texture_bound_) << "Cannot re-bind already bound IOSurface.";
 
   GLenum target_getter = TargetGetterFromGLTarget(target);
@@ -220,12 +220,6 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
   EGLAccess& egl_access = GetEGLAccessForCurrentContext();
 
   DCHECK_EQ(egl_access.texture_target(), target_egl);
-
-  if (internalformat != 0) {
-    LOG(ERROR) << "GLImageIOSurfaceEGL doesn't support binding with a custom "
-                  "internal format yet.";
-    return false;
-  }
 
   // Create the pbuffer representing this IOSurface lazily because we don't know
   // in the constructor if we're going to be used to bind plane 0 to a texture,
@@ -269,6 +263,8 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned target,
   }
 
   texture_bound_ = true;
+  UMA_HISTOGRAM_TIMES("GPU.IOSurface.TexImageTime",
+                      base::TimeTicks::Now() - start_time);
   return true;
 }
 

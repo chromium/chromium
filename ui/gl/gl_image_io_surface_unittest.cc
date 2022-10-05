@@ -24,8 +24,7 @@ template <gfx::BufferFormat format>
 class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
  public:
   scoped_refptr<GLImage> CreateImage(const gfx::Size& size) const {
-    scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(
-        size, GLImageIOSurface::GetInternalFormatForTesting(format)));
+    scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(size));
     IOSurfaceRef surface_ref = gfx::CreateIOSurface(size, format);
     const uint32_t surface_plane = 0;
     bool rv = image->Initialize(surface_ref, surface_plane,
@@ -36,8 +35,7 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
 
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
                                                const uint8_t color[4]) const {
-    scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(
-        size, GLImageIOSurface::GetInternalFormatForTesting(format)));
+    scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(size));
     IOSurfaceRef surface_ref = gfx::CreateIOSurface(size, format);
     const uint32_t surface_plane = 0;
     IOReturn status = IOSurfaceLock(surface_ref, 0, nullptr);
@@ -90,6 +88,10 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
 
   int GetAdmissibleError() const {
     return format == gfx::BufferFormat::YUV_420_BIPLANAR ? 1 : 0;
+  }
+
+  bool SkipTest(GLDisplay* display) const override {
+    return !GLDisplayEGL::GetDisplayForCurrentContext();
   }
 };
 

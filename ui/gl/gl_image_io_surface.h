@@ -27,8 +27,7 @@ namespace gl {
 
 class GL_EXPORT GLImageIOSurface : public GLImage {
  public:
-  static GLImageIOSurface* Create(const gfx::Size& size,
-                                  unsigned internalformat);
+  static GLImageIOSurface* Create(const gfx::Size& size);
 
   GLImageIOSurface(const GLImageIOSurface&) = delete;
   GLImageIOSurface& operator=(const GLImageIOSurface&) = delete;
@@ -61,16 +60,11 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   BindOrCopy ShouldBindOrCopy() override;
-  bool BindTexImage(unsigned target) override;
-  bool BindTexImageWithInternalformat(unsigned target,
-                                      unsigned internalformat) override;
-  void ReleaseTexImage(unsigned target) override {}
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
-  bool EmulatingRGB() const override;
   bool IsInUseByWindowServer() const override;
   void DisableInUseByWindowServer() override;
 
@@ -78,30 +72,19 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface();
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer();
 
-  static unsigned GetInternalFormatForTesting(gfx::BufferFormat format);
-
   // Downcasts from |image|. Returns |nullptr| on failure.
   static GLImageIOSurface* FromGLImage(GLImage* image);
 
  protected:
-  GLImageIOSurface(const gfx::Size& size, unsigned internalformat);
+  GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;
-  virtual bool BindTexImageImpl(unsigned target, unsigned internalformat);
 
   static bool ValidFormat(gfx::BufferFormat format);
   Type GetType() const override;
   class RGBConverter;
 
   const gfx::Size size_;
-
-  // The "internalformat" exposed to the command buffer, which may not be
-  // "internalformat" requested by the client.
-  const unsigned internalformat_;
-
-  // The "internalformat" requested by the client.
-  const unsigned client_internalformat_;
-
-  gfx::BufferFormat format_;
+  gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
   gfx::GenericSharedMemoryId io_surface_id_;

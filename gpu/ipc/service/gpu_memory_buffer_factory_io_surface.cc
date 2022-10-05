@@ -144,10 +144,8 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
   gfx::Size plane_size = GetPlaneSize(plane, size);
 
   gfx::BufferFormat plane_format = GetPlaneBufferFormat(plane, format);
-  unsigned internalformat = gl::BufferFormatToGLInternalFormat(plane_format);
-
   scoped_refptr<gl::GLImageIOSurface> image(
-      gl::GLImageIOSurface::Create(plane_size, internalformat));
+      gl::GLImageIOSurface::Create(plane_size));
   if (color_space.IsValid())
     image->SetColorSpace(color_space);
 
@@ -177,9 +175,7 @@ GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(
     return nullptr;
   }
 
-  unsigned internalformat = gl::BufferFormatToGLInternalFormat(format);
-  scoped_refptr<gl::GLImageIOSurface> image(
-      gl::GLImageIOSurface::Create(size, internalformat));
+  scoped_refptr<gl::GLImageIOSurface> image(gl::GLImageIOSurface::Create(size));
   // Use an invalid GMB id so that we can differentiate between anonymous and
   // shared GMBs by using gfx::GenericSharedMemoryId::is_valid().
   if (!image->Initialize(io_surface.get(), io_surface_plane,
