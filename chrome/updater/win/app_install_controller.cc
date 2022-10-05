@@ -72,30 +72,6 @@
 namespace updater {
 namespace {
 
-bool GetShellDispatch(Microsoft::WRL::ComPtr<IShellDispatch2>* shell_dispatch) {
-  long hwnd = 0;
-  Microsoft::WRL::ComPtr<IShellWindows> shell;
-  Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  Microsoft::WRL::ComPtr<IServiceProvider> service;
-  Microsoft::WRL::ComPtr<IShellBrowser> browser;
-  Microsoft::WRL::ComPtr<IShellView> view;
-  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
-  return SUCCEEDED(::CoCreateInstance(CLSID_ShellWindows, nullptr, CLSCTX_ALL,
-                                      IID_PPV_ARGS(&shell))) &&
-         SUCCEEDED(shell->FindWindowSW(
-             base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(), nullptr,
-             SWC_DESKTOP, &hwnd, SWFO_NEEDDISPATCH, &dispatch)) &&
-         SUCCEEDED(dispatch.As(&service)) &&
-         SUCCEEDED(service->QueryService(SID_STopLevelBrowser,
-                                         IID_PPV_ARGS(&browser))) &&
-         SUCCEEDED(browser->QueryActiveShellView(&view)) &&
-         SUCCEEDED(
-             view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch))) &&
-         SUCCEEDED(dispatch.As(&folder)) &&
-         SUCCEEDED(folder->get_Application(&dispatch)) &&
-         SUCCEEDED(dispatch.As(shell_dispatch));
-}
-
 class InstallProgressSilentObserver : public InstallProgressObserver {
  public:
   explicit InstallProgressSilentObserver(ui::OmahaWndEvents* events_sink);
@@ -1024,14 +1000,8 @@ DWORD AppInstallControllerImpl::GetUIThreadID() const {
 
 bool AppInstallControllerImpl::DoLaunchBrowser(const std::string& url) {
   DCHECK_EQ(GetUIThreadID(), GetCurrentThreadId());
-  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
-  base::win::ScopedVariant empty(L"");
-#undef ShellExecute
-  return GetShellDispatch(&shell_dispatch) &&
-         SUCCEEDED(shell_dispatch->ShellExecute(
-             base::win::ScopedBstr(base::SysUTF8ToWide(url).c_str()).Get(),
-             *empty.AsInput(), *empty.AsInput(), *empty.AsInput(),
-             *base::win::ScopedVariant(SW_SHOWNORMAL).AsInput()));
+
+  return SUCCEEDED(RunDeElevated(base::SysUTF8ToWide(url), {}));
 }
 
 bool AppInstallControllerImpl::DoRestartBrowser(

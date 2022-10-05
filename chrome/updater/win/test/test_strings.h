@@ -18,6 +18,10 @@ extern const char kTestSleepMinutesSwitch[];
 // The switch to signal the event with the name given as a switch value.
 extern const char kTestEventToSignal[];
 
+// Checks if running at medium integrity, and if so, signals the event given as
+// the switch value.
+extern const char kTestEventToSignalIfMediumIntegrity[];
+
 // The switch to wait on the event with the name given as a switch value.
 extern const char kTestEventToWaitOn[];
 

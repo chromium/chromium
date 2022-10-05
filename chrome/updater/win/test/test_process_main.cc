@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <shlobj.h>
 #include <windows.h>
 
 #include <string>
@@ -66,6 +67,15 @@ int main(int, char**) {
 
   if (command_line->HasSwitch(updater::kTestEventToSignal)) {
     EventForSwitch(*command_line, updater::kTestEventToSignal).Signal();
+  } else if (command_line->HasSwitch(
+                 updater::kTestEventToSignalIfMediumIntegrity)) {
+    if (!::IsUserAnAdmin()) {
+      EventForSwitch(*command_line,
+                     updater::kTestEventToSignalIfMediumIntegrity)
+          .Signal();
+    } else {
+      LOG(ERROR) << "Process running at High Integrity instead of Medium";
+    }
   } else if (command_line->HasSwitch(updater::kTestEventToWaitOn)) {
     EventForSwitch(*command_line, updater::kTestEventToWaitOn).Wait();
   }

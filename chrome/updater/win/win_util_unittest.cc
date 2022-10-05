@@ -18,16 +18,19 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
+#include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/unittest_util_win.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/win/test/test_executables.h"
+#include "chrome/updater/win/test/test_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -131,16 +134,48 @@ TEST(WinUtil, RunElevated) {
   EXPECT_EQ(result.value(), DWORD{0});
 }
 
-TEST(WinUtil, RunDeElevated) {
+namespace {
+
+// Allows access to all authenticated users on the machine.
+CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
+  CSecurityDesc sd;
+  CDacl dacl;
+  dacl.AddAllowedAce(Sids::System(), accessmask);
+  dacl.AddAllowedAce(Sids::Admins(), accessmask);
+  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
+
+  sd.SetDacl(dacl);
+  sd.MakeAbsolute();
+  return sd;
+}
+
+}  // namespace
+
+TEST(WinUtil, RunDeElevated_Exe) {
   if (!::IsUserAnAdmin() || !IsUACOn())
     return;
 
-  DWORD exit_code = 0;
-  const base::CommandLine test_process_cmd_line =
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process to confirm that the test process is running at medium
+  // integrity.
+  // The event is created with a security descriptor that allows the medium
+  // integrity process to signal it.
+  const std::wstring event_name =
+      base::StrCat({L"WinUtil.RunDeElevated-",
+                    base::NumberToWString(::GetCurrentProcessId())});
+  CSecurityAttributes sa(GetEveryoneDaclSecurityDescriptor(GENERIC_ALL));
+  base::WaitableEvent event(base::win::ScopedHandle(
+      ::CreateEvent(&sa, FALSE, FALSE, event_name.c_str())));
+  ASSERT_NE(event.handle(), nullptr);
+
+  base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope());
+  test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
+                                           event_name);
   EXPECT_HRESULT_SUCCEEDED(
-      RunDeElevated(test_process_cmd_line.GetProgram(),
-                    test_process_cmd_line.GetArgumentsString(), &exit_code));
+      RunDeElevated(test_process_cmd_line.GetProgram().value(),
+                    test_process_cmd_line.GetArgumentsString()));
+  EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 }
 
 TEST(WinUtil, GetOSVersion) {

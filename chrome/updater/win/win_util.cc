@@ -41,8 +41,10 @@
 #include "base/time/time.h"
 #include "base/win/atl.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/scoped_variant.h"
 #include "base/win/startup_information.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
@@ -679,56 +681,61 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
   return ShellExecuteAndWait(file_path, parameters, L"runas");
 }
 
-HRESULT RunDeElevated(const base::FilePath& file_path,
-                      const std::wstring& parameters,
-                      DWORD* exit_code) {
-  HWND hwnd = ::GetShellWindow();
-  if (!hwnd)
-    return HRESULTFromLastError();
-
-  DWORD explorer_pid = 0;
-  ::GetWindowThreadProcessId(hwnd, &explorer_pid);
-  if (!explorer_pid)
-    return HRESULTFromLastError();
-
-  base::win::ScopedHandle explorer_process(
-      ::OpenProcess(PROCESS_CREATE_PROCESS, FALSE, explorer_pid));
-  if (!explorer_process.is_valid())
-    return HRESULTFromLastError();
-
-  base::win::StartupInformation startup_info;
-  if (!startup_info.InitializeProcThreadAttributeList(1))
-    return HRESULTFromLastError();
-
-  if (!startup_info.UpdateProcThreadAttribute(
-          PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &explorer_process,
-          sizeof(HANDLE))) {
-    return HRESULTFromLastError();
-  }
-
-  PROCESS_INFORMATION process_info = {};
-  if (!::CreateProcess(file_path.value().c_str(),
-                       std::wstring(parameters).data(), nullptr, nullptr, TRUE,
-                       EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
-                       startup_info.startup_info(), &process_info)) {
-    HRESULT hr = HRESULTFromLastError();
-    LOG(ERROR) << "::CreateProcess() failed, " << std::hex << hr;
+HRESULT RunDeElevated(const std::wstring& path,
+                      const std::wstring& parameters) {
+  Microsoft::WRL::ComPtr<IShellWindows> shell;
+  HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
+                                  CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
+  if (FAILED(hr))
     return hr;
-  }
-  base::win::ScopedProcessInformation process_information(process_info);
 
-  const base::Process process(process_information.TakeProcessHandle());
-  const DWORD pid = process.Pid();
-  VLOG(1) << __func__ << ": Started process, PID: " << pid;
+  long hwnd = 0;
+  Microsoft::WRL::ComPtr<IDispatch> dispatch;
+  hr = shell->FindWindowSW(base::win::ScopedVariant(CSIDL_DESKTOP).AsInput(),
+                           base::win::ScopedVariant().AsInput(), SWC_DESKTOP,
+                           &hwnd, SWFO_NEEDDISPATCH, &dispatch);
+  if (FAILED(hr))
+    return hr;
 
-  ::AllowSetForegroundWindow(pid);
+  Microsoft::WRL::ComPtr<IServiceProvider> service;
+  hr = dispatch.As(&service);
+  if (FAILED(hr))
+    return hr;
 
-  int ret_val = 0;
-  if (!process.WaitForExit(&ret_val))
-    return HRESULTFromLastError();
+  Microsoft::WRL::ComPtr<IShellBrowser> browser;
+  hr = service->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&browser));
+  if (FAILED(hr))
+    return hr;
 
-  *exit_code = ret_val;
-  return S_OK;
+  Microsoft::WRL::ComPtr<IShellView> view;
+  hr = browser->QueryActiveShellView(&view);
+  if (FAILED(hr))
+    return hr;
+
+  hr = view->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispatch));
+  if (FAILED(hr))
+    return hr;
+
+  Microsoft::WRL::ComPtr<IShellFolderViewDual> folder;
+  hr = dispatch.As(&folder);
+  if (FAILED(hr))
+    return hr;
+
+  hr = folder->get_Application(&dispatch);
+  if (FAILED(hr))
+    return hr;
+
+  Microsoft::WRL::ComPtr<IShellDispatch2> shell_dispatch;
+  hr = dispatch.As(&shell_dispatch);
+  if (FAILED(hr))
+    return hr;
+
+  return shell_dispatch->ShellExecute(
+      base::win::ScopedBstr(path).Get(),
+      base::win::ScopedVariant(parameters.c_str()),
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant,
+      base::win::ScopedVariant::kEmptyVariant);
 }
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {

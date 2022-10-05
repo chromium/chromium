@@ -241,13 +241,10 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
                              const std::wstring& parameters);
 
-// Starts a new de-elevated process. `file_path` specifies the program to be
-// run. `parameters` can be an empty string. The function waits until the
-// spawned process has completed. The exit code of the process is returned in
-// `exit_code`.
-HRESULT RunDeElevated(const base::FilePath& file_path,
-                      const std::wstring& parameters,
-                      DWORD* exit_code);
+// Runs `path` de-elevated. `path` specifies the exe or url to be launched.
+// `parameters` can be an empty string. The function does not wait for the
+// spawned process.
+HRESULT RunDeElevated(const std::wstring& path, const std::wstring& parameters);
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 

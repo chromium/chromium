@@ -294,17 +294,14 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   }
 
   // Deelevate the metainstaller.
-  DWORD exit_code = 0;
-  HRESULT hr = RunDeElevated(
-      command_line.GetProgram(),
-      [&command_line]() {
+  HRESULT hr =
+      RunDeElevated(command_line.GetProgram().value(), [&command_line]() {
         base::CommandLine de_elevate_command_line = command_line;
         de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
         return de_elevate_command_line.GetArgumentsString();
-      }(),
-      &exit_code);
+      }());
   return SUCCEEDED(hr)
-             ? ProcessExitResult(exit_code)
+             ? ProcessExitResult(SUCCESS_EXIT_CODE)
              : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
 }
 
@@ -341,10 +338,9 @@ ProcessExitResult WMain(HMODULE module) {
             base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
-  }
-
-  if (::IsUserAnAdmin() && scope == UpdaterScope::kUser && IsUACOn())
+  } else if (::IsUserAnAdmin() && scope == UpdaterScope::kUser && IsUACOn()) {
     return HandleRunDeElevated(command_line);
+  }
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
