@@ -199,13 +199,8 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
 
 void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,
                                         crosapi::mojom::IntentPtr intent) {
-  if (base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
-    proxy_->AddPreferredApp(
-        app_id, apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_));
-  } else {
-    proxy_->AddPreferredApp(
-        app_id, apps_util::ConvertCrosapiToAppServiceIntent(intent, profile_));
-  }
+  proxy_->AddPreferredApp(
+      app_id, apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_));
 }
 
 void SubscriberCrosapi::ShowAppManagementPage(const std::string& app_id) {
