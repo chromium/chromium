@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "components/device_signals/core/common/signals_constants.h"
 
@@ -43,14 +44,6 @@ PasswordProtectionTrigger ConvertPasswordProtectionTrigger(
       NOTREACHED();
       return PasswordProtectionTrigger::kUnset;
   }
-}
-
-base::Value ToListValue(const std::vector<std::string>& string_values) {
-  base::Value::List list_value;
-  for (const auto& string_value : string_values) {
-    list_value.Append(string_value);
-  }
-  return base::Value(std::move(list_value));
 }
 
 }  // namespace

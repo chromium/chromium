@@ -9,11 +9,13 @@ source_set("common") {
     "common_signals_decorator.h",
     "metrics_utils.h",
     "signals_decorator.h",
+    "signals_utils.h",
   ]
 
   sources = [
     "common_signals_decorator.cc",
     "metrics_utils.cc",
+    "signals_utils.cc",
   ]
 
   public_deps = [

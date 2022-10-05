@@ -882,7 +882,6 @@ chromium-metrics-reviews@google.com.
   <token key="Variant">
     <variant name="Ash" summary="Ash"/>
     <variant name="Browser" summary="Browser (without cache)"/>
-    <variant name="Browser.WithCache" summary="Browser (with cache)"/>
     <variant name="Common" summary="Common (without cache)"/>
     <variant name="Common.WithCache" summary="Common (with cache)"/>
     <variant name="Context" summary="Context"/>

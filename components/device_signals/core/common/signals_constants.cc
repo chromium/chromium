@@ -35,6 +35,9 @@ const char kChromeRemoteDesktopAppBlocked[] = "chromeRemoteDesktopAppBlocked";
 // that is currently managing the device (or browser for non-CrOS platforms).
 const char kDeviceAffiliationIds[] = "deviceAffiliationIds";
 
+// Host name of the current device.
+const char kDeviceHostName[] = "deviceHostName";
+
 // Name of the signal for getting information about the device
 // manufacturer (e.g. Dell).
 const char kDeviceManufacturer[] = "deviceManufacturer";
@@ -42,6 +45,10 @@ const char kDeviceManufacturer[] = "deviceManufacturer";
 // Name of the signal for getting information about the device model
 // (e.g. iPhone 12 Max).
 const char kDeviceModel[] = "deviceModel";
+
+// Name of the signal for getting information about whether the device's main
+// disk is encrypted.
+const char kDiskEncrypted[] = "diskEncrypted";
 
 // Name of the signal for getting information about the human readable
 // name for the device.
@@ -71,17 +78,12 @@ const char kInstalledHotfixes[] = "hotfixes";
 // device.
 const char kIpAddress[] = "ipAddress";
 
-// Name of the signal for getting information about whether the disk
-// on the device is encrypted.
-const char kIsDiskEncrypted[] = "isDiskEncrypted";
-
 // Name of the signal for getting information about whether the device is
 // jailbroken or modified.
 const char kIsJailbroken[] = "isJailBroken";
 
-// Name of the signal for getting information about whether access to
-// the OS user is protected by a password.
-const char kIsPasswordProtected[] = "isProtectedByPassword";
+// MAC addresses of the device.
+const char kMacAddresses[] = "macAddresses";
 
 // Name of the signal for getting information about the MEID.
 const char kMeid[] = "meid";
@@ -114,6 +116,14 @@ const char kRealtimeUrlCheckMode[] = "realtimeUrlCheckMode";
 // https://chromeenterprise.google/policies/#SafeBrowsingProtectionLevel
 const char kSafeBrowsingProtectionLevel[] = "safeBrowsingProtectionLevel";
 
+// Name of the signal for getting information about whether access to
+// the OS user is protected by a password.
+const char kScreenLockSecured[] = "screenLockSecured";
+
+// Indicates whether the device’s startup software has its Secure Boot feature
+// enabled or not (trusted software).
+const char kSecureBootEnabled[] = "secureBootEnabled";
+
 // Name of the signal for getting information about the device serial
 // number.
 const char kSerialNumber[] = "serialNumber";
@@ -145,7 +155,11 @@ const char kTpmHash[] = "tpmHash";
 
 // Name of the signal for getting information about the windows domain
 // the device has joined.
-const char kWindowsDomain[] = "windowsDomain";
+const char kWindowsMachineDomain[] = "windowsMachineDomain";
+
+// Name of the signal for getting information about the windows domain
+// the current OS user.
+const char kWindowsUserDomain[] = "windowsUserDomain";
 
 }  // namespace names
 

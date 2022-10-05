@@ -39,6 +39,7 @@ class StubDeviceFetcher : public DeviceInfoFetcher {
     device_info.device_host_name = "midnightshift";
     device_info.device_model = "topshot";
     device_info.serial_number = "twirlchange";
+    device_info.secure_boot_enabled = SettingValue::ENABLED;
     device_info.screen_lock_secured = SettingValue::ENABLED;
     device_info.disk_encrypted = SettingValue::DISABLED;
     device_info.mac_addresses.push_back("00:00:00:00:00:00");

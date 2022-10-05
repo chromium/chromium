@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_BROWSER_BROWSER_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_BROWSER_BROWSER_SIGNALS_DECORATOR_H_
 
-#include <memory>
-#include <string>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -41,19 +39,7 @@ class BrowserSignalsDecorator : public SignalsDecorator {
                            base::OnceClosure done_closure,
                            const enterprise_signals::DeviceInfo& device_info);
 
-  void UpdateFromCache(base::Value::Dict& signals);
-
-  policy::CloudPolicyStore* const cloud_policy_store_;
-
-  // Use this variable to control whether or not the cache has been set since
-  // some platforms may not have those values at all.
-  bool cache_initialized_{false};
-
-  // These values are expensive to fetch and are not expected to change
-  // throughout the browser's lifetime, so the decorator will be caching them
-  // for performance reasons.
-  absl::optional<std::string> cached_serial_number_;
-  absl::optional<bool> cached_is_disk_encrypted_;
+  const raw_ptr<policy::CloudPolicyStore> cloud_policy_store_;
 
   base::WeakPtrFactory<BrowserSignalsDecorator> weak_ptr_factory_{this};
 };

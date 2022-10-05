@@ -24,8 +24,15 @@ namespace {
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kLatencyHistogram[] =
     "Enterprise.DeviceTrust.SignalsDecorator.Latency.Browser";
-constexpr char kCachedLatencyHistogram[] =
-    "Enterprise.DeviceTrust.SignalsDecorator.Latency.Browser.WithCache";
+
+constexpr int32_t kDisabledSetting = 1;
+constexpr int32_t kEnabledSetting = 2;
+
+base::Value::List GetExpectedMacAddresses() {
+  base::Value::List mac_addresses;
+  mac_addresses.Append("00:00:00:00:00:00");
+  return mac_addresses;
+}
 
 }  // namespace
 
@@ -50,10 +57,45 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   }
 
   void ValidateStaticSignals(const base::Value::Dict& signals) {
-    EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
-              "twirlchange");
-    EXPECT_EQ(*signals.FindBool(device_signals::names::kIsDiskEncrypted),
-              false);
+    const auto* serial_number =
+        signals.FindString(device_signals::names::kSerialNumber);
+    ASSERT_TRUE(serial_number);
+    EXPECT_EQ(*serial_number, "twirlchange");
+
+    auto screen_lock_secured =
+        signals.FindInt(device_signals::names::kScreenLockSecured);
+    ASSERT_TRUE(screen_lock_secured);
+    EXPECT_EQ(screen_lock_secured.value(), kEnabledSetting);
+
+    auto disk_encrypted =
+        signals.FindInt(device_signals::names::kDiskEncrypted);
+    ASSERT_TRUE(disk_encrypted);
+    EXPECT_EQ(disk_encrypted.value(), kDisabledSetting);
+
+    const auto* device_host_name =
+        signals.FindString(device_signals::names::kDeviceHostName);
+    ASSERT_TRUE(device_host_name);
+    EXPECT_EQ(*device_host_name, "midnightshift");
+
+    const auto* mac_addresses =
+        signals.FindList(device_signals::names::kMacAddresses);
+    ASSERT_TRUE(mac_addresses);
+    EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
+
+    const auto* windows_machine_domain =
+        signals.FindString(device_signals::names::kWindowsMachineDomain);
+    ASSERT_TRUE(windows_machine_domain);
+    EXPECT_EQ(*windows_machine_domain, "MACHINE_DOMAIN");
+
+    const auto* windows_user_domain =
+        signals.FindString(device_signals::names::kWindowsUserDomain);
+    ASSERT_TRUE(windows_user_domain);
+    EXPECT_EQ(*windows_user_domain, "USER_DOMAIN");
+
+    auto secure_boot_enabled =
+        signals.FindInt(device_signals::names::kSecureBootEnabled);
+    ASSERT_TRUE(secure_boot_enabled);
+    EXPECT_EQ(secure_boot_enabled.value(), kEnabledSetting);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -78,22 +120,6 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
             *signals.FindString(device_signals::names::kEnrollmentDomain));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 0);
-
-  // Running a second time will exercise the caching code.
-  base::RunLoop second_run_loop;
-  base::Value::Dict second_signals;
-  decorator_->Decorate(second_signals, second_run_loop.QuitClosure());
-
-  second_run_loop.Run();
-
-  EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
-            *second_signals.FindString(device_signals::names::kSerialNumber));
-  EXPECT_EQ(*signals.FindBool(device_signals::names::kIsDiskEncrypted),
-            *second_signals.FindBool(device_signals::names::kIsDiskEncrypted));
-
-  histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kCachedLatencyHistogram, 1);
 }
 
 TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
