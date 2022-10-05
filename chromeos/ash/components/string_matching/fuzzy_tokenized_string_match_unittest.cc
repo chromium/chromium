@@ -8,7 +8,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/string_matching/sequence_matcher.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -428,15 +427,7 @@ TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInTextButNotQuery) {
                                      /*query_first*/ false);
     scores_query_two_tokens.push_back(relevance);
   }
-
-  // Currently, queries "abc def" and "def ghi" score highly, because they match
-  // to long contiguous regions of the text. "abc ghi" scores poorly, because it
-  // matches two separate regions of the text.
-  //
-  // TODO(crbug.com/1336160): Support flexibility in words being absent from the
-  // query, so that we can:
-  //
-  //   ExpectAllNearlyEqual(scores_query_two_tokens);
+  ExpectAllNearlyEqual(scores_query_two_tokens, /*abs_error*/ 0.1);
 
   // TODO(crbug.com/1336160): Support text-length agnosticism, whereby
   // non-matched text tokens have no (or less of) an adverse effect on scoring.
@@ -882,12 +873,7 @@ TEST_F(FuzzyTokenizedStringMatchTest,
                                      /*query_first*/ false);
     scores.push_back(relevance);
   }
-  // Currently, "abcd ef" and "efgh ij" score very highly due to being long
-  // contiguous matches.
-  //
-  // TODO(crbug.com/1336160): Support word order variation, so that we can e.g.:
-  //
-  //   ExpectAllNearlyEqual(scores);
+  ExpectAllNearlyEqual(scores, /*abs_error*/ 0.2);
 
   // TODO(crbug.com/1336160): Consider a score boost for when a matched token is
   // the first token of both text and query.
@@ -1359,6 +1345,48 @@ TEST_F(FuzzyTokenizedStringMatchTest, PrefixMatcherTest) {
   {
     std::u16string query(u"clash clan");
     std::u16string text(u"Clash of Clan");
+    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
+                                                         TokenizedString(text)),
+                0.99, 0.01);
+  }
+  {
+    std::u16string query(u"clan clash");
+    std::u16string text(u"Clash of Clan");
+    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
+                                                         TokenizedString(text)),
+                0.98, 0.01);
+  }
+  {
+    std::u16string query(u"clashofclan");
+    std::u16string text(u"Clash of Clan");
+    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
+                                                         TokenizedString(text)),
+                1.0, 0.01);
+  }
+  {
+    std::u16string query(u"coc");
+    std::u16string text(u"Clash of Clan");
+    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(
+                    TokenizedString(query), TokenizedString(text),
+                    /* use_acronym_matcher = */ true),
+                0.84, 0.01);
+  }
+  // TODO(crbug.com/1336160): Consider allowing acronym matching for query with
+  // space in between.
+  // E.g., query: "c o c" and text: "Clash of Clan".
+  // But we may also want to exclude some cases.
+  // E.g., query: "c oc" and text: "Clash of Clan".
+  {
+    std::u16string query(u"c o c");
+    std::u16string text(u"Clash of Clan");
+    EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(
+                  TokenizedString(query), TokenizedString(text),
+                  /* use_acronym_matcher = */ true),
+              0.0);
+  }
+  {
+    std::u16string query(u"coc");
+    std::u16string text(u"Clash of Clan");
     EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                        TokenizedString(text)),
               0.0);
@@ -1366,16 +1394,16 @@ TEST_F(FuzzyTokenizedStringMatchTest, PrefixMatcherTest) {
   {
     std::u16string query(u"c o c");
     std::u16string text(u"Clash of Clan");
-    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
-                                                         TokenizedString(text)),
-                0.84, 0.01);
+    EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
+                                                       TokenizedString(text)),
+              0.0);
   }
   {
     std::u16string query(u"wifi");
     std::u16string text(u"wi-fi");
     EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
                                                          TokenizedString(text)),
-                0.91, 0.01);
+                0.94, 0.01);
   }
   {
     std::u16string query(u"clam");
@@ -1394,9 +1422,9 @@ TEST_F(FuzzyTokenizedStringMatchTest, PrefixMatcherTest) {
   {
     std::u16string query(u"remove play");
     std::u16string text(u"Remove Google Play Store");
-    EXPECT_EQ(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
-                                                       TokenizedString(text)),
-              0.0);
+    EXPECT_NEAR(FuzzyTokenizedStringMatch::PrefixMatcher(TokenizedString(query),
+                                                         TokenizedString(text)),
+                1.0, 0.01);
   }
   {
     std::u16string query(u"google play");

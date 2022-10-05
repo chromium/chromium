@@ -17,7 +17,7 @@
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/string_matching/acronym_matcher.h"
 #include "chromeos/ash/components/string_matching/diacritic_utils.h"
-#include "chromeos/ash/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher_new.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -209,14 +209,9 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
                                                 const TokenizedString& text,
                                                 bool use_acronym_matcher) {
-  string_matching::PrefixMatcher match(query, text);
+  string_matching::PrefixMatcherNew match(query, text);
   match.Match();
   double relevance = 0.0;
-
-  // TODO(crbug.com/1336160): Acronym matching still exists in prefix matcher,
-  // and it is redundant to calculate it twice. Acronym matcher is added here
-  // and we should still get the same relevance score as before. The acronym
-  // matching will be removed from prefix matcher in the following CL.
 
   // TODO(crbug.com/1336160): Consider refactoring acronym matching to be
   // separate from FuzzyTokenizedStringMatch.
@@ -255,7 +250,7 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   const auto text_size = text_text.size();
   if (query_size > 0 && query_size == text_size &&
       base::EqualsCaseInsensitiveASCII(query_text, text_text)) {
-    hits_.push_back(gfx::Range(0, query_size));
+    hits_.emplace_back(0, query_size);
     relevance_ = 1.0;
     return true;
   }
@@ -264,8 +259,8 @@ double FuzzyTokenizedStringMatch::Relevance(const TokenizedString& query_input,
   for (const auto& match :
        SequenceMatcher(query_text, text_text).GetMatchingBlocks()) {
     if (match.length > 0) {
-      hits_.push_back(gfx::Range(match.pos_second_string,
-                                 match.pos_second_string + match.length));
+      hits_.emplace_back(match.pos_second_string,
+                         match.pos_second_string + match.length);
     }
   }
 
