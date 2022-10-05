@@ -6,6 +6,7 @@
 
 #import "base/containers/contains.h"
 #import "base/time/default_clock.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 
@@ -16,7 +17,7 @@
 namespace {
 // The default expiration for certificate error and HTTPS-First Mode bypasses is
 // one week.
-const uint64_t kDeltaDefaultExpirationInSeconds = UINT64_C(604800);
+const base::TimeDelta kDeltaDefaultExpiration = base::Days(7);
 }  // namespace
 
 HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ChromeBrowserState* context)
@@ -25,7 +26,7 @@ HttpsUpgradeServiceImpl::HttpsUpgradeServiceImpl(ChromeBrowserState* context)
       allowlist_(
           ios::HostContentSettingsMapFactory::GetForBrowserState(context),
           clock_.get(),
-          base::Seconds(kDeltaDefaultExpirationInSeconds)) {
+          kDeltaDefaultExpiration) {
   DCHECK(context_);
 }
 
