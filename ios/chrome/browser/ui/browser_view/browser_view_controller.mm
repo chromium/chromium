@@ -2232,6 +2232,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 // Adds the given urls to the reading list.
 - (void)addURLsToReadingList:(NSArray<URLWithTitle*>*)URLs {
+  DCHECK(URLs.count > 0) << "URLs are missing";
+
   for (URLWithTitle* urlWithTitle in URLs) {
     [self addURLToReadingList:urlWithTitle.URL withTitle:urlWithTitle.title];
   }

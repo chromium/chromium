@@ -1498,27 +1498,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
 
-  GridViewController* gridViewController =
-      [self gridViewControllerForPage:self.currentPage];
-  NSArray<NSString*>* items =
-      gridViewController.selectedShareableItemIDsForEditing;
-  UIMenu* menu = nil;
-  switch (self.currentPage) {
-    case TabGridPageIncognitoTabs:
-      menu =
-          [UIMenu menuWithChildren:[self.incognitoTabsDelegate
-                                       addToButtonMenuElementsForItems:items]];
-      break;
-    case TabGridPageRegularTabs:
-      menu =
-          [UIMenu menuWithChildren:[self.regularTabsDelegate
-                                       addToButtonMenuElementsForItems:items]];
-      break;
-    case TabGridPageRemoteTabs:
-      // No-op, Add To button inaccessible in remote tabs page.
-      break;
-  }
-  [self.bottomToolbar setAddToButtonMenu:menu];
+  [self configureAddToButtonMenuForSelectedItems];
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
@@ -1559,6 +1539,31 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self configureDoneButtonBasedOnPage:self.currentPage];
   [self configureNewTabButtonBasedOnContentPermissions];
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
+}
+
+// Updates the add to menu items with all the currently selected items.
+- (void)configureAddToButtonMenuForSelectedItems {
+  GridViewController* gridViewController =
+      [self gridViewControllerForPage:self.currentPage];
+  NSArray<NSString*>* items =
+      gridViewController.selectedShareableItemIDsForEditing;
+  UIMenu* menu = nil;
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.incognitoTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRegularTabs:
+      menu =
+          [UIMenu menuWithChildren:[self.regularTabsDelegate
+                                       addToButtonMenuElementsForItems:items]];
+      break;
+    case TabGridPageRemoteTabs:
+      // No-op, Add To button inaccessible in remote tabs page.
+      break;
+  }
+  [self.bottomToolbar setAddToButtonMenu:menu];
 }
 
 - (void)configureNewTabButtonBasedOnContentPermissions {
@@ -1762,6 +1767,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   } else {
     [self.topToolbar configureSelectAllButtonTitle];
   }
+
+  [self configureAddToButtonMenuForSelectedItems];
 }
 
 // Records when the user switches between incognito and regular pages in the tab
