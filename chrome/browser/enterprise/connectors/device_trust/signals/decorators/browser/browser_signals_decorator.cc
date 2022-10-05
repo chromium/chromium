@@ -13,14 +13,12 @@
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace enterprise_connectors {
 
 namespace {
-using policy::BrowserDMTokenStorage;
 using policy::CloudPolicyStore;
 
 constexpr char kLatencyHistogramVariant[] = "Browser";
@@ -28,11 +26,8 @@ constexpr char kLatencyHistogramWithCacheVariant[] = "Browser.WithCache";
 }  // namespace
 
 BrowserSignalsDecorator::BrowserSignalsDecorator(
-    BrowserDMTokenStorage* dm_token_storage,
     CloudPolicyStore* cloud_policy_store)
-    : dm_token_storage_(dm_token_storage),
-      cloud_policy_store_(cloud_policy_store) {
-  DCHECK(dm_token_storage_);
+    : cloud_policy_store_(cloud_policy_store) {
   DCHECK(cloud_policy_store_);
 }
 
@@ -42,13 +37,8 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
                                        base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
 
-  signals.Set(device_signals::names::kDeviceId,
-              dm_token_storage_->RetrieveClientId());
-
   if (cloud_policy_store_->has_policy()) {
     const auto* policy = cloud_policy_store_->policy();
-    signals.Set(device_signals::names::kObfuscatedCustomerId,
-                policy->obfuscated_customer_id());
     signals.Set(device_signals::names::kEnrollmentDomain,
                 policy->has_managed_by() ? policy->managed_by()
                                          : policy->display_domain());

@@ -51,9 +51,7 @@ constexpr char kEncodedChallenge[] =
     "u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65mKrg=";
 
 constexpr char kFakeResponse[] = "fake_response";
-
-constexpr char kDeviceId[] = "device-id";
-constexpr char kObfuscatedCustomerId[] = "customer-id";
+constexpr char kDisplayName[] = "display-name";
 
 std::string GetSerializedSignedChallenge() {
   std::string serialized_signed_challenge;
@@ -112,9 +110,7 @@ class AshAttestationServiceTest : public testing::Test {
 
   base::Value::Dict CreateSignals() {
     base::Value::Dict signals;
-    signals.Set(device_signals::names::kDeviceId, kDeviceId);
-    signals.Set(device_signals::names::kObfuscatedCustomerId,
-                kObfuscatedCustomerId);
+    signals.Set(device_signals::names::kDisplayName, kDisplayName);
     return signals;
   }
 

@@ -27,9 +27,6 @@ const char kBuiltInDnsClientEnabled[] = "builtInDnsClientEnabled";
 // is enabled on the device.
 const char kChromeCleanupEnabled[] = "chromeCleanupEnabled";
 
-// Name of the signal for getting information about the device id.
-const char kDeviceId[] = "deviceId";
-
 // Name of the signal for getting information about the device
 // manufacturer (e.g. Dell).
 const char kDeviceManufacturer[] = "deviceManufacturer";
@@ -84,10 +81,6 @@ const char kIsPasswordProtected[] = "isProtectedByPassword";
 
 // Name of the signal for getting information about the MEID.
 const char kMeid[] = "meid";
-
-// Name of the signal for getting information about the obfuscated CBCM
-// enrolled customer Id.
-const char kObfuscatedCustomerId[] = "obfuscatedCustomerId";
 
 // Name of the signal for getting information about the OS running
 // on the device (e.g. Chrome OS).

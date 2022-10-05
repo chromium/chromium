@@ -15,7 +15,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
-class BrowserDMTokenStorage;
 class CloudPolicyStore;
 }  // namespace policy
 
@@ -28,8 +27,8 @@ namespace enterprise_connectors {
 // Definition of the SignalsDecorator common to all Chrome browser platforms.
 class BrowserSignalsDecorator : public SignalsDecorator {
  public:
-  BrowserSignalsDecorator(policy::BrowserDMTokenStorage* dm_token_storage,
-                          policy::CloudPolicyStore* cloud_policy_store);
+  explicit BrowserSignalsDecorator(
+      policy::CloudPolicyStore* cloud_policy_store);
   ~BrowserSignalsDecorator() override;
 
   // SignalsDecorator:
@@ -44,7 +43,6 @@ class BrowserSignalsDecorator : public SignalsDecorator {
 
   void UpdateFromCache(base::Value::Dict& signals);
 
-  policy::BrowserDMTokenStorage* const dm_token_storage_;
   policy::CloudPolicyStore* const cloud_policy_store_;
 
   // Use this variable to control whether or not the cache has been set since

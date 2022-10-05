@@ -33,24 +33,24 @@ constexpr char kLatencyHistogram[] =
 
 TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   base::HistogramTester histogram_tester;
-  std::string fake_obfuscated_customer_id = "fake_obfuscated_customer_id";
+  std::string fake_display_name = "fake_display_name";
   std::unique_ptr<MockSignalsDecorator> first_decorator =
       std::make_unique<MockSignalsDecorator>();
   EXPECT_CALL(*first_decorator.get(), Decorate(_, _))
-      .WillOnce([&fake_obfuscated_customer_id](base::Value::Dict& signals,
-                                               base::OnceClosure done_closure) {
-        signals.Set(device_signals::names::kObfuscatedCustomerId,
-                    fake_obfuscated_customer_id);
+      .WillOnce([&fake_display_name](base::Value::Dict& signals,
+                                     base::OnceClosure done_closure) {
+        signals.Set(device_signals::names::kDisplayName, fake_display_name);
         std::move(done_closure).Run();
       });
 
-  std::string fake_device_id = "fake_device_id";
+  std::string fake_allow_lock_screen = "false";
   std::unique_ptr<MockSignalsDecorator> second_decorator =
       std::make_unique<MockSignalsDecorator>();
   EXPECT_CALL(*second_decorator.get(), Decorate(_, _))
-      .WillOnce([&fake_device_id](base::Value::Dict& signals,
-                                  base::OnceClosure done_closure) {
-        signals.Set(device_signals::names::kDeviceId, fake_device_id);
+      .WillOnce([&fake_allow_lock_screen](base::Value::Dict& signals,
+                                          base::OnceClosure done_closure) {
+        signals.Set(device_signals::names::kAllowScreenLock,
+                    fake_allow_lock_screen);
         std::move(done_closure).Run();
       });
 
@@ -64,11 +64,11 @@ TEST(SignalsServiceImplTest, CollectSignals_CallsAllDecorators) {
   auto callback =
       base::BindLambdaForTesting([&](const base::Value::Dict signals) {
         EXPECT_EQ(
-            signals.FindString(device_signals::names::kObfuscatedCustomerId)
-                ->c_str(),
-            fake_obfuscated_customer_id);
-        EXPECT_EQ(signals.FindString(device_signals::names::kDeviceId)->c_str(),
-                  fake_device_id);
+            signals.FindString(device_signals::names::kDisplayName)->c_str(),
+            fake_display_name);
+        EXPECT_EQ(signals.FindString(device_signals::names::kAllowScreenLock)
+                      ->c_str(),
+                  fake_allow_lock_screen);
         callback_called = true;
       });
 

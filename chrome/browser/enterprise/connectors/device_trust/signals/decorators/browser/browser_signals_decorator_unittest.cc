@@ -21,9 +21,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
-constexpr char kFakeDeviceId[] = "fake_device_id";
 constexpr char kLatencyHistogram[] =
     "Enterprise.DeviceTrust.SignalsDecorator.Latency.Browser";
 constexpr char kCachedLatencyHistogram[] =
@@ -34,10 +32,9 @@ constexpr char kCachedLatencyHistogram[] =
 class BrowserSignalsDecoratorTest : public testing::Test {
  protected:
   void SetUp() override {
-    fake_dm_token_storage_.SetClientId(kFakeDeviceId);
     enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(
         /*should_force=*/true);
-    decorator_.emplace(&fake_dm_token_storage_, &mock_cloud_policy_store_);
+    decorator_.emplace(&mock_cloud_policy_store_);
   }
 
   void TearDown() override {
@@ -47,15 +44,12 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 
   void SetFakePolicyData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_obfuscated_customer_id(kFakeCustomerId);
     policy_data->set_managed_by(kFakeEnrollmentDomain);
     mock_cloud_policy_store_.set_policy_data_for_testing(
         std::move(policy_data));
   }
 
   void ValidateStaticSignals(const base::Value::Dict& signals) {
-    EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceId),
-              kFakeDeviceId);
     EXPECT_EQ(*signals.FindString(device_signals::names::kSerialNumber),
               "twirlchange");
     EXPECT_EQ(*signals.FindBool(device_signals::names::kIsDiskEncrypted),
@@ -64,7 +58,6 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   policy::MockCloudPolicyStore mock_cloud_policy_store_;
   absl::optional<BrowserSignalsDecorator> decorator_;
 };
@@ -81,8 +74,6 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
 
   ValidateStaticSignals(signals);
 
-  EXPECT_EQ(kFakeCustomerId,
-            *signals.FindString(device_signals::names::kObfuscatedCustomerId));
   EXPECT_EQ(kFakeEnrollmentDomain,
             *signals.FindString(device_signals::names::kEnrollmentDomain));
 
@@ -114,7 +105,6 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
   run_loop.Run();
 
   ValidateStaticSignals(signals);
-  EXPECT_FALSE(signals.contains(device_signals::names::kObfuscatedCustomerId));
   EXPECT_FALSE(signals.contains(device_signals::names::kEnrollmentDomain));
 }
 

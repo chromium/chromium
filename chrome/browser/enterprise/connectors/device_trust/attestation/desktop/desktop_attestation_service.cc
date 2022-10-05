@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_switches.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
@@ -27,6 +28,7 @@
 namespace enterprise_connectors {
 
 namespace {
+using policy::BrowserDMTokenStorage;
 
 // Size of nonce for challenge response.
 const size_t kChallengeResponseNonceBytesSize = 32;
@@ -93,11 +95,14 @@ absl::optional<std::string> CreateChallengeResponseString(
 }  // namespace
 
 DesktopAttestationService::DesktopAttestationService(
+    BrowserDMTokenStorage* dm_token_storage,
     DeviceTrustKeyManager* key_manager)
-    : key_manager_(key_manager),
+    : dm_token_storage_(dm_token_storage),
+      key_manager_(key_manager),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  DCHECK(dm_token_storage_);
   DCHECK(key_manager_);
 }
 
@@ -115,15 +120,6 @@ void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     base::Value::Dict signals,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Signals have to at least have the non-empty device ID and obfuscated
-  // customer ID.
-  if (!signals.FindString(device_signals::names::kDeviceId) ||
-      !signals.FindString(device_signals::names::kObfuscatedCustomerId)) {
-    LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
-    std::move(callback).Run(std::string());
-    return;
-  }
 
   key_manager_->ExportPublicKeyAsync(
       base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
@@ -180,14 +176,22 @@ void DesktopAttestationService::OnChallengeValidated(
     return;
   }
 
+  auto dm_token = dm_token_storage_->RetrieveDMToken();
+  if (!dm_token.is_valid()) {
+    LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
+    std::move(callback).Run(std::string());
+    return;
+  }
+
   // Fill `key_info` out for Chrome Browser.
   // TODO(crbug.com/1241870): Remove public key from signals.
   KeyInfo key_info;
   key_info.set_key_type(CBCM);
   key_info.set_browser_instance_public_key(exported_public_key);
-  key_info.set_device_id(*signals.FindString(device_signals::names::kDeviceId));
-  key_info.set_customer_id(
-      *signals.FindString(device_signals::names::kObfuscatedCustomerId));
+  // dm_token contains all of the information required by the server to retrieve
+  // the device. device_id is necessary to validate the dm_token.
+  key_info.set_dm_token(dm_token.value());
+  key_info.set_device_id(dm_token_storage_->RetrieveClientId());
 
   // VA should accept signals JSON string.
   std::string signals_json;

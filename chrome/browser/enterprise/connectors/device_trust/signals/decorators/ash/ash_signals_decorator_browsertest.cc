@@ -34,8 +34,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kFakeDeviceId[] = "fake_device_id";
-constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kFakeAffilationID[] = "fake_affiliation_id";
 
@@ -145,8 +143,6 @@ class AshSignalsDecoratorBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
                        TestStaticPolicySignals) {
-  device_policy()->policy_data().set_directory_api_id(kFakeDeviceId);
-  device_policy()->policy_data().set_obfuscated_customer_id(kFakeCustomerId);
   device_policy()->policy_data().set_managed_by(kFakeEnrollmentDomain);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
@@ -160,10 +156,6 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
 
   run_loop.Run();
 
-  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceId),
-            kFakeDeviceId);
-  EXPECT_EQ(*signals.FindString(device_signals::names::kObfuscatedCustomerId),
-            kFakeCustomerId);
   EXPECT_EQ(*signals.FindString(device_signals::names::kEnrollmentDomain),
             kFakeEnrollmentDomain);
 }
