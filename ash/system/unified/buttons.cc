@@ -47,9 +47,9 @@ void ConfigureLabel(views::Label* label, SkColor color) {
 BatteryInfoViewBase::BatteryInfoViewBase(
     UnifiedSystemTrayController* controller)
     : Button(base::BindRepeating(
-          [](UnifiedSystemTrayController* controller, const ui::Event& event) {
+          [](UnifiedSystemTrayController* controller) {
             quick_settings_metrics_util::RecordQsButtonActivated(
-                QsButtonCatalogName::kBatteryButton, event);
+                QsButtonCatalogName::kBatteryButton);
             controller->HandleOpenPowerSettingsAction();
           },
           controller)) {

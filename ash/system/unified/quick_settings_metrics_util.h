@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,13 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace ash::quick_settings_metrics_util {
 
 // Records any event on a button in the quick settings main page. The value of
 // recording type of event (such as: tap/click/stylus etc) is not high. To avoid
 // creating a bunch of metrics, this method only records the "catalog name" as
-// the enum bucket for now. Leaves the `event` as a arg in the method for later
-// use, so that if the event type need to be tracked later we can simply add
-// them in this method.
-void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name,
-                             const ui::Event& event);
+// the enum bucket for now.
+void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name);
 
 // Records toggle to enable/disable a feature in the quick settings main page.
 // The arg `enable == true` means this feature was disabled and will be enabled

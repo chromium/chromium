@@ -401,6 +401,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "system_power_button_menu_feedback.icon",
     "system_power_button_menu_lock_screen.icon",
     "system_power_button_menu_power_off.icon",
+    "system_power_button_menu_restart.icon",
     "system_power_button_menu_sign_out.icon",
     "system_tray_accessibility.icon",
     "system_tray_app_badging.icon",

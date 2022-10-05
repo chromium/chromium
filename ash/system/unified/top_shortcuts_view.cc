@@ -65,42 +65,42 @@ class UserAvatarButton : public views::Button {
 auto avatar_button_lambda = [](UnifiedSystemTrayController* controller,
                                const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kAvatarButton, event);
+      QsButtonCatalogName::kAvatarButton);
   controller->ShowUserChooserView();
 };
 
 auto sign_out_button_lambda = [](UnifiedSystemTrayController* controller,
                                  const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kSignOutButton, event);
+      QsButtonCatalogName::kSignOutButton);
   controller->HandleSignOutAction();
 };
 
 auto power_button_lambda = [](UnifiedSystemTrayController* controller,
                               const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kPowerButton, event);
+      QsButtonCatalogName::kPowerButton);
   controller->HandlePowerAction();
 };
 
 auto lock_button_lambda = [](UnifiedSystemTrayController* controller,
                              const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kLockButton, event);
+      QsButtonCatalogName::kLockButton);
   controller->HandleLockAction();
 };
 
 auto settings_button_lambda = [](UnifiedSystemTrayController* controller,
                                  const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kSettingsButton, event);
+      QsButtonCatalogName::kSettingsButton);
   controller->HandleSettingsAction();
 };
 
 auto collapse_button_lambda = [](UnifiedSystemTrayController* controller,
                                  const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kCollapseButton, event);
+      QsButtonCatalogName::kCollapseButton);
   controller->ToggleExpanded();
 };
 

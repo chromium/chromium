@@ -147,7 +147,7 @@ void DateView::OnThemeChanged() {
 
 void DateView::OnButtonPressed(const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kDateViewButton, event);
+      QsButtonCatalogName::kDateViewButton);
 
   if (features::IsCalendarViewEnabled() && controller_->IsExpanded()) {
     controller_->ShowCalendarView(
@@ -286,7 +286,7 @@ class EnterpriseManagedView : public ManagedStateView,
 auto managed_button_lambda = [](UnifiedSystemTrayController* controller,
                                 const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kManagedButton, event);
+      QsButtonCatalogName::kManagedButton);
   controller->HandleEnterpriseInfoAction();
 };
 

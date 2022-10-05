@@ -166,7 +166,7 @@ class VersionButton : public views::LabelButton {
       : LabelButton(
             base::BindRepeating([](const ui::Event& event) {
               quick_settings_metrics_util::RecordQsButtonActivated(
-                  QsButtonCatalogName::kVersionButton, event);
+                  QsButtonCatalogName::kVersionButton);
               Shell::Get()
                   ->system_tray_model()
                   ->client()
@@ -236,7 +236,7 @@ class SubmitFeedbackButton : public IconButton {
       const gfx::RoundedCornersF& highlight_corners)
       : IconButton(base::BindRepeating([](const ui::Event& event) {
                      quick_settings_metrics_util::RecordQsButtonActivated(
-                         QsButtonCatalogName::kFeedBackButton, event);
+                         QsButtonCatalogName::kFeedBackButton);
                      Shell::Get()
                          ->system_tray_model()
                          ->client()

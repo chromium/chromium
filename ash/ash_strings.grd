@@ -390,6 +390,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_LOCK" desc="The label used for the button in the status tray to lock the screen.">
         Lock
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_POWER_OFF" desc="The label used for the button in the status tray to turn off the device.">
+        Power off
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_MESSAGE_NOT_ALLOWED_LACROS" desc="The error message multiple signin is prevented because Lacros is running.">
         Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead or close Lacros and try again.
       </message>

@@ -25,7 +25,11 @@ enum class QsButtonCatalogName {
   kCollapseButton = 9,  // To be deprecated
   kFeedBackButton = 10,
   kVersionButton = 11,
-  kMaxValue = kVersionButton
+  kPowerOffMenuButton = 12,
+  kPowerRestartMenuButton = 13,
+  kPowerSignoutMenuButton = 14,
+  kPowerLockMenuButton = 15,
+  kMaxValue = kPowerLockMenuButton
 };
 
 // A catalog that registers all the features on the Quick Settings page. This

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,7 @@ constexpr char kUnifiedSystemViewSliderDisable[] =
 
 namespace quick_settings_metrics_util {
 
-void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name,
-                             const ui::Event& event) {
+void RecordQsButtonActivated(QsButtonCatalogName button_catalog_name) {
   base::UmaHistogramEnumeration(
       features::IsQsRevampEnabled() ? kQuickSettingsButton : kUnifiedViewButton,
       button_catalog_name);
