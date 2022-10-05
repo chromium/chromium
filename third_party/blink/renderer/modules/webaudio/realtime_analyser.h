@@ -80,10 +80,6 @@ class RealtimeAnalyser final {
   void WriteInput(AudioBus*, uint32_t frames_to_process);
 
  private:
-  // The audio thread writes the input audio here.
-  AudioFloatArray input_buffer_;
-  std::atomic_uint write_index_{0};
-
   unsigned GetWriteIndex() const {
     return write_index_.load(std::memory_order_acquire);
   }
@@ -91,11 +87,6 @@ class RealtimeAnalyser final {
     write_index_.store(new_index, std::memory_order_release);
   }
 
-  // Input audio is downmixed to this bus before copying to m_inputBuffer.
-  scoped_refptr<AudioBus> down_mix_bus_;
-
-  uint32_t fft_size_;
-  std::unique_ptr<FFTFrame> analysis_frame_;
   void DoFFTAnalysis();
 
   // Convert the contents of `magnitude_buffer_` to byte values, saving the
@@ -105,9 +96,19 @@ class RealtimeAnalyser final {
   // Convert `magnitude_buffer_` to dB, saving the result in `destination`
   void ConvertFloatToDb(DOMFloat32Array* destination);
 
+  AudioFloatArray& MagnitudeBuffer() { return magnitude_buffer_; }
+
+  // The audio thread writes the input audio here.
+  AudioFloatArray input_buffer_;
+  std::atomic_uint write_index_{0};
+
+  // Input audio is downmixed to this bus before copying to m_inputBuffer.
+  scoped_refptr<AudioBus> down_mix_bus_;
+
+  uint32_t fft_size_;
+  std::unique_ptr<FFTFrame> analysis_frame_;
   // doFFTAnalysis() stores the floating-point magnitude analysis data here.
   AudioFloatArray magnitude_buffer_;
-  AudioFloatArray& MagnitudeBuffer() { return magnitude_buffer_; }
 
   // A value between 0 and 1 which averages the previous version of
   // m_magnitudeBuffer with the current analysis magnitude data.
