@@ -423,16 +423,15 @@ class Generator(generator.Generator):
     self._SetUniqueNameForImports()
 
     self.WriteWithComment(self._GenerateAMDModule(), "%s.js" % self.module.path)
-    if self.js_bindings_mode == "new":
-      self.WriteWithComment(self._GenerateLiteBindings(),
-                            "%s-lite.js" % self.module.path)
-      self.WriteWithComment(self._GenerateLiteBindingsForCompile(),
-                            "%s-lite-for-compile.js" % self.module.path)
-      self.WriteWithComment(self._GenerateJsModule(),
-                            "%s.m.js" % self.module.path)
-      if _GetWebUiModulePath(self.module) is not None:
-        self.WriteWithComment(self._GenerateWebUiModule(),
-                              "mojom-webui/%s-webui.js" % self.module.path)
+    self.WriteWithComment(self._GenerateLiteBindings(),
+                          "%s-lite.js" % self.module.path)
+    self.WriteWithComment(self._GenerateLiteBindingsForCompile(),
+                          "%s-lite-for-compile.js" % self.module.path)
+    self.WriteWithComment(self._GenerateJsModule(),
+                          "%s.m.js" % self.module.path)
+    if _GetWebUiModulePath(self.module) is not None:
+      self.WriteWithComment(self._GenerateWebUiModule(),
+                            "mojom-webui/%s-webui.js" % self.module.path)
 
   def _GetRelativePath(self, path):
     relpath = urllib.request.pathname2url(

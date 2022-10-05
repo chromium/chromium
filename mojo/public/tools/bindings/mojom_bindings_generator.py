@@ -221,7 +221,6 @@ class MojomProcessor:
             module, args.output_dir, typemap=self._typemap.get(language, {}),
             variant=args.variant, bytecode_path=args.bytecode_path,
             for_blink=args.for_blink,
-            js_bindings_mode=args.js_bindings_mode,
             js_generate_struct_deserializers=\
                     args.js_generate_struct_deserializers,
             export_attribute=args.export_attribute,
@@ -341,11 +340,6 @@ def main():
   generate_parser.add_argument("--for_blink", action="store_true",
                                help="Use WTF types as generated types for mojo "
                                "string/array/map.")
-  generate_parser.add_argument(
-      "--js_bindings_mode", choices=["new", "old"], default="old",
-      help="This option only affects the JavaScript bindings. The value could "
-      "be \"new\" to generate new-style lite JS bindings in addition to the "
-      "old, or \"old\" to only generate old bindings.")
   generate_parser.add_argument(
       "--js_generate_struct_deserializers", action="store_true",
       help="Generate javascript deserialize methods for structs in "

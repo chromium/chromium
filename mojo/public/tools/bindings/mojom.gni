@@ -1722,7 +1722,6 @@ template("mojom") {
           "--filelist={{response_file_name}}",
           "-g",
           "javascript",
-          "--js_bindings_mode=new",
         ]
 
         if (defined(invoker.js_generate_struct_deserializers) &&

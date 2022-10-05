@@ -243,7 +243,6 @@ class Generator:
                variant=None,
                bytecode_path=None,
                for_blink=False,
-               js_bindings_mode="new",
                js_generate_struct_deserializers=False,
                export_attribute=None,
                export_header=None,
@@ -262,7 +261,6 @@ class Generator:
     self.variant = variant
     self.bytecode_path = bytecode_path
     self.for_blink = for_blink
-    self.js_bindings_mode = js_bindings_mode
     self.js_generate_struct_deserializers = js_generate_struct_deserializers
     self.export_attribute = export_attribute
     self.export_header = export_header
