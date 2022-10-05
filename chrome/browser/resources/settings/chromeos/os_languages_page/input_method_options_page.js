@@ -141,8 +141,8 @@ class SettingsInputMethodOptionsPageElement extends
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('languageSettingsUpdateJapanese'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
-    const prefix = this.getPrefsPrefix_();
-    const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
+    const currentSettings =
+        this.engineId_ in prefValue ? prefValue[this.engineId_] : {};
 
     const makeOption = (option) => {
       const name = option.name;
@@ -184,21 +184,6 @@ class SettingsInputMethodOptionsPageElement extends
                 options: section.optionNames.map(makeOption, false),
               };
             });
-  }
-
-  /**
-   * @return {string} Prefs prefix for the current engine ID, which is usually
-   *     just the engine ID itself, but pinyin and zhuyin are special for legacy
-   *     compatibility reason.
-   * @private
-   */
-  getPrefsPrefix_() {
-    if (this.engineId_ === 'zh-t-i0-pinyin') {
-      return 'pinyin';
-    } else if (this.engineId_ === 'zh-hant-t-i0-und') {
-      return 'zhuyin';
-    }
-    return this.engineId_;
   }
 
   /**
@@ -253,9 +238,8 @@ class SettingsInputMethodOptionsPageElement extends
     // new variable.
     const updatedSettings = {};
     Object.assign(updatedSettings, this.getPref(this.PREFS_PATH)['value']);
-    const prefix = this.getPrefsPrefix_();
-    if (!(prefix in updatedSettings)) {
-      updatedSettings[prefix] = {};
+    if (!(this.engineId_ in updatedSettings)) {
+      updatedSettings[this.engineId_] = {};
     }
     // The value of dropdown in html is always string, but some of the prefs
     // values are used as integer or enum by IME, so we need to store numbers
@@ -263,10 +247,12 @@ class SettingsInputMethodOptionsPageElement extends
     if (isNumberValue(optionName)) {
       newValue = parseInt(newValue, 10);
     }
-    updatedSettings[prefix][optionName] = newValue;
+    updatedSettings[this.engineId_][optionName] = newValue;
 
-    if (prefix !== this.engineId_) {
-      updatedSettings[this.engineId_] = updatedSettings[prefix];
+    if (this.engineId_ === 'zh-t-i0-pinyin') {
+      updatedSettings['pinyin'] = updatedSettings[this.engineId_];
+    } else if (this.engineId_ === 'zh-hant-t-i0-und') {
+      updatedSettings['zhuyin'] = updatedSettings[this.engineId_];
     }
     this.setPrefValue(this.PREFS_PATH, updatedSettings);
   }
