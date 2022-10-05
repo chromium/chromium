@@ -130,10 +130,21 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
   state.Style()->SetVariableData(name_, data, is_inherited_property);
 
   if (registration_) {
-    // TODO(andruud): Store CSSParserContext on CSSCustomPropertyDeclaration
-    // and use that.
-    const CSSParserContext* context = StrictCSSParserContext(
-        state.GetDocument().GetExecutionContext()->GetSecureContextMode());
+    const CSSParserContext* context = declaration.ParserContext();
+
+    // There is no "originating" CSSParserContext associated with the
+    // declaration if it represents a "synthetic" token sequence such as those
+    // constructed to represent interpolated (registered) custom properties. [1]
+    //
+    // However, such values should also not contain any relative url()
+    // functions, so we don't need any particular parser context in that case.
+    //
+    // [1]
+    // https://drafts.css-houdini.org/css-properties-values-api-1/#equivalent-token-sequence
+    if (!context) {
+      context = StrictCSSParserContext(
+          state.GetDocument().GetExecutionContext()->GetSecureContextMode());
+    }
     auto mode = CSSParserLocalContext::VariableMode::kTyped;
     auto local_context = CSSParserLocalContext().WithVariableMode(mode);
     CSSParserTokenRange range = data->TokenRange();
@@ -148,7 +159,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     }
 
     registered_value = &StyleBuilderConverter::ConvertRegisteredPropertyValue(
-        state, *registered_value, data->BaseURL(), data->Charset());
+        state, *registered_value, context);
     data = StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
         *registered_value, data->IsAnimationTainted());
 
@@ -194,7 +205,8 @@ const CSSValue* CustomProperty::CSSValueFromComputedStyleInternal(
   if (!data)
     return nullptr;
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(data);
+  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+      data, /* parser_context */ nullptr);
 }
 
 const CSSValue* CustomProperty::ParseUntyped(

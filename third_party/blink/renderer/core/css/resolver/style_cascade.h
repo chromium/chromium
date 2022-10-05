@@ -275,16 +275,6 @@ class CORE_EXPORT StyleCascade {
     bool has_font_units_ = false;
     bool has_root_font_units_ = false;
     bool has_line_height_units_ = false;
-
-    // The base URL and charset are currently needed to calculate the computed
-    // value of <url>-registered custom properties correctly.
-    //
-    // TODO(crbug.com/985013): Store CSSParserContext on
-    // CSSCustomPropertyDeclaration and avoid this.
-    //
-    // https://drafts.css-houdini.org/css-properties-values-api-1/#relative-urls
-    String base_url_;
-    WTF::TextEncoding charset_;
   };
 
   // Resolving Values

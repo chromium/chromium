@@ -51,11 +51,12 @@ void InlineStylePropertyMap::SetCustomProperty(
     const AtomicString& property_name,
     const CSSValue& value) {
   DCHECK(value.IsVariableReferenceValue());
-  auto* variable_data =
-      To<CSSVariableReferenceValue>(value).VariableDataValue();
+  const auto& variable_value = To<CSSVariableReferenceValue>(value);
+  CSSVariableData* variable_data = variable_value.VariableDataValue();
   owner_element_->SetInlineStyleProperty(
       CSSPropertyName(property_name),
-      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(variable_data));
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+          variable_data, variable_value.ParserContext()));
   owner_element_->NotifyInlineStyleMutation();
 }
 

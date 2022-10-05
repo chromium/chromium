@@ -345,14 +345,13 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   bool needs_variable_resolution = false;
   scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
       {CSSParserTokenRange(tokens), StringView(string_value)},
-      is_animation_tainted, needs_variable_resolution, KURL(),
-      WTF::TextEncoding());
+      is_animation_tainted, needs_variable_resolution);
   const PropertyHandle property = GetProperty();
 
   // TODO(andruud): Avoid making the CSSCustomPropertyDeclaration by allowing
   // any CSSValue in CustomProperty::ApplyValue.
   const CSSValue* value = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-      std::move(variable_data));
+      std::move(variable_data), /* parser_context */ nullptr);
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
                               ScopedCSSValue(*value, nullptr));
 }

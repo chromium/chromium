@@ -298,8 +298,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
       CSSVariableParser::ContainsValidVariableReferences(range)) {
     const auto variable_data = CSSVariableData::Create(
         {range, StringView(css_text)}, false /* is_animation_tainted */,
-        false /* needs variable resolution */, parser_context->BaseURL(),
-        parser_context->Charset());
+        false /* needs variable resolution */);
     CSSStyleValueVector values;
     values.push_back(CSSUnparsedValue::FromCSSVariableData(*variable_data));
     return values;

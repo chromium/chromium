@@ -15,14 +15,22 @@
 
 namespace blink {
 
+class CSSParserContext;
+
 class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
  public:
-  explicit CSSCustomPropertyDeclaration(scoped_refptr<CSSVariableData> value)
-      : CSSValue(kCustomPropertyDeclarationClass), value_(std::move(value)) {
+  CSSCustomPropertyDeclaration(scoped_refptr<CSSVariableData> value,
+                               const CSSParserContext* parser_context)
+      : CSSValue(kCustomPropertyDeclarationClass),
+        value_(std::move(value)),
+        parser_context_(parser_context) {
     DCHECK(value_);
   }
 
   CSSVariableData& Value() const { return *value_; }
+  const CSSParserContext* ParserContext() const {
+    return parser_context_.Get();
+  }
 
   String CustomCSSText() const;
 
@@ -34,6 +42,10 @@ class CORE_EXPORT CSSCustomPropertyDeclaration : public CSSValue {
 
  private:
   scoped_refptr<CSSVariableData> value_;
+
+  // The parser context is used to resolve relative URLs, as described in:
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#relative-urls
+  Member<const CSSParserContext> parser_context_;
 };
 
 template <>

@@ -720,9 +720,7 @@ StyleCascade::TokenSequence::TokenSequence(const CSSVariableData* data)
     : is_animation_tainted_(data->IsAnimationTainted()),
       has_font_units_(data->HasFontUnits()),
       has_root_font_units_(data->HasRootFontUnits()),
-      has_line_height_units_(data->HasLineHeightUnits()),
-      base_url_(data->BaseURL()),
-      charset_(data->Charset()) {}
+      has_line_height_units_(data->HasLineHeightUnits()) {}
 
 bool StyleCascade::TokenSequence::AppendTokens(
     base::span<const CSSParserToken> tokens,
@@ -766,8 +764,7 @@ StyleCascade::TokenSequence::BuildVariableData() {
   // even though we should.
   return CSSVariableData::Create(
       CSSTokenizedValue{CSSParserTokenRange{tokens_}, StringView{}},
-      is_animation_tainted_, /*needs_variable_resolution=*/false,
-      KURL{base_url_}, charset_);
+      is_animation_tainted_, /*needs_variable_resolution=*/false);
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
@@ -821,7 +818,8 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (data == &decl.Value())
     return &decl;
 
-  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(data);
+  return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+      data, decl.ParserContext());
 }
 
 const CSSValue* StyleCascade::ResolveVariableReference(

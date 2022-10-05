@@ -29,14 +29,11 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   static scoped_refptr<CSSVariableData> Create(
       const CSSTokenizedValue& tokenized_value,
       bool is_animation_tainted,
-      bool needs_variable_resolution,
-      const KURL& base_url,
-      const WTF::TextEncoding& charset) {
+      bool needs_variable_resolution) {
     void* buf =
         AllocateSpaceIncludingCSSParserTokens(tokenized_value.range.size());
     return base::AdoptRef(new (buf) CSSVariableData(
-        tokenized_value, is_animation_tainted, needs_variable_resolution,
-        base_url, charset));
+        tokenized_value, is_animation_tainted, needs_variable_resolution));
   }
 
   CSSParserTokenRange TokenRange() const {
@@ -70,10 +67,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   // to line-height property.
   bool HasLineHeightUnits() const { return has_line_height_units_; }
 
-  const String& BaseURL() const { return base_url_; }
-
-  const WTF::TextEncoding& Charset() const { return charset_; }
-
   const CSSValue* ParseForSyntax(const CSSSyntaxDefinition&,
                                  SecureContextMode) const;
 
@@ -87,9 +80,7 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
 
   CSSVariableData(const CSSTokenizedValue&,
                   bool is_animation_tainted,
-                  bool needs_variable_resolution,
-                  const KURL& base_url,
-                  const WTF::TextEncoding& charset);
+                  bool needs_variable_resolution);
 
   void ConsumeAndUpdateTokens(const CSSParserTokenRange&);
 #if EXPENSIVE_DCHECKS_ARE_ON()
@@ -119,8 +110,6 @@ class CORE_EXPORT CSSVariableData : public RefCounted<CSSVariableData> {
   bool has_font_units_ = false;
   bool has_root_font_units_ = false;
   bool has_line_height_units_ = false;
-  String base_url_;
-  WTF::TextEncoding charset_;
 
   // The CSSParserTokens are stored after this.
 };

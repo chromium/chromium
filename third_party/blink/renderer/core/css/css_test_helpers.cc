@@ -166,8 +166,7 @@ scoped_refptr<CSSVariableData> CreateVariableData(String s) {
   bool is_animation_tainted = false;
   bool needs_variable_resolution = false;
   return CSSVariableData::Create({range, StringView(s)}, is_animation_tainted,
-                                 needs_variable_resolution, KURL(),
-                                 WTF::TextEncoding());
+                                 needs_variable_resolution);
 }
 
 const CSSValue* CreateCustomIdent(AtomicString s) {

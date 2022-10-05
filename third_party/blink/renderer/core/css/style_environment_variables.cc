@@ -170,8 +170,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
 
   scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
       CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{value}},
-      false /* is_animation_tainted */, false /* needs_variable_resolution */,
-      KURL{g_null_atom}, WTF::TextEncoding());
+      false /* is_animation_tainted */, false /* needs_variable_resolution */);
   data_.Set(name, std::move(variable_data));
   InvalidateVariable(name);
 }
@@ -196,8 +195,7 @@ void StyleEnvironmentVariables::SetVariable(const AtomicString& name,
 
   scoped_refptr<CSSVariableData> variable_data = CSSVariableData::Create(
       CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{value}},
-      false /* is_animation_tainted */, false /* needs_variable_resolution */,
-      KURL{g_null_atom}, WTF::TextEncoding());
+      false /* is_animation_tainted */, false /* needs_variable_resolution */);
 
   TwoDimensionVariableValues* values_to_set = nullptr;
   auto it = two_dimension_data_.find(name);

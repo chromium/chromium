@@ -154,14 +154,10 @@ void CSSVariableData::VerifyStringBacking() const {
 
 CSSVariableData::CSSVariableData(const CSSTokenizedValue& tokenized_value,
                                  bool is_animation_tainted,
-                                 bool needs_variable_resolution,
-                                 const KURL& base_url,
-                                 const WTF::TextEncoding& charset)
+                                 bool needs_variable_resolution)
     : original_text_(tokenized_value.text.ToString()),
       is_animation_tainted_(is_animation_tainted),
-      needs_variable_resolution_(needs_variable_resolution),
-      base_url_(base_url.IsValid() ? base_url.GetString() : String()),
-      charset_(charset) {
+      needs_variable_resolution_(needs_variable_resolution) {
   ConsumeAndUpdateTokens(tokenized_value.range);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   VerifyStringBacking();

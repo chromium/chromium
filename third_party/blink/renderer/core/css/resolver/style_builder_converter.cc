@@ -2024,8 +2024,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     const StyleResolverState* state,
     const CSSToLengthConversionData& css_to_length_conversion_data,
     const CSSValue& value,
-    const String& base_url,
-    const WTF::TextEncoding& charset) {
+    const CSSParserContext* context) {
   // TODO(timloh): Images values can also contain lengths.
   if (const auto* function_value = DynamicTo<CSSFunctionValue>(value)) {
     CSSFunctionValue* new_function =
@@ -2033,7 +2032,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     for (const CSSValue* inner_value : To<CSSValueList>(value)) {
       new_function->Append(ComputeRegisteredPropertyValue(
           document, state, css_to_length_conversion_data, *inner_value,
-          base_url, charset));
+          context));
     }
     return *new_function;
   }
@@ -2043,7 +2042,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     for (const CSSValue* inner_value : *old_list) {
       new_list->Append(ComputeRegisteredPropertyValue(
           document, state, css_to_length_conversion_data, *inner_value,
-          base_url, charset));
+          context));
     }
     return *new_list;
   }
@@ -2113,14 +2112,18 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     }
   }
 
-  if (const auto* uri_value = DynamicTo<cssvalue::CSSURIValue>(value))
-    return *uri_value->ValueWithURLMadeAbsolute(KURL(base_url), charset);
+  if (const auto* uri_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
+    const KURL& base_url = context ? context->BaseURL() : KURL();
+    const WTF::TextEncoding& charset =
+        context ? context->Charset() : WTF::TextEncoding();
+    return *uri_value->ValueWithURLMadeAbsolute(base_url, charset);
+  }
 
   return value;
 }
 
 const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
-    const Document& document,
+    Document& document,
     const CSSValue& value) {
   CSSToLengthConversionData::FontSizes font_sizes;
   CSSToLengthConversionData::ViewportSize viewport_size(
@@ -2131,19 +2134,19 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
       WritingMode::kHorizontalTb, font_sizes, viewport_size, container_sizes,
       /* zoom */ 1.0f);
 
-  return ComputeRegisteredPropertyValue(
-      document, nullptr /* state */, conversion_data, value, document.BaseURL(),
-      document.Encoding());
+  const CSSParserContext* parser_context =
+      document.ElementSheet().Contents()->ParserContext();
+  return ComputeRegisteredPropertyValue(document, nullptr /* state */,
+                                        conversion_data, value, parser_context);
 }
 
 const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyValue(
     const StyleResolverState& state,
     const CSSValue& value,
-    const String& base_url,
-    const WTF::TextEncoding& charset) {
+    const CSSParserContext* parser_context) {
   return ComputeRegisteredPropertyValue(state.GetDocument(), &state,
                                         state.CssToLengthConversionData(),
-                                        value, base_url, charset);
+                                        value, parser_context);
 }
 
 // Registered properties need to substitute as absolute values. This means
@@ -2169,8 +2172,7 @@ StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
   return CSSVariableData::Create(
       CSSTokenizedValue{CSSParserTokenRange{tokens}, StringView{text}},
       is_animation_tainted,
-      /*needs_variable_resolution=*/false, KURL{g_null_atom},
-      WTF::TextEncoding());
+      /*needs_variable_resolution=*/false);
 }
 
 namespace {

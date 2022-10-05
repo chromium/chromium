@@ -173,8 +173,8 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     return nullptr;
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
       CSSVariableData::Create(tokenized_value, is_animation_tainted,
-                              has_references, context.BaseURL(),
-                              context.Charset()));
+                              has_references),
+      &context);
 }
 
 CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
@@ -191,8 +191,7 @@ CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
     return nullptr;
   return MakeGarbageCollected<CSSVariableReferenceValue>(
       CSSVariableData::Create({range, StringView()}, is_animation_tainted,
-                              has_references, context.BaseURL(),
-                              context.Charset()),
+                              has_references),
       context);
 }
 
