@@ -1,17 +1,12 @@
-<style include="cr-shared-style settings-shared">
-    .subsection {
-      margin-inline-start: var(--cr-section-indent-padding);
-      padding-inline-end: var(--cr-section-padding);
-      padding-inline-start: 0;
-    }
-
-    iron-list > :first-of-type {
-      border-top: none;
+<style include="settings-shared">
+    iron-list > :not(:last-of-type) {
+      border-bottom: var(--cr-separator-line);
     }
 </style>
 
 <div id="camera">
   <settings-toggle-button
+      class="settings-box first"
       pref="{{prefs.ash.user.camera_allowed}}"
       id="cameraToggle"
       label="$i18n{cameraToggleTitle}"
@@ -20,27 +15,28 @@
       disabled="[[isCameraListEmpty_]]">
   </settings-toggle-button>
 
-  <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
-    <div id="noCamera" class="subsection settings-box-text">
-      $i18n{noCameraConnectedText}
-    </div>
-  </template>
+  <div class="list-frame">
+    <template is="dom-if" if="[[isCameraListEmpty_]]" restamp>
+      <div id="noCamera" class="list-item">
+        $i18n{noCameraConnectedText}
+      </div>
+    </template>
 
-  <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
-    <iron-list id="cameraList" items="[[camerasConnected_]]">
-      <template>
-        <div class="subsection settings-box">
-          [[item]]
-        </div>
-      </template>
-    </iron-list>
-  </template>
-
-  <div class="hr"></div>
+    <template is="dom-if" if="[[!isCameraListEmpty_]]" restamp>
+      <iron-list id="cameraList" items="[[camerasConnected_]]">
+        <template>
+          <div class="list-item">
+            [[item]]
+          </div>
+        </template>
+      </iron-list>
+    </template>
+  </div>
 </div>
 
 <div id="microphone">
   <settings-toggle-button
+      class="settings-box"
       pref="{{prefs.ash.user.microphone_allowed}}"
       id="microphoneToggle"
       label="$i18n{microphoneToggleTitle}"
@@ -49,50 +45,50 @@
       disabled="[[shouldDisableMicrophoneToggle_]]">
   </settings-toggle-button>
 
-  <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
-    <div id="noMic" class="subsection settings-box-text">
-      $i18n{noMicrophoneConnectedText}
-    </div>
-  </template>
+  <div class="list-frame">
+    <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
+      <div id="noMic" class="list-item">
+        $i18n{noMicrophoneConnectedText}
+      </div>
+    </template>
 
-  <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
-    <iron-list id="micList" items="[[microphonesConnected_]]">
-      <template>
-        <div class="subsection settings-box">
-          [[item]]
-        </div>
-      </template>
-    </iron-list>
-  </template>
-
-  <div class="hr"></div>
+    <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
+      <iron-list id="micList" items="[[microphonesConnected_]]">
+        <template>
+          <div class="list-item">
+            [[item]]
+          </div>
+        </template>
+      </iron-list>
+    </template>
+  </div>
 </div>
 
 <!-- Location toggle is not to be shown in dogfooded version of Privacy Hub -->
 <template is="dom-if" if="[[showPrivacyHubMVPPage_]]" restamp>
   <settings-toggle-button
+      class="settings-box"
       pref="{{prefs.ash.user.geolocation_allowed}}"
       id="geolocationToggle"
       label="$i18n{geolocationToggleTitle}"
       deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
   </settings-toggle-button>
-  <div class="hr"></div>
 </template>
 
 <settings-toggle-button
+    class="settings-box"
     id="suggested-content"
     pref="{{prefs.settings.suggested_content_enabled}}"
     label="$i18n{enableSuggestedContent}"
     sub-label="$i18n{enableSuggestedContentDesc}"
     learn-more-url="$i18n{suggestedContentLearnMoreURL}">
 </settings-toggle-button>
-<div class="hr"></div>
 
 <if expr="_google_chrome">
     <settings-metrics-consent-toggle-button
+        class="settings-box no-padding"
         id="metricsConsentToggle"
         deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
         prefs="{{prefs}}">
     </settings-metrics-consent-toggle-button>
-    <div class="hr"></div>
 </if>
