@@ -25,7 +25,7 @@ class Profile;
 class PasswordManagerPorter : public PasswordManagerPorterInterface,
                               public ui::SelectFileDialog::Listener {
  public:
-  using ProgressCallback =
+  using ExportProgressCallback =
       base::RepeatingCallback<void(password_manager::ExportProgressStatus,
                                    const std::string&)>;
 
@@ -35,7 +35,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   // of exporting.
   PasswordManagerPorter(Profile* profile,
                         password_manager::SavedPasswordsPresenter* presenter,
-                        ProgressCallback on_export_progress_callback);
+                        ExportProgressCallback on_export_progress_callback);
 
   PasswordManagerPorter(const PasswordManagerPorter&) = delete;
   PasswordManagerPorter& operator=(const PasswordManagerPorter&) = delete;
@@ -91,7 +91,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   // |on_export_progress_callback_| to use them to create a new
   // PasswordManagerExporter instance for each export.
   const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
-  ProgressCallback on_export_progress_callback_;
+  ExportProgressCallback on_export_progress_callback_;
 
   // |import_results_callback_|, |to_store_| are stored in the porter
   // while the file is being selected.

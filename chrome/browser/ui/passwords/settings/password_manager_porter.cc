@@ -65,7 +65,7 @@ base::FilePath GetDefaultFilepathForPasswordFile(
 PasswordManagerPorter::PasswordManagerPorter(
     Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter,
-    ProgressCallback on_export_progress_callback)
+    ExportProgressCallback on_export_progress_callback)
     : profile_(profile),
       presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}

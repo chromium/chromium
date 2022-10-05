@@ -5883,6 +5883,7 @@ test("unit_tests") {
     "//components/page_load_metrics/common:test_support",
     "//components/paint_preview/common/mojom",
     "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser:import_results",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/import:csv",
     "//components/payments/content",
