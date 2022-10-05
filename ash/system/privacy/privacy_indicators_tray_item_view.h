@@ -61,6 +61,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // Update the view according to the shelf alignment.
   void UpdateAlignmentForShelf(Shelf* shelf);
 
+  // TrayItemView:
+  std::u16string GetTooltipText(const gfx::Point& point) const override;
+
  private:
   friend class PrivacyIndicatorsTrayItemViewTest;
 
@@ -70,7 +73,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   const char* GetClassName() const override;
   void AnimationProgressed(const gfx::Animation* animation) override;

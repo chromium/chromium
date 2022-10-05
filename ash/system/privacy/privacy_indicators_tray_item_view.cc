@@ -151,6 +151,22 @@ void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
   UpdateBoundsInset();
 }
 
+std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
+    const gfx::Point& point) const {
+  if (camera_is_used_ && microphone_is_used_) {
+    return l10n_util::GetStringUTF16(
+        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
+  }
+
+  if (camera_is_used_)
+    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+
+  if (microphone_is_used_)
+    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
+
+  return std::u16string();
+}
+
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
   EndAllAnimations();
 
@@ -220,22 +236,6 @@ void PrivacyIndicatorsTrayItemView::OnThemeChanged() {
 void PrivacyIndicatorsTrayItemView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   UpdateBoundsInset();
-}
-
-std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
-    const gfx::Point& p) const {
-  if (camera_is_used_ && microphone_is_used_) {
-    return l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
-  }
-
-  if (camera_is_used_)
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
-
-  if (microphone_is_used_)
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
-
-  return std::u16string();
 }
 
 views::View* PrivacyIndicatorsTrayItemView::GetTooltipHandlerForPoint(

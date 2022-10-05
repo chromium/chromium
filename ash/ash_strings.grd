@@ -269,12 +269,15 @@ This file contains the strings for ash.
         <ph name="battery">$2<ex>Battery is full.</ex></ph>
         <ph name="channel">$3<ex>Stable Channel</ex></ph>
         <ph name="network">$4<ex>Connected to Wifi.</ex></ph>,
-        <ph name="mic">$5<ex>A virtual machine is using your microphone</ex></ph>,
-        <ph name="camera">$6<ex>A virtual machine is using your camera</ex></ph>,
-        <ph name="managed">$7<ex>This account is managed by Family Link</ex></ph>
-        <ph name="notification">$8<ex>1 notification</ex></ph>,
-        <ph name="ime">$9<ex>Using US keyboard</ex></ph>
-        <ph name="locale">$10<ex>Using English</ex></ph>
+        <ph name="privacy">$5<ex>Camera in use</ex></ph>,
+        <ph name="managed">$6<ex>This account is managed by Family Link</ex></ph>
+        <ph name="notification">$7<ex>1 notification</ex></ph>,
+        <ph name="ime">$8<ex>Using US keyboard</ex></ph>
+        <ph name="locale">$9<ex>Using English</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of privacy in the status tray and the information on it.">
+        <ph name="mic">$1<ex>A virtual machine is using your microphone</ex></ph>,
+        <ph name="camera">$2<ex>A virtual machine is using your camera</ex></ph>
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
         Quick Settings, Press search + left to access the notification center.

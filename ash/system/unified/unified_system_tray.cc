@@ -62,6 +62,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/views/controls/image_view.h"
@@ -643,12 +644,26 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()
                        : base::EmptyString16());
-  status.push_back(mic_view_ && mic_view_->GetVisible()
-                       ? mic_view_->GetAccessibleNameString()
-                       : base::EmptyString16());
-  status.push_back(camera_view_ && camera_view_->GetVisible()
-                       ? camera_view_->GetAccessibleNameString()
-                       : base::EmptyString16());
+
+  // For privacy string, we use either `privacy_indicators_view_` or the combo
+  // of `mic_view_` and `camera_view_`.
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    status.push_back(
+        privacy_indicators_view_ && privacy_indicators_view_->GetVisible()
+            ? privacy_indicators_view_->GetTooltipText(gfx::Point())
+            : base::EmptyString16());
+  } else {
+    auto mic_string = mic_view_ && mic_view_->GetVisible()
+                          ? mic_view_->GetAccessibleNameString()
+                          : base::EmptyString16();
+    auto camera_string = camera_view_ && camera_view_->GetVisible()
+                             ? camera_view_->GetAccessibleNameString()
+                             : base::EmptyString16();
+    status.push_back(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION,
+        {mic_string, camera_string}, nullptr));
+  }
+
   status.push_back(managed_device_view_->GetVisible()
                        ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
