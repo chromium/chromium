@@ -402,28 +402,16 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
   test::FormDescription form_description = {
       .description_for_logging = "NumberOfAutofilledFields",
       .fields = {{.role = NAME_FIRST,
-                  .label = u"Autofilled",
-                  .name = u"autofilled",
                   .value = u"Elvis Aaron Presley",
                   .is_autofilled = true},
                  {.role = EMAIL_ADDRESS,
-                  .label = u"Autofilled but corrected",
-                  .name = u"autofillfailed",
                   .value = u"buddy@gmail.com",
                   .is_autofilled = true},
-                 {.role = NAME_FIRST,
-                  .label = u"Empty",
-                  .name = u"empty",
-                  .value = u"",
-                  .is_autofilled = false},
+                 {.role = NAME_FIRST, .value = u"", .is_autofilled = false},
                  {.role = EMAIL_ADDRESS,
-                  .label = u"Unknown",
-                  .name = u"unknown",
                   .value = u"garbage",
                   .is_autofilled = false},
                  {.role = NO_SERVER_DATA,
-                  .label = u"Select",
-                  .name = u"select",
                   .value = u"USA",
                   .form_control_type = "select-one",
                   .is_autofilled = false},
@@ -470,54 +458,40 @@ TEST_F(AutofillMetricsTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillFillAndImportFromMoreFields);
   // Set up our form data with two autofilled fields.
-  FormData form =
-      test::GetFormData({.description_for_logging = "NumberOfAutofilledFields",
-                         .fields = {{.label = u"Autofilled",
-                                     .name = u"autofilled",
-                                     .value = u"Elvis Aaron Presley",
-                                     .autocomplete_attribute = "garbage",
-                                     .is_autofilled = true},
-                                    {.label = u"Autofilled but corrected",
-                                     .name = u"autofillfailed",
-                                     .value = u"buddy@gmail.com",
-                                     .autocomplete_attribute = "garbage",
-                                     .is_autofilled = true},
-                                    {.label = u"Empty",
-                                     .name = u"empty",
-                                     .value = u"",
-                                     .is_autofilled = false},
-                                    {.label = u"Unknown",
-                                     .name = u"unknown",
-                                     .value = u"garbage",
-                                     .is_autofilled = false},
-                                    {.label = u"Select",
-                                     .name = u"select",
-                                     .value = u"USA",
-                                     .form_control_type = "select-one",
-                                     .is_autofilled = false},
-                                    {.role = ServerFieldType::PHONE_HOME_NUMBER,
-                                     .value = u"2345678901",
-                                     .form_control_type = "tel",
-                                     .is_autofilled = true}},
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
-
-  std::vector<ServerFieldType> heuristic_types = {
-      NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
-      PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
-  std::vector<ServerFieldType> server_types = {
-      NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
-      EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
-
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  test::FormDescription form_description = {
+      .description_for_logging = "NumberOfAutofilledFields",
+      .fields = {{.role = NAME_FULL,
+                  .value = u"Elvis Aaron Presley",
+                  .autocomplete_attribute = "garbage",
+                  .is_autofilled = true},
+                 {.role = EMAIL_ADDRESS,
+                  .value = u"buddy@gmail.com",
+                  .autocomplete_attribute = "garbage",
+                  .is_autofilled = true},
+                 {.role = NAME_FIRST, .value = u"", .is_autofilled = false},
+                 {.role = EMAIL_ADDRESS,
+                  .value = u"garbage",
+                  .is_autofilled = false},
+                 {.role = NO_SERVER_DATA,
+                  .value = u"USA",
+                  .form_control_type = "select-one",
+                  .is_autofilled = false},
+                 {.role = PHONE_HOME_CITY_AND_NUMBER,
+                  .value = u"2345678901",
+                  .form_control_type = "tel",
+                  .is_autofilled = true}},
+      .unique_renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin =
+          url::Origin::Create(autofill_client_->form_origin())};
+  FormData form = GetAndAddSeenForm(form_description);
 
   // Simulate user changing the second and forth field of the form.
   // TODO(crbug.com/1368096): Fix the metric to work independent of the final
   // value.
   SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
                                                               form.fields[1]);
-
+  SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(form,
+                                                              form.fields[3]);
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
@@ -676,36 +650,37 @@ TEST_P(AutofillPerfectFillingMetricsTest,
 // Test that we log quality metrics appropriately.
 TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
-  FormData form =
-      test::GetFormData({.description_for_logging = "QualityMetrics",
-                         .fields = {{.label = u"Autofilled",
-                                     .name = u"autofilled",
-                                     .value = u"Elvis Aaron Presley",
-                                     .is_autofilled = true},
-                                    {.label = u"Autofill Failed",
-                                     .name = u"autofillfailed",
-                                     .value = u"buddy@gmail.com",
-                                     .is_autofilled = false},
-                                    {.label = u"Empty",
-                                     .name = u"empty",
-                                     .value = u"",
-                                     .is_autofilled = false},
-                                    {.label = u"Unknown",
-                                     .name = u"unknown",
-                                     .value = u"garbage",
-                                     .is_autofilled = false},
-                                    {.label = u"Select",
-                                     .name = u"select",
-                                     .value = u"USA",
-                                     .form_control_type = "select-one",
-                                     .is_autofilled = false},
-                                    {.role = ServerFieldType::PHONE_HOME_NUMBER,
-                                     .value = u"2345678901",
-                                     .form_control_type = "tel",
-                                     .is_autofilled = true}},
-                         .unique_renderer_id = test::MakeFormRendererId(),
-                         .main_frame_origin = url::Origin::Create(
-                             autofill_client_->form_origin())});
+  test::FormDescription form_description = {
+      .description_for_logging = "QualityMetrics",
+      .fields = {{.role = NAME_FIRST,
+                  .heuristic_type = NAME_FULL,
+                  .value = u"Elvis Aaron Presley",
+                  .is_autofilled = true},
+                 {.role = EMAIL_ADDRESS,
+                  .heuristic_type = PHONE_HOME_NUMBER,
+                  .value = u"buddy@gmail.com",
+                  .is_autofilled = false},
+                 {.role = NAME_FIRST,
+                  .heuristic_type = NAME_FULL,
+                  .value = u"",
+                  .is_autofilled = false},
+                 {.role = EMAIL_ADDRESS,
+                  .heuristic_type = PHONE_HOME_NUMBER,
+                  .value = u"garbage",
+                  .is_autofilled = false},
+                 {.role = NO_SERVER_DATA,
+                  .heuristic_type = UNKNOWN_TYPE,
+                  .value = u"USA",
+                  .form_control_type = "select-one",
+                  .is_autofilled = false},
+                 {.role = PHONE_HOME_CITY_AND_NUMBER,
+                  .heuristic_type = PHONE_HOME_CITY_AND_NUMBER,
+                  .value = u"2345678901",
+                  .form_control_type = "tel",
+                  .is_autofilled = true}},
+      .unique_renderer_id = test::MakeFormRendererId(),
+      .main_frame_origin =
+          url::Origin::Create(autofill_client_->form_origin())};
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
@@ -714,7 +689,8 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
       NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
       EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  FormData form = GetAndAddSeenForm(form_description);
+
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
@@ -785,19 +761,13 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportStatus_NoImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_CITY_AND_NUMBER,
-            .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE,
-            .value = u"Invalid State"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP,
-            .value = u"00000000000000000"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
-            .value = u"NoACountry"}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_STATE, .value = u"Invalid State"},
+           {.role = ADDRESS_HOME_ZIP, .value = u"00000000000000000"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"NoACountry"}}});
 
   FillTestProfile(form);
 
@@ -818,16 +788,13 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_RegularImport) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportStatus_RegularImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_CITY_AND_NUMBER,
-            .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   FillTestProfile(form);
 
@@ -848,19 +815,16 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportStatus_UnionImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
-           {.role = ServerFieldType::PHONE_HOME_CITY_AND_NUMBER,
-            .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY,
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_CITY,
             .value = u"New York",
             .autocomplete_attribute = "section-billing locality"},
            // Add the last field of the form into a new section.
-           {.role = ServerFieldType::ADDRESS_HOME_STATE,
+           {.role = ADDRESS_HOME_STATE,
             .value = u"CA",
             .autocomplete_attribute = "section-shipping address-level1"}}});
 
@@ -885,16 +849,13 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_AllFulfilled) {
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportRequirements_AllFulfilled",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_CITY_AND_NUMBER,
-            .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   FillTestProfile(form);
 
@@ -947,15 +908,13 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_MissingHomeLineOne) {
   FormData form = test::GetFormData(
       {.description_for_logging =
            "ProfileImportRequirements_MissingHomeLineOne",
-       .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1, .value = u""},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
+       .fields = {{.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+                  {.role = ADDRESS_HOME_LINE1, .value = u""},
+                  {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+                  {.role = PHONE_HOME_NUMBER, .value = u"2345678901"},
+                  {.role = ADDRESS_HOME_STATE, .value = u"CA"},
+                  {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+                  {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   std::vector<ServerFieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -1018,16 +977,13 @@ TEST_F(AutofillMetricsTest,
       {.description_for_logging =
            "ProfileImportRequirements_AllFulfilledForNonStateCountry",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u""},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
-            .value = u"Germany"}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_STATE, .value = u""},
+           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"Germany"}}});
 
   std::vector<ServerFieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -1084,33 +1040,20 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest,
        ProfileImportRequirements_FilledButInvalidZipEmailAndState) {
   // Set up our form data.
-  FormData form = test::GetFormData(
-      {.description_for_logging =
-           "ProfileImportRequirements_FilledButInvalidZipEmailAndState",
-       .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE,
-            .value = u"DefNotAState"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"1234567890"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
-           {.role = ServerFieldType::EMAIL_ADDRESS,
-            .value = u"test_noat_test.io"}}});
+  test::FormDescription form_description = {
+      .description_for_logging =
+          "ProfileImportRequirements_FilledButInvalidZipEmailAndState",
+      .fields = {
+          {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+          {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+          {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+          {.role = PHONE_HOME_NUMBER, .value = u"2345678901"},
+          {.role = ADDRESS_HOME_STATE, .value = u"DefNotAState"},
+          {.role = ADDRESS_HOME_ZIP, .value = u"1234567890"},
+          {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"},
+          {.role = EMAIL_ADDRESS, .value = u"test_noat_test.io"}}};
 
-  std::vector<ServerFieldType> field_types = {NAME_FULL,
-                                              ADDRESS_HOME_LINE1,
-                                              ADDRESS_HOME_CITY,
-                                              PHONE_HOME_CITY_AND_NUMBER,
-                                              ADDRESS_HOME_STATE,
-                                              ADDRESS_HOME_ZIP,
-                                              ADDRESS_HOME_COUNTRY,
-                                              EMAIL_ADDRESS};
-
-  autofill_manager().AddSeenForm(form, field_types);
+  FormData form = GetAndAddSeenForm(form_description);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -1162,20 +1105,15 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_NonUniqueEmail) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportRequirements_NonUniqueEmail",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
-           {.role = ServerFieldType::EMAIL_ADDRESS,
-            .value = u"test_noat_test.io"},
-           {.label = u"Email1",
-            .name = u".email1",
-            .value = u"not_test@test.io"}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = PHONE_HOME_CITY_AND_NUMBER, .value = u"2345678901"},
+           {.role = ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"USA"},
+           {.role = EMAIL_ADDRESS, .value = u"test_noat_test.io"},
+           {.role = EMAIL_ADDRESS, .value = u"not_test@test.io"}}});
 
   std::vector<ServerFieldType> field_types = {NAME_FULL,
                                               ADDRESS_HOME_LINE1,
@@ -1240,15 +1178,13 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_OnlyAddressLineOne) {
       {.description_for_logging =
            "ProfileImportRequirements_OnlyAddressLineOne",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL,
-            .value = u"Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = u"3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u""},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u""},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u""},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u""},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u""}}});
+           {.role = NAME_FULL, .value = u"Elvis Aaron Presley"},
+           {.role = ADDRESS_HOME_LINE1, .value = u"3734 Elvis Presley Blvd."},
+           {.role = ADDRESS_HOME_CITY, .value = u""},
+           {.role = PHONE_HOME_NUMBER, .value = u""},
+           {.role = ADDRESS_HOME_STATE, .value = u""},
+           {.role = ADDRESS_HOME_ZIP, .value = u""},
+           {.role = ADDRESS_HOME_COUNTRY, .value = u""}}});
 
   std::vector<ServerFieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -4269,11 +4205,9 @@ TEST_P(
   // Set up our form data.
   FormData form = test::GetFormData(
       {.description_for_logging = "PaymentProfileImportRequirements",
-       .fields = {
-           {.role = ServerFieldType::CREDIT_CARD_EXP_MONTH, .value = u""},
-           {.role = ServerFieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR,
-            .value = u""},
-           {.role = ServerFieldType::CREDIT_CARD_NUMBER, .value = u""}}});
+       .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
+                  {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
+                  {.role = CREDIT_CARD_NUMBER, .value = u""}}});
   std::vector<ServerFieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
@@ -4313,11 +4247,9 @@ TEST_P(AutofillMetricsIFrameTest,
   // Set up our form data.
   FormData form = test::GetFormData(
       {.description_for_logging = "PaymentProfileImportRequirements",
-       .fields = {
-           {.role = ServerFieldType::CREDIT_CARD_EXP_MONTH, .value = u""},
-           {.role = ServerFieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR,
-            .value = u""},
-           {.role = ServerFieldType::CREDIT_CARD_NUMBER, .value = u""}}});
+       .fields = {{.role = CREDIT_CARD_EXP_MONTH, .value = u""},
+                  {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR, .value = u""},
+                  {.role = CREDIT_CARD_NUMBER, .value = u""}}});
   std::vector<ServerFieldType> field_types = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR, CREDIT_CARD_NUMBER};
 
@@ -10066,17 +9998,17 @@ TEST_F(AutofillMetricsTest, AutofilledStateFieldSource) {
   // Set up our form data.
   FormData form = test::GetFormData(
       {.description_for_logging = "AutofilledStateFieldSource",
-       .fields = {{.role = ServerFieldType::NAME_FULL},
-                  {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                  {.role = ServerFieldType::ADDRESS_HOME_CITY},
-                  {.role = ServerFieldType::PHONE_HOME_NUMBER},
-                  {.role = ServerFieldType::ADDRESS_HOME_STATE,
+       .fields = {{.role = NAME_FULL},
+                  {.role = ADDRESS_HOME_LINE1},
+                  {.role = ADDRESS_HOME_CITY},
+                  {.role = PHONE_HOME_NUMBER},
+                  {.role = ADDRESS_HOME_STATE,
                    .value = u"TN",
                    .form_control_type = "select-one",
                    .is_autofilled = true,
                    .select_options = {{u"TN", u"TN"}, {u"CA", u"CA"}}},
-                  {.role = ServerFieldType::ADDRESS_HOME_ZIP},
-                  {.role = ServerFieldType::ADDRESS_HOME_COUNTRY}}});
+                  {.role = ADDRESS_HOME_ZIP},
+                  {.role = ADDRESS_HOME_COUNTRY}}});
 
   std::vector<ServerFieldType> field_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -10125,22 +10057,22 @@ TEST_F(AutofillMetricsTest,
   FormData form = test::GetFormData(
       {.description_for_logging = "AutofilledStateFieldSource",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY,
+           {.role = NAME_FULL},
+           {.role = ADDRESS_HOME_CITY,
             .value = u"Sacremento",
             .properties_mask = FieldPropertiesFlags::kUserTyped},  // Case #1
-           {.role = ServerFieldType::ADDRESS_HOME_STATE,
+           {.role = ADDRESS_HOME_STATE,
             .value = u"CA",
             .form_control_type = "select-one",
             .select_options = {{u"TN", u"Tennesse"},
                                {u"CA", u"California"},
                                {u"WA", u"Washington DC"}}},  // Case #4
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP,
+           {.role = ADDRESS_HOME_ZIP,
             .value = u"00000",
             .properties_mask = FieldPropertiesFlags::kUserTyped},  // Case #2
-           {.role = ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+           {.role = PHONE_HOME_WHOLE_NUMBER,
             .value = u"12345678901"},  // Case #3
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY}}});
+           {.role = ADDRESS_HOME_COUNTRY}}});
 
   std::vector<ServerFieldType> field_types = {
       NAME_FULL,        ADDRESS_HOME_CITY,       ADDRESS_HOME_STATE,
@@ -10176,8 +10108,7 @@ TEST_F(AutofillMetricsTest,
 
 TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
   // GIVEN
-  FormData form =
-      test::GetFormData({.fields = {{.role = ServerFieldType::NAME_FULL}}});
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FULL}}});
   CreateSimpleForm(autofill_client_->form_origin(), form);
 
   std::vector<ServerFieldType> field_types = {NAME_FULL};
@@ -10207,8 +10138,7 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
 
 TEST_F(AutofillMetricsTest, FormInteractionsAreInitiallyZero) {
   // GIVEN
-  FormData form =
-      test::GetFormData({.fields = {{.role = ServerFieldType::NAME_FULL}}});
+  FormData form = test::GetFormData({.fields = {{.role = NAME_FULL}}});
   CreateSimpleForm(autofill_client_->form_origin(), form);
 
   std::vector<ServerFieldType> field_types = {NAME_FULL};
@@ -10666,9 +10596,9 @@ INSTANTIATE_TEST_SUITE_P(
         // don't expect any metrics. This form is not eligible.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Three different field types",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_CITY},
             .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
@@ -10679,9 +10609,9 @@ INSTANTIATE_TEST_SUITE_P(
         // would expect that the filling acceptance is reported.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Repeated field types",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
@@ -10692,9 +10622,9 @@ INSTANTIATE_TEST_SUITE_P(
         // would mean that a change to the heuristics would have no effect.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "All overridden by server",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
@@ -10705,9 +10635,9 @@ INSTANTIATE_TEST_SUITE_P(
         // classified by the heuristic, the server does not know it.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Server misses field",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
@@ -10721,9 +10651,9 @@ INSTANTIATE_TEST_SUITE_P(
         // heuristic would not make any difference and we expect no metrics.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Email address exception",
-                     .fields = {{.role = ServerFieldType::EMAIL_ADDRESS},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = EMAIL_ADDRESS},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {EMAIL_ADDRESS, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
@@ -10737,9 +10667,9 @@ INSTANTIATE_TEST_SUITE_P(
         // heuristic would not make any difference and we expect no metrics.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Promo code exception",
-                     .fields = {{.role = ServerFieldType::MERCHANT_PROMO_CODE},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = MERCHANT_PROMO_CODE},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {MERCHANT_PROMO_CODE, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, ADDRESS_HOME_LINE1,
@@ -10763,9 +10693,9 @@ INSTANTIATE_TEST_SUITE_P(
         // a field.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Correctness of edited form",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
@@ -10777,9 +10707,9 @@ INSTANTIATE_TEST_SUITE_P(
         // not edit a field.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Correctness of edited form",
-                     .fields = {{.role = ServerFieldType::NAME_FULL},
-                                {.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = NAME_FULL},
+                                {.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                 ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, NO_SERVER_DATA, NO_SERVER_DATA},
@@ -10790,8 +10720,8 @@ INSTANTIATE_TEST_SUITE_P(
         // Ensure that forms with two fields don't emit metrics.
         LaxLocalHeuristicsTestCase{
             .form = {.description_for_logging = "Two field form",
-                     .fields = {{.role = ServerFieldType::ADDRESS_HOME_LINE1},
-                                {.role = ServerFieldType::ADDRESS_HOME_CITY}}},
+                     .fields = {{.role = ADDRESS_HOME_LINE1},
+                                {.role = ADDRESS_HOME_CITY}}},
             .heuristic_types = {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE1},
             .server_types = {NO_SERVER_DATA, NO_SERVER_DATA},
             .change_form_after_filling = false,
