@@ -727,8 +727,8 @@ TEST_F(OmahaServiceTest, BackoffTest) {
     // Testing multiple times for a given number of retries, as the method has
     // a random part.
     for (int j = 0; j < 2; ++j) {
-      EXPECT_GE(OmahaService::GetBackOff(i).InSeconds(), 3600 - 360);
-      EXPECT_LE(OmahaService::GetBackOff(i).InSeconds(), 6 * 3600);
+      EXPECT_GE(OmahaService::GetBackOff(i), base::Hours(1) - base::Minutes(6));
+      EXPECT_LE(OmahaService::GetBackOff(i), base::Hours(6));
     }
   }
 }
