@@ -14,7 +14,9 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -183,8 +185,34 @@ void AuthFactorEditor::AddContextChallengeResponseKey(
 
   LOGIN_LOG(EVENT) << "Adding challenge-response key from the context";
   if (features::IsUseAuthFactorsEnabled()) {
-    NOTIMPLEMENTED()
-        << "SmartCard keys are not implemented in AuthFactors yet.";
+    user_data_auth::AddAuthFactorRequest request;
+    request.set_auth_session_id(context->GetAuthSessionId());
+
+    DCHECK_EQ(context->GetChallengeResponseKeys().size(), 1ull);
+
+    auto label =
+        GenerateChallengeResponseKeyLabel(context->GetChallengeResponseKeys());
+    cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kSmartCard,
+                                  cryptohome::KeyLabel{label}};
+    cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::SmartCard{
+        context->GetChallengeResponseKeys()[0].signature_algorithms(),
+        cryptohome::kCryptohomeKeyDelegateServiceName,
+    });
+
+    cryptohome::SmartCardMetadata smart_card_metadata{
+        context->GetChallengeResponseKeys()[0].public_key_spki_der()};
+
+    cryptohome::AuthFactorCommonMetadata metadata;
+    cryptohome::AuthFactor factor(ref, std::move(metadata),
+                                  std::move(smart_card_metadata));
+
+    cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+    cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+    UserDataAuthClient::Get()->AddAuthFactor(
+        request, base::BindOnce(&AuthFactorEditor::OnAddAuthFactor,
+                                weak_factory_.GetWeakPtr(), std::move(context),
+                                std::move(callback)));
     return;
   }
 

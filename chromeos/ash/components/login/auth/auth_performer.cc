@@ -16,10 +16,12 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
+#include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_status.h"
@@ -228,8 +230,25 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
   if (features::IsUseAuthFactorsEnabled()) {
-    NOTIMPLEMENTED()
-        << "SmartCard keys are not implemented in AuthFactors yet.";
+    user_data_auth::AuthenticateAuthFactorRequest request;
+    request.set_auth_session_id(context->GetAuthSessionId());
+
+    DCHECK_EQ(context->GetChallengeResponseKeys().size(), 1ull);
+
+    auto label =
+        GenerateChallengeResponseKeyLabel(context->GetChallengeResponseKeys());
+    cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kSmartCard,
+                                  cryptohome::KeyLabel{label}};
+    cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::SmartCard{
+        context->GetChallengeResponseKeys()[0].signature_algorithms(),
+        cryptohome::kCryptohomeKeyDelegateServiceName,
+    });
+    cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+    request.set_auth_factor_label(ref.label().value());
+    client_->AuthenticateAuthFactor(
+        request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
+                                weak_factory_.GetWeakPtr(), std::move(context),
+                                std::move(callback)));
   } else {
     user_data_auth::AuthenticateAuthSessionRequest request;
     request.set_auth_session_id(context->GetAuthSessionId());
