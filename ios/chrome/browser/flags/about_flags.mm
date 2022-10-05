@@ -1239,6 +1239,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTFLiteLanguageDetectionIgnoreDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(translate::kTFLiteLanguageDetectionIgnoreEnabled)},
+    {"app-store-rating-test-engaged-user",
+     flag_descriptions::kAppStoreRatingIgnoreEligibilityCheckTestName,
+     flag_descriptions::kAppStoreRatingIgnoreEligibilityCheckTestDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAppStoreRatingIgnoreEligibilityCheckTest)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

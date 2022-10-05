@@ -21,6 +21,12 @@ const char kAppStoreRatingDescription[] =
     "When enabled, App Store Rating promo will be presented to eligible "
     "users.";
 
+const char kAppStoreRatingIgnoreEligibilityCheckTestName[] =
+    "Overrides App Store rating trigger requirements.";
+const char kAppStoreRatingIgnoreEligibilityCheckTestDescription[] =
+    "Overrides the app store rating trigger requirements to show the prompt"
+    "on the next startup. Used for testing.";
+
 const char kAutofillBrandingIOSName[] = "Autofill Branding on iOS";
 const char kAutofillBrandingIOSDescription[] =
     "Adds the Chrome logo in the form input suggestions bar. Full color by "

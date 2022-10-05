@@ -15,7 +15,17 @@ BASE_FEATURE(kAppStoreRating,
              "AppStoreRating",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppStoreRatingIgnoreEligibilityCheckTest,
+             "AppStoreRatingIgnoreEligibilityCheckTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsAppStoreRatingEnabled() {
   return IsFullscreenPromosManagerEnabled() &&
          base::FeatureList::IsEnabled(kAppStoreRating);
+}
+
+bool IsAppStoreRatingTestEngagedUserEnabled() {
+  return IsAppStoreRatingEnabled() &&
+         base::FeatureList::IsEnabled(
+             kAppStoreRatingIgnoreEligibilityCheckTest);
 }

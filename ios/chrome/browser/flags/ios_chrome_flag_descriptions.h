@@ -22,6 +22,11 @@ extern const char kAdaptiveSuggestionsCountDescription[];
 extern const char kAppStoreRatingName[];
 extern const char kAppStoreRatingDescription[];
 
+// Title and description for the flag that overrides the App Store Rating
+// trigger requirements.
+extern const char kAppStoreRatingIgnoreEligibilityCheckTestName[];
+extern const char kAppStoreRatingIgnoreEligibilityCheckTestDescription[];
+
 // Title and description for the flag to enable Chrome branding on form input
 // suggestions.
 extern const char kAutofillBrandingIOSName[];
