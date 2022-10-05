@@ -13,6 +13,7 @@
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -110,6 +111,9 @@ SiteDataRowView::SiteDataRowView(
       delete_callback_(std::move(delete_callback)),
       create_exception_callback_(std::move(create_exception_callback)) {
   const int icon_size = 16;
+  const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   favicon_image_ = AddChildView(std::make_unique<NonAccessibleImageView>());
   favicon_image_->SetImage(
@@ -136,6 +140,7 @@ SiteDataRowView::SiteDataRowView(
       kBrowserToolsIcon, icon_size));
   menu_button_->SetAccessibleName(u"Open context menu");
   menu_button_->SetProperty(views::kElementIdentifierKey, kMenuButton);
+  views::InstallCircleHighlightPathGenerator(menu_button_);
 
   layout->AddRows(1, views::TableLayout::kFixedSize);
   AddChildView(std::make_unique<views::View>());
@@ -145,6 +150,7 @@ SiteDataRowView::SiteDataRowView(
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   state_label_->SetVisible(is_fully_partitioned_ ||
                            setting_ != CONTENT_SETTING_ALLOW);
+  layout->AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding);
 }
 
 SiteDataRowView::~SiteDataRowView() = default;
