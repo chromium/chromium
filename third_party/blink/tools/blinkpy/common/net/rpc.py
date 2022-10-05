@@ -171,7 +171,9 @@ class BaseRPC:
             https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/proto/v1/resultdb.proto
         """
         entities = []
-        data['pageSize'] = count if count > 0 else 1000
+        # Using 1e5 instead of 1000 max to reduce the rpc number
+        # Check https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/resultdb/internal/pagination/pagination.go
+        data['pageSize'] = count if count > 0 else 1e5
         while data.get('pageToken', True) and (count == 0
                                                or count - len(entities) > 0):
             response = self._luci_rpc(method, data)
