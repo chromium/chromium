@@ -86,6 +86,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
     return virtual_card_enrollment_manager_.get();
   }
 
+  void AddMultiStepImportCandidate(
+      const AutofillProfile& profile,
+      const ProfileImportMetadata& import_metadata) {
+    multistep_importer_.AddMultiStepImportCandidate(profile, import_metadata);
+  }
+
   void ClearMultiStepImportCandidates() { multistep_importer_.Clear(); }
 
   // See comment for |fetched_card_instrument_id_|.
@@ -134,6 +140,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
  private:
   // Defines a candidate for address profile import.
   struct AddressProfileImportCandidate {
+    AddressProfileImportCandidate();
+    AddressProfileImportCandidate(const AddressProfileImportCandidate& other);
+    ~AddressProfileImportCandidate();
+
     // The profile that was extracted from the form.
     AutofillProfile profile;
     // The URL the profile was extracted from.

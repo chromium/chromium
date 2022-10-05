@@ -21,7 +21,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/origin.h"
 
 namespace autofill {
 
@@ -147,8 +146,11 @@ class MultiStepImportMerger {
   // can be merged. See `MergeProfileWithMultiStepCandidates()` for details.
   // Only applicable when `kAutofillEnableMultiStepImports` is enabled.
   void ProcessMultiStepImport(AutofillProfile& profile,
-                              ProfileImportMetadata& import_metadata,
-                              const url::Origin& origin);
+                              ProfileImportMetadata& import_metadata);
+
+  void AddMultiStepImportCandidate(
+      const AutofillProfile& profile,
+      const ProfileImportMetadata& import_metadata);
 
   const absl::optional<url::Origin>& origin() const {
     return multistep_candidates_.origin();
@@ -166,11 +168,9 @@ class MultiStepImportMerger {
   // with the result of merging all relevant candidates.
   // Returns false otherwise and leaves `profile` and `import_metadata`
   // unchanged. Any merged or colliding `multistep_candidates_` are cleared.
-  // `origin`: The origin of the form where `profile` was imported from.
   bool MergeProfileWithMultiStepCandidates(
       AutofillProfile& profile,
-      ProfileImportMetadata& import_metadata,
-      const url::Origin& origin);
+      ProfileImportMetadata& import_metadata);
 
   // With AutofillComplementCountryEarly, merging can fail if one profile
   // fragment contains an observed country and the complemented country of the

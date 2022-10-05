@@ -175,6 +175,13 @@ FormDataImporter::~FormDataImporter() {
     personal_data_manager_->RemoveObserver(this);
 }
 
+FormDataImporter::AddressProfileImportCandidate::
+    AddressProfileImportCandidate() = default;
+FormDataImporter::AddressProfileImportCandidate::AddressProfileImportCandidate(
+    const FormDataImporter::AddressProfileImportCandidate& other) = default;
+FormDataImporter::AddressProfileImportCandidate::
+    ~AddressProfileImportCandidate() = default;
+
 void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
                                       bool profile_autofill_enabled,
                                       bool credit_card_autofill_enabled) {
@@ -441,7 +448,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
   bool ignore_phone_number_fields = false;
 
   // Metadata about the way we construct candidate_profile.
-  ProfileImportMetadata import_metadata;
+  ProfileImportMetadata import_metadata{
+      .origin = url::Origin::Create(form.source_url())};
 
   // Tracks if any of the fields belongs to FormType::kAddressForm.
   bool has_address_related_fields = false;
@@ -616,9 +624,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // This requires the profile to be finalized to apply the merging logic.
   if (finalized_import && has_address_related_fields &&
       !has_invalid_information) {
-    multistep_importer_.ProcessMultiStepImport(
-        candidate_profile, import_metadata,
-        url::Origin::Create(form.source_url()));
+    multistep_importer_.ProcessMultiStepImport(candidate_profile,
+                                               import_metadata);
     // If `candidate_profile` was merged with a profile containing
     // (non-complemented) country information, the country might have changed.
     if (!complement_country_early) {
@@ -691,11 +698,12 @@ bool FormDataImporter::ImportAddressProfileForSection(
   // incognito mode.
   DCHECK(!personal_data_manager_->IsOffTheRecord());
 
-  address_profile_import_candidates->push_back(
-      AddressProfileImportCandidate{.profile = candidate_profile,
-                                    .url = form.source_url(),
-                                    .all_requirements_fulfilled = all_fulfilled,
-                                    .import_metadata = import_metadata});
+  AddressProfileImportCandidate import_candidate;
+  import_candidate.profile = candidate_profile;
+  import_candidate.url = form.source_url();
+  import_candidate.all_requirements_fulfilled = all_fulfilled;
+  import_candidate.import_metadata = import_metadata;
+  address_profile_import_candidates->push_back(import_candidate);
 
   // Return true if a compelete importable profile was found.
   return all_fulfilled;

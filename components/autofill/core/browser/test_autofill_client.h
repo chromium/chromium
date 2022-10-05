@@ -240,7 +240,7 @@ class TestAutofillClient : public AutofillClient {
   }
 
   void set_test_form_data_importer(
-      std::unique_ptr<TestFormDataImporter> form_data_importer) {
+      std::unique_ptr<FormDataImporter> form_data_importer) {
     form_data_importer_ = std::move(form_data_importer);
   }
 
@@ -362,7 +362,7 @@ class TestAutofillClient : public AutofillClient {
   // latter.
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
-  std::unique_ptr<TestFormDataImporter> form_data_importer_;
+  std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_;
   ukm::SourceId source_id_ = -1;

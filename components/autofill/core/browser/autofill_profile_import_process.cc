@@ -68,11 +68,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
 
+  DCHECK(personal_data_manager_);
   new_profiles_suppressed_for_domain_ =
-      personal_data_manager_
-          ? personal_data_manager_->IsNewProfileImportBlockedForDomain(
-                form_source_url_)
-          : false;
+      personal_data_manager_->IsNewProfileImportBlockedForDomain(
+          form_source_url_);
 
   int number_of_unchanged_profiles = 0;
 

@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -86,6 +87,8 @@ struct ProfileImportMetadata {
   // Whether the profile import from any field that contained an unrecognized
   // autocomplete attribute.
   bool did_import_from_unrecognized_autocomplete_field = false;
+  // The origin that the form was submitted on.
+  url::Origin origin;
 };
 
 // This class holds the state associated with the import of an AutofillProfile
@@ -125,6 +128,10 @@ class ProfileImportProcess {
     return import_candidate_;
   }
 
+  const absl::optional<AutofillProfile>& confirmed_import_candidate() const {
+    return confirmed_import_candidate_;
+  }
+
   const absl::optional<AutofillProfile>& merge_candidate() const {
     return merge_candidate_;
   }
@@ -138,6 +145,10 @@ class ProfileImportProcess {
   const AutofillProfile& observed_profile() const { return observed_profile_; }
 
   AutofillProfileImportType import_type() const { return import_type_; }
+
+  const ProfileImportMetadata& import_metadata() const {
+    return import_metadata_;
+  }
 
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
     return user_decision_;

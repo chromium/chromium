@@ -195,40 +195,37 @@ MultiStepImportMerger::~MultiStepImportMerger() = default;
 
 void MultiStepImportMerger::ProcessMultiStepImport(
     AutofillProfile& profile,
-    ProfileImportMetadata& import_metadata,
-    const url::Origin& origin) {
+    ProfileImportMetadata& import_metadata) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableMultiStepImports)) {
     return;
   }
 
   multistep_candidates_.RemoveOutdatedItems(
-      features::kAutofillMultiStepImportCandidateTTL.Get(), origin);
+      features::kAutofillMultiStepImportCandidateTTL.Get(),
+      import_metadata.origin);
   bool has_min_address_requirements =
-      MergeProfileWithMultiStepCandidates(profile, import_metadata, origin);
-
-  if (!has_min_address_requirements ||
-      features::kAutofillEnableMultiStepImportComplements.Get()) {
-    // Add `profile| as a `multistep_candidate`. This happens for incomplete
-    // profiles, which can then be complemented in later steps. When
-    // `kAutofillEnableMultiStepImportComplements` is enabled, complete profiles
-    // are stored too, which enables updating them in later steps.
-    // In the latter case, Autofill tries to import the `profile`. This logs
-    // metrics depending on `import_metadata`. To prevent double counting,
-    // an we store an empty `ProfileImportMetadata` object in this case.
-    multistep_candidates_.Push({.profile = profile,
-                                .import_metadata = has_min_address_requirements
-                                                       ? ProfileImportMetadata()
-                                                       : import_metadata},
-                               origin);
+      MergeProfileWithMultiStepCandidates(profile, import_metadata);
+  if (!has_min_address_requirements) {
+    // Add the incomplete `profile` as an `multistep_candidate`, so it can be
+    // complemented during later imports. Complete profiles for multi-step
+    // complements are added in the AddressProfileSaveManager after a user
+    // decision was made.
+    AddMultiStepImportCandidate(profile, import_metadata);
   }
+}
+
+void MultiStepImportMerger::AddMultiStepImportCandidate(
+    const AutofillProfile& profile,
+    const ProfileImportMetadata& import_metadata) {
+  multistep_candidates_.Push({profile, import_metadata},
+                             import_metadata.origin);
 }
 
 bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
     AutofillProfile& profile,
-    ProfileImportMetadata& import_metadata,
-    const url::Origin& origin) {
-  // Greedily merge with a prefix of `multistep_candidates_`.
+    ProfileImportMetadata& import_metadata) {
+  // Start merging with the most recent `multistep_candidates_`.
   auto candidate = multistep_candidates_.begin();
   AutofillProfile completed_profile = profile;
   ProfileImportMetadata completed_metadata = import_metadata;

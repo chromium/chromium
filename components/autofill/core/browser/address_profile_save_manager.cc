@@ -13,6 +13,34 @@
 
 namespace autofill {
 
+namespace {
+
+// When multi-step complements are enabled, sufficiently complete profiles are
+// added as to `form_data_importer`s multi-step import candidates. This
+// enables complementing them in later steps with additional optional
+// information.
+// This function adds the imported profile as a candidate. This is only done
+// after the user decision to incorporate manual edits.
+void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
+                                     const AutofillProfile& profile,
+                                     const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableMultiStepImports) ||
+      !features::kAutofillEnableMultiStepImportComplements.Get() ||
+      !form_data_importer) {
+    return;
+  }
+  // Metrics depending on `import_process.import_metadata()` are collected
+  // for the `confirmed_import_candidate`. E.g. whether the removal of an
+  // invalid phone number made the import possible. Just like regular updates,
+  // future multi-step updates shouldn't claim impact of this feature again.
+  // The `import_metadata` is thus initialized to a neutral element.
+  ProfileImportMetadata import_metadata{.origin = origin};
+  form_data_importer->AddMultiStepImportCandidate(profile, import_metadata);
+}
+
+}  // namespace
+
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
 AddressProfileSaveManager::AddressProfileSaveManager(
@@ -41,6 +69,8 @@ void AddressProfileSaveManager::ImportProfileFromForm(
        personal_data_manager_->auto_accept_address_imports_for_testing()) &&
       !allow_only_silent_updates) {
     personal_data_manager_->SaveImportedProfile(observed_profile);
+    AddMultiStepComplementCandidate(client_->GetFormDataImporter(),
+                                    observed_profile, import_metadata.origin);
     return;
   }
 
@@ -156,10 +186,13 @@ void AddressProfileSaveManager::FinalizeProfileImport(
     }
   }
 
-  // If an import is declined, all multi-step candidates should be cleared to
-  // avoid showing a similar import prompt again.
-  if (import_process->UserDeclined() && client_->GetFormDataImporter()) {
-    client_->GetFormDataImporter()->ClearMultiStepImportCandidates();
+  if (import_process->UserAccepted()) {
+    const absl::optional<AutofillProfile>& confirmed_import_candidate =
+        import_process->confirmed_import_candidate();
+    DCHECK(confirmed_import_candidate);
+    AddMultiStepComplementCandidate(client_->GetFormDataImporter(),
+                                    *confirmed_import_candidate,
+                                    import_process->import_metadata().origin);
   }
 
   import_process->CollectMetrics(client_->GetUkmRecorder(),
