@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -848,8 +849,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be collapsed/shown and that feed header changes
 // accordingly.
-// TODO(crbug.com/1311947): Failing simulator.
-- (void)DISABLED_testToggleFeedVisible {
+- (void)testToggleFeedVisible {
   [self
       testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
 
@@ -874,11 +874,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that feed can be enabled/disabled and that feed header changes
 // accordingly.
-// TODO(crbug.com/1194106): Flaky on ios-simulator-noncq.
-- (void)DISABLED_testToggleFeedEnabled {
-  [self
-      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
-
+- (void)testToggleFeedEnabled {
   // Ensure that label is visible with correct text for enabled feed, and that
   // the NTP is scrollable.
   [self checkFeedLabelForFeedVisible:YES];
@@ -886,9 +882,13 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Disable feed.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:grey_accessibilityID(
-                                kSettingsArticleSuggestionsCellId)];
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                           kSettingsArticleSuggestionsCellId,
+                                           /*is_toggled_on=*/YES,
+                                           /*enabled=*/YES)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 350)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
@@ -902,9 +902,15 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Re-enable feed.
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:grey_accessibilityID(
-                                kSettingsArticleSuggestionsCellId)];
+  // Why do we we not reset the scroll position after bringing back the feed as
+  // the new parent collectionview? on iphone 8 the logo is cut off.
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                           kSettingsArticleSuggestionsCellId,
+                                           /*is_toggled_on=*/NO,
+                                           /*enabled=*/YES)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 350)
+      onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 
@@ -1309,6 +1315,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NTPFeedMenuEnableButton()]
       performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertTrue(feed_visible, @"Expect feed to be visible!");

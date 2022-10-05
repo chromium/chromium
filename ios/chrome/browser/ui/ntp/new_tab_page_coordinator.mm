@@ -1084,6 +1084,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
       preferenceName == prefs::kNTPContentSuggestionsEnabled ||
       preferenceName == prefs::kNTPContentSuggestionsForSupervisedUserEnabled) {
     [self updateNTPForFeed];
+    [self setContentOffsetToTop];
   }
   if (preferenceName ==
       DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
@@ -1368,6 +1369,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 // changed.
 - (void)handleFeedVisibilityDidChange {
   [self updateNTPForFeed];
+  [self setContentOffsetToTop];
   [self.feedHeaderViewController updateForFeedVisibilityChanged];
 }
 

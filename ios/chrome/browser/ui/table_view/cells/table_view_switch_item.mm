@@ -30,6 +30,8 @@
   cell.detailTextLabel.text = self.detailText;
   cell.switchView.enabled = self.enabled;
   cell.switchView.on = self.on;
+  cell.switchView.accessibilityIdentifier =
+      [NSString stringWithFormat:@"%@, %@", self.text, @"switch"];
   cell.textLabel.textColor =
       [TableViewSwitchCell defaultTextColorForState:cell.switchView.state];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;

@@ -83,6 +83,7 @@ const CGFloat kSwitchTrailingPadding = 22;
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
+    _switchView.isAccessibilityElement = YES;
     _switchView.accessibilityHint =
         l10n_util::GetNSString(IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
