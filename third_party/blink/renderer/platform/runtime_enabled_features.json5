@@ -2697,6 +2697,7 @@
     },
     {
       name: "VariableCOLRV1",
+      status: "test",
       base_feature: "VariableCOLRV1",
     },
     {

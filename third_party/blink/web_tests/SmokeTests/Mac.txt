@@ -1700,7 +1700,8 @@ virtual/text-antialias/caps-lock-indicator-enabled.html
 virtual/text-antialias/cg-fallback-bolding.html
 virtual/text-antialias/cg-vs-atsui.html
 virtual/text-antialias/color-emoji.html
-virtual/text-antialias/colrv1-samples-visual.html
+virtual/text-antialias/colrv1.html
+virtual/text-antialias/colrv1-variable.html
 virtual/text-antialias/complex-path-with-no-subpixel-fonts.html
 virtual/text-antialias/complex-preferred-logical-widths.html
 virtual/text-antialias/complex-synthetic-bold-space-width.html
