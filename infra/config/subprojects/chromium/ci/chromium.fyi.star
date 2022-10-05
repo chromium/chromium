@@ -536,6 +536,29 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-blink-wpt-reset-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux|blink",
+        short_name = "BIr",
+    ),
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    goma_backend = None,
+    os = os.LINUX_DEFAULT,
+)
+
+ci.builder(
     name = "linux-blink-animation-use-time-delta",
     console_view_entry = consoles.console_view_entry(
         category = "linux|blink",

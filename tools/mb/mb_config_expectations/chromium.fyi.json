@@ -1212,6 +1212,17 @@
       "v8_enable_sandbox_future": true
     }
   },
+  "linux-blink-wpt-reset-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "linux-chromeos-annotator-rel": {
     "gn_args": {
       "dcheck_always_on": false,
