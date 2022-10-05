@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -28,7 +29,7 @@ import java.util.Map;
  * 4. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
  * {@link BackPressHandler} with the new defined {@link Type}.
  */
-public class BackPressManager {
+public class BackPressManager implements Destroyable {
     @VisibleForTesting
     static final Map<Integer, Integer> sMetricsMap = new HashMap() {
         {
@@ -167,6 +168,15 @@ public class BackPressManager {
                 handler.handleBackPress();
                 mLastCalledHandlerForTesting = i;
                 return;
+            }
+        }
+    }
+
+    @Override
+    public void destroy() {
+        for (int i = 0; i < mHandlers.length; i++) {
+            if (has(i)) {
+                removeHandler(i);
             }
         }
     }

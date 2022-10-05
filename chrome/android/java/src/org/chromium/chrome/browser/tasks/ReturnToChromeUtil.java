@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -103,7 +104,7 @@ public final class ReturnToChromeUtil {
      * from start surface and this tab is unable to be navigated back further, then we trigger
      * the callback to show overview mode.
      */
-    public static class ReturnToChromeBackPressHandler implements BackPressHandler {
+    public static class ReturnToChromeBackPressHandler implements BackPressHandler, Destroyable {
         private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
                 new ObservableSupplierImpl<>();
         private final Runnable mOnBackPressedCallback;
@@ -139,6 +140,11 @@ public final class ReturnToChromeUtil {
         @Override
         public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
             return mBackPressChangedSupplier;
+        }
+
+        @Override
+        public void destroy() {
+            mActivityTabObserver.destroy();
         }
     }
 
