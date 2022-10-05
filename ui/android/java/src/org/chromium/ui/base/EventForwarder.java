@@ -35,10 +35,6 @@ public class EventForwarder {
     private float mCurrentTouchOffsetX;
     private float mCurrentTouchOffsetY;
 
-    // Offset for the drag events that's dispatching through other views.
-    private float mDragDispatchingOffsetX;
-    private float mDragDispatchingOffsetY;
-
     private int mLastMouseButtonState;
 
     // Track the last tool type of touch sequence.
@@ -222,29 +218,13 @@ public class EventForwarder {
     /**
      * Sets the current amount to offset incoming touch events by (including MotionEvent and
      * DragEvent). This is used to handle content moving and not lining up properly with the
-     * android input system. Usually used when view location shifted (e.g. by top browser control,
-     * etc.)
-     *
-     * @param dx The X offset in pixels to shift touch and drag events.
-     * @param dy The Y offset in pixels to shift touch and drag events.
+     * android input system.
+     * @param dx The X offset in pixels to shift touch events.
+     * @param dy The Y offset in pixels to shift touch events.
      */
     public void setCurrentTouchEventOffsets(float dx, float dy) {
         mCurrentTouchOffsetX = dx;
         mCurrentTouchOffsetY = dy;
-    }
-
-    /**
-     * Sets the current amount to offset incoming drag events by. Used for {@link DragEvent} only.
-     * Usually used when dispatching drag events dispatched from views other than the ContentView.
-     *
-     * @param dx The X offset in pixels to shift drag events.
-     * @param dy The Y offset in pixels to shift drag events.
-     *
-     * @see #setCurrentTouchEventOffsets(float, float) to offset both touch and drag events.
-     */
-    public void setDragDispatchingOffset(float dx, float dy) {
-        mDragDispatchingOffsetX = dx;
-        mDragDispatchingOffsetY = dy;
     }
 
     /**
@@ -424,8 +404,8 @@ public class EventForwarder {
         containerView.getLocationOnScreen(locationOnScreen);
 
         // All coordinates are in device pixel. Conversion to DIP happens in the native.
-        float x = event.getX() + mCurrentTouchOffsetX + mDragDispatchingOffsetX;
-        float y = event.getY() + mCurrentTouchOffsetY + mDragDispatchingOffsetY;
+        float x = event.getX() + mCurrentTouchOffsetX;
+        float y = event.getY() + mCurrentTouchOffsetY;
         float screenX = x + locationOnScreen[0];
         float screenY = y + locationOnScreen[1];
 
