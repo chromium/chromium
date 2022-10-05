@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
@@ -35,6 +36,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
@@ -425,9 +427,29 @@ TEST_F(MediatorTest, RemoveNotificationOnPaired) {
   mock_pairer_broker_->NotifyDevicePaired(device_);
 }
 
-TEST_F(MediatorTest, RemoveNotificationOnDeviceLost) {
+TEST_F(MediatorTest, RemoveNotification_StartTimer_OnDeviceLost_FlagEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kFastPairPreventNotificationsForRecentlyLostDevice},
+      /*disabled_features=*/{});
+
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  EXPECT_CALL(*mock_ui_broker_, StartDeviceLostTimer);
+  mock_scanner_broker_->NotifyDeviceLost(device_);
+}
+
+TEST_F(MediatorTest, RemoveNotification_StartTimer_OnDeviceLost_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kFastPairPreventNotificationsForRecentlyLostDevice});
+
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
+  EXPECT_CALL(*mock_ui_broker_, StartDeviceLostTimer).Times(0);
   mock_scanner_broker_->NotifyDeviceLost(device_);
 }
 

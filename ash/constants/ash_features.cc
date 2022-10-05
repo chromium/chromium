@@ -853,6 +853,17 @@ BASE_FEATURE(kFamilyLinkOnSchoolDevice,
 // Enables the Fast Pair feature.
 BASE_FEATURE(kFastPair, "FastPair", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The amount of minutes we should wait before allowing notifications for a
+// recently lost device.
+const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
+    &kFastPair, "fast-pair-device-lost-notification-timeout-minutes", 5};
+
+// Enabled Fast Pair sub feature to prevent notifications for recently lost
+// devices for |kFastPairDeviceLostNotificationTimeout|.
+BASE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice,
+             "FastPairPreventNotificationsForRecentlyLostDevice",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Sets Fast Pair scanning to low power mode.
 BASE_FEATURE(kFastPairLowPower,
              "FastPairLowPower",
@@ -2385,6 +2396,11 @@ bool IsFastPairEnabled() {
 
 bool IsFastPairLowPowerEnabled() {
   return base::FeatureList::IsEnabled(kFastPairLowPower);
+}
+
+bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
+  return base::FeatureList::IsEnabled(
+      kFastPairPreventNotificationsForRecentlyLostDevice);
 }
 
 bool IsFastPairSoftwareScanningEnabled() {

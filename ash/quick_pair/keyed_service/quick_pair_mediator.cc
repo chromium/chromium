@@ -176,6 +176,11 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   ui_broker_->RemoveNotifications(
       /*clear_already_shown_discovery_notification_cache=*/false);
   FastPairHandshakeLookup::GetInstance()->Erase(device);
+
+  if (ash::features::
+          IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled()) {
+    ui_broker_->StartDeviceLostTimer(device);
+  }
 }
 
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {

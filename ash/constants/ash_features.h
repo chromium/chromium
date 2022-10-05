@@ -258,6 +258,11 @@ BASE_DECLARE_FEATURE(kExperimentalRgbKeyboardPatterns);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFaceMLApp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFamilyLinkOnSchoolDevice);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPair);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::FeatureParam<double>
+    kFastPairDeviceLostNotificationTimeoutMinutes;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairLowPower);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
@@ -656,6 +661,8 @@ bool IsExternalKeyboardInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSubsequentPairingUXEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();

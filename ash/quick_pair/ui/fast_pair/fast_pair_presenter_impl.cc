@@ -26,7 +26,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -88,9 +90,25 @@ FastPairPresenterImpl::FastPairPresenterImpl(
 
 FastPairPresenterImpl::~FastPairPresenterImpl() = default;
 
+void FastPairPresenterImpl::AddDeviceToDiscoveryNotificationAlreadyShownMap(
+    scoped_refptr<Device> device) {
+  DevicesWithDiscoveryNotificationAlreadyShown device_with_discovery_shown;
+  device_with_discovery_shown.protocol = device->protocol;
+  device_with_discovery_shown.metadata_id = device->metadata_id;
+  address_to_devices_with_discovery_notification_already_shown_map_
+      .insert_or_assign(device->ble_address, device_with_discovery_shown);
+}
+
 void FastPairPresenterImpl::ShowDiscovery(scoped_refptr<Device> device,
                                           DiscoveryCallback callback) {
   DCHECK(device);
+
+  // If we are currently running a timer for a recently lost device that we
+  // are already preventing notifications for, return early.
+  if (base::Contains(address_to_lost_device_timer_map_, device->ble_address)) {
+    callback.Run(DiscoveryAction::kAlreadyDisplayed);
+    return;
+  }
 
   // If we have already shown a discovery notification for a device in the
   // same protocol, don't show one again. This prevents a notification being
@@ -100,12 +118,7 @@ void FastPairPresenterImpl::ShowDiscovery(scoped_refptr<Device> device,
     return;
   }
 
-  address_to_devices_with_discovery_notification_already_shown_map_
-      [device->ble_address]
-          .protocol = device->protocol;
-  address_to_devices_with_discovery_notification_already_shown_map_
-      [device->ble_address]
-          .metadata_id = device->metadata_id;
+  AddDeviceToDiscoveryNotificationAlreadyShownMap(device);
 
   const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
@@ -291,6 +304,48 @@ void FastPairPresenterImpl::OnDiscoveryDismissed(scoped_refptr<Device> device,
 
   callback.Run(user_dismissed ? DiscoveryAction::kDismissedByUser
                               : DiscoveryAction::kDismissed);
+}
+
+void FastPairPresenterImpl::StartDeviceLostTimer(scoped_refptr<Device> device) {
+  auto [it, was_emplaced] = address_to_lost_device_timer_map_.try_emplace(
+      device->ble_address, std::make_unique<base::OneShotTimer>());
+
+  // If device is already in the map, return early. This means that the timer
+  // has not expired yet for the device, since we erase the map instance
+  // when the timer expires.
+  if (!was_emplaced)
+    return;
+
+  // Start timer for how long to keep the device in
+  // |address_to_devices_with_discovery_notification_already_shown_map_|, which
+  // prevents the discovery notifications from showing up for the device.
+  // When |AllowNotificationForRecentlyLostDevice| is fired on timeout, remove
+  // the device from the map, allowing notifications to appear again.
+  QP_LOG(VERBOSE) << __func__ << device;
+  it->second->Start(
+      FROM_HERE,
+      base::Minutes(
+          features::kFastPairDeviceLostNotificationTimeoutMinutes.Get()),
+      base::BindOnce(
+          &FastPairPresenterImpl::AllowNotificationForRecentlyLostDevice,
+          weak_pointer_factory_.GetWeakPtr(), device));
+}
+
+void FastPairPresenterImpl::AllowNotificationForRecentlyLostDevice(
+    scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << device;
+  // We check that |device| is in
+  // |address_to_devices_with_discovery_notification_already_shown_map_| before
+  // we erase the timer and discovery notification to prevent the edge case
+  // where a device has the same address as a device already in our map. This
+  // happens with JBL 650s when they switch from initial to subsequent pairing.
+  if (WasDiscoveryNotificationAlreadyShownForDevice(*device)) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": allowing notifications again for device=" << device;
+    address_to_lost_device_timer_map_.erase(device->ble_address);
+    address_to_devices_with_discovery_notification_already_shown_map_.erase(
+        device->ble_address);
+  }
 }
 
 void FastPairPresenterImpl::OnDiscoveryLearnMoreClicked(
