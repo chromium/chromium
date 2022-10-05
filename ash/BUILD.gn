@@ -3328,8 +3328,6 @@ test("ash_pixeltests") {
     "app_list/views/app_list_view_pixeltest.cc",
     "shelf/login_shelf_view_pixeltest.cc",
     "shelf/scrollable_shelf_view_pixeltest.cc",
-    "test/ash_pixel_diff_test_helper.cc",
-    "test/ash_pixel_diff_test_helper.h",
     "test/demo_ash_pixel_diff_test.cc",
   ]
 
@@ -3345,7 +3343,6 @@ test("ash_pixeltests") {
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
     "//ui/views:test_support",
-    "//ui/views:view_pixel_diff_test_support",
   ]
 }
 
@@ -3469,6 +3466,8 @@ static_library("test_support") {
     "system/geolocation/test_geolocation_url_loader_factory.h",
     "system/tray/system_nudge_label.cc",
     "system/tray/system_nudge_label.h",
+    "test/ash_pixel_diff_test_helper.cc",
+    "test/ash_pixel_diff_test_helper.h",
     "utility/haptics_tracking_test_input_controller.cc",
     "utility/haptics_tracking_test_input_controller.h",
 
@@ -3678,6 +3677,7 @@ static_library("test_support") {
     "//ui/snapshot:snapshot",
     "//ui/views",
     "//ui/views:test_support",
+    "//ui/views:view_pixel_diff_test_support",
     "//ui/wm",
     "//ui/wm/public",
   ]

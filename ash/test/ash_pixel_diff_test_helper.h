@@ -19,7 +19,11 @@ class AshPixelDiffTestHelper {
     kShelfWidget,
   };
 
-  AshPixelDiffTestHelper();
+  // `screenshot_prefix` is the prefix of the screenshot names; `corpus`
+  // specifies the result group that will be used to store screenshots in Skia
+  // Gold. Read the comment of `SKiaGoldPixelDiff::Init()` for more details.
+  AshPixelDiffTestHelper(const std::string& screenshot_prefix,
+                         const std::string& corpus);
   AshPixelDiffTestHelper(const AshPixelDiffTestHelper&) = delete;
   AshPixelDiffTestHelper& operator=(const AshPixelDiffTestHelper&) = delete;
   ~AshPixelDiffTestHelper();
@@ -40,11 +44,6 @@ class AshPixelDiffTestHelper {
   bool ComparePrimaryScreenshotWithBoundsInScreen(
       const std::string& screenshot_name,
       const gfx::Rect& screen_bounds);
-
-  // Initializes the underlying utility class for Skia Gold pixel tests.
-  // NOTE: this function has to be called before any pixel comparison.
-  void InitSkiaGoldPixelDiff(const std::string& screenshot_prefix,
-                             const std::string& corpus = std::string());
 
  private:
   // Returns the screen bounds of the given UI component.

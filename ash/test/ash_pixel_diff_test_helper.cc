@@ -22,7 +22,11 @@ gfx::Rect GetShelfWidgetScreenBounds() {
 
 }  // namespace
 
-AshPixelDiffTestHelper::AshPixelDiffTestHelper() = default;
+AshPixelDiffTestHelper::AshPixelDiffTestHelper(
+    const std::string& screenshot_prefix,
+    const std::string& corpus) {
+  pixel_diff_.Init(screenshot_prefix, corpus);
+}
 
 AshPixelDiffTestHelper::~AshPixelDiffTestHelper() = default;
 
@@ -46,12 +50,6 @@ bool AshPixelDiffTestHelper::ComparePrimaryScreenshotWithBoundsInScreen(
   aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
   return pixel_diff_.CompareNativeWindowScreenshot(
       screenshot_name, primary_root_window, screen_bounds);
-}
-
-void AshPixelDiffTestHelper::InitSkiaGoldPixelDiff(
-    const std::string& screenshot_prefix,
-    const std::string& corpus) {
-  pixel_diff_.Init(screenshot_prefix, corpus);
 }
 
 gfx::Rect AshPixelDiffTestHelper::GetUiComponentBoundsInScreen(

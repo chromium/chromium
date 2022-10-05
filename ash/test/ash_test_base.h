@@ -69,6 +69,7 @@ namespace ash {
 
 class AmbientAshTestHelper;
 class AppListTestHelper;
+class AshPixelDiffTestHelper;
 class AshTestHelper;
 class Shelf;
 class TestAppListClient;
@@ -184,17 +185,18 @@ class AshTestBase : public testing::Test {
   // Attach |window| to the current shell's root window.
   void ParentWindowInPrimaryRootWindow(aura::Window* window);
 
-  // Prepares for the pixel diff test. When getting called, this function sets
-  // the default pixel diff test init params. Users need to call
-  // `SetPixelTestInitParam()` if they want to customize the pixel test setup.
+  // Prepares for the pixel diff test. `screenshot_prefix` is the prefix of the
+  // screenshot names; `init_params` indicates how a pixel test should be set
+  // up; `corpus` specifies the result group that will be used to store
+  // screenshots in Skia Gold. For `screenshot_prefix` and `corpus`, read the
+  // comment of `SKiaGoldPixelDiff::Init()` for more details.
   // NOTE: this function should be called before `setup_called_` becomes true.
-  void PrepareForPixelDiffTest();
+  void PrepareForPixelDiffTest(const std::string& screenshot_prefix,
+                               const pixel_test::InitParams& init_params,
+                               const std::string& corpus = std::string());
 
-  // Sets the pixel diff test init params. Only called if users want to
-  // customize the pixel test setup.
-  // NOTE: `PrepareForPixelDiffTest()` has to be called before. In addition,
-  // call this function before `setup_called_` becomes true.
-  void SetPixelTestInitParam(const pixel_test::InitParams& params);
+  // Returns the raw pointer carried by `pixel_test_helper_`.
+  AshPixelDiffTestHelper* GetPixelDiffer();
 
   // Stabilizes the variable UI components (such as the battery view). It should
   // be called after the active user changes since some UI components are
@@ -366,6 +368,10 @@ class AshTestBase : public testing::Test {
 
   // A pref service used for local state.
   TestingPrefServiceSimple local_state_;
+
+  // A helper class to take screen shots then compare with benchmarks. Set by
+  // `PrepareForPixelDiffTest()`.
+  std::unique_ptr<AshPixelDiffTestHelper> pixel_test_helper_;
 
   // Must be constructed after |task_environment_|.
   std::unique_ptr<AshTestHelper> ash_test_helper_;

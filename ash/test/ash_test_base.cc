@@ -27,6 +27,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/test/ash_pixel_diff_test_helper.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/test/test_window_builder.h"
@@ -316,13 +317,16 @@ void AshTestBase::ParentWindowInPrimaryRootWindow(aura::Window* window) {
                                         gfx::Rect());
 }
 
-void AshTestBase::PrepareForPixelDiffTest() {
+void AshTestBase::PrepareForPixelDiffTest(
+    const std::string& screenshot_prefix,
+    const pixel_test::InitParams& init_params,
+    const std::string& corpus) {
   // Expect this function to be called before setup. Because the code that
   // stabilizes the system UI for pixel tests should be executed during setup.
   CHECK(!setup_called_);
 
   CHECK(!pixel_diff_init_params_);
-  pixel_diff_init_params_ = pixel_test::InitParams();
+  pixel_diff_init_params_ = init_params;
 
   // In pixel tests, we want to take screenshots then compare them with the
   // benchmark images. Therefore, enable pixel output in tests.
@@ -333,17 +337,15 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // are stable.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kStabilizeTimeDependentViewForTests);
+
+  DCHECK(!pixel_test_helper_);
+  pixel_test_helper_ =
+      std::make_unique<AshPixelDiffTestHelper>(screenshot_prefix, corpus);
 }
 
-void AshTestBase::SetPixelTestInitParam(const pixel_test::InitParams& params) {
-  // The init params are required during setup. Therefore, the params should be
-  // set before setup is called.
-  CHECK(!setup_called_);
-
-  // `PrepareForPixelDiffTest()` should be called before.
-  CHECK(pixel_diff_init_params_);
-
-  pixel_diff_init_params_ = params;
+AshPixelDiffTestHelper* AshTestBase::GetPixelDiffer() {
+  DCHECK(pixel_test_helper_);
+  return pixel_test_helper_.get();
 }
 
 void AshTestBase::StabilizeUIForPixelTest() {

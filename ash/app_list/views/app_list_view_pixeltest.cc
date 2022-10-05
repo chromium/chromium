@@ -19,12 +19,10 @@ class AppListViewPixelRTLTest
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   AppListViewPixelRTLTest() {
-    PrepareForPixelDiffTest();
-    if (GetParam()) {
-      pixel_test::InitParams init_params;
-      init_params.under_rtl = true;
-      SetPixelTestInitParam(init_params);
-    }
+    pixel_test::InitParams init_params;
+    init_params.under_rtl = GetParam();
+    PrepareForPixelDiffTest(/*screenshot_prefix=*/"app_list_view_pixel",
+                            init_params);
   }
   AppListViewPixelRTLTest(const AppListViewPixelRTLTest&) = delete;
   AppListViewPixelRTLTest& operator=(const AppListViewPixelRTLTest&) = delete;
@@ -43,14 +41,6 @@ class AppListViewPixelRTLTest
     views::TextfieldTestApi(test_helper->GetBubbleSearchBoxView()->search_box())
         .SetCursorLayerOpacity(0.f);
   }
-
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    pixel_test_helper_.InitSkiaGoldPixelDiff("app_list_view_pixel");
-  }
-
-  AshPixelDiffTestHelper pixel_test_helper_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL, AppListViewPixelRTLTest, testing::Bool());
@@ -61,7 +51,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
       /*num_apps=*/2, AppListTestHelper::IconColorType::kAlternativeColor,
       /*set_name=*/true);
   ShowAppListAndHideCursor();
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
       GetParam() ? "bubble_launcher_basics_rtl" : "bubble_launcher_basics"));
 }
 
@@ -79,7 +69,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
   scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(),
                                 /*position=*/20);
 
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
       GetParam() ? "bubble_launcher_gradient_zone_rtl"
                  : "bubble_launcher_gradient_zone"));
 }

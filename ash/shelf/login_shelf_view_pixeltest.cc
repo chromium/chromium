@@ -11,13 +11,8 @@
 
 namespace ash {
 
-class LoginShelfViewPixelTest : public LoginTestBase {
+class LoginShelfViewPixelTestBase : public LoginTestBase {
  public:
-  LoginShelfViewPixelTest() { PrepareForPixelDiffTest(); }
-  LoginShelfViewPixelTest(const LoginShelfViewPixelTest&) = delete;
-  LoginShelfViewPixelTest& operator=(const LoginShelfViewPixelTest&) = delete;
-  ~LoginShelfViewPixelTest() override = default;
-
   // Focuses on the login shelf's shutdown button.
   void FocusOnShutdownButton() {
     views::View* shutdown_button =
@@ -30,23 +25,22 @@ class LoginShelfViewPixelTest : public LoginTestBase {
     shutdown_button_widget->GetFocusManager()->SetFocusedView(shutdown_button);
   }
 
-  // Returns the screenshot name prefix.
-  virtual const char* GetScreenshotPrefix() const {
-    return "login_shelf_view_pixel";
-  }
-
   // LoginTestBase:
   void SetUp() override {
     LoginTestBase::SetUp();
-    pixel_test_helper_.InitSkiaGoldPixelDiff(GetScreenshotPrefix());
-
     // The wallpaper has been set when the pixel test is set up.
     ShowLoginScreen(/*set_wallpaper=*/false);
 
     SetUserCount(1);
   }
+};
 
-  AshPixelDiffTestHelper pixel_test_helper_;
+class LoginShelfViewPixelTest : public LoginShelfViewPixelTestBase {
+ public:
+  LoginShelfViewPixelTest() {
+    PrepareForPixelDiffTest(/*screenshot_prefix=*/"login_shelf_view_pixel",
+                            pixel_test::InitParams());
+  }
 };
 
 // Verifies that moving the focus by the tab key from the lock contents view
@@ -54,23 +48,23 @@ class LoginShelfViewPixelTest : public LoginTestBase {
 TEST_F(LoginShelfViewPixelTest, FocusTraversalFromLockContents) {
   // Trigger the tab key. Verify that the login user expand button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
       "focus_on_login_user_expand_button"));
 
   // Trigger the tab key. Check that the login shelf shutdown button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(
-      pixel_test_helper_.ComparePrimaryFullScreen("focus_on_shutdown_button"));
+      GetPixelDiffer()->ComparePrimaryFullScreen("focus_on_shutdown_button"));
 
   // Trigger the tab key. Check that the browser as guest button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
       "focus_on_browser_as_guest_button"));
 
   // Trigger the tab key. Check that the add person button is focused.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
-      "focus_on_add_person_button"));
+  EXPECT_TRUE(
+      GetPixelDiffer()->ComparePrimaryFullScreen("focus_on_add_person_button"));
 }
 
 // Used to verify the login shelf features with a policy wallpaper.
@@ -81,26 +75,26 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
   PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
 
-  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentScreenshot(
       "focus_on_calendar_view",
       AshPixelDiffTestHelper::UiComponent::kShelfWidget));
 
   // Focus on the time view.
   PressAndReleaseKey(ui::VKEY_TAB);
-  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentScreenshot(
       "focus_on_time_view", AshPixelDiffTestHelper::UiComponent::kShelfWidget));
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
   // Move the focus back to the add person button.
-  EXPECT_TRUE(pixel_test_helper_.CompareUiComponentScreenshot(
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentScreenshot(
       "refocus_on_login_shelf",
       AshPixelDiffTestHelper::UiComponent::kShelfWidget));
 }
 
 class LoginShelfWithPolicyWallpaperPixelTestWithRTL
-    : public LoginShelfViewPixelTest,
+    : public LoginShelfViewPixelTestBase,
       public testing::WithParamInterface<bool /*is_rtl=*/> {
  public:
   LoginShelfWithPolicyWallpaperPixelTestWithRTL() {
@@ -108,18 +102,15 @@ class LoginShelfWithPolicyWallpaperPixelTestWithRTL
     init_params.wallpaper_init_type = pixel_test::WallpaperInitType::kPolicy;
     if (GetParam())
       init_params.under_rtl = true;
-    SetPixelTestInitParam(init_params);
+    PrepareForPixelDiffTest(
+        /*screenshot_prefix=*/"login_shelf_view_policy_wallpaper_pixel",
+        init_params);
   }
   LoginShelfWithPolicyWallpaperPixelTestWithRTL(
       const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
   LoginShelfWithPolicyWallpaperPixelTestWithRTL& operator=(
       const LoginShelfWithPolicyWallpaperPixelTestWithRTL&) = delete;
   ~LoginShelfWithPolicyWallpaperPixelTestWithRTL() override = default;
-
-  // LoginShelfViewPixelTest:
-  const char* GetScreenshotPrefix() const override {
-    return "login_shelf_view_policy_wallpaper_pixel";
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
@@ -130,7 +121,7 @@ INSTANTIATE_TEST_SUITE_P(RTL,
 // works as expected (see https://crbug.com/1197052).
 TEST_P(LoginShelfWithPolicyWallpaperPixelTestWithRTL, FocusOnShutdownButton) {
   FocusOnShutdownButton();
-  EXPECT_TRUE(pixel_test_helper_.ComparePrimaryFullScreen(
+  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
       GetParam() ? "focus_on_shutdown_button_rtl"
                  : "focus_on_shutdown_button"));
 }
