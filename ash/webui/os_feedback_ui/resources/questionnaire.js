@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ const questionBluetoothOtherDevices = '[Bluetooth] Do other computer devices ' +
     '(such as non-Chrome OS devices or other Chromebooks) ' +
     'work well with this Bluetooth peripheral (such as headset or mouse)? ';
 
-const questionWifiTypeOfIssue = '[WiFi] What type of issue is this? ' +
+const questionWifiTypeOfIssue = '[WiFi] What kind of issue is this? ' +
     'Please select one or more from the below: \n' +
     '   * Failure to connect to Wi-Fi \n' +
     '   * Internet connectivity \n' +
@@ -45,7 +45,7 @@ const questionWifiNetworkWorkingBefore =
 const questionWifiOtherDevices = '[WiFi] Do other computer devices ' +
     '(such as non-Chrome OS devices or other Chromebooks) ' +
     'have the same issue using the same Wi-Fi network? ' +
-    'If so, please specify the device type. ';
+    'If so, please specify the kind of device. ';
 
 const questionCellularSim = '[Cellular] Who is your SIM card carrier? ' +
     'For example: Verizon, T-Mobile, AT&T. ';
