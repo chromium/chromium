@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/consent_auditor",
+    "//ios/chrome/browser/consent_auditor:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/signin",

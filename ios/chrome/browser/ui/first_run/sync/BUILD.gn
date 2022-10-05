@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/consent_auditor",
+    "//ios/chrome/browser/consent_auditor:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/signin",

@@ -14,6 +14,7 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
+#import "ios/chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
@@ -50,15 +51,6 @@
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-
-namespace {
-
-std::unique_ptr<KeyedService> CreateFakeConsentAuditor(
-    web::BrowserState* context) {
-  return std::make_unique<consent_auditor::FakeConsentAuditor>();
-}
-
-}  // namespace
 
 // Fake implementing the consumer protocol.
 @interface FakeSigninSyncConsumer : NSObject <SigninSyncConsumer>
@@ -113,7 +105,7 @@ class SigninSyncMediatorTest : public PlatformTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     builder.AddTestingFactory(ConsentAuditorFactory::GetInstance(),
-                              base::BindRepeating(&CreateFakeConsentAuditor));
+                              base::BindRepeating(&BuildFakeConsentAuditor));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(

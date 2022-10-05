@@ -145,6 +145,7 @@ source_set("test_support") {
   deps = [
     ":sync",
     "//base",
+    "//components/consent_auditor:test_support",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sync",

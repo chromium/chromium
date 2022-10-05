@@ -22,3 +22,17 @@ source_set("consent_auditor") {
     "//ios/web/public",
   ]
 }
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "consent_auditor_test_utils.cc",
+    "consent_auditor_test_utils.h",
+  ]
+  deps = [
+    ":consent_auditor",
+    "//components/consent_auditor:test_support",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/web/public",
+  ]
+}
