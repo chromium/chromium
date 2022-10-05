@@ -110,6 +110,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -502,14 +503,17 @@ class DevToolsExtensionTest : public DevToolsTest {
     ASSERT_TRUE(LoadExtensionFromPath(path)) << "Failed to load extension.";
   }
 
-  const Extension* LoadExtensionFromPath(const base::FilePath& path) {
+  const Extension* LoadExtensionFromPath(const base::FilePath& path,
+                                         bool allow_file_access = false) {
     extensions::ExtensionService* service =
         extensions::ExtensionSystem::Get(browser()->profile())
             ->extension_service();
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(browser()->profile());
     extensions::TestExtensionRegistryObserver observer(registry);
-    extensions::UnpackedInstaller::Create(service)->Load(path);
+    auto installer = extensions::UnpackedInstaller::Create(service);
+    installer->set_allow_file_access(allow_file_access);
+    installer->Load(path);
     observer.WaitForExtensionLoaded();
 
     // Wait for any additional extension views to load.
@@ -1721,6 +1725,86 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   RunTest("waitForTestResultsAsMessage",
           base::StrCat({kArbitraryPage, "#view-source:chrome-extension://",
                         extension_id, "/simple_test_page.html"}));
+}
+
+class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
+ public:
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [&](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          const GURL& url = request.GetURL();
+          if (url.path() != "/file-access-test")
+            return nullptr;
+
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          GURL file_url = net::FilePathToFileURL(
+              base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+                  .AppendASCII("content/test/data/devtools/navigation.html"));
+          response->set_content(base::StringPrintf(
+              R"(<script>//# sourceMappingURL=data:application/json,{"version":3,"sources":["%s"]}</script>)",
+              file_url.spec().c_str()));
+          return response;
+        }));
+    DevToolsTest::SetUpOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
+                       CantGetFileResourceWithoutFileAccess) {
+  extensions::TestExtensionDir dir;
+
+  dir.WriteManifest(BuildExtensionManifest("File Access", "devtools.html"));
+  dir.WriteFile(
+      FILE_PATH_LITERAL("devtools.html"),
+      "<html><head><script src='devtools.js'></script></head></html>");
+  dir.WriteFile(FILE_PATH_LITERAL("devtools.js"), R"(
+        let result = 'PASS';
+        chrome.devtools.inspectedWindow.getResources((resources) => {
+          for (const resource of resources) {
+            if (resource.url.startsWith('file://')) {
+              result = 'FAIL';
+            }
+          }
+          chrome.devtools.inspectedWindow.eval(`console.log('${result}')`);
+        });)");
+
+  const Extension* extension =
+      LoadExtensionFromPath(dir.UnpackedPath(), /*allow_file_access=*/false);
+  ASSERT_TRUE(extension);
+
+  OpenDevToolsWindow("/file-access-test", false);
+  RunTestFunction(window_, "waitForTestResultsInConsole");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
+                       CanGetFileResourceWithFileAccess) {
+  extensions::TestExtensionDir dir;
+
+  dir.WriteManifest(BuildExtensionManifest("File Access", "devtools.html"));
+  dir.WriteFile(
+      FILE_PATH_LITERAL("devtools.html"),
+      "<html><head><script src='devtools.js'></script></head></html>");
+  dir.WriteFile(FILE_PATH_LITERAL("devtools.js"), R"(
+        let result = 'FAIL';
+        chrome.devtools.inspectedWindow.getResources((resources) => {
+          for (const resource of resources) {
+            if (resource.url.startsWith('file://')) {
+              result = 'PASS';
+            }
+          }
+          chrome.devtools.inspectedWindow.eval(`console.log('${result}')`);
+        });)");
+
+  const Extension* extension =
+      LoadExtensionFromPath(dir.UnpackedPath(), /*allow_file_access=*/true);
+  ASSERT_TRUE(extension);
+
+  OpenDevToolsWindow("/file-access-test", false);
+  RunTestFunction(window_, "waitForTestResultsInConsole");
 }
 
 // Tests that scripts are not duplicated after Scripts Panel switch.
