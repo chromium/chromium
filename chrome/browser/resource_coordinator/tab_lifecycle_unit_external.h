@@ -41,7 +41,8 @@ class TabLifecycleUnitExternal {
   virtual void SetAutoDiscardable(bool auto_discardable) = 0;
 
   // Discards the tab.
-  virtual bool DiscardTab(mojom::LifecycleUnitDiscardReason reason) = 0;
+  virtual bool DiscardTab(mojom::LifecycleUnitDiscardReason reason,
+                          uint64_t resident_set_size_estimate = 0) = 0;
 
   // Returns true if the tab is discarded.
   virtual bool IsDiscarded() const = 0;

@@ -70,7 +70,8 @@ bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
   return can_discard_;
 }
 
-bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason) {
+bool TestLifecycleUnit::Discard(LifecycleUnitDiscardReason discard_reason,
+                                uint64_t resident_set_size_estimate) {
   return false;
 }
 

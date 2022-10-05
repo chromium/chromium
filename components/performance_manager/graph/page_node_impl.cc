@@ -13,6 +13,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/graph/graph_operations.h"
 
 namespace performance_manager {
 
@@ -567,6 +568,18 @@ const absl::optional<freezing::FreezingVote>& PageNodeImpl::GetFreezingVote()
 PageState PageNodeImpl::GetPageState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_state();
+}
+
+uint64_t PageNodeImpl::EstimateResidentSetSize() const {
+  uint64_t total = 0;
+  performance_manager::GraphOperations::VisitFrameTreePreOrder(
+      this, base::BindRepeating(
+                [](uint64_t* total, const FrameNode* frame_node) {
+                  *total += frame_node->GetResidentSetKbEstimate();
+                  return true;
+                },
+                &total));
+  return total;
 }
 
 void PageNodeImpl::SetLifecycleState(LifecycleState lifecycle_state) {

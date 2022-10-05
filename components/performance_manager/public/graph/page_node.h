@@ -216,6 +216,8 @@ class PageNode : public Node {
 
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
   virtual PageState GetPageState() const = 0;
+
+  virtual uint64_t EstimateResidentSetSize() const = 0;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to

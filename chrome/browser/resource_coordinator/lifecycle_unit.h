@@ -140,7 +140,8 @@ class LifecycleUnit {
   // is easier to achieve that if we discard a group of LifecycleUnits that live
   // in the same process(es) than if we discard individual LifecycleUnits.
   // https://crbug.com/775644
-  virtual bool Discard(LifecycleUnitDiscardReason discard_reason) = 0;
+  virtual bool Discard(LifecycleUnitDiscardReason discard_reason,
+                       uint64_t resident_set_size_estimate = 0) = 0;
 
   // Returns the number of times this lifecycle unit has been discarded.
   virtual size_t GetDiscardCount() const = 0;

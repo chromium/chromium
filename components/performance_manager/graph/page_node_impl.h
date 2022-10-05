@@ -222,6 +222,7 @@ class PageNodeImpl
   const WebContentsProxy& GetContentsProxy() const override;
   const absl::optional<freezing::FreezingVote>& GetFreezingVote()
       const override;
+  uint64_t EstimateResidentSetSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;

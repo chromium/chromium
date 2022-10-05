@@ -49,7 +49,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   int GetEstimatedMemoryFreedOnDiscardKB() const override;
   bool CanDiscard(LifecycleUnitDiscardReason reason,
                   DecisionDetails* decision_details) const override;
-  bool Discard(LifecycleUnitDiscardReason discard_reason) override;
+  bool Discard(LifecycleUnitDiscardReason discard_reason,
+               uint64_t resident_set_size_estimate) override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
 
  private:

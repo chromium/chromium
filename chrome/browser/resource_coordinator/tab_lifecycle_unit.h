@@ -99,7 +99,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   bool CanDiscard(LifecycleUnitDiscardReason reason,
                   DecisionDetails* decision_details) const override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
-  bool Discard(LifecycleUnitDiscardReason discard_reason) override;
+  bool Discard(LifecycleUnitDiscardReason discard_reason,
+               uint64_t resident_set_size_estimate) override;
   ukm::SourceId GetUkmSourceId() const override;
 
   // Implementations of some functions from TabLifecycleUnitExternal. These are
@@ -122,7 +123,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   void CheckMediaUsage(DecisionDetails* decision_details) const;
 
   // Finishes a tab discard, invoked by Discard().
-  void FinishDiscard(LifecycleUnitDiscardReason discard_reason);
+  void FinishDiscard(LifecycleUnitDiscardReason discard_reason,
+                     uint64_t tab_resident_set_size_estimate);
 
   // Returns the RenderProcessHost associated with this tab.
   content::RenderProcessHost* GetRenderProcessHost() const;
