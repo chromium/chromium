@@ -178,10 +178,9 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setAdjustsImageWhenHighlighted:NO];
 
   UIImage* mic_image =
-      UseSymbols()
-          ? DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                       kSymbolContentSuggestionsPointSize)
-          : [UIImage imageNamed:@"location_bar_voice"];
+      UseSymbols() ? DefaultSymbolWithPointSize(
+                         kMicrophoneSymbol, kSymbolContentSuggestionsPointSize)
+                   : [UIImage imageNamed:@"location_bar_voice"];
   mic_image =
       [mic_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
