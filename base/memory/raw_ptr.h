@@ -375,31 +375,27 @@ struct BackupRefPtrImpl {
   // will occur.
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
+    // There are many situations where the compiler can prove that
+    // `ReleaseWrappedPtr` is called on a value that is always nullptr, but the
+    // way `IsManagedByPartitionAllocBRPPool` is written, the compiler can't
+    // prove that nullptr is not managed by PartitionAlloc; and so the compiler
+    // has to emit a useless check and dead code. To avoid that without making
+    // the runtime check slower, tell the compiler to skip
+    // `IsManagedByPartitionAllocBRPPool` when it can statically determine that
+    // address is nullptr.
+#if HAS_BUILTIN(__builtin_constant_p)
+    if (__builtin_constant_p(address == 0) && (address == 0)) {
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+      CHECK(!partition_alloc::IsManagedByPartitionAllocBRPPool(address));
+#endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+      return false;
+    }
+#endif  // HAS_BUILTIN(__builtin_constant_p)
+
     // This covers the nullptr case, as address 0 is never in any
     // PartitionAlloc pool.
     bool is_in_brp_pool =
         partition_alloc::IsManagedByPartitionAllocBRPPool(address);
-
-    // There are many situations where the compiler can prove that
-    // ReleaseWrappedPtr is called on a value that is always nullptr, but the
-    // way the check above is written, the compiler can't prove that nullptr is
-    // not managed by PartitionAlloc; and so the compiler has to emit a useless
-    // check and dead code.
-    // To avoid that without making the runtime check slower, explicitly promise
-    // to the compiler that is_in_brp_pool will always be false for nullptr.
-    //
-    // This condition would look nicer and might also theoretically be nicer for
-    // the optimizer if it was written as "if (!address) { ... }", but
-    // LLVM currently has issues with optimizing that away properly; see:
-    // https://bugs.llvm.org/show_bug.cgi?id=49403
-    // https://reviews.llvm.org/D97848
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2727400/2/base/memory/checked_ptr.h#120
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    CHECK(address || !is_in_brp_pool);
-#endif
-#if HAS_BUILTIN(__builtin_assume)
-    __builtin_assume(address || !is_in_brp_pool);
-#endif
 
     // There may be pointers immediately after the allocation, e.g.
     //   {
@@ -436,13 +432,24 @@ struct BackupRefPtrImpl {
       CHECK(ptr != nullptr);
 #endif
       AcquireInternal(address);
-    }
+    } else {
 #if !defined(PA_HAS_64_BITS_POINTERS)
-    else {
-      partition_alloc::internal::AddressPoolManagerBitmap::
-          BanSuperPageFromBRPPool(address);
+#if HAS_BUILTIN(__builtin_constant_p)
+      // Similarly to `IsSupportedAndNotNull` above, elide the
+      // `BanSuperPageFromBRPPool` call if the compiler can prove that `address`
+      // is zero since PA won't be able to map anything at that address anyway.
+      bool known_constant_zero =
+          __builtin_constant_p(address == 0) && (address == 0);
+#else   // HAS_BUILTIN(__builtin_constant_p)
+      bool known_constant_zero = false;
+#endif  // HAS_BUILTIN(__builtin_constant_p)
+
+      if (!known_constant_zero) {
+        partition_alloc::internal::AddressPoolManagerBitmap::
+            BanSuperPageFromBRPPool(address);
+      }
+#endif  // !defined(PA_HAS_64_BITS_POINTERS)
     }
-#endif
 
     return ptr;
   }
