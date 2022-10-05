@@ -546,6 +546,22 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        std::move(error_callback)));
   }
 
+  void CupsRetrievePrinterPpd(
+      const std::string& name,
+      DebugDaemonClient::CupsRetrievePrinterPpdCallback callback,
+      base::OnceClosure error_callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kCupsRetrievePpd);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(name);
+
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnRetrievedPrinterPpd,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(error_callback)));
+  }
+
   void StartPluginVmDispatcher(const std::string& owner_id,
                                const std::string& lang,
                                PluginVmDispatcherCallback callback) override {
@@ -974,6 +990,24 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       std::move(callback).Run(result);
     else
       std::move(error_callback).Run();
+  }
+
+  void OnRetrievedPrinterPpd(CupsRetrievePrinterPpdCallback callback,
+                             base::OnceClosure error_callback,
+                             dbus::Response* response) {
+    size_t length = 0;
+    const uint8_t* bytes = nullptr;
+
+    if (!(response &&
+          dbus::MessageReader(response).PopArrayOfBytes(&bytes, &length)) ||
+        length == 0 || bytes == nullptr) {
+      LOG(ERROR) << "Failed to retrieve printer PPD";
+      std::move(error_callback).Run();
+      return;
+    }
+
+    std::vector<uint8_t> data(bytes, bytes + length);
+    std::move(callback).Run(data);
   }
 
   void OnStartPluginVmDispatcher(PluginVmDispatcherCallback callback,

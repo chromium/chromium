@@ -301,6 +301,10 @@ void CupsPrintersHandler::RegisterMessages() {
       base::BindRepeating(&CupsPrintersHandler::HandleAddCupsPrinter,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "retrieveCupsPrinterPpd",
+      base::BindRepeating(&CupsPrintersHandler::HandleRetrieveCupsPrinterPpd,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "reconfigureCupsPrinter",
       base::BindRepeating(&CupsPrintersHandler::HandleReconfigureCupsPrinter,
                           base::Unretained(this)));
@@ -425,6 +429,45 @@ void CupsPrintersHandler::HandleUpdateCupsPrinter(
   OnAddedOrEditedSpecifiedPrinter(callback_id, printer,
                                   true /* is_printer_edit */,
                                   PrinterSetupResult::kEditSuccess);
+}
+
+void CupsPrintersHandler::HandleRetrieveCupsPrinterPpd(
+    const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+
+  const std::string& callback_id = args[0].GetString();
+  const std::string& printer_id = args[1].GetString();
+  const std::string& printer_name = args[2].GetString();
+  const std::vector<uint8_t> empty_ppd;
+
+  PRINTER_LOG(DEBUG) << "Retrieving printer PPD for " << printer_id << "("
+                     << printer_name << ")";
+
+  DebugDaemonClient::Get()->CupsRetrievePrinterPpd(
+      printer_id,
+      base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
+                     weak_factory_.GetWeakPtr(), callback_id, printer_name),
+      base::BindOnce(&CupsPrintersHandler::OnRetrieveCupsPrinterPpd,
+                     weak_factory_.GetWeakPtr(), callback_id, printer_name,
+                     empty_ppd));
+}
+
+void CupsPrintersHandler::OnRetrieveCupsPrinterPpd(
+    const std::string& callback_id,
+    const std::string& printer_name,
+    const std::vector<uint8_t>& data) {
+  // Bundle printer metadata
+  base::Value::Dict info;
+  info.Set("printerName", printer_name);
+
+  if (data.empty()) {
+    RejectJavascriptCallback(base::Value(callback_id), info);
+  } else {
+    // Convert our ppd (array of bytes) into a string
+    const std::string ppd(data.begin(), data.end());
+    info.Set("ppd", ppd);
+    ResolveJavascriptCallback(base::Value(callback_id), info);
+  }
 }
 
 void CupsPrintersHandler::HandleRemoveCupsPrinter(

@@ -80,6 +80,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleGetCupsEnterprisePrintersList(const base::Value::List& args);
   void HandleUpdateCupsPrinter(const base::Value::List& args);
   void HandleRemoveCupsPrinter(const base::Value::List& args);
+  void HandleRetrieveCupsPrinterPpd(const base::Value::List& args);
 
   // For a CupsPrinterInfo in |args|, retrieves the relevant PrinterInfo object
   // using an IPP call to the printer.
@@ -180,6 +181,12 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Attempt to add a discovered printer.
   void HandleAddDiscoveredPrinter(const base::Value::List& args);
+
+  // Called when we get a response from
+  // DebugDaemonClient::CupsRetrievePrinterPpd.
+  void OnRetrieveCupsPrinterPpd(const std::string& callback_id,
+                                const std::string& printer_name,
+                                const std::vector<uint8_t>& data);
 
   // Post printer setup callback.
   void OnAddedDiscoveredPrinter(const std::string& callback_id,
