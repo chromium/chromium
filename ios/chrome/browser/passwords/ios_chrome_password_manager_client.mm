@@ -73,6 +73,7 @@ IOSChromePasswordManagerClient::IOSChromePasswordManagerClient(
     : bridge_(bridge),
       password_feature_manager_(
           GetPrefs(),
+          GetLocalStatePrefs(),
           GetSyncServiceForBrowserState(bridge_.browserState)),
       password_reuse_detection_manager_(this),
       credentials_filter_(this,

@@ -369,12 +369,8 @@ class PasswordManagerUtilTest : public testing::Test {
     ON_CALL(*authenticator_, CanAuthenticate).WillByDefault(Return(true));
 #endif
   }
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  void SetHadBiometricsAvailable(bool available) {
-    pref_service_.SetBoolean(password_manager::prefs::kHadBiometricsAvailable,
-                             available);
-  }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void SetBiometricAuthenticationBeforeFilling(bool available) {
     pref_service_.SetBoolean(
         password_manager::prefs::kBiometricAuthenticationBeforeFilling,
@@ -903,40 +899,18 @@ TEST(PasswordManagerUtil, CheckGpmBrandedNamingNotSyncing) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kBiometricAuthenticationForFilling);
-
-  SetHadBiometricsAvailable(/*available=*/false);
-  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
+  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
+              IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(Return(false));
   EXPECT_FALSE(CanUseBiometricAuth(
       authenticator_.get(),
       device_reauth::BiometricAuthRequester::kAutofillSuggestion,
       &mock_client_));
 
-  SetHadBiometricsAvailable(/*available=*/false);
-  SetBiometricAuthenticationBeforeFilling(/*available=*/true);
-  EXPECT_FALSE(CanUseBiometricAuth(
-      authenticator_.get(),
-      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
-      &mock_client_));
-
-  SetHadBiometricsAvailable(/*available=*/true);
-  EXPECT_FALSE(CanUseBiometricAuth(
-      authenticator_.get(),
-      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
-      &mock_client_));
-
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kBiometricAuthenticationForFilling);
+  EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
+              IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(Return(true));
   EXPECT_TRUE(CanUseBiometricAuth(
-      authenticator_.get(),
-      device_reauth::BiometricAuthRequester::kAutofillSuggestion,
-      &mock_client_));
-
-  SetBiometricAuthenticationBeforeFilling(/*available=*/false);
-  EXPECT_FALSE(CanUseBiometricAuth(
       authenticator_.get(),
       device_reauth::BiometricAuthRequester::kAutofillSuggestion,
       &mock_client_));

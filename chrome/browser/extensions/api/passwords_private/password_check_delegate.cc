@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
@@ -259,6 +260,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
       password_feature_manager_(
           std::make_unique<password_manager::PasswordFeatureManagerImpl>(
               profile->GetPrefs(),
+              g_browser_process->local_state(),
               SyncServiceFactory::GetForProfile(profile))),
       saved_passwords_presenter_(presenter),
       insecure_credentials_manager_(presenter,

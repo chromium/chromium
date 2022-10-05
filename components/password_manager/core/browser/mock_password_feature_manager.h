@@ -15,31 +15,44 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
   MockPasswordFeatureManager();
   ~MockPasswordFeatureManager() override;
 
-  MOCK_CONST_METHOD0(IsGenerationEnabled, bool());
+  MOCK_METHOD(bool, IsGenerationEnabled, (), (override, const));
   MOCK_METHOD(bool,
               AreRequirementsForAutomatedPasswordChangeFulfilled,
               (),
               (const override));
-  MOCK_CONST_METHOD0(IsOptedInForAccountStorage, bool());
-  MOCK_CONST_METHOD0(ShouldShowAccountStorageOptIn, bool());
-  MOCK_CONST_METHOD1(ShouldShowAccountStorageReSignin, bool(const GURL&));
-  MOCK_METHOD0(OptInToAccountStorage, void());
-  MOCK_METHOD0(OptOutOfAccountStorageAndClearSettings, void());
+  MOCK_METHOD(bool, IsOptedInForAccountStorage, (), (override, const));
+  MOCK_METHOD(bool, ShouldShowAccountStorageOptIn, (), (override, const));
+  MOCK_METHOD(bool,
+              ShouldShowAccountStorageReSignin,
+              (const GURL&),
+              (override, const));
+  MOCK_METHOD(void, OptInToAccountStorage, (), (override));
+  MOCK_METHOD(void, OptOutOfAccountStorageAndClearSettings, (), (override));
+  MOCK_METHOD(bool, ShouldShowAccountStorageBubbleUi, (), (override, const));
+  MOCK_METHOD(bool,
+              ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
+              (),
+              (override, const));
+  MOCK_METHOD(void,
+              SetDefaultPasswordStore,
+              (const PasswordForm::Store& store),
+              (override));
+  MOCK_METHOD(PasswordForm::Store,
+              GetDefaultPasswordStore,
+              (),
+              (override, const));
+  MOCK_METHOD(bool, IsDefaultPasswordStoreSet, (), (override, const));
 
-  MOCK_CONST_METHOD0(ShouldShowAccountStorageBubbleUi, bool());
-
-  MOCK_CONST_METHOD0(ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,
-                     bool());
-
-  MOCK_METHOD1(SetDefaultPasswordStore, void(const PasswordForm::Store& store));
-  MOCK_CONST_METHOD0(GetDefaultPasswordStore, PasswordForm::Store());
-  MOCK_CONST_METHOD0(IsDefaultPasswordStoreSet, bool());
-
-  MOCK_CONST_METHOD0(ComputePasswordAccountStorageUsageLevel,
-                     metrics_util::PasswordAccountStorageUsageLevel());
-
-  MOCK_METHOD0(RecordMoveOfferedToNonOptedInUser, void());
-  MOCK_CONST_METHOD0(GetMoveOfferedToNonOptedInUserCount, int());
+  MOCK_METHOD(metrics_util::PasswordAccountStorageUsageLevel,
+              ComputePasswordAccountStorageUsageLevel,
+              (),
+              (override, const));
+  MOCK_METHOD(void, RecordMoveOfferedToNonOptedInUser, (), (override));
+  MOCK_METHOD(int, GetMoveOfferedToNonOptedInUserCount, (), (override, const));
+  MOCK_METHOD(bool,
+              IsBiometricAuthenticationBeforeFillingEnabled,
+              (),
+              (override, const));
 };
 
 }  // namespace password_manager

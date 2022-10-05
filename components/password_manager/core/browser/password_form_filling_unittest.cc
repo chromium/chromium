@@ -28,12 +28,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#endif
-
 class PrefService;
 
 using autofill::FieldRendererId;
@@ -80,8 +74,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
-  MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
-  MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
+  MOCK_METHOD(MockPasswordFeatureManager*,
+              GetPasswordFeatureManager,
+              (),
+              (const, override));
   MOCK_METHOD(Origin, GetLastCommittedOrigin, (), (const, override));
 };
 
@@ -138,21 +134,10 @@ class PasswordFormFillingTest : public testing::Test {
 
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
+    ON_CALL(client_, GetPasswordFeatureManager)
+        .WillByDefault(Return(&feature_manager_));
     ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    test_pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-
-    test_pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
-    test_pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kHadBiometricsAvailable, true);
-    ON_CALL(client_, GetPrefs())
-        .WillByDefault(Return(test_pref_service_.get()));
-    ON_CALL(client_, GetLocalStatePrefs())
-        .WillByDefault(Return(test_pref_service_.get()));
-#endif
   }
 
  protected:
@@ -164,9 +149,7 @@ class PasswordFormFillingTest : public testing::Test {
   scoped_refptr<PasswordFormMetricsRecorder> metrics_recorder_;
   std::vector<const PasswordForm*> federated_matches_;
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
-#endif
+  testing::NiceMock<MockPasswordFeatureManager> feature_manager_;
 };
 
 TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
@@ -183,11 +166,6 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
 }
 
 TEST_F(PasswordFormFillingTest, Autofill) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kBiometricAuthenticationForFilling);
-#endif
   std::vector<const PasswordForm*> best_matches;
   best_matches.push_back(&saved_match_);
   PasswordForm another_saved_match = saved_match_;
@@ -199,14 +177,18 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(Return(true));
+#endif
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
       &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
       /*webauthn_suggestions_available=*/false);
 
-  // On Android Touch To Fill will prevent autofilling credentials on page load.
-  // On iOS Reauth is always required.
+  // On Android, Mac and Win authentication will prevent autofilling credentials
+  // on page load. On iOS Reauth is always required.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
@@ -235,11 +217,6 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 }
 
 TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kBiometricAuthenticationForFilling);
-#endif
   const struct {
     const char* description;
     bool new_password_present;
@@ -280,6 +257,10 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     EXPECT_CALL(driver_, SetPasswordFillData(_))
         .WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    EXPECT_CALL(feature_manager_, IsBiometricAuthenticationBeforeFillingEnabled)
+        .WillOnce(Return(true));
+#endif
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
@@ -290,8 +271,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     // permitted. Otherwise, the renderer will not fill anyway and return
     // kFillOnAccountSelect.
     if (test_case.current_password_present) {
-      // On Android Touch To Fill will prevent autofilling credentials on page
-      // load. On iOS Reauth is always required.
+      // On Android, Mac and Win authentication will prevent autofilling
+      // credentials on page load. On iOS Reauth is always required.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);

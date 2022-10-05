@@ -1676,14 +1676,16 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      password_manager::features::kBiometricAuthenticationForFilling);
-#else
       password_manager::features::kBiometricTouchToFill);
 #endif
-  TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
 
@@ -1747,15 +1749,17 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 }
 
 TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      password_manager::features::kBiometricAuthenticationForFilling);
-#else
       password_manager::features::kBiometricTouchToFill);
 #endif
   for (bool is_suggestion_on_password_field : {false, true}) {
-    TestPasswordManagerClient client;
     NiceMock<MockAutofillClient> autofill_client;
     client.SetBiometricAuthenticator(authenticator_);
 
@@ -1818,14 +1822,16 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 }
 
 TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      password_manager::features::kBiometricAuthenticationForFilling);
-#else
       password_manager::features::kBiometricTouchToFill);
 #endif
-  TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
 
@@ -1877,14 +1883,16 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
 
 TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnDeleteFillData) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      password_manager::features::kBiometricAuthenticationForFilling);
-#else
       password_manager::features::kBiometricTouchToFill);
 #endif
-  TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
 
@@ -1937,14 +1945,16 @@ TEST_F(PasswordAutofillManagerTest,
 
 TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnFillDataChange) {
+  TestPasswordManagerClient client;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*client.GetPasswordFeatureManager(),
+          IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillByDefault(Return(true));
+#else
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      password_manager::features::kBiometricAuthenticationForFilling);
-#else
       password_manager::features::kBiometricTouchToFill);
 #endif
-  TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
 

@@ -51,6 +51,7 @@ class WebViewPasswordFeatureManager
 
   void RecordMoveOfferedToNonOptedInUser() override;
   int GetMoveOfferedToNonOptedInUserCount() const override;
+  bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:
   PrefService* const pref_service_;

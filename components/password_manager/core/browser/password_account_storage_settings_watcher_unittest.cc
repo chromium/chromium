@@ -24,7 +24,8 @@ TEST(PasswordAccountStorageSettingsWatcherTest, NotifiesOnChanges) {
   TestingPrefServiceSimple pref_service;
   syncer::TestSyncService sync_service;
 
-  PasswordFeatureManagerImpl feature_manager(&pref_service, &sync_service);
+  PasswordFeatureManagerImpl feature_manager(
+      &pref_service, /*local_state=*/nullptr, &sync_service);
 
   pref_service.registry()->RegisterDictionaryPref(
       prefs::kAccountStoragePerAccountSettings);

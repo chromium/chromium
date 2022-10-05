@@ -22,7 +22,9 @@
 class PasswordFeatureManagerImplTest : public ::testing::Test {
  public:
   PasswordFeatureManagerImplTest()
-      : password_feature_manager_(&pref_service_, &sync_service_) {
+      : password_feature_manager_(&pref_service_,
+                                  &pref_service_,
+                                  &sync_service_) {
     pref_service_.registry()->RegisterDictionaryPref(
         password_manager::prefs::kAccountStoragePerAccountSettings);
     account_.email = "account@gmail.com";
@@ -33,6 +35,12 @@ class PasswordFeatureManagerImplTest : public ::testing::Test {
     pref_service_.registry()->RegisterBooleanPref(
         autofill_assistant::prefs::kAutofillAssistantEnabled, true);
 #endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kHadBiometricsAvailable, false);
+#endif
   }
 
   ~PasswordFeatureManagerImplTest() override = default;
@@ -177,3 +185,67 @@ TEST_F(PasswordFeatureManagerImplTest,
                    .AreRequirementsForAutomatedPasswordChangeFulfilled());
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+struct TestCase {
+  const char* description;
+  bool had_biometrics;
+  bool feature_flag;
+  bool pref_value;
+};
+
+class PasswordFeatureManagerImplTestBiometricAuthenticationTest
+    : public PasswordFeatureManagerImplTest,
+      public testing::WithParamInterface<TestCase> {};
+
+TEST_P(PasswordFeatureManagerImplTestBiometricAuthenticationTest,
+       IsBiometricAuthenticationBeforeFillingEnabled) {
+  TestCase test_case = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      password_manager::features::kBiometricAuthenticationForFilling,
+      test_case.had_biometrics);
+
+  SCOPED_TRACE(test_case.description);
+
+  pref_service_.SetBoolean(password_manager::prefs::kHadBiometricsAvailable,
+                           test_case.feature_flag);
+  pref_service_.SetBoolean(
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling,
+      test_case.pref_value);
+  EXPECT_EQ(test_case.had_biometrics && test_case.feature_flag &&
+                test_case.pref_value,
+            password_feature_manager_
+                .IsBiometricAuthenticationBeforeFillingEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PasswordFeatureManagerImplTestBiometricAuthenticationTest,
+    ::testing::Values(
+        TestCase{
+            .description = "Did not have biometric",
+            .had_biometrics = false,
+            .feature_flag = false,
+            .pref_value = false,
+        },
+        TestCase{
+            .description = "Had biometric, but feature disabled",
+            .had_biometrics = true,
+            .feature_flag = false,
+            .pref_value = false,
+        },
+        TestCase{
+            .description = "Had biometric, feature enabled but didn't opt in",
+            .had_biometrics = true,
+            .feature_flag = true,
+            .pref_value = false,
+        },
+        TestCase{
+            .description = "Had biometric, feature enabled, opted in",
+            .had_biometrics = true,
+            .feature_flag = true,
+            .pref_value = true,
+        }));
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
