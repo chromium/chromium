@@ -25,8 +25,7 @@ ScopedLibusbDeviceHandle::~ScopedLibusbDeviceHandle() {
 }
 
 void ScopedLibusbDeviceHandle::Reset() {
-  libusb_close(handle_);
-  handle_ = nullptr;
+  libusb_close(handle_.ExtractAsDangling());
   context_.reset();
 }
 

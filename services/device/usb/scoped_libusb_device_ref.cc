@@ -23,8 +23,7 @@ ScopedLibusbDeviceRef::~ScopedLibusbDeviceRef() {
 }
 
 void ScopedLibusbDeviceRef::Reset() {
-  libusb_unref_device(device_);
-  device_ = nullptr;
+  libusb_unref_device(device_.ExtractAsDangling());
   context_.reset();
 }
 
