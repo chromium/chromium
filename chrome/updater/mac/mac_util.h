@@ -20,8 +20,8 @@ namespace updater {
 // For system installations returns: "/Library".
 absl::optional<base::FilePath> GetLibraryFolderPath(UpdaterScope scope);
 
-// For user installations sets `path` to: the "~/Library/Application Support"
-// for the logged in user. For system installations sets `path` to:
+// For user installations returns "~/Library/Application Support" for the
+// logged in user. For system installations returns
 // "/Library/Application Support".
 absl::optional<base::FilePath> GetApplicationSupportDirectory(
     UpdaterScope scope);
