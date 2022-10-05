@@ -57,6 +57,13 @@ std::map<variations::VariationID, int> GetGroupWeights() {
       weight_by_id[kTrendingQueriesControlID] = 10;
       break;
     case version_info::Channel::STABLE:
+      weight_by_id[kTrendingQueriesEnabledModuleEnabledID] = 8;
+      weight_by_id[kTrendingQueriesEnabledMinimalSpacingModuleEnabledID] = 8;
+      weight_by_id
+          [kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID] =
+              8;
+      weight_by_id[kTrendingQueriesKeepShortcutsEnabledModuleEnabledID] = 8;
+      weight_by_id[kTrendingQueriesControlID] = 8;
       break;
   }
   return weight_by_id;
