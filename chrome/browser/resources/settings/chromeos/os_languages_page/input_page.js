@@ -15,7 +15,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './add_input_methods_dialog.js';
 import './add_spellcheck_languages_dialog.js';
 import './os_edit_dictionary_page.js';
-import './os_japanese_manage_user_dictionary_page.js';
 import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';

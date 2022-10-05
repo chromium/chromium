@@ -10,11 +10,12 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './input_method_options_page.js';
 import './input_page.js';
+import './languages.js';
+import './os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page_v2.js';
 import './smart_inputs_page.js';
-import './input_method_options_page.js';
-import './languages.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
