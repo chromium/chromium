@@ -18,6 +18,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -30,12 +31,7 @@ namespace content {
 // report. This class can represent multiple different types of reports.
 class CONTENT_EXPORT AttributionReport {
  public:
-  enum class Type {
-    kEventLevel = 0,
-    kAggregatableAttribution = 1,
-    kMinValue = kEventLevel,
-    kMaxValue = kAggregatableAttribution,
-  };
+  using Type = ::attribution_reporting::mojom::ReportType;
 
   using Types = base::EnumSet<Type, Type::kMinValue, Type::kMaxValue>;
 

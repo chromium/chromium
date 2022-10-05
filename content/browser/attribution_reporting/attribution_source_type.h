@@ -5,23 +5,14 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SOURCE_TYPE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_SOURCE_TYPE_H_
 
-#include "content/common/content_export.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 
 namespace content {
 
-// Denotes the type of source for this impression. This allows different types
-// of impressions to be processed differently by storage and attribution
-// logic.
-enum class AttributionSourceType {
-  // An impression which was associated with a top-level navigation.
-  kNavigation = 0,
-  // An impression which was not associated with a navigation.
-  kEvent = 1,
-  kMaxValue = kEvent,
-};
+using AttributionSourceType = ::attribution_reporting::mojom::SourceType;
 
 // Returns "navigation" or "event".
-CONTENT_EXPORT const char* AttributionSourceTypeToString(AttributionSourceType);
+const char* AttributionSourceTypeToString(AttributionSourceType);
 
 }  // namespace content
 

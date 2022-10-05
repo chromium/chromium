@@ -667,8 +667,6 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, RateLimitResult result);
 
-std::ostream& operator<<(std::ostream& out, AttributionSourceType source_type);
-
 std::ostream& operator<<(
     std::ostream& out,
     const AttributionTrigger::EventTriggerData& event_trigger);

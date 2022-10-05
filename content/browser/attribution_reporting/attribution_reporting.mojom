@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+enum ReportType {
+  // An event-level report.
+  // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md
+  kEventLevel = 0,
+  // An aggregatable report.
+  // https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATE.md
+  kAggregatableAttribution = 1,
+};
+
+enum SourceType {
+  // A source that was associated with a top-level navigation.
+  kNavigation = 0,
+  // A source that was not associated with a top-level navigation.
+  kEvent = 1,
+};

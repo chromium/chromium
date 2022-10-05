@@ -4,14 +4,9 @@
 
 module attribution_internals.mojom;
 
+import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// Represents AttributionSourceType.
-enum SourceType {
-  kNavigation,
-  kEvent,
-};
 
 // Represents `AttributionReport::EventLevelData::Id`.
 // Will be used to issue commands for individual reports.
@@ -94,7 +89,7 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  SourceType source_type;
+  attribution_reporting.mojom.SourceType source_type;
   int64 priority;
   DebugKey? debug_key;
   array<uint64> dedup_keys;
@@ -178,12 +173,6 @@ struct WebUITrigger {
   Status aggregatable_status;
 };
 
-// Represents `AttributionReport::ReportType`.
-enum ReportType {
-  kEventLevel,
-  kAggregatableAttribution,
-};
-
 // Struct containing reason for a source registration failure to be displayed
 // as a log by WebUI
 struct FailedSourceRegistration {
@@ -200,7 +189,7 @@ interface Observer {
 
   // Called when the reports in storage changed, indicating that the observer
   // should call `Handler::GetReports()`.
-  OnReportsChanged(ReportType report_type);
+  OnReportsChanged(attribution_reporting.mojom.ReportType report_type);
 
   // Called when a source-registration attempt fails.
   OnSourceRejected(WebUISource source);
@@ -233,7 +222,7 @@ interface Handler {
 
   // Returns all reports of the specified type contained in storage, including
   // those that are actively being sent.
-  GetReports(ReportType report_type) => (array<WebUIReport> reports);
+  GetReports(attribution_reporting.mojom.ReportType report_type) => (array<WebUIReport> reports);
 
   // Sends the given reports, ignoring delay, returning when the operation has
   // been completed and the reports have been cleared from storage.

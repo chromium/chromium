@@ -13,9 +13,13 @@ html_to_wrapper("html_wrapper_files") {
 # Copy (via creating sym links) all the other files into the same folder for
 # ts_library.
 copy("copy_files") {
-  deps = [ "//content/browser/attribution_reporting:mojo_bindings_webui_js" ]
+  deps = [
+    "//content/browser/attribution_reporting:internals_mojo_bindings_webui_js",
+    "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+  ]
   sources = [
     "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_internals.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/content/browser/attribution_reporting/attribution_reporting.mojom-webui.js",
     "attribution_internals.ts",
     "attribution_internals_table.ts",
     "table_model.ts",
@@ -33,6 +37,7 @@ ts_library("build_ts") {
     "attribution_internals_table.html.ts",
     "table_model.ts",
     "attribution_internals.mojom-webui.js",
+    "attribution_reporting.mojom-webui.js",
   ]
   deps = [
     "//ui/webui/resources:library",

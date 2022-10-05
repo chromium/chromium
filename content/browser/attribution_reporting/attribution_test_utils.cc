@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_reporting.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -1033,10 +1034,6 @@ std::ostream& operator<<(std::ostream& out, RateLimitResult result) {
       break;
   }
   return out;
-}
-
-std::ostream& operator<<(std::ostream& out, AttributionSourceType source_type) {
-  return out << AttributionSourceTypeToString(source_type);
 }
 
 std::ostream& operator<<(std::ostream& out,

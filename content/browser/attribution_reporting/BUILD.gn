@@ -10,8 +10,16 @@ proto_library("attribution_reporting_proto") {
 }
 
 mojom("mojo_bindings") {
+  sources = [ "attribution_reporting.mojom" ]
+  webui_module_path = "/"
+}
+
+mojom("internals_mojo_bindings") {
   sources = [ "attribution_internals.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_origin" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//url/mojom:url_mojom_origin",
+  ]
   webui_module_path = "/"
 
   cpp_typemaps = [
@@ -29,19 +37,10 @@ mojom("mojo_bindings") {
           mojom = "attribution_internals.mojom.ReportID"
           cpp = "::content::AttributionReport::Id"
         },
-        {
-          mojom = "attribution_internals.mojom.SourceType"
-          cpp = "::content::AttributionSourceType"
-        },
-        {
-          mojom = "attribution_internals.mojom.ReportType"
-          cpp = "::content::AttributionReport::Type"
-        },
       ]
       traits_headers = [
         "attribution_internals_mojom_traits.h",
         "attribution_report.h",
-        "attribution_source_type.h",
       ]
       traits_sources = [ "attribution_internals_mojom_traits.cc" ]
       traits_deps = [
