@@ -352,7 +352,13 @@ class SaveCardOfferObserver
 };
 
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
+// TODO(crbug.com/1366531): Fails on Mac 12.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveCardIcon DISABLED_SaveCardIcon
+#else
+#define MAYBE_SaveCardIcon SaveCardIcon
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, MAYBE_SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
   ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
