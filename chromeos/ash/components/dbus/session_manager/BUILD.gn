@@ -14,6 +14,7 @@ component("session_manager") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/arc:arc_proto",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
     "//chromeos/ash/components/dbus/userdataauth",
@@ -34,7 +35,6 @@ component("session_manager") {
 
 proto_library("login_manager_proto") {
   sources = [
-    "//third_party/cros_system_api/dbus/login_manager/arc.proto",
     "//third_party/cros_system_api/dbus/login_manager/login_screen_storage.proto",
     "//third_party/cros_system_api/dbus/login_manager/policy_descriptor.proto",
   ]
