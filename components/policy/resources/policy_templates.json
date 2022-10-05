@@ -794,6 +794,7 @@
       'policies': [
         'EnableMediaRouter',
         'ShowCastIconInToolbar',
+        'MediaRouterCastAllowAllIPs'
       ],
     },
     {
