@@ -134,7 +134,11 @@ function appendRow(peerConnectionElement, active, candidatePair, stats) {
   pairRow.children[2].innerText = localCandidate.networkType;
   // protocol must always be the same for the pair
   // so put it into the pair row above the candidate type.
+  // Add tcpType for local candidates.
   pairRow.children[4].innerText = localCandidate.protocol;
+  if (localCandidate.tcpType) {
+    pairRow.children[4].innerText += ' ' + localCandidate.tcpType;
+  }
 
   // Remote candidate.
   const remoteRow = findOrCreateGridRow(peerConnectionElement.id,
