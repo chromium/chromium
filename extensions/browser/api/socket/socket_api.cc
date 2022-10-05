@@ -129,17 +129,10 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
 
     AppFirewallHoleManager* manager =
         AppFirewallHoleManager::Get(browser_context());
-    std::unique_ptr<AppFirewallHole> hole(
-        manager->Open(type, local_address.port(), GetOriginId()).release());
-
+    std::unique_ptr<AppFirewallHole> hole =
+        manager->Open(type, local_address.port(), GetOriginId());
     if (!hole) {
       Respond(ErrorWithCode(-1, kFirewallFailure));
-      return;
-    }
-
-    Socket* socket = GetSocket(socket_id);
-    if (!socket) {
-      Respond(ErrorWithCode(-1, kSocketNotFoundError));
       return;
     }
 
