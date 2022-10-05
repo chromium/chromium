@@ -49,6 +49,7 @@
 
   .icon-active {
     height: 24px;
+    padding-inline-end: 16px;
     width: 24px;
   }
 </style>
@@ -79,8 +80,12 @@
     </div>
     <div class="layout vertical hid-selection-entry">
       <div id="hid-mouse-row" class="flex layout horizontal center">
+        <paper-spinner-lite class="icon-active"
+            hidden="[[!spinnerIsVisible_(mouseState_)]]" active>
+        </paper-spinner-lite>
         <hd-iron-icon id="mouse-icon" alt=""
-            icon1x="oobe-20:hid-mouse" icon2x="oobe-40:hid-mouse">
+            icon1x="oobe-20:hid-mouse" icon2x="oobe-40:hid-mouse"
+            hidden="[[spinnerIsVisible_(mouseState_)]]">
         </hd-iron-icon>
         <img id="mouse-tick" alt=""
             hidden="[[!tickIsVisible_(mouseState_)]]"
@@ -88,16 +93,17 @@
         <div id="mouse-label" aria-live="polite" class="flex">
           [[getMouseLabel_(locale, mouseState_, pointingDeviceName)]]
         </div>
-        <paper-spinner-lite class="icon-active"
-            hidden="[[!spinnerIsVisible_(mouseState_)]]" active>
-        </paper-spinner-lite>
       </div>
     </div>
     <div class="layout vertical hid-selection-entry">
       <div id="hid-keyboard-row" class="flex layout horizontal center"
           on-click="openPinDialog_">
+        <paper-spinner-lite class="icon-active"
+            hidden="[[!spinnerIsVisible_(keyboardState_)]]" active>
+        </paper-spinner-lite>
         <hd-iron-icon id="keyboard-icon" alt=""
-            icon1x="oobe-20:hid-keyboard" icon2x="oobe-40:hid-keyboard">
+            icon1x="oobe-20:hid-keyboard" icon2x="oobe-40:hid-keyboard"
+            hidden="[[spinnerIsVisible_(keyboardState_)]]">
         </hd-iron-icon>
         <img id="keyboard-tick" alt=""
             hidden="[[!tickIsVisible_(keyboardState_)]]"
@@ -105,9 +111,6 @@
         <div id="keyboard-label" aria-live="polite" class="flex">
           [[getKeyboardLabel_(locale, keyboardState_, keyboardDeviceName)]]
         </div>
-        <paper-spinner-lite class="icon-active"
-            hidden="[[!spinnerIsVisible_(keyboardState_)]]" active>
-        </paper-spinner-lite>
       </div>
     </div>
   </div>
