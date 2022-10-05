@@ -365,6 +365,7 @@ _CONFIG = [
             'gfx::RectFToSkRect',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
+            'gfx::ScaleInsets',
             'gfx::ScaleToCeiledSize',
             'gfx::ScaleToEnclosedRect',
             'gfx::ScaleToEnclosingRect',

@@ -529,6 +529,20 @@ void DocumentTransition::WillCommitCompositorFrame() {
     PauseRendering();
 }
 
+gfx::Insets DocumentTransition::GetViewportWidgetInsets() const {
+  if (!style_tracker_)
+    return gfx::Insets();
+
+  return style_tracker_->GetViewportWidgetInsets();
+}
+
+gfx::Size DocumentTransition::GetRootContainerSize() const {
+  if (!style_tracker_)
+    return gfx::Size();
+
+  return style_tracker_->GetRootContainerSize();
+}
+
 void DocumentTransition::PauseRendering() {
   DCHECK(!rendering_paused_scope_);
 

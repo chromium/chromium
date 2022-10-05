@@ -29,6 +29,8 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -581,9 +583,31 @@ PhysicalRect LayoutView::ViewRect() const {
   NOT_DESTROYED();
   if (ShouldUsePrintingLayout())
     return PhysicalRect(PhysicalOffset(), Size());
-  if (frame_view_)
-    return PhysicalRect(PhysicalOffset(), PhysicalSize(frame_view_->Size()));
-  return PhysicalRect();
+
+  if (!frame_view_)
+    return PhysicalRect();
+
+  if (frame_view_->GetFrame().IsOutermostMainFrame()) {
+    auto* supplement =
+        DocumentTransitionSupplement::FromIfExists(GetDocument());
+    if (supplement && !supplement->GetTransition()->IsIdle()) {
+      // If we're capturing a transition snapshot, the root transition needs to
+      // produce the snapshot at a known stable size, excluding all insetting
+      // UI like mobile URL bars and virtual keyboards.
+
+      // This adjustment should always be an expansion of the current viewport.
+      DCHECK_GE(supplement->GetTransition()->GetRootContainerSize().width(),
+                frame_view_->Size().width());
+      DCHECK_GE(supplement->GetTransition()->GetRootContainerSize().height(),
+                frame_view_->Size().height());
+
+      return PhysicalRect(
+          PhysicalOffset(),
+          PhysicalSize(supplement->GetTransition()->GetRootContainerSize()));
+    }
+  }
+
+  return PhysicalRect(PhysicalOffset(), PhysicalSize(frame_view_->Size()));
 }
 
 PhysicalRect LayoutView::OverflowClipRect(

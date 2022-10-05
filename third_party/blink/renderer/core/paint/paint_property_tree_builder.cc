@@ -2892,6 +2892,25 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
 
   context_.current.paint_offset += context_.repeating_paint_offset_adjustment;
 
+  // If a transition is in progress, the root transition container is shifted
+  // up and left to be at the origin "as-if all viewport-insetting UI were
+  // hidden". This is done so that the transition container is stable across
+  // navigations where the state of such UI can change (e.g. URL bar hidden ->
+  // shown). Offset painting of content so that it paints at the fixed viewport
+  // origin rather than behind the UI.
+  if (auto* supplement =
+          DocumentTransitionSupplement::FromIfExists(object_.GetDocument())) {
+    if (object_.IsDocumentElement() && !supplement->GetTransition()->IsIdle()) {
+      gfx::Insets inset =
+          supplement->GetTransition()->GetViewportWidgetInsets();
+      PhysicalOffset offset =
+          PhysicalOffset(LayoutUnit(inset.left()), LayoutUnit(inset.top()));
+      context_.current.paint_offset += offset;
+      context_.absolute_position.paint_offset += offset;
+      context_.fixed_position.paint_offset += offset;
+    }
+  }
+
   context_.current.additional_offset_to_layout_shift_root_delta +=
       context_.pending_additional_offset_to_layout_shift_root_delta;
   context_.pending_additional_offset_to_layout_shift_root_delta =

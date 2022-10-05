@@ -1001,10 +1001,11 @@ gfx::SizeF LocalFrameView::LargeViewportSizeForViewportUnits() const {
     // portals.
     if (frame_->IsOutermostMainFrame() && layout_size.width() &&
         viewport_width) {
-      float page_scale_at_layout_width = viewport_width / layout_size.width();
+      float layout_to_viewport_width_scale_factor =
+          viewport_width / layout_size.width();
       layout_size.Enlarge(0, (browser_controls.TotalHeight() -
                               browser_controls.TotalMinHeight()) /
-                                 page_scale_at_layout_width);
+                                 layout_to_viewport_width_scale_factor);
     }
   }
 

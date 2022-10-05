@@ -149,6 +149,15 @@ class DocumentTransitionStyleTracker
 
   VectorOf<Element> GetTransitioningElements() const;
 
+  // In physical pixels. The size we should use for the snapshot and pseudo
+  // elements. This is intended to be stable across navigations and expands the
+  // current viewport size to a state where all insetting UI is retracted.
+  gfx::Size GetRootContainerSize() const;
+
+  // In physical pixels. Returns how much viewport-insetting UI widgets such as
+  // the virtual keyboard or mobile URL bar are insetting the viewport.
+  gfx::Insets GetViewportWidgetInsets() const;
+
  private:
   class ImageWrapperPseudoElement;
 

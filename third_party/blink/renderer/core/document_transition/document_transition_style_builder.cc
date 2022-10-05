@@ -14,6 +14,7 @@
 namespace blink {
 namespace {
 
+const char* kTransitionRootName = "html::page-transition";
 const char* kContainerTagName = "html::page-transition-container";
 const char* kImageWrapperTagName = "html::page-transition-image-wrapper";
 const char* kIncomingImageTagName = "html::page-transition-incoming-image";
@@ -153,6 +154,13 @@ void DocumentTransitionStyleBuilder::AddContainerStyles(
       writing_mode_stream.str().c_str());
 
   AddContainerStyles(tag, rule_builder.ReleaseString());
+}
+
+void DocumentTransitionStyleBuilder::AddRootStyles(const String& rules) {
+  builder_.Append(kTransitionRootName);
+  builder_.Append("{ ");
+  builder_.Append(rules);
+  builder_.Append(" }");
 }
 
 }  // namespace blink

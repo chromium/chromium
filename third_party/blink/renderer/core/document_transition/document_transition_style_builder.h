@@ -26,8 +26,6 @@ class DocumentTransitionStyleBuilder {
   void AddSelector(const String& name, const String& tag);
   void AddPlusLighter(const String& tag);
 
-  void AddRules(const String& selector, const String& tag, const String& rules);
-
   void AddAnimationAndBlending(const String& tag,
                                const ContainerProperties& source_properties);
 
@@ -39,6 +37,8 @@ class DocumentTransitionStyleBuilder {
                           const ContainerProperties& properties,
                           WritingMode writing_mode);
 
+  void AddRootStyles(const String& rules);
+
   String Build();
 
  private:
@@ -48,6 +48,8 @@ class DocumentTransitionStyleBuilder {
   void AddObjectViewBox(const String& selector,
                         const String& tag,
                         const String& value);
+
+  void AddRules(const String& selector, const String& tag, const String& rules);
 
   StringBuilder builder_;
 };

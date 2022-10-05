@@ -135,6 +135,11 @@ class CORE_EXPORT DocumentTransition
 
   bool IsIdle() const { return state_ == State::kIdle; }
 
+  // In physical pixels. See comments on equivalent methods in
+  // DocumentTransitionStyleTracker for info.
+  gfx::Insets GetViewportWidgetInsets() const;
+  gfx::Size GetRootContainerSize() const;
+
  private:
   friend class DocumentTransitionTest;
   friend class AXDocumentTransitionTest;
