@@ -103,16 +103,20 @@ class UnretainedWrapper {
   template <typename U = T, typename I>
   explicit UnretainedWrapper(raw_ptr<U, I>&& o) : ptr_(std::move(o)) {}
 
+  template <typename U, typename I>
+  static void ReportIfDangling(const raw_ptr<U, I>& ptr) {
+    if constexpr (std::is_same_v<RawPtrType,
+                                 base::RawPtrBanDanglingIfSupported>) {
+      ptr.ReportIfDangling();
+    }
+  }
+  template <typename U>
+  static void ReportIfDangling(U* ptr) {}
+
   T* get() const {
-#if !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
     // `ptr_` is either a `raw_ptr` (if `T` is a supported type) or a regular
     // C++ pointer otherwise.
-    if constexpr (std::is_same_v<RawPtrType,
-                                 base::RawPtrBanDanglingIfSupported> &&
-                  !std::is_same_v<ImplType, T*>) {
-      ptr_.ReportIfDangling();
-    }
-#endif  // !defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+    ReportIfDangling(ptr_);
     return ptr_;
   }
 
