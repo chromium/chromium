@@ -136,11 +136,6 @@ class AppServiceProxyTest : public testing::Test {
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
 
-  AppServiceProxyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kAppServicePreferredAppsWithoutMojom);
-  }
-
   class FakeIconLoader : public apps::IconLoader {
    public:
     void FlushPendingCallbacks() {

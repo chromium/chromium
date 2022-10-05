@@ -10,8 +10,6 @@
 
 namespace apps {
 
-COMPONENT_EXPORT(APP_TYPES)
-BASE_DECLARE_FEATURE(kAppServicePreferredAppsWithoutMojom);
 COMPONENT_EXPORT(APP_TYPES) BASE_DECLARE_FEATURE(kAppServiceLaunchWithoutMojom);
 COMPONENT_EXPORT(APP_TYPES)
 BASE_DECLARE_FEATURE(kAppServiceSetPermissionWithoutMojom);

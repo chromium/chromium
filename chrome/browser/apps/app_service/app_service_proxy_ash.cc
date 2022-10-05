@@ -473,10 +473,6 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
 }
 
 void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
-  if (!base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
-    return;
-  }
-
   AppServiceProxyBase::InitializePreferredAppsForAllSubscribers();
   if (crosapi_subscriber_ && preferred_apps_impl_) {
     crosapi_subscriber_->InitializePreferredApps(
@@ -486,10 +482,6 @@ void AppServiceProxyAsh::InitializePreferredAppsForAllSubscribers() {
 
 void AppServiceProxyAsh::OnPreferredAppsChanged(
     PreferredAppChangesPtr changes) {
-  if (!base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
-    return;
-  }
-
   if (!crosapi_subscriber_) {
     AppServiceProxyBase::OnPreferredAppsChanged(std::move(changes));
     return;

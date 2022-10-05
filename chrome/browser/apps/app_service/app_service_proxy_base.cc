@@ -233,10 +233,6 @@ void AppServiceProxyBase::OnPreferredAppSet(
 void AppServiceProxyBase::OnSupportedLinksPreferenceChanged(
     const std::string& app_id,
     bool open_in_app) {
-  if (!base::FeatureList::IsEnabled(kAppServicePreferredAppsWithoutMojom)) {
-    return;
-  }
-
   for (const auto& iter : publishers_) {
     iter.second->OnSupportedLinksPreferenceChanged(app_id, open_in_app);
   }
