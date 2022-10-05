@@ -25,6 +25,38 @@ bool IsInlineContainerForNode(const NGBlockNode& node,
              node.Style().GetPosition());
 }
 
+NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
+    const NGPhysicalFragment& fragment,
+    const NGLayoutInputNode& container,
+    bool is_fragmentation_context_root) {
+  // If the |fragment| is not absolutely positioned, it's a valid anchor.
+  // https://tabatkins.github.io/specs/css-anchor-position/#determining
+  if (!fragment.IsOutOfFlowPositioned())
+    return NGLogicalAnchorQuery::SetOptions::kValidInOrder;
+
+  // If the OOF |fragment| is not in a block fragmentation context, it's a child
+  // of its containing block. Make it invalid.
+  DCHECK(fragment.GetLayoutObject());
+  if (!is_fragmentation_context_root)
+    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+
+  // |container| is null if it's an inline box.
+  if (!container.GetLayoutBox())
+    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+
+  // If the OOF |fragment| is in a block fragmentation context, it's a child of
+  // the fragmentation context root. If its containing block is the |container|,
+  // make it invalid.
+  const LayoutObject* layout_object = fragment.GetLayoutObject();
+  const LayoutObject* containing_block = layout_object->Container();
+  DCHECK(containing_block);
+  if (containing_block == container.GetLayoutBox())
+    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+  // Otherwise its containing block is a descendant of the block fragmentation
+  // context, so it's valid, but the call order is not in the tree order.
+  return NGLogicalAnchorQuery::SetOptions::kValidOutOfOrder;
+}
+
 }  // namespace
 
 void NGContainerFragmentBuilder::ReplaceChild(
@@ -44,25 +76,32 @@ NGLogicalAnchorQuery& NGContainerFragmentBuilder::EnsureAnchorQuery() {
 void NGContainerFragmentBuilder::PropagateChildAnchors(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset) {
+  absl::optional<NGLogicalAnchorQuery::SetOptions> options;
   if (child.IsBox()) {
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
     if (const AtomicString& anchor_name = child.Style().AnchorName();
         !anchor_name.IsNull()) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
+      options = AnchorQuerySetOptions(child, node_,
+                                      IsBlockFragmentationContextRoot());
       EnsureAnchorQuery().Set(
           anchor_name, child,
           LogicalRect{child_offset,
-                      child.Size().ConvertToLogical(GetWritingMode())});
+                      child.Size().ConvertToLogical(GetWritingMode())},
+          *options);
     }
   }
 
   // Propagate any descendants' anchor references.
   if (const NGPhysicalAnchorQuery* anchor_query = child.AnchorQuery()) {
+    if (!options) {
+      options = AnchorQuerySetOptions(child, node_,
+                                      IsBlockFragmentationContextRoot());
+    }
     const WritingModeConverter converter(GetWritingDirection(), child.Size());
-    EnsureAnchorQuery().SetFromPhysical(
-        *anchor_query, converter, child_offset,
-        /* is_invalid */ child.IsOutOfFlowPositioned());
+    EnsureAnchorQuery().SetFromPhysical(*anchor_query, converter, child_offset,
+                                        *options);
   }
 }
 

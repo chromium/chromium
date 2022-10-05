@@ -104,14 +104,25 @@ class CORE_EXPORT NGLogicalAnchorQuery
   const LogicalRect* Rect(const AtomicString& name) const;
   const NGPhysicalFragment* Fragment(const AtomicString& name) const;
 
+  enum class SetOptions {
+    // A valid entry. The call order is in the tree order.
+    kValidInOrder,
+    // A valid entry but the call order may not be in the tree order.
+    kValidOutOfOrder,
+    // An invalid entry.
+    kInvalid,
+  };
   void Set(const AtomicString& name,
            const NGPhysicalFragment& fragment,
-           const LogicalRect& rect);
-  void Set(const AtomicString& name, NGLogicalAnchorReference* reference);
+           const LogicalRect& rect,
+           SetOptions);
+  void Set(const AtomicString& name,
+           NGLogicalAnchorReference* reference,
+           bool maybe_out_of_order = false);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset,
-                       bool is_invalid);
+                       SetOptions);
 
   // Evaluate the |anchor_name| for the |anchor_value|. Returns |nullopt| if
   // the query is invalid (e.g., no targets or wrong axis.)
