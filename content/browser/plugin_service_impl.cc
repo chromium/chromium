@@ -54,6 +54,12 @@ namespace content {
 
 namespace {
 
+std::vector<WebPluginInfo> GetPluginsHelper() {
+  std::vector<WebPluginInfo> plugins;
+  PluginList::Singleton()->GetPlugins(&plugins);
+  return plugins;
+}
+
 // Callback set on the PluginList to assert that plugin loading happens on the
 // correct thread.
 void WillLoadPluginsCallback(base::SequenceChecker* sequence_checker) {
@@ -260,13 +266,13 @@ std::u16string PluginServiceImpl::GetPluginDisplayNameByPath(
 }
 
 void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
-  base::PostTaskAndReplyWithResult(
-      plugin_list_task_runner_.get(), FROM_HERE, base::BindOnce([]() {
-        std::vector<WebPluginInfo> plugins;
-        PluginList::Singleton()->GetPlugins(&plugins);
-        return plugins;
-      }),
-      std::move(callback));
+  base::PostTaskAndReplyWithResult(plugin_list_task_runner_.get(), FROM_HERE,
+                                   base::BindOnce(&GetPluginsHelper),
+                                   std::move(callback));
+}
+
+std::vector<WebPluginInfo> PluginServiceImpl::GetPluginsSynchronous() {
+  return GetPluginsHelper();
 }
 
 void PluginServiceImpl::RegisterPlugins() {
