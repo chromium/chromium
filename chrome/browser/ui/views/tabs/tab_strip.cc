@@ -1839,7 +1839,16 @@ void TabStrip::Layout() {
     SetBounds(0, 0, width, GetLayoutConstant(TAB_HEIGHT));
   }
 
-  tab_container_->SetBoundsRect(GetLocalBounds());
+  if (tab_container_->bounds() != GetLocalBounds()) {
+    tab_container_->SetBoundsRect(GetLocalBounds());
+  } else {
+    // We still need to layout in this case, as the available width may have
+    // changed, which can change layout outcomes (e.g. affecting tab
+    // visibility). See https://crbug.com/1370459.
+    // TODO(crbug.com/1371301): TabContainer should observe available width
+    // changes and invalidate its layout when needed.
+    tab_container_->Layout();
+  }
   drag_context_->SetBoundsRect(GetLocalBounds());
 }
 
