@@ -43,19 +43,11 @@ struct CORE_EXPORT NGGridPlacementData {
            row_explicit_count == other.row_explicit_count;
   }
 
-  bool HasStandalonePlacement(GridTrackSizingDirection track_direction) const {
+  bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
     const wtf_size_t subgrid_span_size = (track_direction == kForColumns)
                                              ? column_subgrid_span_size
                                              : row_subgrid_span_size;
     return subgrid_span_size == kNotFound;
-  }
-
-  void SetSubgridSpanSize(wtf_size_t subgrid_span_size,
-                          GridTrackSizingDirection track_direction) {
-    if (track_direction == kForColumns)
-      column_subgrid_span_size = subgrid_span_size;
-    else
-      row_subgrid_span_size = subgrid_span_size;
   }
 
   NGGridLineResolver line_resolver;

@@ -264,7 +264,11 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
 
   const auto& node = Node();
   auto placement_data = PlacementData();
-  auto grid_items = node.GridItemsIncludingSubgridded(&placement_data);
+  auto grid_items = node.GridItemsIncludingSubgridded(placement_data);
+
+  placement_data.column_start_offset =
+      node.CachedPlacementData().column_start_offset;
+  placement_data.row_start_offset = node.CachedPlacementData().row_start_offset;
 
   NGGridLayoutData layout_data;
   LayoutUnit intrinsic_block_size;
@@ -417,8 +421,14 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
   auto placement_data = PlacementData();
 
   // If we have inline size containment ignore all children.
-  if (!node.ShouldApplyInlineSizeContainment())
-    grid_items = node.GridItemsIncludingSubgridded(&placement_data);
+  if (!node.ShouldApplyInlineSizeContainment()) {
+    grid_items = node.GridItemsIncludingSubgridded(placement_data);
+
+    placement_data.column_start_offset =
+        node.CachedPlacementData().column_start_offset;
+    placement_data.row_start_offset =
+        node.CachedPlacementData().row_start_offset;
+  }
 
   NGGridLayoutData layout_data(
       LayoutTrackCollection(placement_data, kForColumns, &grid_items),
@@ -633,6 +643,7 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
     LayoutUnit* intrinsic_block_size) {
   DCHECK(grid_items && layout_data && intrinsic_block_size);
 
+  const auto& node = Node();
   const auto& container_style = Style();
   const auto& constraint_space = ConstraintSpace();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
@@ -692,14 +703,14 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
     // would only apply when we have only flexible track(s).
-    if (grid_items->IsEmpty() && Node().HasLineIfEmpty()) {
+    if (grid_items->IsEmpty() && node.HasLineIfEmpty()) {
       *intrinsic_block_size = std::max(
           *intrinsic_block_size, border_scrollbar_padding.BlockSum() +
-                                     Node().EmptyLineBlockSize(BreakToken()));
+                                     node.EmptyLineBlockSize(BreakToken()));
     }
 
     *intrinsic_block_size = ClampIntrinsicBlockSize(
-        constraint_space, Node(), BreakToken(), border_scrollbar_padding,
+        constraint_space, node, BreakToken(), border_scrollbar_padding,
         *intrinsic_block_size);
   }
 
@@ -2715,7 +2726,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
       IsParallelWritingMode(container_constraint_space.GetWritingMode(),
                             grid_item.node.Style().GetWritingMode());
 
-  if (grid_item.HasSubgriddedAxis(kForColumns)) {
+  if (grid_item.has_subgridded_columns) {
     const auto& range_indices = is_parallel_grid_item
                                     ? grid_item.column_range_indices
                                     : grid_item.row_range_indices;
@@ -2727,7 +2738,7 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
             range_indices.begin, range_indices.end, kForColumns)));
   }
 
-  if (grid_item.HasSubgriddedAxis(kForRows)) {
+  if (grid_item.has_subgridded_rows) {
     const auto& range_indices = is_parallel_grid_item
                                     ? grid_item.row_range_indices
                                     : grid_item.column_range_indices;

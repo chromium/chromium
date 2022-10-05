@@ -14,9 +14,9 @@ namespace {
 // Additionally will determine:
 //  - The behavior of 'auto' via the |auto_behavior| out-parameter.
 //  - If the alignment is safe via the |is_overflow_safe| out-parameter.
-AxisEdge AxisEdgeFromItemPosition(const bool is_inline_axis,
-                                  const bool is_replaced,
-                                  const bool is_out_of_flow,
+AxisEdge AxisEdgeFromItemPosition(bool is_inline_axis,
+                                  bool is_replaced,
+                                  bool is_out_of_flow,
                                   const ComputedStyle& item_style,
                                   const ComputedStyle& container_style,
                                   NGAutoBehavior* auto_behavior,
@@ -118,15 +118,20 @@ AxisEdge AxisEdgeFromItemPosition(const bool is_inline_axis,
 
 }  // namespace
 
-GridItemData::GridItemData(const NGBlockNode node,
-                           const ComputedStyle& container_style)
+GridItemData::GridItemData(
+    const NGBlockNode node,
+    const ComputedStyle& container_style,
+    bool parent_must_consider_grid_items_for_column_sizing,
+    bool parent_must_consider_grid_items_for_row_sizing)
     : node(node),
       parent_grid(nullptr),
+      has_subgridded_columns(false),
+      has_subgridded_rows(false),
       is_sizing_dependent_on_block_size(false),
-      is_considered_for_column_sizing(true),
-      is_considered_for_row_sizing(true),
-      can_subgrid_items_in_column_direction(false),
-      can_subgrid_items_in_row_direction(false) {
+      is_considered_for_column_sizing(false),
+      is_considered_for_row_sizing(false),
+      must_consider_grid_items_for_column_sizing(false),
+      must_consider_grid_items_for_row_sizing(false) {
   const auto& style = node.Style();
 
   const bool is_replaced = node.IsReplaced();
@@ -147,36 +152,63 @@ GridItemData::GridItemData(const NGBlockNode node,
 
   const auto container_writing_direction =
       container_style.GetWritingDirection();
+  const auto container_writing_mode =
+      container_writing_direction.GetWritingMode();
   const auto item_writing_mode = style.GetWritingMode();
 
-  column_baseline_writing_mode = DetermineBaselineWritingMode(
-      container_writing_direction.GetWritingMode(), item_writing_mode,
-      /* is_parallel_context */ false);
-  row_baseline_writing_mode = DetermineBaselineWritingMode(
-      container_writing_direction.GetWritingMode(), item_writing_mode,
-      /* is_parallel_context */ true);
+  column_baseline_writing_mode =
+      DetermineBaselineWritingMode(container_writing_mode, item_writing_mode,
+                                   /* is_parallel_context */ false);
+  row_baseline_writing_mode =
+      DetermineBaselineWritingMode(container_writing_mode, item_writing_mode,
+                                   /* is_parallel_context */ true);
 
   column_baseline_group = DetermineBaselineGroup(
       container_writing_direction, column_baseline_writing_mode,
       /* is_parallel_context */ false,
       /* is_last_baseline */ inline_axis_alignment == AxisEdge::kLastBaseline);
+
   row_baseline_group = DetermineBaselineGroup(
       container_writing_direction, row_baseline_writing_mode,
       /* is_parallel_context */ true,
       /* is_last_baseline */ block_axis_alignment == AxisEdge::kLastBaseline);
+
+  if (node.IsGrid()) {
+    // TODO(ethavar): Don't consider subgrids with size containment.
+    has_subgridded_columns = style.GridTemplateColumns().IsSubgriddedAxis();
+    has_subgridded_rows = style.GridTemplateRows().IsSubgriddedAxis();
+  }
+
+  const bool item_is_parallel_with_container =
+      IsParallelWritingMode(container_writing_mode, item_writing_mode);
+
+  if (parent_must_consider_grid_items_for_column_sizing) {
+    is_considered_for_column_sizing = item_is_parallel_with_container
+                                          ? !has_subgridded_columns
+                                          : !has_subgridded_rows;
+    must_consider_grid_items_for_column_sizing =
+        !is_considered_for_column_sizing;
+  }
+
+  if (parent_must_consider_grid_items_for_row_sizing) {
+    is_considered_for_row_sizing = item_is_parallel_with_container
+                                       ? !has_subgridded_rows
+                                       : !has_subgridded_columns;
+    must_consider_grid_items_for_row_sizing = !is_considered_for_row_sizing;
+  }
 }
 
 void GridItemData::SetAlignmentFallback(
-    const GridTrackSizingDirection track_direction,
+    GridTrackSizingDirection track_direction,
     const ComputedStyle& container_style,
-    const bool has_synthesized_baseline) {
+    bool has_synthesized_baseline) {
   // Alignment fallback is only possible when baseline alignment is specified.
   if (!IsBaselineSpecifiedForDirection(track_direction))
     return;
 
   auto CanParticipateInBaselineAlignment =
       [&](const ComputedStyle& container_style,
-          const GridTrackSizingDirection track_direction) -> bool {
+          GridTrackSizingDirection track_direction) -> bool {
     // "If baseline alignment is specified on a grid item whose size in that
     // axis depends on the size of an intrinsically-sized track (whose size is
     // therefore dependent on both the item’s size and baseline alignment,

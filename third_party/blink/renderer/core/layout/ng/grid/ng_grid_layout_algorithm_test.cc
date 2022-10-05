@@ -41,13 +41,13 @@ class NGGridLayoutAlgorithmTest
   void SetUp() override { NGBaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
-    auto placement_data = algorithm.PlacementData();
+    const auto& node = algorithm.Node();
     auto grid_items =
-        algorithm.Node().GridItemsIncludingSubgridded(&placement_data);
+        node.GridItemsIncludingSubgridded(algorithm.PlacementData());
 
     LayoutUnit unused_intrinsic_block_size;
-    algorithm.ComputeGridGeometry(placement_data, &grid_items, &layout_data_,
-                                  &unused_intrinsic_block_size);
+    algorithm.ComputeGridGeometry(node.CachedPlacementData(), &grid_items,
+                                  &layout_data_, &unused_intrinsic_block_size);
 
     *cached_grid_items_ = grid_items.item_data;
   }

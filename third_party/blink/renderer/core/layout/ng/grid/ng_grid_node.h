@@ -22,10 +22,16 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
   const NGGridPlacementData& CachedPlacementData() const;
 
   GridItems GridItemsIncludingSubgridded(
-      NGGridPlacementData* placement_data) const;
+      const NGGridPlacementData& placement_data) const;
 
  private:
-  GridItems ConstructGridItems(NGGridPlacementData* placement_data) const;
+  GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
+                               bool* has_subgridded_items) const;
+  GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
+                               const ComputedStyle& root_grid_style,
+                               bool must_consider_grid_items_for_column_sizing,
+                               bool must_consider_grid_items_for_row_sizing,
+                               bool* has_subgridded_items = nullptr) const;
 };
 
 template <>
