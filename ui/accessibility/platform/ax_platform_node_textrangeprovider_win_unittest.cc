@@ -7123,8 +7123,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   AXNode* root_node = GetRoot();
   AXNodePosition::AXPositionInstance range_start =
-      AXNodePosition::CreateTreePosition(tree_data.tree_id,
-                                         generic_container_2.id,
+      AXNodePosition::CreateTreePosition(*GetTree(), generic_container_2.id,
                                          /*child_index*/ 3);
   AXNodePosition::AXPositionInstance range_end = range_start->Clone();
 

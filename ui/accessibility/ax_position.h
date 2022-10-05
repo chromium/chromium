@@ -253,21 +253,25 @@ class AXPosition {
     return new_position;
   }
 
+  static AXPositionInstance CreateTreePosition(const AXTree& tree,
+                                               AXNodeID anchor_id,
+                                               int child_index) {
+    return CreateTreePosition(tree.GetAXTreeID(), anchor_id, child_index);
+  }
+
   static AXPositionInstance CreateTreePositionAtStartOfAnchor(
       const AXNode& anchor) {
     // Initialize the child index:
     // - For a leaf, the child index will be BEFORE_TEXT.
     // - Otherwise the child index will be 0.
     int child_index = IsLeafNodeForTreePosition(anchor) ? BEFORE_TEXT : 0;
-    AXTreeID tree_id = anchor.tree()->GetAXTreeID();
-    return CreateTreePosition(tree_id, anchor.id(), child_index);
+    return CreateTreePosition(*anchor.tree(), anchor.id(), child_index);
   }
 
   static AXPositionInstance CreateTreePositionAtEndOfAnchor(
       const AXNode& anchor) {
     // Initialize the child index to the anchor's child count.
-    AXTreeID tree_id = anchor.tree()->GetAXTreeID();
-    return CreateTreePosition(tree_id, anchor.id(),
+    return CreateTreePosition(*anchor.tree(), anchor.id(),
                               anchor.GetChildCountCrossingTreeBoundary());
   }
 
@@ -2433,14 +2437,14 @@ class AXPosition {
     if (IsNullPosition())
       return CreateNullPosition();
 
-    AXTreeID parent_tree_id = AXTreeIDUnknown();
-    AXNodeID parent_anchor_id = kInvalidAXNodeID;
     const AXNode* parent_anchor = GetAnchor()->GetParentCrossingTreeBoundary();
     if (!parent_anchor)
       return CreateNullPosition();
-    parent_tree_id = parent_anchor->tree()->GetAXTreeID();
-    parent_anchor_id = parent_anchor->id();
-    DCHECK_NE(parent_tree_id, AXTreeIDUnknown());
+
+    const AXTree* tree = parent_anchor->tree();
+    DCHECK(tree);
+
+    AXNodeID parent_anchor_id = parent_anchor->id();
     DCHECK_NE(parent_anchor_id, kInvalidAXNodeID);
 
     switch (kind_) {
@@ -2469,8 +2473,7 @@ class AXPosition {
         // last child in its parent anchor.
         int child_index = AnchorIndexInParent();
         if (AtEndOfAnchor())
-          return CreateTreePosition(parent_tree_id, parent_anchor_id,
-                                    (child_index + 1));
+          return CreateTreePosition(*tree, parent_anchor_id, (child_index + 1));
 
         switch (move_direction) {
           case ax::mojom::MoveDirection::kNone:
@@ -2487,8 +2490,7 @@ class AXPosition {
             // "AnchorIndexInParent" always returns a child index that is before
             // any "object replacement character" in our parent, we use that for
             // both situations.
-            return CreateTreePosition(parent_tree_id, parent_anchor_id,
-                                      child_index);
+            return CreateTreePosition(*tree, parent_anchor_id, child_index);
           case ax::mojom::MoveDirection::kForward:
             // "move_direction" is only important when this position is an
             // "embedded object in parent", i.e., when this position's anchor is
@@ -2500,8 +2502,7 @@ class AXPosition {
             // "AnchorIndexInParent" for the child index.
             if (!AtStartOfAnchor() && IsEmbeddedObjectInParent())
               ++child_index;
-            return CreateTreePosition(parent_tree_id, parent_anchor_id,
-                                      child_index);
+            return CreateTreePosition(*tree, parent_anchor_id, child_index);
         }
       }
 
@@ -2621,6 +2622,7 @@ class AXPosition {
         // because our "AtEndOfLine" predicate takes into account trailing line
         // breaks, which would create false positives.
 
+        const AXTreeID& parent_tree_id = parent_anchor->tree()->GetAXTreeID();
         AXPositionInstance parent_position = CreateTextPosition(
             parent_tree_id, parent_anchor_id, parent_offset, parent_affinity);
         if (AtEndOfAnchor() && !parent_position->AtStartOfAnchor() &&
