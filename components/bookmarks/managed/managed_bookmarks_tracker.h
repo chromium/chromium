@@ -64,6 +64,7 @@ class ManagedBookmarksTracker {
  private:
   std::u16string GetBookmarksFolderTitle() const;
 
+  void ReloadManagedBookmarksFolderTitle();
   void ReloadManagedBookmarks();
 
   void UpdateBookmarks(const BookmarkNode* folder,

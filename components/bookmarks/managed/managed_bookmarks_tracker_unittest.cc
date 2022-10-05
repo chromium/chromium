@@ -199,6 +199,29 @@ TEST_F(ManagedBookmarksTrackerTest, LoadInitialWithTitle) {
   EXPECT_TRUE(NodeMatchesValue(managed_node(), expected));
 }
 
+TEST_F(ManagedBookmarksTrackerTest, DynamicRefreshOfTitle) {
+  // Set the managed folder title.
+  const char kExpectedFolderName[] = "foo";
+  prefs_.SetString(prefs::kManagedBookmarksFolderName, kExpectedFolderName);
+  // Set a policy before loading the model.
+  SetManagedPref(prefs::kManagedBookmarks, CreateTestTree());
+  CreateModel();
+  EXPECT_TRUE(model_->bookmark_bar_node()->children().empty());
+  EXPECT_TRUE(model_->other_node()->children().empty());
+  EXPECT_FALSE(managed_node()->children().empty());
+  EXPECT_TRUE(managed_node()->IsVisible());
+
+  base::Value::Dict expected(
+      CreateFolder(kExpectedFolderName, CreateTestTree()));
+  EXPECT_TRUE(NodeMatchesValue(managed_node(), expected));
+
+  // Set new managed folder title.
+  const char kNewFolderName[] = "bar";
+  prefs_.SetString(prefs::kManagedBookmarksFolderName, kNewFolderName);
+  expected = CreateFolder(kNewFolderName, CreateTestTree());
+  EXPECT_TRUE(NodeMatchesValue(managed_node(), expected));
+}
+
 TEST_F(ManagedBookmarksTrackerTest, SwapNodes) {
   SetManagedPref(prefs::kManagedBookmarks, CreateTestTree());
   CreateModel();

@@ -81,6 +81,11 @@ void ManagedBookmarksTracker::Init(BookmarkPermanentNode* managed_node) {
       prefs::kManagedBookmarks,
       base::BindRepeating(&ManagedBookmarksTracker::ReloadManagedBookmarks,
                           base::Unretained(this)));
+  registrar_.Add(
+      prefs::kManagedBookmarksFolderName,
+      base::BindRepeating(
+          &ManagedBookmarksTracker::ReloadManagedBookmarksFolderTitle,
+          base::Unretained(this)));
   // Reload now just in case something changed since the initial load started.
   // Note that  we must not load managed bookmarks until the cloud policy system
   // has been fully initialized (which will make our preference a managed
@@ -103,11 +108,14 @@ std::u16string ManagedBookmarksTracker::GetBookmarksFolderTitle() const {
                                     base::UTF8ToUTF16(domain));
 }
 
-void ManagedBookmarksTracker::ReloadManagedBookmarks() {
-  // In case the user just signed into or out of the account.
+void ManagedBookmarksTracker::ReloadManagedBookmarksFolderTitle() {
   model_->SetTitle(managed_node_, GetBookmarksFolderTitle(),
                    bookmarks::metrics::BookmarkEditSource::kOther);
+}
 
+void ManagedBookmarksTracker::ReloadManagedBookmarks() {
+  // In case the user just signed into or out of the account.
+  ReloadManagedBookmarksFolderTitle();
   // Recursively update all the managed bookmarks and folders.
   const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
   UpdateBookmarks(managed_node_, list);
@@ -189,4 +197,4 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
   return true;
 }
 
-}  // namespace policy
+}  // namespace bookmarks
