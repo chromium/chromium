@@ -71,12 +71,6 @@ config("runtime_library") {
   asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
-
-  # Prevent Mac OS X AssertMacros.h (included by system header) from defining
-  # macros that collide with common names, like 'check', 'require', and
-  # 'verify'.
-  # http://opensource.apple.com/source/CarbonHeaders/CarbonHeaders-18.1/AssertMacros.h
-  defines = [ "__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0" ]
 }
 
 # On Mac, this is used for everything except static libraries.
