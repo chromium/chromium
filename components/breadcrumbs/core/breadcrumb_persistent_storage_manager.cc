@@ -54,10 +54,10 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
   if (file_valid) {
     const size_t remaining_length = kPersistedFilesizeInBytes - position;
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/1327267): Remove this once crashes in this function on
-    // CrOS are understood. The first and last values are delimiters to aid in
-    // finding this array on the stack, as CrOS crashes are hard to debug.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1327267): Remove this once crashes in this function are
+    // understood. The first and last values are delimiters to aid in finding
+    // this array on the stack, as CrOS and Android crashes are hard to debug.
     size_t debug_data[] = {0x1234beef,
                            reinterpret_cast<size_t>(file.data()),
                            file.length(),
@@ -67,7 +67,7 @@ void DoWriteEventsToFile(const base::FilePath& file_path,
                            write_counter_at_last_full_rewrite,
                            0x5678beef};
     base::debug::Alias(&debug_data);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
     char* data = reinterpret_cast<char*>(file.data());
     base::strlcpy(&data[position], events.c_str(), remaining_length);
