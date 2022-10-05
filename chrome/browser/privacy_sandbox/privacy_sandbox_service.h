@@ -290,6 +290,14 @@ class PrivacySandboxService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxNoPromptEnabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           FirstPartySetsNotRelevantMetricAllowedCookies);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           FirstPartySetsNotRelevantMetricBlockedCookies);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           FirstPartySetsEnabledMetric);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
+                           FirstPartySetsDisabledMetric);
 
   // Should be used only for tests when mocking the service.
   PrivacySandboxService();
@@ -319,6 +327,21 @@ class PrivacySandboxService : public KeyedService {
     kMaxValue = kPSEnabledFlocDisabledBlockAll,
   };
 
+  // Contains all possible states of first party sets preference.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Must be kept in sync with the FirstPartySetsState enum in
+  // histograms/enums.xml.
+  enum class FirstPartySetsState {
+    // The user allows all cookies, or blocks all cookies.
+    kFpsNotRelevant = 0,
+    // The user blocks third-party cookies, and has FPS enabled.
+    kFpsEnabled = 1,
+    // The user blocks third-party cookies, and has FPS disabled.
+    kFpsDisabled = 2,
+    kMaxValue = kFpsDisabled,
+  };
+
   // Contains the possible states of a users Privacy Sandbox overall settings.
   // Must be kept in sync with SettingsPrivacySandboxStartupStates in
   // histograms/enums.xml
@@ -344,6 +367,9 @@ class PrivacySandboxService : public KeyedService {
     // tools/metrics/histograms/enums.xml
     kMaxValue = kNoPromptRequiredDisabled,
   };
+
+  // Helper function to log first party sets state.
+  void RecordFirstPartySetsStateHistogram(FirstPartySetsState state);
 
   // Helper function to actually make the metrics call for
   // LogPrivacySandboxState.

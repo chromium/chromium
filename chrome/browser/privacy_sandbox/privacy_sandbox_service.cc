@@ -369,6 +369,11 @@ void PrivacySandboxService::SetFledgeJoiningAllowed(
   }
 }
 
+void PrivacySandboxService::RecordFirstPartySetsStateHistogram(
+    PrivacySandboxService::FirstPartySetsState state) {
+  base::UmaHistogramEnumeration("Settings.FirstPartySets.State", state);
+}
+
 void PrivacySandboxService::RecordPrivacySandboxHistogram(
     PrivacySandboxService::SettingsPrivacySandboxEnabled state) {
   base::UmaHistogramEnumeration("Settings.PrivacySandbox.Enabled", state);
@@ -456,6 +461,17 @@ void PrivacySandboxService::LogPrivacySandboxState() {
   // Do not record metrics for non-regular profiles.
   if (!IsRegularProfile(profile_type_))
     return;
+
+  auto fps_status = FirstPartySetsState::kFpsNotRelevant;
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
+          CONTENT_SETTING_BLOCK) {
+    fps_status =
+        pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled)
+            ? FirstPartySetsState::kFpsEnabled
+            : FirstPartySetsState::kFpsDisabled;
+  }
+  RecordFirstPartySetsStateHistogram(fps_status);
 
   // Start by recording any metrics for Privacy Sandbox 3.
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {

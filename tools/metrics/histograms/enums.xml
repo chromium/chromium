@@ -43635,6 +43635,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="DB data corrupted"/>
 </enum>
 
+<enum name="FirstPartySetsState">
+  <int value="0" label="Not Relevant"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Disabled"/>
+</enum>
+
 <enum name="FirstRunLaunchSource">
   <summary>
     External applications/promotions that triggered Chrome launch and First Run.

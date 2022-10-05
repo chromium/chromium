@@ -88,6 +88,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.FirstPartySets.State" enum="FirstPartySetsState"
+    expires_after="2023-04-04">
+  <owner>alimariam@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <summary>
+    Records either the state of first party sets (FPS) or not relevant,
+    depending on the user's cookie settings. This is logged on startup.
+  </summary>
+</histogram>
+
 <histogram name="Settings.GivenShowHomeButton_HomePageIsNewTabPage"
     enum="Boolean" expires_after="2023-02-26">
   <owner>mpearson@chromium.org</owner>

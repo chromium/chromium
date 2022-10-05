@@ -62,6 +62,7 @@ using browsing_topics::Topic;
 using privacy_sandbox::CanonicalTopic;
 using testing::ElementsAre;
 
+const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
 const char kPrivacySandboxStartupHistogram[] =
     "Settings.PrivacySandbox.StartupState";
 
@@ -1462,6 +1463,84 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptNoticeWaiting) {
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
       PrivacySandboxService::PSStartupStates::kPromptWaiting, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       FirstPartySetsNotRelevantMetricAllowedCookies) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+
+  histogram_tester.ExpectUniqueSample(
+      kFirstPartySetsStateHistogram,
+      PrivacySandboxService::FirstPartySetsState::kFpsNotRelevant, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       FirstPartySetsNotRelevantMetricBlockedCookies) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+
+  histogram_tester.ExpectUniqueSample(
+      kFirstPartySetsStateHistogram,
+      PrivacySandboxService::FirstPartySetsState::kFpsNotRelevant, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+
+  histogram_tester.ExpectUniqueSample(
+      kFirstPartySetsStateHistogram,
+      PrivacySandboxService::FirstPartySetsState::kFpsEnabled, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(false));
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+
+  histogram_tester.ExpectUniqueSample(
+      kFirstPartySetsStateHistogram,
+      PrivacySandboxService::FirstPartySetsState::kFpsDisabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptConsentWaiting) {
