@@ -424,6 +424,13 @@ using TokenFrameMap = std::unordered_map<blink::LocalFrameToken,
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
+auto& GetDocumentTokenMap() {
+  static base::NoDestructor<std::unordered_map<
+      blink::DocumentToken, RenderFrameHostImpl*, blink::DocumentToken::Hasher>>
+      map;
+  return *map;
+}
+
 BackForwardCacheMetrics::NotRestoredReason
 RendererEvictionReasonToNotRestoredReason(
     blink::mojom::RendererEvictionReason reason) {
@@ -1545,6 +1552,29 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
           .Run(
               "Unknown LocalFrame made RenderFrameHost::FromFrameToken "
               "request.");
+    }
+    return nullptr;
+  }
+
+  return it->second;
+}
+
+// static
+RenderFrameHostImpl* RenderFrameHostImpl::FromDocumentToken(
+    int process_id,
+    const blink::DocumentToken& document_token,
+    mojo::ReportBadMessageCallback* process_mismatch_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const auto it = GetDocumentTokenMap().find(document_token);
+  if (it == GetDocumentTokenMap().end())
+    return nullptr;
+
+  if (it->second->GetProcess()->GetID() != process_id) {
+    if (process_mismatch_callback) {
+      SYSLOG(WARNING)
+          << "Denying illegal RenderFrameHost::FromDocumentToken request.";
+      std::move(*process_mismatch_callback)
+          .Run("process ID does not match requested DocumentToken");
     }
     return nullptr;
   }
@@ -14554,6 +14584,9 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)
     : token_(token), weak_factory_(&document) {
+  auto [_, inserted] = GetDocumentTokenMap().insert({token_, &document});
+  CHECK(inserted);
+
   // Only create page object for the main document as the PageImpl is 1:1 with
   // main document.
   if (!document.GetParent()) {
@@ -14574,6 +14607,10 @@ RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
   // Explicitly clear all user data here, so that the other fields of
   // DocumentAssociatedData are still valid while user data is being destroyed.
   ClearAllUserData();
+
+  // Last in case any DocumentService / DocumentUserData service destructors try
+  // to look up RenderFrameHosts by DocumentToken.
+  CHECK_EQ(1u, GetDocumentTokenMap().erase(token_));
 }
 
 void RenderFrameHostImpl::DocumentAssociatedData::

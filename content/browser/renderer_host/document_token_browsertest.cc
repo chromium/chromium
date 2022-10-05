@@ -96,32 +96,46 @@ class DocumentTokenBrowserTest : public ContentBrowserTest {
     SCOPED_TRACE(target_url.spec());
     // Capture the FrameTreeNode now; when a navigation commits, the current
     // RenderFrameHost may change.
+    RenderFrameHostImpl* const old_render_frame_host =
+        static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
     FrameTreeNode* const frame_tree_node =
-        static_cast<RenderFrameHostImpl*>(adapter.render_frame_host())
-            ->frame_tree_node();
-    const blink::DocumentToken old_token = GetBrowserSideToken(adapter);
+        old_render_frame_host->frame_tree_node();
+    const int old_process_id = old_render_frame_host->GetProcess()->GetID();
+    const blink::LocalFrameToken old_frame_token =
+        old_render_frame_host->GetFrameToken();
+    const blink::DocumentToken old_document_token =
+        GetBrowserSideToken(old_render_frame_host);
+    const WeakDocumentPtr old_weak_document_ptr =
+        old_render_frame_host->GetWeakDocumentPtr();
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
 
     // Start a new navigation in the main frame. The navigation is still
     // ongoing, so `DocumentToken` should not be updated yet.
     TestNavigationManager nav_manager(
-        WebContents::FromRenderFrameHost(adapter.render_frame_host()),
-        target_url);
+        WebContents::FromRenderFrameHost(old_render_frame_host), target_url);
     EXPECT_TRUE(BeginNavigateToURLFromRenderer(adapter, target_url));
-    EXPECT_TRUE(VerifyMatchingTokens(adapter));
-    EXPECT_EQ(old_token, GetBrowserSideToken(adapter));
+    EXPECT_TRUE(VerifyMatchingTokens(old_render_frame_host));
+    EXPECT_EQ(old_document_token, GetBrowserSideToken(old_render_frame_host));
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
 
     // Just before the request is actually issued, the navigation is still
     // ongoing, so `DocumentToken` should not be updated yet.
     EXPECT_TRUE(nav_manager.WaitForRequestStart());
-    EXPECT_TRUE(VerifyMatchingTokens(adapter));
-    EXPECT_EQ(old_token, GetBrowserSideToken(adapter));
+    EXPECT_TRUE(VerifyMatchingTokens(old_render_frame_host));
+    EXPECT_EQ(old_document_token, GetBrowserSideToken(old_render_frame_host));
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
 
     if (ExpectedResponse::kYes == expect_response) {
       // Just before reading the response, the navigation is still ongoing, so
       // `DocumentToken` should not be updated yet.
       EXPECT_TRUE(nav_manager.WaitForResponse());
-      EXPECT_TRUE(VerifyMatchingTokens(adapter));
-      EXPECT_EQ(old_token, GetBrowserSideToken(adapter));
+      EXPECT_TRUE(VerifyMatchingTokens(old_render_frame_host));
+      EXPECT_EQ(old_document_token, GetBrowserSideToken(old_render_frame_host));
+      EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                           old_process_id, old_document_token));
     }
 
     // Once a cross-document navigation completes, the document token should be
@@ -129,12 +143,31 @@ class DocumentTokenBrowserTest : public ContentBrowserTest {
     nav_manager.WaitForNavigationFinished();
     // The RenderFrameHost may have changed; use the FrameTreeNode captured
     // above instead.
-    EXPECT_EQ(target_url,
-              frame_tree_node->current_frame_host()->GetLastCommittedURL());
-    EXPECT_TRUE(VerifyMatchingTokens(frame_tree_node));
-    const blink::DocumentToken new_token = GetBrowserSideToken(frame_tree_node);
-    EXPECT_NE(new_token, old_token);
-    return new_token;
+    RenderFrameHostImpl* const new_render_frame_host =
+        frame_tree_node->current_frame_host();
+    EXPECT_EQ(target_url, new_render_frame_host->GetLastCommittedURL());
+    EXPECT_TRUE(VerifyMatchingTokens(new_render_frame_host));
+    const blink::LocalFrameToken new_frame_token =
+        new_render_frame_host->GetFrameToken();
+    const blink::DocumentToken new_document_token =
+        GetBrowserSideToken(new_render_frame_host);
+    EXPECT_NE(new_document_token, old_document_token);
+    if (new_frame_token == old_frame_token) {
+      // If the RenderFrameHost is reused, it should no longer be possible to
+      // use the old token to look up the RenderFrameHost.
+      EXPECT_EQ(nullptr, RenderFrameHostImpl::FromDocumentToken(
+                             old_process_id, old_document_token));
+    } else if (old_weak_document_ptr.AsRenderFrameHostIfValid()) {
+      // Otherwise, if the old RenderFrameHost is still around, it should still
+      // map to the same RenderFrameHost.
+      EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                           old_process_id, old_document_token));
+    }
+    EXPECT_EQ(
+        new_render_frame_host,
+        RenderFrameHostImpl::FromDocumentToken(
+            new_render_frame_host->GetProcess()->GetID(), new_document_token));
+    return new_document_token;
   }
 };
 
@@ -218,13 +251,22 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, NewWindowBasic) {
 
     // Capture the FrameTreeNode now; when a navigation commits, the current
     // RenderFrameHost may change.
+    RenderFrameHostImpl* const old_render_frame_host =
+        static_cast<RenderFrameHostImpl*>(new_contents->GetPrimaryMainFrame());
     FrameTreeNode* const frame_tree_node =
-        static_cast<RenderFrameHostImpl*>(new_contents->GetPrimaryMainFrame())
-            ->frame_tree_node();
-    const blink::DocumentToken old_token = GetBrowserSideToken(new_contents);
+        old_render_frame_host->frame_tree_node();
+    const int old_process_id = old_render_frame_host->GetProcess()->GetID();
+    const blink::LocalFrameToken old_frame_token =
+        old_render_frame_host->GetFrameToken();
+    const blink::DocumentToken old_document_token =
+        GetBrowserSideToken(new_contents);
+    const WeakDocumentPtr old_weak_document_ptr =
+        old_render_frame_host->GetWeakDocumentPtr();
 
     EXPECT_TRUE(VerifyMatchingTokens(new_contents));
-    EXPECT_EQ(old_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_document_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
     // Even after creating a new window, the original `WebContents` should still
     // have the same `DocumentToken`.
     EXPECT_EQ(seen_tokens[0], GetBrowserSideToken(web_contents()));
@@ -233,7 +275,9 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, NewWindowBasic) {
     // ongoing, so `DocumentToken` should not be updated yet.
     EXPECT_TRUE(nav_manager.WaitForRequestStart());
     EXPECT_TRUE(VerifyMatchingTokens(new_contents));
-    EXPECT_EQ(old_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_document_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
     // The original `WebContents` should still have the same `DocumentToken`.
     EXPECT_EQ(seen_tokens[0], GetBrowserSideToken(web_contents()));
 
@@ -241,7 +285,9 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, NewWindowBasic) {
     // `DocumentToken` should not be updated yet.
     EXPECT_TRUE(nav_manager.WaitForResponse());
     EXPECT_TRUE(VerifyMatchingTokens(new_contents));
-    EXPECT_EQ(old_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_document_token, GetBrowserSideToken(new_contents));
+    EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                         old_process_id, old_document_token));
     // The original `WebContents` should still have the same `DocumentToken`.
     EXPECT_EQ(seen_tokens[0], GetBrowserSideToken(web_contents()));
 
@@ -250,12 +296,32 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, NewWindowBasic) {
     nav_manager.WaitForNavigationFinished();
     // The RenderFrameHost may have changed; use the FrameTreeNode captured
     // above instead.
+    RenderFrameHostImpl* const new_render_frame_host =
+        frame_tree_node->current_frame_host();
     EXPECT_EQ(embedded_test_server()->GetURL("a.com", "/title1.html"),
-              frame_tree_node->current_frame_host()->GetLastCommittedURL());
-    EXPECT_TRUE(VerifyMatchingTokens(frame_tree_node));
-    const blink::DocumentToken new_token = GetBrowserSideToken(frame_tree_node);
-    EXPECT_NE(new_token, old_token);
-    seen_tokens.push_back(new_token);
+              new_render_frame_host->GetLastCommittedURL());
+    EXPECT_TRUE(VerifyMatchingTokens(new_render_frame_host));
+    const blink::LocalFrameToken new_frame_token =
+        new_render_frame_host->GetFrameToken();
+    const blink::DocumentToken new_document_token =
+        GetBrowserSideToken(new_render_frame_host);
+    EXPECT_NE(new_document_token, old_document_token);
+    if (new_frame_token == old_frame_token) {
+      // If the RenderFrameHost is reused, it should no longer be possible to
+      // use the old token to look up the RenderFrameHost.
+      EXPECT_EQ(nullptr, RenderFrameHostImpl::FromDocumentToken(
+                             old_process_id, old_document_token));
+    } else if (old_weak_document_ptr.AsRenderFrameHostIfValid()) {
+      // Otherwise, if the old RenderFrameHost is still around, it should still
+      // map to the same RenderFrameHost.
+      EXPECT_EQ(old_render_frame_host, RenderFrameHostImpl::FromDocumentToken(
+                                           old_process_id, old_document_token));
+    }
+    EXPECT_EQ(
+        new_render_frame_host,
+        RenderFrameHostImpl::FromDocumentToken(
+            new_render_frame_host->GetProcess()->GetID(), new_document_token));
+    seen_tokens.push_back(new_document_token);
     // The original `WebContents` should still have the same `DocumentToken`.
     EXPECT_EQ(seen_tokens[0], GetBrowserSideToken(web_contents()));
   }
@@ -388,7 +454,10 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const blink::DocumentToken token = GetBrowserSideToken(web_contents());
+  const int old_process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
+  const blink::DocumentToken old_document_token =
+      GetBrowserSideToken(web_contents());
 
   // Cause the renderer to crash.
   RenderProcessHostWatcher crash_observer(
@@ -399,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
 
   // After a crash, the DocumentToken should still be the same even though the
   // renderer process is gone..
-  EXPECT_EQ(token, GetBrowserSideToken(web_contents()));
+  EXPECT_EQ(old_document_token, GetBrowserSideToken(web_contents()));
 
   // But when a live RenderFrame is needed again, RenderDocument should force a
   // new RenderFrameHost, and thus, a new DocumentToken. The remainder of this
@@ -410,11 +479,20 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html"));
   shell()->LoadURL(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
+  const int new_process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID();
   const blink::DocumentToken token_after_navigation_started =
       GetBrowserSideToken(web_contents());
-  EXPECT_NE(token_after_navigation_started, token);
+  EXPECT_NE(token_after_navigation_started, old_document_token);
   const WeakDocumentPtr document_weak_ptr =
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr();
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            RenderFrameHostImpl::FromDocumentToken(
+                new_process_id, token_after_navigation_started));
+  // The old RenderFrameHost should be gone at this point, so a document token
+  // lookup should fail.
+  EXPECT_EQ(nullptr, RenderFrameHostImpl::FromDocumentToken(
+                         old_process_id, old_document_token));
 
   // After the navigation finishes, the RenderFrameHost will still use the same
   // DocumentToken, since no new DocumentAssociatedData was created. The latter
@@ -424,9 +502,12 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, CrashThenReload) {
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   const blink::DocumentToken token_after_navigation_finished =
       GetBrowserSideToken(web_contents());
-  EXPECT_NE(token_after_navigation_finished, token);
+  EXPECT_NE(token_after_navigation_finished, old_document_token);
   EXPECT_EQ(token_after_navigation_finished, token_after_navigation_started);
   EXPECT_NE(document_weak_ptr.AsRenderFrameHostIfValid(), nullptr);
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            RenderFrameHostImpl::FromDocumentToken(
+                new_process_id, token_after_navigation_started));
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest,
@@ -434,9 +515,11 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const blink::DocumentToken token = GetBrowserSideToken(web_contents());
-  const WeakDocumentPtr document_weak_ptr =
-      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr();
+  RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
+  const blink::LocalFrameToken frame_token = main_frame->GetFrameToken();
+  const blink::DocumentToken old_document_token =
+      GetBrowserSideToken(main_frame);
+  const WeakDocumentPtr document_weak_ptr = main_frame->GetWeakDocumentPtr();
 
   // Cause the renderer to crash.
   RenderProcessHostWatcher crash_observer(
@@ -450,22 +533,48 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest,
   // created before the renderer is re-created; a typical failure in this path
   // will manifest as a mismatch between the browser and renderer-side document
   // tokens.
-  web_contents()
-      ->GetPrimaryFrameTree()
-      .root()
+  main_frame->frame_tree_node()
       ->render_manager()
       ->InitializeMainRenderFrameForImmediateUse();
+  // The RenderFrameHost should be reused.
+  ASSERT_EQ(frame_token,
+            web_contents()->GetPrimaryMainFrame()->GetFrameToken());
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   // The re-created RenderFrame should have a distinct document token.
-  const blink::DocumentToken new_token = GetBrowserSideToken(web_contents());
-  EXPECT_NE(new_token, token);
+  const blink::DocumentToken new_document_token =
+      GetBrowserSideToken(web_contents());
+  EXPECT_NE(new_document_token, old_document_token);
   // The previous DocumentWeakPtr should be invalidated since the
   // DocumentAssociatedData was re-created.
   EXPECT_FALSE(document_weak_ptr.AsRenderFrameHostIfValid());
+  // Even though the RenderFrameHost did not change, only a lookup using the new
+  // DocumentToken should succeed.
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame(),
+            RenderFrameHostImpl::FromDocumentToken(
+                web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                new_document_token));
+  EXPECT_EQ(nullptr,
+            RenderFrameHostImpl::FromDocumentToken(
+                web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                old_document_token));
 }
 
 // TODO(https://crbug.com/1362938): Add tests for bfcache navigations and
 // prerender activations.
+
+IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, MismatchedProcessID) {
+  RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
+  bool called = false;
+  mojo::ReportBadMessageCallback callback =
+      base::BindLambdaForTesting([&called](base::StringPiece reason) {
+        called = true;
+        EXPECT_EQ("process ID does not match requested DocumentToken", reason);
+      });
+  EXPECT_EQ(nullptr, RenderFrameHostImpl::FromDocumentToken(
+                         main_frame->GetProcess()->GetID() + 1,
+                         main_frame->GetDocumentToken(), &callback));
+  EXPECT_TRUE(called);
+}
 
 }  // namespace
 

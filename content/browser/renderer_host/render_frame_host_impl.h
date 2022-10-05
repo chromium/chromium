@@ -305,9 +305,29 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   static RenderFrameHostImpl* FromID(GlobalRenderFrameHostId id);
   static RenderFrameHostImpl* FromID(int process_id, int routing_id);
+  // Returns the `RenderFrameHostImpl` with the given `blink::LocalFrameToken`,
+  // or `nullptr` if no such `RenderFrameHostImpl` exists.
+  //
+  // Note that though local frame tokens are globally unique, the process ID is
+  // required as a second factor to reduce the risk of inadvertent info leaks
+  // leading to security failures. If there is a `RenderFrameHostImpl` with a
+  // matching local frame token but not a matching process ID, invokes
+  // `process_mismatch_callback` (if non-null) and returns `nullptr`.
   static RenderFrameHostImpl* FromFrameToken(
       int process_id,
       const blink::LocalFrameToken& frame_token,
+      mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
+  // Returns the `RenderFrameHostImpl` with the given `blink::DocumentToken`, or
+  // `nullptr` if no such `RenderFrameHostImpl` exists.
+  //
+  // Note that though document tokens are globally unique, the process ID is
+  // required as a second factor to reduce the risk of inadvertent info leaks
+  // leading to security failures. If there is a `RenderFrameHostImpl` with a
+  // matching document token but not a matching process ID, invokes
+  // `process_mismatch_callback` (if non-null) and returns `nullptr`.
+  static RenderFrameHostImpl* FromDocumentToken(
+      int process_id,
+      const blink::DocumentToken& document_token,
       mojo::ReportBadMessageCallback* process_mismatch_callback = nullptr);
 
   static RenderFrameHostImpl* FromAXTreeID(ui::AXTreeID ax_tree_id);
