@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
@@ -23,6 +24,49 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::cros_healthd {
+namespace internal {
+
+template <typename MojoInterfaceType>
+class ServiceProvider
+    : public chromeos::mojo_service_manager::mojom::ServiceProvider {
+ public:
+  explicit ServiceProvider(MojoInterfaceType* impl) : impl_(impl) {}
+  ServiceProvider(const ServiceProvider&) = delete;
+  ServiceProvider& operator=(const ServiceProvider&) = delete;
+  ~ServiceProvider() override = default;
+
+  // Binds the provider.
+  mojo::PendingRemote<chromeos::mojo_service_manager::mojom::ServiceProvider>
+  BindNewPipeAndPassRemote() {
+    return provider_.BindNewPipeAndPassRemote();
+  }
+
+  // Flush the mojo receivers for testing.
+  void FlushForTesting() {
+    provider_.FlushForTesting();
+    service_receiver_set_.FlushForTesting();
+  }
+
+ private:
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override {
+    service_receiver_set_.Add(
+        impl_, mojo::PendingReceiver<MojoInterfaceType>(std::move(receiver)));
+  }
+
+  // The provider to receive requests from the service manager.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_{this};
+  // The pointer to the implementation of the mojo interface.
+  MojoInterfaceType* const impl_;
+  // The receiver set to keeps the connections from clients to access the mojo
+  // service.
+  mojo::ReceiverSet<MojoInterfaceType> service_receiver_set_;
+};
+
+}  // namespace internal
 
 // This class serves as a fake for all four of cros_healthd's mojo interfaces.
 // The factory methods bind to receivers held within FakeCrosHealtdService, and
@@ -327,6 +371,14 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   // Used as the response to any ProbeMultipleProcessInfo IPCs received.
   mojom::MultipleProcessResultPtr multiple_process_response_{
       mojom::MultipleProcessResult::New()};
+
+  // Service providers to provide the services.
+  internal::ServiceProvider<mojom::CrosHealthdDiagnosticsService>
+      diagnostics_provider_{this};
+  internal::ServiceProvider<mojom::CrosHealthdEventService> event_provider_{
+      this};
+  internal::ServiceProvider<mojom::CrosHealthdProbeService> probe_provider_{
+      this};
 
   // Allows the remote end to call the probe, diagnostics and event service
   // methods.

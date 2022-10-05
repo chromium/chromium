@@ -280,13 +280,6 @@ const char kChildWallpaperLarge[] = "child-wallpaper-large";
 // non-user-writable JPEG file).
 const char kChildWallpaperSmall[] = "child-wallpaper-small";
 
-// Make ash use the chromeos service manager to bootstrap mojo connection to
-// cros_healthd.
-// TODO(b/236953728): This is a temporary flag for migration. remove it after
-// fully sync with chromeos.
-const char kCrosHealthdUsesServiceManager[] =
-    "cros-healthd-uses-service-manager";
-
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
 
