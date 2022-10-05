@@ -671,6 +671,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.FontProvider.ProductSansRegular.LoadSuccess"
+    enum="Boolean" expires_after="2023-09-23">
+  <owner>eic@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <summary>
+    Records whether the ProductSans-Regular was successfully loaded in the Font
+    Provider Api.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
     enum="FormInputAccessoryAction" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>
