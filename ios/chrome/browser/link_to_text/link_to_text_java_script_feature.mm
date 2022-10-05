@@ -75,9 +75,9 @@ void LinkToTextJavaScriptFeature::GetLinkToText(
 void LinkToTextJavaScriptFeature::RunGenerationJS(
     web::WebFrame* frame,
     base::OnceCallback<void(const base::Value*)> callback) {
-  CallJavaScriptFunction(
-      frame, kGetLinkToTextFunction, /* parameters= */ {}, std::move(callback),
-      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs));
+  CallJavaScriptFunction(frame, kGetLinkToTextFunction, /* parameters= */ {},
+                         std::move(callback),
+                         link_to_text::kLinkGenerationTimeout);
 }
 
 // static

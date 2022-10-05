@@ -50,7 +50,7 @@ shared_highlighting::LinkGenerationError OutcomeToError(
 }
 
 BOOL IsLinkGenerationTimeout(base::TimeDelta latency) {
-  return latency.InMilliseconds() >= kLinkGenerationTimeoutInMs;
+  return latency >= kLinkGenerationTimeout;
 }
 
 }  // namespace link_to_text

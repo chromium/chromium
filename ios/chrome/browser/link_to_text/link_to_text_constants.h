@@ -5,16 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_LINK_TO_TEXT_LINK_TO_TEXT_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace link_to_text {
 
-// Number of milliseconds before timing out link generation requests.
-extern const double kLinkGenerationTimeoutInMs;
-
-// Number of seconds before timing out when checking preconditions. Uses a short
-// timeout for the time that the main thread can spin waiting for a response,
-// and a much longer timeout for the callbacks created by the WebState.
-extern const double kPreconditionsTimeoutInSeconds;
-extern const double kPreconditionsWebStateTimeoutInSeconds;
+// Duration before timing out link generation requests.
+constexpr base::TimeDelta kLinkGenerationTimeout = base::Milliseconds(500);
 
 }  // namespace link_to_text
 

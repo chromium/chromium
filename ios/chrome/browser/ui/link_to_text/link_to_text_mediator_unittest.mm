@@ -501,8 +501,8 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   base::HistogramTester histogram_tester;
 
   SetLinkToTextResponse(nullptr, /*zoom=*/0);
-  fake_js_feature_.set_latency(
-      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs + 10));
+  fake_js_feature_.set_latency(link_to_text::kLinkGenerationTimeout +
+                               base::Milliseconds(10));
 
   __block BOOL callback_invoked = NO;
   [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {

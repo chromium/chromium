@@ -33,7 +33,6 @@ source_set("internal") {
   sources = [
     "link_generation_outcome.h",
     "link_to_text_constants.h",
-    "link_to_text_constants.mm",
     "link_to_text_utils.h",
     "link_to_text_utils.mm",
   ]
