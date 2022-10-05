@@ -6,8 +6,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
+#include "components/password_manager/core/browser/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -23,6 +22,12 @@ constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
 
 constexpr int kTestErrorListVersion = 2;
+
+constexpr int kInternalError = 8;
+constexpr int kDeveloperError = 10;
+constexpr int kBackendGeneric = 11009;
+constexpr int kInvalidData = 11011;
+constexpr int kUnexpectedError = 11013;
 
 void EnableUPMFeatureWithTestParams(
     base::test::ScopedFeatureList* feature_list) {
@@ -93,16 +98,15 @@ TEST_F(PasswordManagerEvictionUtilTest, EvictsUser) {
 
   base::HistogramTester histogram_tester;
 
-  password_manager_upm_eviction::EvictCurrentUser(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError),
-      pref_service());
+  password_manager_upm_eviction::EvictCurrentUser(kInternalError,
+                                                  pref_service());
 
   EXPECT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors));
   EXPECT_EQ(pref_service()->GetInteger(
                 password_manager::prefs::
                     kUnenrolledFromGoogleMobileServicesAfterApiErrorCode),
-            static_cast<int>(AndroidBackendAPIErrorCode::kInternalError));
+            kInternalError);
   EXPECT_EQ(pref_service()->GetInteger(
                 password_manager::prefs::
                     kUnenrolledFromGoogleMobileServicesWithErrorListVersion),
@@ -149,7 +153,7 @@ TEST_F(PasswordManagerEvictionUtilTest, ReenrollsUser) {
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError));
+      kInternalError);
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesWithErrorListVersion,
@@ -192,7 +196,7 @@ TEST_F(PasswordManagerEvictionUtilTest,
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError));
+      kInternalError);
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesWithErrorListVersion,
@@ -212,7 +216,7 @@ TEST_F(PasswordManagerEvictionUtilTest,
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError));
+      kInternalError);
   pref_service()->SetInteger(
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesWithErrorListVersion,
@@ -239,40 +243,40 @@ TEST_F(PasswordManagerEvictionUtilTest, ShouldNotIgnoreByDefault) {
   feature_list()->InitAndEnableFeature(
       password_manager::features::kUnifiedPasswordManagerAndroid);
 
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldIgnoreOnApiError(kInternalError));
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, ShouldNotRetryByDefault) {
   feature_list()->InitAndEnableFeature(
       password_manager::features::kUnifiedPasswordManagerAndroid);
 
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldRetryOnApiError(kInternalError));
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, ShouldIgnoreOnlyListedError) {
   EnableUPMFeatureWithTestParams(feature_list());
 
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kBackendGeneric)));
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError)));
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldIgnoreOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kUnexpectedError)));
+  EXPECT_TRUE(
+      password_manager_upm_eviction::ShouldIgnoreOnApiError(kInternalError));
+  EXPECT_TRUE(
+      password_manager_upm_eviction::ShouldIgnoreOnApiError(kBackendGeneric));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldIgnoreOnApiError(kDeveloperError));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldIgnoreOnApiError(kUnexpectedError));
 }
 
 TEST_F(PasswordManagerEvictionUtilTest, ShouldRetryOnlyListedError) {
   EnableUPMFeatureWithTestParams(feature_list());
 
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kDeveloperError)));
-  EXPECT_TRUE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInvalidData)));
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kInternalError)));
-  EXPECT_FALSE(password_manager_upm_eviction::ShouldRetryOnApiError(
-      static_cast<int>(AndroidBackendAPIErrorCode::kUnexpectedError)));
+  EXPECT_TRUE(
+      password_manager_upm_eviction::ShouldRetryOnApiError(kDeveloperError));
+  EXPECT_TRUE(
+      password_manager_upm_eviction::ShouldRetryOnApiError(kInvalidData));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldRetryOnApiError(kInternalError));
+  EXPECT_FALSE(
+      password_manager_upm_eviction::ShouldRetryOnApiError(kUnexpectedError));
 }

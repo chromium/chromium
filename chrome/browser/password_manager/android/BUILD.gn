@@ -43,8 +43,6 @@ source_set("backend") {
   ]
 
   sources = [
-    "password_manager_eviction_util.cc",
-    "password_manager_eviction_util.h",
     "password_manager_lifecycle_helper.cc",
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
@@ -419,7 +417,6 @@ source_set("unit_tests") {
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
-    "password_manager_eviction_util_unittest.cc",
     "password_manager_settings_service_android_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
