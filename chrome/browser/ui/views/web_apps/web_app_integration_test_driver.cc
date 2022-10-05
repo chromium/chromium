@@ -1919,9 +1919,9 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   SkBitmap icon_bitmap;
   base::RunLoop run_loop;
 
+  NavigateTabbedBrowserToSite(icon_url, NavigationMode::kNewTab);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  NavigateTabbedBrowserToSite(icon_url, NavigationMode::kNewTab);
 
   web_contents->DownloadImage(
       icon_url, false, gfx::Size(), 0, false,

@@ -142,6 +142,19 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrect) {
   helper_.CheckAppInListIconCorrect(Site::kStandalone);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrectFails) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);  // green icon
+  EXPECT_NONFATAL_FAILURE(helper_.CheckAppInListIconCorrect(Site::kMinimalUi),
+                          "expected_color");  // black icon
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       CheckAppInListIconCorrectAfterInstallPolicyApp) {
+  helper_.InstallPolicyApp(Site::kStandalone, ShortcutOptions::kWithShortcut,
+                           WindowOptions::kWindowed, InstallMode::kWebApp);
+  helper_.CheckAppInListIconCorrect(Site::kStandalone);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigation) {
   helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckAppNavigation(Site::kStandalone);
