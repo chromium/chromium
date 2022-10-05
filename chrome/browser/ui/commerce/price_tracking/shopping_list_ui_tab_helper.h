@@ -22,7 +22,6 @@ class GURL;
 class PrefService;
 
 namespace content {
-class Page;
 class WebContents;
 }  // namespace content
 
@@ -57,7 +56,8 @@ class ShoppingListUiTabHelper
   const GURL& GetProductImageURL();
 
   // content::WebContentsObserver implementation
-  void PrimaryPageChanged(content::Page& page) override;
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
 
   // bookmarks::BaseBookmarkModelObserver
   void BookmarkModelChanged() override;

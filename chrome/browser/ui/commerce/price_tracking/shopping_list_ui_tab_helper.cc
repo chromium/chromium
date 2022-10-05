@@ -15,7 +15,6 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -84,7 +83,8 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShouldShowPriceTrackFUEBubble, true);
 }
 
-void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
+void ShoppingListUiTabHelper::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
 
