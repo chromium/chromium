@@ -662,7 +662,7 @@
     },
     {
       name: "CSSFontFaceSrcTechParsing",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "CSSFontFamilyMath",
@@ -2494,7 +2494,7 @@
     },
     {
       name: "SupportsFontFormatTech",
-      status: "experimental"
+      status: "stable"
     },
     {
       // When a Web application calls getDisplayMedia() and asks for video,
@@ -2697,7 +2697,7 @@
     },
     {
       name: "VariableCOLRV1",
-      status: "test",
+      status: "stable",
       base_feature: "VariableCOLRV1",
     },
     {
