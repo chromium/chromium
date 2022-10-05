@@ -13,11 +13,9 @@ import subprocess
 import sys
 import logging
 
+
 third_party_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from compile_src import compile_src_for_node
-
 
 def check_or_write_file(filepath, content, check):
     if check:
