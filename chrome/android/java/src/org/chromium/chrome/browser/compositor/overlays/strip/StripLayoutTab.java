@@ -496,10 +496,11 @@ public class StripLayoutTab implements VirtualView {
 
     /**
      * @param show Whether or not the close button is allowed to be shown.
+     * @param animate Whether or not to animate the close button showing/hiding.
      */
-    public void setCanShowCloseButton(boolean show) {
+    public void setCanShowCloseButton(boolean show, boolean animate) {
         mCanShowCloseButton = show;
-        checkCloseButtonVisibility(true);
+        checkCloseButtonVisibility(animate);
     }
 
     /**

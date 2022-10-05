@@ -144,7 +144,10 @@ public class StripLayoutHelperTest {
     @Test
     @Feature({"Accessibility"})
     public void testSimpleTabOrder() {
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_MEDIUM);
         initializeTest(false, false, 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
     }
@@ -158,7 +161,10 @@ public class StripLayoutHelperTest {
     @Test
     @Feature({"Accessibility"})
     public void testTabOrderWithIndex() {
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
         initializeTest(false, false, 1);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Tabs should be in left to right order regardless of index
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(1));
@@ -172,7 +178,10 @@ public class StripLayoutHelperTest {
     @Test
     @Feature({"Accessibility"})
     public void testTabOrderRtl() {
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
         initializeTest(true, false, 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Tabs should be in linear order even in RTL.
         // Android will take care of reversing it.
@@ -187,7 +196,10 @@ public class StripLayoutHelperTest {
     @Test
     @Feature({"Accessibility"})
     public void testIncognitoAccessibilityDescriptions() {
+        TabUiFeatureUtilities.setTabMinWidthForTesting(TAB_WIDTH_SMALL);
         initializeTest(false, true, 0);
+        mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         assertTabStripAndOrder(getExpectedAccessibilityDescriptions(0));
     }
@@ -241,12 +253,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Close btn should be visible on the selected tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close btn is hidden on unselected tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -263,12 +275,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.tabSelected(1, 3, 0, false);
 
         // Close btn should be hidden on the selected tab as its an edge tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
         // Close btn is hidden on unselected tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(false);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(false, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -290,12 +302,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
         // Close button is visible for the rest of the tabs.
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
     }
 
     @Test
@@ -318,12 +330,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close button is visible for the rest of the tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -344,11 +356,11 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close button is visible for all tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
     }
 
     @Test
@@ -370,12 +382,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close btn should be visible for rest of the tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -400,12 +412,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close button is visible for the rest of the tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[3]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(false, false);
     }
 
     @Test
@@ -426,12 +438,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(false, false);
         // Close button is visible for the rest of the tabs.
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[4]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(true, false);
     }
 
     @Test
@@ -453,12 +465,12 @@ public class StripLayoutHelperTest {
 
         // Assert
         // Close button is visible for the rest of the tabs.
-        Mockito.verify(tabs[0]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[1]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[2]).setCanShowCloseButton(true);
-        Mockito.verify(tabs[3]).setCanShowCloseButton(true);
+        Mockito.verify(tabs[0]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[1]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[2]).setCanShowCloseButton(true, false);
+        Mockito.verify(tabs[3]).setCanShowCloseButton(true, false);
         // Close btn should be hidden for the partially visible edge tab.
-        Mockito.verify(tabs[4]).setCanShowCloseButton(false);
+        Mockito.verify(tabs[4]).setCanShowCloseButton(false, false);
     }
 
     @Test

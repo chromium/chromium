@@ -747,11 +747,13 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         for (int i = 0; i < count; i++) {
             final StripLayoutTab tab = mStripTabs[i];
-            if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_MEDIUM) {
-                mStripTabs[i].setCanShowCloseButton(shouldShowCloseButton(tab, i));
-            } else if (TabUiFeatureUtilities.getTabMinWidth() == TAB_WIDTH_SMALL) {
-                mStripTabs[i].setCanShowCloseButton(tab.getWidth() >= TAB_WIDTH_MEDIUM
-                        || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab, i)));
+            if (mMinTabWidth == TAB_WIDTH_MEDIUM) {
+                boolean canShowCloseButton = shouldShowCloseButton(tab, i);
+                mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
+            } else if (mMinTabWidth == TAB_WIDTH_SMALL) {
+                boolean canShowCloseButton = tab.getWidth() >= TAB_WIDTH_MEDIUM
+                        || (tab.getId() == selectedTab.getId() && shouldShowCloseButton(tab, i));
+                mStripTabs[i].setCanShowCloseButton(canShowCloseButton, !mIsFirstLayoutPass);
             }
         }
     }
@@ -1371,7 +1373,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void pushStackerPropertiesToTab(StripLayoutTab tab) {
-        tab.setCanShowCloseButton(mStripStacker.canShowCloseButton());
+        // The close button is visible by default. If it should be hidden on tab creation, do not
+        // animate the fade-out. See (https://crbug.com/1342654).
+        boolean shouldShowCloseButton =
+                (!mTabStripImpEnabled) || mCachedTabWidth >= TAB_WIDTH_MEDIUM;
+        tab.setCanShowCloseButton(
+                mStripStacker.canShowCloseButton() && shouldShowCloseButton, false);
         // TODO(dtrainor): Push more properties as they are added (title text slide, etc?)
     }
 
