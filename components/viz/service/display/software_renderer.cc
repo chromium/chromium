@@ -103,8 +103,10 @@ void SoftwareRenderer::BeginDrawingFrame() {
 
 void SoftwareRenderer::FinishDrawingFrame() {
   TRACE_EVENT0("viz", "SoftwareRenderer::FinishDrawingFrame");
-  current_framebuffer_canvas_.reset();
+  // `current_canvas_` may be pointing to `current_framebuffer_canvas_`. Make
+  // sure to reset it before destroying `current_framebuffer_canvas_`.
   current_canvas_ = nullptr;
+  current_framebuffer_canvas_.reset();
 
   if (root_canvas_)
     output_device_->EndPaint();
@@ -136,11 +138,13 @@ void SoftwareRenderer::EnsureScissorTestDisabled() {
 void SoftwareRenderer::BindFramebufferToOutputSurface() {
   DCHECK(!root_canvas_);
 
-  current_framebuffer_canvas_.reset();
   root_canvas_ = output_device_->BeginPaint(current_frame()->root_damage_rect);
   if (!root_canvas_)
     output_device_->EndPaint();
+  // `current_canvas_` may be pointing to `current_framebuffer_canvas_`. Make
+  // sure to re-assign it before destroying `current_framebuffer_canvas_`
   current_canvas_ = root_canvas_;
+  current_framebuffer_canvas_.reset();
 }
 
 void SoftwareRenderer::BindFramebufferToTexture(
