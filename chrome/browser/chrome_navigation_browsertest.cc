@@ -2612,7 +2612,7 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
              {{"stored_sites_max_size", base::NumberToString(3)},
               {"should_persist_across_restarts", "true"}}}};
     // Disable full site isolation so we can observe effects of COOP isolation.
-    const std::vector<base::Feature> kDisabledFeatures = {
+    const std::vector<base::test::FeatureRef> kDisabledFeatures = {
         features::kSitePerProcess};
     feature_list_.InitWithFeaturesAndParameters(kEnabledFeatures,
                                                 kDisabledFeatures);

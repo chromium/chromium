@@ -155,7 +155,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
                      FeatureHash,
                      FeatureEqualOperator>
       features_with_params_;
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest, Basic) {

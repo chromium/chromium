@@ -104,7 +104,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
             bool guest_profile = false) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (enable_feature)
       enabled_features.emplace_back(kAnnouncementNotification, parameters);
     else
