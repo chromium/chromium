@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_APP_MANAGER_IMPL_H_
 
-#include <map>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -13,20 +12,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/app_registry_cache_observer_with_profile.h"
 #include "chrome/browser/ash/note_taking_helper.h"
-#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
-class GURL;
-
-namespace apps {
-class AppUpdate;
-}
 
 namespace base {
 class TickClock;
@@ -41,20 +33,14 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
-namespace web_app {
-struct ExternalInstallOptions;
-}
-
 namespace lock_screen_apps {
 
 class LockScreenProfileCreator;
 
 // The default implementation of lock_screen_apps::AppManager.
-class AppManagerImpl
-    : public AppManager,
-      public ash::NoteTakingHelper::Observer,
-      public apps::AppRegistryCacheObserverWithProfile::Delegate,
-      public extensions::ExtensionRegistryObserver {
+class AppManagerImpl : public AppManager,
+                       public ash::NoteTakingHelper::Observer,
+                       public extensions::ExtensionRegistryObserver {
  public:
   explicit AppManagerImpl(const base::TickClock* tick_clock);
 
@@ -78,18 +64,13 @@ class AppManagerImpl
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
-
-  // apps::AppRegistryCacheObserverWithProfile::Delegate
-  void OnAppUpdate(const apps::AppUpdate& update, Profile* profile) override;
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
 
   // ash::NoteTakingHelper::Observer:
   void OnAvailableNoteTakingAppsUpdated() override;
   void OnPreferredNoteTakingAppUpdated(Profile* profile) override;
-
-  // Modify web app external install options for testing.
-  using OverrideInstallOptionsCallback =
-      void (*)(web_app::ExternalInstallOptions&);
-  OverrideInstallOptionsCallback& OverrideInstallOptions();
 
  private:
   enum class State {
@@ -158,26 +139,6 @@ class AppManagerImpl
   // method.
   State AddAppToLockScreenProfile(const std::string& app_id);
 
-  // Reset synchronizing state, and run any pending web app synchronize
-  // operation. Returns whether an operation was run.
-  bool MaybeRunPendingWebAppSynchronize();
-
-  // Records a web app installation to the lock screen profile, updating
-  // internal state and metrics.
-  void RecordLockScreenWebAppInstall(
-      int install_id,
-      base::TimeTicks install_start_time,
-      std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
-          install_results,
-      std::map<GURL, bool> uninstall_results);
-
-  // Records a possible web app uninstallation from the lock screen profile,
-  // notifying listeners.
-  void RecordLockScreenWebAppUninstall(
-      std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
-          install_results,
-      std::map<GURL, bool> uninstall_results);
-
   // Uninstalls lock screen note taking app from the lock screen profile.
   void RemoveChromeAppFromLockScreenProfile(const std::string& app_id);
 
@@ -197,9 +158,6 @@ class AppManagerImpl
   void HandleLockScreenChromeAppUnload(
       extensions::UnloadedExtensionReason reason);
 
-  // Synchronizes state to remove all web apps from the lock screen profile.
-  void RemoveAllWebAppsFromLockScreenProfile();
-
   // Removes the lock screen app from the lock screen apps profile if the app
   // manager encountered an error - e.g. if the app unexpectedly got disabled in
   // the lock screen apps profile.
@@ -215,12 +173,6 @@ class AppManagerImpl
 
   const base::TickClock* tick_clock_;
 
-  // Because synchronize operations cannot overlap, track when one is running.
-  bool is_synchronizing_installed_web_apps_ = false;
-  // Because synchronize operations cannot overlap, hold on to the latest App ID
-  // (may be empty) waiting to synchronize.
-  absl::optional<std::string> opt_app_id_pending_synchronize_ = absl::nullopt;
-
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extensions_observation_{this};
@@ -232,16 +184,10 @@ class AppManagerImpl
                           ash::NoteTakingHelper::Observer>
       note_taking_helper_observation_{this};
 
-  absl::optional<apps::AppRegistryCacheObserverWithProfile>
-      primary_profile_app_registry_observer_;
-
-  absl::optional<apps::AppRegistryCacheObserverWithProfile>
-      lock_screen_profile_app_registry_observer_;
-
-  // Called when the lock screen app availability changes.
+  // To be called when the lock screen app availability changes.
   base::RepeatingClosure app_changed_callback_;
 
-  // Counts app installs. Passed to app install callback as install
+  // Counts Chrome app installs. Passed to app install callback as install
   // request identifier to determine whether the completed install is stale.
   int install_count_ = 0;
 

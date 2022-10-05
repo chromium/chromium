@@ -18,26 +18,17 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece_forward.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/traits_bag.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/fake_lock_screen_profile_creator.h"
@@ -47,15 +38,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -63,14 +45,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/app_update.h"
-#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/browser/uninstall_result_code.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -78,7 +53,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_event_router.h"
-#include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -87,8 +61,6 @@
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
-#include "url/gurl.h"
 
 using extensions::DictionaryBuilder;
 using extensions::ListBuilder;
@@ -176,125 +148,41 @@ class LockScreenEventObserver
   bool expect_restore_action_state_ = true;
 };
 
-enum class TestAppType { kUnpackedChromeApp, kInternalChromeApp, kWebApp };
+enum class TestAppType { kUnpackedChromeApp, kInternalChromeApp };
 
 struct TestApp {
-  const char* name = "";
-  // GURLs cannot be statically initialized, so use a string.
-  const char* url = "";
   const char* extension_id = "";
   const char* version = "";
   bool supports_lock_screen = false;
 };
 
+// TODO (crbug.com/1332379): Stop using real extension IDs here.
 // A lock screen capable app.
 const TestApp kLockScreenCapableApp{
-    .name = "Lock Screen Capable App",
-    .url = "https://lockscreencapable.example.com",
     .extension_id = ash::NoteTakingHelper::kProdKeepExtensionId,
     .version = "1.0",
     .supports_lock_screen = true};
 // An updated version of `kLockScreenCapable` (same ID).
 const TestApp kLockScreenCapableAppUpdated{
-    .name = "Lock Screen Capable App Updated",
-    .url = "https://lockscreencapable.example.com",
     .extension_id = ash::NoteTakingHelper::kProdKeepExtensionId,
     .version = "1.1",
     .supports_lock_screen = true};
 // Another lock screen capable app (different ID from `kLockScreenCapable`).
 const TestApp kLockScreenCapableApp2{
-    .name = "Lock Screen Capable App 2",
-    .url = "https://lockscreencapable2.example.com",
     .extension_id = ash::NoteTakingHelper::kDevKeepExtensionId,
     .version = "1.0",
     .supports_lock_screen = true};
 // A note-taking app that is not lock screen capable.
 const TestApp kNotLockScreenCapableApp{
-    .name = "Not Lock Screen Capable App",
-    .url = "https://notlockscreencapable.example.com",
     .extension_id = ash::NoteTakingHelper::kNoteTakingWebAppIdTest,
     .version = "1.0",
     .supports_lock_screen = false};
-const TestApp* const kTestApps[] = {
-    &kLockScreenCapableApp, &kLockScreenCapableAppUpdated,
-    &kLockScreenCapableApp2, &kNotLockScreenCapableApp};
-
-std::unique_ptr<WebAppInstallInfo> MakeWebAppInfo(const TestApp& test_app) {
-  GURL url(test_app.url);
-  auto info = std::make_unique<WebAppInstallInfo>();
-  info->title = base::UTF8ToUTF16(test_app.name);
-  info->install_url = url;
-  info->start_url = url;
-  info->scope = url;
-  info->user_display_mode = web_app::UserDisplayMode::kStandalone;
-  info->note_taking_new_note_url = url;
-  if (test_app.supports_lock_screen)
-    info->lock_screen_start_url = url;
-
-  return info;
-}
-
-void ModifyExternalInstallOptions(web_app::ExternalInstallOptions& options) {
-  for (const TestApp* test_app : kTestApps) {
-    if (options.install_url == GURL(test_app->url) &&
-        options.fallback_app_name == test_app->name) {
-      options.only_use_app_info_factory = true;
-      options.app_info_factory = base::BindLambdaForTesting(
-          [test_app]() { return MakeWebAppInfo(*test_app); });
-      return;
-    }
-  }
-  NOTREACHED() << "Unrecognised app install " << options.install_url.spec()
-               << " " << options.fallback_app_name.value_or("(no name)");
-}
-
-apps::AppRegistryCache& app_registry_cache(Profile* profile) {
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
-  return apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache();
-}
-
-bool IsInstalled(const std::string& app_id, Profile* profile) {
-  bool result = false;
-  app_registry_cache(profile).ForOneApp(
-      app_id, [&result](const apps::AppUpdate& update) {
-        result = apps_util::IsInstalled(update.Readiness());
-      });
-  return result;
-}
-
-bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
-  bool result = false;
-  app_registry_cache(profile).ForOneApp(
-      app_id, [&result](const apps::AppUpdate& update) {
-        if (apps_util::IsInstalled(update.Readiness()) &&
-            update.AppType() == apps::AppType::kWeb) {
-          result = true;
-        }
-      });
-  return result;
-}
-
-bool IsInstalledAndEnabled(const std::string& app_id, Profile* profile) {
-  bool result = false;
-  app_registry_cache(profile).ForOneApp(
-      app_id, [&result](const apps::AppUpdate& update) {
-        result = update.Readiness() == apps::Readiness::kReady;
-      });
-  return result;
-}
 
 class LockScreenAppManagerImplTest
     : public testing::TestWithParam<TestAppType> {
  public:
   LockScreenAppManagerImplTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWebLockScreenApi,
-                              blink::features::kWebAppManifestLockScreen},
-        /*disabled_features=*/{});
-  }
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   LockScreenAppManagerImplTest(const LockScreenAppManagerImplTest&) = delete;
   LockScreenAppManagerImplTest& operator=(const LockScreenAppManagerImplTest&) =
@@ -311,8 +199,6 @@ class LockScreenAppManagerImplTest
 
     InitExtensionSystem(profile());
 
-    InitWebAppsSystem(profile());
-
     // Initialize arc session manager - NoteTakingHelper expects it to be set.
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
@@ -324,10 +210,6 @@ class LockScreenAppManagerImplTest
         std::make_unique<lock_screen_apps::FakeLockScreenProfileCreator>(
             &profile_manager_);
     lock_screen_profile_creator_->Initialize();
-    // Ensure lock screen profiles don't spawn new processes to install apps.
-    lock_screen_profile_creator_->AddCreateProfileCallback(base::BindOnce(
-        &LockScreenAppManagerImplTest::OnLockScreenProfileCreated,
-        base::Unretained(this)));
 
     ResetAppManager();
   }
@@ -356,14 +238,6 @@ class LockScreenAppManagerImplTest
         /*autoupdate_enabled=*/false);
   }
 
-  web_app::FakeWebAppProvider* InitWebAppsSystem(Profile* profile) {
-    auto* provider = web_app::FakeWebAppProvider::Get(profile);
-    provider->SetDefaultFakeSubsystems();
-    provider->SetRunSubsystemStartupTasks(true);
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
-    return provider;
-  }
-
   void SetUpTestEventRouter() {
     LockScreenEventRouter* event_router =
         extensions::CreateAndUseTestEventRouter<LockScreenEventRouter>(
@@ -373,11 +247,11 @@ class LockScreenAppManagerImplTest
     event_router->AddEventObserver(event_observer_.get());
   }
 
-  base::FilePath GetChromeAppSourcePath(TestAppType app_type,
-                                        Profile* profile,
-                                        const std::string& id,
-                                        const std::string& version) {
-    switch (app_type) {
+  base::FilePath GetTestAppSourcePath(TestAppType appType,
+                                      Profile* profile,
+                                      const std::string& id,
+                                      const std::string& version) {
+    switch (appType) {
       case TestAppType::kUnpackedChromeApp:
         return profile->GetPath().Append("Downloads").Append("app");
       case TestAppType::kInternalChromeApp:
@@ -386,37 +260,7 @@ class LockScreenAppManagerImplTest
             ->install_directory()
             .Append(id)
             .Append(version);
-      case TestAppType::kWebApp:
-        return base::FilePath();
     }
-  }
-
-  bool PathExists(const std::string& app_id, Profile* profile) {
-    return PathExists(app_id, profile, GetParam());
-  }
-
-  bool PathExists(const std::string& app_id,
-                  Profile* profile,
-                  TestAppType type) {
-    // Web Apps don't have a path.
-    if (type == TestAppType::kWebApp)
-      return IsInstalled(app_id, profile);
-
-    const extensions::Extension* app =
-        extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-            app_id, extensions::ExtensionRegistry::ENABLED);
-    return app && base::PathExists(app->path());
-  }
-
-  base::FilePath GetPath(const std::string& app_id, Profile* profile) {
-    // Web Apps don't have a path.
-    if (GetParam() == TestAppType::kWebApp)
-      return base::FilePath();
-
-    const extensions::Extension* app =
-        extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-            app_id, extensions::ExtensionRegistry::ENABLED);
-    return app ? app->path() : base::FilePath();
   }
 
   base::FilePath GetExpectedLockScreenAppPath(const TestApp& test_app) {
@@ -425,10 +269,10 @@ class LockScreenAppManagerImplTest
   }
 
   base::FilePath GetExpectedLockScreenAppPathForAppType(
-      TestAppType app_type,
+      TestAppType appType,
       Profile* original_profile,
       const TestApp& test_app) {
-    switch (app_type) {
+    switch (appType) {
       case TestAppType::kUnpackedChromeApp:
         return original_profile->GetPath().Append("Downloads").Append("app");
       case TestAppType::kInternalChromeApp:
@@ -437,61 +281,39 @@ class LockScreenAppManagerImplTest
             ->install_directory()
             .Append(test_app.extension_id)
             .Append(std::string(test_app.version) + "_0");
-      case TestAppType::kWebApp:
-        // Web apps don't have a path.
-        return base::FilePath();
     }
   }
 
-  extensions::mojom::ManifestLocation GetChromeAppLocation(
-      TestAppType app_type) {
-    switch (app_type) {
+  extensions::mojom::ManifestLocation GetAppLocation(TestAppType appType) {
+    switch (appType) {
       case TestAppType::kUnpackedChromeApp:
         return extensions::mojom::ManifestLocation::kUnpacked;
       case TestAppType::kInternalChromeApp:
         return extensions::mojom::ManifestLocation::kInternal;
-      case TestAppType::kWebApp:
-        NOTREACHED();
-        return extensions::mojom::ManifestLocation::kInvalidLocation;
     }
   }
 
   // Returns the ID of installed app.
   std::string InstallTestApp(const TestApp& test_app) {
-    return InstallTestAppWithType(test_app, GetParam(), profile());
+    return InstallTestAppWithType(GetParam(), profile(), test_app);
   }
 
   // Returns the ID of installed app.
-  std::string InstallTestAppWithType(const TestApp& test_app,
-                                     TestAppType type,
-                                     Profile* profile) {
-    if (type == TestAppType::kUnpackedChromeApp ||
-        type == TestAppType::kInternalChromeApp) {
-      scoped_refptr<const extensions::Extension> extension =
-          MakeChromeApp(test_app, type, profile);
-      extensions::ExtensionSystem::Get(profile)
-          ->extension_service()
-          ->AddExtension(extension.get());
-      return extension->id();
-    } else if (type == TestAppType::kWebApp) {
-      return web_app::test::InstallWebApp(
-          profile, MakeWebAppInfo(test_app),
-          /*overwrite_existing_manifest_fields=*/true,
-          webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    } else {
-      NOTREACHED();
-      return std::string();
-    }
+  std::string InstallTestAppWithType(TestAppType type,
+                                     Profile* profile,
+                                     const TestApp& test_app) {
+    scoped_refptr<const extensions::Extension> extension =
+        MakeChromeApp(type, profile, test_app);
+    extensions::ExtensionSystem::Get(profile)
+        ->extension_service()
+        ->AddExtension(extension.get());
+    return extension->id();
   }
 
-  scoped_refptr<const extensions::Extension> MakeChromeApp(TestApp test_app,
-                                                           TestAppType app_type,
-                                                           Profile* profile) {
-    if (app_type == TestAppType::kWebApp) {
-      NOTREACHED();
-      return nullptr;
-    }
-
+  scoped_refptr<const extensions::Extension> MakeChromeApp(
+      TestAppType appType,
+      Profile* profile,
+      const TestApp& test_app) {
     std::string id = test_app.extension_id;
     std::string version = test_app.version;
     bool supports_lock_screen = test_app.supports_lock_screen;
@@ -519,14 +341,14 @@ class LockScreenAppManagerImplTest
         .Set("action_handlers", std::move(action_handlers));
 
     base::FilePath extension_path =
-        GetChromeAppSourcePath(app_type, profile, id, version);
+        GetTestAppSourcePath(appType, profile, id, version);
 
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
             .SetManifest(manifest_builder.Build())
             .SetID(id)
             .SetPath(extension_path)
-            .SetLocation(GetChromeAppLocation(app_type))
+            .SetLocation(GetAppLocation(appType))
             .Build();
 
     // Create the app path with required files - app manager *will* attempt to
@@ -558,7 +380,6 @@ class LockScreenAppManagerImplTest
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile("secondary_profile");
     InitExtensionSystem(profile);
-    InitWebAppsSystem(profile);
     return profile;
   }
 
@@ -585,16 +406,16 @@ class LockScreenAppManagerImplTest
     app_manager()->Initialize(profile, lock_screen_profile_creator_.get());
     if (create_lock_screen_profile)
       CreateLockScreenProfile();
-    app_manager()->Start(base::BindRepeating(
-        &LockScreenAppManagerImplTest::OnNoteTakingAppChanged,
-        base::Unretained(this)));
+    app_manager()->Start(
+        base::BindRepeating(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
+                            base::Unretained(this)));
   }
 
   void RestartLockScreenAppManager() {
     app_manager()->Stop();
-    app_manager()->Start(base::BindRepeating(
-        &LockScreenAppManagerImplTest::OnNoteTakingAppChanged,
-        base::Unretained(this)));
+    app_manager()->Start(
+        base::BindRepeating(&LockScreenAppManagerImplTest::OnNoteTakingChanged,
+                            base::Unretained(this)));
   }
 
   void CreateLockScreenProfile() {
@@ -607,12 +428,6 @@ class LockScreenAppManagerImplTest
     needs_lock_screen_event_router_ = true;
   }
 
-  void OnLockScreenProfileCreated() {
-    // Skip if profile creation failed.
-    if (LockScreenProfile())
-      InitWebAppsSystem(LockScreenProfile());
-  }
-
   TestingProfile* profile() { return profile_; }
 
   Profile* LockScreenProfile() {
@@ -623,52 +438,27 @@ class LockScreenAppManagerImplTest
 
   void ResetAppManager() {
     app_manager_ = std::make_unique<AppManagerImpl>(&tick_clock_);
-    // Prevent lock screen web app installs from attempting to fetch URLs.
-    app_manager_->OverrideInstallOptions() = &ModifyExternalInstallOptions;
   }
 
   int note_taking_changed_count() const { return note_taking_changed_count_; }
 
   void ResetNoteTakingChangedCount() { note_taking_changed_count_ = 0; }
 
-  void AwaitNoteTakingChanged() {
-    base::RunLoop run_loop;
-    on_note_taking_app_changed_ = run_loop.QuitClosure();
-    run_loop.Run();
-    on_note_taking_app_changed_.Reset();
-  }
-
-  void AwaitNoteTakingChangedCount(int count) {
-    base::RunLoop run_loop;
-    // Post a task to ensure we don't race with something changing the count.
-    if (note_taking_changed_count_ >= count) {
-      base::SequencedTaskRunnerHandle::Get()->PostTaskAndReply(
-          FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
-      run_loop.Run();
-      return;
-    }
-
-    on_note_taking_app_changed_ = base::BindLambdaForTesting([&]() {
-      if (note_taking_changed_count_ >= count)
-        run_loop.Quit();
-    });
-    run_loop.Run();
-    on_note_taking_app_changed_.Reset();
-  }
-
-  // Waits for a round trip between file task runner used by the extension
-  // service and the main thread - used to ensure that all pending file runner
-  // task finish,
-  void RunExtensionServiceTaskRunner() {
+  // Waits for a round trip between file task runner used by the profile's
+  // extension service and the main thread - used to ensure that all pending
+  // file runner task finish,
+  void RunExtensionServiceTaskRunner(Profile* profile) {
     base::RunLoop run_loop;
     extensions::GetExtensionFileTaskRunner()->PostTaskAndReply(
         FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
     run_loop.Run();
   }
 
-  bool IsUninstallAsync() { return GetParam() == TestAppType::kWebApp; }
+  bool IsInstallAsync() {
+    return GetParam() != TestAppType::kUnpackedChromeApp;
+  }
 
-  int NoteTakingChangedCountOnStart() { return 1; }
+  int NoteTakingChangedCountOnStart() { return IsInstallAsync() ? 1 : 0; }
 
   LockScreenEventObserver* event_observer() { return event_observer_.get(); }
 
@@ -676,22 +466,13 @@ class LockScreenAppManagerImplTest
     return lock_screen_profile_creator_.get();
   }
 
-  // Doubly-parameterised test for changing from the `GetParam()` TestAppType to
-  // `new_type` during app activation. Defined below.
-  void TestChangeAppTypeWhileActivating(TestAppType new_type);
-
  protected:
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<lock_screen_apps::FakeLockScreenProfileCreator>
       lock_screen_profile_creator_;
 
  private:
-  void OnNoteTakingAppChanged() {
-    ++note_taking_changed_count_;
-    if (on_note_taking_app_changed_) {
-      on_note_taking_app_changed_.Run();
-    }
-  }
+  void OnNoteTakingChanged() { ++note_taking_changed_count_; }
 
   TestingProfile* CreatePrimaryProfile() {
     DCHECK(!scoped_user_manager_) << "there can be only one primary profile";
@@ -705,9 +486,8 @@ class LockScreenAppManagerImplTest
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
+
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  base::RepeatingClosure on_note_taking_app_changed_;
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
@@ -719,28 +499,42 @@ class LockScreenAppManagerImplTest
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 
-  std::unique_ptr<AppManagerImpl> app_manager_;
+  std::unique_ptr<AppManager> app_manager_;
 
   bool needs_lock_screen_event_router_ = false;
   int note_taking_changed_count_ = 0;
 };
 
+bool IsInstalled(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* app =
+      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+          app_id, extensions::ExtensionRegistry::EVERYTHING);
+  return app;
+}
+
+bool IsInstalledAndEnabled(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* app =
+      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+          app_id, extensions::ExtensionRegistry::ENABLED);
+  return app;
+}
+
+bool PathExists(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* app =
+      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+          app_id, extensions::ExtensionRegistry::ENABLED);
+  return app && base::PathExists(app->path());
+}
+
+base::FilePath GetPath(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* app =
+      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+          app_id, extensions::ExtensionRegistry::ENABLED);
+  return app ? app->path() : base::FilePath();
+}
+
 absl::optional<std::string> GetVersion(const std::string& app_id,
                                        Profile* profile) {
-  std::string app_name;
-  app_registry_cache(profile).ForOneApp(
-      app_id, [&app_name](const apps::AppUpdate& update) {
-        if (apps_util::IsInstalled(update.Readiness()) &&
-            update.AppType() == apps::AppType::kWeb) {
-          app_name = update.Name();
-        }
-      });
-  for (const TestApp* app : kTestApps) {
-    if (app->name == app_name) {
-      return app->version;
-    }
-  }
-
   const extensions::Extension* app =
       extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
           app_id, extensions::ExtensionRegistry::ENABLED);
@@ -750,34 +544,18 @@ absl::optional<std::string> GetVersion(const std::string& app_id,
 }
 
 void UnloadApp(const std::string& app_id, Profile* profile) {
-  // Web Apps cannot be unloaded, so locally uninstall instead.
-  if (IsInstalledWebApp(app_id, profile)) {
-    web_app::WebAppProvider::GetForTest(profile)
-        ->sync_bridge()
-        .SetAppIsLocallyInstalled(app_id, false);
-    return;
-  }
-
   extensions::ExtensionSystem::Get(profile)
       ->extension_service()
       ->UnloadExtension(app_id, extensions::UnloadedExtensionReason::UPDATE);
 }
 
 void SimulateAppCrash(const std::string& app_id, Profile* profile) {
-  // Web Apps don't have an equivalent, so just skip them.
   extensions::ExtensionSystem::Get(profile)
       ->extension_service()
       ->TerminateExtension(app_id);
 }
 
 void DisableApp(const std::string& app_id, Profile* profile) {
-  if (IsInstalledWebApp(app_id, profile)) {
-    web_app::WebAppProvider::GetForTest(profile)
-        ->sync_bridge()
-        .SetAppIsDisabled(app_id, true);
-    return;
-  }
-
   extensions::ExtensionSystem::Get(profile)
       ->extension_service()
       ->DisableExtension(app_id,
@@ -785,51 +563,20 @@ void DisableApp(const std::string& app_id, Profile* profile) {
 }
 
 void UninstallApp(const std::string& app_id, Profile* profile) {
-  if (IsInstalledWebApp(app_id, profile)) {
-    base::RunLoop run_loop;
-    web_app::WebAppProvider::GetForTest(profile)
-        ->install_finalizer()
-        .UninstallExternalWebApp(
-            app_id, web_app::WebAppManagement::Type::kSystem,
-            webapps::WebappUninstallSource::kExternalLockScreen,
-            base::BindLambdaForTesting(
-                [&run_loop](webapps::UninstallResultCode code) {
-                  DCHECK(code == webapps::UninstallResultCode::kSuccess);
-                  run_loop.Quit();
-                }));
-    run_loop.Run();
-    return;
-  }
-
   extensions::ExtensionSystem::Get(profile)
       ->extension_service()
       ->UninstallExtension(app_id, extensions::UNINSTALL_REASON_FOR_TESTING,
                            nullptr);
 }
 
-std::string ToString(TestAppType type) {
-  switch (type) {
-    case TestAppType::kUnpackedChromeApp:
-      return "UnpackedChromeApp";
-    case TestAppType::kInternalChromeApp:
-      return "InternalChromeApp";
-    case TestAppType::kWebApp:
-      return "WebApp";
-  }
-}
-
-std::string ParamToString(testing::TestParamInfo<TestAppType> param) {
-  return ToString(param.param);
-}
-
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+INSTANTIATE_TEST_SUITE_P(Unpacked,
                          LockScreenAppManagerImplTest,
-                         ::testing::Values(TestAppType::kUnpackedChromeApp,
-                                           TestAppType::kInternalChromeApp,
-                                           TestAppType::kWebApp),
-                         ParamToString);
+                         ::testing::Values(TestAppType::kUnpackedChromeApp));
+INSTANTIATE_TEST_SUITE_P(Internal,
+                         LockScreenAppManagerImplTest,
+                         ::testing::Values(TestAppType::kInternalChromeApp));
 
 TEST_P(LockScreenAppManagerImplTest, StartAddsAppToTarget) {
   std::string app_id = AddTestAppWithLockScreenSupport(
@@ -838,10 +585,9 @@ TEST_P(LockScreenAppManagerImplTest, StartAddsAppToTarget) {
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -861,12 +607,11 @@ TEST_P(LockScreenAppManagerImplTest, StartAddsAppToTarget) {
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
-  // Chrome apps are uninstalled at Stop() but web apps are uninstalled only
-  // when a different app is installed.
-  EXPECT_EQ(IsInstalled(app_id, LockScreenProfile()),
-            GetParam() == TestAppType::kWebApp);
 
-  RunExtensionServiceTaskRunner();
+  EXPECT_FALSE(IsInstalled(app_id, LockScreenProfile()));
+
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id, profile()));
 }
@@ -876,7 +621,7 @@ TEST_P(LockScreenAppManagerImplTest, StartWhenLockScreenNotesNotEnabled) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/false);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -885,13 +630,14 @@ TEST_P(LockScreenAppManagerImplTest, StartWhenLockScreenNotesNotEnabled) {
   EXPECT_FALSE(IsInstalled(app_id, LockScreenProfile()));
 
   app_manager()->Stop();
-
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
+
   EXPECT_FALSE(IsInstalled(app_id, LockScreenProfile()));
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id, profile()));
 }
@@ -903,9 +649,9 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -923,7 +669,7 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   ash::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(profile(),
                                                                    false);
 
-  AwaitNoteTakingChangedCount(2);
+  EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -936,7 +682,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingDisabledWhileStarted) {
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id, profile()));
 }
@@ -946,7 +693,7 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/false);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -959,10 +706,9 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -983,7 +729,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingEnabledWhileStarted) {
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id, profile()));
 }
@@ -997,10 +744,9 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1017,12 +763,11 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
 
   ash::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id_2);
 
-  EXPECT_EQ(IsUninstallAsync() ? 1 : 2, note_taking_changed_count());
+  EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1044,7 +789,8 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingChangedWhileStarted) {
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id_2, profile()));
   EXPECT_TRUE(PathExists(app_id_1, profile()));
@@ -1062,7 +808,7 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
   // Initialize app manager - the note taking should be disabled initially
   // because the preferred app is not lock-screen-capable.
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_EQ(false, app_manager()->IsLockScreenAppAvailable());
 
@@ -1074,10 +820,8 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
   ResetNoteTakingChangedCount();
   // If test app is installed asynchronously. the app won't be enabled on
   // lock screen until extension service task runner tasks are run.
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
-
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1105,7 +849,8 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   // Make sure original app paths are not deleted.
   EXPECT_TRUE(PathExists(app_id, profile()));
@@ -1113,16 +858,11 @@ TEST_P(LockScreenAppManagerImplTest, NoteTakingChangedToLockScreenSupported) {
 }
 
 TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
-  // TODO(crbug.com/1368944): Fix crash on trybots then re-enable this test.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1141,9 +881,7 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
 
   UnloadApp(app_id, profile());
 
-  AwaitNoteTakingChangedCount(2);
-  RunExtensionServiceTaskRunner();
-  EXPECT_EQ(2, note_taking_changed_count());
+  EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -1158,10 +896,9 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1181,33 +918,77 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenNoteTakingReloadedWhileStarted) {
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id, profile()));
 }
 
-void LockScreenAppManagerImplTest::TestChangeAppTypeWhileActivating(
-    TestAppType new_type) {
+TEST_P(LockScreenAppManagerImplTest,
+       NoteTakingAppChangeToUnpackedWhileActivating) {
   std::string app_id_1 = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
-  std::string app_id_2 =
-      InstallTestAppWithType(kLockScreenCapableApp2, new_type, profile());
+  std::string app_id_2 = InstallTestAppWithType(
+      TestAppType::kUnpackedChromeApp, profile(), kLockScreenCapableApp2);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
+
+  ash::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id_2);
+
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(app_id_2, app_manager()->GetLockScreenAppId());
+  EXPECT_EQ(1, note_taking_changed_count());
+  ResetNoteTakingChangedCount();
+
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+
+  EXPECT_EQ(0, note_taking_changed_count());
+
+  EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(app_id_2, app_manager()->GetLockScreenAppId());
+
+  ASSERT_TRUE(IsInstalledAndEnabled(app_id_2, LockScreenProfile()));
+  EXPECT_TRUE(PathExists(app_id_2, LockScreenProfile()));
+
+  EXPECT_EQ(
+      GetExpectedLockScreenAppPathForAppType(TestAppType::kUnpackedChromeApp,
+                                             profile(), kLockScreenCapableApp2),
+      GetPath(app_id_2, LockScreenProfile()));
+
+  app_manager()->Stop();
+
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
+
+  EXPECT_TRUE(PathExists(app_id_1, profile()));
+  EXPECT_TRUE(PathExists(app_id_2, profile()));
+}
+
+TEST_P(LockScreenAppManagerImplTest,
+       NoteTakingAppChangeToInternalWhileActivating) {
+  std::string app_id_1 = AddTestAppWithLockScreenSupport(
+      kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
+
+  std::string app_id_2 = InstallTestAppWithType(
+      TestAppType::kInternalChromeApp, profile(), kLockScreenCapableApp2);
+
+  InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
+
+  EXPECT_EQ(0, note_taking_changed_count());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
   ash::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id_2);
 
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
-  EXPECT_EQ(note_taking_changed_count(), 1);
+  EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
-  AwaitNoteTakingChangedCount(1);
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
 
@@ -1215,28 +996,20 @@ void LockScreenAppManagerImplTest::TestChangeAppTypeWhileActivating(
   EXPECT_EQ(app_id_2, app_manager()->GetLockScreenAppId());
 
   ASSERT_TRUE(IsInstalledAndEnabled(app_id_2, LockScreenProfile()));
-  EXPECT_TRUE(PathExists(app_id_2, LockScreenProfile(), new_type));
+  EXPECT_TRUE(PathExists(app_id_2, LockScreenProfile()));
+
+  EXPECT_EQ(
+      GetExpectedLockScreenAppPathForAppType(TestAppType::kInternalChromeApp,
+                                             profile(), kLockScreenCapableApp2),
+      GetPath(app_id_2, LockScreenProfile()));
 
   app_manager()->Stop();
 
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
+  RunExtensionServiceTaskRunner(profile());
 
   EXPECT_TRUE(PathExists(app_id_1, profile()));
-  EXPECT_TRUE(PathExists(app_id_2, profile(), new_type));
-}
-
-TEST_P(LockScreenAppManagerImplTest,
-       NoteTakingAppChangeToUnpackedWhileActivating) {
-  TestChangeAppTypeWhileActivating(TestAppType::kUnpackedChromeApp);
-}
-
-TEST_P(LockScreenAppManagerImplTest,
-       NoteTakingAppChangeToInternalWhileActivating) {
-  TestChangeAppTypeWhileActivating(TestAppType::kInternalChromeApp);
-}
-
-TEST_P(LockScreenAppManagerImplTest, NoteTakingAppChangeToWebWhileActivating) {
-  TestChangeAppTypeWhileActivating(TestAppType::kWebApp);
+  EXPECT_TRUE(PathExists(app_id_2, profile()));
 }
 
 TEST_P(LockScreenAppManagerImplTest, ShutdownWhenStarted) {
@@ -1244,24 +1017,19 @@ TEST_P(LockScreenAppManagerImplTest, ShutdownWhenStarted) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_TRUE(IsInstalled(app_id, LockScreenProfile()));
 }
 
 TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenEnabled) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   ASSERT_EQ(app_id, app_manager()->GetLockScreenAppId());
 
@@ -1278,10 +1046,6 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenEnabled) {
 }
 
 TEST_P(LockScreenAppManagerImplTest, LaunchAppWithFalseRestoreLastActionState) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   profile()->GetPrefs()->SetBoolean(prefs::kRestoreLastLockScreenNote, false);
@@ -1290,7 +1054,7 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWithFalseRestoreLastActionState) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   ASSERT_EQ(app_id, app_manager()->GetLockScreenAppId());
 
@@ -1314,7 +1078,7 @@ TEST_P(LockScreenAppManagerImplTest, LaunchAppWhenNoLockScreenApp) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/false);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
   EXPECT_TRUE(event_observer()->launched_apps().empty());
@@ -1333,10 +1097,9 @@ TEST_P(LockScreenAppManagerImplTest, InitializedAfterLockScreenProfileCreated) {
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/false);
 
   EXPECT_EQ(0, note_taking_changed_count());
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1368,10 +1131,9 @@ TEST_P(LockScreenAppManagerImplTest, StartedBeforeLockScreenProfileCreated) {
 
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
-  EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
+  EXPECT_EQ(!IsInstallAsync(), app_manager()->IsLockScreenAppAvailable());
 
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(NoteTakingChangedCountOnStart(), note_taking_changed_count());
   ResetNoteTakingChangedCount();
@@ -1400,7 +1162,7 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenProfileCreatedNoSupportedApp) {
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
 
   CreateLockScreenProfile();
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_EQ(0, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -1445,17 +1207,13 @@ TEST_P(LockScreenAppManagerImplTest,
 }
 
 TEST_P(LockScreenAppManagerImplTest, ReloadLockScreenAppAfterAppCrash) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   SimulateAppCrash(app_id, LockScreenProfile());
@@ -1480,18 +1238,13 @@ TEST_P(LockScreenAppManagerImplTest, ReloadLockScreenAppAfterAppCrash) {
 }
 
 TEST_P(LockScreenAppManagerImplTest, AppReloadFailure) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   SimulateAppCrash(app_id, LockScreenProfile());
@@ -1511,7 +1264,6 @@ TEST_P(LockScreenAppManagerImplTest, AppReloadFailure) {
   EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
 
   // Make sure that note taking is not reported as available any longer.
-  AwaitNoteTakingChangedCount(1);
   EXPECT_EQ(1, note_taking_changed_count());
   ResetNoteTakingChangedCount();
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
@@ -1524,13 +1276,10 @@ TEST_P(LockScreenAppManagerImplTest, LockScreenAppGetsUninstalled) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   UninstallApp(app_id, LockScreenProfile());
-  RunExtensionServiceTaskRunner();
-  AwaitNoteTakingChangedCount(1);
 
   // Note taking should be reported to be unavailable if the app was uninstalled
   // from the lock screen profile.
@@ -1545,8 +1294,7 @@ TEST_P(LockScreenAppManagerImplTest, TerminatedAppGetsUninstalled) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   SimulateAppCrash(app_id, LockScreenProfile());
@@ -1558,7 +1306,6 @@ TEST_P(LockScreenAppManagerImplTest, TerminatedAppGetsUninstalled) {
 
   // Prevent app reload.
   UninstallApp(app_id, LockScreenProfile());
-  AwaitNoteTakingChangedCount(1);
 
   // Note taking should be reported to be unavailable if the app was uninstalled
   // from the lock screen profile.
@@ -1573,13 +1320,12 @@ TEST_P(LockScreenAppManagerImplTest, DoNotReloadLockScreenAppWhenDisabled) {
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  AwaitNoteTakingChangedCount(NoteTakingChangedCountOnStart());
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   DisableApp(app_id, LockScreenProfile());
 
-  AwaitNoteTakingChangedCount(IsUninstallAsync() ? 2 : 1);
+  EXPECT_EQ(1, note_taking_changed_count());
   EXPECT_FALSE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_TRUE(app_manager()->GetLockScreenAppId().empty());
   EXPECT_FALSE(app_manager()->LaunchLockScreenApp());
@@ -1590,17 +1336,13 @@ TEST_P(LockScreenAppManagerImplTest, DoNotReloadLockScreenAppWhenDisabled) {
 
 TEST_P(LockScreenAppManagerImplTest,
        RestartingAppManagerAfterLockScreenAppDisabled) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   DisableApp(app_id, LockScreenProfile());
@@ -1610,7 +1352,7 @@ TEST_P(LockScreenAppManagerImplTest,
 
   // Restarting the app manager should enable lock screen app again.
   RestartLockScreenAppManager();
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(app_id, app_manager()->GetLockScreenAppId());
@@ -1622,17 +1364,13 @@ TEST_P(LockScreenAppManagerImplTest,
 }
 
 TEST_P(LockScreenAppManagerImplTest, AppNotReloadedAfterRepeatedCrashes) {
-  // TODO(crbug.com/1006642): Enable test when web apps can be launched.
-  if (GetParam() == TestAppType::kWebApp)
-    return;
-
   set_needs_lock_screen_event_router();
 
   std::string app_id = AddTestAppWithLockScreenSupport(
       kLockScreenCapableApp, /*enable_on_lock_screen=*/true);
 
   InitializeAndStartAppManager(profile(), /*create_lock_screen_profile=*/true);
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
   ResetNoteTakingChangedCount();
 
   // Simulate lock screen note app crash and launch few times.
@@ -1654,7 +1392,7 @@ TEST_P(LockScreenAppManagerImplTest, AppNotReloadedAfterRepeatedCrashes) {
 
   // Restarting the app manager should enable lock screen app again.
   RestartLockScreenAppManager();
-  RunExtensionServiceTaskRunner();
+  RunExtensionServiceTaskRunner(LockScreenProfile());
 
   EXPECT_TRUE(app_manager()->IsLockScreenAppAvailable());
   EXPECT_EQ(app_id, app_manager()->GetLockScreenAppId());
