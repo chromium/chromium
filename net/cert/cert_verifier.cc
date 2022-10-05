@@ -86,13 +86,6 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
         std::move(cert_net_fetcher));
   }
 #endif
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (!verify_proc &&
-      base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
-    verify_proc =
-        CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
-  }
-#endif
   if (!verify_proc) {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     verify_proc =

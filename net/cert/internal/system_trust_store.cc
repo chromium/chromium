@@ -218,6 +218,13 @@ CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
 
 #elif BUILDFLAG(IS_MAC)
 
+// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
+// Mac.
+std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
+  return std::make_unique<DummySystemTrustStore>();
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 namespace {
 
 TrustStoreMac::TrustImplType ParamToTrustImplType(
@@ -249,10 +256,6 @@ TrustStoreMac::TrustImplType GetTrustStoreImplParam(
   // If handling that becomes necessary, the flags should be checked in the
   // higher level code (maybe in cert_verifier_creation.cc) so that each
   // type of CertVerifyProc could be created with the appropriate flags.
-  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
-    return ParamToTrustImplType(features::kCertVerifierBuiltinImpl.Get(),
-                                default_impl);
-  }
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
     return ParamToTrustImplType(features::kChromeRootStoreSysImpl.Get(),
                                 default_impl);
@@ -266,10 +269,6 @@ TrustStoreMac::TrustImplType GetTrustStoreImplParam(
 }
 
 size_t GetTrustStoreCacheSize() {
-  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature) &&
-      features::kCertVerifierBuiltinCacheSize.Get() > 0) {
-    return features::kCertVerifierBuiltinCacheSize.Get();
-  }
   if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed) &&
       features::kChromeRootStoreSysCacheSize.Get() > 0) {
     return features::kChromeRootStoreSysCacheSize.Get();
@@ -282,49 +281,6 @@ size_t GetTrustStoreCacheSize() {
   constexpr size_t kDefaultCacheSize = 512;
   return kDefaultCacheSize;
 }
-
-}  // namespace
-
-class SystemTrustStoreMac : public SystemTrustStore {
- public:
-  SystemTrustStoreMac() = default;
-
-  TrustStore* GetTrustStore() override { return GetGlobalTrustStoreMac(); }
-
-  bool UsesSystemTrustStore() const override { return true; }
-
-  // IsKnownRoot returns true if the given trust anchor is a standard one (as
-  // opposed to a user-installed root)
-  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
-    return GetGlobalTrustStoreMac()->IsKnownRoot(trust_anchor);
-  }
-
-  static void InitializeTrustCacheOnWorkerThread() {
-    GetGlobalTrustStoreMac()->InitializeTrustCache();
-  }
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  int64_t chrome_root_store_version() override { return 0; }
-#endif
-
- private:
-  static constexpr TrustStoreMac::TrustImplType kDefaultTrustImpl =
-      TrustStoreMac::TrustImplType::kLruCache;
-
-  static TrustStoreMac* GetGlobalTrustStoreMac() {
-    static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
-        kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultTrustImpl),
-        GetTrustStoreCacheSize(), TrustStoreMac::TrustDomains::kAll);
-    return static_trust_store_mac.get();
-  }
-};
-
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<SystemTrustStoreMac>();
-}
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-namespace {
 
 TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
   constexpr TrustStoreMac::TrustImplType kDefaultMacTrustImplForCRS =
@@ -358,15 +314,6 @@ void InitializeTrustStoreMacCache() {
     return;
   }
 #endif  // CHROME_ROOT_STORE_SUPPORTED
-  if (base::FeatureList::IsEnabled(
-          net::features::kCertVerifierBuiltinFeature)) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(
-            &SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
-    return;
-  }
 }
 
 #elif BUILDFLAG(IS_FUCHSIA)

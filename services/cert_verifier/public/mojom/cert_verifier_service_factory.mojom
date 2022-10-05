@@ -41,9 +41,6 @@ struct CertVerifierCreationParams {
 // the CertVerifierServiceParams are fixed and all CertVerifiers created by the
 // factory will be created with the same service parameters.
 struct CertVerifierServiceParams {
-  [EnableIf=is_builtin_cert_verifier_feature_supported]
-  bool use_builtin_cert_verifier;
-
   [EnableIf=is_chrome_root_store_supported]
   bool use_chrome_root_store;
 };

@@ -39,12 +39,6 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc() {
         /*cert_net_fetcher=*/nullptr);
   }
 #endif
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
-    return CertVerifyProc::CreateBuiltinVerifyProc(
-        /*cert_net_fetcher=*/nullptr);
-  }
-#endif
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return CertVerifyProc::CreateBuiltinVerifyProc(/*cert_net_fetcher=*/nullptr);
 #else

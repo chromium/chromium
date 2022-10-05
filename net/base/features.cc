@@ -208,18 +208,6 @@ BASE_FEATURE(kSameSiteDefaultChecksMethodRigorously,
              "SameSiteDefaultChecksMethodRigorously",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-BASE_FEATURE(kCertVerifierBuiltinFeature,
-             "CertVerifierBuiltin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#if BUILDFLAG(IS_MAC)
-const base::FeatureParam<int> kCertVerifierBuiltinImpl{
-    &kCertVerifierBuiltinFeature, "impl", 0};
-const base::FeatureParam<int> kCertVerifierBuiltinCacheSize{
-    &kCertVerifierBuiltinFeature, "cachesize", 0};
-#endif /* BUILDFLAG(IS_MAC) */
-#endif
-
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 // Enables the dual certificate verification trial feature.
 // https://crbug.com/649026
@@ -232,11 +220,6 @@ const base::FeatureParam<int> kCertDualVerificationTrialImpl{
 const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
     &kCertDualVerificationTrialFeature, "cachesize", 0};
 #endif /* BUILDFLAG(IS_MAC) */
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-const base::FeatureParam<bool> kCertDualVerificationTrialUseCrs{
-    &kCertDualVerificationTrialFeature, "use_crs", false};
-#endif
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

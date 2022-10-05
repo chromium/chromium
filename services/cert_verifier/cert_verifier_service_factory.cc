@@ -103,10 +103,6 @@ CertVerifierServiceFactoryImpl::CertVerifierServiceFactoryImpl(
     : service_params_(std::move(params)), receiver_(this, std::move(receiver)) {
   if (!service_params_) {
     service_params_ = mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-    service_params_->use_builtin_cert_verifier = base::FeatureList::IsEnabled(
-        net::features::kCertVerifierBuiltinFeature);
-#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     service_params_->use_chrome_root_store =
         base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);

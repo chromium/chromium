@@ -14,13 +14,6 @@
 
 namespace {
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
-  return base::FeatureList::IsEnabled(
-      net::features::kCertVerifierBuiltinFeature);
-}
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 bool ShouldUseChromeRootStore(PrefService* local_state) {
 #if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
@@ -54,10 +47,6 @@ class CertVerifierServiceConfigurationStorage {
   CertVerifierServiceConfigurationStorage() {
     params_ = cert_verifier::mojom::CertVerifierServiceParams::New();
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-    params_->use_builtin_cert_verifier =
-        ShouldUseBuiltinCertVerifier(g_browser_process->local_state());
-#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
     params_->use_chrome_root_store =
         ShouldUseChromeRootStore(g_browser_process->local_state());

@@ -296,15 +296,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShortLaxAllowUnsafeThreshold);
 // This only has an effect if the cookie defaults to SameSite=Lax.
 NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-// When enabled, use the builtin cert verifier instead of the platform verifier.
-NET_EXPORT BASE_DECLARE_FEATURE(kCertVerifierBuiltinFeature);
-#if BUILDFLAG(IS_MAC)
-NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
-NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinCacheSize;
-#endif /* BUILDFLAG(IS_MAC) */
-#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
-
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 NET_EXPORT BASE_DECLARE_FEATURE(kCertDualVerificationTrialFeature);
 #if BUILDFLAG(IS_MAC)
@@ -312,14 +303,6 @@ NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
 NET_EXPORT extern const base::FeatureParam<int>
     kCertDualVerificationTrialCacheSize;
 #endif /* BUILDFLAG(IS_MAC) */
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) && \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-// If both builtin verifier+system roots and builtin verifier+CRS flags are
-// supported in the same build, this param can be used to choose which to test
-// in the trial.
-NET_EXPORT extern const base::FeatureParam<bool>
-    kCertDualVerificationTrialUseCrs;
-#endif
 #endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)

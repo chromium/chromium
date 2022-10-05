@@ -49,17 +49,14 @@ class TrialComparisonCertVerifierFeatureEnabledTest
         /*enabled_features=*/{{net::features::kCertDualVerificationTrialFeature,
                                {{"uma_only", "true"}}}},
         // This test suite tests enabling the TrialComparisonCertVerifier,
-        // which can only be done when kCertVerifierBuiltinFeature and
-        // KChromeRootStoreUsed are not enabled. There are separate tests below
+        // which can only be done when KChromeRootStoreUsed is not enabled.
+        // There are separate tests below
         // (TrialComparisonCertVerifierFeatureOverridenBy*) for testing that
-        // the TrialComparisonCertVerifier is not used when those features are
+        // the TrialComparisonCertVerifier is not used when that feature is
         // enabled.
         /*disabled_features=*/{
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-          net::features::kCertVerifierBuiltinFeature,
-#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-              net::features::kChromeRootStoreUsed,
+          net::features::kChromeRootStoreUsed,
 #endif
         });
   }
@@ -97,50 +94,6 @@ IN_PROC_BROWSER_TEST_F(TrialComparisonCertVerifierFeatureEnabledTest,
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
   histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 1);
 }
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-class TrialComparisonCertVerifierFeatureOverridenByBuiltinVerifierTest
-    : public TrialComparisonCertVerifierTest {
- public:
-  TrialComparisonCertVerifierFeatureOverridenByBuiltinVerifierTest() {
-    TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
-    scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_->InitWithFeaturesAndParameters(
-        // None of these tests should generate a report, but set the trial to
-        // uma_only mode anyway just to be safe.
-        {{net::features::kCertDualVerificationTrialFeature,
-          {{"uma_only", "true"}}},
-         // Enable the builtin verifier.
-         {net::features::kCertVerifierBuiltinFeature, {}}},
-        {});
-  }
-
-  ~TrialComparisonCertVerifierFeatureOverridenByBuiltinVerifierTest() override {
-    TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(
-        false);
-  }
-
- protected:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    TrialComparisonCertVerifierFeatureOverridenByBuiltinVerifierTest,
-    TrialEnabledPrefEnabledBuiltVerifierEnabled) {
-  safe_browsing::SetExtendedReportingPrefForTests(
-      browser()->profile()->GetPrefs(), true);
-
-  ASSERT_TRUE(https_test_server_.Start());
-  base::HistogramTester histograms;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("/title1.html")));
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency", 1);
-  // If both the dual cert verifier trial feature and the builtin verifier
-  // feature are enabled, the dual cert verifier trial should not be used.
-  histograms.ExpectTotalCount("Net.CertVerifier_Job_Latency_TrialPrimary", 0);
-}
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class TrialComparisonCertVerifierFeatureOverridenByChromeRootStoreTest

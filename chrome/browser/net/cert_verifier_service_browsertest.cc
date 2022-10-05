@@ -7,8 +7,7 @@
 #include "chrome/common/buildflags.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) || \
-    BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -20,68 +19,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) ||
-        // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-class CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest
-    : public policy::PolicyTest,
-      public testing::WithParamInterface<std::tuple<bool>> {
- public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kCertVerifierBuiltinFeature,
-        feature_use_builtin_cert_verifier());
-
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void ExpectUseBuiltinCertVerifierCorrect(bool use_builtin_cert_verifier) {
-    {
-      cert_verifier::mojom::CertVerifierServiceParamsPtr params =
-          GetChromeCertVerifierServiceParams();
-      ASSERT_TRUE(params);
-      EXPECT_EQ(use_builtin_cert_verifier, params->use_builtin_cert_verifier);
-    }
-
-    // Also test the params the actual CertVerifierServiceFactory was created
-    // with, to ensure the values are being plumbed through properly.
-    base::test::TestFuture<cert_verifier::mojom::CertVerifierServiceParamsPtr>
-        service_params_future;
-    content::GetCertVerifierServiceFactory()->GetServiceParamsForTesting(
-        service_params_future.GetCallback());
-    ASSERT_TRUE(service_params_future.Get());
-    EXPECT_EQ(use_builtin_cert_verifier,
-              service_params_future.Get()->use_builtin_cert_verifier);
-  }
-
-  bool feature_use_builtin_cert_verifier() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool expected_use_builtin_cert_verifier() const {
-    return feature_use_builtin_cert_verifier();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest,
-                       Test) {
-  ExpectUseBuiltinCertVerifierCorrect(expected_use_builtin_cert_verifier());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest,
-    ::testing::Combine(::testing::Bool()),
-    [](const testing::TestParamInfo<
-        CertVerifierServiceCertVerifierBuiltinFeaturePolicyTest::ParamType>&
-           info) {
-      return std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse";
-    });
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class CertVerifierServiceChromeRootStoreFeaturePolicyTest

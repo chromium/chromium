@@ -893,10 +893,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   cert_verifier::mojom::CertVerifierServiceParamsPtr
       cert_verifier_configuration = GetChromeCertVerifierServiceParams();
   DCHECK(cert_verifier_configuration);
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  is_trial_comparison_supported &=
-      !cert_verifier_configuration->use_builtin_cert_verifier;
-#endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   is_trial_comparison_supported &=
       !cert_verifier_configuration->use_chrome_root_store;
