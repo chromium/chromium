@@ -556,14 +556,17 @@ bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
   }
 
   // Adjust the transform matrix.
-  visual_transform->PostTranslate(-clipped_onscreen_rect.OffsetFromOrigin());
-
   float scale_x = monitor_size.width() * 1.0f / swap_chain_size->width();
   float scale_y = monitor_size.height() * 1.0f / swap_chain_size->height();
-  // TODO(this bug): The previous value of the transform is cleared. We need
-  // to clean up the code if this is the expected behavior.
   visual_transform->MakeIdentity();
   visual_transform->Scale(scale_x, scale_y);
+
+  // Origin is probably (0,0) all the time. If not, adjust the origin.
+  if (!params.quad_rect.origin().IsOrigin()) {
+    auto new_origin = params.quad_rect.origin();
+    visual_transform->TransformPoint(&new_origin);
+    visual_transform->PostTranslate(-new_origin.OffsetFromOrigin());
+  }
 
 #if DCHECK_IS_ON()
   // The new transform matrix should transform the swap chain to the monitor
