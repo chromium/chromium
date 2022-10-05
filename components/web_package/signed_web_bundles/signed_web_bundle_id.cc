@@ -4,7 +4,9 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
+#include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -84,6 +86,14 @@ SignedWebBundleId SignedWebBundleId::CreateForDevelopment(
   return SignedWebBundleId(Type::kDevelopment, encoded_id, decoded_id);
 }
 
+// static
+SignedWebBundleId SignedWebBundleId::CreateRandomForDevelopment(
+    base::RepeatingCallback<void(void*, size_t)> random_generator) {
+  std::array<uint8_t, kDecodedIdLength - kTypeSuffixLength> random_bytes;
+  random_generator.Run(random_bytes.data(), random_bytes.size());
+  return CreateForDevelopment(random_bytes);
+}
+
 SignedWebBundleId::SignedWebBundleId(
     Type type,
     base::StringPiece encoded_id,
@@ -102,6 +112,12 @@ Ed25519PublicKey SignedWebBundleId::GetEd25519PublicKey() const {
   return Ed25519PublicKey::Create(
       base::make_span(decoded_id_)
           .first<kDecodedIdLength - kTypeSuffixLength>());
+}
+
+// static
+base::RepeatingCallback<void(void*, size_t)>
+SignedWebBundleId::GetDefaultRandomGenerator() {
+  return base::BindRepeating(&base::RandBytes);
 }
 
 }  // namespace web_package

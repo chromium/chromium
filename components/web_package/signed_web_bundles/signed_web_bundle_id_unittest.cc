@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -137,6 +138,26 @@ TEST(SignedWebBundleIdTest, CreateForEd25519PublicKey) {
 TEST(SignedWebBundleIdTest, CreateForDevelopment) {
   auto id = SignedWebBundleId::CreateForDevelopment(
       base::make_span(kDevelopmentBytes));
+  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
+  EXPECT_EQ(id.id(), kDevelopmentSignedWebBundleId);
+}
+
+TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentDefaultGenerator) {
+  auto id = SignedWebBundleId::CreateRandomForDevelopment();
+  EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
+}
+
+TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentCustomGenerator) {
+  auto custom_callback =
+      base::BindLambdaForTesting([](void* ptr, size_t len) -> void {
+        DCHECK_EQ(len, kDevelopmentBytes.size());
+        std::copy(kDevelopmentBytes.begin(), kDevelopmentBytes.begin() + len,
+                  static_cast<uint8_t*>(ptr));
+      });
+
+  SignedWebBundleId id =
+      SignedWebBundleId::CreateRandomForDevelopment(custom_callback);
+
   EXPECT_EQ(id.type(), SignedWebBundleId::Type::kDevelopment);
   EXPECT_EQ(id.id(), kDevelopmentSignedWebBundleId);
 }

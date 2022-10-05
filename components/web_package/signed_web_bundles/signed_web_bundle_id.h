@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 #define COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_SIGNED_WEB_BUNDLE_ID_H_
 
+#include "base/callback.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
@@ -53,6 +54,10 @@ class SignedWebBundleId {
   static SignedWebBundleId CreateForDevelopment(
       base::span<const uint8_t, kDecodedIdLength - kTypeSuffixLength> data);
 
+  static SignedWebBundleId CreateRandomForDevelopment(
+      base::RepeatingCallback<void(void*, size_t)> random_generator =
+          GetDefaultRandomGenerator());
+
   SignedWebBundleId(const SignedWebBundleId& other);
 
   ~SignedWebBundleId();
@@ -81,6 +86,9 @@ class SignedWebBundleId {
   Type type_;
   const std::string encoded_id_;
   const std::array<uint8_t, kDecodedIdLength> decoded_id_;
+
+  static base::RepeatingCallback<void(void*, size_t)>
+  GetDefaultRandomGenerator();
 };
 
 }  // namespace web_package
