@@ -1072,6 +1072,7 @@ VideoSampleEntry::VideoSampleEntry()
       data_reference_index(0),
       width(0),
       height(0),
+      alpha_mode(VideoDecoderConfig::AlphaMode::kIsOpaque),
       video_codec(VideoCodec::kUnknown),
       video_codec_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
       video_codec_level(kNoVideoCodecLevel) {}
@@ -1149,6 +1150,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_color_space = hevcConfig->GetColorSpace();
       hdr_metadata = hevcConfig->GetHDRMetadata();
+      alpha_mode = hevcConfig->GetAlphaMode();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));
@@ -1193,6 +1195,7 @@ bool VideoSampleEntry::Parse(BoxReader* reader) {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       video_color_space = hevcConfig->GetColorSpace();
       hdr_metadata = hevcConfig->GetHDRMetadata();
+      alpha_mode = hevcConfig->GetAlphaMode();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
       frame_bitstream_converter =
           base::MakeRefCounted<HEVCBitstreamConverter>(std::move(hevcConfig));

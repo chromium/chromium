@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
+#include "media/base/video_decoder_config.h"
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -45,7 +46,8 @@ HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
       numTemporalLayers(0),
       temporalIdNested(0),
       lengthSizeMinusOne(0),
-      numOfArrays(0) {}
+      numOfArrays(0),
+      alpha_mode(VideoDecoderConfig::AlphaMode::kIsOpaque) {}
 
 HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() {}
 FourCC HEVCDecoderConfigurationRecord::BoxType() const { return FOURCC_HVCC; }
@@ -198,6 +200,11 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
                 sei_msg.mastering_display_info.min_luminance / kLumaDenoninator;
             break;
           }
+          case H265SEIMessage::kSEIAlphaChannelInfo:
+            if (sei_msg.alpha_channel_info.alpha_channel_cancel_flag == 0) {
+              alpha_mode = VideoDecoderConfig::AlphaMode::kHasAlpha;
+            }
+            break;
           default:
             break;
         }
@@ -249,6 +256,10 @@ VideoColorSpace HEVCDecoderConfigurationRecord::GetColorSpace() {
 
 gfx::HDRMetadata HEVCDecoderConfigurationRecord::GetHDRMetadata() {
   return hdr_metadata;
+}
+
+VideoDecoderConfig::AlphaMode HEVCDecoderConfigurationRecord::GetAlphaMode() {
+  return alpha_mode;
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 

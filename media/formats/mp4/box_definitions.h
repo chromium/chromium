@@ -329,6 +329,8 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   PixelAspectRatioBox pixel_aspect;
   ProtectionSchemeInfo sinf;
 
+  VideoDecoderConfig::AlphaMode alpha_mode;
+
   VideoCodec video_codec;
   VideoCodecProfile video_codec_profile;
   VideoCodecLevel video_codec_level;

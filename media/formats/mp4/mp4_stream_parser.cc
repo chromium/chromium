@@ -547,8 +547,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           return false;
       }
       video_config.Initialize(entry.video_codec, entry.video_codec_profile,
-                              VideoDecoderConfig::AlphaMode::kIsOpaque,
-                              VideoColorSpace::REC709(),
+                              entry.alpha_mode, VideoColorSpace::REC709(),
                               CalculateRotation(track->header, moov_->header),
                               coded_size, visible_rect, natural_size,
                               // No decoder-specific buffer needed for AVC;

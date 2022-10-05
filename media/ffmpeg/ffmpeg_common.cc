@@ -37,6 +37,14 @@ EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   return key ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted;
 }
 
+VideoDecoderConfig::AlphaMode GetAlphaMode(const AVStream* stream) {
+  AVDictionaryEntry* alpha_mode =
+      av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
+  return alpha_mode && !strcmp(alpha_mode->value, "1")
+             ? VideoDecoderConfig::AlphaMode::kHasAlpha
+             : VideoDecoderConfig::AlphaMode::kIsOpaque;
+}
+
 }  // namespace
 
 // Why AV_INPUT_BUFFER_PADDING_SIZE? FFmpeg assumes all input buffers are
@@ -535,6 +543,9 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                       codec_context->color_range == AVCOL_RANGE_JPEG
                           ? gfx::ColorSpace::RangeID::FULL
                           : gfx::ColorSpace::RangeID::LIMITED);
+
+  VideoDecoderConfig::AlphaMode alpha_mode = GetAlphaMode(stream);
+
   switch (codec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     case VideoCodec::kH264: {
@@ -574,6 +585,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
             color_space = hevc_config.GetColorSpace();
           }
           hdr_metadata = hevc_config.GetHDRMetadata();
+          alpha_mode = hevc_config.GetAlphaMode();
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
         }
       }
@@ -654,9 +666,6 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       profile = ProfileIDToVideoCodecProfile(codec_context->profile);
   }
 
-  auto* alpha_mode = av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
-  const bool has_alpha = alpha_mode && !strcmp(alpha_mode->value, "1");
-
   void* display_matrix =
       av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
 
@@ -709,12 +718,9 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                       codec_context->extradata + codec_context->extradata_size);
   }
   // TODO(tmathmeyer) ffmpeg can't provide us with an actual video rotation yet.
-  config->Initialize(codec, profile,
-                     has_alpha ? VideoDecoderConfig::AlphaMode::kHasAlpha
-                               : VideoDecoderConfig::AlphaMode::kIsOpaque,
-                     color_space, video_transformation, coded_size,
-                     visible_rect, natural_size, extra_data,
-                     GetEncryptionScheme(stream));
+  config->Initialize(codec, profile, alpha_mode, color_space,
+                     video_transformation, coded_size, visible_rect,
+                     natural_size, extra_data, GetEncryptionScheme(stream));
   // Set the aspect ratio explicitly since our version hasn't been rounded.
   config->set_aspect_ratio(aspect_ratio);
 
