@@ -38,6 +38,7 @@ int App::Run() {
 }
 
 void App::Shutdown(int exit_code) {
+  CHECK(!quit_.is_null()) << "App was shutdown previously.";
   std::move(quit_).Run(exit_code);
 }
 
