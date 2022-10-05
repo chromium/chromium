@@ -244,8 +244,10 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
 }
 
 // Tests that CWVAutofillController can fetch, fill, and clear suggestions.
-// TODO(crbug.com/1259114): Figure out why this is test is flaky.
-TEST_F(WebViewAutofillTest, DISABLED_TestSuggestionFetchFillClear) {
+TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
+  id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  autofill_controller_.delegate = delegate;
+
   ASSERT_TRUE(test_server_->Start());
   ASSERT_TRUE(LoadTestPage());
   ASSERT_TRUE(SetFormFieldValue(kTestNameFieldID, kTestNameFieldValue));
@@ -253,10 +255,40 @@ TEST_F(WebViewAutofillTest, DISABLED_TestSuggestionFetchFillClear) {
   ASSERT_TRUE(SetFormFieldValue(kTestStateFieldID, kTestStateFieldValue));
   ASSERT_TRUE(SetFormFieldValue(kTestCityFieldID, kTestCityFieldValue));
   ASSERT_TRUE(SetFormFieldValue(kTestZipFieldID, kTestZipFieldValue));
+
+  // Stub the confirm save callback to save the new profile right away.
+  void (^invocation_handler)(NSInvocation*) = ^(NSInvocation* invocation) {
+    void (^decision_handler)(CWVAutofillProfileUserDecision);
+    [invocation getArgument:&decision_handler atIndex:5];
+    decision_handler(CWVAutofillProfileUserDecisionAccepted);
+  };
+  [[[delegate stub] andDo:invocation_handler]
+                    autofillController:autofill_controller_
+      confirmSaveForNewAutofillProfile:[OCMArg any]
+                            oldProfile:[OCMArg any]
+                       decisionHandler:[OCMArg any]];
   ASSERT_TRUE(SubmitForm());
+
   // Wait for about:blank to be loaded after <form> submitted.
   ASSERT_TRUE(WaitUntilPageLoaded());
+
   ASSERT_TRUE(LoadTestPage());
+
+  // The input element needs to be focused before suggestions can be fetched.
+  [[delegate expect] autofillController:autofill_controller_
+          didFocusOnFieldWithIdentifier:kTestAddressFieldID
+                              fieldType:kTestFieldType
+                               formName:kTestFormName
+                                frameID:[OCMArg any]
+                                  value:[OCMArg any]
+                          userInitiated:YES];
+  NSString* focus_script =
+      [NSString stringWithFormat:@"document.getElementById('%@').focus()",
+                                 kTestAddressFieldID];
+  NSError* focus_error = nil;
+  test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
+  ASSERT_TRUE(!focus_error);
+  [delegate verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
   NSArray<CWVAutofillSuggestion*>* fetched_suggestions = FetchSuggestions();
   ASSERT_EQ(1U, fetched_suggestions.count);
@@ -264,14 +296,6 @@ TEST_F(WebViewAutofillTest, DISABLED_TestSuggestionFetchFillClear) {
   EXPECT_NSEQ(kTestAddressFieldValue, fetched_suggestion.value);
   EXPECT_NSEQ(kTestFormName, fetched_suggestion.formName);
   EXPECT_NSEQ(GetMainFrameId(), fetched_suggestion.frameID);
-
-  // The input element needs to be focused before it can be filled or cleared.
-  NSString* focus_script =
-      [NSString stringWithFormat:@"document.getElementById('%@').focus()",
-                                 kTestAddressFieldID];
-  NSError* focus_error = nil;
-  test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
-  ASSERT_TRUE(!focus_error);
 
   [autofill_controller_ acceptSuggestion:fetched_suggestion
                        completionHandler:nil];
