@@ -379,6 +379,30 @@
             ]
         }
     ],
+    "AndroidRdsDomainAndDefault": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Domain_20221003",
+                    "params": {
+                        "SubdomainSettings": "false"
+                    },
+                    "enable_features": [
+                        "RequestDesktopSiteExceptions",
+                        "RequestDesktopSiteExceptionsDowngrade"
+                    ],
+                    "disable_features": [
+                        "RequestDesktopSiteDefaults",
+                        "RequestDesktopSiteDefaultsControl",
+                        "RequestDesktopSiteDefaultsDowngrade"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidScrollOptimizations": [
         {
             "platforms": [
@@ -8845,6 +8869,66 @@
                     ],
                     "disable_features": [
                         "SkipCommitsIfNotSynchronizingCompositorState"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RequestDesktopSiteDefaultsControlCohort": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteDefaultsControlSynthetic"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RequestDesktopSiteDefaultsEnabledCohort": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteDefaultsSynthetic"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RequestDesktopSiteOptInControlCohort": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteOptInControlSynthetic"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RequestDesktopSiteOptInEnabledCohort": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteOptInSynthetic"
                     ]
                 }
             ]
