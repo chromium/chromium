@@ -2797,6 +2797,10 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
   if (line_box.IsEmptyLineBox())
     return;
 
+  // Skip over the line-box if we are past our clamp point.
+  if (lines_until_clamp_ && *lines_until_clamp_ <= 0)
+    return;
+
   if (UNLIKELY(line_box.IsBlockInInline())) {
     // Block-in-inline may have different first/last baselines.
     DCHECK(container_builder_.ItemsBuilder());
@@ -2833,6 +2837,10 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
       baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock) {
     return;
   }
+
+  // Skip over the block if we are past our clamp point.
+  if (lines_until_clamp_ && *lines_until_clamp_ <= 0)
+    return;
 
   const auto& physical_fragment = To<NGPhysicalBoxFragment>(child);
   NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
