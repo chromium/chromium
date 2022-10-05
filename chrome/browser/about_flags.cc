@@ -7773,6 +7773,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickActionShowBubbleLauncherName,
      flag_descriptions::kQuickActionShowBubbleLauncherDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kQuickActionShowBubbleLauncher)},
+    {"text-in-shelf", flag_descriptions::kTextInShelfName,
+     flag_descriptions::kTextInShelfDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHomeButtonWithText)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

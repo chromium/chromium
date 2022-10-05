@@ -6476,6 +6476,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "text-in-shelf",
+    "owners": [ "wcwang@google.com", "//ash/shelf/OWNERS"  ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "third-party-storage-partitioning",
     "owners": [ "miketaylr", "eliason" ],
     "expiry_milestone": 112

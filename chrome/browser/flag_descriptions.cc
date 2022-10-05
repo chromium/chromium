@@ -2911,6 +2911,10 @@ const char kTailoredSecurityDesktopNoticeDescription[] =
     "Protection within Chrome when they enable or disable Enhanced Protection "
     "on their Account.";
 
+const char kTextInShelfName[] = "Internal test: text in shelf";
+const char kTextInShelfDescription[] =
+    "Extend text in shelf timeout to learn about user education";
+
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";

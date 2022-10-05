@@ -1641,6 +1641,9 @@ extern const char kTailoredSecurityDesktopNoticeDescription[];
 extern const char kTextBasedAudioDescriptionName[];
 extern const char kTextBasedAudioDescriptionDescription[];
 
+extern const char kTextInShelfName[];
+extern const char kTextInShelfDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
