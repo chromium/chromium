@@ -16407,6 +16407,71 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceManager.PageTimelineState">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>spvw@chromium.org</owner>
+  <summary>
+    Metrics detailing the lifecycle state of tabs over the course of the
+    execution of the browser. One slice is collected on a heartbeat every approx
+    100 minutes on average (but dependent on PRNG). A slice is a collection of
+    PageTimelineState UKM events. One PageTimelineState is recorded for each
+    browser tab when a slice is collected.
+  </summary>
+  <metric name="ChangedFaviconOrTitleInBackground" enum="Boolean">
+    <summary>
+      True if this page has been observed to change its favicon or title when in
+      the background.
+    </summary>
+  </metric>
+  <metric name="CurrentState" enum="PageState">
+    <summary>
+      The state the tab was in when the slice was recorded.
+    </summary>
+  </metric>
+  <metric name="SliceId">
+    <summary>
+      A strictly increasing ID used to order slices in relation to each other.
+      This is not zero for the first slice, but rather is a randomly chosen
+      number to make it more difficult to derive exact browser uptime.
+
+      A &quot;slice&quot; is a collection of PageTimelineStates recorded at the
+      same time.
+    </summary>
+  </metric>
+  <metric name="TabId">
+    <summary>
+      A monotonically increasing generated id assigned to a tab, enabling
+      analysis of a tab's lifecycle across several slices. This is necessary
+      because a URL isn't sufficient to identify a tab: multiple tabs can be
+      open for the same URL, and a tab containing foo.com and be closed, with
+      another re-opened between two slice snapshots.
+    </summary>
+  </metric>
+  <metric name="TimeInCurrentState">
+    <summary>
+      The time in milliseconds spent in the current state. Exponentially
+      bucketed.
+    </summary>
+  </metric>
+  <metric name="TimeSinceCreation">
+    <summary>
+      Time in milliseconds since this tab was created. Exponentially bucketed.
+    </summary>
+  </metric>
+  <metric name="TimeSinceLastSlice">
+    <summary>
+      The time in milliseconds since the last slice was recorded. Exponentially
+      bucketed.
+    </summary>
+  </metric>
+  <metric name="TotalForegroundTime">
+    <summary>
+      Cumulative time in milliseconds spent in foreground by this tab since its
+      creation. Exponentially bucketed.
+    </summary>
+  </metric>
+</event>
+
 <event name="PeriodicBackgroundSyncEventCompleted">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>

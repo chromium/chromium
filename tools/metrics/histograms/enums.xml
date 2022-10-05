@@ -75731,6 +75731,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="99" label="a.b.58.x"/>
 </enum>
 
+<enum name="PageState">
+  <int value="0" label="Focused"/>
+  <int value="1" label="Visible"/>
+  <int value="2" label="Background"/>
+  <int value="3" label="Throttled"/>
+  <int value="4" label="Frozen"/>
+  <int value="5" label="Discarded"/>
+</enum>
+
 <enum name="PageUsed">
   <int value="0" label="Discarded"/>
   <int value="1" label="Used"/>

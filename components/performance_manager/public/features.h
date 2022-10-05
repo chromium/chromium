@@ -62,6 +62,14 @@ BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
 
+// Enable PageTimelineMonitor timer and by extension, PageTimelineState event
+// collection.
+BASE_DECLARE_FEATURE(kPageTimelineMonitor);
+
+// Set the interval in seconds between calls of
+// PageTimelineMonitor::CollectSlice()
+extern const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime;
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

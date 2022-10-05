@@ -59,4 +59,11 @@ BASE_FEATURE(kUrgentPageDiscarding,
              "UrgentPageDiscarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageTimelineMonitor,
+             "PageTimelineMonitor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kPageTimelineStateIntervalTime{
+    &kPageTimelineMonitor, "time_between_collect_slice", base::Minutes(5)};
+
 }  // namespace performance_manager::features
