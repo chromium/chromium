@@ -10,6 +10,9 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications
  * and get bookmark data model.
@@ -56,10 +59,20 @@ public interface BookmarkDelegate {
     void notifyStateChange(BookmarkUIObserver observer);
 
     /**
-     * Closes the Bookmark UI (if on phone) and opens the given bookmark.
-     * @param bookmark       bookmark to open.
+     * Closes the Bookmark UI (if on phone) and opens the given bookmark in the current tab.
+     * @param bookmark The bookmark to open.
      */
-    void openBookmark(BookmarkId bookmark);
+    default void openBookmark(BookmarkId bookmark) {
+        openBookmarks(Arrays.asList(bookmark), null);
+    }
+
+    /**
+     * Closes the Bookmark UI (if on phone) and opens the given bookmark in new tabs.
+     * @param bookmarks The bookmarks to open.
+     * @param incognito Whether the bookmarks should open in an incognito window. If this is null
+     *                  then the current incognito context will be used.
+     */
+    void openBookmarks(List<BookmarkId> bookmarks, Boolean incognito);
 
     /**
      * Shows the search UI.

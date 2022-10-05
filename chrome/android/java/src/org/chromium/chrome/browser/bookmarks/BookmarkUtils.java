@@ -448,10 +448,12 @@ public class BookmarkUtils {
      * @param model Bookmarks model to manage the bookmark.
      * @param bookmarkId ID of the bookmark to be opened.
      * @param isIncognito Whether the bookmark manager is opened in incognito mode.
+     * @param launchType The {@link TabLaunchType} to use for this bookmark, may be null.
      * @return Whether the bookmark was successfully opened.
      */
     public static boolean openBookmark(Context context, ComponentName openBookmarkComponentName,
-            BookmarkModel model, @Nullable BookmarkId bookmarkId, boolean isIncognito) {
+            BookmarkModel model, @Nullable BookmarkId bookmarkId, boolean isIncognito,
+            @Nullable @TabLaunchType Integer launchType) {
         if (model.getBookmarkById(bookmarkId) == null) return false;
 
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
@@ -472,7 +474,7 @@ public class BookmarkUtils {
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
             openUrl(context, bookmarkItem.getUrl().getSpec(), bookmarkId, openBookmarkComponentName,
-                    /*launchType=*/null, isIncognito);
+                    launchType, isIncognito);
         }
         return true;
     }

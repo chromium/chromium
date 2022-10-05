@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -39,6 +40,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -519,14 +521,21 @@ public class BookmarkManager
     }
 
     @Override
-    public void openBookmark(BookmarkId bookmark) {
-        if (!BookmarkUtils.openBookmark(
-                    mContext, mOpenBookmarkComponentName, mBookmarkModel, bookmark, mIsIncognito)) {
-            return;
+    public void openBookmarks(List<BookmarkId> bookmarks, Boolean incognito) {
+        if (bookmarks == null || bookmarks.size() == 0) return;
+
+        boolean anyOpened = false;
+        for (int i = 0; i < bookmarks.size(); i++) {
+            BookmarkId bookmark = bookmarks.get(i);
+            @TabLaunchType
+            Integer tabLaunchType = i > 1 ? TabLaunchType.FROM_LONGPRESS_BACKGROUND : null;
+            anyOpened |=
+                    BookmarkUtils.openBookmark(mContext, mOpenBookmarkComponentName, mBookmarkModel,
+                            bookmark, incognito == null ? mIsIncognito : incognito, tabLaunchType);
         }
 
-        // Close bookmark UI. Keep the reading list page open.
-        if (bookmark != null && bookmark.getType() != BookmarkType.READING_LIST) {
+        if (anyOpened && bookmarks.get(0) != null
+                && bookmarks.get(0).getType() != BookmarkType.READING_LIST) {
             BookmarkUtils.finishActivityOnPhone(mContext);
         }
     }
