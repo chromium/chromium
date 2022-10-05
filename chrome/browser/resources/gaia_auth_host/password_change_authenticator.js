@@ -159,7 +159,7 @@ export class PasswordChangeAuthenticator extends EventTarget {
     super();
 
     this.initialFrameUrl_ = null;
-    this.webviewEventManager_ = WebviewEventManager.create();
+    this.webviewEventManager_ = new WebviewEventManager();
 
     /**
      * @private {WebView|undefined}

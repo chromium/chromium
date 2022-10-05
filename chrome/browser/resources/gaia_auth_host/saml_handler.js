@@ -275,7 +275,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
        */
       this.urlParameterToAutofillSAMLUsername = null;
 
-      this.webviewEventManager_ = WebviewEventManager.create();
+      this.webviewEventManager_ = new WebviewEventManager();
 
       this.webviewEventManager_.addEventListener(
           this.webview_, 'contentload', this.onContentLoad_.bind(this));

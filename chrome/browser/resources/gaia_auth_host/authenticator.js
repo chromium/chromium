@@ -426,7 +426,7 @@ export class Authenticator extends EventTarget {
         webview;
     assert(this.webview_);
     this.enableGaiaActionButtons_ = false;
-    this.webviewEventManager_ = WebviewEventManager.create();
+    this.webviewEventManager_ = new WebviewEventManager();
 
     this.clientId_ = null;
 
