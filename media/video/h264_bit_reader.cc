@@ -71,7 +71,8 @@ bool H264BitReader::ReadBits(int num_bits, int* out) {
 
   while (num_remaining_bits_in_curr_byte_ < bits_left) {
     // Take all that's left in current byte, shift to make space for the rest.
-    *out |= (curr_byte_ << (bits_left - num_remaining_bits_in_curr_byte_));
+    *out |= ((curr_byte_ & ((1u << num_remaining_bits_in_curr_byte_) - 1u))
+             << (bits_left - num_remaining_bits_in_curr_byte_));
     bits_left -= num_remaining_bits_in_curr_byte_;
 
     if (!UpdateCurrByte())
