@@ -192,6 +192,43 @@ mojom("mojom_network_isolation_key") {
   ]
 }
 
+# As with mojom_ip_address, this is a separate target to avoid a circular
+# dependency, which comes from the fact that proxy_resolver service will use
+# this interface, and the network service uses the proxy_resolver service.
+# Separate from |mojom_ip_address| because a bunch of other consumers are
+# depending on that and don't need this.
+# This is not yet used by the proxy_resolver, but will be as a part of
+# crbug/1343856.
+mojom("mojom_network_anonymization_key") {
+  generate_java = true
+  sources = [ "network_anonymization_key.mojom" ]
+
+  public_deps = [
+    ":mojom_schemeful_site",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.NetworkAnonymizationKey"
+          cpp = "::net::NetworkAnonymizationKey"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/network_anonymization_key_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+}
+
 # As with |mojom_ip_address|, this is a separate target to avoid a circular
 # dependency, which comes from the fact that proxy_resolver_win uses this
 # interface, and the network service uses the proxy_resolver_win service. This
@@ -467,6 +504,7 @@ mojom("url_loader_base") {
         "//services/network/public/cpp/network_ipc_param_traits.h",
         "//services/network/public/cpp/url_request_mojom_traits.h",
         "//services/network/public/cpp/network_isolation_key_mojom_traits.h",
+        "//services/network/public/cpp/network_anonymization_key_mojom_traits.h",
       ]
       traits_private_headers = [
         "//services/network/public/mojom/devtools_observer.mojom.h",
@@ -1029,6 +1067,7 @@ mojom("mojom") {
     ":cookies_mojom",
     ":mojom_first_party_sets",
     ":mojom_ip_address",
+    ":mojom_network_anonymization_key",
     ":mojom_network_isolation_key",
     ":mojom_network_param",
     ":mojom_proxy_config",
