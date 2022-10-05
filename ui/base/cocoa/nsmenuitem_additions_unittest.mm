@@ -569,6 +569,22 @@ TEST(NSMenuItemAdditionsTest, MMFKEHandlesFlagsChangedEvents) {
 
   // Check that there are no issues with key up events.
   EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(key_up_event));
+
+  modifiers = NSEventModifierFlagFunction;
+  NSEvent* empty_chars_event = [NSEvent keyEventWithType:NSEventTypeKeyDown
+                                                location:NSZeroPoint
+                                           modifierFlags:modifiers
+                                               timestamp:0.0
+                                            windowNumber:0
+                                                 context:nil
+                                              characters:@""
+                             charactersIgnoringModifiers:@""
+                                               isARepeat:NO
+                                                 keyCode:0];
+
+  // Make sure we correctly handle the situation of function key press event
+  // with no characters (dead keys).
+  EXPECT_EQ(expected_flags, ModifierMaskForKeyEvent(empty_chars_event));
 }
 
 }  // namespace

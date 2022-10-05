@@ -37,13 +37,16 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
       [event type] != NSEventTypeKeyDown)
     return eventModifierMask;
 
+  NSString* eventString = [event charactersIgnoringModifiers];
+  if ([eventString length] == 0)
+    return eventModifierMask;
+
   // "Up arrow", home, and other "function" key events include
   // NSEventModifierFlagFunction in their flags even though the user isn't
   // holding down the keyboard's function / world key. Add
   // NSEventModifierFlagFunction to the returned modifier mask only if the
   // event isn't for a function key.
-  unichar firstCharacter =
-      [[event charactersIgnoringModifiers] characterAtIndex:0];
+  unichar firstCharacter = [eventString characterAtIndex:0];
   if (firstCharacter < NSUpArrowFunctionKey ||
       firstCharacter > NSModeSwitchFunctionKey)
     eventModifierMask |= NSEventModifierFlagFunction;
