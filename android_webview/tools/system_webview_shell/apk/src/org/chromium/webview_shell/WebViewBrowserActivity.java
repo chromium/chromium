@@ -843,7 +843,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     private void launchWebViewDevUI() {
-        PackageInfo currentWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(this);
+        PackageInfo currentWebViewPackage = WebViewCompat.getCurrentWebViewPackage(this);
         if (currentWebViewPackage == null) {
             Log.e(TAG, "Couldn't find current WebView package");
             Toast.makeText(this, "WebView package isn't found", Toast.LENGTH_LONG).show();

@@ -57,7 +57,6 @@ android_library("system_webview_shell_apk_java") {
     "apk/src/org/chromium/webview_shell/WebViewBrowserSecondProcessActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewCreateDestroyActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewLayoutTestActivity.java",
-    "apk/src/org/chromium/webview_shell/WebViewPackageHelper.java",
     "apk/src/org/chromium/webview_shell/WebViewThreadTestActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewTracingActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewWithClipPath.java",

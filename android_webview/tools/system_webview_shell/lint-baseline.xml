@@ -35,17 +35,6 @@
     </issue>
 
     <issue
-        id="WebViewApiAvailability"
-        message="Consider using `WebViewCompat.getCurrentWebViewPackage` instead which will support more devices."
-        errorLine1="            return WebView.getCurrentWebViewPackage();"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewPackageHelper.java"
-            line="42"
-            column="20"/>
-    </issue>
-
-    <issue
         id="PrivateApi"
         message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
         errorLine1="            Class&lt;?> activityThreadClazz = Class.forName(&quot;android.app.ActivityThread&quot;);"
@@ -178,17 +167,6 @@
     </issue>
 
     <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="            return pm.queryIntentActivities(intent, flags);"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/base/android/java/src/org/chromium/base/PackageManagerUtils.java"
-            line="63"
-            column="23"/>
-    </issue>
-
-    <issue
         id="UnsupportedChromeOsCameraSystemFeature"
         message="You should look for any camera available on the device, not just the rear"
         errorLine1="        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)"
@@ -199,6 +177,17 @@
             column="16"/>
     </issue>
 
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details"
+        errorLine1="            return pm.queryIntentActivities(intent, flags);"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$SRC/base/android/java/src/org/chromium/base/PackageManagerUtils.java"
+            line="63"
+            column="23"/>
+    </issue>
+    
     <issue
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`"
@@ -560,17 +549,6 @@
             file="$SRC/android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"
             line="26"
             column="13"/>
-    </issue>
-
-    <issue
-        id="Overdraw"
-        message="Possible overdraw: Root element paints background `@android:color/black` with a theme that also paints a background (inferred theme is `@style/ShellTheme`)"
-        errorLine1="    android:background=&quot;@android:color/black&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/res/layout/activity_web_platform_tests_child.xml"
-            line="6"
-            column="5"/>
     </issue>
 
     <issue
