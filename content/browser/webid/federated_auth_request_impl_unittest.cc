@@ -154,6 +154,7 @@ int FETCH_ENDPOINT_ALL_REQUEST_TOKEN =
 struct RequestExpectations {
   absl::optional<RequestTokenStatus> return_status;
   absl::optional<FederatedAuthRequestResult> devtools_issue_status;
+  absl::optional<std::string> selected_idp_config_url;
   // Any combination of FetchedEndpoint flags.
   int fetched_endpoints;
 };
@@ -259,7 +260,7 @@ static const MockConfiguration kConfigurationValid{
 
 static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
-    FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
+    kProviderUrlFull, FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
 
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
@@ -276,6 +277,9 @@ class AuthRequestCallbackHelper {
       delete;
 
   absl::optional<RequestTokenStatus> status() const { return status_; }
+  absl::optional<GURL> selected_idp_config_url() const {
+    return selected_idp_config_url_;
+  }
   absl::optional<std::string> token() const { return token_; }
 
   base::OnceClosure quit_closure() {
@@ -285,6 +289,7 @@ class AuthRequestCallbackHelper {
 
   // This can only be called once per lifetime of this object.
   base::OnceCallback<void(RequestTokenStatus,
+                          const absl::optional<GURL>&,
                           const absl::optional<std::string>&)>
   callback() {
     return base::BindOnce(&AuthRequestCallbackHelper::ReceiverMethod,
@@ -303,9 +308,11 @@ class AuthRequestCallbackHelper {
 
  private:
   void ReceiverMethod(RequestTokenStatus status,
+                      const absl::optional<GURL>& selected_idp_config_url,
                       const absl::optional<std::string>& token) {
     CHECK(!was_called_);
     status_ = status;
+    selected_idp_config_url_ = selected_idp_config_url;
     token_ = token;
     was_called_ = true;
     wait_for_callback_loop_.Quit();
@@ -316,6 +323,7 @@ class AuthRequestCallbackHelper {
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
   absl::optional<RequestTokenStatus> status_;
+  absl::optional<GURL> selected_idp_config_url_;
   absl::optional<std::string> token_;
 };
 
@@ -709,12 +717,19 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         PerformAuthRequest(std::move(identity_provider_ptrs),
                            request_parameters.prefer_auto_sign_in,
                            configuration.wait_for_callback);
-    ASSERT_EQ(auth_response.first, expectation.return_status);
-    if (auth_response.first == RequestTokenStatus::kSuccess) {
-      EXPECT_EQ(configuration.token, auth_response.second);
+    ASSERT_EQ(std::get<0>(auth_response), expectation.return_status);
+    if (std::get<0>(auth_response) == RequestTokenStatus::kSuccess) {
+      EXPECT_EQ(configuration.token, std::get<2>(auth_response));
     } else {
-      EXPECT_TRUE(auth_response.second == absl::nullopt ||
-                  auth_response.second == kEmptyToken);
+      EXPECT_TRUE(std::get<2>(auth_response) == absl::nullopt ||
+                  std::get<2>(auth_response) == kEmptyToken);
+    }
+
+    if (expectation.selected_idp_config_url) {
+      EXPECT_EQ(std::get<1>(auth_response),
+                GURL(*expectation.selected_idp_config_url));
+    } else {
+      EXPECT_FALSE(std::get<1>(auth_response).has_value());
     }
 
     EXPECT_EQ(expectation.fetched_endpoints,
@@ -723,7 +738,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     if (expectation.devtools_issue_status) {
       int issue_count = main_test_rfh()->GetFederatedAuthRequestIssueCount(
           *expectation.devtools_issue_status);
-      if (auth_response.first == RequestTokenStatus::kSuccess) {
+      if (std::get<0>(auth_response) == RequestTokenStatus::kSuccess) {
         EXPECT_EQ(0, issue_count);
       } else {
         EXPECT_LT(0, issue_count);
@@ -796,7 +811,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
   }
 
-  std::pair<absl::optional<RequestTokenStatus>, absl::optional<std::string>>
+  std::tuple<absl::optional<RequestTokenStatus>,
+             absl::optional<GURL>,
+             absl::optional<std::string>>
   PerformAuthRequest(
       std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
       bool prefer_auto_sign_in,
@@ -820,7 +837,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
       request_remote_.set_disconnect_handler(base::OnceClosure());
     }
-    return std::make_pair(auth_helper_.status(), auth_helper_.token());
+    return std::make_tuple(auth_helper_.status(),
+                           auth_helper_.selected_idp_config_url(),
+                           auth_helper_.token());
   }
 
   LogoutRpsStatus PerformLogoutRequest(
@@ -1067,6 +1086,7 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
   IdentityProviderParameters identity_provider{"https://not-in-list.example",
@@ -1094,6 +1114,7 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListHasNoFilename) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
   RunAuthTest(parameters, expectations, config);
 }
@@ -1105,6 +1126,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
@@ -1126,6 +1148,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
@@ -1147,6 +1170,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
       "";
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
+      kProviderUrlFull,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::CLIENT_METADATA};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
@@ -1160,6 +1184,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
@@ -1172,9 +1197,10 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
       std::vector<IdentityProviderParameters>{identity_provider},
       /*prefer_auto_sign_in=*/false};
   MockConfiguration configuration = kConfigurationValid;
-  RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      FederatedAuthRequestResult::kError,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(request, expectations, configuration);
 
   histogram_tester_.ExpectUniqueSample(
@@ -1190,6 +1216,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1203,6 +1230,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1252,6 +1280,7 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   std::vector<std::string> messages =
@@ -1373,6 +1402,7 @@ TEST_F(FederatedAuthRequestImplTest,
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
@@ -1578,6 +1608,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   configuration.customized_dialog = true;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
@@ -1637,6 +1668,7 @@ TEST_F(FederatedAuthRequestImplTest, UIIsIgnored) {
   RequestExpectations expectations = {
       /*return_status=*/absl::nullopt,
       /*devtools_issue_status=*/absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   task_environment()->FastForwardBy(base::Minutes(10));
@@ -1694,6 +1726,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorRpPageNotVisible,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
@@ -1705,9 +1738,10 @@ TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED);
 
-  RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      FederatedAuthRequestResult::kError,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
@@ -1722,9 +1756,10 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_VARIATIONS);
 
-  RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      FederatedAuthRequestResult::kError,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
@@ -1741,9 +1776,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.wait_for_callback = false;
-  RequestExpectations expectations = {/*return_status=*/absl::nullopt,
-                                      /*devtools_issue_status*/ absl::nullopt,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      /*return_status=*/absl::nullopt,
+      /*devtools_issue_status*/ absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   // Delete the request before DelayTimer kicks in.
@@ -1765,9 +1802,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.wait_for_callback = false;
-  RequestExpectations expectations = {/*return_status=*/absl::nullopt,
-                                      /*devtools_issue_status*/ absl::nullopt,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      /*return_status=*/absl::nullopt,
+      /*devtools_issue_status*/ absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   // Abort the request before DelayTimer kicks in.
@@ -1901,6 +1940,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForOnlyBrowserObservedSignIn) {
 TEST_F(FederatedAuthRequestImplTest, RequestEmbargo) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kShouldEmbargo,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -1944,6 +1984,7 @@ TEST_F(FederatedAuthRequestImplTest, ApiBlockedForOrigin) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorDisabledInSettings,
+      /* selected_idp_config_url=*/absl::nullopt,
       /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
 }
@@ -1986,6 +2027,7 @@ TEST_P(FederatedAuthRequestImplTestCancelConsistency, AccountNotSelected) {
   RequestExpectations expectation = {
       /*return_status=*/absl::nullopt,
       /*devtools_issue_status*/ absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
       /*fetched_endpoints=*/
       fedcm_disabled
           ? 0
@@ -2035,6 +2077,7 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorDisabledInSettings,
+      /* selected_idp_config_url=*/absl::nullopt,
       FETCH_ENDPOINT_ALL_REQUEST_TOKEN & ~FetchedEndpoint::TOKEN};
 
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2168,6 +2211,7 @@ TEST_F(FederatedAuthRequestImplTest, NavigateDuringAccountFetchBFCacheEnabled) {
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       /*devtools_issue_status*/ absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2193,6 +2237,7 @@ TEST_F(FederatedAuthRequestImplTest,
   RequestExpectations expectations = {
       /*return_status*/ absl::nullopt,
       /*devtools_issue_status*/ absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2258,6 +2303,7 @@ TEST_F(FederatedAuthRequestImplTest,
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2289,6 +2335,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
       FetchStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
           FetchedEndpoint::ACCOUNTS | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -2310,9 +2357,10 @@ TEST_F(FederatedAuthRequestImplTest,
 
   EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _)).Times(0);
   MockConfiguration configuration = kConfigurationValid;
-  RequestExpectations expectations = {RequestTokenStatus::kError,
-                                      FederatedAuthRequestResult::kError,
-                                      /*fetched_endpoints=*/0};
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /* selected_idp_config_url=*/absl::nullopt,
+      /*fetched_endpoints=*/0};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
@@ -2323,7 +2371,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
   list.InitAndDisableFeature(features::kFedCmMultipleIdentityProviders);
 
   RequestExpectations request_multiple_idps = {RequestTokenStatus::kError,
-                                               absl::nullopt, 0};
+                                               absl::nullopt, absl::nullopt, 0};
 
   IdentityProviderParameters identity_provider{"https://idp1.com", kClientId,
                                                kNonce};
@@ -2361,7 +2409,10 @@ TEST_F(FederatedAuthRequestImplTest, AllSuccessfulMultiIdpRequest) {
   configuration.idp_info[kProviderTwoUrlFull].manifest_list.provider_urls =
       std::set<std::string>{"https://idp2.example/fedcm.json"};
 
-  RunAuthTest(parameters, kExpectationSuccess, configuration);
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderOneUrlFull;
+
+  RunAuthTest(parameters, expectations, configuration);
 }
 
 // Test some successful IDP and some failed IDP multi IDP FedCM request.
@@ -2396,6 +2447,7 @@ TEST_F(FederatedAuthRequestImplTest, PartiallySuccessfulMultiIdpRequest) {
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, absl::nullopt,
+      /* selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
   RunAuthTest(parameters, expectations, configuration);

@@ -402,7 +402,7 @@ void FederatedAuthRequestImpl::RequestToken(
     bool show_iframe_requester,
     RequestTokenCallback callback) {
   if (idp_ptrs.empty()) {
-    std::move(callback).Run(RequestTokenStatus::kError, "");
+    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
     return;
   }
   // It should not be possible to receive multiple IDPs when the
@@ -410,13 +410,14 @@ void FederatedAuthRequestImpl::RequestToken(
   // could be received from a compromised renderer.
   if (idp_ptrs.size() > 1u && !base::FeatureList::IsEnabled(
                                   features::kFedCmMultipleIdentityProviders)) {
-    std::move(callback).Run(RequestTokenStatus::kError, "");
+    std::move(callback).Run(RequestTokenStatus::kError, absl::nullopt, "");
     return;
   }
 
   if (HasPendingRequest()) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests);
-    std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests, "");
+    std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
+                            absl::nullopt, "");
     return;
   }
 
@@ -1028,7 +1029,7 @@ void FederatedAuthRequestImpl::OnDismissFailureDialog(
     absl::optional<TokenStatus> token_status,
     bool should_delay_callback,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
-  CompleteRequest(result, token_status, /*token=*/"", should_delay_callback);
+  CompleteRequestWithError(result, token_status, should_delay_callback);
 }
 
 void FederatedAuthRequestImpl::OnDialogDismissed(
@@ -1155,7 +1156,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       }
 
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
-                      TokenStatus::kSuccess, token,
+                      TokenStatus::kSuccess, idp.config_url, token,
                       /*should_delay_callback=*/false);
       return;
     }
@@ -1200,12 +1201,15 @@ void FederatedAuthRequestImpl::CompleteRequestWithError(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
     bool should_delay_callback) {
-  CompleteRequest(result, token_status, /*token=*/"", should_delay_callback);
+  CompleteRequest(result, token_status,
+                  /*selected_idp_config_url=*/absl::nullopt,
+                  /*token=*/"", should_delay_callback);
 }
 
 void FederatedAuthRequestImpl::CompleteRequest(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
+    const absl::optional<GURL>& selected_idp_config_url,
     const std::string& id_token,
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
@@ -1244,7 +1248,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
     RequestTokenStatus status =
         FederatedAuthRequestResultToRequestTokenStatus(result);
-    std::move(auth_request_callback_).Run(status, id_token);
+    std::move(auth_request_callback_)
+        .Run(status, selected_idp_config_url, id_token);
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,

@@ -526,6 +526,7 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
 void OnRequestToken(ScriptPromiseResolver* resolver,
                     const CredentialRequestOptions* options,
                     RequestTokenStatus status,
+                    const absl::optional<KURL>& selected_idp_config_url,
                     const WTF::String& token) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {

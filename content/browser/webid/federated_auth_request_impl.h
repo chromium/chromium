@@ -168,6 +168,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequest(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      const absl::optional<GURL>& selected_idp_config_url,
       const std::string& token,
       bool should_delay_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
