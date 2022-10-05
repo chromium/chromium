@@ -49,6 +49,48 @@ blink::WebCryptoKey GetTestAesCbcKey() {
   return key;
 }
 
+blink::WebCryptoKey ImportRawKey(const std::vector<uint8_t>& key_bytes) {
+  return ImportSecretKeyFromRaw(
+      key_bytes, CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
+      blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt);
+}
+
+std::vector<uint8_t> EncryptOrDie(blink::WebCryptoKey key,
+                                  const std::vector<uint8_t>& iv,
+                                  const std::vector<uint8_t>& plaintext) {
+  std::vector<uint8_t> output;
+  Status status = Encrypt(CreateAesCbcAlgorithm(iv), key, plaintext, &output);
+  CHECK(status.IsSuccess());
+  return output;
+}
+
+std::vector<uint8_t> DecryptOrDie(blink::WebCryptoKey key,
+                                  const std::vector<uint8_t>& iv,
+                                  const std::vector<uint8_t>& ciphertext) {
+  std::vector<uint8_t> output;
+  Status status = Decrypt(CreateAesCbcAlgorithm(iv), key, ciphertext, &output);
+  CHECK(status.IsSuccess());
+  return output;
+}
+
+std::string EncryptMustFail(blink::WebCryptoKey key,
+                            const std::vector<uint8_t>& iv,
+                            const std::vector<uint8_t>& plaintext) {
+  std::vector<uint8_t> output;
+  Status status = Encrypt(CreateAesCbcAlgorithm(iv), key, plaintext, &output);
+  CHECK(!status.IsSuccess());
+  return StatusToString(status);
+}
+
+std::string DecryptMustFail(blink::WebCryptoKey key,
+                            const std::vector<uint8_t>& iv,
+                            const std::vector<uint8_t>& ciphertext) {
+  std::vector<uint8_t> output;
+  Status status = Decrypt(CreateAesCbcAlgorithm(iv), key, ciphertext, &output);
+  CHECK(!status.IsSuccess());
+  return StatusToString(status);
+}
+
 class WebCryptoAesCbcTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoAesCbcTest, InputTooLarge) {
@@ -86,78 +128,268 @@ TEST_F(WebCryptoAesCbcTest, ExportKeyUnsupportedFormat) {
       ExportKey(blink::kWebCryptoKeyFormatPkcs8, GetTestAesCbcKey(), &output));
 }
 
-// Tests importing of keys (in a variety of formats), errors during import,
-// encryption, and decryption, using known answers.
-TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
-  base::Value::List tests = ReadJsonTestFileAsList("aes_cbc.json");
-  for (const auto& test_value : tests) {
-    SCOPED_TRACE(&test_value - &tests[0]);
-    ASSERT_TRUE(test_value.is_dict());
-    const base::DictionaryValue* test =
-        &base::Value::AsDictionaryValue(test_value);
+struct AesCbcKnownAnswer {
+  const char* key;
+  const char* iv;
+  const char* plaintext;
+  const char* ciphertext;
+};
 
-    blink::WebCryptoKeyFormat key_format = GetKeyFormatFromJsonTestCase(test);
-    std::vector<uint8_t> key_data =
-        GetKeyDataFromJsonTestCase(test, key_format);
-    std::string import_error = "Success";
-    test->GetString("import_error", &import_error);
+const AesCbcKnownAnswer kAesCbcKnownAnswers[] = {
+    // F.2.1 (CBC-AES128.Encrypt)
+    // http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
+    {"2b7e151628aed2a6abf7158809cf4f3c", "000102030405060708090a0b0c0d0e0f",
+     "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a"
+     "35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be66c3710",
+     // Added a padding block: encryption of {0x10, 0x10, ... 0x10}) (not given
+     // by the NIST test vector)
+     "7649abac8119b246cee98e9b12e9197d5086cb9b507219ee95db113a917678b273bed6b8e"
+     "3c1743b7116e69e222295163ff1caa1681fac09120eca307586e1a78cb82807230e1321d3"
+     "fae00d18cc2012"},
 
-    // Import the key.
-    blink::WebCryptoKey key;
+    // F.2.6 CBC-AES256.Decrypt [*]
+    // http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
+    //
+    // [*] Truncated 3 bytes off the plain text, so block 4 differs from the
+    // NIST vector.
+    {"603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4",
+     "000102030405060708090a0b0c0d0e0f",
+     // Truncated the last block to make it more interesting.
+     "6bc1bee22e409f96e93d7e117393172aae2d8a571e03ac9c9eb76fac45af8e5130c81c46a"
+     "35ce411e5fbc1191a0a52eff69f2445df4f9b17ad2b417be6",
+     // Last block differs from source vector (due to truncation)
+     "f58c4c04d6e5f1ba779eabfb5f7bfbd69cfc4e967edb808d679f777bc6702c7d39f23369a"
+     "9d9bacfa530e26304231461c9aaf02a6a54e9e242ccbf48c59daca6"},
+
+    // Taken from encryptor_unittest.cc (EncryptorTest.EmptyEncrypt())
+    {"3132383d5369787465656e4279746573", "5377656574205369787465656e204956", "",
+     "8518b8878d34e7185e300d0fcc426396"}};
+
+TEST_F(WebCryptoAesCbcTest, KnownAnswers) {
+  for (const auto& test : kAesCbcKnownAnswers) {
+    SCOPED_TRACE(&test - &kAesCbcKnownAnswers[0]);
+    auto key = HexStringToBytes(test.key);
+    auto iv = HexStringToBytes(test.iv);
+    auto plaintext = HexStringToBytes(test.plaintext);
+    auto ciphertext = HexStringToBytes(test.ciphertext);
+
+    blink::WebCryptoKey imported_key = ImportRawKey(key);
+    EXPECT_EQ(EncryptOrDie(imported_key, iv, plaintext), ciphertext);
+    EXPECT_EQ(DecryptOrDie(imported_key, iv, ciphertext), plaintext);
+  }
+}
+
+TEST_F(WebCryptoAesCbcTest, IVIsWrongSize) {
+  auto key = ImportRawKey(HexStringToBytes("3132383d5369787465656e4279746573"));
+  auto plaintext = HexStringToBytes("0000");
+  auto ciphertext = HexStringToBytes("8518b8878d34e7185e300d0fcc426396");
+
+  auto short_iv = HexStringToBytes("5300");
+  auto long_iv =
+      HexStringToBytes("5377656574205369787465656e2049560000000000000000");
+
+  const std::string error =
+      "OperationError: The \"iv\" has an unexpected length -- must be 16 bytes";
+
+  EXPECT_EQ(EncryptMustFail(key, short_iv, plaintext), error);
+  EXPECT_EQ(EncryptMustFail(key, long_iv, plaintext), error);
+
+  EXPECT_EQ(DecryptMustFail(key, short_iv, ciphertext), error);
+  EXPECT_EQ(DecryptMustFail(key, long_iv, ciphertext), error);
+}
+
+TEST_F(WebCryptoAesCbcTest, ImportShortKey) {
+  auto algo = CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc);
+  auto key_bytes = HexStringToBytes("31");
+  blink::WebCryptoKey unused_key;
+  Status status = ImportKey(
+      blink::kWebCryptoKeyFormatRaw, key_bytes, algo, true,
+      blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
+      &unused_key);
+  EXPECT_EQ(StatusToString(status),
+            "DataError: AES key data must be 128 or 256 bits");
+}
+
+TEST_F(WebCryptoAesCbcTest, ImportKeyWrongFormat) {
+  auto algo = CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc);
+  auto key_bytes = HexStringToBytes("3132383d5369787465656e4279746573");
+
+  auto try_format = [=](blink::WebCryptoKeyFormat format) {
+    blink::WebCryptoKey unused_key;
     Status status = ImportKey(
-        key_format, key_data,
+        format, key_bytes, algo, true,
+        blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
+        &unused_key);
+    EXPECT_EQ(StatusToString(status),
+              "NotSupported: Unsupported import key format for algorithm");
+  };
+
+  try_format(blink::kWebCryptoKeyFormatSpki);
+  try_format(blink::kWebCryptoKeyFormatPkcs8);
+}
+
+TEST_F(WebCryptoAesCbcTest, ImportAes192Key) {
+  auto algo = CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc);
+  auto key_bytes =
+      HexStringToBytes("5377656574205369787465656e2049560000000000000000");
+  blink::WebCryptoKey unused_key;
+  Status status = ImportKey(
+      blink::kWebCryptoKeyFormatRaw, key_bytes, algo, true,
+      blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
+      &unused_key);
+  EXPECT_EQ(StatusToString(status),
+            "OperationError: 192-bit AES keys are not supported");
+}
+
+TEST_F(WebCryptoAesCbcTest, DecryptTruncatedCiphertextFails) {
+  auto key = ImportRawKey(HexStringToBytes("2b7e151628aed2a6abf7158809cf4f3c"));
+  auto iv = HexStringToBytes("000102030405060708090a0b0c0d0e0f");
+
+  std::vector<uint8_t> plaintext(64, 0);
+  auto ciphertext = EncryptOrDie(key, iv, plaintext);
+
+  ASSERT_EQ(plaintext, DecryptOrDie(key, iv, ciphertext));
+
+  // Drop 3 bytes at the end:
+  ciphertext.resize(ciphertext.size() - 3);
+  EXPECT_EQ(DecryptMustFail(key, iv, ciphertext), "OperationError");
+
+  // Drop the rest of the trailing block:
+  ciphertext.resize(ciphertext.size() - 13);
+  EXPECT_EQ(DecryptMustFail(key, iv, ciphertext), "OperationError");
+
+  // And try an empty ciphertext:
+  ciphertext.clear();
+  EXPECT_EQ(DecryptMustFail(key, iv, ciphertext), "OperationError");
+}
+
+struct JwkImportFailureTest {
+  const char* jwk;
+  const char* error;
+};
+
+const JwkImportFailureTest kJwkImportFailureTests[] = {
+    {R"({
+        "kty": "oct",
+        "k": "GADWrMRHwQfoNaXU5fZvTg",
+        "key_ops": [ "encrypt", "decrypt", "encrypt" ]
+      })",
+     "DataError: The \"key_ops\" member of the JWK dictionary contains "
+     "duplicate usages."},
+    {R"({
+        "kty": "oct",
+        "k": "GADWrMRHwQfoNaXU5fZvTg",
+        "key_ops": [ "foopy", "decrypt", "foopy" ]
+    })",
+     "DataError: The \"key_ops\" member of the JWK dictionary contains "
+     "duplicate usages."},
+    {R"({
+        "kty": "oct",
+        "alg": "A127CBC",
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+    })",
+     "DataError: The JWK \"alg\" member was inconsistent with that specified "
+     "by the Web Crypto call"},
+    {R"({
+        "kty": "foo",
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+      })",
+     "DataError: The JWK \"kty\" member was not \"oct\""},
+    {R"({
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+      })",
+     "DataError: The required JWK member \"kty\" was missing"},
+    {R"({
+        "kty": 0.1,
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+      })",
+     "DataError: The JWK member \"kty\" must be a string"},
+    {R"({
+        "kty": "oct",
+        "use": "foo",
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+      })",
+     "DataError: The JWK \"use\" member could not be parsed"},
+    {R"({
+        "kty": "oct",
+        "use": true,
+        "k": "GADWrMRHwQfoNaXU5fZvTg"
+      })",
+     "DataError: The JWK member \"use\" must be a string"},
+    {R"({
+        "kty": "oct",
+        "k": "GADWrMRHwQfoNaXU5fZvTg",
+        "ext": 0
+      })",
+     "DataError: The JWK member \"ext\" must be a boolean"},
+    {R"({
+        "kty": "oct",
+        "k": "GADWrMRHwQfoNaXU5fZvTg",
+        "key_ops": true
+      })",
+     "DataError: The JWK member \"key_ops\" must be a list"},
+    {R"({
+        "kty": "oct",
+        "k": "GADWrMRHwQfoNaXU5fZvTg",
+        "key_ops": ["encrypt", 3]
+      })",
+     "DataError: The JWK member \"key_ops[1]\" must be a string"},
+    {R"({
+        "kty": "oct"
+      })",
+     "DataError: The required JWK member \"k\" was missing"},
+    {R"({
+        "kty": "oct",
+        "k": "Qk3f0DsytU8lfza2au #$% Htaw2xpop9GYyTuH0p5GghxTI="
+      })",
+     "DataError: The JWK member \"k\" could not be base64url decoded or "
+     "contained padding"},
+    {R"({
+        "kty": "oct",
+        "k": ""
+      })",
+     "DataError: AES key data must be 128 or 256 bits"},
+    {R"({
+        "kty": "oct",
+        "alg": "A128CBC",
+        "k": ""
+      })",
+     "DataError: The JWK \"k\" member did not include the right length of key "
+     "data for the given algorithm."},
+    {R"({
+        "kty": "oct",
+        "alg": "A128CBC",
+        "k": "AVj42h0Y5aqGtE3yluKL"
+      })",
+     "DataError: The JWK \"k\" member did not include the right length of key "
+     "data for the given algorithm."},
+    {R"({
+        "kty": "oct",
+        "alg": "A128CBC",
+        "k": "dGhpcyAgaXMgIDI0ICBieXRlcyBsb25n"
+      })",
+     "DataError: The JWK \"k\" member did not include the right length of key "
+     "data for the given algorithm."},
+    {R"({
+        "kty": "oct",
+        "alg": "A192CBC",
+        "k": "YWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh"
+      })",
+     "OperationError: 192-bit AES keys are not supported"},
+};
+
+TEST_F(WebCryptoAesCbcTest, JwkImportFailures) {
+  for (const auto& test : kJwkImportFailureTests) {
+    blink::WebCryptoKey unused_key;
+    std::string jwk = test.jwk;
+    std::vector<uint8_t> jwk_bytes(jwk.begin(), jwk.end());
+    Status status = ImportKey(
+        blink::kWebCryptoKeyFormatJwk, jwk_bytes,
         CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc), true,
         blink::kWebCryptoKeyUsageEncrypt | blink::kWebCryptoKeyUsageDecrypt,
-        &key);
-    ASSERT_EQ(import_error, StatusToString(status));
-    if (status.IsError())
-      continue;
-
-    // Test encryption.
-    if (test->FindKey("plain_text")) {
-      std::vector<uint8_t> test_plain_text =
-          GetBytesFromHexString(test, "plain_text");
-
-      std::vector<uint8_t> test_iv = GetBytesFromHexString(test, "iv");
-
-      std::string encrypt_error = "Success";
-      test->GetString("encrypt_error", &encrypt_error);
-
-      std::vector<uint8_t> output;
-      status = Encrypt(CreateAesCbcAlgorithm(test_iv), key, test_plain_text,
-                       &output);
-      ASSERT_EQ(encrypt_error, StatusToString(status));
-      if (status.IsError())
-        continue;
-
-      std::vector<uint8_t> test_cipher_text =
-          GetBytesFromHexString(test, "cipher_text");
-
-      EXPECT_BYTES_EQ(test_cipher_text, output);
-    }
-
-    // Test decryption.
-    if (test->FindKey("cipher_text")) {
-      std::vector<uint8_t> test_cipher_text =
-          GetBytesFromHexString(test, "cipher_text");
-
-      std::vector<uint8_t> test_iv = GetBytesFromHexString(test, "iv");
-
-      std::string decrypt_error = "Success";
-      test->GetString("decrypt_error", &decrypt_error);
-
-      std::vector<uint8_t> output;
-      status = Decrypt(CreateAesCbcAlgorithm(test_iv), key, test_cipher_text,
-                       &output);
-      ASSERT_EQ(decrypt_error, StatusToString(status));
-      if (status.IsError())
-        continue;
-
-      std::vector<uint8_t> test_plain_text =
-          GetBytesFromHexString(test, "plain_text");
-
-      EXPECT_BYTES_EQ(test_plain_text, output);
-    }
+        &unused_key);
+    ASSERT_TRUE(!status.IsSuccess());
+    EXPECT_EQ(StatusToString(status), test.error);
   }
 }
 
@@ -327,6 +559,22 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkUseEnc) {
       blink::kWebCryptoKeyUsageDecrypt | blink::kWebCryptoKeyUsageEncrypt |
           blink::kWebCryptoKeyUsageWrapKey | blink::kWebCryptoKeyUsageUnwrapKey,
       key.Usages());
+}
+
+TEST_F(WebCryptoAesCbcTest, ImportJwkUnknownKeyOps) {
+  blink::WebCryptoKey key;
+  const std::string jwk =
+      R"({
+            "kty": "oct",
+            "k": "GADWrMRHwQfoNaXU5fZvTg",
+            "key_ops": ["foo", "bar", "encrypt", "decrypt"]
+        })";
+
+  EXPECT_EQ(Status::Success(),
+            ImportKey(blink::kWebCryptoKeyFormatJwk,
+                      base::as_bytes(base::make_span(jwk)),
+                      CreateAlgorithm(blink::kWebCryptoAlgorithmIdAesCbc),
+                      false, blink::kWebCryptoKeyUsageEncrypt, &key));
 }
 
 TEST_F(WebCryptoAesCbcTest, ImportJwkInvalidJson) {
