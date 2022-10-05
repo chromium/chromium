@@ -40,7 +40,7 @@ class Position {
   // Normalize the |point| inside of |content_bounds|. |point| is relative
   // position inside of |content_bounds|.
   void Normalize(const gfx::Point& point, const gfx::RectF& content_bounds);
-  std::unique_ptr<PositionProto> ConvertToProto();
+  std::unique_ptr<PositionProto> ConvertToProto() const;
 
   bool operator==(const Position& other) const;
   bool operator!=(const Position& other) const;

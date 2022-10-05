@@ -56,6 +56,25 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
   current_display_mode_ = mode;
 }
 
+void InputMappingView::OnActionAdded(Action* action) {
+  auto view = action->CreateView(display_overlay_controller_);
+  if (view) {
+    view->SetDisplayMode(current_display_mode_);
+    AddChildView(std::move(view));
+  }
+}
+
+void InputMappingView::OnActionRemoved(Action* action) {
+  for (auto* view : children()) {
+    auto* action_view = static_cast<ActionView*>(view);
+    if (action != action_view->action())
+      continue;
+
+    RemoveChildViewT(action_view);
+    break;
+  }
+}
+
 void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
   auto event_location = event.root_location();
   for (auto* const child : children()) {

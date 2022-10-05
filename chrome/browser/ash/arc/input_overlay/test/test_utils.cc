@@ -22,10 +22,11 @@ std::unique_ptr<views::Widget> CreateArcWindow(aura::Window* root_window,
   widget->Init(std::move(params));
   widget->widget_delegate()->SetCanResize(true);
   widget->SetBounds(bounds);
-  auto app_id = absl::optional<std::string>("app_id");
-  widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, *app_id);
+  widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, std::string("app_id"));
   widget->GetNativeWindow()->SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  widget->GetNativeWindow()->SetProperty(ash::kArcPackageNameKey,
+                                         std::string("arc.packagename"));
   widget->Show();
   widget->Activate();
 

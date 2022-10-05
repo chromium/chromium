@@ -52,6 +52,12 @@ std::vector<Position> ParseLocation(const base::Value& position) {
   return positions;
 }
 
+// Add a default position in the |positions|.
+void InitPositions(std::vector<Position>& positions) {
+  positions.emplace_back(PositionType::kDefault);
+  positions.back().set_anchor_to_target(gfx::Vector2dF(0.5, 0.5));
+}
+
 }  // namespace
 
 std::unique_ptr<Position> ParsePosition(const base::Value& value) {
@@ -206,6 +212,28 @@ bool Action::ParseFromJson(const base::Value& value) {
   return true;
 }
 
+bool Action::ParseFromProto(const ActionProto& proto) {
+  id_ = proto.id();
+  if (!proto.has_input_element())
+    return false;
+
+  original_input_ = InputElement::ConvertFromProto(proto.input_element());
+  current_input_ = std::make_unique<InputElement>(*original_input_);
+
+  if (!proto.positions().empty()) {
+    std::vector<Position> positions;
+    for (const auto& pos_proto : proto.positions()) {
+      auto position = Position::ConvertFromProto(pos_proto);
+      if (!position)
+        return false;
+      positions.emplace_back(*position);
+    }
+    original_positions_ = positions;
+    current_positions_ = std::move(positions);
+  }
+  return true;
+}
+
 void Action::OverwriteFromProto(const ActionProto& proto) {
   if (proto.has_input_element()) {
     auto input_element = InputElement::ConvertFromProto(proto.input_element());
@@ -220,6 +248,17 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
       current_positions_[0] = *position;
     position.reset();
   }
+}
+
+bool Action::InitFromEditor() {
+  if (!touch_injector_)
+    return false;
+  id_ = touch_injector_->GetNextActionID();
+
+  InitPositions(original_positions_);
+  InitPositions(current_positions_);
+
+  return true;
 }
 
 bool IsInputBound(const InputElement& input_element) {
@@ -274,7 +313,7 @@ void Action::CancelPendingBind() {
     canceled = true;
   }
 
-  DCHECK(action_view_);
+  // For unit test, |action_view_| could be nullptr.
   if (!action_view_ || !canceled)
     return;
   action_view_->SetViewContent(BindingOption::kCurrent);
@@ -306,7 +345,6 @@ void Action::PrepareToBindPosition(std::unique_ptr<Position> position) {
 }
 
 void Action::RestoreToDefault() {
-  DCHECK(action_view_);
   bool restored = false;
   if (beta_) {
     pending_position_.reset();
@@ -325,6 +363,7 @@ void Action::RestoreToDefault() {
     restored = true;
   }
 
+  // For unit test, |action_view_| could be nullptr.
   if (!action_view_ || !restored)
     return;
 
@@ -449,24 +488,35 @@ void Action::PostUnbindInputProcess() {
   action_view_->set_unbind_label_index(kDefaultLabelIndex);
 }
 
-std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
-  if (*original_input_ == *current_input_ &&
-      (!beta_ || original_positions_ == current_positions_)) {
-    return nullptr;
-  }
-
+std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
-  if (*original_input_ != *current_input_) {
+
+  if (id_ <= kMaxDefaultActionID) {
+    if (*original_input_ == *current_input_) {
+      if (!beta_ || original_positions_ == current_positions_)
+        return nullptr;
+    } else {
+      proto->set_allocated_input_element(
+          current_input_->ConvertToProto().release());
+    }
+
+    if (beta_ && original_positions_ != current_positions_) {
+      // Now only supports changing and saving the first touch position.
+      auto pos_proto = current_positions_[0].ConvertToProto();
+      *proto->add_positions() = *pos_proto;
+      pos_proto.reset();
+    }
+  } else if (beta_) {
+    // Save everything for user-added action.
     proto->set_allocated_input_element(
         current_input_->ConvertToProto().release());
-  }
-
-  if (beta_ && original_positions_ != current_positions_) {
-    // Now only supports changing and saving the first touch position.
     auto pos_proto = current_positions_[0].ConvertToProto();
     *proto->add_positions() = *pos_proto;
     pos_proto.reset();
+  } else {
+    // There shouldn't be user-added action for beta flag off.
+    NOTREACHED();
   }
 
   return proto;

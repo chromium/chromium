@@ -21,6 +21,7 @@ class ActionTap : public Action {
 
   // Override from Action.
   bool ParseFromJson(const base::Value& value) override;
+  bool InitFromEditor() override;
   bool RewriteEvent(const ui::Event& origin,
                     const bool is_mouse_locked,
                     const gfx::Transform* rotation_transform,
@@ -30,6 +31,7 @@ class ActionTap : public Action {
   std::unique_ptr<ActionView> CreateView(
       DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
+  std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const override;
 
  private:
   class ActionTapView;

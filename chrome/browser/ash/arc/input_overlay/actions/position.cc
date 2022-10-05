@@ -245,7 +245,7 @@ void Position::Normalize(const gfx::Point& point,
   aspect_ratio_.reset();
 }
 
-std::unique_ptr<PositionProto> Position::ConvertToProto() {
+std::unique_ptr<PositionProto> Position::ConvertToProto() const {
   auto proto = std::make_unique<PositionProto>();
   proto->add_anchor_to_target(anchor_to_target_.x());
   proto->add_anchor_to_target(anchor_to_target_.y());

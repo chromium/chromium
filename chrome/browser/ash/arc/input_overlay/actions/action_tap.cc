@@ -133,7 +133,7 @@ class ActionTap::ActionTapView : public ActionView {
   }
 
   void OnMenuEntryPressed() override {
-    display_overlay_controller_->AddActionEditMenu(this, ActionType::kTap);
+    display_overlay_controller_->AddActionEditMenu(this, ActionType::TAP);
     DCHECK(menu_entry_);
     if (!menu_entry_)
       return;
@@ -187,6 +187,15 @@ bool ActionTap::ParseFromJson(const base::Value& value) {
   return parsed_input_sources_ == InputSource::IS_KEYBOARD
              ? ParseJsonFromKeyboard(value)
              : ParseJsonFromMouse(value);
+}
+
+bool ActionTap::InitFromEditor() {
+  if (!Action::InitFromEditor())
+    return false;
+
+  original_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
+  current_input_ = InputElement::CreateActionTapKeyElement(ui::DomCode::NONE);
+  return true;
 }
 
 bool ActionTap::ParseJsonFromKeyboard(const base::Value& value) {
@@ -384,6 +393,15 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
   ui::Event::DispatcherApi(&(rewritten_events.back()))
       .set_target(touch_injector_->window());
   return true;
+}
+
+std::unique_ptr<ActionProto> ActionTap::ConvertToProtoIfCustomized() const {
+  auto action_proto = Action::ConvertToProtoIfCustomized();
+  if (!action_proto)
+    return nullptr;
+
+  action_proto->set_action_type(ActionType::TAP);
+  return action_proto;
 }
 
 }  // namespace input_overlay

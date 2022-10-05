@@ -66,6 +66,9 @@ class Action {
   virtual ~Action();
 
   virtual bool ParseFromJson(const base::Value& value);
+  // Used to create an action from UI.
+  virtual bool InitFromEditor();
+  bool ParseFromProto(const ActionProto& proto);
   void OverwriteFromProto(const ActionProto& proto);
   // 1. Return true & non-empty touch_events:
   //    Call SendEventFinally to send simulated touch event.
@@ -110,7 +113,7 @@ class Action {
   const Position& GetCurrentDisplayedPosition();
 
   // Return the proto object if the action is customized.
-  std::unique_ptr<ActionProto> ConvertToProtoIfCustomized();
+  virtual std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const;
   // Update |touch_down_positions_| after reposition, rotation change or window
   // bounds change.
   void UpdateTouchDownPositions();

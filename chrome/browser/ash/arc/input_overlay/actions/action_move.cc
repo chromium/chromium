@@ -253,6 +253,17 @@ bool ActionMove::ParseFromJson(const base::Value& value) {
   }
 }
 
+bool ActionMove::InitFromEditor() {
+  if (!Action::InitFromEditor())
+    return false;
+
+  std::vector<ui::DomCode> keycodes{ui::DomCode::NONE, ui::DomCode::NONE,
+                                    ui::DomCode::NONE, ui::DomCode::NONE};
+  original_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
+  current_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
+  return true;
+}
+
 bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
   auto* keys = value.FindListKey(kKeys);
   if (!keys) {
@@ -622,6 +633,15 @@ gfx::PointF ActionMove::TransformLocationInPixels(
   float scale = touch_injector_->window()->GetHost()->device_scale_factor();
   new_pos.Scale(scale);
   return new_pos;
+}
+
+std::unique_ptr<ActionProto> ActionMove::ConvertToProtoIfCustomized() const {
+  auto action_proto = Action::ConvertToProtoIfCustomized();
+  if (!action_proto)
+    return nullptr;
+
+  action_proto->set_action_type(ActionType::MOVE);
+  return action_proto;
 }
 
 }  // namespace input_overlay

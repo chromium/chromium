@@ -76,6 +76,12 @@ class DisplayOverlayController : public ui::EventHandler,
   // hidden or input overlay is disabled.
   void OnApplyMenuState();
 
+  // For editor.
+  // Show the action view when adding |action|.
+  void OnActionAdded(Action* action);
+  // Remove the action view when removing |action|.
+  void OnActionRemoved(Action* action);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
@@ -121,6 +127,15 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
+  // TODO(b/250900717): Below are used temporarily. It will be updated/removed
+  // when the final UX/UI is ready.
+  void AddButtonForAddActionTap();
+  void RemoveButtonForAddActionTap();
+  void OnAddActionTapButtonPressed();
+  void AddButtonForAddActionMove();
+  void RemoveButtonForAddActionMove();
+  void OnAddActionMoveButtonPressed();
+
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuEntryPosition();
   views::View* GetParentView();
@@ -150,6 +165,9 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
   raw_ptr<ash::PillButton> nudge_view_ = nullptr;
+  // TODO(b/250900717): Below are temporary UIs for editor feature.
+  raw_ptr<ash::PillButton> add_action_tap_ = nullptr;
+  raw_ptr<ash::PillButton> add_action_move_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

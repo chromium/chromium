@@ -99,10 +99,10 @@ std::unique_ptr<ActionEditMenu> ActionEditMenu::BuildActionEditMenu(
       std::make_unique<ActionEditMenu>(display_overlay_controller, anchor);
 
   switch (action_type) {
-    case ActionType::kTap:
+    case ActionType::TAP:
       menu->InitActionTapEditMenu();
       break;
-    case ActionType::kMove:
+    case ActionType::MOVE:
       menu->InitActionTapEditMenu();
       break;
     default:

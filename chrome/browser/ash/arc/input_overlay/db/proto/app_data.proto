@@ -28,6 +28,14 @@ enum MouseAction {
   SECONDARY_DRAG_MOVE = 5;
 }
 
+// Action types according to the touch events.
+enum ActionType {
+  // |TAP| involves touch down and up.
+  TAP = 0;
+  // |MOVE| involves touch down, move and up.
+  MOVE = 1;
+}
+
 message InputElementProto {
   // Input sources for each action. One input binding may have more than one
   // source. For example, the action type may need to combine key input and
@@ -53,6 +61,8 @@ message ActionProto {
   // Customized Positions for this action. Now it only saves one position. Use
   // keyword |repeated| for future expansion.
   repeated PositionProto positions = 3;
+  // Action type for this action.
+  optional ActionType action_type = 4;
 }
 
 message AppDataProto {

@@ -35,6 +35,9 @@ constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
 
 gfx::RectF CalculateWindowContentBounds(aura::Window* window);
 
+// Maximum default action ID. User-added actions have ID > kMaxDefaultActionID.
+constexpr int kMaxDefaultActionID = 9999;
+
 // TouchInjector includes all the touch actions related to the specific window
 // and performs as a bridge between the ArcInputOverlayManager and the touch
 // actions. It implements EventRewriter to transform input events to touch
@@ -135,6 +138,17 @@ class TouchInjector : public ui::EventRewriter {
   void UpdateForDisplayMetricsChanged();
   void UpdateForWindowBoundsChanged();
 
+  // Add or delete an Action.
+  // Return an action ID (> kMaxDefaultActionID) for adding a new action.
+  int GetNextActionID();
+  // Add a new action of type |action_type| from UI without input binding and
+  // with default position binding at the center.
+  void AddNewAction(ActionType action_type);
+  // Add action view for |action|.
+  void AddActionView(Action* action);
+  // Remove action view for |action|.
+  void RemoveActionView(Action* action);
+
   // UMA stats.
   void RecordMenuStateOnLaunch();
 
@@ -206,6 +220,14 @@ class TouchInjector : public ui::EventRewriter {
   // Load menu state from |proto|. The default state is on for the toggles.
   void LoadMenuStateFromProto(AppDataProto& proto);
 
+  // Create Action by |action_type| without any input bindings.
+  std::unique_ptr<Action> CreateRawAction(ActionType action_type);
+  // Remove all user-added actions from |actions|, and move the deleted actions
+  // to |removed_actions|.
+  void RemoveUserActionsAndViews(
+      std::vector<std::unique_ptr<Action>>& actions,
+      std::vector<std::unique_ptr<Action>>& removed_actions);
+
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
@@ -255,6 +277,12 @@ class TouchInjector : public ui::EventRewriter {
   // Key is the original touch id. Value is a struct containing required info
   // for this touch event.
   base::flat_map<ui::PointerId, TouchPointInfo> rewritten_touch_infos_;
+
+  // This for Action adding or deleting. For default action, ID <=
+  // kMaxDefaultActionID. For custom actions, ID > kMaxDefaultActionID.
+  int next_action_id_ = kMaxDefaultActionID + 1;
+  std::vector<std::unique_ptr<Action>> pending_add_actions_;
+  std::vector<std::unique_ptr<Action>> pending_delete_actions_;
 
   // Callback when saving proto file.
   OnSaveProtoFileCallback save_file_callback_;
