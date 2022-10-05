@@ -38,7 +38,4 @@ builders.builder(
         category = "flakiness",
         short_name = "reproducer",
     ),
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
