@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,23 +12,17 @@
 #include "ui/views/view.h"
 
 // The helper class to verify the bubble app list with recent apps shown.
-class BubbleAppListWithRecentAppBrowserTest
+class AppListWithRecentAppBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  BubbleAppListWithRecentAppBrowserTest() = default;
-  BubbleAppListWithRecentAppBrowserTest(
-      const BubbleAppListWithRecentAppBrowserTest&) = delete;
-  BubbleAppListWithRecentAppBrowserTest& operator=(
-      const BubbleAppListWithRecentAppBrowserTest&) = delete;
-  ~BubbleAppListWithRecentAppBrowserTest() override = default;
+  AppListWithRecentAppBrowserTest() = default;
+  AppListWithRecentAppBrowserTest(const AppListWithRecentAppBrowserTest&) =
+      delete;
+  AppListWithRecentAppBrowserTest& operator=(
+      const AppListWithRecentAppBrowserTest&) = delete;
+  ~AppListWithRecentAppBrowserTest() override = default;
 
   // extensions::ExtensionBrowserTest:
-  void SetUp() override {
-    feature_list_.InitWithFeatures({ash::features::kProductivityLauncher},
-                                   /*disabled_features=*/{});
-    extensions::ExtensionBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     AppListClientImpl* client = AppListClientImpl::GetInstance();
@@ -50,12 +42,10 @@ class BubbleAppListWithRecentAppBrowserTest
   }
 
   ash::AppListTestApi app_list_test_api_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(BubbleAppListWithRecentAppBrowserTest,
-                       MouseClickAtRecentApp) {
+IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest, MouseClickAtRecentApp) {
   views::View* recent_app = app_list_test_api_.GetRecentAppAt(0);
   event_generator_->MoveMouseTo(recent_app->GetBoundsInScreen().CenterPoint());
   base::HistogramTester histogram_tester;
