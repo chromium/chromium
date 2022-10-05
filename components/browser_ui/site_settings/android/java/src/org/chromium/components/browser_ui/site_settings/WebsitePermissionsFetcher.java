@@ -491,15 +491,42 @@ public class WebsitePermissionsFetcher {
             }
 
             @Override
-            public void runAsync(final TaskQueue queue) {
+            public void run() {
                 if (canDealWithFirstPartySetsInfo()) {
-                    mSiteSettingsDelegate.fetchMemberToOwnerFPSMap((memberToOwnerFPSMap) -> {
-                        setFirstPartySetsInfo(memberToOwnerFPSMap);
-                        queue.next();
-                    });
-                } else {
-                    queue.next();
+                    Map<String, Set<String>> fpsOwnerToMembers =
+                            buildOwnerToMembersMapFromFetchedSites();
+
+                    // For each {@link Website} sets its FirstPartySet info: the FPS Owner and the
+                    // number of members of that FPS.
+                    for (Website site : mSites.values()) {
+                        String fpsOwnerHostname = mSiteSettingsDelegate.getFirstPartySetOwner(
+                                site.getAddress().getOrigin());
+                        if (fpsOwnerHostname == null) continue;
+                        int fpsMembersCount = fpsOwnerToMembers.get(fpsOwnerHostname).size();
+                        site.setFPSCookieInfo(new FPSCookieInfo(fpsOwnerHostname, fpsMembersCount));
+                    }
                 }
+            }
+            /**
+             * Builds a {@link Map<String,  Set <String>>} of FPS Owner - Set of FPS Members from
+             * the fetched websites.
+             */
+            @NonNull
+            private Map<String, Set<String>> buildOwnerToMembersMapFromFetchedSites() {
+                Map<String, Set<String>> fpsOwnerToMember = new HashMap<>();
+                for (Website site : mSites.values()) {
+                    String fpsMemberHostname = site.getAddress().getDomainAndRegistry();
+                    String fpsOwnerHostname = mSiteSettingsDelegate.getFirstPartySetOwner(
+                            site.getAddress().getOrigin());
+                    if (fpsOwnerHostname == null) continue;
+                    Set<String> members = fpsOwnerToMember.get(fpsOwnerHostname);
+                    if (members == null) {
+                        members = new HashSet<>();
+                    }
+                    members.add(fpsMemberHostname);
+                    fpsOwnerToMember.put(fpsOwnerHostname, members);
+                }
+                return fpsOwnerToMember;
             }
         }
 
@@ -514,43 +541,6 @@ public class WebsitePermissionsFetcher {
             public void run() {
                 mCallback.onWebsitePermissionsAvailable(mSites.values());
             }
-        }
-
-        /**
-         * Builds a {@link Map<String,  Set <String>>} of FPS Owner - Set of FPS Members from the
-         * fetched websites and for each {@link Website} sets its FPS info: the FPS Owner and the
-         * number of members of that FPS.
-         * @param memberToOwnerFPSMap map of ETLD+1s mapping a member to its owner.
-         */
-        private void setFirstPartySetsInfo(Map<String, String> memberToOwnerFPSMap) {
-            Map<String, Set<String>> fpsOwnerToMembers =
-                    buildOwnerToMembersMapFromFetchedSites(memberToOwnerFPSMap);
-
-            for (Website site : mSites.values()) {
-                String fpsMember = site.getAddress().getDomainAndRegistry();
-                String fpsOwner = memberToOwnerFPSMap.get(fpsMember);
-                if (fpsOwner == null) continue;
-                int fpsMembersCount = fpsOwnerToMembers.get(fpsOwner).size();
-                site.setFPSCookieInfo(new FPSCookieInfo(fpsOwner, fpsMembersCount));
-            }
-        }
-
-        @NonNull
-        private Map<String, Set<String>> buildOwnerToMembersMapFromFetchedSites(
-                Map<String, String> memberToOwnerFPSMap) {
-            Map<String, Set<String>> fpsOwnerToMember = new HashMap<>();
-            for (Website site : mSites.values()) {
-                String fpsMember = site.getAddress().getDomainAndRegistry();
-                String fpsOwner = memberToOwnerFPSMap.get(fpsMember);
-                if (fpsOwner == null) continue;
-                Set<String> members = fpsOwnerToMember.get(fpsOwner);
-                if (members == null) {
-                    members = new HashSet<>();
-                }
-                members.add(fpsMember);
-                fpsOwnerToMember.put(fpsOwner, members);
-            }
-            return fpsOwnerToMember;
         }
     }
 

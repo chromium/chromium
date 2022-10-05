@@ -40,7 +40,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.url.GURL;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -239,8 +238,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback) {
-        PrivacySandboxBridge.fetchMemberToOwnerFPSMap(callback);
+    public String getFirstPartySetOwner(String memberOrigin) {
+        return PrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
     }
 
     @Override

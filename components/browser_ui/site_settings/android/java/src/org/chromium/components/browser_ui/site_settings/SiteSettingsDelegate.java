@@ -16,7 +16,6 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -152,12 +151,12 @@ public interface SiteSettingsDelegate {
      */
     void setFirstPartySetsDataAccessEnabled(boolean enabled);
 
-    /***
-     * Fetches the First Party Sets member to owner map.
-     * Called with a mapping from FPS member to the respective FPS owner. Both members and owners
-     * are hostnames.
+    /**
+     * Gets the First Party Sets owner hostname given a FPS member origin.
+     * @param memberOrigin FPS member origin.
+     * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback);
+    String getFirstPartySetOwner(String memberOrigin);
 
     /**
      * Returns whether the current implementation of the delegate is able to launch the Clear

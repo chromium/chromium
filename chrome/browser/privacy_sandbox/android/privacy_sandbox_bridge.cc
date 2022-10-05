@@ -198,23 +198,18 @@ static void JNI_PrivacySandboxBridge_SetFirstPartySetsDataAccessEnabled(
   GetPrivacySandboxService()->SetFirstPartySetsDataAccessEnabled(enabled);
 }
 
-static void JNI_PrivacySandboxBridge_FetchMemberToOwnerFPSMap(
+static ScopedJavaLocalRef<jstring>
+JNI_PrivacySandboxBridge_GetFirstPartySetOwner(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_callback) {
-  auto firstPartySets = GetPrivacySandboxService()->GetFirstPartySets();
-  ScopedJavaLocalRef<jobject> map =
-      Java_PrivacySandboxBridge_createMemberToOwnerFPSMap(env);
+    const JavaParamRef<jstring>& memberOrigin) {
+  auto fpsOwner = GetPrivacySandboxService()->GetFirstPartySetOwner(
+      GURL(ConvertJavaStringToUTF8(env, memberOrigin)));
 
-  for (const auto& fps : firstPartySets) {
-    ScopedJavaLocalRef<jstring> site =
-        ConvertUTF8ToJavaString(env, fps.first.GetURL().host());
-    ScopedJavaLocalRef<jstring> owner =
-        ConvertUTF8ToJavaString(env, fps.second.GetURL().host());
-    Java_PrivacySandboxBridge_insertMemberAndOwnerIntoFPSMap(env, map, site,
-                                                             owner);
+  if (!fpsOwner.has_value()) {
+    return nullptr;
   }
 
-  base::android::RunObjectCallbackAndroid(java_callback, map);
+  return ConvertUTF8ToJavaString(env, fpsOwner->GetURL().host());
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(

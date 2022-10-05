@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.site_settings;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import static java.util.Map.entry;
@@ -285,13 +282,15 @@ public class WebsitePermissionsFetcherTest {
             "http://www.archive.org/",
     };
 
-    private static final Map<String, String> FIRST_PARTY_SETS =
-            Map.ofEntries(entry("google.de", "google.com"), entry("youtube.com", "google.com"),
-                    entry("google.ch", "google.com"), entry("google.it", "google.com"),
-                    entry("wikipedia.org", "wikipedia.org"), entry("chromium.org", "chromium.org"),
-                    entry("googlesource.org", "chromium.org"), entry("verizon.com", "verizon.com"),
-                    entry("verizonconnect.com", "verizon.com"), entry("aol.com", "verizon.com"),
-                    entry("vodafone.de", "vodafone.com"));
+    private static final Map<String, String> FPS_MEMBER_TO_OWNER_MAP = Map.ofEntries(
+            entry("https://google.de", "google.com"), entry("https://youtube.com", "google.com"),
+            entry("https://google.ch", "google.com"), entry("https://google.it", "google.com"),
+            entry("https://wikipedia.org", "wikipedia.org"),
+            entry("https://chromium.org", "chromium.org"),
+            entry("https://googlesource.org", "chromium.org"),
+            entry("https://verizon.com", "verizon.com"),
+            entry("https://verizonconnect.com", "verizon.com"),
+            entry("https://aol.com", "verizon.com"), entry("https://vodafone.de", "vodafone.com"));
 
     private static class WebsitePermissionsWaiter
             extends CallbackHelper implements WebsitePermissionsFetcher.WebsitePermissionsCallback {
@@ -1001,15 +1000,15 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    public void testFetchFirstPartySetsAndMergeInfoIntoWebsites() {
+    public void testGetFirstPartySetsOwnersAndMergeInfoIntoWebsites() {
         MockitoAnnotations.initMocks(this);
-        doAnswer((invocation) -> {
-            Callback callback = (Callback) invocation.getArguments()[0];
-            callback.onResult(FIRST_PARTY_SETS);
-            return null;
-        })
-                .when(mSiteSettingsDelegate)
-                .fetchMemberToOwnerFPSMap(any(Callback.class));
+
+        for (var entry : FPS_MEMBER_TO_OWNER_MAP.entrySet()) {
+            Mockito.doReturn(entry.getValue())
+                    .when(mSiteSettingsDelegate)
+                    .getFirstPartySetOwner(entry.getKey());
+        }
+
         Mockito.doReturn(true).when(mSiteSettingsDelegate).isFirstPartySetsDataAccessEnabled();
         Mockito.doReturn(true)
                 .when(mSiteSettingsDelegate)
