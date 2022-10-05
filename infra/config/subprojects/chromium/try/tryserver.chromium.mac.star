@@ -52,7 +52,7 @@ try_.builder(
         "ci/mac-osxbeta-rel",
     ],
     builderless = False,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_13,
 )
 
 # This trybot mirrors the trybot mac-rel
@@ -76,7 +76,7 @@ try_.builder(
 
 try_.builder(
     name = "mac-builder-next-rel",
-    os = os.MAC_12,
+    os = os.MAC_13,
     builderless = False,
 )
 

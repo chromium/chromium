@@ -930,7 +930,7 @@ ci.thin_tester(
     ),
     main_console_view = None,
     builderless = False,
-    os = os.MAC_DEFAULT,
+    os = os.MAC_13,
     cores = 12,
     triggered_by = ["ci/Mac Builder (dbg)"],
 )
@@ -2298,7 +2298,7 @@ fyi_mac_builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
-    os = None,
+    os = os.MAC_13,
     goma_backend = None,
     reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
