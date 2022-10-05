@@ -23,7 +23,7 @@
           }
         }]
       },
-      // Should deactivate the first source.
+      // Should be preferred over the first source as it's more recent.
       {
         "timestamp": "1643235575000",
         "registration_request": {
@@ -75,7 +75,7 @@
           }
         }]
       },
-      // Should deactivate the second source.
+      // Should be preferred over the second source as it's more recent.
       {
         "timestamp": "1643235581000",
         "registration_request": {
