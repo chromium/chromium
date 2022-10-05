@@ -249,9 +249,6 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   // See class documentation for Widget in widget.h for a note about ownership.
   Widget::InitParams::Ownership ownership_;
 
-  // Are we in the destructor?
-  bool destroying_;
-
   ui::Cursor cursor_;
 
   std::unique_ptr<TooltipManagerAura> tooltip_manager_;

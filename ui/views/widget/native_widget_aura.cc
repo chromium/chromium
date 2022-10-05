@@ -126,8 +126,7 @@ bool FindLayersInOrder(const std::vector<ui::Layer*>& children,
 NativeWidgetAura::NativeWidgetAura(internal::NativeWidgetDelegate* delegate)
     : delegate_(delegate),
       window_(new aura::Window(this, aura::client::WINDOW_TYPE_UNKNOWN)),
-      ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET),
-      destroying_(false) {
+      ownership_(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
   aura::client::SetFocusChangeObserver(window_, this);
   wm::SetActivationChangeObserver(window_, this);
 }
@@ -1174,7 +1173,6 @@ void NativeWidgetAura::OnTransientParentChanged(aura::Window* new_parent) {
 // NativeWidgetAura, protected:
 
 NativeWidgetAura::~NativeWidgetAura() {
-  destroying_ = true;
   if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
     // `drop_helper_` and `window_reorderer_` hold a pointer to `delegate_`'s
     // root view. Reset them before deleting `delegate_` to avoid holding a
