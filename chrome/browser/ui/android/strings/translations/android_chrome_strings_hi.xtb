@@ -45,7 +45,7 @@
 <translation id="1208340532756947324">सभी डिवाइस पर सिंक करने और मनमुताबिक बनाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="1209206284964581585">अभी छिपाएं</translation>
 <translation id="1227058898775614466">नेविगेशन का इतिहास</translation>
-<translation id="1231733316453485619">क्या सिंक करना चालू करें?</translation>
+<translation id="1231733316453485619">सिंक करना चालू करना है?</translation>
 <translation id="123724288017357924">कैश सामग्री को अनदेखा कर, मौजूदा पेज फिर लोड करें</translation>
 <translation id="1239792311949352652">इस पेज को फटाफट शेयर करें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="1240190568154816272">Chrome से जुड़ी सलाह</translation>
@@ -136,7 +136,7 @@
 <translation id="164269334534774161">आप <ph name="CREATION_TIME" /> से इस पेज की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1668122540633280551">चुनें कि Chrome के होम पेज पर वीडियो की झलक अपने-आप किस तरह दिखे.</translation>
-<translation id="1670399744444387456">मूलभूत</translation>
+<translation id="1670399744444387456">बुनियादी विकल्प</translation>
 <translation id="1671236975893690980">डाउनलोड लंबित…</translation>
 <translation id="1672586136351118594">फिर से न दिखाएं</translation>
 <translation id="1680919990519905526">Google Lens से इमेज खरीदें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
@@ -293,7 +293,7 @@
 <translation id="2587052924345400782">नया वर्शन उपलब्ध है</translation>
 <translation id="2593272815202181319">मोनोस्पेस</translation>
 <translation id="2604446170045642109">सेटिंग में जाकर, साइटों के लिए गहरे रंग वाली थीम बंद की जा सकती है.</translation>
-<translation id="2612676031748830579">कार्ड संख्या</translation>
+<translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2625189173221582860">पासवर्ड कॉपी किया गया</translation>
 <translation id="2642087927315268160">साइन इन करने के लिए, खातों की सूची बंद है.</translation>
 <translation id="2647434099613338025">भाषा जोड़ें</translation>
@@ -315,7 +315,7 @@
 <translation id="2722945394406572875">प्राइवसी सैंडबॉक्स प्रॉम्प्ट बंद है</translation>
 <translation id="2723001399770238859">ऑडियो</translation>
 <translation id="2732063072010454421">वॉइस सर्च का बेहतर अनुभव पाएं</translation>
-<translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या 'बैटरी सेवर' चालू होने पर गहरे रंग वाली थीम चालू करें</translation>
+<translation id="2760989362628427051">अपने डिवाइस की गहरे रंग वाली थीम या बैटरी सेवर मोड चालू होने पर, गहरे रंग वाली थीम चालू करें</translation>
 <translation id="2762000892062317888">अभी-अभी</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> के रूप में प्रवेश किया गया.</translation>
 <translation id="2776236159752647997">निजता, सुरक्षा और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग के लिए, <ph name="BEGIN_LINK" />Google की सेवाएं<ph name="END_LINK" /> देखें</translation>
@@ -406,7 +406,7 @@
 <translation id="3207960819495026254">बुकमार्क किया गया</translation>
 <translation id="3208584281581115441">अभी देखें</translation>
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> मिटाया गया</translation>
-<translation id="3214996641768123781">जब आप साइन इन रहते हैं, तब हो सकता है कि <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधियां<ph name="END_LINK2" /> आपके Google खाते में सेव हो जाएं. आप किसी भी समय उन्हें मिटा सकते हैं.</translation>
+<translation id="3214996641768123781">साइन इन रहने पर, <ph name="BEGIN_LINK1" />खोज इतिहास<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />अन्य तरह की गतिविधियां<ph name="END_LINK2" /> आपके Google खाते में सेव हो सकती हैं. आपके पास इन्हें मिटाने का भी विकल्प है.</translation>
 <translation id="321773570071367578">अगर आप अपना 'पासफ़्रेज़' भूल गए हैं या यह सेटिंग बदलना चाहते हैं, तो <ph name="BEGIN_LINK" /> सिंक रीसेट करें<ph name="END_LINK" /></translation>
 <translation id="3220943972464248773">पासवर्ड सिंक करने के लिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="3223522355830797639">आपका बैंक, आपकी पहचान की पुष्टि करना चाहता है.</translation>
@@ -562,7 +562,7 @@
 <translation id="409109920254068737">इस टैबलेट का इस्तेमाल, उस डिवाइस पर साइन इन करने के लिए किया जा सकता है जिस पर यह क्यूआर कोड दिख रहा है.</translation>
 <translation id="4095146165863963773">ऐप्लिकेशन डेटा मिटाएं?</translation>
 <translation id="4096227151372679484">बुकमार्क सेव फ़्लो के फ़ोल्डर, आधी स्क्रीन पर खुले हैं</translation>
-<translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
+<translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और क्रैश रिपोर्ट भेजकर, Chrome को बेहतर बनाने में मदद करें.</translation>
 <translation id="4101475238162928417">दूसरे डिवाइसों पर, अपने पासवर्ड, बुकमार्क वगैरह पाने के लिए, सिंक करें</translation>
 <translation id="410351446219883937">अपने आप चलाएं</translation>
 <translation id="4106587138345390261">Chrome नई सुविधाओं पर काम कर रहा है. इनकी मदद से साइटें, आपकी निजी जानकारी का कम से कम इस्तेमाल करने के बावजूद, आपको ब्राउज़िंग का पहले जैसा अनुभव दे पाएंगी</translation>
@@ -714,7 +714,7 @@
 <translation id="4905823827770127520">पेज का लिंक जोड़ें</translation>
 <translation id="4908869848243824489">Google का 'डिस्कवर'</translation>
 <translation id="4909709702739934280">आपका एडमिन, आपके ब्राउज़र को मैनेज करता है</translation>
-<translation id="4910889077668685004">भुगतान ऐप्लिकेशन</translation>
+<translation id="4910889077668685004">पेमेंट ऐप्लिकेशन</translation>
 <translation id="4912413785358399818">टैब को अन्य जगह ले जाएं</translation>
 <translation id="4913169188695071480">रीफ्रेश करना बंद करें</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# पेज}one{# पेज}other{# पेज}}</translation>
@@ -818,7 +818,7 @@
 <translation id="5468068603361015296">क्या आप फिर भी <ph name="FILE_NAME" /> को डाउनलोड करना चाहते हैं?</translation>
 <translation id="548278423535722844">मैप ऐप्लिकेशन में खोलें</translation>
 <translation id="5483197086164197190">Navigate Chrome</translation>
-<translation id="5487521232677179737">डेटा साफ़ करें</translation>
+<translation id="5487521232677179737">डेटा मिटाएं</translation>
 <translation id="549025011754480756">बोलकर खोजने का तरीका</translation>
 <translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
@@ -834,7 +834,7 @@
 <translation id="5561549206367097665">नेटवर्क का इंतज़ार किया जा रहा है…</translation>
 <translation id="5568069709869097550">साइन इन नहीं किया जा सकता</translation>
 <translation id="5578795271662203820">इस इमेज के लिए <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
-<translation id="5581519193887989363">आप जब चाहें तब <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> में जाकर किसी भी चीज़ को सिंक करने का विकल्प चुन सकते हैं.</translation>
+<translation id="5581519193887989363">आपके पास <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> में जाकर अपने हिसाब से चीज़ें सिंक करने का विकल्प है.</translation>
 <translation id="5590372121997663538">इस कंप्यूटर को याद रखें</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
 <translation id="5599941490345670218">Google Assistant सभी वेबसाइटों पर आपके निर्देश के मुताबिक काम कर सकती है</translation>
@@ -1013,7 +1013,7 @@
 <translation id="6464977750820128603">आप Chrome में जिन साइटों पर जाते हैं उन्हें देख सकते हैं और उनके लिए टाइमर लगा सकते हैं.\n\nGoogle उन साइटों की जानकारी लेता है जिनके लिए आप टाइमर लगाते हैं. साथ ही, यह जानकारी भी ली जाती है कि आप उन साइटों पर कितनी देर तक रहे. इस जानकारी का इस्तेमाल 'डिजिटल वेलबीइंग' को बेहतर बनाने के लिए किया जाता है.</translation>
 <translation id="6473086018775716761">शेयर करने के विकल्पों की सूची, आधी स्क्रीन पर खुली हुई है.</translation>
 <translation id="6475951671322991020">वीडियो डाउनलोड करें</translation>
-<translation id="6477928892249167417">शायद ये साइटें आपके लिए अहम हैं:</translation>
+<translation id="6477928892249167417">ये साइटें शायद आपके लिए अहम हैं:</translation>
 <translation id="6482749332252372425">मेमोरी स्‍थान कम होने के कारण <ph name="FILE_NAME" /> डाउनलोड विफल रहा.</translation>
 <translation id="6496823230996795692">पहली बार <ph name="APP_NAME" /> का उपयोग करने के लिए, कृपया इंटरनेट चालू करें.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{फ़ाइल डाउनलोड हो गई है}one{# डाउनलोड पूरा हुआ}other{# डाउनलोड पूरे हुए}}</translation>
@@ -1051,7 +1051,7 @@
 <translation id="6637100877383020115">ऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">हमेशा के लिए ब्लॉक करें</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> हटाएं</translation>
-<translation id="6643016212128521049">साफ़ करें</translation>
+<translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6645629752388991326">कंट्रोल करें कि सुरक्षा कुंजी के तौर पर इस फ़ोन का इस्तेमाल करके किन डिवाइसों पर साइन इन किया जा सकता है.</translation>
 <translation id="6647441008198474441">इस बात का अंदाज़ा लगाने के लिए कि आपको कौन-कौनसी साइटें पसंद हैं, Google को आपके देखे गए पेजों के यूआरएल भेजे जाते हैं</translation>
 <translation id="6648459603387803038">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chrome से बाहर भी प्रबंधित किया जा सकता है.</translation>
@@ -1185,14 +1185,14 @@
 <translation id="7379900596734708416">साइटों के लिए गहरे रंग वाली थीम</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome पहली बार चलाने का अनुभव</translation>
-<translation id="741204030948306876">हां मैं सहमत हूं</translation>
+<translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>
 <translation id="7431991332293347422">यह नियंत्रित करें कि खोज वगैरह को मनमुताबिक बनाने के लिए आपके ब्राउज़िंग इतिहास का इस्तेमाल कैसे किया जाए</translation>
 <translation id="7435356471928173109">आपके एडमिन ने ये सुविधा बंद की हुई है</translation>
 <translation id="7437998757836447326">Chrome से साइन आउट करें</translation>
 <translation id="7443901082822119557">साइटें गुप्त मोड इस्तेमाल करने पर, अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, कुकी इस्तेमाल नहीं कर सकतीं. जैसे, लोगों के हिसाब से विज्ञापन दिखाने के लिए. शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="7444811645081526538">ज़्यादा श्रेणियां</translation>
-<translation id="7453467225369441013">आपको ज़्यादातर साइटों से साइन आउट कर देता है. आप अपने Google खाते से साइन आउट नहीं होंगे.</translation>
+<translation id="7453467225369441013">आपको ज़्यादातर साइटों से साइन आउट कर देता है. हालांकि, Google खाते से साइन आउट नहीं किया जाता.</translation>
 <translation id="7454641608352164238">जगह काफ़ी नहीं है</translation>
 <translation id="7456774706094330779">पहले से लोड करने की एक्सटेंडेड सुविधा</translation>
 <translation id="7468819939926272717">किसी भावना को दिखाने वाला GIF चुनें</translation>
@@ -1270,7 +1270,7 @@
 <translation id="78270725016672455">किसी साइट पर साइन इन करने के लिए, आपका कंप्यूटर इस डिवाइस को रजिस्टर करना चाहता है</translation>
 <translation id="7844171778363018843">सिंक करने के लिए कोई भी डेटा नहीं चुना गया</translation>
 <translation id="7846296061357476882">Google की सेवाएं</translation>
-<translation id="784934925303690534">समय सीमा</translation>
+<translation id="784934925303690534">समयसीमा</translation>
 <translation id="7851858861565204677">अन्य डिवाइस</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7857691613771368249">पूछें कि फ़ाइलें कब सेव करनी हैं</translation>
@@ -1286,7 +1286,7 @@
 <translation id="789763218334337857">Chrome को इस्तेमाल करने का तरीका</translation>
 <translation id="7903184275147100332">इसमें एक मिनट लग सकता है</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>
-<translation id="7926975587469166629">कार्ड का प्रचलित नाम</translation>
+<translation id="7926975587469166629">कार्ड का कोई दूसरा नाम</translation>
 <translation id="7929962904089429003">मेन्यू खोलें</translation>
 <translation id="7930998711684428189">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="7939485076072265087">हाइलाइट टेक्स्ट के लिए बेहतर कार्ड बनाएं</translation>
@@ -1454,7 +1454,7 @@
 <translation id="867767487203716855">अगला अपडेट</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8683081248374354009">ग्रुप को रीसेट करें</translation>
-<translation id="869891660844655955">समय समाप्ति तारीख</translation>
+<translation id="869891660844655955">खत्म होने की तारीख</translation>
 <translation id="8699120352855309748">इन भाषाओं का अनुवाद करने की सुविधा न दें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
@@ -1480,7 +1480,7 @@
 <translation id="8854223127042600341">ऑफ़लाइन सेव की गई अपनी फ़ाइलें देखें</translation>
 <translation id="8856607253650333758">जानकारी पाएं</translation>
 <translation id="8873817150012960745">शुरू करने के लिए, यहां टैप करें</translation>
-<translation id="8881973373982641723">ब्राउज़िंग का इतिहास मिटाता है और इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
+<translation id="8881973373982641723">ब्राउज़िंग इतिहास मिटाता है. इसमें खोज बॉक्स का ब्राउज़िंग इतिहास भी शामिल है.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> आपकी निजता को सुरक्षित रखने के लिए, हम सूची से उन साइटों को ऑटोमैटिकली मिटा देते हैं जिन्हें चार हफ़्ते से पहले देखा गया था. अगर आपने किसी साइट को फिर से देखा है, तो उसे सूची में दोबारा शामिल किया जा सकता है. इसके अलावा, जिस साइट को पसंद के विषयों का अनुमान लगाने वाली सूची में शामिल नहीं करवाना है उसे हटाया भी जा सकता है.</translation>
 <translation id="8898822736010347272">आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज की कुछ सामग्री को यह Google को भेजता है. ऐसा इसलिए जिससे कि नए खतरों को खोजा जा सके और वेब पर सभी सुरक्षित रहें.</translation>
 <translation id="8906502871739599113">प्रतिक्रिया डुप्लीकेट है</translation>
@@ -1558,7 +1558,7 @@
 <translation id="95817756606698420">चीन में खोज करने के लिए Chrome, <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> का इस्तेमाल कर सकता है. आप इसे <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में बदल सकते हैं.</translation>
 <translation id="962979164594783469">यह ऐप्लिकेशन इंस्टॉल करें</translation>
 <translation id="96681097142096641">क्या आप सरल बनाए गए पेज को देखना चाहते हैं?</translation>
-<translation id="968900484120156207">आप जिन पेजों पर जाएंगे वे यहां दिखाई देंगे</translation>
+<translation id="968900484120156207">विज़िट किए जाने वाले पेज यहां दिखेंगे</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनट शेष</translation>
 <translation id="978443947993957527">अपने काम का कॉन्टेंट पाएं</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
