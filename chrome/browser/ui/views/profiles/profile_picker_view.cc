@@ -287,6 +287,17 @@ void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       new base::OnceClosure(std::move(callback));
 }
 
+// static
+void ProfilePicker::ShowDialogAndDisplayErrorMessage(
+    content::BrowserContext* browser_context) {
+  if (!ProfilePicker::IsActive())
+    return;
+
+  GURL url(chrome::kChromeUISigninErrorURL);
+  ProfilePicker::ShowDialog(browser_context, url, base::FilePath());
+  return;
+}
+
 // ProfilePickerForceSigninDialog
 // -------------------------------------------------------------
 
@@ -317,17 +328,6 @@ void ProfilePickerForceSigninDialog::ShowForceSigninDialog(
       signin_metrics::Reason::kForcedSigninPrimaryAccount, true);
 
   ProfilePicker::ShowDialog(browser_context, url, profile_path);
-}
-
-void ProfilePickerForceSigninDialog::ShowDialogAndDisplayErrorMessage(
-    content::BrowserContext* browser_context) {
-  DCHECK(signin_util::IsForceSigninEnabled());
-  if (!ProfilePicker::IsActive())
-    return;
-
-  GURL url(chrome::kChromeUISigninErrorURL);
-  ProfilePicker::ShowDialog(browser_context, url, base::FilePath());
-  return;
 }
 
 // static

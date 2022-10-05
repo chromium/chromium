@@ -294,6 +294,10 @@ class ProfilePicker {
   // `ProfilePicker::Params::ForLacrosSelectAvailableAccount()`.
   static void NotifyAccountSelected(const std::string& gaia_id);
 #endif
+
+  // Show the dialog and display local sign in error message without browser.
+  static void ShowDialogAndDisplayErrorMessage(
+      content::BrowserContext* browser_context);
 };
 
 // Dialog that will be displayed when a locked profile is selected in the
@@ -315,10 +319,6 @@ class ProfilePickerForceSigninDialog {
   // via the profile picker, when force signin is enabled.
   static void ShowForceSigninDialog(content::BrowserContext* browser_context,
                                     const base::FilePath& profile_path);
-
-  // Show the dialog and display local sign in error message without browser.
-  static void ShowDialogAndDisplayErrorMessage(
-      content::BrowserContext* browser_context);
 
   // Display local sign in error message without browser.
   static void DisplayErrorMessage();
