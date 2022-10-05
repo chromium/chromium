@@ -737,7 +737,8 @@ void AppsContainerView::UpdateForNewSortingOrder(
   // guidance is spoken first because focus moves immediately to the undo button
   // on the toast.
   if (new_order) {
-    toast_container_->AnnounceSortOrder(*new_order);
+    if (*new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst)
+      toast_container_->AnnounceSortOrder(*new_order);
   } else if (animate) {
     toast_container_->AnnounceUndoSort();
   }

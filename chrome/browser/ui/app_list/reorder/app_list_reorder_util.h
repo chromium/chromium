@@ -77,6 +77,28 @@ class StringWrapperComparator {
   icu::Collator* const collator_;
 };
 
+struct EphemeralAwareName {
+  EphemeralAwareName(bool is_ephemeral, std::u16string name);
+  ~EphemeralAwareName();
+
+  bool is_ephemeral;
+  std::u16string name;
+};
+
+// A comparator class used to compare EphemeralAwareName wrapper.
+class EphemeralStateAndNameComparator {
+ public:
+  explicit EphemeralStateAndNameComparator(icu::Collator* collator);
+
+  // Returns true if lhs precedes rhs.
+  bool operator()(
+      const reorder::SyncItemWrapper<EphemeralAwareName>& lhs,
+      const reorder::SyncItemWrapper<EphemeralAwareName>& rhs) const;
+
+ private:
+  icu::Collator* const collator_;
+};
+
 // Gets a list of wrappers based on the mappings from ids to sync items.
 template <typename T>
 std::vector<SyncItemWrapper<T>> GenerateWrappersFromSyncItems(
@@ -129,6 +151,15 @@ SyncItemWrapper<ash::IconColor>::SyncItemWrapper(
     const AppListSyncableService::SyncItem& sync_item);
 template <>
 SyncItemWrapper<ash::IconColor>::SyncItemWrapper(
+    const ash::AppListItemMetadata& metadata);
+
+// SyncItemWrapper<EphemeralAwareName> -----------------------------------------
+
+template <>
+SyncItemWrapper<EphemeralAwareName>::SyncItemWrapper(
+    const AppListSyncableService::SyncItem& sync_item);
+template <>
+SyncItemWrapper<EphemeralAwareName>::SyncItemWrapper(
     const ash::AppListItemMetadata& metadata);
 
 // Color sorting utility methods -----------------------------------------------

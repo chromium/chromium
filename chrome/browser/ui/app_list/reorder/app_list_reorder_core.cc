@@ -38,6 +38,8 @@ bool IsIncreasingOrder(ash::AppListSortOrder order) {
       return false;
     case ash::AppListSortOrder::kColor:
       return true;
+    case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
+      return true;
   }
 }
 
@@ -61,6 +63,19 @@ void SortItems(std::vector<SyncItemWrapper<ash::IconColor>>* items,
                ash::AppListSortOrder order) {
   DCHECK(IsIncreasingOrder(order));
   IconColorWrapperComparator comparator;
+  std::sort(items->begin(), items->end(), comparator);
+}
+
+template <>
+void SortItems(std::vector<SyncItemWrapper<EphemeralAwareName>>* items,
+               ash::AppListSortOrder order) {
+  DCHECK(IsIncreasingOrder(order));
+  UErrorCode error = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(error));
+  if (U_FAILURE(error))
+    collator.reset();
+
+  EphemeralStateAndNameComparator comparator(collator.get());
   std::sort(items->begin(), items->end(), comparator);
 }
 
@@ -484,6 +499,12 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
           reorder::GenerateWrappersFromSyncItems<ash::IconColor>(sync_item_map);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
+    case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst: {
+      std::vector<reorder::SyncItemWrapper<EphemeralAwareName>> wrappers =
+          reorder::GenerateWrappersFromSyncItems<EphemeralAwareName>(
+              sync_item_map);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
     case ash::AppListSortOrder::kCustom:
       NOTREACHED();
       return std::vector<reorder::ReorderParam>();
@@ -505,6 +526,12 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
     case ash::AppListSortOrder::kColor: {
       std::vector<reorder::SyncItemWrapper<ash::IconColor>> wrappers =
           reorder::GenerateWrappersFromAppListItems<ash::IconColor>(
+              app_list_items, /*ignored_id=*/absl::nullopt);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst: {
+      std::vector<reorder::SyncItemWrapper<EphemeralAwareName>> wrappers =
+          reorder::GenerateWrappersFromAppListItems<EphemeralAwareName>(
               app_list_items, /*ignored_id=*/absl::nullopt);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
@@ -545,6 +572,17 @@ bool CalculateItemPositionInOrder(
           order, reorder::SyncItemWrapper<ash::IconColor>(metadata),
           local_items, global_items, comparator, target_position);
     }
+    case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst: {
+      UErrorCode error = U_ZERO_ERROR;
+      std::unique_ptr<icu::Collator> collator(
+          icu::Collator::createInstance(error));
+      if (U_FAILURE(error))
+        collator.reset();
+      EphemeralStateAndNameComparator comparator(collator.get());
+      return CalculatePositionForSyncItemWrapper(
+          order, reorder::SyncItemWrapper<EphemeralAwareName>(metadata),
+          local_items, global_items, comparator, target_position);
+    }
   }
 }
 
@@ -576,6 +614,7 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
   switch (order) {
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kColor:
+    case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
       return 0.f;
     case ash::AppListSortOrder::kNameAlphabetical:

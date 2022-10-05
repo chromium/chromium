@@ -101,4 +101,44 @@ TEST_F(AppListReorderCoreTest, CalculatePositionForItemNotInOrder) {
               target_position.LessThan(item4.position()));
 }
 
+TEST_F(AppListReorderCoreTest, CalculatePositionForEphemeralItemNotInOrder) {
+  // Prepare four items. Note that `ephemeral_item1` is an ephemeral app.
+  // Current order: `item1`, `item2`, `item3`, `ephemeral_item1`.
+  ChromeAppListItem item1(/*profile=*/nullptr, GenerateId("Id1"),
+                          /*model_updater=*/nullptr);
+  item1.SetChromeName("A");
+  item1.SetChromePosition(syncer::StringOrdinal::CreateInitialOrdinal());
+
+  ChromeAppListItem item2(/*profile=*/nullptr, GenerateId("Id2"),
+                          /*model_updater=*/nullptr);
+  item2.SetChromeName("B");
+  item2.SetChromePosition(item1.position().CreateAfter());
+
+  ChromeAppListItem item3(/*profile=*/nullptr, GenerateId("Id3"),
+                          /*model_updater=*/nullptr);
+  item3.SetChromeName("C");
+  item3.SetChromePosition(item2.position().CreateAfter());
+
+  ChromeAppListItem ephemeral_item1(/*profile=*/nullptr, GenerateId("Id4"),
+                                    /*model_updater=*/nullptr);
+  ephemeral_item1.SetChromeName("D");
+  ephemeral_item1.SetIsEphemeral(true);
+  ephemeral_item1.SetChromePosition(item3.position().CreateAfter());
+
+  // New order: `ephemeral_item1`, `item1`, `item2`, `&item3`.
+  std::vector<const ChromeAppListItem*> items{&item1, &item2, &item3,
+                                              &ephemeral_item1};
+  syncer::StringOrdinal target_position;
+
+  // Calculate `ephemeral_item1`'s position in order.
+  bool success = reorder::CalculateItemPositionInOrder(
+      ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst,
+      ephemeral_item1.metadata(), items,
+      /*global_items=*/nullptr, &target_position);
+  EXPECT_TRUE(success);
+
+  // Verify that `target_position` is less than `item1`.
+  EXPECT_TRUE(target_position.LessThan(item1.position()));
+}
+
 }  // namespace app_list

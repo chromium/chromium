@@ -42,6 +42,7 @@ const gfx::VectorIcon* GetToastIconForOrder(AppListSortOrder order) {
     case AppListSortOrder::kColor:
       return &kSortColorIcon;
     case AppListSortOrder::kCustom:
+    case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
       return nullptr;
   }
@@ -298,7 +299,8 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
 bool AppListToastContainerView::GetVisibilityForSortOrder(
     const absl::optional<AppListSortOrder>& new_order) const {
-  return new_order && *new_order != AppListSortOrder::kCustom;
+  return new_order && *new_order != AppListSortOrder::kCustom &&
+         *new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst;
 }
 
 void AppListToastContainerView::AnnounceSortOrder(AppListSortOrder new_order) {
@@ -376,6 +378,7 @@ std::u16string AppListToastContainerView::CalculateToastTextFromOrder(
       return l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_UNDO_SORT_TOAST_FOR_COLOR_SORT);
     case AppListSortOrder::kCustom:
+    case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
       return u"";
   }
@@ -392,6 +395,7 @@ std::u16string AppListToastContainerView::GetA11yTextOnUndoButtonFromOrder(
       return l10n_util::GetStringUTF16(
           IDS_ASH_LAUNCHER_UNDO_COLOR_SORT_TOAST_SPOKEN_TEXT);
     case AppListSortOrder::kCustom:
+    case AppListSortOrder::kAlphabeticalEphemeralAppFirst:
       NOTREACHED();
       return u"";
   }

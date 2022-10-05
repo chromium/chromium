@@ -15,6 +15,15 @@
 
 namespace app_list {
 namespace reorder {
+namespace {
+
+std::u16string GetItemName(const std::string& name, bool is_folder) {
+  if (is_folder && name.empty())
+    return l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
+  return base::UTF8ToUTF16(name);
+}
+
+}  // namespace
 
 const float kOrderResetThreshold = 0.2f;
 
@@ -51,34 +60,16 @@ SyncItemWrapper<std::u16string>::SyncItemWrapper(
     const AppListSyncableService::SyncItem& sync_item)
     : id(sync_item.item_id),
       item_ordinal(sync_item.item_ordinal),
-      is_folder(sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER) {
-  // Handle the case when the folder item name is not specified and set the
-  // `key_attribute` to the default placeholder.
-  if (is_folder && sync_item.item_name.empty()) {
-    key_attribute =
-        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
-    return;
-  }
-
-  key_attribute = base::UTF8ToUTF16(sync_item.item_name);
-}
+      is_folder(sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER),
+      key_attribute(GetItemName(sync_item.item_name, is_folder)) {}
 
 template <>
 SyncItemWrapper<std::u16string>::SyncItemWrapper(
     const ash::AppListItemMetadata& metadata)
     : id(metadata.id),
       item_ordinal(metadata.position),
-      is_folder(metadata.is_folder) {
-  // Handle the case when the folder item name is not specified and set the
-  // `key_attribute` to the default placeholder.
-  if (is_folder && metadata.name.empty()) {
-    key_attribute =
-        l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
-    return;
-  }
-
-  key_attribute = base::UTF8ToUTF16(metadata.name);
-}
+      is_folder(metadata.is_folder),
+      key_attribute(GetItemName(metadata.name, is_folder)) {}
 
 // SyncItemWrapper<ash::IconColor> ---------------------------------------------
 
@@ -97,6 +88,32 @@ SyncItemWrapper<ash::IconColor>::SyncItemWrapper(
       item_ordinal(metadata.position),
       is_folder(metadata.is_folder),
       key_attribute(metadata.icon_color) {}
+
+// EphemeralAwareName ----------------------------------------------------------
+
+EphemeralAwareName::EphemeralAwareName(bool is_ephemeral, std::u16string name)
+    : is_ephemeral(is_ephemeral), name(name) {}
+EphemeralAwareName::~EphemeralAwareName() = default;
+
+// SyncItemWrapper<EphemeralAwareName> -----------------------------------------
+
+template <>
+SyncItemWrapper<EphemeralAwareName>::SyncItemWrapper(
+    const AppListSyncableService::SyncItem& sync_item)
+    : id(sync_item.item_id),
+      item_ordinal(sync_item.item_ordinal),
+      is_folder(sync_item.item_type == sync_pb::AppListSpecifics::TYPE_FOLDER),
+      key_attribute(sync_item.is_ephemeral,
+                    GetItemName(sync_item.item_name, is_folder)) {}
+
+template <>
+SyncItemWrapper<EphemeralAwareName>::SyncItemWrapper(
+    const ash::AppListItemMetadata& metadata)
+    : id(metadata.id),
+      item_ordinal(metadata.position),
+      is_folder(metadata.is_folder),
+      key_attribute(metadata.is_ephemeral,
+                    GetItemName(metadata.name, is_folder)) {}
 
 // IconColorWrapperComparator -------------------------------------------------
 
@@ -147,6 +164,26 @@ bool StringWrapperComparator::operator()(
     return result == UCOL_LESS;
 
   return result == UCOL_GREATER;
+}
+
+// EphemeralStateAndNameComparator ---------------------------------------------
+
+EphemeralStateAndNameComparator::EphemeralStateAndNameComparator(
+    icu::Collator* collator)
+    : collator_(collator) {}
+
+bool EphemeralStateAndNameComparator::operator()(
+    const reorder::SyncItemWrapper<EphemeralAwareName>& lhs,
+    const reorder::SyncItemWrapper<EphemeralAwareName>& rhs) const {
+  if (lhs.key_attribute.is_ephemeral != rhs.key_attribute.is_ephemeral)
+    return lhs.key_attribute.is_ephemeral > rhs.key_attribute.is_ephemeral;
+
+  if (!collator_)
+    return lhs.key_attribute.name < rhs.key_attribute.name;
+
+  UCollationResult result = base::i18n::CompareString16WithCollator(
+      *collator_, lhs.key_attribute.name, rhs.key_attribute.name);
+  return result == UCOL_LESS;
 }
 
 // Color Sort Utilities -------------------------------------------------------

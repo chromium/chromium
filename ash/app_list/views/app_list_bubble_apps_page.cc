@@ -519,7 +519,8 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
   // on the toast. Note that when `new_order` is null, `animate` was set to true
   // only if the sort was reverted.
   if (new_order) {
-    toast_container_->AnnounceSortOrder(*new_order);
+    if (*new_order != AppListSortOrder::kAlphabeticalEphemeralAppFirst)
+      toast_container_->AnnounceSortOrder(*new_order);
   } else if (animate) {
     toast_container_->AnnounceUndoSort();
   }

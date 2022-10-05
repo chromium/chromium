@@ -186,7 +186,13 @@ enum class AppListSortOrder {
   // by the light vibrant color extracted from the icon.
   kColor,
 
-  kMaxValue = kColor,
+  // Ephemeral apps and folders are sorted first, in alphabetical order,
+  // followed by the non-ephemeral apps and folders in alphabetical order.
+  // Note that folders are also sorted by their name and not automatically added
+  // to the front.
+  kAlphabeticalEphemeralAppFirst,
+
+  kMaxValue = kAlphabeticalEphemeralAppFirst,
 };
 
 // All the events that affect the app list sort order (including the pref order
