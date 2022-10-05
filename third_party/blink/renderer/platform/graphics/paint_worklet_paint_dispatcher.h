@@ -13,7 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_painter.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 

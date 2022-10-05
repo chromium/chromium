@@ -12,7 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/rtc_base/async_resolver_interface.h"
 

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/mutator_client.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 

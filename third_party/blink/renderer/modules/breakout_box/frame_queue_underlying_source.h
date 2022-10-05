@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 

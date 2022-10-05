@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 
 namespace blink {
 

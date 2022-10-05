@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 
 namespace blink {
 

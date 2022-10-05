@@ -41,7 +41,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

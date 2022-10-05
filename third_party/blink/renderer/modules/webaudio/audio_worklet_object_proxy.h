@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_OBJECT_PROXY_H_
 
 #include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 
 namespace blink {
 

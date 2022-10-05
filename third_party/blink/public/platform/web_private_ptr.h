@@ -39,6 +39,7 @@
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"  // nogncheck
 #include "third_party/blink/renderer/platform/heap/persistent.h"  // nogncheck
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"  // nogncheck
 #endif

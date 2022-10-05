@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {

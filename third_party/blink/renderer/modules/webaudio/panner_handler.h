@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/audio/cone_effect.h"
 #include "third_party/blink/renderer/platform/audio/distance_effect.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 

@@ -17,7 +17,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom-blink.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
