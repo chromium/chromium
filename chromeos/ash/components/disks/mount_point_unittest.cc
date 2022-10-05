@@ -62,7 +62,7 @@ TEST_F(MountPointTest, MountFailure) {
       .WillOnce(RunOnceCallback<6>(
           MountError::kUnknown, DiskMountManager::MountPoint{
                                     kSourcePath, kMountPath, MountType::kDevice,
-                                    MountCondition::kUnsupportedFilesystem}));
+                                    MountError::kUnsupportedFilesystem}));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
   base::RunLoop run_loop;

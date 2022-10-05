@@ -149,7 +149,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
                  << error_code << ", source_path=" << mount_info.source_path
                  << ", mount_path=" << mount_info.mount_path
                  << ", mount_type=" << static_cast<int>(mount_info.mount_type)
-                 << ", mount_condition=" << mount_info.mount_condition;
+                 << ", mount_error=" << mount_info.mount_error;
       std::move(callback).Run(Failure(false));
       return;
     }

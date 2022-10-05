@@ -174,7 +174,7 @@ void CrostiniSshfs::OnMountEvent(
                << ", source_path=" << mount_info.source_path
                << ", mount_path=" << mount_info.mount_path
                << ", mount_type=" << mount_info.mount_type
-               << ", mount_condition=" << mount_info.mount_condition;
+               << ", mount_error=" << mount_info.mount_error;
     switch (error_code) {
       case ash::MountError::kInternal:
         Finish(CrostiniSshfsResult::kMountErrorInternal);

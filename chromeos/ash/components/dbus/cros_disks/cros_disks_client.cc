@@ -130,7 +130,7 @@ MountError CrosDisksMountErrorToChromeMountError(
   }
 }
 
-bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
+bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountPoint* entry) {
   DCHECK(reader);
   DCHECK(entry);
 
@@ -148,7 +148,7 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
     LOG(WARNING) << "Cannot get MountEntry's read-only flag from DBus";
   }
 
-  entry->error_code = CrosDisksMountErrorToChromeMountError(
+  entry->mount_error = CrosDisksMountErrorToChromeMountError(
       static_cast<cros_disks::MountErrorType>(error_code));
   entry->mount_type = static_cast<MountType>(mount_type);
   entry->progress_percent = 100;
@@ -156,7 +156,7 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
   return true;
 }
 
-bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
+bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountPoint* entry) {
   DCHECK(reader);
   DCHECK(entry);
 
@@ -179,7 +179,7 @@ bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
     progress_percent = 0;
   }
 
-  entry->error_code = MountError::kInProgress;
+  entry->mount_error = MountError::kInProgress;
   entry->mount_type = static_cast<MountType>(mount_type);
   entry->progress_percent = progress_percent;
 
@@ -479,9 +479,9 @@ class CrosDisksClientImpl : public CrosDisksClient {
       return;
     }
 
-    std::vector<MountEntry> entries;
+    std::vector<MountPoint> entries;
     while (array_reader.HasMoreData()) {
-      MountEntry entry;
+      MountPoint entry;
       dbus::MessageReader sub_reader(nullptr);
       if (!array_reader.PopStruct(&sub_reader) ||
           !ReadMountEntryFromDbus(&sub_reader, &entry)) {
@@ -524,14 +524,14 @@ class CrosDisksClientImpl : public CrosDisksClient {
   // Handles MountCompleted signal and notifies observers.
   void OnMountCompleted(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
-    MountEntry entry;
+    MountPoint entry;
     if (!ReadMountEntryFromDbus(&reader, &entry)) {
       LOG(ERROR) << "Invalid signal: " << signal->ToString();
       return;
     }
 
     UMA_HISTOGRAM_ENUMERATION("CrosDisksClient.MountCompletedError",
-                              entry.error_code);
+                              entry.mount_error);
     // Flatten MountType and MountError into a single dimension.
     constexpr int kMaxMountErrors = 100;
     static_assert(
@@ -540,7 +540,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
     base::UmaHistogramSparse(
         "CrosDisksClient.MountErrorMountType",
         static_cast<int>(entry.mount_type) * kMaxMountErrors +
-            static_cast<int>(entry.error_code));
+            static_cast<int>(entry.mount_error));
 
     // Notify observers.
     for (Observer& observer : observer_list_)
@@ -550,7 +550,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
   // Handles MountProgress signal and notifies observers.
   void OnMountProgress(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
-    MountEntry entry;
+    MountPoint entry;
     if (!ReadMountProgressFromDbus(&reader, &entry)) {
       LOG(ERROR) << "Invalid signal: " << signal->ToString();
       return;
@@ -785,31 +785,31 @@ std::ostream& operator<<(std::ostream& out, const MountEventType event) {
   return out << std::underlying_type_t<MountEventType>(event);
 }
 
-std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
-  return out << "error_code = " << entry.error_code << ", source_path = '"
+std::ostream& operator<<(std::ostream& out, const MountPoint& entry) {
+  return out << "mount_error = " << entry.mount_error << ", source_path = '"
              << entry.source_path << "', mount_type = " << entry.mount_type
              << ", mount_path = '" << entry.mount_path
              << "', read_only = " << entry.read_only
              << ", progress_percent = " << entry.progress_percent;
 }
 
-MountEntry::MountEntry(const MountEntry&) = default;
-MountEntry& MountEntry::operator=(const MountEntry&) = default;
+MountPoint::MountPoint(const MountPoint&) = default;
+MountPoint& MountPoint::operator=(const MountPoint&) = default;
 
-MountEntry::MountEntry(MountEntry&&) = default;
-MountEntry& MountEntry::operator=(MountEntry&&) = default;
+MountPoint::MountPoint(MountPoint&&) = default;
+MountPoint& MountPoint::operator=(MountPoint&&) = default;
 
-MountEntry::MountEntry() = default;
-MountEntry::MountEntry(const base::StringPiece source_path,
+MountPoint::MountPoint() = default;
+MountPoint::MountPoint(const base::StringPiece source_path,
                        const base::StringPiece mount_path,
                        const MountType mount_type,
-                       const MountError error_code,
+                       const MountError mount_error,
                        const int progress_percent,
                        const bool read_only)
     : source_path(source_path),
       mount_path(mount_path),
       mount_type(mount_type),
-      error_code(error_code),
+      mount_error(mount_error),
       progress_percent(progress_percent),
       read_only(read_only) {}
 

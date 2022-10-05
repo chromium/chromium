@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -561,19 +562,22 @@ void VolumeToVolumeMetadata(
   volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
-    case ash::disks::MountCondition::kNone:
+    default:
+      NOTREACHED() << "Unexpected mount condition " << volume.mount_condition();
+      [[fallthrough]];
+    case ash::MountError::kNone:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;
-    case ash::disks::MountCondition::kUnknownFilesystem:
+    case ash::MountError::kUnknownFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNKNOWN;
       break;
-    case ash::disks::MountCondition::kUnsupportedFilesystem:
+    case ash::MountError::kUnsupportedFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
       break;
-    case ash::disks::MountCondition::kInProgress:
+    case ash::MountError::kInProgress:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_IN_PROGRESS;
       break;

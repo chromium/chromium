@@ -200,9 +200,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   const base::FilePath& source_path() const { return source_path_; }
   const base::FilePath& mount_path() const { return mount_path_; }
   const base::FilePath& remote_mount_path() const { return remote_mount_path_; }
-  ash::disks::MountCondition mount_condition() const {
-    return mount_condition_;
-  }
+  ash::MountError mount_condition() const { return mount_condition_; }
   MountContext mount_context() const { return mount_context_; }
   const base::FilePath& storage_device_path() const {
     return storage_device_path_;
@@ -272,8 +270,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   base::FilePath remote_mount_path_;
 
   // The mounting condition. See the enum for the details.
-  ash::disks::MountCondition mount_condition_ =
-      ash::disks::MountCondition::kNone;
+  ash::MountError mount_condition_ = ash::MountError::kNone;
 
   // The context of the mount. Whether mounting was performed due to a user
   // interaction or not.

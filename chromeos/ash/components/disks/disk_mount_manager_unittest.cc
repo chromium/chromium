@@ -308,7 +308,7 @@ struct MountEvent : public ObserverEvent {
     return StringPrintf("OnMountEvent(%d, %d, %s, %s, %d, %d)", event,
                         error_code, mount_point.source_path.c_str(),
                         mount_point.mount_path.c_str(), mount_point.mount_type,
-                        mount_point.mount_condition);
+                        mount_point.mount_error);
   }
 };
 

@@ -92,7 +92,7 @@ struct TestMountPoint {
   std::string source_path;
   std::string mount_path;
   ash::MountType mount_type;
-  ash::disks::MountCondition mount_condition;
+  ash::MountError mount_error;
 
   // -1 if there is no disk info.
   int disk_info_index;
@@ -241,17 +241,17 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path1")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::disks::MountCondition::kNone, 0},
+         ash::MountType::kDevice, ash::MountError::kNone, 0},
         {"device_path2",
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path2")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::disks::MountCondition::kNone, 1},
+         ash::MountType::kDevice, ash::MountError::kNone, 1},
         {"device_path3",
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path3")
              .AsUTF8Unsafe(),
-         ash::MountType::kDevice, ash::disks::MountCondition::kNone, 2},
+         ash::MountType::kDevice, ash::MountError::kNone, 2},
         {// Set source path inside another mounted volume.
          ash::CrosDisksClient::GetRemovableDiskMountPoint()
              .AppendASCII("mount_path3/archive.zip")
@@ -259,11 +259,11 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
          ash::CrosDisksClient::GetArchiveMountPoint()
              .AppendASCII("archive_mount_path")
              .AsUTF8Unsafe(),
-         ash::MountType::kArchive, ash::disks::MountCondition::kNone, -1}};
+         ash::MountType::kArchive, ash::MountError::kNone, -1}};
 
     for (const auto& mp : kTestMountPoints) {
       mount_points_.insert(
-          {mp.source_path, mp.mount_path, mp.mount_type, mp.mount_condition});
+          {mp.source_path, mp.mount_path, mp.mount_type, mp.mount_error});
       int disk_info_index = mp.disk_info_index;
       if (mp.disk_info_index >= 0) {
         EXPECT_GT(std::size(kTestDisks), static_cast<size_t>(disk_info_index));

@@ -20,21 +20,6 @@
 namespace ash {
 namespace disks {
 
-// State of a mounted filesystem.
-// This enum is a subset of ash::MountError (but with different numeric values).
-// This enum matches extensions::api::file_manager_private::MountCondition (but
-// with different names).
-enum class MountCondition {
-  kNone,
-  kUnknownFilesystem,
-  kUnsupportedFilesystem,
-  kInProgress,
-};
-
-// Output operator for logging.
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS)
-std::ostream& operator<<(std::ostream& out, MountCondition condition);
-
 // Possible filesystem types that can be passed to FormatMountedDevice.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -108,8 +93,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     // Type of mount.
     MountType mount_type;
     // Condition of mount.
-    MountCondition mount_condition;
-    // Progress percent between 0 and 100 when mount_condition is kInProgress.
+    MountError mount_error;
+    // Progress percent between 0 and 100 when mount_error is kInProgress.
     int progress_percent;
     // Read-only file system?
     bool read_only;
@@ -123,7 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     MountPoint(base::StringPiece source_path,
                base::StringPiece mount_path,
                MountType mount_type,
-               MountCondition mount_condition = MountCondition::kNone,
+               MountError mount_error = MountError::kNone,
                int progress_percent = 0,
                bool read_only = false);
   };

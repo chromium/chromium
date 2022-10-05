@@ -466,24 +466,21 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
     }
 
-    bool want_to_keep = entry.error_code == MountError::kNone;
-    MountCondition mount_condition = MountCondition::kNone;
+    bool want_to_keep = entry.mount_error == MountError::kNone;
+    MountError mount_error = MountError::kNone;
     if (entry.mount_type == MountType::kDevice) {
-      if (entry.error_code == MountError::kUnknownFilesystem) {
-        mount_condition = MountCondition::kUnknownFilesystem;
+      if (entry.mount_error == MountError::kUnknownFilesystem) {
+        mount_error = MountError::kUnknownFilesystem;
         want_to_keep = true;
-      } else if (entry.error_code == MountError::kUnsupportedFilesystem) {
-        mount_condition = MountCondition::kUnsupportedFilesystem;
+      } else if (entry.mount_error == MountError::kUnsupportedFilesystem) {
+        mount_error = MountError::kUnsupportedFilesystem;
         want_to_keep = true;
       }
     }
 
-    const MountPoint mount_info{entry.source_path,
-                                entry.mount_path,
-                                entry.mount_type,
-                                mount_condition,
-                                100,
-                                entry.read_only};
+    const MountPoint mount_info{
+        entry.source_path, entry.mount_path, entry.mount_type, mount_error, 100,
+        entry.read_only};
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
@@ -499,7 +496,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     } else {
       LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
-                 << mount_info.mount_path << "': " << entry.error_code;
+                 << mount_info.mount_path << "': " << entry.mount_error;
       if (const MountPoints::const_iterator it =
               mount_points_.find(mount_info.mount_path);
           it != mount_points_.end()) {
@@ -525,7 +522,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // mount path being set even if the disk isn't mounted. cros-disks also
       // does some tracking of non-mounted mount paths.
       disk->SetMountPath(mount_info.mount_path);
-      disk->set_mounted(entry.error_code == MountError::kNone);
+      disk->set_mounted(entry.mount_error == MountError::kNone);
     }
 
     // Observers may read the values of disks_. So notify them after tweaking
@@ -534,14 +531,14 @@ class DiskMountManagerImpl : public DiskMountManager,
         it != mount_callbacks_.end()) {
       DCHECK_EQ(it->first, entry.source_path);
       VLOG(1) << "Calling mount callback for '" << entry.source_path
-              << "' with error = " << entry.error_code;
-      std::move(it->second).Run(entry.error_code, mount_info);
+              << "' with error = " << entry.mount_error;
+      std::move(it->second).Run(entry.mount_error, mount_info);
       mount_callbacks_.erase(std::move(it));
     } else {
       LOG(ERROR) << "No mount callback for '" << entry.source_path << "'";
     }
 
-    NotifyMountStatusUpdate(MOUNTING, entry.error_code, mount_info);
+    NotifyMountStatusUpdate(MOUNTING, entry.mount_error, mount_info);
 
     if (disk) {
       DCHECK(disk_it != disks_.end());
@@ -555,11 +552,11 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // CrosDisksClient::Observer override.
   void OnMountProgress(const MountEntry& entry) override {
-    DCHECK_EQ(entry.error_code, MountError::kInProgress);
+    DCHECK_EQ(entry.mount_error, MountError::kInProgress);
 
     const auto [it, ok] = mount_points_.insert(
         {entry.source_path, entry.mount_path, entry.mount_type,
-         MountCondition::kInProgress, entry.progress_percent, entry.read_only});
+         MountError::kInProgress, entry.progress_percent, entry.read_only});
     if (ok) {
       DCHECK_EQ(it->mount_path, entry.mount_path);
       VLOG(1) << "Added in-progress mount point '" << entry.mount_path
@@ -572,7 +569,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     DCHECK_EQ(mount_point.mount_path, entry.mount_path);
     DCHECK_EQ(mount_point.source_path, entry.source_path);
     DCHECK_EQ(mount_point.mount_type, entry.mount_type);
-    DCHECK_EQ(mount_point.mount_condition, MountCondition::kInProgress);
+    DCHECK_EQ(mount_point.mount_error, MountError::kInProgress);
     DCHECK_EQ(mount_point.read_only, entry.read_only);
 
     mount_point.progress_percent = entry.progress_percent;
@@ -1117,21 +1114,6 @@ class DiskMountManagerImpl : public DiskMountManager,
 
 }  // namespace
 
-std::ostream& operator<<(std::ostream& out, MountCondition condition) {
-  switch (condition) {
-#define PRINT(s)          \
-  case MountCondition::s: \
-    return out << #s;
-    PRINT(kNone)
-    PRINT(kUnknownFilesystem)
-    PRINT(kUnsupportedFilesystem)
-    PRINT(kInProgress)
-#undef PRINT
-  }
-
-  return out << static_cast<std::underlying_type_t<MountCondition>>(condition);
-}
-
 DiskMountManager::MountPoint::MountPoint(const MountPoint&) = default;
 DiskMountManager::MountPoint::MountPoint(MountPoint&&) = default;
 DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
@@ -1142,13 +1124,13 @@ DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
 DiskMountManager::MountPoint::MountPoint(const base::StringPiece source_path,
                                          const base::StringPiece mount_path,
                                          const MountType mount_type,
-                                         const MountCondition mount_condition,
+                                         const MountError mount_error,
                                          const int progress_percent,
                                          const bool read_only)
     : source_path(source_path),
       mount_path(mount_path),
       mount_type(mount_type),
-      mount_condition(mount_condition),
+      mount_error(mount_error),
       progress_percent(progress_percent),
       read_only(read_only) {}
 

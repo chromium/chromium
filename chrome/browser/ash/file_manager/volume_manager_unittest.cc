@@ -52,10 +52,10 @@
 namespace file_manager {
 namespace {
 
+using ::ash::MountError;
 using ::ash::MountType;
 using ::ash::disks::Disk;
 using ::ash::disks::DiskMountManager;
-using ::ash::disks::MountCondition;
 using base::FilePath;
 
 std::vector<std::string> arc_volume_ids = {
@@ -385,13 +385,13 @@ class VolumeManagerTest : public testing::Test {
 TEST(VolumeTest, CreateForRemovable) {
   const std::unique_ptr<Volume> volume = Volume::CreateForRemovable(
       {"/source/path", "/mount/path", MountType::kDevice,
-       MountCondition::kUnknownFilesystem},
+       MountError::kUnknownFilesystem},
       nullptr);
   ASSERT_TRUE(volume);
   EXPECT_EQ(volume->source_path(), FilePath("/source/path"));
   EXPECT_EQ(volume->mount_path(), FilePath("/mount/path"));
   EXPECT_EQ(volume->type(), VOLUME_TYPE_REMOVABLE_DISK_PARTITION);
-  EXPECT_EQ(volume->mount_condition(), MountCondition::kUnknownFilesystem);
+  EXPECT_EQ(volume->mount_condition(), MountError::kUnknownFilesystem);
   EXPECT_EQ(volume->volume_id(), "removable:path");
   EXPECT_EQ(volume->volume_label(), "path");
   EXPECT_EQ(volume->source(), SOURCE_DEVICE);

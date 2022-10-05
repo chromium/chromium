@@ -333,7 +333,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
                         ? SOURCE_FILE
                         : SOURCE_DEVICE;
   volume->mount_path_ = base::FilePath(mount_point.mount_path);
-  volume->mount_condition_ = mount_point.mount_condition;
+  volume->mount_condition_ = mount_point.mount_error;
 
   if (disk) {
     volume->file_system_type_ = disk->file_system_type();
@@ -1907,7 +1907,7 @@ bool VolumeManager::DoMountEvent(std::unique_ptr<Volume> volume_ptr,
   bool inserted = false;
 
   if (error == ash::MountError::kNone ||
-      volume.mount_condition() != ash::disks::MountCondition::kNone) {
+      volume.mount_condition() != ash::MountError::kNone) {
     const auto [it, ok] = mounted_volumes_.insert(std::move(volume_ptr));
     if (ok) {
       inserted = true;

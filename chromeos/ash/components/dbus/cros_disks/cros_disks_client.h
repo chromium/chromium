@@ -294,32 +294,40 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
-struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
+struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountPoint {
+  // Device or archive path.
   std::string source_path;
+  // Mounted path.
   std::string mount_path;
+  // Type of mount.
   MountType mount_type = MountType::kInvalid;
-  MountError error_code = MountError::kUnknown;
+  // Condition of mount.
+  MountError mount_error = MountError::kUnknown;
+  // Progress percent between 0 and 100 when mount_error is kInProgress.
   int progress_percent = 0;
+  // Read-only file system?
   bool read_only = false;
 
-  MountEntry(const MountEntry&);
-  MountEntry& operator=(const MountEntry&);
+  MountPoint(const MountPoint&);
+  MountPoint& operator=(const MountPoint&);
 
-  MountEntry(MountEntry&&);
-  MountEntry& operator=(MountEntry&&);
+  MountPoint(MountPoint&&);
+  MountPoint& operator=(MountPoint&&);
 
-  MountEntry();
-  MountEntry(base::StringPiece source_path,
+  MountPoint();
+  MountPoint(base::StringPiece source_path,
              base::StringPiece mount_path,
-             MountType mount_type,
-             MountError error_code = MountError::kUnknown,
+             MountType mount_type = MountType::kInvalid,
+             MountError mount_error = MountError::kUnknown,
              int progress_percent = 0,
              bool read_only = false);
 };
 
 // Output operator for logging.
 COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
-std::ostream& operator<<(std::ostream& out, const MountEntry& entry);
+std::ostream& operator<<(std::ostream& out, const MountPoint& entry);
+
+using MountEntry = MountPoint;
 
 // A class to make the actual DBus calls for cros-disks service.
 // This class only makes calls, result/error handling should be done
@@ -334,7 +342,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
 
   // A callback to handle the result of EnumerateMountEntries.
   // The argument is the enumerated mount entries.
-  typedef base::OnceCallback<void(const std::vector<MountEntry>& entries)>
+  typedef base::OnceCallback<void(const std::vector<MountPoint>& entries)>
       EnumerateMountEntriesCallback;
 
   // A callback to handle the result of GetDeviceProperties.
@@ -357,10 +365,10 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
                               const std::string& device_path) = 0;
 
     // Called when a MountCompleted signal is received.
-    virtual void OnMountCompleted(const MountEntry& entry) = 0;
+    virtual void OnMountCompleted(const MountPoint& entry) = 0;
 
     // Called when a MountProgress signal is received.
-    virtual void OnMountProgress(const MountEntry& entry) = 0;
+    virtual void OnMountProgress(const MountPoint& entry) = 0;
 
     // Called when a FormatCompleted signal is received.
     virtual void OnFormatCompleted(FormatError error_code,
