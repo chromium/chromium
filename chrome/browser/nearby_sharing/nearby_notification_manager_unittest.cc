@@ -153,8 +153,8 @@ class NearbyNotificationManagerTestBase : public testing::Test {
  public:
   explicit NearbyNotificationManagerTestBase(
       std::tuple<bool, bool> feature_list) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     is_self_share_enabled_ = std::get<0>(feature_list);
     is_self_share_auto_accept_enabled_ = std::get<1>(feature_list);
     if (is_self_share_enabled_) {

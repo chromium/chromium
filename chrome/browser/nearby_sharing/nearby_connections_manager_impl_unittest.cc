@@ -528,8 +528,8 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   bool is_webrtc_enabled = std::get<2>(GetParam());
   bool is_wifilan_enabled = std::get<3>(GetParam());
 
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   if (is_webrtc_enabled) {
     enabled_features.push_back(features::kNearbySharingWebRtc);
   } else {

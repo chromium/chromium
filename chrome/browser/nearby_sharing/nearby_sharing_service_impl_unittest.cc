@@ -346,7 +346,7 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 
 // We will run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
-const std::vector<base::Feature> kTestFeatures = {
+const std::vector<base::test::FeatureRef> kTestFeatures = {
     features::kNearbySharingSelfShareAutoAccept,
     features::kNearbySharingSelfShareUI};
 
@@ -1455,8 +1455,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void CreateFeatureList(size_t feature_mask) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // Use |feature_mask| as a bitmask to decide which features in
     // |kTestFeatures| to enable or disable.
