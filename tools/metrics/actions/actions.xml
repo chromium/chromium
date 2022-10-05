@@ -11115,12 +11115,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.ExperienceKit.Calendar.Copy">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    Recorded when user taps Copy in context menu after a long press on an date.
+  </description>
+</action>
+
 <action name="IOS.ExperienceKit.Calendar.Display">
   <owner>erahmaoui@google.com</owner>
   <owner>djean@chromium.org</owner>
   <description>
     The number of times the user triggered the &quot;add-to-calendar&quot;
     context after a long press on a date.
+  </description>
+</action>
+
+<action name="IOS.ExperienceKit.Maps.Copy">
+  <owner>erahmaoui@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    Recorded when user taps Copy in context menu after a long press on an
+    address.
   </description>
 </action>
 
