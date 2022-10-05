@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-dictionary PictureInPictureWindowOptions {
+// https://steimelchrome.github.io/draft_spec.html#dictdef-documentpictureinpictureoptions
+
+dictionary DocumentPictureInPictureOptions {
   float initialAspectRatio = 0.0;
   boolean lockAspectRatio = false;
   boolean copyStyleSheets = false;

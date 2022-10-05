@@ -13,11 +13,11 @@
 
 namespace blink {
 
+class DocumentPictureInPictureOptions;
 class DocumentPictureInPictureSession;
 class ExceptionState;
 class ExecutionContext;
 class Navigator;
-class PictureInPictureWindowOptions;
 class ScriptPromise;
 class ScriptState;
 
@@ -32,7 +32,7 @@ class MODULES_EXPORT DocumentPictureInPicture : public ScriptWrappable,
   DocumentPictureInPicture(ExecutionContext*, Navigator&);
 
   ScriptPromise requestWindow(ScriptState*,
-                              PictureInPictureWindowOptions*,
+                              DocumentPictureInPictureOptions*,
                               ExceptionState&);
 
   DocumentPictureInPictureSession* session(ScriptState*) const;

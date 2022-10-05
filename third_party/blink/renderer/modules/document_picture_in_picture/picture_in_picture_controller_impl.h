@@ -7,7 +7,6 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_picture_in_picture_window_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
@@ -20,11 +19,11 @@
 
 namespace blink {
 
+class DocumentPictureInPictureOptions;
 class DocumentPictureInPictureSession;
 class ExceptionState;
 class HTMLVideoElement;
 class PictureInPictureWindow;
-class PictureInPictureWindowOptions;
 class ScriptState;
 class TreeScope;
 
@@ -78,7 +77,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // Creates a picture-in-picture window that can contain arbitrary HTML.
   void CreateDocumentPictureInPictureWindow(ScriptState*,
                                             LocalDOMWindow&,
-                                            PictureInPictureWindowOptions*,
+                                            DocumentPictureInPictureOptions*,
                                             ScriptPromiseResolver*,
                                             ExceptionState&);
 

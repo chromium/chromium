@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
@@ -415,7 +416,7 @@ bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
 void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
     ScriptState* script_state,
     LocalDOMWindow& opener,
-    PictureInPictureWindowOptions* options,
+    DocumentPictureInPictureOptions* options,
     ScriptPromiseResolver* resolver,
     ExceptionState& exception_state) {
   if (!LocalFrame::ConsumeTransientUserActivation(opener.GetFrame())) {

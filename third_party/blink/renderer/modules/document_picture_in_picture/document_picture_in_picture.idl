@@ -9,6 +9,6 @@
     RuntimeEnabled=DocumentPictureInPictureAPI
 ]
 interface DocumentPictureInPicture {
-  [CallWith=ScriptState, RaisesException, NewObject] Promise<DocumentPictureInPictureSession> requestWindow(optional PictureInPictureWindowOptions options = {});
+  [CallWith=ScriptState, RaisesException, NewObject] Promise<DocumentPictureInPictureSession> requestWindow(optional DocumentPictureInPictureOptions options = {});
   [CallWith=ScriptState] readonly attribute DocumentPictureInPictureSession session;
 };

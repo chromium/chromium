@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_document_picture_in_picture_options.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -79,7 +80,7 @@ DocumentPictureInPictureSession* OpenDocumentPictureInPictureSession(
   ScriptState* script_state = ToScriptStateForMainWorld(document.GetFrame());
   ScriptState::Scope entered_context_scope(script_state);
 
-  // Create the PictureInPictureWindowOptions.
+  // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
   v8_object
@@ -97,10 +98,10 @@ DocumentPictureInPictureSession* OpenDocumentPictureInPictureSession(
               v8::Number::New(v8_scope.GetIsolate(), true))
         .Check();
   }
-  PictureInPictureWindowOptions* options =
-      PictureInPictureWindowOptions::Create(resolver->Promise().GetIsolate(),
-                                            v8_object,
-                                            v8_scope.GetExceptionState());
+  DocumentPictureInPictureOptions* options =
+      DocumentPictureInPictureOptions::Create(resolver->Promise().GetIsolate(),
+                                              v8_object,
+                                              v8_scope.GetExceptionState());
 
   // Set a base URL for the opener window.
   document.SetBaseURLOverride(opener_url);

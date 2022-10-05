@@ -43,7 +43,7 @@ DocumentPictureInPicture* DocumentPictureInPicture::documentPictureInPicture(
 
 ScriptPromise DocumentPictureInPicture::requestWindow(
     ScriptState* script_state,
-    PictureInPictureWindowOptions* options,
+    DocumentPictureInPictureOptions* options,
     ExceptionState& exception_state) {
   LocalDOMWindow* dom_window = LocalDOMWindow::From(script_state);
   if (!dom_window) {
@@ -52,9 +52,6 @@ ScriptPromise DocumentPictureInPicture::requestWindow(
     return ScriptPromise();
   }
 
-  // TODO(crbug.com/1360443): When this call is inlined here, be sure to
-  // replace `PictureInPictureWindowOptions` with a new
-  // `DocumentPictureInPictureOptions` type.
   // TODO(https://crbug.com/1253970): Check if PiP is allowed (e.g. user
   // gesture, permissions, etc).
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
