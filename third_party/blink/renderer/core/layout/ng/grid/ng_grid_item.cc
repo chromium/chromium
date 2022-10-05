@@ -229,16 +229,13 @@ void GridItemData::SetAlignmentFallback(
           IsParallelWritingMode(container_style.GetWritingMode(),
                                 item_style.GetWritingMode());
       if (is_parallel_to_baseline_axis) {
-        const bool logical_height_depends_on_container =
-            item_style.LogicalHeight().IsPercentOrCalc() ||
-            item_style.LogicalMinHeight().IsPercentOrCalc() ||
-            item_style.LogicalMaxHeight().IsPercentOrCalc() ||
-            item_style.LogicalHeight().IsAuto();
-        return !logical_height_depends_on_container;
+        return !item_style.LogicalHeight().IsPercentOrCalcOrStretch() &&
+               !item_style.LogicalMinHeight().IsPercentOrCalcOrStretch() &&
+               !item_style.LogicalMaxHeight().IsPercentOrCalcOrStretch();
       } else {
-        // Orthogonal items with synthesized baselines never support baseline
-        // alignment when they span intrinsic or flex tracks.
-        return false;
+        return !item_style.LogicalWidth().IsPercentOrCalcOrStretch() &&
+               !item_style.LogicalMinWidth().IsPercentOrCalcOrStretch() &&
+               !item_style.LogicalMaxWidth().IsPercentOrCalcOrStretch();
       }
     }
     return true;

@@ -271,6 +271,10 @@ class PLATFORM_EXPORT Length {
   bool IsPercentOrCalc() const {
     return GetType() == kPercent || GetType() == kCalculated;
   }
+  bool IsPercentOrCalcOrStretch() const {
+    return GetType() == kPercent || GetType() == kCalculated ||
+           GetType() == kFillAvailable;
+  }
   bool IsExtendToZoom() const { return GetType() == kExtendToZoom; }
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }

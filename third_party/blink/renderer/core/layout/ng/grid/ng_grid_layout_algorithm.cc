@@ -864,13 +864,23 @@ const NGLayoutResult* LayoutGridItemForMeasure(
 
 LayoutUnit NGGridLayoutAlgorithm::GetLogicalBaseline(
     const NGBoxFragment& baseline_fragment,
-    BaselineGroup baseline_group,
-    bool is_last_baseline) const {
+    const bool is_last_baseline) const {
   const auto font_baseline = Style().GetFontBaseline();
   return is_last_baseline
              ? baseline_fragment.BlockSize() -
                    baseline_fragment.LastBaselineOrSynthesize(font_baseline)
              : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
+}
+
+LayoutUnit NGGridLayoutAlgorithm::GetSynthesizedLogicalBaseline(
+    const LayoutUnit block_size,
+    const bool is_flipped_lines,
+    const bool is_last_baseline) const {
+  const auto font_baseline = Style().GetFontBaseline();
+  const auto synthesized_baseline = NGBoxFragment::SynthesizedBaseline(
+      font_baseline, is_flipped_lines, block_size);
+  return is_last_baseline ? block_size - synthesized_baseline
+                          : synthesized_baseline;
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
@@ -903,7 +913,25 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       CreateConstraintSpaceForMeasure(*grid_item, layout_data, track_direction);
   const auto margins = ComputeMarginsFor(space, item_style, ConstraintSpace());
 
-  auto MinMaxContentSizes = [&]() -> MinMaxSizes {
+  LayoutUnit baseline_shim;
+  auto CalculateBaselineShim = [&](const LayoutUnit baseline) -> void {
+    const LayoutUnit track_baseline =
+        Baseline(layout_data, *grid_item, track_direction);
+    if (track_baseline == LayoutUnit::Min())
+      return;
+
+    // Determine the delta between the baselines.
+    baseline_shim = track_baseline - baseline;
+
+    // Subtract out the start margin so it doesn't get added a second time at
+    // the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
+    baseline_shim -=
+        ComputeMarginsFor(space, item_style,
+                          grid_item->BaselineWritingDirection(track_direction))
+            .block_start;
+  };
+
+  auto MinOrMaxContentSize = [&](const bool is_min_size) -> LayoutUnit {
     const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
 
     // The min/max contribution may depend on the block-size of the grid-area:
@@ -919,7 +947,24 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     // tracks for this case.
     if (is_parallel && result.depends_on_block_constraints)
       grid_item->is_sizing_dependent_on_block_size = true;
-    return result.sizes;
+
+    const LayoutUnit size =
+        is_min_size ? result.sizes.min_size : result.sizes.max_size;
+
+    if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
+      CalculateBaselineShim(GetSynthesizedLogicalBaseline(
+          size,
+          grid_item->BaselineWritingDirection(track_direction).IsFlippedLines(),
+          grid_item->IsLastBaselineSpecifiedForDirection(track_direction)));
+    }
+
+    return size + baseline_shim;
+  };
+  auto MinContentSize = [&]() -> LayoutUnit {
+    return MinOrMaxContentSize(/* is_min_size */ true);
+  };
+  auto MaxContentSize = [&]() -> LayoutUnit {
+    return MinOrMaxContentSize(/* is_min_size */ false);
   };
 
   // This function will determine the correct block-size of a grid-item.
@@ -927,7 +972,6 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   //  - We'll need to do a full layout for tables.
   //  - We'll need special logic for replaced elements.
   //  - We'll need to respect the aspect-ratio when appropriate.
-  LayoutUnit baseline_shim;
   auto BlockContributionSize = [&]() -> LayoutUnit {
     DCHECK(!is_parallel_with_track_direction);
 
@@ -947,7 +991,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       // set our inline-size to our max content-contribution size.
       const auto fallback_space = CreateConstraintSpaceForMeasure(
           *grid_item, layout_data, track_direction,
-          /* opt_fixed_block_size */ MinMaxContentSizes().max_size);
+          /* opt_fixed_block_size */ MaxContentSize());
 
       result = LayoutGridItemForMeasure(*grid_item, fallback_space,
                                         sizing_constraint);
@@ -955,33 +999,16 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       result = LayoutGridItemForMeasure(*grid_item, space, sizing_constraint);
     }
 
-    const auto baseline_writing_direction =
-        grid_item->BaselineWritingDirection(track_direction);
     NGBoxFragment baseline_fragment(
-        baseline_writing_direction,
+        grid_item->BaselineWritingDirection(track_direction),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
-      LayoutUnit track_baseline =
-          Baseline(layout_data, *grid_item, track_direction);
-
-      // The item's baseline alignment impacts the item's contribution as the
-      // difference between the track's baseline and the item's baseline.
-      if (track_baseline != LayoutUnit::Min()) {
-        baseline_shim =
-            track_baseline -
-            GetLogicalBaseline(baseline_fragment,
-                               grid_item->BaselineGroup(track_direction),
-                               grid_item->IsLastBaselineSpecifiedForDirection(
-                                   track_direction));
-
-        // Subtract out the start margin so it doesn't get added a second time
-        // at the end of |NGGridLayoutAlgorithm::ContributionSizeForGridItem|.
-        baseline_shim -=
-            ComputeMarginsFor(space, item_style, baseline_writing_direction)
-                .block_start;
-      }
+      CalculateBaselineShim(GetLogicalBaseline(
+          baseline_fragment,
+          grid_item->IsLastBaselineSpecifiedForDirection(track_direction)));
     }
+
     return baseline_fragment.BlockSize() + baseline_shim;
   };
 
@@ -992,9 +1019,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   switch (contribution_type) {
     case GridItemContributionType::kForContentBasedMinimums:
     case GridItemContributionType::kForIntrinsicMaximums:
-      contribution = is_parallel_with_track_direction
-                         ? MinMaxContentSizes().min_size
-                         : BlockContributionSize();
+      contribution = is_parallel_with_track_direction ? MinContentSize()
+                                                      : BlockContributionSize();
       break;
     case GridItemContributionType::kForIntrinsicMinimums: {
       // TODO(ikilpatrick): All of the below is incorrect for replaced elements.
@@ -1061,7 +1087,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
           // Resolve the content-based minimum size.
           contribution = is_parallel_with_track_direction
-                             ? MinMaxContentSizes().min_size
+                             ? MinContentSize()
                              : BlockContributionSize();
 
           const auto& set_indices = grid_item->SetIndices(track_direction);
@@ -1107,9 +1133,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
           // the special min-size treatment above. (They will all end up being
           // the specified size).
           if (is_parallel_with_track_direction) {
-            contribution = main_length.IsMaxContent()
-                               ? MinMaxContentSizes().max_size
-                               : MinMaxContentSizes().min_size;
+            contribution = main_length.IsMaxContent() ? MaxContentSize()
+                                                      : MinContentSize();
           } else {
             contribution = BlockContributionSize();
           }
@@ -1128,9 +1153,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     }
     case GridItemContributionType::kForMaxContentMinimums:
     case GridItemContributionType::kForMaxContentMaximums:
-      contribution = is_parallel_with_track_direction
-                         ? MinMaxContentSizes().max_size
-                         : BlockContributionSize();
+      contribution = is_parallel_with_track_direction ? MaxContentSize()
+                                                      : BlockContributionSize();
       break;
     case GridItemContributionType::kForFreeSpace:
       NOTREACHED() << "|kForFreeSpace| should only be used to distribute extra "
@@ -1393,9 +1417,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
 
     LayoutUnit baseline =
         (is_last_baseline ? margins.block_end : margins.block_start) +
-        GetLogicalBaseline(baseline_fragment,
-                           grid_item.BaselineGroup(track_direction),
-                           is_last_baseline);
+        GetLogicalBaseline(baseline_fragment, is_last_baseline);
 
     // TODO(kschmi): The IsReplaced() check here is a bit strange, but is
     // necessary to pass some of the tests. Follow-up to see if there's
@@ -2980,7 +3002,6 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       if (!grid_item.IsBaselineAlignedForDirection(track_direction))
         return LayoutUnit();
 
-      const auto baseline_group = grid_item.BaselineGroup(track_direction);
       NGBoxFragment baseline_fragment(
           grid_item.BaselineWritingDirection(track_direction),
           physical_fragment);
@@ -2989,9 +3010,9 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
       const LayoutUnit baseline_delta =
           Baseline(layout_data, grid_item, track_direction) -
           GetLogicalBaseline(
-              baseline_fragment, baseline_group,
+              baseline_fragment,
               grid_item.IsLastBaselineSpecifiedForDirection(track_direction));
-      if (baseline_group == BaselineGroup::kMajor)
+      if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
         return baseline_delta;
 
       // BaselineGroup::kMinor

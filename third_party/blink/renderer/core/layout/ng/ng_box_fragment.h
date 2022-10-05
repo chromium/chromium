@@ -29,6 +29,15 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
            physical_fragment_.Style().GetWritingMode();
   }
 
+  static LayoutUnit SynthesizedBaseline(FontBaseline baseline_type,
+                                        bool is_flipped_lines,
+                                        LayoutUnit block_size) {
+    if (baseline_type == kAlphabeticBaseline)
+      return is_flipped_lines ? LayoutUnit() : block_size;
+
+    return block_size / 2;
+  }
+
   absl::optional<LayoutUnit> FirstBaseline() const {
     if (!IsWritingModeEqual())
       return absl::nullopt;
@@ -44,10 +53,8 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     if (auto first_baseline = FirstBaseline())
       return *first_baseline;
 
-    if (baseline_type == kAlphabeticBaseline)
-      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
-
-    return BlockSize() / 2;
+    return SynthesizedBaseline(
+        baseline_type, writing_direction_.IsFlippedLines(), BlockSize());
   }
 
   absl::optional<LayoutUnit> LastBaseline() const {
@@ -65,10 +72,8 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     if (auto last_baseline = LastBaseline())
       return *last_baseline;
 
-    if (baseline_type == kAlphabeticBaseline)
-      return writing_direction_.IsFlippedLines() ? LayoutUnit() : BlockSize();
-
-    return BlockSize() / 2;
+    return SynthesizedBaseline(
+        baseline_type, writing_direction_.IsFlippedLines(), BlockSize());
   }
 
   // Compute baseline metrics (ascent/descent) for this box.

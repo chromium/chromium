@@ -3977,16 +3977,11 @@ crbug.com/1160916 external/wpt/css/css-backgrounds/border-top-right-radius-010.x
 
 # [css-grid]
 crbug.com/1045599 external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-repeat-max-width-001.html [ Failure ]
 crbug.com/1335889 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-009.html [ Failure ]
 
 # Simple to fix - but blocked on performance regression requiring cache logic change.
 crbug.com/1272533 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
-
-# The 'last baseline' keyword is not implemented yet
-crbug.com/885175 external/wpt/css/css-grid/alignment/grid-container-baseline-001.html [ Failure ]
 
 # Baseline Content-Alignment is not implemented yet for CSS Grid Layout
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-content-baseline-001.html [ Skip ]
@@ -4003,7 +3998,6 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 # [css-subgrid]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-002.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-003.html [ Failure ]
