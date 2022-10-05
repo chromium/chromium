@@ -4,7 +4,6 @@
 
 #include <tuple>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -14,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -170,11 +168,6 @@ std::ostream& operator<<(std::ostream& os, const ExpectedAppMenuItem& i) {
 
 class BrowserAppShelfControllerBrowserTest
     : public crosapi::AshRequiresLacrosBrowserTestBase {
- public:
-  BrowserAppShelfControllerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kLacrosPrimary);
-  }
-
  protected:
   static constexpr char kURL_A[] = "https://a.example.org";
   static constexpr char kURL_B[] = "https://b.example.org";
@@ -313,7 +306,6 @@ class BrowserAppShelfControllerBrowserTest
     return SelectResult{action_taken, std::move(app_menu_items)};
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   apps::BrowserAppInstanceRegistry* registry_{nullptr};
 };
 

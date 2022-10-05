@@ -31,7 +31,6 @@ VpnExtensionObserverBrowserTest*
 -SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
--BrowserAppShelfControllerBrowserTest.*
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
 -DockedMagnifierVirtualKeyboardTest.WelcomeScreen
 -ChromeVoxTutorialTest.Gestures
