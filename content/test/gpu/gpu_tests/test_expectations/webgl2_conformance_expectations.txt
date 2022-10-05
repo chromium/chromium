@@ -924,6 +924,12 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance/context/context-eviction-with-garbage-collection.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/webgl-multi-draw-instanced-base-vertex-base-instance.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/canvas_sub_rectangle/* [ Slow ]
+
 ##############################
 # Lacros-like Linux Failures #
 ##############################

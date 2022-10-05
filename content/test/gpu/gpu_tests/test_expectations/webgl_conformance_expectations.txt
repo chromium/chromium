@@ -784,6 +784,9 @@ crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/r
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1271227 [ chromeos chromeos-board-amd64-generic ] conformance/attribs/gl-bindAttribLocation-aliasing.html [ RetryOnFailure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
+[ chromeos chromeos-board-amd64-generic ] conformance/context/context-eviction-with-garbage-collection.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic ] conformance/reading/read-pixels-test.html [ Slow ]
+[ chromeos chromeos-board-amd64-generic ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 # Need to investigate failure on basically all devices with passthrough on CrOS.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
