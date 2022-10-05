@@ -5463,6 +5463,21 @@
             ]
         }
     ],
+    "IOSFeedSyncPromo": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDiscoverFeedTopSyncPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSGhostCards": [
         {
             "platforms": [
