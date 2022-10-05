@@ -296,4 +296,16 @@ suite('SidePanelBookmarksListTest', () => {
         2,
         metrics.count('Commerce.PriceTracking.SidePanel.TrackedProductsShown'));
   });
+
+  test('RemovesBookmarksInShoppingList', async () => {
+    checkShoppingListVisibility(bookmarksList, true);
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('4');
+    flush();
+    checkShoppingListVisibility(bookmarksList, true);
+
+    bookmarksApi.callbackRouter.onRemoved.callListeners('3');
+    flush();
+    checkShoppingListVisibility(bookmarksList, false);
+  });
 });

@@ -5,9 +5,11 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
@@ -39,6 +41,9 @@ class MockPage : public shopping_list::mojom::Page {
 };
 
 class ShoppingListHandlerTest : public testing::Test {
+ public:
+  ShoppingListHandlerTest() { features_.InitAndEnableFeature(kShoppingList); }
+
  protected:
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
@@ -54,6 +59,7 @@ class ShoppingListHandlerTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListHandler> handler_;
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(ShoppingListHandlerTest, ConvertToMojoTypes) {

@@ -49,6 +49,7 @@ export class ShoppingListElement extends PolymerElement {
       productInfos: {
         type: Array,
         value: () => [],
+        observer: 'onProductInfoChanged_',
       },
     };
   }
@@ -223,6 +224,11 @@ export class ShoppingListElement extends PolymerElement {
       return false;
     }
     return true;
+  }
+
+  private onProductInfoChanged_() {
+    this.untrackedItems_ = this.untrackedItems_.filter(
+        untrackedItem => this.productInfos.includes(untrackedItem));
   }
 }
 

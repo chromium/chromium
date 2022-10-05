@@ -436,6 +436,8 @@ export class BookmarksListElement extends PolymerElement {
 
     getAnnouncerInstance().announce(loadTimeData.getStringF(
         'bookmarkDeleted', getBookmarkName(removedNode)));
+    this.productInfos_ =
+        this.productInfos_.filter(item => item.bookmarkId !== BigInt(id));
   }
 
   private focusBookmark_(id: string) {
