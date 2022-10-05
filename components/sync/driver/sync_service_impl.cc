@@ -184,8 +184,7 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
                           base::Unretained(this)));
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
-      sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_,
-      SyncStoppedReporter::ResultCallback());
+      sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_);
 
   if (identity_manager_)
     identity_manager_->AddObserver(this);

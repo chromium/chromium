@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 
@@ -22,15 +21,10 @@ namespace syncer {
 // Manages informing the sync server that sync has been disabled.
 class SyncStoppedReporter {
  public:
-  enum Result { RESULT_SUCCESS, RESULT_ERROR, RESULT_TIMEOUT };
-
-  using ResultCallback = base::OnceCallback<void(const Result&)>;
-
   SyncStoppedReporter(
       const GURL& sync_service_url,
       const std::string& user_agent,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      ResultCallback callback);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   SyncStoppedReporter(const SyncStoppedReporter&) = delete;
   SyncStoppedReporter& operator=(const SyncStoppedReporter&) = delete;
@@ -47,11 +41,10 @@ class SyncStoppedReporter {
   // Public so tests can use it.
   static GURL GetSyncEventURL(const GURL& sync_service_url);
 
+ private:
   // Callback for a request timing out.
-  // Public so tests can use it.
   void OnTimeout();
 
- private:
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   // Handles timing out requests.
@@ -68,9 +61,6 @@ class SyncStoppedReporter {
 
   // The current URL loader. Null unless a request is in progress.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  // A callback for request completion or timeout.
-  ResultCallback callback_;
 };
 
 }  // namespace syncer

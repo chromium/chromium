@@ -4,14 +4,14 @@
 
 #include "components/sync/driver/sync_stopped_reporter.h"
 
-#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/http/http_status_code.h"
-#include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -47,28 +47,13 @@ class SyncStoppedReporterTest : public testing::Test {
             url_loader_factory());
   }
 
-  void RequestFinishedCallback(const SyncStoppedReporter::Result& result) {
-    request_result_ = result;
-  }
-
   GURL interception_url(const GURL& url) {
     return SyncStoppedReporter::GetSyncEventURL(url);
   }
 
   GURL test_url() { return GURL(kTestURL); }
 
-  void call_on_timeout(SyncStoppedReporter* ssr) { ssr->OnTimeout(); }
-
   std::string user_agent() const { return std::string(kTestUserAgent); }
-
-  SyncStoppedReporter::ResultCallback callback() {
-    return base::BindOnce(&SyncStoppedReporterTest::RequestFinishedCallback,
-                          base::Unretained(this));
-  }
-
-  const SyncStoppedReporter::Result& request_result() const {
-    return request_result_;
-  }
 
   network::TestURLLoaderFactory* url_loader_factory() {
     return &test_url_loader_factory_;
@@ -82,7 +67,6 @@ class SyncStoppedReporterTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  SyncStoppedReporter::Result request_result_;
 };
 
 // Test that the event URL gets constructed correctly.
@@ -95,7 +79,7 @@ TEST_F(SyncStoppedReporterTest, EventURL) {
         intercepted_url = request.url;
       }));
   SyncStoppedReporter ssr(GURL(kTestURL), user_agent(),
-                          shared_url_loader_factory(), callback());
+                          shared_url_loader_factory());
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   EXPECT_EQ(kEventURL, intercepted_url.spec());
 }
@@ -110,7 +94,7 @@ TEST_F(SyncStoppedReporterTest, EventURLWithSlash) {
         intercepted_url = request.url;
       }));
   SyncStoppedReporter ssr(GURL(kTestURLTrailingSlash), user_agent(),
-                          shared_url_loader_factory(), callback());
+                          shared_url_loader_factory());
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   EXPECT_EQ(kEventURL, intercepted_url.spec());
 }
@@ -127,8 +111,8 @@ TEST_F(SyncStoppedReporterTest, FetcherConfiguration) {
         intercepted_headers = request.headers;
         intercepted_body = network::GetUploadData(request);
       }));
-  SyncStoppedReporter ssr(test_url(), user_agent(), shared_url_loader_factory(),
-                          callback());
+  SyncStoppedReporter ssr(test_url(), user_agent(),
+                          shared_url_loader_factory());
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
 
   // Ensure the headers are set correctly.
@@ -150,72 +134,50 @@ TEST_F(SyncStoppedReporterTest, FetcherConfiguration) {
 }
 
 TEST_F(SyncStoppedReporterTest, HappyCase) {
+  base::HistogramTester histogram_tester;
   url_loader_factory()->AddResponse(interception_url(test_url()).spec(), "");
-  SyncStoppedReporter ssr(test_url(), user_agent(), shared_url_loader_factory(),
-                          callback());
+  SyncStoppedReporter ssr(test_url(), user_agent(),
+                          shared_url_loader_factory());
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-  EXPECT_EQ(SyncStoppedReporter::RESULT_SUCCESS, request_result());
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse",
+                                      net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut", false,
+                                      1);
 }
 
 TEST_F(SyncStoppedReporterTest, ServerNotFound) {
+  base::HistogramTester histogram_tester;
   url_loader_factory()->AddResponse(interception_url(test_url()).spec(), "",
                                     net::HTTP_NOT_FOUND);
-  SyncStoppedReporter ssr(test_url(), user_agent(), shared_url_loader_factory(),
-                          callback());
+  SyncStoppedReporter ssr(test_url(), user_agent(),
+                          shared_url_loader_factory());
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
-  EXPECT_EQ(SyncStoppedReporter::RESULT_ERROR, request_result());
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchResponse",
+                                      net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
+  histogram_tester.ExpectTotalCount("Sync.SyncStoppedURLFetchTimedOut", 0);
 }
 
 TEST_F(SyncStoppedReporterTest, Timeout) {
-  url_loader_factory()->AddResponse(interception_url(test_url()).spec(), "");
+  base::HistogramTester histogram_tester;
   // Mock the underlying loop's clock to trigger the timer at will.
   base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
+  // No TestURLLoaderFactory::AddResponse(), so the request stays pending.
 
-  SyncStoppedReporter ssr(test_url(), user_agent(), shared_url_loader_factory(),
-                          callback());
+  SyncStoppedReporter ssr(test_url(), user_agent(),
+                          shared_url_loader_factory());
 
   // Begin request.
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
 
-  // Trigger the timeout.
+  // Trigger the timeout, 30 seconds should be more than enough.
   ASSERT_TRUE(mock_main_runner->HasPendingTask());
-  call_on_timeout(&ssr);
-  mock_main_runner->FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(SyncStoppedReporter::RESULT_TIMEOUT, request_result());
-}
-
-TEST_F(SyncStoppedReporterTest, NoCallback) {
-  url_loader_factory()->AddResponse(interception_url(GURL(kTestURL)).spec(),
-                                    "");
-  SyncStoppedReporter ssr(GURL(kTestURL), user_agent(),
-                          shared_url_loader_factory(),
-                          SyncStoppedReporter::ResultCallback());
-  ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
-}
-
-TEST_F(SyncStoppedReporterTest, NoCallbackTimeout) {
-  url_loader_factory()->AddResponse(interception_url(GURL(kTestURL)).spec(),
-                                    "");
-  // Mock the underlying loop's clock to trigger the timer at will.
-  base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
-
-  SyncStoppedReporter ssr(GURL(kTestURL), user_agent(),
-                          shared_url_loader_factory(),
-                          SyncStoppedReporter::ResultCallback());
-
-  // Begin request.
-  ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
-
-  // Trigger the timeout.
-  ASSERT_TRUE(mock_main_runner->HasPendingTask());
-  call_on_timeout(&ssr);
-  mock_main_runner->FastForwardUntilNoTasksRemain();
+  mock_main_runner->FastForwardBy(base::Seconds(30));
+  histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut", true,
+                                      1);
 }
 
 }  // namespace syncer

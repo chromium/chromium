@@ -11,8 +11,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -21,6 +19,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+namespace syncer {
 
 namespace {
 
@@ -54,17 +54,13 @@ void LogSyncStoppedRequestResult(const network::SimpleURLLoader& url_loader) {
 
 }  // namespace
 
-namespace syncer {
-
 SyncStoppedReporter::SyncStoppedReporter(
     const GURL& sync_service_url,
     const std::string& user_agent,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    ResultCallback callback)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : sync_event_url_(GetSyncEventURL(sync_service_url)),
       user_agent_(user_agent),
-      url_loader_factory_(std::move(url_loader_factory)),
-      callback_(std::move(callback)) {
+      url_loader_factory_(std::move(url_loader_factory)) {
   DCHECK(!sync_service_url.is_empty());
   DCHECK(!user_agent_.empty());
   DCHECK(url_loader_factory_);
@@ -136,22 +132,13 @@ void SyncStoppedReporter::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   DCHECK(simple_url_loader_);
   LogSyncStoppedRequestResult(*simple_url_loader_);
-  Result result = response_body ? RESULT_SUCCESS : RESULT_ERROR;
   simple_url_loader_.reset();
   timer_.Stop();
-  if (!callback_.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), result));
-  }
 }
 
 void SyncStoppedReporter::OnTimeout() {
   LogSyncStoppedRequestTimeout(/*timed_out=*/true);
   simple_url_loader_.reset();
-  if (!callback_.is_null()) {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback_), RESULT_TIMEOUT));
-  }
 }
 
 // Static.
