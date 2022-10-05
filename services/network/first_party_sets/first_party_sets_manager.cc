@@ -186,11 +186,6 @@ void FirstPartySetsManager::SetCompleteSets(net::GlobalFirstPartySets sets) {
   InvokePendingQueries();
 }
 
-void FirstPartySetsManager::SetEnabledForTesting(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  enabled_ = enabled;
-}
-
 void FirstPartySetsManager::EnqueuePendingQuery(base::OnceClosure run_query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!sets_.has_value());

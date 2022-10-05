@@ -63,9 +63,6 @@ class FirstPartySetsManager {
   // invocations are ignored.
   void SetCompleteSets(net::GlobalFirstPartySets sets);
 
-  // Sets the enabled_ attribute for testing.
-  void SetEnabledForTesting(bool enabled);
-
   // Returns the mapping of sites to entries for the given input sites (if an
   // entry exists).
   //
