@@ -141,9 +141,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.features_enabled.push_back(kDiscoverFeedInNtp);
 
   config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
-  // Enable arm that does not hide shortcuts.
-  config.features_enabled.push_back(kTrendingQueriesModule);
-  config.variations_enabled = {3350760};
+  if ([self isRunningTest:@selector(testTrendingQueries)]) {
+    // Enable arm that does not hide shortcuts.
+    config.features_enabled.push_back(kTrendingQueriesModule);
+    config.variations_enabled = {3350760};
+  }
   return config;
 }
 
@@ -952,9 +954,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.
-// TODO(crbug.com/1280323): Re-enable after removing didLoadPageWithSuccess: to
-// update NTP scroll state.
-- (void)DISABLED_testNewSearchFromNewTabMenu {
+- (void)testNewSearchFromNewTabMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
@@ -984,9 +984,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests the "new search" menu item from the new tab menu after disabling the
 // feed.
-// TODO(crbug.com/1280323): Re-enable after removing didLoadPageWithSuccess: to
-// update NTP scroll state.
-- (void)DISABLED_testNewSearchFromNewTabMenuAfterTogglingFeed {
+- (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
@@ -1333,6 +1331,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::NTPFeedMenuDisableButton()]
       performAction:grey_tap()];
+  // This ensures that the app is given time to update the pref before checking
+  // its state.
+  [ChromeEarlGreyUI waitForAppToIdle];
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
