@@ -6,8 +6,10 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permissions_client.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -251,6 +253,17 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       // Not associated with a ContentSettingsType.
       return absl::nullopt;
   }
+}
+
+// Returns whether confirmation chips can be displayed
+bool IsConfirmationChipSupported(RequestType for_request_type) {
+  return base::ranges::any_of(
+      std::vector<RequestType>{
+          RequestType::kNotifications, RequestType::kGeolocation,
+          RequestType::kCameraStream, RequestType::kMicStream},
+      [for_request_type](permissions::RequestType request_type) {
+        return request_type == for_request_type;
+      });
 }
 
 IconId GetIconId(RequestType type) {

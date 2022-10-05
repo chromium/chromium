@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/permissions/features.h"
 #include "components/permissions/request_type.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/ui_controls.h"
@@ -234,4 +236,46 @@ IN_PROC_BROWSER_TEST_F(PermissionBubbleInteractiveUITest, MAYBE_SwitchTabs) {
 #if BUILDFLAG(IS_MAC)
   TestSwitchingTabsWithCurlyBraces();
 #endif
+}
+
+class PermissionPromptBubbleViewConfirmationTest
+    : public PermissionBubbleInteractiveUITest {
+ public:
+  PermissionPromptBubbleViewConfirmationTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kConfirmationChip},
+        {permissions::features::kPermissionChip});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewConfirmationTest,
+                       VerifyConfirmationChipShown) {
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  LocationBarView* location_bar_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  EXPECT_NE(location_bar_view->chip_controller(), nullptr);
+  EXPECT_TRUE(location_bar_view->chip_controller()->chip()->GetVisible());
+  EXPECT_EQ(location_bar_view->chip_controller()->chip()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleViewConfirmationTest,
+                       VerifyFullScreenHandledCorrectly) {
+  FullscreenNotificationObserver fullscreen_observer(browser());
+  chrome::ToggleFullscreenMode(browser());
+  fullscreen_observer.Wait();
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  LocationBarView* location_bar_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
+  EXPECT_NE(location_bar_view->chip_controller(), nullptr);
+  EXPECT_FALSE(location_bar_view->chip_controller()->chip()->GetVisible());
 }

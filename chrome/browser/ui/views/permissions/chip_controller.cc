@@ -103,7 +103,13 @@ void ChipController::OnRequestDecided(
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
   permission_prompt_model_->UpdateWithUserDecision(permission_action);
 
-  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip)) {
+  if (!GetLocationBarView()->IsDrawn() ||
+      GetLocationBarView()->GetWidget()->IsFullscreen()) {
+    // If the location bar isn't drawn or during fullscreen, the chip can't be
+    // shown anywhere.
+    ResetChip();
+  } else if (base::FeatureList::IsEnabled(
+                 permissions::features::kConfirmationChip)) {
     HandleConfirmation(permission_action);
   } else {
     HideChip();
@@ -147,18 +153,20 @@ void ChipController::OnWidgetDestroying(views::Widget* widget) {
   CollapsePrompt(/*allow_restart=*/false);
 }
 
-void ChipController::ShowPermissionPrompt(
+void ChipController::InitializePermissionPrompt(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   ResetChip();
 
+  // Here we just initialize the controller with the current request. We might
+  // not yet want to display the chip, for example when a prompt bubble without
+  // a request chip is shown --> only once a confirmation should be displayed,
+  // the chip should become visible.
+  chip_->SetVisible(false);
   permission_prompt_model_ =
       std::make_unique<PermissionPromptChipModel>(delegate);
   chip_shown_time_ = base::TimeTicks::Now();
-  AnnouncePermissionRequestForAccessibility(
-      permission_prompt_model_->GetAccessibilityChipText());
-  chip_->SetVisible(true);
 
   if (active_chip_permission_request_manager_.has_value()) {
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
@@ -166,8 +174,18 @@ void ChipController::ShowPermissionPrompt(
 
   active_chip_permission_request_manager_ =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-
   active_chip_permission_request_manager_.value()->AddObserver(this);
+}
+
+void ChipController::ShowPermissionPrompt(
+    content::WebContents* web_contents,
+    permissions::PermissionPrompt::Delegate* delegate) {
+  DCHECK(delegate);
+  InitializePermissionPrompt(web_contents, delegate);
+  AnnouncePermissionRequestForAccessibility(
+      permission_prompt_model_->GetAccessibilityChipText());
+  chip_->SetVisible(true);
+  chip_shown_time_ = base::TimeTicks::Now();
 
   SyncChipWithModel();
 
@@ -311,6 +329,8 @@ void ChipController::HandleConfirmation(
   SyncChipWithModel();
   if (permission_prompt_model_->CanDisplayConfirmation()) {
     is_confirmation_showing_ = true;
+    chip_->SetVisible(true);
+    chip_->ResetAnimation();
     chip_->AnimateExpand(kExpandDuration);
     chip_->SetCallback(base::BindRepeating(&ChipController::ShowPageInfoDialog,
                                            base::Unretained(this)));

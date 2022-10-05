@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 
 PermissionPromptBubble::PermissionPromptBubble(
@@ -13,6 +14,13 @@ PermissionPromptBubble::PermissionPromptBubble(
     Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate),
       permission_requested_time_(base::TimeTicks::Now()) {
+  LocationBarView* lbv = GetLocationBarView();
+  if (lbv && lbv->IsDrawn() &&
+      base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
+      delegate->Requests()[0]->IsConfirmationChipSupported()) {
+    lbv->chip_controller()->InitializePermissionPrompt(web_contents, delegate);
+  }
+
   ShowBubble();
 }
 
@@ -51,13 +59,30 @@ bool PermissionPromptBubble::UpdateAnchor() {
   if (!prompt_bubble_)
     return true;
 
-  // If |browser_| changed, recreate bubble for correct browser.
+  // If |browser_| changed, we need to recreate bubble for correct browser.
   if (was_browser_changed) {
     CleanUpPromptBubble();
     ShowBubble();
   } else {
     prompt_bubble_->UpdateAnchorPosition();
   }
+
+  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
+      delegate()->Requests()[0]->IsConfirmationChipSupported()) {
+    // If we have a location bar view but the chip_controller_ doesn't exist,
+    // it means that the we switched from a browser mode that did not have a
+    // location bar view. In that case we should create the chip in the location
+    // bar view if required, then obtain a reference to the chip controller and
+    // finally initialize it with the current permission request.
+    LocationBarView* lbv = GetLocationBarView();
+
+    if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen()) {
+      auto* chip_controller = lbv->chip_controller();
+      chip_controller->InitializePermissionPrompt(web_contents(), delegate());
+      chip_controller->UpdateBrowser(browser());
+    }
+  }
+
   return true;
 }
 
