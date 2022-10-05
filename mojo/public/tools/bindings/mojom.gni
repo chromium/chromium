@@ -103,8 +103,8 @@ mojom_generator_sources =
       "$mojom_generator_root/generators/cpp_util.py",
       "$mojom_generator_root/generators/mojom_cpp_generator.py",
       "$mojom_generator_root/generators/mojom_java_generator.py",
-      "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_js_generator.py",
+      "$mojom_generator_root/generators/mojom_mojolpm_generator.py",
       "$mojom_generator_root/generators/mojom_ts_generator.py",
       "$mojom_generator_script",
     ]
@@ -1708,7 +1708,6 @@ template("mojom") {
             "$root_gen_dir/$base_path.js",
             "$root_gen_dir/$base_path.m.js",
             "$root_gen_dir/$base_path-lite.js",
-            "$root_gen_dir/$base_path.html",
             "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
 
