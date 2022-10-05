@@ -590,6 +590,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool hdmi_rediscovering() const { return hdmi_rediscovering_; }
 
   void SetHDMIRediscoverGracePeriodForTesting(int duration_in_ms);
+  bool ShouldSwitchToHotPlugDevice(const AudioDevice& hotplug_device) const;
 
   enum DeviceStatus {
     OLD_DEVICE,
@@ -630,6 +631,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void HandleHotPlugDevice(
       const AudioDevice& hotplug_device,
       const AudioDevicePriorityQueue& device_priority_queue);
+
+  // Handles the regular user hotplug case with user priority.
+  void HandleHotPlugDeviceByUserPriority(const AudioDevice& hotplug_device);
 
   void SwitchToTopPriorityDevice(bool is_input);
 

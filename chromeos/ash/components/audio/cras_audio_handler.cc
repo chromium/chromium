@@ -1036,6 +1036,12 @@ AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
   if (deprioritize_bt_wbs_mic_ && device.is_input &&
       (device.type == AudioDeviceType::kBluetooth))
     device.priority = 0;
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+    device.user_priority = audio_pref_handler_->GetUserPriority(device);
+  }
+
   return device;
 }
 
@@ -1312,6 +1318,17 @@ bool CrasAudioHandler::ChangeActiveDevice(
     return false;
   }
 
+  // Update user priority whenever the audio device is activated.
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+    const AudioDevice* current_active_device =
+        GetDeviceFromId(current_active_node_id);
+    if (current_active_device != nullptr) {
+      audio_pref_handler_->SetUserPriorityHigherThan(new_active_device,
+                                                     *current_active_device);
+    }
+  }
+
   // Set the current active input/output device to the new_active_device.
   current_active_node_id = new_active_device.id;
   audio_devices_[current_active_node_id].active = true;
@@ -1523,9 +1540,64 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
   }
 }
 
+bool CrasAudioHandler::ShouldSwitchToHotPlugDevice(
+    const AudioDevice& hotplug_device) const {
+  // Whenever 35mm headphone or mic is hot plugged, always pick it as the active
+  // device.
+  if (hotplug_device.type == AudioDeviceType::kHeadphone ||
+      hotplug_device.type == AudioDeviceType::kMic) {
+    return true;
+  }
+
+  const uint64_t active_node_id =
+      hotplug_device.is_input ? active_input_node_id_ : active_output_node_id_;
+  const AudioDevice* current_active_device = GetDeviceFromId(active_node_id);
+
+  if (!current_active_device) {
+    return true;
+  }
+
+  // Use built-in priority if hotplug_device or current_active_device has
+  // kUserPriorityNone. Otherwise the newly plugged devices will never be
+  // selected due to having user_priority = 0.
+  // current_active_device can has kUserPriorityNone, if it is a new device
+  // and it is activated when there is no active device (ex: the first active
+  // device after boot).
+  if ((hotplug_device.user_priority == kUserPriorityNone ||
+       current_active_device->user_priority == kUserPriorityNone)) {
+    return LessBuiltInPriority(*current_active_device, hotplug_device);
+  }
+
+  return LessUserPriority(*current_active_device, hotplug_device);
+}
+
+void CrasAudioHandler::HandleHotPlugDeviceByUserPriority(
+    const AudioDevice& hotplug_device) {
+  // This most likely may happen during the transition period of cras
+  // initialization phase, in which a non-simple-usage node may appear like
+  // a hotplug node.
+  if (!hotplug_device.is_for_simple_usage())
+    return;
+
+  if (ShouldSwitchToHotPlugDevice(hotplug_device)) {
+    SwitchToDevice(hotplug_device, true, ACTIVATE_BY_PRIORITY);
+    return;
+  }
+
+  // Do not active the hotplug device. The hotplug device is not the top
+  // priority device.
+  VLOG(1) << "Hotplug device remains inactive as its previous state:"
+          << hotplug_device.ToString();
+}
+
 void CrasAudioHandler::HandleHotPlugDevice(
     const AudioDevice& hotplug_device,
     const AudioDevicePriorityQueue& device_priority_queue) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kRobustAudioDeviceSelectLogic)) {
+    return HandleHotPlugDeviceByUserPriority(hotplug_device);
+  }
+
   // This most likely may happen during the transition period of cras
   // initialization phase, in which a non-simple-usage node may appear like
   // a hotplug node.

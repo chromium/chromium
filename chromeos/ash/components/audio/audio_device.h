@@ -109,29 +109,27 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevice {
   uint32_t max_supported_channels = 0;
   uint32_t audio_effect = 0;
   int32_t number_of_volume_steps = 0;
+  // The larger value means the higher priority.
+  uint32_t user_priority = kUserPriorityNone;
 };
 
 typedef std::vector<AudioDevice> AudioDeviceList;
 typedef std::map<uint64_t, AudioDevice> AudioDeviceMap;
 
-struct AudioDeviceCompare {
-  // Rules used to discern which device is higher,
-  // 1.) Device Type:
-  //       [Headphones/USB/Bluetooh > HDMI > Internal Speakers]
-  //       [External Mic/USB Mic/Bluetooth > Internal Mic]
-  // 2.) Device Plugged in Time:
-  //       [Later > Earlier]
-  bool operator()(const AudioDevice& a, const AudioDevice& b) const {
-    if (a.priority < b.priority) {
-      return true;
-    } else if (b.priority < a.priority) {
-      return false;
-    } else if (a.plugged_time < b.plugged_time) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+// Compare device user priority first. If tie, compare them with the
+// LessBuiltInPriority().
+bool LessUserPriority(const AudioDevice& a, const AudioDevice& b);
+
+// Rules used to discern which device is higher:
+// 1.) Device Type:
+//       [Headphones/USB/Bluetooth > HDMI > Internal Speakers]
+//       [External Mic/USB Mic/Bluetooth > Internal Mic]
+// 2.) Device Plugged in Time:
+//       [Later > Earlier]
+bool LessBuiltInPriority(const AudioDevice& a, const AudioDevice& b);
+
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDeviceCompare {
+  bool operator()(const AudioDevice& a, const AudioDevice& b) const;
 };
 
 }  // namespace ash
