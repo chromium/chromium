@@ -737,8 +737,10 @@ public class CustomTabActivityTest {
 
         assertLastLaunchedClientAppRecorded(
                 ClientIdentifierType.REFERRER, "", mTestPage, cctActivity.getTaskId(), false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> getActivity().finish());
-        CriteriaHelper.pollUiThread(() -> getActivity().isDestroyed());
+
+        Activity activity = getActivity();
+        activity.finish();
+        ApplicationTestUtils.waitForActivityState(activity, Stage.DESTROYED);
 
         // Write shared prefs as it the last CCT session has saw tab interactions.
         SharedPreferencesManager pref = SharedPreferencesManager.getInstance();
