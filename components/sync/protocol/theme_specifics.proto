@@ -22,15 +22,13 @@ message ThemeSpecifics {
   // present.  If not set, and all custom_* fields should be omitted.
   optional bool use_custom_theme = 1;
 
-  // This field is only set (i.e., not cleared) on platforms that have
-  // a distinction between the system theme and the default theme, but
-  // other platforms must be careful to pass through the set state (not
-  // just the value) of this flag.
+  // This field is only relevant on platforms that have a distinction between
+  // the system theme and the default theme, but other platforms must be careful
+  // to pass through the value of this flag.
   //
-  // If true, we use the system theme by default (i.e., when we don't use
-  // a custom theme) for platforms that make a distinction between the
-  // default theme and the system theme.  Has no effect if use_custom_theme
-  // is set.
+  // If true, we use the system theme by default (i.e., when we don't use a
+  // custom theme) for platforms that make a distinction between the default
+  // theme and the system theme. Has no effect if use_custom_theme is true.
   optional bool use_system_theme_by_default = 2;
 
   // TODO(gayane): Migrate custom_* fields to a separate message.
