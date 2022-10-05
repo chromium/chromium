@@ -120,6 +120,7 @@ class MessageBannerMediator implements SwipeHandler {
         if (mCurrentState == State.HIDDEN) {
             mModel.set(TRANSLATION_Y,
                     fromIndex == Position.FRONT ? 0 : -mMaxTranslationYSupplier.get());
+            mModel.set(MARGIN_TOP, mDefaultMarginTop);
         } else if (mCurrentState == State.IDLE && toIndex == Position.FRONT) {
             // Animating marginTop is expensive. Use translationY to simulate the effect of
             // marginTop.

@@ -105,7 +105,7 @@ public class MessageBannerMediatorUnitTest {
         Animator animator = mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, -100, 0, 0, "before showing.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "before showing.");
 
         animator.start();
         shadowOf(getMainLooper()).idle();
@@ -119,7 +119,7 @@ public class MessageBannerMediatorUnitTest {
         Animator animator = mMediator.show(Position.FRONT, Position.BACK, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, 0, 0, 0, "before showing.");
+        assertModelState(0, 0, 0, DEFAULT_MARGIN, "before showing.");
 
         animator.start();
         shadowOf(getMainLooper()).idle();

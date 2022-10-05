@@ -25,6 +25,9 @@ import java.util.List;
  */
 public class MessageAnimationCoordinator {
     private static final String TAG = MessageQueueManager.TAG;
+    // Animation start delay for the back message for MessageBannerMediator.ENTER_DURATION_MS amount
+    // of time, required to show the front message from Position.INVISIBLE to Position.FRONT.
+    private static final int BACK_MESSAGE_START_DELAY_MS = 600;
 
     /**
      * mCurrentDisplayedMessage refers to the message which is currently visible on the screen
@@ -160,7 +163,12 @@ public class MessageAnimationCoordinator {
         if (cf == nf && cb == nb) return;
         if (cf == null) { // Implies that currently back is also null.
             mFrontAnimator = nf.handler.show(Position.INVISIBLE, Position.FRONT);
-            if (nb != null) mBackAnimator = nb.handler.show(Position.FRONT, Position.BACK);
+            if (nb != null) {
+                mBackAnimator = nb.handler.show(Position.FRONT, Position.BACK);
+                if (mBackAnimator != null) {
+                    mBackAnimator.setStartDelay(BACK_MESSAGE_START_DELAY_MS);
+                }
+            }
         } else if (cf != nf && cf != nb) {
             // Current displayed front message will be hidden.
             mFrontAnimator = cf.handler.hide(Position.FRONT, Position.INVISIBLE, animate);
