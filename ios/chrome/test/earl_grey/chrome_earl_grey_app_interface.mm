@@ -287,10 +287,6 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::OpenNewTab();
 }
 
-+ (NSURL*)simulateExternalAppURLOpening {
-  return chrome_test_util::SimulateExternalAppURLOpening();
-}
-
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL {
   chrome_test_util::SimulateExternalAppURLOpeningWithURL(URL);
 }

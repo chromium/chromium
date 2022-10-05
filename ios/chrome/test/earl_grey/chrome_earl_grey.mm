@@ -293,15 +293,14 @@ UIWindow* GetAnyKeyWindow() {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
-- (void)simulateExternalAppURLOpening {
-  NSURL* openedNSURL =
-      [ChromeEarlGreyAppInterface simulateExternalAppURLOpening];
+- (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url {
+  [ChromeEarlGreyAppInterface
+      simulateExternalAppURLOpeningWithURL:net::NSURLWithGURL(url)];
   // Wait until the navigation is finished.
-  GURL openedGURL = net::GURLWithNSURL(openedNSURL);
   GREYCondition* finishedLoading = [GREYCondition
       conditionWithName:kWaitForPageToStartLoadingError
                   block:^{
-                    return openedGURL == [ChromeEarlGrey webStateVisibleURL];
+                    return url == [ChromeEarlGrey webStateVisibleURL];
                   }];
   bool pageLoaded =
       [finishedLoading waitWithTimeout:kWaitForPageLoadTimeout.InSecondsF()];

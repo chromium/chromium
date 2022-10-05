@@ -269,8 +269,8 @@ UIWindow* GetAnyKeyWindow();
 // timeout, or a GREYAssert is induced.
 - (void)openNewTab;
 
-// Simulates opening http://www.example.com/ from another application.
-- (void)simulateExternalAppURLOpening;
+// Simulates opening `url` from another application.
+- (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
 // Simulates opening the add account sign-in flow from the web.
 - (void)simulateAddAccountFromWeb;

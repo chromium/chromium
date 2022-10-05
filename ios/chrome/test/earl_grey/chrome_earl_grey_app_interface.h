@@ -134,10 +134,6 @@
 // Opens a new tab, and does not wait for animations to complete.
 + (void)openNewTab;
 
-// Simulates opening http://www.example.com/ from another application.
-// Returns the opened URL.
-+ (NSURL*)simulateExternalAppURLOpening;
-
 // Simulates opening a custom `URL` from another application.
 + (void)simulateExternalAppURLOpeningWithURL:(NSURL*)URL;
 

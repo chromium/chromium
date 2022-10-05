@@ -104,8 +104,7 @@
   [sceneController showSignin:command baseViewController:baseViewController];
 }
 
-+ (void)triggerConsistencyPromoSigninDialog {
-  NSURL* url = [NSURL URLWithString:@"http://www.example.com"];
++ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url {
   const GURL gURL = net::GURLWithNSURL(url);
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();

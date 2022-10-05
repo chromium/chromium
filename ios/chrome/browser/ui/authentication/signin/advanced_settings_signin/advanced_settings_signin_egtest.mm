@@ -22,6 +22,7 @@
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -293,7 +294,10 @@ void WaitForSettingDoneButton() {
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   [SigninEarlGrey verifySignedOut];
 }
@@ -313,7 +317,10 @@ void WaitForSettingDoneButton() {
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   [SigninEarlGrey verifySignedOut];
 }
@@ -329,7 +336,10 @@ void WaitForSettingDoneButton() {
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   [SigninEarlGrey verifySignedOut];
 }
@@ -345,7 +355,10 @@ void WaitForSettingDoneButton() {
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   [SigninEarlGrey verifySignedOut];
 }

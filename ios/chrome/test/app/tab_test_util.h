@@ -16,14 +16,6 @@ namespace chrome_test_util {
 // Opens a new tab, and does not wait for animations to complete.
 void OpenNewTab();
 
-// TODO(crbug.com/1277282): deprecate this in favor of
-// SimulateExternalAppURLOpeningWithURL() to not allow loading an external
-// page.
-//
-// Simulates opening http://www.example.com/ from another application.
-// Returns the opened URL.
-NSURL* SimulateExternalAppURLOpening();
-
 // Simulates opening `URL` from another application.
 void SimulateExternalAppURLOpeningWithURL(NSURL* URL);
 

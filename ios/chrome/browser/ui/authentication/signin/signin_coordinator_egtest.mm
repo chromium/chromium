@@ -40,6 +40,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -364,7 +365,10 @@ void ExpectSyncConsentHistogram(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Open new tab to cancel sign-in.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
@@ -425,7 +429,10 @@ void ExpectSyncConsentHistogram(
       assertWithMatcher:grey_interactable()];
 
   // Open new tab to cancel sign-in.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
@@ -476,7 +483,10 @@ void ExpectSyncConsentHistogram(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open new tab to cancel sign-in.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.
@@ -579,17 +589,12 @@ void ExpectSyncConsentHistogram(
       performAction:grey_tap()];
 
   // Open the URL as if it was opened from another app.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
-
-  // Check if the URL was opened.
-  const GURL expectedURL("http://www.example.com/");
-  GREYAssertEqual(expectedURL, [ChromeEarlGrey webStateVisibleURL],
-                  @"Didn't open new tab with example.com.");
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   [SigninEarlGrey verifySignedOut];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            "www.example.com")];
 }
 
 // Opens the reauth dialog and interrupts it by open an URL from an external
@@ -599,10 +604,10 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            "www.example.com")];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 }
 
 // Verifies that the user is signed in when selecting "Yes I'm In", after the
@@ -672,16 +677,10 @@ void ExpectSyncConsentHistogram(
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [self openSigninFromView:openSigninMethod tapSettingsLink:tapSettingsLink];
   // Open the URL as if it was opened from another app.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
-
-  // Check if the URL was opened.
-  const GURL expectedURL("http://www.example.com/");
-  GREYAssertEqual(expectedURL, [ChromeEarlGrey webStateVisibleURL],
-                  @"Didn't open new tab with example.com.");
-  // Check that the web page is visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            "www.example.com")];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
   // Should be not signed in, after being interrupted.
   [SigninEarlGrey verifySignedOut];
 }
@@ -769,7 +768,10 @@ void ExpectSyncConsentHistogram(
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Open new tab to cancel sign-in.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 
   // Re-open the sign-in screen. If it wasn't correctly dismissed previously,
   // this will fail.

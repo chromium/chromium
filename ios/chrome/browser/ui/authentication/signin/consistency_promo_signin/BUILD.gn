@@ -91,6 +91,8 @@ source_set("eg2_tests") {
     "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//net",
+    "//net:test_support",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

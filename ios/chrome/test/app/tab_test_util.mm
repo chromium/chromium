@@ -70,18 +70,6 @@ void OpenNewTab() {
   }
 }
 
-NSURL* SimulateExternalAppURLOpening() {
-  NSURL* url = [NSURL URLWithString:@"http://www.example.com"];
-  TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
-  context.URL = url;
-
-  UIApplication* application = UIApplication.sharedApplication;
-  UIScene* scene = application.connectedScenes.anyObject;
-  [scene.delegate scene:scene openURLContexts:[NSSet setWithObject:context]];
-
-  return url;
-}
-
 void SimulateExternalAppURLOpeningWithURL(NSURL* URL) {
   TestOpenURLContext* context = [[TestOpenURLContext alloc] init];
   context.URL = URL;

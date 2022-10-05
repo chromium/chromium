@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -436,11 +437,12 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   // Wait until the sheet is fully presented before to opening an external URL.
   [ChromeEarlGreyUI waitForAppToIdle];
   // Open the URL as if it was opened from another app.
-  [ChromeEarlGrey simulateExternalAppURLOpening];
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
   // Verifies that the user is signed in and Settings have been dismissed.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGrey
-      waitForMatcher:chrome_test_util::OmniboxContainingText("example.com")];
 }
 
 // Tests that opening and closing the sign-out confirmation dialog does

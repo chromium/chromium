@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_APP_INTERFACE_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
+#import "url/gurl.h"
 
 @class FakeChromeIdentity;
 @protocol GREYMatcher;
@@ -51,7 +53,8 @@ enum class ConsentLevel;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
 // directly the current SceneController.
-+ (void)triggerConsistencyPromoSigninDialog;
+// `url` that triggered the web sign-in/consistency dialog.
++ (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
 
 @end
 
