@@ -173,7 +173,7 @@ class NET_EXPORT NetworkAnonymizationKey {
     return frame_site_;
   }
 
-  bool GetIsCrossSite() const;
+  absl::optional<bool> GetIsCrossSite() const;
 
   const absl::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
