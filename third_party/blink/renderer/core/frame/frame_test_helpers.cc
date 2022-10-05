@@ -792,6 +792,15 @@ void TestWebFrameClient::CommitNavigation(
   if (!frame_)
     return;
   auto params = WebNavigationParams::CreateFromInfo(*info);
+
+  KURL url = info->url_request.Url();
+  if (url.IsAboutSrcdocURL()) {
+    // If we are loading an about:srcdoc frame in a Blink unit test, then we are
+    // guaranteed to have a local parent.
+    blink::WebLocalFrame* parent = frame_->Parent()->ToWebLocalFrame();
+    params->fallback_srcdoc_base_url = parent->GetDocument().BaseURL();
+  }
+
   MockPolicyContainerHost mock_policy_container_host;
   params->policy_container = std::make_unique<WebPolicyContainer>(
       WebPolicyContainerPolicies(),

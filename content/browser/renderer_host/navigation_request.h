@@ -816,6 +816,27 @@ class CONTENT_EXPORT NavigationRequest
   // properly determine SiteInstances and process allocation.
   UrlInfo GetUrlInfo();
 
+  // Return the parent's base url, snapshotted when this NavigationRequest was
+  // created. Used for sending to srcdoc renderers. See
+  // https://crbug.com/1356658 for further details. Note: The returned value
+  // will be empty unless (i) the navigation is to about:srcdoc, and (ii)
+  // IsolateSandboxedIframes is enabled.
+  // TODO(wjmaclean):  https://crbug.com/1356658 Make this also apply for
+  // about:blank navigations as well.
+
+  // Return the parent's base url, snapshotted when this NavigationRequest was
+  // created. Used for sending to srcdoc renderers. See
+  // https://crbug.com/1356658 for further details.
+  // Note: The returned value will be empty unless:
+  // 1. The navigation is to about:srcdoc, and
+  // 2. IsolateSandboxedIframes is enabled.
+  //
+  // TODO(https://crbug.com/1356658) Make this also apply for
+  // about:blank navigations as well.
+  const GURL& inherited_base_url() const {
+    return commit_params_->fallback_srcdoc_baseurl;
+  }
+
   bool is_overriding_user_agent() const {
     return commit_params_->is_overriding_user_agent;
   }

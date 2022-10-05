@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS allow-same-origin
-FAIL disallow-same-origin assert_equals: expected "https://web-platform.test:8444/html/infrastructure/urls/terminology-0/document-base-url-about-srcdoc.https.window.html" but got "about:srcdoc"
-Harness: the test ran to completion.
-

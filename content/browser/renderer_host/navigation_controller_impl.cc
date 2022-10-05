@@ -3944,6 +3944,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          GURL() /* fallback_srcdoc_baseurl_value */,
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/node->AncestorOrSelfHasCSPEE(),
           std::string() /* reduced_accept_language */);
@@ -4094,8 +4095,11 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           frame_tree_node->AncestorOrSelfHasCSPEE());
   commit_params->post_content_type = post_content_type;
 
-  if (common_params->url.IsAboutSrcdoc())
+  if (common_params->url.IsAboutSrcdoc()) {
+    // TODO(wjmaclean): initialize this in NavigationRequest's constructor
+    // instead.
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
+  }
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,

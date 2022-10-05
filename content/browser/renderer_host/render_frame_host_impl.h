@@ -714,6 +714,28 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RemoveChild(FrameTreeNode* child);
   void ResetChildren();
 
+  // Returns the base URL value of the associated document. This uses the
+  // base URL value sent from the renderer (if any), otherwise it defaults to
+  // the value inherited from this document's parent (for srcdoc iframes), or
+  // the last committed URL if neither of these apply.
+  // Note: this can only be called when IsolateSandboxedIframes is enabled.
+  // TODO(wjmaclean): https://crbug.com/1356658 In future this will be modified
+  // to also use the inherited value for about:blank frames, though in that case
+  // it's inherited from the initiator.
+  const GURL& GetBaseUrl() const;
+
+  // Returns the base url received from the renderer, if any.
+  // Note: this is only valid when IsolatedSandboxedIframes is enabled.
+  const GURL& base_url_from_renderer_for_testing() const {
+    return base_url_from_renderer_;
+  }
+
+  // Returns the base url inherited from the parent, if any.
+  // Note: this is only valid when IsolatedSandboxedIframes is enabled.
+  const GURL& snapshotted_base_url_from_parent_for_testing() const {
+    return snapshotted_base_url_from_parent_;
+  }
+
   // Set the URL of the document represented by this RenderFrameHost. Called
   // when the navigation commits. See also `GetLastCommittedURL`.
   void SetLastCommittedUrl(const GURL& url);
@@ -2216,6 +2238,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FrameSizeChanged(const gfx::Size& frame_size) override;
   void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
                        const std::string& srcdoc_value) override;
+  void DidChangeBaseURL(const GURL& base_url) override;
   void ReceivedDelegatedCapability(
       blink::mojom::DelegatedCapability delegated_capability) override;
   void CreatePortal(
@@ -3538,6 +3561,26 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidEnterBackForwardCacheInternal();
   void WillLeaveBackForwardCacheInternal();
 
+  // Stores an override of this document's base URL when it does not match the
+  // last committed URL or an inherited value (e.g., if a <base> element is
+  // added). This is tracked for all frames, for the purpose of GetBaseUrl. This
+  // value is currently only set when the IsolateSandboxedIframes feature is
+  // enabled.
+  void set_base_url_from_renderer(const GURL& base_url) {
+    base_url_from_renderer_ = base_url;
+  }
+
+  // Stores a snapshot of the inherited base URL from the start of the
+  // NavigationRequest, if this document inherited one (e.g., about:srcdoc).
+  // This value is currently only set when the IsolateSandboxedIframes feature
+  // is enabled.
+  // TODO(wjmaclean): about:blank frames may also need to inherit base URLs,
+  // possibly from the initiator rather than the parent. See
+  // https://crbug.com/1356658#c7.
+  void set_inherited_base_url(const GURL& inherited_base_url) {
+    snapshotted_base_url_from_parent_ = inherited_base_url;
+  }
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -3612,6 +3655,20 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(https://crbug.com/1304466): Ensure this is always set, and use it to
   // avoid separately storing the last committed URL and origin here.
   scoped_refptr<FrameNavigationEntry> last_committed_frame_entry_;
+
+  // This value stores the Document::GetBaseURL() value. It is used to determine
+  // the base URL of children about::srcdoc documents.
+  GURL base_url_from_renderer_;
+  // For documents whose current_url() is about:srcdoc, this is the GetBaseUrl()
+  // of the parent node (which is guaranteed to be non-null since about:srcdoc
+  // can't be used in a top-level frame). It is snapshotted at the time the
+  // srcdoc's NavigationRequest is created, and stored here to prevent the
+  // srcdoc from being affected by subsequent changes in the parent's value.
+  // TODO(wjmaclean): https://crbug.com/1356658 update this when we start
+  // sending base urls to about:blank as well. In the about:blank case we'll use
+  // the initiator instead of the parent (as not all about:blanks will have
+  // parents).
+  GURL snapshotted_base_url_from_parent_;
 
   // Tracks this frame's last committed navigation's URL. Note that this will be
   // empty before the first commit in this *RenderFrameHost*, even if the

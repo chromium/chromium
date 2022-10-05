@@ -521,6 +521,13 @@ void FillNavigationParamsRequest(
       navigation_params->early_hints_preloaded_resources.emplace_back(resource);
     }
   }
+
+  if (common_params.url.IsAboutSrcdoc()) {
+    // Pass on the `fallback_srcdoc_baseurl` sent from the frame host. This will
+    // picked up in DocumentLoader.
+    navigation_params->fallback_srcdoc_base_url =
+        commit_params.fallback_srcdoc_baseurl;
+  }
 }
 
 blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(

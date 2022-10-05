@@ -84,6 +84,12 @@ bool DocumentInit::IsSrcdocDocument() const {
   return window_ && !window_->GetFrame()->IsMainFrame() && is_srcdoc_document_;
 }
 
+const KURL& DocumentInit::FallbackSrcdocBaseURL() const {
+  DCHECK(window_ && !window_->GetFrame()->IsMainFrame() ||
+         fallback_srcdoc_base_url_.IsEmpty());
+  return fallback_srcdoc_base_url_;
+}
+
 DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
                                        Document* owner_document) {
   DCHECK(!window_);
@@ -244,6 +250,11 @@ DocumentInit& DocumentInit::WithSrcdocDocument(bool is_srcdoc_document) {
   return *this;
 }
 
+DocumentInit& DocumentInit::WithFallbackSrcdocBaseURL(
+    const KURL& fallback_srcdoc_base_url) {
+  fallback_srcdoc_base_url_ = fallback_srcdoc_base_url;
+  return *this;
+}
 
 DocumentInit& DocumentInit::WithWebBundleClaimedUrl(
     const KURL& web_bundle_claimed_url) {

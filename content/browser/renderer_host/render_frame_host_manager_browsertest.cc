@@ -880,47 +880,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, MAYBE_DisownOpener) {
   EXPECT_FALSE(new_shell->web_contents()->HasOpener());
 }
 
-// Test that changes to an iframe's srcdoc attribute propagate through the
-// browser and are stored/cleared on the FrameTreeNode as needed.
-IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, SrcdocIframe) {
-  StartEmbeddedServer();
-
-  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  EXPECT_TRUE(NavigateToURL(shell(), main_url));
-
-  // Create srcdoc iframe.
-  {
-    std::string js_str =
-        "var frame = document.createElement('iframe'); "
-        "frame.id = 'test_frame'; "
-        "frame.srcdoc = 'srcdoc test content'; "
-        "document.body.append(frame);";
-    EXPECT_TRUE(ExecJs(shell(), js_str));
-    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  }
-
-  // Verify content on FrameTreeNode.
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetPrimaryFrameTree()
-                            .root();
-  ASSERT_EQ(1U, root->child_count());
-  FrameTreeNode* child = root->child_at(0);
-  EXPECT_EQ(GURL(url::kAboutSrcdocURL), child->current_url());
-  EXPECT_EQ("srcdoc test content", child->srcdoc_value());
-
-  // Reset the srcdoc attribute, and verify the FrameTreeNode is updated
-  // accordingly.
-  {
-    std::string js_str =
-        "var frame = document.getElementById('test_frame'); "
-        "frame.removeAttribute('srcdoc');";
-    EXPECT_TRUE(ExecJs(shell(), js_str));
-    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  }
-  EXPECT_EQ(GURL(url::kAboutBlankURL), child->current_url());
-  EXPECT_EQ("", child->srcdoc_value());
-}
-
 // Test that subframes can disown their openers.  http://crbug.com/225528.
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, DisownSubframeOpener) {
   const GURL frame_url("data:text/html,<iframe name=\"foo\"></iframe>");

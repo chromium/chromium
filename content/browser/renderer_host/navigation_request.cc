@@ -1277,6 +1277,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          GURL() /* fallback_srcdoc_baseurl */,
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
@@ -1406,6 +1407,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*fenced_frame_reporting_metadata=*/nullptr,
           // This timestamp will be populated when the commit IPC is sent.
           base::TimeTicks() /* commit_sent */, std::string() /* srcdoc_value */,
+          GURL() /* fallback_srcdoc_baseurl_value */,
           false /* should_load_data_url */,
           /*ancestor_or_self_has_cspee=*/
           frame_tree_node->AncestorOrSelfHasCSPEE(),
@@ -1839,6 +1841,20 @@ NavigationRequest::NavigationRequest(
           1, common_params_->url, true,
           GetIsolationInfo().network_isolation_key());
     }
+  }
+
+  // For navigations that inherit a base URL, snapshot the parent's base URL at
+  // the start of the navigation. Currently, this is only stored and sent to the
+  // renderer if kIsolatedSandboxedIframes is enabled, since it is a behavior
+  // change relevant for isolated sandboxed iframes. See
+  // https://crbug.com/1356658.
+  // TODO(wjmaclean): about:blank frames may also need to inherit base URLs,
+  // possibly from the initiator rather than the parent. See
+  // https://crbug.com/1356658#c7.
+  if (GetURL().IsAboutSrcdoc() && frame_tree_node_->parent() &&
+      SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    commit_params_->fallback_srcdoc_baseurl =
+        frame_tree_node_->parent()->GetBaseUrl();
   }
 }
 
