@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "cc/paint/paint_export.h"
+
 namespace cc {
 
 // See the skottie::MarkerObserver API for details. The arguments there are
