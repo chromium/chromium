@@ -30,6 +30,9 @@
 - (id<AutocompleteSuggestionGroup>)extractPedals:
     (NSArray<id<AutocompleteSuggestion>>*)suggestions;
 
+// Returns whether the object stores pedals in cache. Used in tests.
+- (BOOL)hasCachedPedals;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_PEDAL_SECTION_EXTRACTOR_H_

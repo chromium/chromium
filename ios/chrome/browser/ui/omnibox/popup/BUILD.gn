@@ -243,6 +243,7 @@ source_set("unit_tests") {
     "omnibox_pedal_annotator_unittest.mm",
     "omnibox_popup_mediator_unittest.mm",
     "omnibox_popup_row_cell_unittest.mm",
+    "omnibox_popup_view_controller_unittest.mm",
     "pedal_section_extractor_unittest.mm",
   ]
   deps = [

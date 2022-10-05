@@ -107,4 +107,8 @@ const NSTimeInterval kPedalDebouceTimer = 0.3;
   [self.delegate invalidatePedals];
 }
 
+- (BOOL)hasCachedPedals {
+  return self.previousPedalGroup;
+}
+
 @end
