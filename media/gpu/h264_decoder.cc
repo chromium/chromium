@@ -152,8 +152,8 @@ void H264Decoder::Reset() {
   accelerator_->Reset();
   last_output_poc_ = std::numeric_limits<int>::min();
 
-  encrypted_sei_nalus_.clear();
-  sei_subsamples_.clear();
+  prior_cencv1_nalus_.clear();
+  prior_cencv1_subsamples_.clear();
 
   recovery_frame_num_.reset();
   recovery_frame_cnt_.reset();
@@ -1294,15 +1294,27 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessEncryptedSliceHeader(
     const std::vector<SubsampleEntry>& subsamples) {
   DCHECK(curr_nalu_);
   DCHECK(curr_slice_hdr_);
-  std::vector<base::span<const uint8_t>> spans(encrypted_sei_nalus_.size() + 1);
-  spans.assign(encrypted_sei_nalus_.begin(), encrypted_sei_nalus_.end());
+  std::vector<base::span<const uint8_t>> spans(prior_cencv1_nalus_.begin(),
+                                               prior_cencv1_nalus_.end());
   spans.emplace_back(curr_nalu_->data, curr_nalu_->size);
-  std::vector<SubsampleEntry> all_subsamples(sei_subsamples_.size() + 1);
-  all_subsamples.assign(sei_subsamples_.begin(), sei_subsamples_.end());
+  std::vector<SubsampleEntry> all_subsamples(prior_cencv1_subsamples_.begin(),
+                                             prior_cencv1_subsamples_.end());
   all_subsamples.insert(all_subsamples.end(), subsamples.begin(),
                         subsamples.end());
-  return accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
-                                                 curr_slice_hdr_.get());
+  auto rv = accelerator_->ParseEncryptedSliceHeader(spans, all_subsamples,
+                                                    curr_slice_hdr_.get());
+  // Return now if this isn't fully processed and don't store the NALU info
+  // since we will get called again in the kTryAgain case, and on an error we
+  // want to exist.
+  if (rv != H264Accelerator::Status::kOk)
+    return rv;
+
+  // Insert this encrypted slice data as well in case this is a multi-slice
+  // picture.
+  prior_cencv1_nalus_.emplace_back(curr_nalu_->data, curr_nalu_->size);
+  prior_cencv1_subsamples_.insert(prior_cencv1_subsamples_.end(),
+                                  subsamples.begin(), subsamples.end());
+  return rv;
 }
 
 H264Decoder::H264Accelerator::Status H264Decoder::PreprocessCurrentSlice() {
@@ -1405,8 +1417,8 @@ void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   current_stream_ = ptr;
   current_stream_size_ = size;
   current_stream_has_been_changed_ = true;
-  encrypted_sei_nalus_.clear();
-  sei_subsamples_.clear();
+  prior_cencv1_nalus_.clear();
+  prior_cencv1_subsamples_.clear();
   if (decrypt_config) {
     parser_.SetEncryptedStream(ptr, size, decrypt_config->subsamples());
     current_decrypt_config_ = decrypt_config->Clone();
@@ -1504,8 +1516,6 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
               CHECK_ACCELERATOR_RESULT(ProcessEncryptedSliceHeader(subsamples));
               parsed_header = true;
               curr_slice_hdr_->pic_parameter_set_id = last_parsed_pps_id_;
-              encrypted_sei_nalus_.clear();
-              sei_subsamples_.clear();
             }
           }
           if (!parsed_header) {
@@ -1610,10 +1620,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           const std::vector<SubsampleEntry>& subsamples =
               parser_.GetCurrentSubsamples();
           if (!subsamples.empty()) {
-            encrypted_sei_nalus_.emplace_back(curr_nalu_->data,
-                                              curr_nalu_->size);
+            prior_cencv1_nalus_.emplace_back(curr_nalu_->data,
+                                             curr_nalu_->size);
             DCHECK_EQ(1u, subsamples.size());
-            sei_subsamples_.push_back(subsamples[0]);
+            prior_cencv1_subsamples_.push_back(subsamples[0]);
             // Since the SEI is encrypted, do not try to parse it below as it
             // may fail or yield incorrect results.
             DVLOG(3) << "Skipping parsing of encrypted SEI NALU";
@@ -1761,7 +1771,10 @@ bool H264Decoder::IsNewPrimaryCodedPicture(const H264Picture* curr_pic,
         // but some encoders neglect changing idr_pic_id for two consecutive
         // IDRs. Work around this by checking if the next slice contains the
         // zeroth macroblock, i.e. data that belongs to the next picture.
-        slice_hdr.first_mb_in_slice == 0)))
+        // Do not perform this check for CENCv1 encrypted content as the
+        // first_mb_in_slice field is not correctly populated in that case.
+        (slice_hdr.first_mb_in_slice == 0 &&
+         !slice_hdr.full_sample_encryption))))
     return true;
 
   if (!sps)

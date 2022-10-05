@@ -390,11 +390,11 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   std::unique_ptr<H264NALU> curr_nalu_;
   std::unique_ptr<H264SliceHeader> curr_slice_hdr_;
 
-  // Encrypted SEI NALUs preceding a fully encrypted slice NALU. We need to
+  // Encrypted NALUs preceding a fully encrypted (CENCv1) slice NALU. We need to
   // save these that are part of a single sample so they can all be decrypted
   // together.
-  std::vector<base::span<const uint8_t>> encrypted_sei_nalus_;
-  std::vector<SubsampleEntry> sei_subsamples_;
+  std::vector<base::span<const uint8_t>> prior_cencv1_nalus_;
+  std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
   // These are absl::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.
