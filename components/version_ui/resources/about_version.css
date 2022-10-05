@@ -96,6 +96,7 @@ body {
   background-color: var(--background-color);
   border: none;
   border-radius: 2px;
+  cursor: pointer;
 }
 
 #copy-to-clipboard-icon {
