@@ -607,8 +607,9 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  if (toplevel->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(AppType::BROWSER)) {
+  auto app_type = toplevel->GetProperty(aura::client::kAppType);
+  if (app_type == static_cast<int>(AppType::BROWSER) ||
+      app_type == static_cast<int>(AppType::LACROS)) {
     return nullptr;
   }
 
