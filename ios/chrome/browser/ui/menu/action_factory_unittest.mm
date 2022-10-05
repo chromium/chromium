@@ -294,7 +294,8 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = [UIImage imageNamed:@"offline"];
+  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+                                                      kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON);

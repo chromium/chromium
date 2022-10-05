@@ -265,7 +265,8 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = nil;
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 
@@ -368,7 +369,8 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = nil;
+  UIImage* expectedImage =
+      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH);
 

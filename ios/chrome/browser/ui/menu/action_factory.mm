@@ -181,9 +181,13 @@
 
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:
     (ProceduralBlock)block {
+  UIImage* image = UseSymbols()
+                       ? DefaultSymbolWithPointSize(kCheckMarkCircleSymbol,
+                                                    kSymbolActionPointSize)
+                       : [UIImage imageNamed:@"offline"];
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON)
-                         image:[UIImage imageNamed:@"offline"]
+                         image:image
                           type:MenuActionType::ViewOffline
                          block:block];
 }
@@ -302,10 +306,13 @@
 }
 
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
+  UIImage* image = UseSymbols() ? CustomSymbolWithPointSize(
+                                      kCameraLensSymbol, kSymbolActionPointSize)
+                                : [UIImage imageNamed:@"lens_icon"];
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE)
-                      image:[UIImage imageNamed:@"lens_icon"]
+                      image:image
                        type:MenuActionType::SearchImageWithLens
                       block:block];
   return action;

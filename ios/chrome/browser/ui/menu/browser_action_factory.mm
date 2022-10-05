@@ -211,11 +211,11 @@
 - (UIAction*)actionToOpenNewIncognitoTab {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  // TODO(crbug.com/1285015): Add the image.
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
-                      image:nil
+                      image:CustomSymbolWithPointSize(kIncognitoSymbol,
+                                                      kSymbolActionPointSize)
                        type:MenuActionType::OpenNewIncognitoTab
                       block:^{
                         [handler openURLInNewTab:[OpenNewTabCommand
@@ -293,11 +293,11 @@
 - (UIAction*)actionToStartNewIncognitoSearch {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  // TODO(crbug.com/1285015): Add the image.
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
-                      image:nil
+                      image:CustomSymbolWithPointSize(kIncognitoSymbol,
+                                                      kSymbolActionPointSize)
                        type:MenuActionType::StartNewIcognitoSearch
                       block:^{
                         OpenNewTabCommand* command =
