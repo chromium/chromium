@@ -23,7 +23,7 @@
         var host_info = get_host_info();
         var expectedUrl = "http://" + host_info.ORIGINAL_HOST + ":" +
             host_info.HTTP_PORT +
-            "/navigation-timing/nav2_test_attributes_values.html";
+          "/navigation-timing/nav2-test-attributes-values.html";
         var navTiming2EventOrder1 = [
             'startTime',
             'redirectStart',
@@ -104,8 +104,8 @@
                     // running this test.
                     assert_true(entries[0].transferSize > entries[0].encodedBodySize,
                         "Expected transferSize to be greater than encodedBodySize in uncached navigation.");
-                    assert_equals(entries[0].encodedBodySize, 5955);
-                    assert_equals(entries[0].decodedBodySize, 5955);
+                  assert_equals(entries[0].encodedBodySize, 5949);
+                  assert_equals(entries[0].decodedBodySize, 5949);
                     verifyTimingEventOrder(entries[0], navTiming2EventOrder1);
                     // Verify if the reported timing is not that different
                     // from what is reported by Navigation Timing 1.
