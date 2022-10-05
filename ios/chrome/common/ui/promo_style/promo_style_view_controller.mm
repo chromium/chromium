@@ -516,6 +516,15 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   }
 }
 
+- (void)setavatarAccessibilityLabel:(NSString*)avatarAccessibilityLabel {
+  _avatarAccessibilityLabel = avatarAccessibilityLabel;
+  if (self.hasAvatarImage) {
+    self.avatarImageView.accessibilityLabel = avatarAccessibilityLabel;
+    self.avatarImageView.isAccessibilityElement =
+        avatarAccessibilityLabel != nil;
+  }
+}
+
 - (UILabel*)titleLabel {
   if (!_titleLabel) {
     _titleLabel = [[UILabel alloc] init];

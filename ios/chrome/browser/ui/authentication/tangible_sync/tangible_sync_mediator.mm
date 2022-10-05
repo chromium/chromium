@@ -151,6 +151,15 @@
   UIImage* image = _accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::Large);
   self.consumer.primaryIdentityAvatarImage = image;
+  NSString* accessibilityLabel = nil;
+  if (identity.userFullName.length == 0) {
+    accessibilityLabel = identity.userEmail;
+  } else {
+    accessibilityLabel = [NSString
+        stringWithFormat:@"%@ %@", identity.userFullName, identity.userEmail];
+  }
+  DCHECK(accessibilityLabel);
+  self.consumer.primaryIdentityAvatarAccessibilityLabel = accessibilityLabel;
 }
 
 // Callback used when the sign in flow is complete, with `success`.

@@ -13,6 +13,9 @@
 // Avatar image for the primary identity.
 @property(nonatomic, strong) UIImage* primaryIdentityAvatarImage;
 
+// Avatar label for the primary identity.
+@property(nonatomic, strong) NSString* primaryIdentityAvatarAccessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_TANGIBLE_SYNC_TANGIBLE_SYNC_CONSUMER_H_

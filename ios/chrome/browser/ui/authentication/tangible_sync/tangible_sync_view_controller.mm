@@ -28,6 +28,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
 @dynamic delegate;
 @synthesize primaryIdentityAvatarImage = _primaryIdentityAvatarImage;
+@synthesize primaryIdentityAvatarAccessibilityLabel =
+    _primaryIdentityAvatarAccessibilityLabel;
 
 #pragma mark - UIViewController
 
@@ -38,6 +40,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.avatarImage = self.primaryIdentityAvatarImage;
+  self.avatarAccessibilityLabel = self.primaryIdentityAvatarAccessibilityLabel;
   int titleStringID = 0;
   int subtitleStringID = 0;
   switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
@@ -121,6 +124,16 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   if (_primaryIdentityAvatarImage != primaryIdentityAvatarImage) {
     _primaryIdentityAvatarImage = primaryIdentityAvatarImage;
     self.avatarImage = primaryIdentityAvatarImage;
+  }
+}
+
+- (void)setprimaryIdentityAvatarAccessibilityLabel:
+    (NSString*)primaryIdentityAvatarAccessibilityLabel {
+  if (_primaryIdentityAvatarAccessibilityLabel !=
+      primaryIdentityAvatarAccessibilityLabel) {
+    _primaryIdentityAvatarAccessibilityLabel =
+        primaryIdentityAvatarAccessibilityLabel;
+    self.avatarAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
   }
 }
 

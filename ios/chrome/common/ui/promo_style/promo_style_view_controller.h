@@ -45,6 +45,10 @@
 // Sets the avatar image. Needs to `hasAvatarImage` to `YES` before.
 @property(nonatomic, strong) UIImage* avatarImage;
 
+// Sets the avatar accessibility label. Needs to `hasAvatarImage` to `YES`
+// before.
+@property(nonatomic, copy) NSString* avatarAccessibilityLabel;
+
 // The label of the headline below the image. Must be set before the view is
 // loaded. This is declared public so the accessibility can be enabled.
 @property(nonatomic, strong) UILabel* titleLabel;
