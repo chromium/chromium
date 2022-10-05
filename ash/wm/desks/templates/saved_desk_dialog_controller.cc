@@ -311,6 +311,14 @@ void SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog() {
 
 void SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog() {
   DCHECK(!unsupported_apps_callback_.is_null());
+
+  // Make sure the saved desk buttons are enabled since the user should be able
+  // to click them again after cancelling the unsupported apps dialog.
+  for (auto& overview_grid :
+       Shell::Get()->overview_controller()->overview_session()->grid_list()) {
+    overview_grid->EnableSaveDeskButtonContainer();
+  }
+
   std::move(unsupported_apps_callback_).Run(nullptr);
   unsupported_apps_template_.reset();
 }

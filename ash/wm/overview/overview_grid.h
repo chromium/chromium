@@ -361,6 +361,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // `save_desk_button_container_widget_`.
   void UpdateSaveDeskButtons();
 
+  // Enable the save desk button container.
+  void EnableSaveDeskButtonContainer();
+
   bool IsSaveDeskButtonContainerVisible() const;
   bool IsSaveDeskAsTemplateButtonVisible() const;
   bool IsSaveDeskForLaterButtonVisible() const;

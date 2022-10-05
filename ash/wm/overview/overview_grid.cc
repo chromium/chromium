@@ -776,6 +776,7 @@ void OverviewGrid::RemoveAllItemsForDesksTemplatesLaunch() {
   window_list_.clear();
   num_incognito_windows_ = 0;
   num_unsupported_windows_ = 0;
+  EnableSaveDeskButtonContainer();
 }
 
 void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
@@ -1994,6 +1995,14 @@ void OverviewGrid::UpdateSaveDeskButtons() {
                             ->GetPreferredSize()));
 }
 
+void OverviewGrid::EnableSaveDeskButtonContainer() {
+  if (!save_desk_button_container_widget_ ||
+      overview_session_->is_shutting_down()) {
+    return;
+  }
+  save_desk_button_container_widget_->GetContentsView()->SetEnabled(true);
+}
+
 bool OverviewGrid::IsSaveDeskButtonContainerVisible() const {
   // The widget may be visible but in the process of fading away. We treat that
   // as not visible.
@@ -2490,15 +2499,27 @@ void OverviewGrid::UpdateCannotSnapWarningVisibility(bool animate) {
 }
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
+  auto* container = save_desk_button_container_widget_->GetContentsView();
+  // Disable the save desk button container after the first click to prevent
+  // unwanted clicks/user interaction.
+  if (!container->GetEnabled())
+    return;
+  container->SetEnabled(false);
+
   overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
-      DeskTemplateType::kTemplate,
-      save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
+      DeskTemplateType::kTemplate, root_window());
 }
 
 void OverviewGrid::OnSaveDeskForLaterButtonPressed() {
+  auto* container = save_desk_button_container_widget_->GetContentsView();
+  // Disable the save desk button container after the first click to prevent
+  // unwanted clicks/user interaction.
+  if (!container->GetEnabled())
+    return;
+  container->SetEnabled(false);
+
   overview_session_->saved_desk_presenter()->MaybeSaveActiveDeskAsTemplate(
-      DeskTemplateType::kSaveAndRecall,
-      save_desk_button_container_widget_->GetNativeWindow()->GetRootWindow());
+      DeskTemplateType::kSaveAndRecall, root_window());
 }
 
 void OverviewGrid::OnDesksTemplatesGridFadedOut() {

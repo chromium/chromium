@@ -336,6 +336,16 @@ class SavedDeskTest : public OverviewTestBase {
     event_generator->ClickLeftButton();
   }
 
+  void SpamClickOnView(const views::View* view) {
+    DCHECK(view);
+
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+    DCHECK(view->GetVisible());
+    for (size_t i = 0; i < 5; i++)
+      event_generator->ClickLeftButton();
+  }
+
   void LongPressAt(const gfx::Point& point) {
     ui::TouchEvent long_press(ui::ET_GESTURE_LONG_PRESS, point,
                               base::TimeTicks::Now(),
@@ -4399,6 +4409,58 @@ TEST_F(SavedDeskTest, NoEmptyDeskTemplate) {
 
   // Ensure there are no templates.
   EXPECT_EQ(0u, desk_model()->GetEntryCount());
+}
+
+// Tests that you can't save the same desk more than once at a time by spamming
+// the save desk as template or save desk for later buttons.
+TEST_F(SavedDeskTest, SpamClickSaveDeskButtons) {
+  // Add a window.
+  auto test_window = CreateAppWindow();
+
+  // Enter overview.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Click the save desk as template button 5 times.
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  SavedDeskSaveDeskButton* save_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(root);
+  ASSERT_TRUE(save_template_button);
+  SpamClickOnView(save_template_button);
+  WaitForDesksTemplatesUI();
+  WaitForLibraryUI();
+
+  // Ensure there is only 1 template, from the first of the 5 clicks.
+  OverviewGrid* overview_grid = GetOverviewGridList().front().get();
+  const std::vector<SavedDeskItemView*> grid_items =
+      GetItemViewsFromDeskLibrary(overview_grid);
+  EXPECT_EQ(1u, GetItemViewsFromDeskLibrary(overview_grid).size());
+
+  // Leave and re-enter overview.
+  ToggleOverview();
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+
+  // Release the window because saving the desk for later will close it.
+  test_window.release();
+
+  // Click the save desk for later button 5 times.
+  SavedDeskSaveDeskButton* save_desk_button =
+      GetSaveDeskForLaterButtonForRoot(root);
+  ASSERT_TRUE(save_desk_button);
+  SpamClickOnView(save_desk_button);
+  // Wait an extra time like in `OpenOverviewAndSaveDeskForLater` to wait for
+  // the WindowCloseObserver watcher that handles blocking dialogs.
+  WaitForDesksTemplatesUI();
+  WaitForDesksTemplatesUI();
+
+  // Ensure there are only 2 templates: one from the first of the 5 clicks of
+  // the save template button and one from the first of the 5 clicks of the save
+  // desk for later button.
+  OverviewGrid* overview_grid2 = GetOverviewGridList().front().get();
+  const std::vector<SavedDeskItemView*> grid_items2 =
+      GetItemViewsFromDeskLibrary(overview_grid2);
+  EXPECT_EQ(2u, GetItemViewsFromDeskLibrary(overview_grid2).size());
 }
 
 }  // namespace ash
