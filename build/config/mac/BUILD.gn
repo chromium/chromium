@@ -97,11 +97,9 @@ config("mac_dynamic_flags") {
     # the host toolchain (see https://crbug.com/1315433). Only used
     # for when building for iOS.
     if (target_os == "ios" && current_toolchain == host_toolchain) {
-      ldflags += [
-        "-Wl,-rpath,@loader_path/" +
-            rebase_path(get_label_info(":mac_dynamic_flags", "root_out_dir"),
-                        root_build_dir),
-      ]
+      ldflags += [ "-Wl,-rpath,@loader_path/" + rebase_path(
+                       get_label_info(":mac_dynamic_flags", "root_out_dir"),
+                       root_build_dir) ]
     }
   }
 }
