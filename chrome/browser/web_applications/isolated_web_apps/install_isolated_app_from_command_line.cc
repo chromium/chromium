@@ -22,6 +22,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/webapps/browser/installable/installable_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -39,7 +41,18 @@ void ReportInstallationResult(
   }
 }
 
+std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(
+          /*context=*/&profile));
+
+  webapps::InstallableManager::CreateForWebContents(web_contents.get());
+
+  return web_contents;
+}
+
 void ScheduleInstallIsolatedApp(WebAppProvider& provider,
+                                Profile& profile,
                                 GURL url,
                                 base::OnceClosure callback) {
   DCHECK(url.is_valid());
@@ -47,12 +60,13 @@ void ScheduleInstallIsolatedApp(WebAppProvider& provider,
 
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
-          url, std::make_unique<WebAppUrlLoader>(),
+          url, CreateWebContents(profile), std::make_unique<WebAppUrlLoader>(),
           provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
 }
 
 void InstallApplicationFromUrl(WebAppProvider& provider,
+                               Profile& profile,
                                GURL url,
                                base::OnceClosure callback) {
   DCHECK(url.is_valid());
@@ -60,7 +74,7 @@ void InstallApplicationFromUrl(WebAppProvider& provider,
 
   provider.on_registry_ready().Post(
       FROM_HERE, base::BindOnce(ScheduleInstallIsolatedApp, std::ref(provider),
-                                url, std::move(callback)));
+                                std::ref(profile), url, std::move(callback)));
 }
 
 base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
@@ -75,7 +89,8 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
     return base::DoNothing();
   }
 
-  return base::BindRepeating(InstallApplicationFromUrl, std::ref(*provider));
+  return base::BindRepeating(InstallApplicationFromUrl, std::ref(*provider),
+                             std::ref(profile));
 }
 
 base::OnceClosure& GetNextDoneCallbackInstance() {

@@ -39,6 +39,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,14 +153,24 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
+  WebAppProvider& web_app_provider() {
+    auto* web_app_provider = WebAppProvider::GetForTest(profile());
+    DCHECK(web_app_provider != nullptr);
+    return *web_app_provider;
+  }
+
+  WebAppCommandManager& command_manager() {
+    return web_app_provider().command_manager();
+  }
+
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command) {
-    WebAppProvider::GetForTest(profile())->command_manager().ScheduleCommand(
-        std::move(command));
+    command_manager().ScheduleCommand(std::move(command));
   }
 
   struct Parameters {
     std::string url;
     std::unique_ptr<WebAppUrlLoader> url_loader;
+    std::unique_ptr<content::WebContents> web_contents;
   };
 
   base::expected<InstallIsolatedAppCommandSuccess,
@@ -170,9 +181,17 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
                                           InstallIsolatedAppCommandError>>
         test_future;
-    auto command =
-        CreateCommand(parameters.url, std::move(parameters.url_loader),
-                      test_future.GetCallback());
+
+    std::unique_ptr<content::WebContents> web_contents =
+        std::move(parameters.web_contents);
+    if (web_contents == nullptr) {
+      web_contents = content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+    }
+
+    auto command = CreateCommand(parameters.url, std::move(web_contents),
+                                 std::move(parameters.url_loader),
+                                 test_future.GetCallback());
     command->SetDataRetrieverForTesting(
         data_retriever != nullptr ? std::move(data_retriever)
                                   : CreateDefaultDataRetriever(parameters.url));
@@ -182,6 +201,7 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
 
   std::unique_ptr<InstallIsolatedAppCommand> CreateCommand(
       base::StringPiece url,
+      std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                              InstallIsolatedAppCommandError>)>
@@ -190,8 +210,8 @@ class InstallIsolatedAppCommandTest : public ::testing::Test {
     DCHECK(application_url.is_valid());
 
     return std::make_unique<InstallIsolatedAppCommand>(
-        application_url, std::move(url_loader), *install_finalizer_,
-        std::move(callback));
+        application_url, std::move(web_contents), std::move(url_loader),
+        *install_finalizer_, std::move(callback));
   }
 
   base::expected<InstallIsolatedAppCommandSuccess,
@@ -497,11 +517,14 @@ TEST_F(InstallIsolatedAppCommandTest, CommandLocksOnAppIdAndWebContents) {
   base::test::TestFuture<base::expected<InstallIsolatedAppCommandSuccess,
                                         InstallIsolatedAppCommandError>>
       test_future;
-  auto command = CreateCommand("http://test-app-id.com/",
-                               std::make_unique<TestWebAppUrlLoader>(),
-                               test_future.GetCallback());
+
+  auto command = CreateCommand(
+      "http://test-app-id.com/",
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile())),
+      std::make_unique<TestWebAppUrlLoader>(), test_future.GetCallback());
   EXPECT_THAT(command->lock(),
-              AllOf(Property(&Lock::type, Eq(Lock::Type::kAppAndWebContents)),
+              AllOf(Property(&Lock::type, Eq(Lock::Type::kApp)),
                     Property(&Lock::app_ids,
                              UnorderedElementsAre(GenerateAppIdFromUnhashed(
                                  "http://test-app-id.com/")))));

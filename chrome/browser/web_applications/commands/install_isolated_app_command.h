@@ -24,9 +24,13 @@
 
 class GURL;
 
+namespace content {
+class WebContents;
+}
+
 namespace web_app {
 
-class SharedWebContentsWithAppLock;
+class AppLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
 class WebAppUrlLoader;
@@ -44,6 +48,12 @@ struct InstallIsolatedAppCommandError {
   }
 };
 
+// Isolated Web App requires:
+//  * no cross-origin navigation
+//  * content should never be loaded in normal tab
+//
+// |content::IsolatedAppThrottle| enforces that. The requirements prevent
+// re-using web contents.
 class InstallIsolatedAppCommand : public WebAppCommand {
  public:
   // |application_url| is the url for the app to be installed. The url must be
@@ -54,6 +64,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   // The `id` in the application's manifest must equal "/".
   explicit InstallIsolatedAppCommand(
       const GURL& application_url,
+      std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       WebAppInstallFinalizer& install_finalizer,
       base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
@@ -109,9 +120,11 @@ class InstallIsolatedAppCommand : public WebAppCommand {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+  std::unique_ptr<AppLock> lock_;
 
   GURL url_;
+
+  std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   WebAppInstallFinalizer& install_finalizer_;
