@@ -362,8 +362,10 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
         DCHECK_EQ(rv, OK);
         rv = DoConnect();
         break;
+      case CONNECT_STATE_CONNECT_CONFIGURE:
+        rv = DoConnectConfigure(rv);
+        break;
       case CONNECT_STATE_CONNECT_COMPLETE:
-        DCHECK_EQ(rv, OK);
         rv = DoConnectComplete();
         break;
       case CONNECT_STATE_SEND_REQUEST:
@@ -464,7 +466,7 @@ int DedicatedWebTransportHttp3Client::DoResolveHostComplete(int rv) {
 }
 
 int DedicatedWebTransportHttp3Client::DoConnect() {
-  int rv = OK;
+  next_connect_state_ = CONNECT_STATE_CONNECT_CONFIGURE;
 
   // TODO(vasilvv): consider unifying parts of this code with QuicSocketFactory
   // (which currently has a lot of code specific to QuicChromiumClientSession).
@@ -478,27 +480,9 @@ int DedicatedWebTransportHttp3Client::DoConnect() {
 
   IPEndPoint server_address =
       *resolve_host_request_->GetAddressResults()->begin();
-  rv = socket_->Connect(server_address);
-  if (rv != OK)
-    return rv;
-
-  rv = socket_->SetReceiveBufferSize(kQuicSocketReceiveBufferSize);
-  if (rv != OK)
-    return rv;
-
-  rv = socket_->SetDoNotFragment();
-  if (rv == ERR_NOT_IMPLEMENTED)
-    rv = OK;
-  if (rv != OK)
-    return rv;
-
-  rv = socket_->SetSendBufferSize(quic::kMaxOutgoingPacketSize * 20);
-  if (rv != OK)
-    return rv;
-
-  CreateConnection();
-  next_connect_state_ = CONNECT_STATE_CONNECT_COMPLETE;
-  return ERR_IO_PENDING;
+  return socket_->ConnectAsync(
+      server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
+                                     base::Unretained(this)));
 }
 
 void DedicatedWebTransportHttp3Client::CreateConnection() {
@@ -560,6 +544,34 @@ int DedicatedWebTransportHttp3Client::DoConnectComplete() {
   safe_to_report_error_details_ = true;
   next_connect_state_ = CONNECT_STATE_SEND_REQUEST;
   return OK;
+}
+
+int DedicatedWebTransportHttp3Client::DoConnectConfigure(int rv) {
+  if (rv != OK) {
+    return rv;
+  }
+
+  rv = socket_->SetReceiveBufferSize(kQuicSocketReceiveBufferSize);
+  if (rv != OK) {
+    return rv;
+  }
+
+  rv = socket_->SetDoNotFragment();
+  if (rv == ERR_NOT_IMPLEMENTED) {
+    rv = OK;
+  }
+  if (rv != OK) {
+    return rv;
+  }
+
+  rv = socket_->SetSendBufferSize(quic::kMaxOutgoingPacketSize * 20);
+  if (rv != OK) {
+    return rv;
+  }
+
+  next_connect_state_ = CONNECT_STATE_CONNECT_COMPLETE;
+  CreateConnection();
+  return ERR_IO_PENDING;
 }
 
 void DedicatedWebTransportHttp3Client::OnSettingsReceived() {

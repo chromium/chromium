@@ -106,6 +106,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
     CONNECT_STATE_RESOLVE_HOST,
     CONNECT_STATE_RESOLVE_HOST_COMPLETE,
     CONNECT_STATE_CONNECT,
+    CONNECT_STATE_CONNECT_CONFIGURE,
     CONNECT_STATE_CONNECT_COMPLETE,
     CONNECT_STATE_SEND_REQUEST,
     CONNECT_STATE_CONFIRM_CONNECTION,
@@ -125,6 +126,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   int DoResolveHostComplete(int rv);
   // Establishes the QUIC connection.
   int DoConnect();
+  int DoConnectConfigure(int rv);
   int DoConnectComplete();
   void CreateConnection();
   // Sends the CONNECT request to establish a WebTransport session.
