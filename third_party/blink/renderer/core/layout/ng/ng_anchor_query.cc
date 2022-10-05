@@ -439,27 +439,36 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
     return;
 
   // If this is a fragment of the existing |LayoutObject|, unite the rect.
-  DCHECK(result.stored_value->value);
-  NGLogicalAnchorReference& existing = *result.stored_value->value;
-  const LayoutObject* existing_object = existing.fragment->GetLayoutObject();
-  DCHECK(existing_object);
+  Member<NGLogicalAnchorReference>* const existing_head_ptr =
+      &result.stored_value->value;
+  NGLogicalAnchorReference* const existing_head = *existing_head_ptr;
+  DCHECK(existing_head);
+  const NGLogicalAnchorReference* last_valid_existing = nullptr;
   const LayoutObject* new_object = reference->fragment->GetLayoutObject();
   DCHECK(new_object);
-  if (existing_object == new_object) {
-    existing.rect.Unite(reference->rect);
-    return;
+  for (NGLogicalAnchorReference* existing = existing_head; existing;
+       existing = existing->next) {
+    const LayoutObject* existing_object = existing->fragment->GetLayoutObject();
+    DCHECK(existing_object);
+    if (existing_object == new_object) {
+      existing->rect.Unite(reference->rect);
+      return;
+    }
+    if (!existing->is_invalid)
+      last_valid_existing = existing;
   }
 
   // Ignore the new value if both new and existing values are valid, and the
   // call order is in the tree order.
-  if (!maybe_out_of_order && !reference->is_invalid && !existing.is_invalid) {
-    DCHECK(existing_object->IsBeforeInPreOrder(*new_object));
+  if (!maybe_out_of_order && !reference->is_invalid && last_valid_existing) {
+    DCHECK(last_valid_existing->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+        *new_object));
     return;
   }
 
   // When out-of-flow objects are involved, callers can't guarantee the call
   // order. Insert into the list in the tree order.
-  reference->InsertInPreOrderInto(&result.stored_value->value);
+  reference->InsertInPreOrderInto(existing_head_ptr);
 }
 
 void NGPhysicalAnchorQuery::SetFromLogical(
