@@ -46,9 +46,6 @@ try_.defaults.caches.set([
     ),
 ])
 
-# TODO(crbug.com/1362440): remove this.
-try_.defaults.omit_python2.set(False)
-
 consoles.list_view(
     name = "tryserver.chromium.codesearch",
 )
