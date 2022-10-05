@@ -64,7 +64,10 @@ builder(
         },
         "target_builders": [
             target_builder(
-                name = "android-marshmallow-x86-rel",
+                name = "android-nougat-x86-rel",
+            ),
+            target_builder(
+                name = "android-12-x64-rel",
             ),
         ],
     },
