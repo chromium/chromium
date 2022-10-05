@@ -302,7 +302,7 @@ struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountPoint {
   // Type of mount.
   MountType mount_type = MountType::kInvalid;
   // Condition of mount.
-  MountError mount_error = MountError::kUnknown;
+  MountError mount_error = MountError::kNone;
   // Progress percent between 0 and 100 when mount_error is kInProgress.
   int progress_percent = 0;
   // Read-only file system?
@@ -318,7 +318,7 @@ struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountPoint {
   MountPoint(base::StringPiece source_path,
              base::StringPiece mount_path,
              MountType mount_type = MountType::kInvalid,
-             MountError mount_error = MountError::kUnknown,
+             MountError mount_error = MountError::kNone,
              int progress_percent = 0,
              bool read_only = false);
 };
@@ -326,8 +326,6 @@ struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountPoint {
 // Output operator for logging.
 COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
 std::ostream& operator<<(std::ostream& out, const MountPoint& entry);
-
-using MountEntry = MountPoint;
 
 // A class to make the actual DBus calls for cros-disks service.
 // This class only makes calls, result/error handling should be done

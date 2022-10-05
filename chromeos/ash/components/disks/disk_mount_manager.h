@@ -84,34 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
 
   using Disks = std::set<std::unique_ptr<Disk>, SortByDevicePath>;
 
-  // Information about a mount point.
-  struct MountPoint {
-    // Device's path.
-    std::string source_path;
-    // Mounted path.
-    std::string mount_path;
-    // Type of mount.
-    MountType mount_type;
-    // Condition of mount.
-    MountError mount_error;
-    // Progress percent between 0 and 100 when mount_error is kInProgress.
-    int progress_percent;
-    // Read-only file system?
-    bool read_only;
-
-    MountPoint(const MountPoint&);
-    MountPoint& operator=(const MountPoint&);
-
-    MountPoint(MountPoint&&);
-    MountPoint& operator=(MountPoint&&);
-
-    MountPoint(base::StringPiece source_path,
-               base::StringPiece mount_path,
-               MountType mount_type,
-               MountError mount_error = MountError::kNone,
-               int progress_percent = 0,
-               bool read_only = false);
-  };
+  using MountPoint = ::ash::MountPoint;
 
   // Comparator sorting MountPoint objects by mount_path.
   struct SortByMountPath {

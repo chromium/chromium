@@ -457,7 +457,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // CrosDisksClient::Observer override.
-  void OnMountCompleted(const MountEntry& entry) override {
+  void OnMountCompleted(const MountPoint& entry) override {
     if (const auto it = deferred_mount_events_.find(entry.source_path);
         it != deferred_mount_events_.end()) {
       it->second.push_back(entry);
@@ -551,7 +551,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // CrosDisksClient::Observer override.
-  void OnMountProgress(const MountEntry& entry) override {
+  void OnMountProgress(const MountPoint& entry) override {
     DCHECK_EQ(entry.mount_error, MountError::kInProgress);
 
     const auto [it, ok] = mount_points_.insert(
@@ -863,9 +863,9 @@ class DiskMountManagerImpl : public DiskMountManager,
     auto mount_events_iter = deferred_mount_events_.find(device_path);
     if (mount_events_iter == deferred_mount_events_.end())
       return;
-    std::vector<MountEntry> entries = std::move(mount_events_iter->second);
+    std::vector<MountPoint> entries = std::move(mount_events_iter->second);
     deferred_mount_events_.erase(mount_events_iter);
-    for (const MountEntry& entry : entries)
+    for (const MountPoint& entry : entries)
       OnMountCompleted(entry);
   }
 
@@ -955,8 +955,8 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Part of EnsureMountInfoRefreshed(). Called after mount entries are listed.
   void RefreshAfterEnumerateMountEntries(
-      const std::vector<MountEntry>& entries) {
-    for (const MountEntry& entry : entries)
+      const std::vector<MountPoint>& entries) {
+    for (const MountPoint& entry : entries)
       OnMountCompleted(entry);
     RefreshCompleted(true);
   }
@@ -1102,7 +1102,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // GetDeviceProperties(), for deferring mount events, and removed once it has
   // completed. This prevents a race resulting in mount events being fired with
   // the corresponding Disk entry unexpectedly missing.
-  std::map<std::string, std::vector<MountEntry>> deferred_mount_events_;
+  std::map<std::string, std::vector<MountPoint>> deferred_mount_events_;
 
   bool already_refreshed_ = false;
   std::vector<EnsureMountInfoRefreshedCallback> refresh_callbacks_;
@@ -1113,26 +1113,6 @@ class DiskMountManagerImpl : public DiskMountManager,
 };
 
 }  // namespace
-
-DiskMountManager::MountPoint::MountPoint(const MountPoint&) = default;
-DiskMountManager::MountPoint::MountPoint(MountPoint&&) = default;
-DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
-    const MountPoint&) = default;
-DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
-    MountPoint&&) = default;
-
-DiskMountManager::MountPoint::MountPoint(const base::StringPiece source_path,
-                                         const base::StringPiece mount_path,
-                                         const MountType mount_type,
-                                         const MountError mount_error,
-                                         const int progress_percent,
-                                         const bool read_only)
-    : source_path(source_path),
-      mount_path(mount_path),
-      mount_type(mount_type),
-      mount_error(mount_error),
-      progress_percent(progress_percent),
-      read_only(read_only) {}
 
 DiskMountManager::Observer::~Observer() {
   DCHECK(!IsInObserverList());
