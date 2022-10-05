@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -92,6 +93,11 @@ MATCHER_P(PasswordChangesAre, expectations, "") {
   }
 
   return changes.value() == expectations;
+}
+
+std::string GetFallbackHistogramNameForMethodName(std::string method_name) {
+  return base::StrCat(
+      {"PasswordManager.PasswordStoreProxyBackend.", method_name, ".Fallback"});
 }
 
 }  // namespace
@@ -778,73 +784,6 @@ TEST_F(PasswordStoreProxyBackendTest,
   proxy_backend().AddLoginAsync(CreateTestForm(), base::DoNothing());
 }
 
-TEST_F(PasswordStoreProxyBackendTest,
-       RetriesAddLoginOnBuiltInBackendWhenOnAndroidFails) {
-  base::test::ScopedFeatureList feature_list;
-  // Enable UPM for syncing users only.
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(kUnrecoverableError);
-      })));
-  const PasswordStoreChangeList changes = {
-      PasswordStoreChange(PasswordStoreChange::Type::ADD, CreateTestForm())};
-  EXPECT_CALL(built_in_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(Invoke(
-          [&changes](auto reply) -> void { std::move(reply).Run(changes); })));
-  // Check that caller doesn't receive an error from android backend.
-  EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
-  proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
-}
-
-TEST_F(PasswordStoreProxyBackendTest, DoesntRetryAddLoginOnRecoverableError) {
-  base::test::ScopedFeatureList feature_list;
-  // Enable UPM for syncing users only.
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), AddLoginAsync)
-      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(kRecoverableError);
-      })));
-  EXPECT_CALL(built_in_backend(), AddLoginAsync).Times(0);
-  // Check that caller doesn't receive an error from android backend.
-  EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(kRecoverableError)));
-  proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
-}
-
-TEST_F(PasswordStoreProxyBackendTest,
-       RetriesUpdateLoginOnBuiltInBackendWhenOnAndroidFails) {
-  base::test::ScopedFeatureList feature_list;
-  // Enable UPM for syncing users only.
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kUnifiedPasswordManagerAndroid, {{"stage", "2"}});
-  EnablePasswordSync();
-
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-
-  EXPECT_CALL(android_backend(), UpdateLoginAsync)
-      .WillOnce(WithArg<1>(Invoke([](auto reply) -> void {
-        std::move(reply).Run(kUnrecoverableError);
-      })));
-  const PasswordStoreChangeList changes = {
-      PasswordStoreChange(PasswordStoreChange::Type::UPDATE, CreateTestForm())};
-  EXPECT_CALL(built_in_backend(), UpdateLoginAsync)
-      .WillOnce(WithArg<1>(Invoke(
-          [&changes](auto reply) -> void { std::move(reply).Run(changes); })));
-  // Check that caller doesn't receive an error from android backend.
-  EXPECT_CALL(mock_reply, Run(PasswordChangesAre(changes)));
-  proxy_backend().UpdateLoginAsync(CreateTestForm(), mock_reply.Get());
-}
-
 struct FallbackParam {
   PasswordStoreBackendError error;
   bool should_fallback;
@@ -875,6 +814,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   base::test::ScopedFeatureList feature_list;
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list, password_manager::features::kFallbackOnModifyingOperations);
+
+  base::HistogramTester histogram_tester;
+
   EnablePasswordSync();
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
@@ -897,6 +839,11 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
     EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
   }
   proxy_backend().AddLoginAsync(CreateTestForm(), mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("AddLoginAsync"), true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -906,6 +853,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   base::test::ScopedFeatureList feature_list;
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list, password_manager::features::kFallbackOnModifyingOperations);
+
+  base::HistogramTester histogram_tester;
+
   EnablePasswordSync();
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
@@ -928,6 +878,11 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
     EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
   }
   proxy_backend().UpdateLoginAsync(CreateTestForm(), mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("UpdateLoginAsync"), true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -938,6 +893,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list,
       password_manager::features::kFallbackOnNonUserAffectingReadOperations);
+
+  base::HistogramTester histogram_tester;
+
   EnablePasswordSync();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -962,6 +920,11 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
                 Run(VariantWith<PasswordStoreBackendError>(p.error)));
   }
   proxy_backend().GetAllLoginsAsync(mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("GetAllLoginsAsync"), true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -972,6 +935,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list,
       password_manager::features::kFallbackOnNonUserAffectingReadOperations);
+
+  base::HistogramTester histogram_tester;
+
   EnablePasswordSync();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -996,6 +962,12 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
                 Run(VariantWith<PasswordStoreBackendError>(p.error)));
   }
   proxy_backend().GetAutofillableLoginsAsync(mock_reply.Get());
+  {
+    if (ShouldFallbackOnParam(p))
+      histogram_tester.ExpectUniqueSample(
+          GetFallbackHistogramNameForMethodName("GetAutofillableLoginsAsync"),
+          true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -1006,6 +978,9 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list,
       password_manager::features::kFallbackOnUserAffectingReadOperations);
+
+  base::HistogramTester histogram_tester;
+
   EnablePasswordSync();
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
@@ -1030,8 +1005,14 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
                 Run(VariantWith<PasswordStoreBackendError>(p.error)));
   }
   proxy_backend().FillMatchingLoginsAsync(mock_reply.Get(),
+
                                           /*include_psl=*/false,
                                           std::vector<PasswordFormDigest>());
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("FillMatchingLoginsAsync"), true,
+        1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -1041,6 +1022,8 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   base::test::ScopedFeatureList feature_list;
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list, password_manager::features::kFallbackOnRemoveOperations);
+
+  base::HistogramTester histogram_tester;
 
   EnablePasswordSync();
 
@@ -1069,6 +1052,11 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
     EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
   }
   proxy_backend().RemoveLoginAsync(form, mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("RemoveLoginAsync"), true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -1078,6 +1066,8 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   base::test::ScopedFeatureList feature_list;
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list, password_manager::features::kFallbackOnRemoveOperations);
+
+  base::HistogramTester histogram_tester;
 
   EnablePasswordSync();
 
@@ -1111,6 +1101,12 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   proxy_backend().RemoveLoginsByURLAndTimeAsync(
       base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::DoNothing(),
       mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(
+        GetFallbackHistogramNameForMethodName("RemoveLoginsByURLAndTimeAsync"),
+        true, 1);
+  }
 }
 
 TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
@@ -1120,6 +1116,8 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   base::test::ScopedFeatureList feature_list;
   InitFeatureListWithFallbackEnableFeatureParam(
       feature_list, password_manager::features::kFallbackOnRemoveOperations);
+
+  base::HistogramTester histogram_tester;
 
   EnablePasswordSync();
 
@@ -1152,6 +1150,12 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
   }
   proxy_backend().RemoveLoginsCreatedBetweenAsync(kStart, kEnd,
                                                   mock_reply.Get());
+
+  if (ShouldFallbackOnParam(p)) {
+    histogram_tester.ExpectUniqueSample(GetFallbackHistogramNameForMethodName(
+                                            "RemoveLoginsCreatedBetweenAsync"),
+                                        true, 1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
