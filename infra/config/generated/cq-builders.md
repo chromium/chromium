@@ -23,13 +23,11 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-pie-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-rel""))
 
+* [android-x64-cast](https://ci.chromium.org/p/chromium/builders/try/android-x64-cast) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-x64-cast"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-x64-cast""))
+
 * [android_compile_dbg](https://ci.chromium.org/p/chromium/builders/try/android_compile_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_compile_dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_compile_dbg""))
 
 * [android_cronet](https://ci.chromium.org/p/chromium/builders/try/android_cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_cronet"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android_cronet""))
-
-* [cast_shell_android](https://ci.chromium.org/p/chromium/builders/try/cast_shell_android) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""cast_shell_android"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""cast_shell_android""))
-
-* [cast_shell_linux](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""cast_shell_linux"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""cast_shell_linux""))
 
 * [chromeos-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-amd64-generic-rel""))
 
@@ -62,6 +60,8 @@ These builders must pass before a CL may land that affects files outside of
 * [linux-rel](https://ci.chromium.org/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel""))
 
 * [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-wayland-rel""))
+
+* [linux-x64-castos](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-x64-castos""))
 
 * [linux_chromium_asan_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_rel_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_asan_rel_ng""))
 
@@ -189,16 +189,6 @@ builder.
   Path regular expressions:
   * [`//infra/config/generated/builders/.*`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/.*)
 
-* [cast_shell_linux_arm64](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux_arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""cast_shell_linux_arm64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""cast_shell_linux_arm64""))
-
-  Path regular expressions:
-  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
-
-* [cast_shell_linux_dbg](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux_dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""cast_shell_linux_dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""cast_shell_linux_dbg""))
-
-  Path regular expressions:
-  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
-
 * [chromeos-amd64-generic-dbg](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromeos-amd64-generic-dbg""))
 
   Path regular expressions:
@@ -319,6 +309,11 @@ builder.
   Path regular expressions:
   * [`//third_party/crashpad/crashpad/.+`](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/)
 
+* [linux-arm64-castos](https://ci.chromium.org/p/chromium/builders/try/linux-arm64-castos) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-arm64-castos"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-arm64-castos""))
+
+  Path regular expressions:
+  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
+
 * [linux-blink-rel](https://ci.chromium.org/p/chromium/builders/try/linux-blink-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-blink-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-blink-rel""))
 
   Path regular expressions:
@@ -354,6 +349,11 @@ builder.
   * [`//components/tracing/.+`](https://cs.chromium.org/chromium/src/components/tracing/)
   * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
+
+* [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-x64-castos-dbg""))
+
+  Path regular expressions:
+  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_dbg_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_dbg_ng""))
 

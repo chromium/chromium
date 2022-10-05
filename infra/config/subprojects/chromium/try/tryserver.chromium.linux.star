@@ -49,7 +49,6 @@ try_.builder(
     ],
     builderless = not settings.is_main,
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -59,11 +58,6 @@ try_.builder(
         "ci/Cast Linux Debug",
     ],
     main_list_view = "try",
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
-        ],
-    ),
 )
 
 try_.builder(
@@ -73,11 +67,6 @@ try_.builder(
         "ci/Cast Linux ARM64",
     ],
     main_list_view = "try",
-    tryjob = try_.job(
-        location_regexp = [
-            ".+/[+]/chromecast/.+",
-        ],
-    ),
     os = os.LINUX_BIONIC,
 )
 
@@ -133,6 +122,11 @@ try_.builder(
         "ci/Cast Linux ARM64",
     ],
     main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chromecast/.+",
+        ],
+    ),
     os = os.LINUX_BIONIC,
 )
 
@@ -357,6 +351,7 @@ try_.builder(
     ],
     builderless = not settings.is_main,
     main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -373,6 +368,11 @@ try_.builder(
         "ci/Cast Linux Debug",
     ],
     main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chromecast/.+",
+        ],
+    ),
 )
 
 try_.builder(
