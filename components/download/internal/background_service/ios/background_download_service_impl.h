@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -123,6 +124,7 @@ class BackgroundDownloadServiceImpl
   // A directory to hold download service files. The files in here will be
   // pruned frequently.
   const base::FilePath download_dir_;
+  std::set<std::string> cancelled_downloads_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BackgroundDownloadServiceImpl> weak_ptr_factory_{this};
