@@ -149,6 +149,24 @@ constexpr CGFloat kIconLabelWidth = 30;
   [line addSubview:bulletPointView];
   [line addSubview:instructionLabel];
 
+  // Add constraints for bulletPointView and instructionLabel vertical margins
+  // to make sure that they are as small as possible.
+  NSLayoutConstraint* minimunBulletPointTopMargin =
+      [bulletPointView.topAnchor constraintEqualToAnchor:line.topAnchor
+                                                constant:kVerticalMargin];
+  minimunBulletPointTopMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimumBulletPointBottomMargin =
+      [bulletPointView.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
+                                                   constant:-kVerticalMargin];
+  minimumBulletPointBottomMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimunLabelTopMargin =
+      [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
+                                                 constant:kVerticalMargin];
+  minimunLabelTopMargin.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* minimumLabelBottomMargin =
+      [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
+                                                    constant:-kVerticalMargin];
+  minimumLabelBottomMargin.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
     [bulletPointView.leadingAnchor constraintEqualToAnchor:line.leadingAnchor
                                                   constant:kLeadingMargin],
@@ -157,10 +175,20 @@ constexpr CGFloat kIconLabelWidth = 30;
         constraintEqualToAnchor:bulletPointView.trailingAnchor
                        constant:kSpacing],
     [instructionLabel.centerYAnchor constraintEqualToAnchor:line.centerYAnchor],
-    [instructionLabel.bottomAnchor constraintEqualToAnchor:line.bottomAnchor
-                                                  constant:-kVerticalMargin],
-    [instructionLabel.topAnchor constraintEqualToAnchor:line.topAnchor
-                                               constant:kVerticalMargin],
+    minimunBulletPointTopMargin, minimumBulletPointBottomMargin,
+    minimunLabelTopMargin, minimumLabelBottomMargin,
+    [bulletPointView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:line.bottomAnchor
+                                 constant:-kVerticalMargin],
+    [bulletPointView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:line.topAnchor
+                                    constant:kVerticalMargin],
+    [instructionLabel.bottomAnchor
+        constraintLessThanOrEqualToAnchor:line.bottomAnchor
+                                 constant:-kVerticalMargin],
+    [instructionLabel.topAnchor
+        constraintGreaterThanOrEqualToAnchor:line.topAnchor
+                                    constant:kVerticalMargin],
     [instructionLabel.trailingAnchor constraintEqualToAnchor:line.trailingAnchor
                                                     constant:-kTrailingMargin]
   ]];
@@ -204,7 +232,7 @@ constexpr CGFloat kIconLabelWidth = 30;
 
     [labelContainer.widthAnchor constraintEqualToConstant:kIconLabelWidth],
     [labelContainer.heightAnchor
-        constraintEqualToAnchor:labelContainer.widthAnchor],
+        constraintEqualToAnchor:stepNumberLabel.heightAnchor],
   ]];
 
   return labelContainer;
