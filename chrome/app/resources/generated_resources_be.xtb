@@ -5641,7 +5641,6 @@
 <translation id="6345878117466430440">Пазначыць як прачытанае</translation>
 <translation id="6347010704471250799">Паказваць апавяшчэнне</translation>
 <translation id="6349101878882523185">Усталяваць праграму "<ph name="APP_NAME" />"</translation>
-<translation id="6351383110065274390">Прыемнай гульні на Chromebook!</translation>
 <translation id="6354918092619878358">SECG эліптычны secp256r1 (іншая назва – ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Гэта эксперыментальны браўзер (яго альфа-версія)! Некаторыя функцыі могуць адсутнічаць або падтрымлівацца не поўнасцю. Паведамляйце пра праблемы праз меню "Даведка &gt; Паведаміць аб праблеме...".</translation>
 <translation id="635609604405270300">Не выключайце прыладу.</translation>
@@ -6002,7 +6001,6 @@
 <translation id="6691541770654083180">Зямля</translation>
 <translation id="6691936601825168937">&amp;Наперад</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 старонка}one{{COUNT} старонка}few{{COUNT} старонкі}many{{COUNT} старонак}other{{COUNT} старонкі}}</translation>
-<translation id="6694430008315398925">Наладжванне Steam</translation>
 <translation id="6697172646384837537">Выберыце, куды трэба імпартаваць паролі</translation>
 <translation id="6697492270171225480">Паказваць прапановы падобных старонак, калі старонку не ўдаецца знайсці</translation>
 <translation id="6697690052557311665">Каб абагуліць папку, націсніце на ёй правай кнопкай мышы ў праграме "Файлы" і выберыце "Абагуліць з Linux".</translation>
@@ -8406,7 +8404,6 @@
 <translation id="8983018820925880511">Новым профілем будзе кіраваць <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> можа змяняць файл <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Ваша прылада будзе бачнай усім яшчэ <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Вітаем у Steam для Chromebook</translation>
 <translation id="8985264973231822211">Апошнія дзеянні: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> сут таму</translation>
 <translation id="8985661493893822002">Каб увайсці на прыладу <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="8986362086234534611">Забыць</translation>

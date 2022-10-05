@@ -5632,7 +5632,6 @@
 <translation id="6345878117466430440">Оқылды деп белгілеу</translation>
 <translation id="6347010704471250799">Хабарландыруды көрсету</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
-<translation id="6351383110065274390">Chromebook құрылғысында ойындар ойнаңыз</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Бұл — эксперименттік (альфа нұсқасы) браузер. Оның кейбір функциялары жоқ немесе шектелген болуы мүмкін. Ақауларды "Анықтама &gt; Ақау туралы хабарлау" бөліміне өтіп хабарлай аласыз.</translation>
 <translation id="635609604405270300">Құрылғыны қосулы күйде ұстаңыз</translation>
@@ -5987,7 +5986,6 @@
 <translation id="6691541770654083180">Жер</translation>
 <translation id="6691936601825168937">&amp;Бұру</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 бет}other{{COUNT} бет}}</translation>
-<translation id="6694430008315398925">Steam қолданбасын реттеу</translation>
 <translation id="6697172646384837537">Құпия сөздер импортталатын орынды таңдаңыз.</translation>
 <translation id="6697492270171225480">Бет табылмағанда, ұқсас нұсқаларды ұсыну</translation>
 <translation id="6697690052557311665">Бөлісу үшін Files қолданбасындағы қалтаны тінтуірдің оң жақ түймесімен басып, "Linux-пен бөлісу" пәрменін таңдаңыз.</translation>
@@ -8388,7 +8386,6 @@
 <translation id="8983018820925880511">Бұл жаңа профильді <ph name="DOMAIN" /> басқарады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> файлын өңдей алады.</translation>
 <translation id="8984694057134206124">Құрылғыңыз барлығына <ph name="MINUTES" /> минут бойы көрінеді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook құрылғысына арналған Steam қолданбасына қош келдіңіз!</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> күн бұрын қосылған.</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> құрылғысына кіру үшін интернетке қосылыңыз.</translation>
 <translation id="8986362086234534611">Ұмыту</translation>

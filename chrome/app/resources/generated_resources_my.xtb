@@ -1128,6 +1128,7 @@
 <translation id="2034346955588403444">အခြား WiFi ကွန်ရက်များကို ထည့်ပါ</translation>
 <translation id="2035211704574173780">အဖြူအမည်း</translation>
 <translation id="203574396658008164">လော့ခ်ချထားချိန် မျက်နှာပြင်တွင် မှတ်စုရေးခြင်းအက်ပ်ကို ဖွင့်ထားရန်</translation>
+<translation id="2036514476578229158">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="2037445849770872822">ဤ Google အကောင့်အတွက် ကြီးကြပ်မှု ထည့်သွင်းထားသည်။ နောက်ထပ် မိဘ အထိန်းအချုပ်များ ထည့်သွင်းရန် 'ရှေ့ဆက်ရန်' ကိုရွေးပါ။
 
 ထိုသို့မဟုတ်ပါက ဤစက်ပစ္စည်းတွင် ဤအကောင့်သို့ အပြောင်းအလဲများကို ပြမည်ဖြစ်၍ ယခုထွက်ပါ။
@@ -1248,6 +1249,7 @@
 <translation id="2135787500304447609">ပြန်လည် ရှေ့ဆက်မည်</translation>
 <translation id="2136372518715274136">စကားဝှက်အသစ် ထည့်ပါ</translation>
 <translation id="2136476978468204130">သင်ထည့်သွင်းထားသည့် လျှို့ဝှက်စကားစုသည် မမှန်ကန်ပါ</translation>
+<translation id="2137891579555018930">ခွင့်ပြုချက်ကို စောင့်နေသည်...</translation>
 <translation id="2138398485845393913">"<ph name="DEVICE_NAME" />" သို့ ချိတ်ဆက်နေဆဲဖြစ်သည်</translation>
 <translation id="2139919072249842737">စနစ်ထည့်သွင်းရန် ခလုတ်</translation>
 <translation id="2140788884185208305">ဘက်ထရီအခြေအနေ</translation>
@@ -4125,6 +4127,7 @@
 <translation id="4858913220355269194">ဖရစ်ဇ်</translation>
 <translation id="4862642413395066333">OCSP တုံ့ပြန်မှုများကို လက်မှတ်ထိုးနေ</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရသည်</translation>
+<translation id="486459320933704969">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် မိဘ (သို့) အုပ်ထိန်းသူက OK ဟု ပြောရန်လိုအပ်သည်</translation>
 <translation id="4864805589453749318">ကျောင်းအကောင့်ထည့်ရန် ခွင့်ပြုချက်ပေးသည့် မိဘကို ရွေးပါ။</translation>
 <translation id="486635084936119914">ဒေါင်းလုဒ်လုပ်ပြီးနောက် အချို့ဖိုင်အမျိုးအစားများကို အလိုအလျောက်ဖွင့်ပါ</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> ၏ အသံကိုမှတ်မိရန် Google Assistant ကို သင်ပေးပါ</translation>
@@ -5651,7 +5654,6 @@
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="6347010704471250799">အကြောင်းကြားချက်ပြခြင်း</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ထည့်သွင်းရန်</translation>
-<translation id="6351383110065274390">သင့် Chromebook တွင် ဂိမ်းကစားနိုင်ပါပြီ</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">စမ်းသပ် (အယ်လ်ဖာအရည်အသွေးရှိ) ဘရောင်ဇာ။ အပြင်အဆင်အချို့ မပါဝင်ပါ (သို့) မပြည့်စုံပါ။ ပြဿနာများ တိုင်ကြားရန်- အကူအညီ &gt; "ပြဿနာတိုင်ကြားရန်..." သို့ သွားပါ။</translation>
 <translation id="635609604405270300">ကိရိယာကို ဆက်ဖွင့်ထားပါ</translation>
@@ -6004,7 +6006,6 @@
 <translation id="6691541770654083180">ကမ္ဘာမြေ</translation>
 <translation id="6691936601825168937">ရှေ့သို့</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 မျက်နှာ}other{{COUNT} မျက်နှာ}}</translation>
-<translation id="6694430008315398925">Steam စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="6697172646384837537">သင့်စကားဝှက်များ ထည့်သွင်းလိုသောနေရာကို ရွေးရန်</translation>
 <translation id="6697492270171225480">စာမျက်နှာ ရှာမတွေ့သည့်အခါ အလားတူစာမျက်နှာများအတွက် အကြံပြုချက်များ ပြရန်</translation>
 <translation id="6697690052557311665">မျှဝေရန် Files အက်ပ်ထဲရှိ ဖိုင်တွဲတွင် ညာခလုတ်နှိပ်ပြီး "Linux နှင့် မျှဝေရန်" ကို ရွေးပါ။</translation>
@@ -8405,7 +8406,6 @@
 <translation id="8983018820925880511">ဤပရိုဖိုင်အသစ်ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲမည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> က <ph name="FILENAME" /> ကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="8984694057134206124">သင့်ကို လူတိုင်းက <ph name="MINUTES" /> မိနစ်ကြာ မြင်နိုင်မည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook ၏ Steam က ကြိုဆိုပါသည်</translation>
 <translation id="8985264973231822211">ပြီးခဲ့သော <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ရက်က အသုံးပြုထားသည်</translation>
 <translation id="8985661493893822002">သင်၏ <ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန် အင်တာနက်ချိတ်ဆက်ပါ။</translation>
 <translation id="8986362086234534611">မေ့ပစ်လိုက်ပါ</translation>
@@ -8683,6 +8683,7 @@
 <translation id="947329552760389097">&amp;စာမျက်နှာအတွင်းရှိ အရာများကို စစ်ဆေးရန်</translation>
 <translation id="947526284350604411">သင့်အဖြေ</translation>
 <translation id="947667444780368238">ဤဖိုင်တွဲတွင် စနစ်ဖိုင်များ ပါဝင်သဖြင့် <ph name="ORIGIN" /> က ၎င်းထဲရှိ ဖိုင်များကို ဖွင့်၍မရပါ</translation>
+<translation id="949314938206378263">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="950307215746360464">စနစ်ထည့်သွင်းမှု လမ်းညွှန်</translation>
 <translation id="951991426597076286">ပယ်ချရန်</translation>
 <translation id="952471655966876828">စက်ဖွင့်ထားသောအခါ (သို့) အသုံးပြုနေသောအခါ အလိုအလျောက် ချိတ်ဆက်ပါမည်</translation>

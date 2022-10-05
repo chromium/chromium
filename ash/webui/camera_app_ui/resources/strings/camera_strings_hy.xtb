@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Փաստաթղթի սկանավորում</translation>
 <translation id="1309250603447638106">Ներբեռնվում են թարմացումներ փաստաթղթերի սկանավորման գործառույթի համար</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />։ Դրանք օգտագործելու համար սեղմեք «Որոնում»+ձախ սլաք։</translation>
+<translation id="1417314334557041815">Փոփոխել էջ <ph name="INDEX" />-ը</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> սարքը միացված չէ։</translation>
 <translation id="1473110567575736769">Ժամաչափ 3 վայրկյան</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Տեսագրություն չկա</translation>
 <translation id="1838104802459806957">Թեքել վերև</translation>
+<translation id="1843105061469674856">Սկանավորել լրացուցիչ էջը</translation>
 <translation id="1851169887664797861">Հասանելի են տեսախցիկի լրացուցիչ կարգավորումներ</translation>
 <translation id="1851616744363735765">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="1862930711583847113">Չհաջողվեց արտահանել <ph name="FILE" /> ֆայլը</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Այս տեսախցիկի լուծաչափը հնարավոր չէ փոխել</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="4281620174117014503">Միջին լուծաչափ</translation>
+<translation id="428234092390943511">Էջի մանրապատկեր</translation>
 <translation id="4329152592498422850">Անցնել քառակուսի լուսանկարների ռեժիմին</translation>
 <translation id="4340659173795395806">Այժմ դուք կարող եք ստեղծել մի քանի էջից կազմված PDF ֆայլ</translation>
 <translation id="4383571725254449280">Տպման վիճակագրության մատյաններ</translation>

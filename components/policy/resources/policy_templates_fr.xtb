@@ -1019,28 +1019,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2017301949684549118">URL des applications Web à installer de façon silencieuse.</translation>
 <translation id="2017459564744167827">Consultez la page <ph name="REFERENCE_URL" /> pour en savoir plus sur le schéma et le formatage.</translation>
 <translation id="2024476116966025075">Configurer le nom de domaine requis pour les clients d'accès à distance</translation>
-<translation id="2024821084720338323">Si elle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> limite et regroupe de façon agressive les minuteurs JavaScript dans les onglets en arrière-plan. Par conséquent, ceux-ci ne s'exécutent pas plus d'une fois par minute après la mise en arrière-plan d'une page pendant au moins cinq minutes.
-
-          Bien que conforme aux normes Web, cette fonctionnalité peut perturber le fonctionnement
-          de certains sites Web en retardant des actions (jusqu'à une
-          minute). Cependant, son activation permet de réduire de manière significative la consommation du processeur et de la
-          batterie. Pour en savoir plus, consultez la page suivante : https://bit.ly/30b1XR4.
-
-          Si cette règle est activée, l'activation de la fonctionnalité est forcée. Les utilisateurs ne peuvent pas ignorer
-          ce paramètre.
-
-          Si cette règle est désactivée, la désactivation de la fonctionnalité est forcée. Les utilisateurs ne peuvent pas ignorer
-          ce paramètre.
-
-          Si cette règle n'est pas définie, le contrôle de la fonctionnalité s'opérera selon
-          sa propre logique interne, que les utilisateurs peuvent configurer manuellement.
-
-          Notez que la règle est appliquée individuellement pour chaque processus de moteur de rendu. La dernière valeur du paramètre de règle s'applique
-          au démarrage du processus d'un moteur de rendu. Un démarrage complet
-          est requis pour garantir que le même paramètre de règle s'applique à l'ensemble des
-          onglets chargés. L'exécution de processus basés sur des valeurs différentes pour cette règle
-          est sans danger.
-          </translation>
 <translation id="2029985289397958781">Désactiver la recherche <ph name="GOOGLE_LENS_PRODUCT_NAME" /> assistée par appareil photo pour les utilisateurs de la version Enterprise</translation>
 <translation id="2030905906517501646">Mot clé du moteur de recherche par défaut</translation>
 <translation id="203096360153626918">Cette règle n'a aucun effet sur les applications Android. L'utilisation du mode plein écran est possible même si cette règle est définie sur "<ph name="FALSE" />".</translation>

@@ -5653,7 +5653,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6345878117466430440">읽음으로 표시</translation>
 <translation id="6347010704471250799">알림 표시</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> 설치</translation>
-<translation id="6351383110065274390">Chromebook에서 게임 즐기기</translation>
 <translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">실험(알파 등급) 브라우저입니다. 일부 기능이 누락되거나 완전하지 않을 수 있습니다. 문제가 발생하면 도움말 &gt; '문제 신고...'에서 신고해 주세요.</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
@@ -6008,7 +6007,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6691541770654083180">지구</translation>
 <translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>
-<translation id="6694430008315398925">Steam 설정하기</translation>
 <translation id="6697172646384837537">비밀번호를 가져와 저장할 위치 선택</translation>
 <translation id="6697492270171225480">페이지를 찾을 수 없을 때 비슷한 페이지 제안 표시</translation>
 <translation id="6697690052557311665">공유하려면 Files 앱에서 마우스 오른쪽 버튼으로 폴더를 클릭한 다음 'Linux와 공유'를 선택하세요.</translation>
@@ -8411,7 +8409,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8983018820925880511">이 새 프로필은 <ph name="DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook용 Steam 시작하기</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요</translation>
 <translation id="8986362086234534611">저장 안함</translation>

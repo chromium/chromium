@@ -1020,28 +1020,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2017301949684549118">URL per abb web da installare automaticamente.</translation>
 <translation id="2017459564744167827">Vedi <ph name="REFERENCE_URL" /> per ulteriori informazioni su schema e formattazione.</translation>
 <translation id="2024476116966025075">Configura il nome di dominio richiesto per i client di accesso remoto</translation>
-<translation id="2024821084720338323">Se viene attivata la funzionalità di <ph name="PRODUCT_NAME" />, i timer di JavaScript nelle schede in background vengono limitati e uniti in modo aggressivo ed eseguiti non più di una volta al minuto dopo che la pagina è stata in background per almeno cinque minuti.
-
-          Si tratta di una funzione conforme agli standard web, ma potrebbe causare interruzioni della funzionalità
-          su alcuni siti web, facendo sì che determinate azioni vengano ritardate anche fino a un
-          minuto. Tuttavia, comporta un significativo risparmio della batteria e della CPU, se
-          attivata. Per ulteriori dettagli, visita il sito https://bit.ly/30b1XR4.
-
-          Se il criterio viene attivato, la funzionalità viene attivata forzatamente e
-          gli utenti non possono modificarla.
-
-          Se il criterio viene disattivato, la funzionalità viene disattivata forzatamente e
-          gli utenti non possono modificarla.
-
-          Se il criterio non viene configurato, la funzionalità viene controllata dalla sua stessa
-          logica interna, che può essere configurata manualmente dagli utenti.
-
-          Questo criterio viene applicato per processo del renderer, con il valore più
-          recente dell'impostazione del criterio attivo all'inizio di un processo del renderer. È necessario
-          un riavvio completo per garantire che tutte le schede caricate ricevano un'impostazione del criterio
-          coerente. I processi possono essere eseguiti in sicurezza con
-          valori diversi di questo criterio.
-          </translation>
 <translation id="2029985289397958781">Viene disattivata la ricerca tramite fotocamera con <ph name="GOOGLE_LENS_PRODUCT_NAME" /> per gli utenti Enterprise</translation>
 <translation id="2030905906517501646">Parola chiave del provider di ricerca predefinito</translation>
 <translation id="203096360153626918">Questa norma non ha effetto sulle app Android, che saranno in grado di entrare in modalità a schermo intero anche se la norma viene impostata su <ph name="FALSE" />.</translation>

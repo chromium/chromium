@@ -5652,7 +5652,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6345878117466430440">Означаване като прочетено</translation>
 <translation id="6347010704471250799">Показване на известие</translation>
 <translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
-<translation id="6351383110065274390">Наслаждавайте се на игрите си на своя Chromebook</translation>
 <translation id="6354918092619878358">Елиптична крива secp256r1 по SECG (позната и като ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Експериментален браузър (алфа-версия)! Някои функции липсват или не са завършени. Отворете „Помощ &gt; Подаване на сигнал за проблем...“, за да сигнализирате за проблеми.</translation>
 <translation id="635609604405270300">Не изключвайте устройството</translation>
@@ -6007,7 +6006,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6691541770654083180">Земя</translation>
 <translation id="6691936601825168937">&amp;Препращане</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}other{{COUNT} страници}}</translation>
-<translation id="6694430008315398925">Настройване на Steam</translation>
 <translation id="6697172646384837537">Изберете къде да импортирате паролите си</translation>
 <translation id="6697492270171225480">Показване на предложения за подобни страници, когато дадена страница не може да бъде намерена</translation>
 <translation id="6697690052557311665">За да споделите папка, кликнете с десен бутон върху нея в приложението файлове и изберете „Споделяне с Linux“.</translation>
@@ -8409,7 +8407,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8983018820925880511">Този нов потребителски профил ще се управлява от <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> може да редактира „<ph name="FILENAME" />“</translation>
 <translation id="8984694057134206124">Устройството ви ще бъде видимо за всички в продължение на <ph name="MINUTES" /> минути. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Добре дошли в Steam за Chromebook</translation>
 <translation id="8985264973231822211">Активно преди <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ден</translation>
 <translation id="8985661493893822002">Моля, свържете се с интернет, за да влезете в устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8986362086234534611">Забравяне</translation>

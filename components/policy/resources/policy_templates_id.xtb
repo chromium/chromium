@@ -1025,28 +1025,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="2017301949684549118">URL untuk Aplikasi Web diinstal otomatis.</translation>
 <translation id="2017459564744167827">Buka <ph name="REFERENCE_URL" /> untuk informasi lebih lanjut terkait skema dan pemformatan.</translation>
 <translation id="2024476116966025075">Mengonfigurasi nama domain yang diperlukan untuk klien akses jarak jauh</translation>
-<translation id="2024821084720338323">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan menyebabkan timer JavaScript di tab latar belakang dibatasi dan digabungkan secara agresif, berjalan tidak lebih dari satu kali per menit setelah halaman berada di latar belakang selama 5 menit atau lebih.
-
-          Ini merupakan fitur kepatuhan standar web, tetapi mungkin merusak fungsi
-          di beberapa situs dengan menyebabkan tindakan tertentu tertunda hingga beberapa
-          saat. Namun, fitur ini membuat penggunaan CPU dan baterai menjadi lebih hemat secara signifikan jika
-          diaktifkan. Lihat https://bit.ly/30b1XR4 untuk detail selengkapnya.
-
-          Jika kebijakan ini disetel ke aktif, fitur akan diaktifkan secara paksa dan
-          pengguna tidak akan dapat menggantinya.
-
-          Jika kebijakan ini disetel ke nonaktif, fitur akan dinonaktifkan secara paksa dan
-          pengguna tidak akan dapat menggantinya.
-
-          Jika kebijakan ini tidak disetel, fitur akan dikontrol oleh
-          logika internalnya sendiri, yang dapat dikonfigurasi pengguna secara manual.
-
-          Perlu diperhatikan bahwa kebijakan diterapkan per proses perender, dengan nilai terbaru
-          setelan kebijakan yang digunakan saat proses perender dimulai. Mulai ulang
-          sepenuhnya diperlukan untuk memastikan bahwa semua tab yang dimuat akan menerima setelan kebijakan
-          yang konsisten. Proses yang berjalan dengan nilai kebijakan yang berbeda
-          tidak berbahaya.
-          </translation>
 <translation id="2029985289397958781">Nonaktifkan penelusuran yang dibantu kamera <ph name="GOOGLE_LENS_PRODUCT_NAME" /> untuk pengguna versi Bisnis</translation>
 <translation id="2030905906517501646">Kata kunci penyedia penelusuran default</translation>
 <translation id="203096360153626918">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi akan dapat memasuki mode layar penuh meski kebijakan ini disetel ke <ph name="FALSE" />.</translation>

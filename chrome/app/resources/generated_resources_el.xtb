@@ -5655,7 +5655,6 @@
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
 <translation id="6347010704471250799">Εμφάνιση ειδοποίησης</translation>
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>
-<translation id="6351383110065274390">Απολαύστε το gaming στο Chromebook</translation>
 <translation id="6354918092619878358">Ελλειπτική καμπύλη SECG secp256r1 (επίσης γνωστή ως ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Πειραματικό πρόγραμμα περιήγησης (ποιότητα alpha)! Ορισμένες λειτουργίες λείπουν ή δεν είναι ολοκληρωμένες. Αναφέρετε τυχόν προβλήματα στην ενότητα: Βοήθεια &gt; Αναφορά προβλήματος…</translation>
 <translation id="635609604405270300">Κρατήστε τη συσκευή ενεργοποιημένη</translation>
@@ -6010,7 +6009,6 @@
 <translation id="6691541770654083180">Γη</translation>
 <translation id="6691936601825168937">&amp;Προώθηση</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 σελίδα}other{{COUNT} σελίδες}}</translation>
-<translation id="6694430008315398925">Ρύθμιση του Steam</translation>
 <translation id="6697172646384837537">Επιλέξτε πού θα γίνει εισαγωγή των κωδικών πρόσβασής σας</translation>
 <translation id="6697492270171225480">Εμφάνιση προτάσεων για παρόμοιες σελίδες όταν δεν είναι δυνατή η εύρεση μιας σελίδας</translation>
 <translation id="6697690052557311665">Για κοινή χρήση, κάντε δεξί κλικ σε έναν φάκελο στην εφαρμογή Αρχεία και, στη συνέχεια, επιλέξτε "Κοινή χρήση με Linux".</translation>
@@ -8410,7 +8408,6 @@
 <translation id="8983018820925880511">Η διαχείριση αυτού του νέου προφίλ θα γίνεται από τον τομέα <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Ο ιστότοπος <ph name="ORIGIN" /> μπορεί να επεξεργαστεί το αρχείο <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Η συσκευή σας θα είναι ορατή σε όλους για <ph name="MINUTES" /> λεπτά. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Καλωσορίσατε στο Steam για Chromebook</translation>
 <translation id="8985264973231822211">Ενεργή πριν από <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ημέρα</translation>
 <translation id="8985661493893822002">Συνδεθείτε στο διαδίκτυο για να συνδεθείτε στη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>

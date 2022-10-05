@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Скенирајте го документот</translation>
 <translation id="1309250603447638106">Преземете ги ажурирањата за скенирање документи</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + стрелка налево за пристап.</translation>
+<translation id="1417314334557041815">Изменете ја страницата <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> е исклучена.</translation>
 <translation id="1473110567575736769">Тајмер од 3 секунди</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ништо не е снимено</translation>
 <translation id="1838104802459806957">Навалeте нагоре</translation>
+<translation id="1843105061469674856">Скенирај дополнителна страница</translation>
 <translation id="1851169887664797861">Достапни се дополнителни контроли за камерата</translation>
 <translation id="1851616744363735765">ПАУЗИРАНО</translation>
 <translation id="1862930711583847113">Не може да се извезе <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Камерава не може да ја промени резолуцијата</translation>
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
 <translation id="4281620174117014503">Резолуција на аудиовизуелни содржини</translation>
+<translation id="428234092390943511">Сликичка на страница</translation>
 <translation id="4329152592498422850">Префрли на фотографирање во квадратна форма</translation>
 <translation id="4340659173795395806">Сега можете да создавате PDF-датотеки со повеќе страници</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>

@@ -1122,6 +1122,7 @@
 <translation id="2034346955588403444">სხვა Wi-Fi ქსელის დამატება</translation>
 <translation id="2035211704574173780">ნაცრისფერი სკალა</translation>
 <translation id="203574396658008164">ჩაკეტილი ეკრანიდან ჩანიშვნის ჩართვა</translation>
+<translation id="2036514476578229158">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობლებს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="2037445849770872822">ზედამხედველობა ამ Google ანგარიშისთვის დაყენებულია. მშობელთა მიერ კონტროლის სხვა საშუალებების დასაყენებლად აირჩიეთ „გაგრძელება“.
 
 სხვა შემთხვევაში გამოდით ახლავე, რომ ამ ანგარიშში შეტანილი ცვლილებები აისახოს ამ მოწყობილობაზე.
@@ -1243,6 +1244,7 @@
 <translation id="2135787500304447609">&amp;გაგრძელება</translation>
 <translation id="2136372518715274136">შეიყვანეთ ახალი პაროლი</translation>
 <translation id="2136476978468204130">თქვენ მიერ შეყვანილი საიდუმლო ფრაზა არასწორია</translation>
+<translation id="2137891579555018930">ნებართვის მოლოდინში...</translation>
 <translation id="2138398485845393913">„<ph name="DEVICE_NAME" />“-თან დაკავშირება ჯერ კიდევ მიმდინარეობს</translation>
 <translation id="2139919072249842737">დაყენების ღილაკი</translation>
 <translation id="2140788884185208305">ბატარეის მდგომარეობა</translation>
@@ -4129,6 +4131,7 @@
 <translation id="4858913220355269194">ფრიცი</translation>
 <translation id="4862642413395066333">ხელმოწერის OCSP პასუხები</translation>
 <translation id="4863769717153320198">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ნაგულისხმევი)</translation>
+<translation id="486459320933704969">მშობელმა ან მეურვემ უნდა დაადასტუროს, რომ ამ ვებსაიტის მონახულება შეგიძლიათ</translation>
 <translation id="4864805589453749318">აირჩიეთ მშობელი, რომელიც მოგანიჭებთ სასწავლებლის ანგარიშის ნებართვას.</translation>
 <translation id="486635084936119914">კონკრეტული ტიპის ფაილების ავტომატური გახსნა ჩამოტვირთვის შემდეგ</translation>
 <translation id="4868281708609571334">ასწავლეთ Google ასისტენტს <ph name="SUPERVISED_USER_NAME" />-ის ხმის ამოცნობა</translation>
@@ -5664,7 +5667,6 @@
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
 <translation id="6347010704471250799">შეტყობინების ჩვენება</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />-ის ინსტალაცია</translation>
-<translation id="6351383110065274390">ისიამოვნეთ თქვენს Chromebook-ზე თამაშის პროცესით</translation>
 <translation id="6354918092619878358">SECG ეკლიპტიკური მრუდი secp256r1 (ასევე ცნობილი, როგორც ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">ბრაუზერი ექსპერიმენტულია (ალფა-ხარისხის)! მას ზოგიერთი ფუნქცია აკლია, ან ისინი არასრულია. პრობლემების შესატყობინებლად გადადით აქ: დახმარება &gt; „შეტყობინება პრობლემის შესახებ...“.</translation>
 <translation id="635609604405270300">მოწყობილობის ჩართულად შენარჩუნება</translation>
@@ -6020,7 +6022,6 @@
 <translation id="6691541770654083180">დედამიწა</translation>
 <translation id="6691936601825168937">&amp;გადამისამართება</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 გვერდი}other{{COUNT} გვერდი}}</translation>
-<translation id="6694430008315398925">მიმდინარეობს Steam-ის დაყენება</translation>
 <translation id="6697172646384837537">აირჩიეთ, სად გსურთ თქვენი პაროლების იმპორტირება</translation>
 <translation id="6697492270171225480">მსგავსი გვერდების შემოთავაზებების ჩვენება, როცა გვერდი ვერ მოიძებნება</translation>
 <translation id="6697690052557311665">გასაზიარებლად დააწკაპუნეთ მარჯვენა ღილაკით საქაღალდეს ფაილების აპში, შემდეგ კი აირჩიეთ — „Linux-თან გაზიარება“.</translation>
@@ -8283,6 +8284,7 @@
 <translation id="8838601485495657486">გაუმჭვირვალე</translation>
 <translation id="8838770651474809439">ჰამბურგერი</translation>
 <translation id="8838778928843281408">ტელეფონების მართვა</translation>
+<translation id="883924185304953854">სურათებით ძიება</translation>
 <translation id="8841843049738266382">დაშვებულ სიაში შემავალი მომხმარებლების წაკითხვა და შეცვლა</translation>
 <translation id="8842594465773264717">თითის ამ ანაბეჭდის წაშლა</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
@@ -8432,7 +8434,6 @@
 <translation id="8983018820925880511">ამ ახალ პროფილს მართავს <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის რედაქტირება</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> წუთის განმავლობაში ყველასთვის ხილული იქნებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">მოგესალმებათ Steam Chromebook-ისთვის</translation>
 <translation id="8985264973231822211">აქტიური იყო <ph name="DEVICE_LAST_ACTIVATED_TIME" /> დღის წინ</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" />-ში შესასვლელად დაუკავშირდით ინტერნეტს.</translation>
 <translation id="8986362086234534611">დავიწყება</translation>
@@ -8711,6 +8712,7 @@
 <translation id="947329552760389097">ელემენტების შ&amp;ემოწმება</translation>
 <translation id="947526284350604411">თქვენი პასუხი</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ვერ გახსნის ფაილებს ამ საქაღალდეში, რადგან ის შეიცავს სისტემის ფაილებს</translation>
+<translation id="949314938206378263">თქვენ მოითხოვეთ ამ საიტის მონახულება. თქვენს მშობელს გამოხმაურება შეუძლია Family Link-იდან.</translation>
 <translation id="950307215746360464">დაყენების სახელმძღვანელო</translation>
 <translation id="951991426597076286">უარყოფა</translation>
 <translation id="952471655966876828">მოწყობილობა ავტომატურად დაკავშირდება, როდესაც ჩაირთვება ან გამოიყენება</translation>

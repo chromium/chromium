@@ -1018,28 +1018,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2017301949684549118">URLs para apps da Web serem instalados silenciosamente.</translation>
 <translation id="2017459564744167827">Consulte <ph name="REFERENCE_URL" /> para ver mais informações sobre esquema e formatação.</translation>
 <translation id="2024476116966025075">Configurar o nome de domínio obrigatório para clientes de acesso remoto</translation>
-<translation id="2024821084720338323">Quando ativado, o recurso <ph name="PRODUCT_NAME" /> faz com que os timers JavaScript nas guias em segundo plano sejam agressivamente limitados e agrupados, sendo executados no máximo uma vez por minuto depois que uma página tiver ficado 5 minutos ou mais em segundo plano.
-
-          Esse é um recurso que obedece aos padrões da Web, mas pode causar falhas na funcionalidade
-          em alguns sites, fazendo com que certas ações sofram um atraso de até um
-          minuto. No entanto, ele economiza significativamente o uso da bateria e da CPU quando
-          ativado. Acesse https://bit.ly/30b1XR4 para ver mais detalhes (em inglês).
-
-          Se esta política for ativada, o recurso terá uma ativação forçada e
-          o usuário não poderá modificar isso.
-
-          Se esta política for desativada, o recurso terá uma desativação forçada e
-          o usuário não poderá modificar isso.
-
-          Se esta política não for definida, o recurso será controlado pela própria
-          lógica interna, que pode ser configurada manualmente pelo usuário.
-
-          Observe que a política é aplicada em cada processo do renderizador, com os valores
-          mais recentes da política sendo aplicados quando um processo do renderizador é iniciado. Uma reinicialização
-          completa é necessária para garantir que todas as guias carregadas recebam uma configuração
-          consistente da política. Não há problemas em executar processos com valores
-          diferentes desta política.
-          </translation>
 <translation id="2029985289397958781">Desativar a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuários corporativos</translation>
 <translation id="2030905906517501646">Palavra-chave do provedor de pesquisa padrão</translation>
 <translation id="203096360153626918">Esta política não tem nenhum efeito sobre os apps Android. Eles poderão entrar no modo tela cheia mesmo se a política estiver definida como <ph name="FALSE" />.</translation>

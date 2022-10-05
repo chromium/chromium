@@ -5654,7 +5654,6 @@
 <translation id="6345878117466430440">Позначити як прочитане</translation>
 <translation id="6347010704471250799">Показувати сповіщення</translation>
 <translation id="6349101878882523185">Установіть додаток <ph name="APP_NAME" /></translation>
-<translation id="6351383110065274390">Насолоджуйтесь іграми на Chromebook</translation>
 <translation id="6354918092619878358">Еліптична крива SECG secp256r1 (також відома як ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Експериментальний веб-переглядач (альфа-версія). Деякі функції відсутні або неповні. Щоб повідомити про проблему, натисніть "Довідка" &gt; "Повідомити про проблему…".</translation>
 <translation id="635609604405270300">Не вимикайте пристрій</translation>
@@ -6015,7 +6014,6 @@
 <translation id="6691541770654083180">Земля</translation>
 <translation id="6691936601825168937">&amp;Переслати</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 сторінка}one{{COUNT} сторінка}few{{COUNT} сторінки}many{{COUNT} сторінок}other{{COUNT} сторінки}}</translation>
-<translation id="6694430008315398925">Налаштування додатка Steam</translation>
 <translation id="6697172646384837537">Виберіть, куди імпортувати паролі</translation>
 <translation id="6697492270171225480">Показувати пропозиції схожих сторінок, коли не вдається знайти сторінку</translation>
 <translation id="6697690052557311665">Щоб надіслати папку, натисніть її в додатку Файли правою кнопкою миші та виберіть "Надіслати за допомогою Linux".</translation>
@@ -8420,7 +8418,6 @@
 <translation id="8983018820925880511">Цим новим профілем керуватиме <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> може змінювати файл "<ph name="FILENAME" />"</translation>
 <translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Вітаємо в додатку Steam для Chromebook</translation>
 <translation id="8985264973231822211">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
 <translation id="8985661493893822002">Щоб увійти на пристрої <ph name="DEVICE_TYPE" />, підключіться до Інтернету.</translation>
 <translation id="8986362086234534611">Забути</translation>

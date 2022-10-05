@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skannaðu skjalið</translation>
 <translation id="1309250603447638106">Sækir uppfærslur fyrir skjalaskönnun</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Leit + Vinstri ör til að opna.</translation>
+<translation id="1417314334557041815">Breyta síðu <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er ekki í sambandi.</translation>
 <translation id="1473110567575736769">3 sekúndna teljari</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ekkert var tekið upp</translation>
 <translation id="1838104802459806957">Halla upp</translation>
+<translation id="1843105061469674856">Skanna viðbótarsíðu</translation>
 <translation id="1851169887664797861">Viðbótarstýringar tiltækar fyrir myndavél</translation>
 <translation id="1851616744363735765">HLÉ</translation>
 <translation id="1862930711583847113">Ekki tókst að flytja <ph name="FILE" /> út</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Myndavélin getur ekki breytt upplausn</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="4281620174117014503">Miðlungsupplausn</translation>
+<translation id="428234092390943511">Smámynd síðu</translation>
 <translation id="4329152592498422850">Skipta yfir í töku ferningslaga mynda</translation>
 <translation id="4340659173795395806">Nú geturðu búið til PDF með mörgum síðum</translation>
 <translation id="4383571725254449280">Prenta afkastaannála</translation>

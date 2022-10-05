@@ -5640,7 +5640,6 @@
 <translation id="6345878117466430440">Отметить как прочитанное</translation>
 <translation id="6347010704471250799">Показывать уведомление</translation>
 <translation id="6349101878882523185">Установить приложение "<ph name="APP_NAME" />"</translation>
-<translation id="6351383110065274390">Теперь вы можете играть на Chromebook</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Это экспериментальный браузер (альфа-версия). Некоторые функции в нем могут отсутствовать или работать в ограниченном режиме. Чтобы сообщить о проблемах, нажмите "Справка &gt; Сообщить о проблеме".</translation>
 <translation id="635609604405270300">Не выключайте устройство.</translation>
@@ -6001,7 +6000,6 @@
 <translation id="6691541770654083180">Планета Земля</translation>
 <translation id="6691936601825168937">&amp;Вперед</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} страницы}many{{COUNT} страниц}other{{COUNT} страницы}}</translation>
-<translation id="6694430008315398925">Установка Steam…</translation>
 <translation id="6697172646384837537">Выберите, куда импортировать пароли</translation>
 <translation id="6697492270171225480">Предлагать варианты, если страница, которую вы пытаетесь открыть, не найдена</translation>
 <translation id="6697690052557311665">Чтобы открыть доступ к папке, нажмите на нее правой кнопкой мыши в приложении "Файлы" и выберите "Предоставить доступ Linux".</translation>
@@ -8406,7 +8404,6 @@
 <translation id="8983018820925880511">Новым профилем будет управлять <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> может изменять файл "<ph name="FILENAME" />".</translation>
 <translation id="8984694057134206124">Ваше устройство будет видно всем пользователям поблизости в течение <ph name="MINUTES" /> мин. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Вас приветствует Steam для Chromebook</translation>
 <translation id="8985264973231822211">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
 <translation id="8985661493893822002">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, подключитесь к интернету.</translation>
 <translation id="8986362086234534611">Удалить</translation>

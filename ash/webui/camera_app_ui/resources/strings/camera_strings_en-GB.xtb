@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Scan your document</translation>
 <translation id="1309250603447638106">Downloading updates for document scanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
+<translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
 <translation id="1473110567575736769">Three seconds timer</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nothing recorded</translation>
 <translation id="1838104802459806957">Tilt up</translation>
+<translation id="1843105061469674856">Scan additional page</translation>
 <translation id="1851169887664797861">Additional camera controls available</translation>
 <translation id="1851616744363735765">PAUSED</translation>
 <translation id="1862930711583847113">Unable to export <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">This camera cannot change resolution</translation>
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4281620174117014503">Medium resolution</translation>
+<translation id="428234092390943511">Page thumbnail</translation>
 <translation id="4329152592498422850">Switch to take square photo</translation>
 <translation id="4340659173795395806">You can now create multi-page PDF</translation>
 <translation id="4383571725254449280">Print performance logs</translation>

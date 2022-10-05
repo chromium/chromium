@@ -1013,17 +1013,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2017301949684549118">Ohne Nutzereingriff zu installierende URLs für Web-Apps.</translation>
 <translation id="2017459564744167827">Unter <ph name="REFERENCE_URL" /> erhältst du weitere Informationen zu Schema und Formatierung.</translation>
 <translation id="2024476116966025075">Erforderlichen Domainnamen für Remotezugriff-Clients konfigurieren</translation>
-<translation id="2024821084720338323">Wenn die Funktion <ph name="PRODUCT_NAME" /> aktiviert ist, sorgt sie dafür, dass JavaScript-Timer auf Tabs im Hintergrund aktiv gedrosselt und zusammengeschlossen werden. Sie können nicht öfter als einmal pro Minute ausgeführt werden, nachdem eine Seite für 5 Minuten oder mehr in den Hintergrund verschoben wurde.
-
-          Diese Funktion ist mit gängigen Webstandards kompatibel, kann jedoch einige Websites beeinträchtigen, sodass bestimmte Aktionen möglicherweise bis zu einer Minute verspätet erfolgen. Allerdings schont diese Funktion CPU und Akku erheblich, wenn sie aktiviert ist. Weitere Informationen findest du unter https://bit.ly/30b1XR4.
-
-          Wenn diese Richtlinie aktiviert ist, ist die Funktion standardmäßig aktiviert. Nutzer können dann keine andere Einstellung vornehmen.
-
-          Wenn sie deaktiviert ist, ist die Funktion standardmäßig deaktiviert. Nutzer können dann keine andere Einstellung vornehmen.
-
-          Wenn sie nicht konfiguriert ist, folgt die Funktion ihrer eigenen internen Logik und kann von Nutzern manuell konfiguriert werden.
-
-          Bitte beachte, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn du sicherstellen möchtest, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein Neustart des Browsers nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.</translation>
 <translation id="2029985289397958781">Kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> für Unternehmensnutzer deaktivieren</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>

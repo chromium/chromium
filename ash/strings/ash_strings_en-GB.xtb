@@ -190,6 +190,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1989113344093894667">Can't capture content</translation>
 <translation id="1990046457226896323">Speech files downloaded</translation>
 <translation id="1993072747612765854">Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update</translation>
+<translation id="1995660704900986789">Power off</translation>
 <translation id="1998100899771863792">Current desk</translation>
 <translation id="2001444736072756133">Search your <ph name="CATEGORY" />, files, apps and more.</translation>
 <translation id="2016340657076538683">Type a message</translation>
@@ -413,6 +414,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
 <translation id="3375634426936648815">Connected</translation>
+<translation id="3378438761594387761">You'll find your recent downloads and screen captures here</translation>
 <translation id="3378442621503952303">Connecting to profile. Wait a few minutes.</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -719,6 +721,7 @@ Connect your device to power.</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="509790653408515442">When you stream your phone’s apps, they will appear here</translation>
 <translation id="5098537242461068432">Desk and windows reopened</translation>
+<translation id="5104236669533825617">Can’t create screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
@@ -764,6 +767,7 @@ Connect your device to power.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (right)</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
+<translation id="536019650977002321">Your administrator doesn’t allow audio capture. Contact your administrator for more info.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Go to this tab</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
 <translation id="5391307769715781764">Replace saved desk?</translation>

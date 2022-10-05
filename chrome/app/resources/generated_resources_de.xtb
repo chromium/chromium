@@ -5632,7 +5632,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6345878117466430440">Als gelesen markieren</translation>
 <translation id="6347010704471250799">Benachrichtigung einblenden</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
-<translation id="6351383110065274390">Viel Spaß beim Spielen auf deinem Chromebook</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Dies ist ein experimenteller Browser (Alpha). Einige Funktionen sind möglicherweise nicht verfügbar oder unvollständig. Melde Probleme über „Hilfe“ &gt; „Problem melden…“.</translation>
 <translation id="635609604405270300">Gerät eingeschaltet lassen</translation>
@@ -5987,7 +5986,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6691541770654083180">Erde</translation>
 <translation id="6691936601825168937">&amp;Vorwärts</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 Seite}other{{COUNT} Seiten}}</translation>
-<translation id="6694430008315398925">Steam einrichten</translation>
 <translation id="6697172646384837537">Auswählen, wo deine Passwörter importiert werden sollen</translation>
 <translation id="6697492270171225480">Vorschläge für ähnliche Seiten anzeigen, wenn eine Seite nicht gefunden werden kann</translation>
 <translation id="6697690052557311665">Zur Freigabe eines Ordners klicke ihn in der App "Dateien" mit der rechten Maustaste an und wähle "Mit Linux teilen" aus.</translation>
@@ -8389,7 +8387,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8983018820925880511">Dieses neue Profil wird von <ph name="DOMAIN" /> verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kann "<ph name="FILENAME" />" bearbeiten</translation>
 <translation id="8984694057134206124">Du wirst <ph name="MINUTES" /> Minuten lang für alle sichtbar sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Willkommen bei Steam für Chromebook</translation>
 <translation id="8985264973231822211">Vor <ph name="DEVICE_LAST_ACTIVATED_TIME" /> Tagen aktiv</translation>
 <translation id="8985661493893822002">Stelle eine Internetverbindung her, um dich auf deinem Gerät (<ph name="DEVICE_TYPE" />) anzumelden.</translation>
 <translation id="8986362086234534611">Entfernen</translation>

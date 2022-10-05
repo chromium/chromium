@@ -5649,7 +5649,6 @@
 <translation id="6345878117466430440">ಓದಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="6347010704471250799">ಅಧಿಸೂಚನೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
-<translation id="6351383110065274390">ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ನಿಮ್ಮ ಗೇಮಿಂಗ್ ಅನ್ನು ಆನಂದಿಸಿ</translation>
 <translation id="6354918092619878358">SECG ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">ಪ್ರಾಯೋಗಿಕ (ಆಲ್ಫಾ ಗುಣಮಟ್ಟ) ಬ್ರೌಸರ್! ಕೆಲವು ವೈಶಿಷ್ಟ್ಯಗಳು ಕಾಣೆಯಾಗಿರಬಹುದು ಅಥವಾ ಅಪೂರ್ಣವಾಗಿದೆ. ಯಾವುದೇ ಸಮಸ್ಯೆಗಳಿದ್ದರೆ, ಸಹಾಯ &gt; "ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ..." ನಲ್ಲಿ ವರದಿ ಮಾಡಿ.</translation>
 <translation id="635609604405270300">ಸಾಧನವು ಆನ್ ಆಗಿರಲಿ</translation>
@@ -6006,7 +6005,6 @@
 <translation id="6691541770654083180">ಭೂಮಿ</translation>
 <translation id="6691936601825168937">&amp;ಮುಂದೆ ತನ್ನಿ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ಪುಟ}one{{COUNT} ಪುಟಗಳು}other{{COUNT} ಪುಟಗಳು}}</translation>
-<translation id="6694430008315398925">Steam ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6697172646384837537">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಲ್ಲಿಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6697492270171225480">ಯಾವುದೇ ಪುಟವನ್ನು ಕಂಡುಹಿಡಿಯಲು ಸಾಧ್ಯವಾಗದಿದ್ದರೆ, ಅಂತಹುದೇ ಪುಟಗಳ ಸಲಹೆಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6697690052557311665">ಇದನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಫೈಲ್‌ಗಳ ಆ್ಯಪ್‌ನಲ್ಲಿ ಒಂದು ಫೋಲ್ಡರ್‌ನ ಮೇಲೆ ರೈಟ್-ಕ್ಲಿಕ್ ಮಾಡಿ, ನಂತರ "Linux ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
@@ -8406,7 +8404,6 @@
 <translation id="8983018820925880511">ಈ ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />ವೆಬ್‌ಸೈಟ್ <ph name="FILENAME" /> ಅನ್ನು ಎಡಿಟ್ ಮಾಡಬಹುದು</translation>
 <translation id="8984694057134206124">ನೀವು <ph name="MINUTES" /> ನಿಮಿಷಗಳವರೆಗೆ ಎಲ್ಲರಿಗೂ ಕಾಣಿಸುತ್ತೀರಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook ನ Steam ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="8985661493893822002">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ.</translation>
 <translation id="8986362086234534611">ಮರೆತುಹೋಗು</translation>

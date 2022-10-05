@@ -5670,7 +5670,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6345878117466430440">Märgi loetuks</translation>
 <translation id="6347010704471250799">Kuva märguanne</translation>
 <translation id="6349101878882523185">Installi <ph name="APP_NAME" /></translation>
-<translation id="6351383110065274390">Nautige Chromebookis mängimist</translation>
 <translation id="6354918092619878358">SECG elliptilise kõveraga secp256r1 (ehk ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Katseline (alfa-kvaliteediga) brauser! Mõni funktsioon on puudu või poolik. Teavitage probleemidest valikutega Abi &gt; „Probleemist teavitamine …”.</translation>
 <translation id="635609604405270300">Hoidke seade sisselülitatuna</translation>
@@ -6026,7 +6025,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6691541770654083180">Maa</translation>
 <translation id="6691936601825168937">&amp;Edasi</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 leht}other{{COUNT} lehte}}</translation>
-<translation id="6694430008315398925">Steami seadistamine</translation>
 <translation id="6697172646384837537">Valige, kuhu oma paroolid importida</translation>
 <translation id="6697492270171225480">Kui lehte ei leita, kuvatakse sarnaste lehtede soovitusi</translation>
 <translation id="6697690052557311665">Jagamiseks paremklõpsake rakenduses Failid soovitud kaustal ja valige käsk „Jaga Linuxiga”.</translation>
@@ -8439,7 +8437,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8983018820925880511">Seda uut profiili haldab <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> saab faili <ph name="FILENAME" /> muuta</translation>
 <translation id="8984694057134206124">Olete <ph name="MINUTES" /> minutit kõigile nähtav. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Tere tulemast Chromebookile mõeldud Steami!</translation>
 <translation id="8985264973231822211">Aktiivne <ph name="DEVICE_LAST_ACTIVATED_TIME" /> päev tagasi</translation>
 <translation id="8985661493893822002">Seadmesse <ph name="DEVICE_TYPE" /> sisselogimiseks looge ühendus internetiga.</translation>
 <translation id="8986362086234534611">Unusta</translation>

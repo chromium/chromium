@@ -1024,27 +1024,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="2017301949684549118">URL de las aplicaciones web que se instalarán de manera silenciosa</translation>
 <translation id="2017459564744167827">Consulta <ph name="REFERENCE_URL" /> para obtener más información sobre el esquema y el formato.</translation>
 <translation id="2024476116966025075">Configurar el nombre de dominio requerido para los clientes de acceso remoto</translation>
-<translation id="2024821084720338323">Si se habilita, la función de <ph name="PRODUCT_NAME" /> limitará y fusionará de forma drástica los cronómetros de JavaScript de las pestañas en segundo plano; estos no funcionarán más de una vez por minuto después de que una página haya estado en segundo plano durante 5 minutos o más.
-
-          Esta función cumple con los estándares web, pero es posible que genere
-          fallos en algunos sitios web debido a que provoca demoras de hasta un minuto
-          en ciertas acciones. Sin embargo, cuando se habilita, se obtienen ahorros significativos
-          de CPU y batería. Para obtener más información, consulta https://bit.ly/30b1XR4.
-
-          Si habilitas esta política, se habilitará la función de manera forzosa
-          y los usuarios no podrán anularla.
-
-          Si inhabilitas esta política, se inhabilitará la función de manera forzosa
-          y los usuarios no podrán anularla.
-
-          Si no la estableces, la función estará controlada por su propia
-          lógica interna; en este caso, los usuarios podrán configurarla.
-
-          Ten en cuenta que se aplica la política por proceso de renderizado, con el valor
-          más reciente de la configuración de la política vigente cuando comienza este proceso. Se debe
-          reiniciar el navegador para asegurarse de que todas las pestañas cargadas reciban una
-          configuración de política coherente. Distintos procesos pueden tener valores diferentes para esta política
-          sin efectos adversos.</translation>
 <translation id="2029985289397958781">Inhabilitar la búsqueda asistida por cámara mediante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuarios empresariales</translation>
 <translation id="2030905906517501646">Palabra clave del proveedor de búsqueda predeterminado</translation>
 <translation id="203096360153626918">Esta política no tiene efecto en las apps de Android. Podrán implementar el modo de pantalla completa, incluso si esta política se establece como <ph name="FALSE" />.</translation>

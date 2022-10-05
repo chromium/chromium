@@ -2097,7 +2097,7 @@
 <translation id="2891922230654533301"><ph name="APP_NAME" /> தளத்தில் உள்நுழைய உங்கள் சாதனத்தைப் பயன்படுத்த விரும்புகிறீர்களா?</translation>
 <translation id="2893013536106749396">உங்களுக்குப் பிடித்த விஷயங்களைப் பற்றி உடனுக்குடன் தெரிவிக்கும் கார்டுகளைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="2893168226686371498">இயல்புநிலை உலாவி</translation>
-<translation id="2893180576842394309">‘தேடல்’ மற்றும் பிற Google சேவைகளைத் தனிப்பயனாக்க, உங்கள் வரலாற்றை Google பயன்படுத்தக்கூடும்</translation>
+<translation id="2893180576842394309">Search மற்றும் பிற Google சேவைகளைப் பிரத்தியேகமாக்க, உங்களின் இதுவரையான செயல்பாடுகளை Google பயன்படுத்தக்கூடும்</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
 <translation id="289695669188700754">விசை ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடினால் இந்தப் பிரத்தியேக அமைப்பு அகற்றப்படும்</translation>
@@ -5655,7 +5655,6 @@
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
 <translation id="6347010704471250799">அறிவிப்பைக் காட்டு</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ஆப்ஸை நிறுவுக</translation>
-<translation id="6351383110065274390">Chromebookகில் கேம் விளையாடி மகிழுங்கள்</translation>
 <translation id="6354918092619878358">SECG நீள்வட்ட வளைவான secp256r1 (ANSI X9.62 prime256v1 எனவும் அறியப்படும், NIST P-256)</translation>
 <translation id="6355789186038748882">சோதனை (ஆல்ஃபா பதிப்பு) உலாவி! சில அம்சங்கள் விடுபட்டிருக்கலாம் அல்லது முழுமை பெறாமல் இருக்கலாம். சிக்கல்கள் இருந்தால் உதவி &gt; "சிக்கலைப் புகாரளி..." என்பதற்குச் சென்று புகாரளிக்கவும்.</translation>
 <translation id="635609604405270300">சாதனத்தை இயக்கத்தில் வைத்திருக்கவும்</translation>
@@ -6010,7 +6009,6 @@
 <translation id="6691541770654083180">பூமி</translation>
 <translation id="6691936601825168937">&amp;அடுத்த பக்கம்</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{ஒரு பக்கம்}other{{COUNT} பக்கங்கள்}}</translation>
-<translation id="6694430008315398925">Steam ஆப்ஸை அமைத்தல்</translation>
 <translation id="6697172646384837537">கடவுச்சொற்களை எங்கு ஏற்ற வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6697492270171225480">பக்கத்தைக் கண்டறிய முடியாத போது, அதே மாதிரியான பக்கங்களுக்கான பரிந்துரைகளைக் காட்டும்</translation>
 <translation id="6697690052557311665">பகிர, ’ஃபைல்கள் ’ ஆப்ஸில் ஒரு ஃபோல்டரின் மீது வலது கிளிக் செய்து, "Linuxஸுடன் பகிர்” என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
@@ -8412,7 +8410,6 @@
 <translation id="8983018820925880511">இந்தப் புதிய சுயவிவரத்தை <ph name="DOMAIN" /> நிர்வகிக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="FILENAME" /> ஃபைலை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
 <translation id="8984694057134206124">அருகிலுள்ள அனைவருக்கும் <ph name="MINUTES" /> நிமிடங்களுக்கு உங்கள் சாதனம் காட்டப்படும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebookகிற்கான Steam ஆப்ஸிற்கு வரவேற்கிறோம்</translation>
 <translation id="8985264973231822211">கடைசியாக <ph name="DEVICE_LAST_ACTIVATED_TIME" /> நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="8985661493893822002">உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் உள்நுழைய இணையத்துடன் இணைக்கவும்.</translation>
 <translation id="8986362086234534611">மற</translation>

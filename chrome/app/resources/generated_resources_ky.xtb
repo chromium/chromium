@@ -5654,7 +5654,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6345878117466430440">Окулду деп белгилөө</translation>
 <translation id="6347010704471250799">Билдирмени көрсөтүү</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> колдонмосун орнотуу</translation>
-<translation id="6351383110065274390">Оюндарыңызды Chromebook'та ойноңуз</translation>
 <translation id="6354918092619878358">SECG эллиптикалык ийри сызыгы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="6355789186038748882">Экперименталдуу (альфа-сапаттагы) серепчи! Айрым функциялар жок же толук эмес. Көйгөйлөрдү кабарлоо үчүн Жардам &gt; "Көйгөйдү кабарлоо..." бөлүмүнө өтүңүз.</translation>
 <translation id="635609604405270300">Түзмөктү өчүрбөңүз</translation>
@@ -6009,7 +6008,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6691541770654083180">Жер</translation>
 <translation id="6691936601825168937">&amp;Багыттоо</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 барак}other{{COUNT} барак}}</translation>
-<translation id="6694430008315398925">Steam'ди жөндөө</translation>
 <translation id="6697172646384837537">Сырсөздөрүңүз импорттоло турган жерди тандаңыз</translation>
 <translation id="6697492270171225480">Барак табылбай жатканда окшош барактар сунушталсын</translation>
 <translation id="6697690052557311665">Бөлүшүү үчүн, Файлдар колдонмосундагы папканы чычкандын оң баскычы менен чыкылдатып, андан соң "Linux акрылуу бөлүшүү" дегенди тандаңыз.</translation>
@@ -8410,7 +8408,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8983018820925880511">Бул жаңы профиль <ph name="DOMAIN" /> тарабынан тескелет. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> түзөтө алат</translation>
 <translation id="8984694057134206124">Түзмөгүңүз бардык адамдарга <ph name="MINUTES" /> мүнөткө чейин көрүнөт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook үчүн Steam колдонмосуна кош келиңиз</translation>
 <translation id="8985264973231822211">Соңку аракеттер: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> күн мурун</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кирүү үчүн Интернетке туташыңыз.</translation>
 <translation id="8986362086234534611">Унутуу</translation>

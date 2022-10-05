@@ -1024,18 +1024,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="2017301949684549118">Web Uygulamalarının URL'leri sessizce yüklenir.</translation>
 <translation id="2017459564744167827">Şema ve biçimlendirme hakkında daha fazla bilgi için <ph name="REFERENCE_URL" /> adresine bakın.</translation>
 <translation id="2024476116966025075">Uzaktan erişim istemcileri için gereken alan adını yapılandır</translation>
-<translation id="2024821084720338323"><ph name="PRODUCT_NAME" /> özelliği, etkinleştirildiği zaman arka plan sekmelerindeki JavaScript zamanlayıcılarının yoğun şekilde kısıtlanmasına ve birleştirilmesine, bir sayfa 5 dakika veya daha uzun süre arka planda kaldıktan sonra dakikada bir defadan fazla çalışmamasına neden olur.
-
-          Bu, web standartlarına uyumlu bir özelliktir ancak belirli işlemlerin bir dakikaya kadar gecikmesine neden olarak bazı web sitelerinde işlevselliği bozabilir. Ancak etkin olduğunda önemli ölçüde CPU ve pil tasarrufu sağlar. Daha fazla ayrıntı için https://bit.ly/30b1XR4 sayfasına bakabilirsiniz.
-
-          Bu politika etkin değerine ayarlanırsa özellik etkin olmaya zorlanır ve kullanıcılar bunu geçersiz kılamaz.
-
-          Bu politika devre dışı değerine ayarlanırsa özellik devre dışı olmaya zorlanır ve kullanıcılar bunu geçersiz kılamaz.
-
-          Bu politika ayarlanmadan bırakılırsa özellik kullanıcılar tarafından manuel olarak yapılandırılabilen kendi dahili mantığı tarafından kontrol edilir.
-
-          Politikanın oluşturucu işlemi başına uygulandığını ve bir oluşturucu işlemi başladığında geçerli olan politika ayarının en son değerinin kullanıldığını unutmayın. Tüm yüklenen sekmelerin tutarlı bir politika ayarı almasını sağlamak için tam bir yeniden başlatma gereklidir. İşlemlerin bu politikanın farklı değerleriyle çalışması zararlı değildir.
-          </translation>
 <translation id="2029985289397958781">Kurumsal kullanıcılar için <ph name="GOOGLE_LENS_PRODUCT_NAME" /> kamera destekli aramayı devre dışı bırak</translation>
 <translation id="2030905906517501646">Varsayılan arama sağlayıcı anahtar kelimesi</translation>
 <translation id="203096360153626918">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur. Bu politika <ph name="FALSE" /> seçeneğine ayarlansa bile uygulamalar tam ekran moduna girebilir.</translation>
