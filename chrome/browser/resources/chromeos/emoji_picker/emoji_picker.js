@@ -34,8 +34,8 @@ export class EmojiPicker extends PolymerElement {
     return {
       'dataUrls': {
         [CategoryEnum.EMOJI]: [
-          '/emoji_14_0_ordering_start.json',
-          '/emoji_14_0_ordering_remaining.json',
+          '/emoji_15_0_ordering_start.json',
+          '/emoji_15_0_ordering_remaining.json',
         ],
         [CategoryEnum.EMOTICON]: ['/emoticon_ordering.json'],
         [CategoryEnum.SYMBOL]: ['/symbol_ordering.json'],
