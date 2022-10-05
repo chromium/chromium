@@ -108,6 +108,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void AddRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
     bool HasRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
 
+    std::string AddSession(const cryptohome::AccountIdentifier& account_id,
+                           bool authenticated);
+
    private:
     FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
         const cryptohome::AccountIdentifier& account_id);

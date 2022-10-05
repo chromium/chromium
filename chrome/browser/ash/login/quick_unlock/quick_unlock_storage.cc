@@ -94,6 +94,20 @@ const UserContext* QuickUnlockStorage::GetUserContext(
   return auth_token_->user_context();
 }
 
+void QuickUnlockStorage::ReplaceUserContext(
+    const std::string& auth_token,
+    std::unique_ptr<UserContext> user_context) {
+  if (!auth_token_ || auth_token_->Identifier() != auth_token) {
+    // See the comment in `AuthToken::ReplaceUserContext` for a situation in
+    // which this might happen.
+    LOG(WARNING)
+        << "Replacement user context is ignored because auth token is gone";
+    return;
+  }
+
+  auth_token_->ReplaceUserContext(std::move(user_context));
+}
+
 FingerprintState QuickUnlockStorage::GetFingerprintState(Purpose purpose) {
   // Fingerprint is not registered for this account.
   if (!fingerprint_storage_->HasRecord())

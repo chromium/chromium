@@ -445,6 +445,25 @@ bool FakeUserDataAuthClient::TestApi::HasRecoveryFactor(
   return ContainsFakeFactor<RecoveryFactor>(user_state.auth_factors);
 }
 
+std::string FakeUserDataAuthClient::TestApi::AddSession(
+    const cryptohome::AccountIdentifier& account_id,
+    bool authenticated) {
+  CHECK(g_instance->users_.contains(account_id));
+
+  std::string auth_session_id = base::StringPrintf(
+      kAuthSessionIdTemplate, g_instance->next_auth_session_id_++);
+
+  CHECK_EQ(g_instance->auth_sessions_.count(auth_session_id), 0u);
+  AuthSessionData& session = g_instance->auth_sessions_[auth_session_id];
+
+  session.id = auth_session_id;
+  session.ephemeral = false;
+  session.account = account_id;
+  session.authenticated = authenticated;
+
+  return auth_session_id;
+}
+
 FakeUserDataAuthClient::UserCryptohomeState&
 FakeUserDataAuthClient::TestApi::GetUserState(
     const cryptohome::AccountIdentifier& account_id) {

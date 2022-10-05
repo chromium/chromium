@@ -1676,8 +1676,11 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     }
 
     UpdateEasyUnlockKeys(user_context_);
-    quick_unlock::PinBackend::GetInstance()->MigrateToCryptohome(
-        profile, *user_context_.GetKey());
+    if (!features::IsUseAuthsessionQuickUnlockEnabled()) {
+      // Migration to cryptohome uses legacy AddKey-based cryptohome methods.
+      quick_unlock::PinBackend::GetInstance()->MigrateToCryptohome(
+          profile, std::make_unique<UserContext>(user_context_));
+    }
 
     // Save sync password hash and salt to profile prefs if they are available.
     // These will be used to detect Gaia password reuses.

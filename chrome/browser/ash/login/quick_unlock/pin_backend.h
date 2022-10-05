@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "components/prefs/pref_service.h"
 
@@ -50,7 +51,7 @@ class PinBackend {
   void HasLoginSupport(BoolCallback result);
 
   // Try to migrate a prefs-based PIN to cryptohome.
-  void MigrateToCryptohome(Profile* profile, const Key& key);
+  void MigrateToCryptohome(Profile*, std::unique_ptr<UserContext>);
 
   // Check if the given account_id has a PIN registered.
   void IsSet(const AccountId& account_id, BoolCallback result);
@@ -119,7 +120,9 @@ class PinBackend {
 
   // Called when a migration attempt has completed. If `success` is true the PIN
   // should be cleared from prefs.
-  void OnPinMigrationAttemptComplete(Profile* profile, bool success);
+  void OnPinMigrationAttemptComplete(Profile* profile,
+                                     std::unique_ptr<UserContext>,
+                                     absl::optional<AuthenticationError>);
 
   // Actions to be performed after an authentication attempt with Cryptohome.
   // The only use case right now is for PIN auto submit, where we might want to
@@ -163,6 +166,14 @@ class PinBackend {
   // Backfill PIN auto submit preferences for users who already have a pin, but
   // had it set up before the pin auto submit feature was released.
   void PinAutosubmitBackfill(const AccountId& account_id, size_t pin_length);
+
+  // Updates the user context stored in the storage indexed by the supplied
+  // `auth_token`, and runs the supplied `callback` with true iff the `error`
+  // parameter is `nullopt`.
+  static void OnAuthOperation(std::string auth_token,
+                              BoolCallback callback,
+                              std::unique_ptr<UserContext>,
+                              absl::optional<AuthenticationError>);
 
   // True if still trying to determine which backend should be used.
   bool resolving_backend_ = true;

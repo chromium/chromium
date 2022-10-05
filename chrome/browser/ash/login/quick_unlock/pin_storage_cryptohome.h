@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -49,11 +50,12 @@ class PinStorageCryptohome {
                             BoolCallback result) const;
   // Sets a new PIN. If `pin_salt` is empty, `pin` will be hashed and should be
   // plain-text. If `pin_salt` contains a value, `pin` will not be hashed.
-  void SetPin(const UserContext& user_context,
+  void SetPin(std::unique_ptr<UserContext> user_context,
               const std::string& pin,
               const absl::optional<std::string>& pin_salt,
-              BoolCallback did_set);
-  void RemovePin(const UserContext& user_context, BoolCallback did_remove);
+              AuthOperationCallback callback);
+  void RemovePin(std::unique_ptr<UserContext> user_context,
+                 AuthOperationCallback callback);
   void CanAuthenticate(const AccountId& account_id,
                        Purpose purpose,
                        BoolCallback result) const;
@@ -68,10 +70,17 @@ class PinStorageCryptohome {
  private:
   void OnSystemSaltObtained(const std::string& system_salt);
 
+  // We call this after changing something in cryptohome. It reloads the
+  // AuthFactorsConfiguration.
+  void OnAuthFactorsEdit(AuthOperationCallback,
+                         std::unique_ptr<UserContext>,
+                         absl::optional<AuthenticationError>);
+
   bool salt_obtained_ = false;
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
   std::unique_ptr<PinSaltStorage> pin_salt_storage_;
+  AuthFactorEditor auth_factor_editor_;
 
   base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
 };

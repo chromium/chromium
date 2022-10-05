@@ -74,6 +74,9 @@ class QuickUnlockStorage : public KeyedService {
   // Fetch the user context if `auth_token` is valid. May return null.
   const UserContext* GetUserContext(const std::string& auth_token);
 
+  void ReplaceUserContext(const std::string& auth_token,
+                          std::unique_ptr<UserContext>);
+
   // Determines the fingerprint state. This is called at lock screen
   // initialization or after the fingerprint sensor has restarted.
   FingerprintState GetFingerprintState(Purpose purpose);
