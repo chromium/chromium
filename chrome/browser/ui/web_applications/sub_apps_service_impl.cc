@@ -16,11 +16,10 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
-#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/render_frame_host.h"
@@ -62,16 +61,15 @@ std::vector<std::pair<UnhashedAppId, GURL>> InstallParamsFromMojo(
 WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
   auto* const initiator_web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
-  return web_app::WebAppProvider::GetForWebContents(initiator_web_contents);
+  auto* provider = WebAppProvider::GetForWebContents(initiator_web_contents);
+  DCHECK(provider);
+  return provider;
 }
 
-absl::optional<AppId> GetAppIdForLastCommittedURL(
-    content::RenderFrameHost& render_frame_host) {
-  GURL parent_url = render_frame_host.GetLastCommittedURL();
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host);
-  DCHECK(provider);
-  WebAppRegistrar& web_app_registrar = provider->registrar();
-  return web_app_registrar.FindAppWithUrlInScope(parent_url);
+const AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
+  auto* const initiator_web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  return WebAppTabHelper::GetAppId(initiator_web_contents);
 }
 
 void OnAdd(
@@ -125,7 +123,6 @@ void SubAppsServiceImpl::Add(
     std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps,
     AddCallback result_callback) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  DCHECK(provider);
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
         FROM_HERE,
@@ -134,8 +131,7 @@ void SubAppsServiceImpl::Add(
     return;
   }
 
-  absl::optional<AppId> parent_app_id =
-      GetAppIdForLastCommittedURL(render_frame_host());
+  const AppId* parent_app_id = GetAppId(render_frame_host());
   // Verify that the calling app is installed itself. This check is done here
   // and not in `CreateIfAllowed` because of a potential race between doing the
   // check there and then running the current function, and the parent app being
@@ -179,15 +175,13 @@ void SubAppsServiceImpl::Add(
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
   // Verify that the calling app is installed itself (cf. `Add`).
-  absl::optional<AppId> parent_app_id =
-      GetAppIdForLastCommittedURL(render_frame_host());
-  if (!parent_app_id.has_value()) {
+  const AppId* parent_app_id = GetAppId(render_frame_host());
+  if (!parent_app_id) {
     return std::move(result_callback)
         .Run(SubAppsServiceListResult::New(SubAppsServiceResult::kFailure,
                                            std::vector<UnhashedAppId>()));
   }
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  DCHECK(provider);
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
         FROM_HERE, base::BindOnce(&SubAppsServiceImpl::List,
@@ -213,7 +207,6 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id,
                                 RemoveCallback result_callback) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  DCHECK(provider);
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
         FROM_HERE, base::BindOnce(&SubAppsServiceImpl::Remove,
@@ -223,9 +216,8 @@ void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id,
   }
 
   // Verify that the calling app is installed itself (cf. `Add`).
-  absl::optional<AppId> calling_app_id =
-      GetAppIdForLastCommittedURL(render_frame_host());
-  if (!calling_app_id.has_value()) {
+  const AppId* calling_app_id = GetAppId(render_frame_host());
+  if (!calling_app_id) {
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }
 
@@ -240,7 +232,8 @@ void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id,
 
   // Verify that the app we're trying to remove exists, that its parent_app is
   // the one doing the current call, and that the app was locally installed.
-  if (!app || calling_app_id != app->parent_app_id() ||
+  if (!app || !app->parent_app_id() ||
+      *calling_app_id != *app->parent_app_id() ||
       !app->is_locally_installed()) {
     return std::move(result_callback).Run(SubAppsServiceResult::kFailure);
   }

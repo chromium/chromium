@@ -108,11 +108,11 @@ std::vector<AppId> CreateAppIdsForLock(
 }  // namespace
 
 SubAppInstallCommand::SubAppInstallCommand(
-    AppId& parent_app_id,
+    const AppId& parent_app_id,
     std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
     SubAppInstallResultCallback install_callback,
     Profile* profile,
-    WebAppRegistrar* registrar,
+    const WebAppRegistrar* registrar,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
