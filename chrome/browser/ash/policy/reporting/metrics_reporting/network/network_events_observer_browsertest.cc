@@ -18,7 +18,6 @@
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,8 +32,11 @@ namespace {
 constexpr int kSignalStrength = 50;
 constexpr char kWifiGuid[] = "wifi-guid";
 constexpr char kWifiServicePath[] = "/service/wlan";
-const auto network_connection_state =
-    chromeos::network_health::mojom::NetworkState::kOnline;
+constexpr char kWifiConfig[] =
+    R"({"GUID": "%s", "Type": "wifi", "State": "online",
+    "WiFi.SignalStrengthRssi": %d})";
+constexpr int kGoodSignalStrengthRssi = -50;
+constexpr int kLowSignalStrengthRssi = -75;
 
 Record GetNextRecord(::chromeos::MissiveClientTestObserver* observer) {
   const std::tuple<Priority, Record>& enqueued_record =
@@ -66,6 +68,17 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
 
       return;
     }
+    network_handler_test_helper_ =
+        std::make_unique<::ash::NetworkHandlerTestHelper>();
+    network_handler_test_helper_->AddDefaultProfiles();
+    network_handler_test_helper_->ResetDevicesAndServices();
+    auto* const service_client = network_handler_test_helper_->service_test();
+    service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
+                               shill::kTypeWifi, shill::kStateOnline, true);
+    std::string service_config_good_signal =
+        base::StringPrintf(kWifiConfig, kWifiGuid, kGoodSignalStrengthRssi);
+    network_handler_test_helper_->ConfigureService(service_config_good_signal);
+
     ::policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
   }
 
@@ -79,7 +92,8 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
         ash::kReportDeviceNetworkStatus, false);
   }
 
-  // Create user.
+  std::unique_ptr<::ash::NetworkHandlerTestHelper> network_handler_test_helper_;
+
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   ::policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};
   ash::CryptohomeMixin crypto_home_mixin_{&mixin_host_};
@@ -96,25 +110,16 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
   chromeos::MissiveClientTestObserver missive_observer_(
       ::reporting::Destination::EVENT_METRIC);
 
-  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
-  network_handler_test_helper_.AddDefaultProfiles();
-  network_handler_test_helper_.ResetDevicesAndServices();
-  auto* const service_client = network_handler_test_helper_.service_test();
-
-  service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
-                             shill::kTypeWifi, shill::kStateReady, true);
-
   EnablePolicy();
-
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->EmitConnectionStateChangedEventForTesting(kWifiGuid,
-                                                  network_connection_state);
+      ->EmitConnectionStateChangedEventForTesting(
+          kWifiGuid,
+          chromeos::network_health::mojom::NetworkState::kNotConnected);
 
   const Record& record = GetNextRecord(&missive_observer_);
   MetricData record_data;
 
   ASSERT_TRUE(record_data.ParseFromString(record.data()));
-
   // Testing event found successfully.
   EXPECT_THAT(
       record_data.event_data().type(),
@@ -131,13 +136,9 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
   chromeos::MissiveClientTestObserver missive_observer_(
       ::reporting::Destination::EVENT_METRIC);
 
-  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
-  network_handler_test_helper_.AddDefaultProfiles();
-  network_handler_test_helper_.ResetDevicesAndServices();
-  auto* const service_client = network_handler_test_helper_.service_test();
-
-  service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
-                             shill::kTypeWifi, shill::kStateReady, true);
+  const std::string service_config_low_signal =
+      base::StringPrintf(kWifiConfig, kWifiGuid, kLowSignalStrengthRssi);
+  network_handler_test_helper_->ConfigureService(service_config_low_signal);
 
   EnablePolicy();
   ash::cros_healthd::FakeCrosHealthd::Get()
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
 
   // Testing event found successfully.
   EXPECT_THAT(record_data.event_data().type(),
-              Eq(::reporting::MetricEventType::NETWORK_SIGNAL_STRENGTH_CHANGE));
+              Eq(::reporting::MetricEventType::NETWORK_SIGNAL_STRENGTH_LOW));
 }
 
 }  // namespace
