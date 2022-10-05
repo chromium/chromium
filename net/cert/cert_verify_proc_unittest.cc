@@ -3411,47 +3411,32 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
        Sha1IntermediateButAIAHasSha256) {
   const char kHostname[] = "www.example.com";
 
-  base::FilePath certs_dir =
-      GetTestNetDataDirectory()
-          .AppendASCII("verify_certificate_chain_unittest")
-          .AppendASCII("target-and-intermediate");
-
-  CertificateList orig_certs = CreateCertificateListFromFile(
-      certs_dir, "chain.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, orig_certs.size());
-
-  // Build slightly modified variants of |orig_certs|.
-  CertBuilder root(orig_certs[2]->cert_buffer(), nullptr);
-  root.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  root.GenerateECKey();
-  CertBuilder intermediate(orig_certs[1]->cert_buffer(), &root);
-  intermediate.GenerateECKey();
-  CertBuilder leaf(orig_certs[0]->cert_buffer(), &intermediate);
-  leaf.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  leaf.GenerateECKey();
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
 
   // Make the leaf certificate have an AIA (CA Issuers) that points to the
   // embedded test server. This uses a random URL for predictable behavior in
   // the presence of global caching.
   std::string ca_issuers_path = MakeRandomPath(".cer");
   GURL ca_issuers_url = GetTestServerAbsoluteUrl(ca_issuers_path);
-  leaf.SetCaIssuersUrl(ca_issuers_url);
-  leaf.SetSubjectAltName(kHostname);
+  leaf->SetCaIssuersUrl(ca_issuers_url);
+  leaf->SetSubjectAltName(kHostname);
 
   // Make two versions of the intermediate - one that is SHA256 signed, and one
   // that is SHA1 signed. Note that the subjectKeyIdentifier for `intermediate`
   // is intentionally not changed, so that path building will consider both
   // certificate paths.
-  intermediate.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-  intermediate.SetRandomSerialNumber();
-  auto intermediate_sha256 = intermediate.DupCertBuffer();
+  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
+  intermediate->SetRandomSerialNumber();
+  auto intermediate_sha256 = intermediate->DupCertBuffer();
 
-  intermediate.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
-  intermediate.SetRandomSerialNumber();
-  auto intermediate_sha1 = intermediate.DupCertBuffer();
+  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha1);
+  intermediate->SetRandomSerialNumber();
+  auto intermediate_sha1 = intermediate->DupCertBuffer();
 
   // Trust the root certificate.
-  auto root_cert = root.GetX509Certificate();
+  auto root_cert = root->GetX509Certificate();
   ScopedTestRoot scoped_root(root_cert.get());
 
   // Setup the test server to reply with the SHA256 intermediate.
@@ -3464,7 +3449,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   intermediates.push_back(bssl::UpRef(intermediate_sha1.get()));
   scoped_refptr<X509Certificate> chain_sha1 = X509Certificate::CreateFromBuffer(
-      leaf.DupCertBuffer(), std::move(intermediates));
+      leaf->DupCertBuffer(), std::move(intermediates));
   ASSERT_TRUE(chain_sha1.get());
 
   const int flags = 0;

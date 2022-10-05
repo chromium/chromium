@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
@@ -182,14 +183,20 @@ void CertBuilder::CreateSimpleChain(
       certs_dir, "chain.pem", X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(3U, orig_certs.size());
 
+  // Set a default validity.
+  base::Time not_before = base::Time::Now() - base::Days(7);
+  base::Time not_after = base::Time::Now() + base::Days(7);
+
   // Build slightly modified variants of |orig_certs|.
   *out_root =
       std::make_unique<CertBuilder>(orig_certs[2]->cert_buffer(), nullptr);
+  (*out_root)->SetValidity(not_before, not_after);
   (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
   (*out_root)->GenerateECKey();
 
   *out_intermediate = std::make_unique<CertBuilder>(
       orig_certs[1]->cert_buffer(), out_root->get());
+  (*out_intermediate)->SetValidity(not_before, not_after);
   (*out_intermediate)->EraseExtension(der::Input(kCrlDistributionPointsOid));
   (*out_intermediate)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
   (*out_intermediate)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
@@ -197,6 +204,7 @@ void CertBuilder::CreateSimpleChain(
 
   *out_leaf = std::make_unique<CertBuilder>(orig_certs[0]->cert_buffer(),
                                             out_intermediate->get());
+  (*out_leaf)->SetValidity(not_before, not_after);
   (*out_leaf)->SetSubjectAltName(kHostname);
   (*out_leaf)->EraseExtension(der::Input(kCrlDistributionPointsOid));
   (*out_leaf)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
@@ -215,13 +223,19 @@ void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
   auto orig_leaf = ImportCertFromFile(certs_dir, "ok_cert.pem");
   ASSERT_TRUE(orig_leaf);
 
+  // Set a default validity.
+  base::Time not_before = base::Time::Now() - base::Days(7);
+  base::Time not_after = base::Time::Now() + base::Days(7);
+
   // Build slightly modified variants of |orig_certs|.
   *out_root = std::make_unique<CertBuilder>(orig_root->cert_buffer(), nullptr);
+  (*out_root)->SetValidity(not_before, not_after);
   (*out_root)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
   (*out_root)->GenerateECKey();
 
   *out_leaf =
       std::make_unique<CertBuilder>(orig_leaf->cert_buffer(), out_root->get());
+  (*out_leaf)->SetValidity(not_before, not_after);
   (*out_leaf)->SetSubjectAltName(kHostname);
   (*out_leaf)->SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
   (*out_leaf)->GenerateECKey();
