@@ -33,7 +33,7 @@ class ChromeAccountManagerServiceObserverBridge
  private:
   // ChromeAccountManagerService::Observer implementation.
   void OnIdentityListChanged(bool need_user_approval) override;
-  void OnIdentityChanged(ChromeIdentity* identity) override;
+  void OnIdentityChanged(id<SystemIdentity> identity) override;
 
   __weak id<ChromeAccountManagerServiceObserver> observer_ = nil;
   base::ScopedObservation<ChromeAccountManagerService,

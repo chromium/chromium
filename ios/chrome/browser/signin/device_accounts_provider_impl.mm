@@ -22,7 +22,7 @@
 namespace {
 // Returns the account info for `identity` (which must not be nil).
 DeviceAccountsProvider::AccountInfo GetAccountInfo(
-    ChromeIdentity* identity,
+    id<SystemIdentity> identity,
     ios::ChromeIdentityService* identity_service) {
   DCHECK(identity);
   DeviceAccountsProvider::AccountInfo account_info;

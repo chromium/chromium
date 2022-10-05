@@ -130,13 +130,13 @@ class AuthenticationService : public KeyedService,
   // Grants signin::ConsentLevel::kSignin to `identity`.
   // This method does not set up Sync-the-feature for the identity.
   // Virtual for testing.
-  virtual void SignIn(ChromeIdentity* identity);
+  virtual void SignIn(id<SystemIdentity> identity);
 
   // Grants signin::ConsentLevel::kSync to `identity`.
   // This starts setting up Sync-the-feature, but the setup will only complete
   // once SyncUserSettings::SetFirstSetupComplete() is called.
   // Virtual for testing.
-  virtual void GrantSyncConsent(ChromeIdentity* identity);
+  virtual void GrantSyncConsent(id<SystemIdentity> identity);
 
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,
@@ -148,11 +148,11 @@ class AuthenticationService : public KeyedService,
                        ProceduralBlock completion);
 
   // Returns whether there is a cached associated MDM error for `identity`.
-  bool HasCachedMDMErrorForIdentity(ChromeIdentity* identity) const;
+  bool HasCachedMDMErrorForIdentity(id<SystemIdentity> identity) const;
 
   // Shows the MDM Error dialog for `identity` if it has an associated MDM
   // error. Returns true if `identity` had an associated error, false otherwise.
-  bool ShowMDMErrorDialogForIdentity(ChromeIdentity* identity);
+  bool ShowMDMErrorDialogForIdentity(id<SystemIdentity> identity);
 
   // Returns a weak pointer of this.
   base::WeakPtr<AuthenticationService> GetWeakPtr();
@@ -172,12 +172,13 @@ class AuthenticationService : public KeyedService,
 
   // Returns the cached MDM infos associated with `identity`. If the cache
   // is stale for `identity`, the entry might be removed.
-  NSDictionary* GetCachedMDMInfo(ChromeIdentity* identity) const;
+  NSDictionary* GetCachedMDMInfo(id<SystemIdentity> identity) const;
 
   // Handles an MDM notification `user_info` associated with `identity`.
   // Returns whether the notification associated with `user_info` was fully
   // handled.
-  bool HandleMDMNotification(ChromeIdentity* identity, NSDictionary* user_info);
+  bool HandleMDMNotification(id<SystemIdentity> identity,
+                             NSDictionary* user_info);
 
   // Verifies that the authenticated user is still associated with a valid
   // ChromeIdentity. This method must only be called when the user is
@@ -192,7 +193,7 @@ class AuthenticationService : public KeyedService,
   // resign-in infobar if the method signs out.
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
-  void HandleForgottenIdentity(ChromeIdentity* invalid_identity,
+  void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
                                bool should_prompt,
                                bool device_restore);
 
@@ -208,7 +209,7 @@ class AuthenticationService : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeAccountManagerServiceObserver implementation.
-  void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   NSDictionary* user_info) override;
   void OnIdentityListChanged(bool need_user_approval) override;
   void OnServiceSupportedChanged() override;

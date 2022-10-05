@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate_fake.h"
@@ -36,7 +37,7 @@ AuthenticationServiceFake::AuthenticationServiceFake(
 
 AuthenticationServiceFake::~AuthenticationServiceFake() {}
 
-void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
+void AuthenticationServiceFake::SignIn(id<SystemIdentity> identity) {
   // Needs to call PrepareForFirstSyncSetup to behave like
   // AuthenticationService.
   DCHECK(identity);
@@ -45,7 +46,7 @@ void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
   consent_level_ = signin::ConsentLevel::kSignin;
 }
 
-void AuthenticationServiceFake::GrantSyncConsent(ChromeIdentity* identity) {
+void AuthenticationServiceFake::GrantSyncConsent(id<SystemIdentity> identity) {
   consent_level_ = signin::ConsentLevel::kSync;
 }
 
@@ -74,7 +75,7 @@ ChromeIdentity* AuthenticationServiceFake::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      return primary_identity_;
+      return base::mac::ObjCCastStrict<ChromeIdentity>(primary_identity_);
     case signin::ConsentLevel::kSync:
       return (consent_level_ == signin::ConsentLevel::kSync) ? primary_identity_
                                                              : nil;

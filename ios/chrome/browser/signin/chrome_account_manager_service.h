@@ -40,7 +40,7 @@ class ChromeAccountManagerService : public KeyedService,
     // `user_info` is the user info dictionary in the original notification. It
     // should not be accessed directly but via helper methods (like
     // ChromeIdentityService::IsInvalidGrantError).
-    virtual void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+    virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             NSDictionary* user_info) {}
 
     // Handles identity list changed events.
@@ -50,7 +50,7 @@ class ChromeAccountManagerService : public KeyedService,
     virtual void OnIdentityListChanged(bool need_user_approval) {}
 
     // Called when the identity is updated.
-    virtual void OnIdentityChanged(ChromeIdentity* identity) {}
+    virtual void OnIdentityChanged(id<SystemIdentity> identity) {}
 
     // Called when ChromeIdentityService is replaced. The value of
     // `IsServiceSupported()` might have been updated.
@@ -73,7 +73,7 @@ class ChromeAccountManagerService : public KeyedService,
   bool HasRestrictedIdentities() const;
 
   // Returns whether `identity` is valid and known by the service.
-  bool IsValidIdentity(ChromeIdentity* identity) const;
+  bool IsValidIdentity(id<SystemIdentity> identity) const;
 
   // Returns whether `email` is restricted.
   bool IsEmailRestricted(base::StringPiece email) const;
@@ -95,7 +95,7 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns the identity avatar. If the avatar is not available, it is fetched
   // in background (a notification will be received when it will be available),
   // and the default avatar is returned (see `Observer::OnIdentityChanged()`).
-  UIImage* GetIdentityAvatarWithIdentity(ChromeIdentity* identity,
+  UIImage* GetIdentityAvatarWithIdentity(id<SystemIdentity> identity,
                                          IdentityAvatarSize size);
 
   // Returns true if the service can be used.
@@ -109,10 +109,10 @@ class ChromeAccountManagerService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // ChromeIdentityServiceObserver implementation.
-  void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
+  void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   NSDictionary* user_info) override;
   void OnIdentityListChanged(bool need_user_approval) override;
-  void OnProfileUpdate(ChromeIdentity* identity) override;
+  void OnProfileUpdate(id<SystemIdentity> identity) override;
   void OnChromeIdentityServiceWillBeDestroyed() override;
 
   // ChromeBrowserProvider implementation.

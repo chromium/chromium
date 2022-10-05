@@ -63,7 +63,7 @@ using testing::Return;
 
 namespace {
 
-CoreAccountId GetAccountId(ChromeIdentity* identity) {
+CoreAccountId GetAccountId(id<SystemIdentity> identity) {
   return CoreAccountId(base::SysNSStringToUTF8([identity gaiaID]));
 }
 
@@ -140,7 +140,7 @@ class AuthenticationServiceTest : public PlatformTest {
     authentication_service()->OnApplicationWillEnterForeground();
   }
 
-  void FireAccessTokenRefreshFailed(ChromeIdentity* identity,
+  void FireAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                     NSDictionary* user_info) {
     authentication_service()->OnAccessTokenRefreshFailed(identity, user_info);
   }
@@ -149,12 +149,12 @@ class AuthenticationServiceTest : public PlatformTest {
     authentication_service()->OnIdentityListChanged(notify_user);
   }
 
-  void SetCachedMDMInfo(ChromeIdentity* identity, NSDictionary* user_info) {
+  void SetCachedMDMInfo(id<SystemIdentity> identity, NSDictionary* user_info) {
     authentication_service()->cached_mdm_infos_[GetAccountId(identity)] =
         user_info;
   }
 
-  bool HasCachedMDMInfo(ChromeIdentity* identity) {
+  bool HasCachedMDMInfo(id<SystemIdentity> identity) {
     return authentication_service()->cached_mdm_infos_.count(
                GetAccountId(identity)) > 0;
   }
@@ -626,7 +626,7 @@ TEST_F(AuthenticationServiceTest, HandleMDMBlockedNotification) {
   ON_CALL(*identity_service(), GetMDMDeviceStatus(user_info1))
       .WillByDefault(Return(1));
 
-  auto handle_mdm_notification_callback = [](ChromeIdentity*, NSDictionary*,
+  auto handle_mdm_notification_callback = [](id<SystemIdentity>, NSDictionary*,
                                              ios::MDMStatusCallback callback) {
     callback(true /* is_blocked */);
     return true;

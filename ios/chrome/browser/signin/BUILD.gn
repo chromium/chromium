@@ -54,6 +54,7 @@ source_set("signin") {
     "user_approved_account_list_manager.mm",
   ]
   deps = [
+    ":system_identity",
     "//base",
     "//components/browser_sync",
     "//components/content_settings/core/browser",

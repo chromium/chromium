@@ -9,8 +9,7 @@
 
 #include "ios/chrome/browser/signin/constants.h"
 
-@class ChromeIdentity;
-@class UIImage;
+@protocol SystemIdentity;
 
 // This class manages an image cache for resized avatar images.
 @interface ResizedAvatarCache : NSObject
@@ -28,7 +27,7 @@
 // avatar image. The user of this class should be an observer of identity
 // updates. When notified of identity updates, this method should be called
 // again to obtain an updated resized image.
-- (UIImage*)resizedAvatarForIdentity:(ChromeIdentity*)identity;
+- (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_RESIZED_AVATAR_CACHE_H_

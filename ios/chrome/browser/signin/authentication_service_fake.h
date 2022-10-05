@@ -27,9 +27,9 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   ~AuthenticationServiceFake() override;
 
-  void SignIn(ChromeIdentity* identity) override;
+  void SignIn(id<SystemIdentity> identity) override;
 
-  void GrantSyncConsent(ChromeIdentity* identity) override;
+  void GrantSyncConsent(id<SystemIdentity> identity) override;
 
   void SignOut(signin_metrics::ProfileSignout signout_source,
                bool force_clear_browsing_data,
@@ -52,7 +52,7 @@ class AuthenticationServiceFake : public AuthenticationService {
   // Internal method effectively signing out the user.
   void SignOutInternal(ProceduralBlock completion);
 
-  __strong ChromeIdentity* primary_identity_;
+  __strong id<SystemIdentity> primary_identity_;
   signin::ConsentLevel consent_level_ = signin::ConsentLevel::kSignin;
 
   // WeakPtrFactory should be last.
