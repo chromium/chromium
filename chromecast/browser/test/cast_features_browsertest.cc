@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -127,10 +128,10 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
 
   // Clears |features| from the PrefStore. Should be called in a PRE_PRE_*
   // method for any tested feature in a test to ensure consistent state.
-  void ClearFeaturesFromPrefs(std::vector<base::Feature> features) {
+  void ClearFeaturesFromPrefs(std::vector<base::test::FeatureRef> features) {
     DictionaryPrefUpdate dict(pref_service(), prefs::kLatestDCSFeatures);
-    for (auto f : features)
-      dict->RemoveKey(f.name);
+    for (const auto& f : features)
+      dict->RemoveKey(f->name);
     pref_service()->CommitPendingWrite();
   }
 

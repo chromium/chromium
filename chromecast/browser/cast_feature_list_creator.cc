@@ -21,11 +21,12 @@ namespace chromecast {
 namespace {
 
 // Convert the |features| vector into a comma separated string.
-std::string FeatureVectorToString(const std::vector<base::Feature>& features) {
+std::string FeatureVectorToString(
+    const std::vector<const base::Feature*>& features) {
   std::vector<std::string> feature_names;
 
-  for (auto& feature : features)
-    feature_names.push_back(feature.name);
+  for (const auto* feature : features)
+    feature_names.push_back(feature->name);
 
   return base::JoinString(feature_names, ",");
 }
@@ -63,12 +64,12 @@ std::unique_ptr<PrefService> CastFeatureListCreator::TakePrefService() {
 }
 
 void CastFeatureListCreator::SetExtraEnableFeatures(
-    const std::vector<base::Feature>& extra_enable_features) {
+    const std::vector<const base::Feature*>& extra_enable_features) {
   extra_enable_features_ = FeatureVectorToString(extra_enable_features);
 }
 
 void CastFeatureListCreator::SetExtraDisableFeatures(
-    const std::vector<base::Feature>& extra_disable_features) {
+    const std::vector<const base::Feature*>& extra_disable_features) {
   extra_disable_features_ = FeatureVectorToString(extra_disable_features);
 }
 

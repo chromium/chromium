@@ -151,20 +151,20 @@ CastContentBrowserClient::CastContentBrowserClient(
           std::make_unique<CastNetworkContexts>(GetCorsExemptHeadersList())),
       cast_feature_list_creator_(cast_feature_list_creator) {
   cast_feature_list_creator_->SetExtraEnableFeatures({
-    ::media::kInternalMediaSession, features::kNetworkServiceInProcess,
+    &::media::kInternalMediaSession, &features::kNetworkServiceInProcess,
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VIDEO_CAPTURE_SERVICE)
-        features::kMojoVideoCapture,
+        &features::kMojoVideoCapture,
 #endif
 #if BUILDFLAG(USE_V4L2_CODEC)
         // Enable accelerated video decode if v4l2 codec is supported.
-        ::media::kVaapiVideoDecodeLinux,
+        &::media::kVaapiVideoDecodeLinux,
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
   });
 
 #if BUILDFLAG(IS_ANDROID)
   cast_feature_list_creator_->SetExtraDisableFeatures({
       // Disable AAudio improve AV sync performance.
-      ::features::kUseAAudioDriver,
+      &::features::kUseAAudioDriver,
   });
 #endif
 }
