@@ -4,6 +4,8 @@
 
 #import "ios/web/web_state/user_interaction_state.h"
 
+#import "base/time/time.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -11,7 +13,7 @@
 namespace {
 // The duration of the period following a screen touch during which the user is
 // still considered to be interacting with the page.
-const NSTimeInterval kMaximumDelayForUserInteractionInSeconds = 2;
+constexpr base::TimeDelta kMaximumDelayForUserInteraction = base::Seconds(2);
 }
 
 namespace web {
@@ -62,7 +64,7 @@ void UserInteractionState::SetTapInProgress(bool tap_in_progress) {
 }
 
 void UserInteractionState::ResetLastTransferTime() {
-  last_transfer_time_in_seconds_ = CFAbsoluteTimeGetCurrent();
+  last_transfer_time_ = base::TimeTicks::Now();
 }
 
 web::UserInteractionEvent* UserInteractionState::LastUserInteraction() const {
@@ -82,16 +84,17 @@ bool UserInteractionState::HasUserTappedRecently(WKWebView* web_view) const {
     return NO;
   if (!last_user_interaction_)
     return NO;
-  return tap_in_progress_ ||
-         ((CFAbsoluteTimeGetCurrent() - last_user_interaction_->time) <
-          kMaximumDelayForUserInteractionInSeconds);
+  if (tap_in_progress_)
+    return YES;
+  return (base::TimeTicks::Now() - last_user_interaction_->time) <
+         kMaximumDelayForUserInteraction;
 }
 
 bool UserInteractionState::IsUserInteracting(WKWebView* web_view) const {
   // If page transfer started after last tap, user is deemed to be no longer
   // interacting.
   if (!last_user_interaction_ ||
-      last_transfer_time_in_seconds_ > last_user_interaction_->time) {
+      last_transfer_time_ > last_user_interaction_->time) {
     return NO;
   }
   return HasUserTappedRecently(web_view);

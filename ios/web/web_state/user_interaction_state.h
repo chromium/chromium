@@ -8,6 +8,7 @@
 #import <WebKit/WebKit.h>
 #include <memory>
 
+#include "base/time/time.h"
 #import "ios/web/web_state/user_interaction_event.h"
 
 namespace web {
@@ -39,7 +40,7 @@ class UserInteractionState {
   // Sets `tap_in_progress_`.
   void SetTapInProgress(bool tap_in_progress);
 
-  // Resets `last_transfer_time_in_seconds_` to current time.
+  // Resets `last_transfer_time_` to current time.
   void ResetLastTransferTime();
 
   // Returns the raw pointer managed by `last_user_interaction_`.
@@ -63,9 +64,8 @@ class UserInteractionState {
   bool user_interaction_registered_since_web_view_created_;
   // Whether a tap is in progress.
   bool tap_in_progress_;
-  // The time of the last page transfer start, measured in seconds since Jan 1
-  // 2001.
-  CFAbsoluteTime last_transfer_time_in_seconds_;
+  // The time of the last page transfer start.
+  base::TimeTicks last_transfer_time_;
   // Data on the recorded last user interaction.
   std::unique_ptr<web::UserInteractionEvent> last_user_interaction_;
 };

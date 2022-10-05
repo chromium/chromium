@@ -7,6 +7,7 @@
 
 #import <CoreFoundation/CFDate.h>
 
+#include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -15,11 +16,12 @@ namespace web {
 // interaction and the main document URL at that time.
 struct UserInteractionEvent {
   explicit UserInteractionEvent(const GURL& url)
-      : main_document_url(url), time(CFAbsoluteTimeGetCurrent()) {}
+      : main_document_url(url), time(base::TimeTicks::Now()) {}
+
   // Main document URL at the time the interaction occurred.
   GURL main_document_url;
-  // Time that the interaction occurred, measured in seconds since Jan 1 2001.
-  CFAbsoluteTime time;
+  // Time that the interaction occurred.
+  base::TimeTicks time;
 };
 
 }  // namespace web

@@ -10,6 +10,7 @@
 #import "base/compiler_specific.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
+#import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -34,15 +35,15 @@ namespace {
 // checking for the realization of 3 WebStates within one second. Only
 // report this error once per launch.
 constexpr size_t kMaxEvents = 3;
-constexpr CFTimeInterval kWindowSizeInSeconds = 1.0f;
+constexpr base::TimeDelta kWindowSize = base::Seconds(1);
 size_t g_last_realized_count = 0;
-CFTimeInterval g_last_creation_time = 0;
-bool g_has_reported_once = false;
 void CheckForOverRealization() {
+  static bool g_has_reported_once = false;
   if (g_has_reported_once)
     return;
-  CFTimeInterval now = CACurrentMediaTime();
-  if (now - g_last_creation_time < kWindowSizeInSeconds) {
+  static base::TimeTicks g_last_creation_time;
+  base::TimeTicks now = base::TimeTicks::Now();
+  if ((now - g_last_creation_time) < kWindowSize) {
     g_last_realized_count++;
     if (g_last_realized_count >= kMaxEvents) {
       base::debug::DumpWithoutCrashing();
