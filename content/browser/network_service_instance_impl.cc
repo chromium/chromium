@@ -301,7 +301,15 @@ void CreateNetworkContextInternal(
   auto* network_service = GetNetworkService();
 
 #if BUILDFLAG(USE_SOCKET_BROKER)
-  if (GetContentClient()->browser()->ShouldSandboxNetworkService() &&
+  // If the browser has started shutting down, it is possible that either a)
+  // `g_client` was never created if shutdown started before the network service
+  // was created, or b) the network service might have crashed meaning
+  // `g_client` is the client for the already-crashed Network Service, and a new
+  // network service never started. It's not safe to bind the socket broker in
+  // either of these cases so skip the binding since the browser is shutting
+  // down anyway.
+  if (!GetContentClient()->browser()->IsShuttingDown() &&
+      GetContentClient()->browser()->ShouldSandboxNetworkService() &&
       !params->socket_broker) {
     params->socket_broker = g_client->BindSocketBroker();
   }
