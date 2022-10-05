@@ -35,6 +35,8 @@ class UIBrokerImpl final : public UIBroker {
   void ShowCompanionApp(scoped_refptr<Device> device) override;
   void RemoveNotifications(
       bool clear_already_shown_discovery_notification_cache) override;
+  void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      scoped_refptr<Device> device) override;
   void StartDeviceLostTimer(scoped_refptr<Device> device) override;
 
  private:

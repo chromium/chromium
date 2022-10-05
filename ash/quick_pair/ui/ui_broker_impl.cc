@@ -107,6 +107,12 @@ void UIBrokerImpl::RemoveNotifications(
       clear_already_shown_discovery_notification_cache);
 }
 
+void UIBrokerImpl::RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+    scoped_refptr<Device> device) {
+  fast_pair_presenter_->RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      device);
+}
+
 void UIBrokerImpl::StartDeviceLostTimer(scoped_refptr<Device> device) {
   fast_pair_presenter_->StartDeviceLostTimer(device);
 }

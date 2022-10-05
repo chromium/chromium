@@ -67,6 +67,8 @@ class FastPairPresenterImpl : public FastPairPresenter {
                         CompanionAppCallback callback) override;
   void RemoveNotifications(
       bool clear_already_shown_discovery_notification_cache) override;
+  void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      scoped_refptr<Device> device) override;
 
   // When a device is lost, prevent notifications for it for a timeout.
   // This will allow devices that are lost to appear again for a user without

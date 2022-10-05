@@ -506,5 +506,12 @@ void FastPairPresenterImpl::RemoveNotifications(
   notification_controller_->RemoveNotifications();
 }
 
+void FastPairPresenterImpl::
+    RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+        scoped_refptr<Device> device) {
+  address_to_devices_with_discovery_notification_already_shown_map_.erase(
+      device->ble_address);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

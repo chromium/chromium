@@ -41,6 +41,8 @@ class UIBroker {
   virtual void ShowCompanionApp(scoped_refptr<Device> device) = 0;
   virtual void RemoveNotifications(
       bool clear_already_shown_discovery_notification_cache) = 0;
+  virtual void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      scoped_refptr<Device> device) = 0;
   virtual void StartDeviceLostTimer(scoped_refptr<Device> device) = 0;
 };
 

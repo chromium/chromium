@@ -1528,6 +1528,47 @@ TEST_F(FastPairPresenterImplTest, ShowDiscoveryAgain_MapCleared) {
   EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kPairToDevice);
 }
 
+TEST_F(FastPairPresenterImplTest, ShowDiscoveryAgain_DevicePaired) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  ON_CALL(*browser_delegate_, GetIdentityManager())
+      .WillByDefault(testing::Return(identity_manager_));
+
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(&FastPairPresenterImplTest::OnDiscoveryAction,
+                          weak_pointer_factory_.GetWeakPtr(),
+                          subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  // Simulate the device being removed from the cache when the device is paired.
+  fast_pair_presenter_->RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      subsequently_paired_device_);
+
+  fast_pair_presenter_->ShowDiscovery(
+      subsequently_paired_device_,
+      base::BindRepeating(
+          &FastPairPresenterImplTest::OnDiscoveryActionForSecondNotification,
+          weak_pointer_factory_.GetWeakPtr(), subsequently_paired_device_));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(discovery_action_, DiscoveryAction::kPairToDevice);
+  EXPECT_EQ(secondary_discovery_action_, DiscoveryAction::kPairToDevice);
+}
+
 TEST_F(FastPairPresenterImplTest, DontShowDiscoveryNotificationsForDeviceLost) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));

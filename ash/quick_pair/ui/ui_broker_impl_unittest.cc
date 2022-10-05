@@ -72,11 +72,19 @@ class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
 
   bool timer_started() { return timer_started_; }
 
+  void RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(
+      scoped_refptr<ash::quick_pair::Device> device) override {
+    remove_from_cache_ = true;
+  }
+
+  bool remove_from_cache() { return remove_from_cache_; }
+
  private:
   bool show_pairing_ = false;
   bool removed_ = false;
   bool show_pairing_failed_ = false;
   bool timer_started_ = false;
+  bool remove_from_cache_ = false;
 };
 
 class FakeFastPairPresenterFactory
@@ -300,6 +308,17 @@ TEST_F(UIBrokerImplTest, StartDeviceLostTimer) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->timer_started());
+}
+
+TEST_F(UIBrokerImplTest,
+       RemoveDeviceFromAlreadyShownDiscoveryNotificationCache) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
+                                             Protocol::kFastPairInitial);
+  ui_broker_->RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(
+      presenter_factory_->fake_fast_pair_presenter()->remove_from_cache());
 }
 
 }  // namespace quick_pair

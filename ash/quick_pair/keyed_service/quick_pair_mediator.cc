@@ -224,12 +224,22 @@ void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
       /*clear_already_shown_discovery_notification_cache=*/false);
   scanner_broker_->OnDevicePaired(device);
   fast_pair_repository_->PersistDeviceImages(device);
+
+  if (ash::features::
+          IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled()) {
+    ui_broker_->RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(device);
+  }
 }
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,
                              PairFailure failure) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ",Failure=" << failure;
-  ui_broker_->ShowPairingFailed(std::move(device));
+  ui_broker_->ShowPairingFailed(device);
+
+  if (ash::features::
+          IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled()) {
+    ui_broker_->RemoveDeviceFromAlreadyShownDiscoveryNotificationCache(device);
+  }
 }
 
 void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
