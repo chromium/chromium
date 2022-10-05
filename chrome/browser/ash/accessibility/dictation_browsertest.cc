@@ -289,11 +289,9 @@ class DictationTestBase
  protected:
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(https://crbug.com/1370572): This needs to be updated separately with
-    // SpeechRecognitionTestHelper.
-    std::vector<base::Feature> enabled_features =
+    std::vector<base::test::FeatureRef> enabled_features =
         test_helper_.GetEnabledFeatures();
-    std::vector<base::Feature> disabled_features =
+    std::vector<base::test::FeatureRef> disabled_features =
         test_helper_.GetDisabledFeatures();
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

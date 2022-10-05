@@ -119,15 +119,17 @@ void SpeechRecognitionTestHelper::SendErrorAndWait() {
   }
 }
 
-std::vector<base::Feature> SpeechRecognitionTestHelper::GetEnabledFeatures() {
-  std::vector<base::Feature> features;
+std::vector<base::test::FeatureRef>
+SpeechRecognitionTestHelper::GetEnabledFeatures() {
+  std::vector<base::test::FeatureRef> features;
   if (type_ == speech::SpeechRecognitionType::kOnDevice)
     features.push_back(ash::features::kOnDeviceSpeechRecognition);
   return features;
 }
 
-std::vector<base::Feature> SpeechRecognitionTestHelper::GetDisabledFeatures() {
-  std::vector<base::Feature> features;
+std::vector<base::test::FeatureRef>
+SpeechRecognitionTestHelper::GetDisabledFeatures() {
+  std::vector<base::test::FeatureRef> features;
   if (type_ == speech::SpeechRecognitionType::kNetwork)
     features.push_back(ash::features::kOnDeviceSpeechRecognition);
   return features;
