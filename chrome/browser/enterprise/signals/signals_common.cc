@@ -12,7 +12,6 @@ absl::optional<bool> SettingValueToBool(SettingValue setting_value) {
       return true;
     case SettingValue::DISABLED:
       return false;
-    case SettingValue::NONE:
     case SettingValue::UNKNOWN:
       return absl::nullopt;
   }

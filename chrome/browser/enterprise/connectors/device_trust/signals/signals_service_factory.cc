@@ -7,11 +7,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/context_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/content/content_signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_impl.h"
+#include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/management/management_service.h"
 
@@ -32,24 +35,24 @@
 
 namespace enterprise_connectors {
 
-std::unique_ptr<SignalsService> CreateSignalsService(
-    Profile* profile,
-    PolicyBlocklistService* policy_blocklist_service,
-    policy::ManagementService* management_service) {
+std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
   DCHECK(g_browser_process);
   DCHECK(profile);
+
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
   DCHECK(management_service);
 
-  if (!policy_blocklist_service || !management_service->IsManaged()) {
+  if (!management_service->IsManaged()) {
     return nullptr;
   }
 
   std::vector<std::unique_ptr<SignalsDecorator>> decorators;
 
-  decorators.push_back(std::make_unique<CommonSignalsDecorator>(
-      g_browser_process->local_state(), profile->GetPrefs()));
-  decorators.push_back(
-      std::make_unique<ContentSignalsDecorator>(policy_blocklist_service));
+  decorators.push_back(std::make_unique<CommonSignalsDecorator>());
+  decorators.push_back(std::make_unique<ContextSignalsDecorator>(
+      enterprise_signals::ContextInfoFetcher::CreateInstance(
+          profile, ConnectorsServiceFactory::GetForBrowserContext(profile))));
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   policy::CloudPolicyStore* store = nullptr;

@@ -10,7 +10,6 @@
 namespace enterprise_signals {
 
 enum class SettingValue {
-  NONE,
   UNKNOWN,
   DISABLED,
   ENABLED,

@@ -61,8 +61,6 @@ const char kEndpointVerificationStoreFailed[] =
 api::enterprise_reporting_private::SettingValue ToInfoSettingValue(
     enterprise_signals::SettingValue value) {
   switch (value) {
-    case enterprise_signals::SettingValue::NONE:
-      return api::enterprise_reporting_private::SETTING_VALUE_NONE;
     case enterprise_signals::SettingValue::UNKNOWN:
       return api::enterprise_reporting_private::SETTING_VALUE_UNKNOWN;
     case enterprise_signals::SettingValue::DISABLED:

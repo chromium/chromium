@@ -27,6 +27,14 @@ const char kBuiltInDnsClientEnabled[] = "builtInDnsClientEnabled";
 // is enabled on the device.
 const char kChromeCleanupEnabled[] = "chromeCleanupEnabled";
 
+// Name of the signal for getting information about whether users can
+// access other computers from Chrome using Chrome Remote Desktop.
+const char kChromeRemoteDesktopAppBlocked[] = "chromeRemoteDesktopAppBlocked";
+
+// Customer IDs of organizations that are affiliated with the organization
+// that is currently managing the device (or browser for non-CrOS platforms).
+const char kDeviceAffiliationIds[] = "deviceAffiliationIds";
+
 // Name of the signal for getting information about the device
 // manufacturer (e.g. Dell).
 const char kDeviceManufacturer[] = "deviceManufacturer";
@@ -39,10 +47,6 @@ const char kDeviceModel[] = "deviceModel";
 // name for the device.
 const char kDisplayName[] = "displayName";
 
-// Name of the signal for getting information about the dns address of
-// the device.
-const char kDnsAddress[] = "dnsAddress";
-
 // Name of the signal for getting information about the CBCM enrollment
 // domain of the browser.
 const char kEnrollmentDomain[] = "enrollmentDomain";
@@ -54,7 +58,7 @@ const char kFileSystemInfo[] = "fileSystemInfo";
 
 // Name of the signal for getting information about whether firewall is
 // enabled on the device.
-const char kFirewallOn[] = "firewallOn";
+const char kOsFirewall[] = "osFirewall";
 
 // Name of the signal for getting information about the IMEI.
 const char kImei[] = "imei";
@@ -95,9 +99,15 @@ const char kOsVersion[] = "osVersion";
 const char kPasswordProtectionWarningTrigger[] =
     "passwordPotectionWarningTrigger";
 
-// Name of the signal for getting information about whether users can
-// access other computers from Chrome using Chrome Remote Desktop.
-const char kRemoteDesktopAvailable[] = "remoteDesktopAvailable";
+// Customer IDs of organizations that are affiliated with the organization
+// that is currently managing the user who is logged in to the current Chrome
+// Profile.
+const char kProfileAffiliationIds[] = "profileAffiliationIds";
+
+// Indicates whether Enterprise-grade (i.e. custom) unsafe URL scanning is
+// enabled or not. This setting may be controlled by an enterprise policy:
+// https://chromeenterprise.google/policies/#EnterpriseRealTimeUrlCheckMode
+const char kRealtimeUrlCheckMode[] = "realtimeUrlCheckMode";
 
 // Name of the signal for getting information of the value of the
 // SafeBrowsingProtectionLevel policy.
@@ -120,6 +130,10 @@ const char kSignedInProfileName[] = "signedInProfileName";
 // SitePerProcess policy.
 // https://chromeenterprise.google/policies/#SitePerProcess
 const char kSiteIsolationEnabled[] = "siteIsolationEnabled";
+
+// Name of the signal for getting information about the dns address of
+// the device.
+const char kSystemDnsServers[] = "systemDnsServers";
 
 // Name of the signal for getting information about whether third party
 // blocking is enabled on the device.

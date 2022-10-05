@@ -8486,8 +8486,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/signals/decorators/common",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common:test_support",
       "../browser/enterprise/connectors/device_trust/signals/decorators/common:unit_tests",
-      "../browser/enterprise/connectors/device_trust/signals/decorators/content",
-      "../browser/enterprise/connectors/device_trust/signals/decorators/content:unit_tests",
       "//components/device_signals/core/common",
       "//services/data_decoder/public/cpp:test_support",
     ]

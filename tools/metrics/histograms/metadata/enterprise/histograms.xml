@@ -885,7 +885,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Browser.WithCache" summary="Browser (with cache)"/>
     <variant name="Common" summary="Common (without cache)"/>
     <variant name="Common.WithCache" summary="Common (with cache)"/>
-    <variant name="Content" summary="Content"/>
+    <variant name="Context" summary="Context"/>
     <variant name="Full" summary="full set of"/>
   </token>
 </histogram>

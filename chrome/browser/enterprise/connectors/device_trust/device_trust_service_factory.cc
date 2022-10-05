@@ -18,7 +18,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -73,7 +72,6 @@ DeviceTrustServiceFactory::DeviceTrustServiceFactory()
           "DeviceTrustService",
           ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
-  DependsOn(PolicyBlocklistFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
 }
 
@@ -91,9 +89,6 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
     // Return nullptr since the current management configuration isn't
     // supported.
     return nullptr;
-
-  auto* management_service =
-      policy::ManagementServiceFactory::GetForProfile(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<AttestationService> attestation_service =
@@ -119,9 +114,7 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
           policy::BrowserDMTokenStorage::Get(), key_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto signals_service = CreateSignalsService(
-      profile, PolicyBlocklistFactory::GetForBrowserContext(context),
-      management_service);
+  auto signals_service = CreateSignalsService(profile);
 
   if (!signals_service) {
     return nullptr;
