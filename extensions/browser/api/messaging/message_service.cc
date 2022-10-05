@@ -357,7 +357,8 @@ void MessageService::OpenChannelToExtension(
     // Check to see if it was a WebView making the request.
     // Sending messages from WebViews to extensions breaks webview isolation,
     // so only allow component extensions to receive messages from WebViews.
-    bool is_web_view = !!WebViewGuest::FromWebContents(source_contents);
+    bool is_web_view =
+        !!WebViewGuest::FromRenderFrameHost(source_render_frame_host);
     if (is_web_view &&
         Manifest::IsComponentLocation(target_extension->location())) {
       include_guest_process_info = true;
@@ -638,8 +639,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
     DCHECK(port_context.frame);
     guest_render_frame_routing_id = port_context.frame->routing_id;
 
-    DCHECK(WebViewGuest::FromWebContents(
-        WebContents::FromRenderFrameHost(source.GetRenderFrameHost())));
+    DCHECK(WebViewGuest::FromRenderFrameHost(source.GetRenderFrameHost()));
   }
 
   // Send the connect event to the receiver.  Give it the opener's port ID (the
