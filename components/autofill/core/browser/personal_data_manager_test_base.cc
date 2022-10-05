@@ -25,7 +25,7 @@ PersonalDataLoadedObserverMock::PersonalDataLoadedObserverMock() = default;
 PersonalDataLoadedObserverMock::~PersonalDataLoadedObserverMock() = default;
 
 // static
-std::vector<base::Feature>
+std::vector<base::test::FeatureRef>
 PersonalDataManagerTestBase::GetDefaultEnabledFeatures() {
   // Enable account storage by default, some tests will override this to be
   // false.
@@ -33,9 +33,9 @@ PersonalDataManagerTestBase::GetDefaultEnabledFeatures() {
 }
 
 PersonalDataManagerTestBase::PersonalDataManagerTestBase(
-    const std::vector<base::Feature>& additional_enabled_features)
+    const std::vector<base::test::FeatureRef>& additional_enabled_features)
     : identity_test_env_(&test_url_loader_factory_) {
-  std::vector<base::Feature> all_enabled_features(
+  std::vector<base::test::FeatureRef> all_enabled_features(
       PersonalDataManagerTestBase::GetDefaultEnabledFeatures());
   base::ranges::copy(additional_enabled_features,
                      std::back_inserter(all_enabled_features));

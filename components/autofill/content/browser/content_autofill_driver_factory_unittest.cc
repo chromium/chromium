@@ -267,9 +267,9 @@ class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes() {
-    std::vector<base::Feature> enabled;
+    std::vector<base::test::FeatureRef> enabled;
     // Allow BackForwardCache for all devices regardless of their memory.
-    std::vector<base::Feature> disabled{
+    std::vector<base::test::FeatureRef> disabled{
         ::features::kBackForwardCacheMemoryControls};
     (autofill_across_iframes() ? enabled : disabled)
         .push_back(features::kAutofillAcrossIframes);
@@ -365,7 +365,7 @@ class ContentAutofillDriverFactoryTest_FencedFrames
  public:
   ContentAutofillDriverFactoryTest_FencedFrames() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
     if (autofill_enabled_in_fencedframe()) {

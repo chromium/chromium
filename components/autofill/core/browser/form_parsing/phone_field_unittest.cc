@@ -40,7 +40,7 @@ class PhoneFieldTest
  public:
   PhoneFieldTest() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (GetParam().enable) {
       enabled.emplace_back(
           features::kAutofillParsingPatternProvider,

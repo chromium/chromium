@@ -738,8 +738,8 @@ class FormDataImporterTest : public FormDataImporterTestBase,
     support_for_apartment_numbers_ = GetParam();
 
     // Enable all those features by default.
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     (support_for_apartment_numbers_ ? enabled_features : disabled_features)
         .push_back(features::kAutofillEnableSupportForApartmentNumbers);

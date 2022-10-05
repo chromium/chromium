@@ -36,10 +36,11 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
 
 class PersonalDataManagerTestBase {
  protected:
-  static std::vector<base::Feature> GetDefaultEnabledFeatures();
+  static std::vector<base::test::FeatureRef> GetDefaultEnabledFeatures();
 
   explicit PersonalDataManagerTestBase(
-      const std::vector<base::Feature>& additional_enabled_features = {});
+      const std::vector<base::test::FeatureRef>& additional_enabled_features =
+          {});
 
   ~PersonalDataManagerTestBase();
 

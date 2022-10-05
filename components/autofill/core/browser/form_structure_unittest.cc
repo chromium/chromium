@@ -2186,8 +2186,8 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
 TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
   bool autofill_across_iframes = GetParam();
   base::test::ScopedFeatureList scoped_features;
-  std::vector<base::Feature> enabled;
-  std::vector<base::Feature> disabled;
+  std::vector<base::test::FeatureRef> enabled;
+  std::vector<base::test::FeatureRef> disabled;
   (autofill_across_iframes ? &enabled : &disabled)
       ->push_back(features::kAutofillAcrossIframes);
   scoped_features.InitWithFeatures(enabled, disabled);

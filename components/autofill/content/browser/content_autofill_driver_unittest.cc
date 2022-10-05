@@ -324,8 +324,8 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
   };
 
   ContentAutofillDriverTest() : autofill_across_iframes_(GetParam()) {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
     (autofill_across_iframes_ ? enabled : disabled)
         .push_back(features::kAutofillAcrossIframes);
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
