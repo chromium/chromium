@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
@@ -45,9 +44,6 @@
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_util.h"
-#include "net/socket/ssl_client_socket.h"
-#include "net/ssl/ssl_key_logger_impl.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -128,28 +124,6 @@ std::vector<GURL> ConvertArgumentsToURLs(
   for (const auto& arg : base::Reversed(args))
     urls.push_back(ConvertArgumentToURL(arg));
   return urls;
-}
-
-// Gets file path into ssl_keylog_file from command line argument or
-// environment variable. Command line argument has priority when
-// both specified.
-base::FilePath GetSSLKeyLogFile(const base::CommandLine* command_line) {
-  if (command_line->HasSwitch(switches::kSSLKeyLogFile)) {
-    base::FilePath path =
-        command_line->GetSwitchValuePath(switches::kSSLKeyLogFile);
-    if (!path.empty())
-      return path;
-    LOG(WARNING) << "ssl-key-log-file argument missing";
-  }
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string path_str;
-  env->GetVar("SSLKEYLOGFILE", &path_str);
-#if BUILDFLAG(IS_WIN)
-  // base::Environment returns environment variables in UTF-8 on Windows.
-  return base::FilePath(base::UTF8ToWide(path_str));
-#else
-  return base::FilePath(path_str);
-#endif
 }
 
 int RunContentMain(
@@ -246,14 +220,6 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {
 
   HeadlessBrowserContext::Builder context_builder =
       browser_->CreateBrowserContextBuilder();
-  // TODO(eseckler): These switches should also affect BrowserContexts that
-  // are created via DevTools later.
-  base::FilePath ssl_keylog_file =
-      GetSSLKeyLogFile(base::CommandLine::ForCurrentProcess());
-  if (!ssl_keylog_file.empty()) {
-    net::SSLClientSocket::SetSSLKeyLogger(
-        std::make_unique<net::SSLKeyLoggerImpl>(ssl_keylog_file));
-  }
 
   // Retrieve the locale set by InitApplicationLocale() in
   // headless_content_main_delegate.cc in a way that is free of side-effects.

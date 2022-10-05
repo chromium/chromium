@@ -31,7 +31,6 @@ HEADLESS_EXPORT extern const char kNoSystemProxyConfigService[];
 HEADLESS_EXPORT extern const char kRemoteDebuggingAddress[];
 HEADLESS_EXPORT extern const char kRepl[];
 HEADLESS_EXPORT extern const char kScreenshot[];
-HEADLESS_EXPORT extern const char kSSLKeyLogFile[];
 HEADLESS_EXPORT extern const char kTimeout[];
 HEADLESS_EXPORT extern const char kUseANGLE[];
 HEADLESS_EXPORT extern const char kUseGL[];
