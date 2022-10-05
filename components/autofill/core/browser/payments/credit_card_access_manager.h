@@ -404,7 +404,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // For logging metrics.
-  raw_ptr<CreditCardFormEventLogger> form_event_logger_;
+  raw_ptr<CreditCardFormEventLogger, DanglingUntriaged> form_event_logger_;
 
   // Timestamp used for preflight call metrics.
   absl::optional<base::TimeTicks> preflight_call_timestamp_;

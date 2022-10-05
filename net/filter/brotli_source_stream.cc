@@ -163,7 +163,7 @@ class BrotliSourceStream : public FilterSourceStream {
     free(&array[-1]);
   }
 
-  raw_ptr<BrotliDecoderState> brotli_state_;
+  raw_ptr<BrotliDecoderState, DanglingUntriaged> brotli_state_;
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
 

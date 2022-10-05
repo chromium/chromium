@@ -173,7 +173,8 @@ class WebContentsViewAndroid : public WebContentsView,
   // Interface used to get notified of events from the synchronous compositor.
   raw_ptr<SynchronousCompositorClient> synchronous_compositor_client_;
 
-  raw_ptr<SelectionPopupController> selection_popup_controller_ = nullptr;
+  raw_ptr<SelectionPopupController, DanglingUntriaged>
+      selection_popup_controller_ = nullptr;
 
   int device_orientation_ = 0;
 

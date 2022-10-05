@@ -534,7 +534,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   // Observer's name pointer to instance map. Can be raw_ptr as the instance is
   // owned `observers` above, and is removed from the map on destruction.
-  base::flat_map<const char*, base::raw_ptr<PageLoadMetricsObserverInterface>>
+  base::flat_map<
+      const char*,
+      base::raw_ptr<PageLoadMetricsObserverInterface, DanglingUntriaged>>
       observers_map_;
 
   PageLoadMetricsUpdateDispatcher metrics_update_dispatcher_;
