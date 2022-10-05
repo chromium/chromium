@@ -7,6 +7,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -15,6 +17,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace content {
 
@@ -23,10 +26,13 @@ class PrefetchService;
 // An isolated network context used for prefetches. The purpose of using a
 // separate network context is to set a custom proxy configuration, and separate
 // any cookies.
-class PrefetchNetworkContext {
+class CONTENT_EXPORT PrefetchNetworkContext {
  public:
-  PrefetchNetworkContext(PrefetchService* prefetch_service,
-                         const PrefetchType& prefetch_type);
+  PrefetchNetworkContext(
+      PrefetchService* prefetch_service,
+      const PrefetchType& prefetch_type,
+      const blink::mojom::Referrer& referring_origin,
+      const GlobalRenderFrameHostId& referring_render_frame_host_id);
   ~PrefetchNetworkContext();
 
   PrefetchNetworkContext(const PrefetchNetworkContext&) = delete;
@@ -50,8 +56,9 @@ class PrefetchNetworkContext {
 
  private:
   // Binds |pending_receiver| to a URL loader factory associated with
-  // |network_context_|.
+  // the given |network_context|.
   void CreateNewURLLoaderFactory(
+      network::mojom::NetworkContext* network_context,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
       absl::optional<net::IsolationInfo> isolation_info);
 
@@ -67,6 +74,11 @@ class PrefetchNetworkContext {
   // also determines if it should be configured to use the Prefetch Proxy or
   // not.
   const PrefetchType prefetch_type_;
+
+  // These parameters are used when considering to proxy |url_loader_factory_|
+  // by calling WillCreateURLLoaderFactory.
+  const blink::mojom::Referrer referrer_;
+  const GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // The network context and URL loader factory to use when making prefetches.
   mojo::Remote<network::mojom::NetworkContext> network_context_;

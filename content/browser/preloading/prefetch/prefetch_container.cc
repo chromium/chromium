@@ -114,7 +114,8 @@ PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContext(
     PrefetchService* prefetch_service) {
   if (!network_context_) {
     network_context_ = std::make_unique<PrefetchNetworkContext>(
-        prefetch_service, prefetch_type_);
+        prefetch_service, prefetch_type_, referrer_,
+        referring_render_frame_host_id_);
   }
   return network_context_.get();
 }

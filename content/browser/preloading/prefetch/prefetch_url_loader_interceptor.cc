@@ -26,6 +26,7 @@
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -219,14 +220,50 @@ void PrefetchURLLoaderInterceptor::InterceptPrefetchedNavigation(
     return;
   }
 
+  // Set up URL loader that will serve the prefetched data, and URL loader
+  // factory that will "create" this loader.
   std::unique_ptr<PrefetchFromStringURLLoader> url_loader =
       std::make_unique<PrefetchFromStringURLLoader>(
           prefetch_container->ReleasePrefetchedResponse(),
           tenative_resource_request);
+  scoped_refptr<SingleRequestURLLoaderFactory>
+      single_request_url_loader_factory =
+          base::MakeRefCounted<SingleRequestURLLoaderFactory>(
+              url_loader->ServingResponseHandler());
 
+  // Create URL loader factory pipe that can be possibly proxied by Extensions.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
+      pending_receiver.InitWithNewPipeAndPassRemote();
+
+  // Call WillCreateURLLoaderFactory so that Extensions (and other features) can
+  // proxy the URLLoaderFactory pipe.
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  RenderFrameHost* render_frame_host = frame_tree_node->current_frame_host();
+  NavigationRequest* navigation_request = frame_tree_node->navigation_request();
+  bool bypass_redirect_checks = false;
+
+  // TODO (https://crbug.com/1369766): Investigate if header_client param should
+  // be non-null, and then how to utilize it.
+  GetContentClient()->browser()->WillCreateURLLoaderFactory(
+      BrowserContextFromFrameTreeNodeId(frame_tree_node_id_), render_frame_host,
+      render_frame_host->GetProcess()->GetID(),
+      ContentBrowserClient::URLLoaderFactoryType::kNavigation, url::Origin(),
+      navigation_request->GetNavigationId(),
+      ukm::SourceIdObj::FromInt64(navigation_request->GetNextPageUkmSourceId()),
+      &pending_receiver, /*header_client=*/nullptr, &bypass_redirect_checks,
+      /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr);
+
+  // Bind the (possibly proxied) mojo pipe to the URL loader factory that will
+  // serve the prefetched data.
+  single_request_url_loader_factory->Clone(std::move(pending_receiver));
+
+  // Wrap the other end of the mojo pipe and use it to intercept the navigation.
   std::move(loader_callback_)
-      .Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
-          url_loader->ServingResponseHandler()));
+      .Run(network::SharedURLLoaderFactory::Create(
+          std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
+              std::move(pending_remote))));
 
   // url_loader manages its own lifetime once bound to the mojo pipes.
   url_loader.release();

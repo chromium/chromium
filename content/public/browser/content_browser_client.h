@@ -1507,6 +1507,9 @@ class CONTENT_EXPORT ContentBrowserClient {
     // For regular fetches from a service worker (e.g., fetch(), XHR), not
     // including importScripts().
     kServiceWorkerSubResource,
+
+    // For prefetches.
+    kPrefetch,
   };
 
   // Allows the embedder to intercept URLLoaderFactory interfaces used by the
