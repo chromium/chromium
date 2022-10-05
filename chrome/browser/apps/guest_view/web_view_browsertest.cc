@@ -1643,54 +1643,39 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
   ASSERT_TRUE(embedder_web_contents);
 
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr("localhost");
-
-  std::string empty_guest_path(
-      "/extensions/platform_apps/web_view/shim/empty_guest.html");
-  GURL empty_guest_url = embedded_test_server()->GetURL(empty_guest_path);
-  empty_guest_url = empty_guest_url.ReplaceComponents(replace_host);
-
-  ui_test_utils::UrlLoadObserver empty_guest_observer(
-      empty_guest_url, content::NotificationService::AllSources());
-
   // Run the test and wait until the guest WebContents is available and has
   // finished loading.
   ExtensionTestMessageListener done_listener("TEST_PASSED");
   done_listener.set_failure_message("TEST_FAILED");
   EXPECT_TRUE(content::ExecuteScript(
       embedder_web_contents, "runTest('testWebViewAndEmbedderInNewWindow')"));
-
-  empty_guest_observer.Wait();
-
-  content::Source<content::NavigationController> source =
-      empty_guest_observer.source();
-  EXPECT_TRUE(source->DeprecatedGetWebContents()
-                  ->GetPrimaryMainFrame()
-                  ->GetProcess()
-                  ->IsForGuestsOnly());
   ASSERT_TRUE(done_listener.WaitUntilSatisfied());
 
   // Make sure opener and owner for the empty_guest source are different.
-  // In general, we should have two guests and two embedders. Once we know the
-  // guests are different and the embedders are different, then we have four
-  // distinct WebContents, as we expect.
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
-      &guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* new_window_guest_contents = guest_contents_list[0];
+  // In general, we should have two guests and two embedders and all four
+  // should be different.
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  content::RenderFrameHost* new_window_guest_frame = guest_rfh_list[0];
+  content::RenderFrameHost* empty_guest_frame = guest_rfh_list[1];
+  EXPECT_TRUE(empty_guest_frame->GetProcess()->IsForGuestsOnly());
 
-  content::WebContents* empty_guest_web_contents =
-      source->DeprecatedGetWebContents();
-  ASSERT_EQ(empty_guest_web_contents, guest_contents_list[1]);
-  ASSERT_NE(empty_guest_web_contents, new_window_guest_contents);
+  guest_view::GuestViewBase* empty_guest_view =
+      GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_EQ(empty_guest_view->GetGuestMainFrame(), empty_guest_frame);
+  ASSERT_NE(empty_guest_view->GetGuestMainFrame(), new_window_guest_frame);
+
   content::WebContents* empty_guest_embedder =
-      GetEmbedderForGuest(empty_guest_web_contents);
-  ASSERT_NE(empty_guest_embedder, embedder_web_contents);
+      empty_guest_view->embedder_web_contents();
   ASSERT_TRUE(empty_guest_embedder);
+  ASSERT_NE(empty_guest_embedder->GetPrimaryMainFrame(), empty_guest_frame);
+
+  // TODO(1261928): Introduce a test helper to expose the opener as a
+  // `content::Page`.
   content::RenderFrameHost* empty_guest_opener =
-      empty_guest_web_contents->GetFirstWebContentsInLiveOriginalOpenerChain()
+      empty_guest_view->web_contents()
+          ->GetFirstWebContentsInLiveOriginalOpenerChain()
           ->GetPrimaryMainFrame();
   ASSERT_TRUE(empty_guest_opener);
   ASSERT_NE(empty_guest_opener, empty_guest_embedder->GetPrimaryMainFrame());

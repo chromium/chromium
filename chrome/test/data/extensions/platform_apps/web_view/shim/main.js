@@ -3339,10 +3339,11 @@ function testWebViewAndEmbedderInNewWindow() {
         // We could use e.targetUrl here I suppose, but it's about:blank so
         // it doesn't seem to trigger a loadstop.
         newwebview.setAttribute('src', embedder.emptyGuestURL);
-        newwebview.addEventListener('loadstop', function (evt2) {
+        newwebview.addEventListener('loadstop', function(evt2) {
           // After this test exits, we'll still need to compare embedders in the
           // C++ part of this test.
-          embedder.test.succeed();
+          if (newwebview.src == embedder.emptyGuestURL)
+            embedder.test.succeed();
         });
         // Be sure to do the attach before appending to document.
         e.window.attach(newwebview);
