@@ -31,7 +31,6 @@ class MEDIA_EXPORT DefaultDecoderFactory final : public DecoderFactory {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) final;
-  SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigsForWebRTC() final;
   void CreateVideoDecoders(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       GpuVideoAcceleratorFactories* gpu_factories,

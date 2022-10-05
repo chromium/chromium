@@ -27,12 +27,6 @@ void FuchsiaDecoderFactory::CreateAudioDecoders(
   // There are no Fuchsia-specific audio decoders.
 }
 
-SupportedVideoDecoderConfigs
-FuchsiaDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
-  // TODO(crbug.com/1207991) Enable HW decoder support for WebRTC.
-  return {};
-}
-
 void FuchsiaDecoderFactory::CreateVideoDecoders(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,

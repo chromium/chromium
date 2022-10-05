@@ -45,13 +45,6 @@ class MEDIA_EXPORT DecoderFactory {
       MediaLog* media_log,
       std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders);
 
-  // Returns the union of all decoder configs supported by the decoders created
-  // when CreateVideoDecoders is called.
-  // TODO(crbug.com/1173503): Rename to GetSupportedVideoDecoderConfigs after
-  //                          being properly implemented for all factories.
-  virtual SupportedVideoDecoderConfigs
-  GetSupportedVideoDecoderConfigsForWebRTC();
-
   // Creates video decoders and append them to the end of |video_decoders|.
   // Decoders are single-threaded, each decoder should run on |task_runner|.
   virtual void CreateVideoDecoders(

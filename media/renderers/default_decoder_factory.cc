@@ -78,54 +78,6 @@ void DefaultDecoderFactory::CreateAudioDecoders(
   }
 }
 
-SupportedVideoDecoderConfigs
-DefaultDecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
-  SupportedVideoDecoderConfigs supported_configs;
-
-  {
-    base::AutoLock auto_lock(shutdown_lock_);
-    if (external_decoder_factory_) {
-      SupportedVideoDecoderConfigs external_supported_configs =
-          external_decoder_factory_->GetSupportedVideoDecoderConfigsForWebRTC();
-      supported_configs.insert(supported_configs.end(),
-                               external_supported_configs.begin(),
-                               external_supported_configs.end());
-    }
-  }
-
-  if (!base::FeatureList::IsEnabled(media::kExposeSwDecodersToWebRTC))
-    return supported_configs;
-
-#if BUILDFLAG(ENABLE_LIBVPX)
-  // When the VpxVideoDecoder has been updated for RTC add
-  // `VpxVideoDecoder::SupportedConfigs()` to `supported_configs`.
-#endif
-
-#if BUILDFLAG(ENABLE_LIBGAV1_DECODER)
-  if (base::FeatureList::IsEnabled(kGav1VideoDecoder)) {
-    SupportedVideoDecoderConfigs gav1_configs =
-        Gav1VideoDecoder::SupportedConfigs();
-    supported_configs.insert(supported_configs.end(), gav1_configs.begin(),
-                             gav1_configs.end());
-  } else
-#endif
-  {
-#if BUILDFLAG(ENABLE_DAV1D_DECODER)
-    SupportedVideoDecoderConfigs dav1d_configs =
-        Dav1dVideoDecoder::SupportedConfigs();
-    supported_configs.insert(supported_configs.end(), dav1d_configs.begin(),
-                             dav1d_configs.end());
-#endif
-  }
-
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // When the FFmpegVideoDecoder has been updated for RTC add
-  // `FFmpegVideoDecoder::SupportedConfigsForWebRTC()` to `supported_configs`.
-#endif
-
-  return supported_configs;
-}
-
 void DefaultDecoderFactory::CreateVideoDecoders(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,

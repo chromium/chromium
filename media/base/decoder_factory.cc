@@ -17,11 +17,6 @@ void DecoderFactory::CreateAudioDecoders(
     MediaLog* media_log,
     std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) {}
 
-SupportedVideoDecoderConfigs
-DecoderFactory::GetSupportedVideoDecoderConfigsForWebRTC() {
-  return {};
-}
-
 void DecoderFactory::CreateVideoDecoders(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     GpuVideoAcceleratorFactories* gpu_factories,
