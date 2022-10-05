@@ -164,8 +164,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   gpu::GpuMemoryBufferConfigurationSet native_configurations_;
   base::AtomicFlag native_configurations_initialized_;
 
-  const bool runs_on_ui_thread_;
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;
   base::WeakPtrFactory<HostGpuMemoryBufferManager> weak_factory_{this};

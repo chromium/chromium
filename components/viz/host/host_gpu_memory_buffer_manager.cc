@@ -72,8 +72,8 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
       client_id_(client_id),
       gpu_memory_buffer_support_(std::move(gpu_memory_buffer_support)),
       pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
-      runs_on_ui_thread_(task_runner->BelongsToCurrentThread()),
       task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
         gpu_memory_buffer_support_.get());
@@ -159,7 +159,6 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
       pending_buffers_[client_id].insert(
           std::make_pair(id, std::move(buffer_info)));
       if (call_sync) {
-        DCHECK(runs_on_ui_thread_);
         gfx::GpuMemoryBufferHandle handle;
         {
           mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
@@ -228,8 +227,7 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  DCHECK(runs_on_ui_thread_ || !task_runner_->BelongsToCurrentThread());
-  bool call_sync = runs_on_ui_thread_ && task_runner_->BelongsToCurrentThread();
+  bool call_sync = task_runner_->BelongsToCurrentThread();
 
   // A refcounted wrapper around a bool so that if the thread waiting on a
   // PostTask to the main thread is quit due to shutdown and the task runs
@@ -261,12 +259,11 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
         allow_base_sync_primitives;
-    if (runs_on_ui_thread_ && shutdown_event) {
-      // If this class is running on the UI thread then
-      // TileManager::FinishTasksAndCleanUp could block on the worker thread
-      // where this task is running. That could in turn block on a task posted
-      // to the UI thread. We avoid this deadlock by having an event that
-      // TileManager can set to cancel this wait.
+    if (shutdown_event) {
+      // This class runs on the UI thread so TileManager::FinishTasksAndCleanUp
+      // could block on the worker thread where this task is running. That could
+      // in turn block on a task posted to the UI thread. We avoid this deadlock
+      // by having an event that TileManager can set to cancel this wait.
       base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
       size_t index =
           base::WaitableEvent::WaitMany(waitables, std::size(waitables));
