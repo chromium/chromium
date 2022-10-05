@@ -66,7 +66,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
                 tabGroupModelFilter, editorSupportsActionOnRelatedTabs());
         tabGroupModelFilter.mergeListOfTabsToGroup(tabs, destinationTab, false, true);
 
-        RecordUserAction.record("TabMultiSelect.Done");
+        RecordUserAction.record("TabMultiSelectV2.GroupTabs");
         RecordUserAction.record("TabGroup.Created.TabMultiSelect");
     }
 

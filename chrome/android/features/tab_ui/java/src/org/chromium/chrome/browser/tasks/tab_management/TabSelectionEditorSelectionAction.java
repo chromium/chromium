@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 
@@ -84,8 +85,10 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     public void performAction(List<Tab> tabs) {
         if (mActionState == ActionState.SELECT_ALL) {
             getActionDelegate().selectAll();
+            RecordUserAction.record("TabMultiSelectV2.SelectAll");
         } else if (mActionState == ActionState.DESELECT_ALL) {
             getActionDelegate().deselectAll();
+            RecordUserAction.record("TabMultiSelectV2.DeselectAll");
         } else {
             assert false : "Invalid selection state";
         }

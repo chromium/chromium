@@ -190,7 +190,7 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
             TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         return new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
-                mTabSelectionEditorController) {
+                mContext, mTabSelectionEditorController) {
             @Override
             public void goBack() {
                 super.goBack();

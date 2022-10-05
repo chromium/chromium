@@ -63,6 +63,7 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
         for (Tab tab : tabs) {
             filter.moveTabOutOfGroup(tab.getId());
         }
+        RecordUserAction.record("TabMultiSelectV2.UngroupTabs");
         RecordUserAction.record("TabGridDialog.RemoveFromGroup.TabMultiSelect");
     }
 

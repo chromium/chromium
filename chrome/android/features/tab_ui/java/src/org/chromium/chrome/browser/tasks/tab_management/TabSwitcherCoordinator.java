@@ -498,7 +498,7 @@ public class TabSwitcherCoordinator
                             mTabSelectionEditorCoordinator.getController(),
                             TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP),
                     new TabSelectionEditorNavigationProvider(
-                            mTabSelectionEditorCoordinator.getController()));
+                            mActivity, mTabSelectionEditorCoordinator.getController()));
         }
     }
 
@@ -541,7 +541,7 @@ public class TabSwitcherCoordinator
         mTabSelectionEditorCoordinator.getController().configureToolbarWithMenuItems(
                 mTabSelectionEditorActions,
                 new TabSelectionEditorNavigationProvider(
-                        mTabSelectionEditorCoordinator.getController()));
+                        mActivity, mTabSelectionEditorCoordinator.getController()));
 
         List<Tab> tabs = new ArrayList<>();
         TabList list = mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
@@ -549,6 +549,7 @@ public class TabSwitcherCoordinator
             tabs.add(list.getTabAt(i));
         }
         mTabSelectionEditorCoordinator.getController().show(tabs);
+        RecordUserAction.record("TabMultiSelectV2.OpenFromGrid");
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {

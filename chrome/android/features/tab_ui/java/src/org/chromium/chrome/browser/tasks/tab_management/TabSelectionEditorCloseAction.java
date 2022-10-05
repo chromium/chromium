@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 
@@ -51,6 +52,7 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
         getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
+        RecordUserAction.record("TabMultiSelectV2.CloseTabs");
     }
 
     @Override

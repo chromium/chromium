@@ -128,10 +128,12 @@ class TabSelectionEditorCoordinator {
     public static class TabSelectionEditorNavigationProvider {
         private final TabSelectionEditorCoordinator
                 .TabSelectionEditorController mTabSelectionEditorController;
+        private final Context mContext;
 
-        public TabSelectionEditorNavigationProvider(
+        public TabSelectionEditorNavigationProvider(Context context,
                 TabSelectionEditorCoordinator
                         .TabSelectionEditorController tabSelectionEditorController) {
+            mContext = context;
             mTabSelectionEditorController = tabSelectionEditorController;
         }
 
@@ -139,7 +141,11 @@ class TabSelectionEditorCoordinator {
          * Defines what to do when the navigation button is clicked.
          */
         public void goBack() {
-            RecordUserAction.record("TabMultiSelect.Cancelled");
+            if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+                RecordUserAction.record("TabMultiSelectV2.ClosedByUser");
+            } else {
+                RecordUserAction.record("TabMultiSelect.Cancelled");
+            }
             mTabSelectionEditorController.hide();
         }
     }

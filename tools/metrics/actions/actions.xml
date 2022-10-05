@@ -18528,7 +18528,9 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuSelectTabs">
   <owner>ckitagawa@chromium.org</owner>
-  <description>User selected tabs in the mobile tab switcher.</description>
+  <description>
+    User pressed 'Select tabs' in the mobile tab switcher.
+  </description>
 </action>
 
 <action name="MobileMenuSettings">
@@ -34981,6 +34983,8 @@ should be able to be added at any place in this file.
              back arrow or through the system back."/>
   <suffix name="Done"
       label="Users tapped the action button on the top right corner."/>
+  <suffix name="OpenFromDialog"
+      label="Users tapped the ungroup button in the tab grid dialog."/>
   <suffix name="TabSelected"
       label="Users selected a tab in TabSelectionEditor."/>
   <suffix name="TabUnselected"
@@ -34989,12 +34993,32 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="Closed"
+      label="Catch all for closures of the TabSelectionEditorV2."/>
+  <suffix name="ClosedAutomatically"
+      label="Users closed the TabSelectionEditorV2 via an action."/>
+  <suffix name="ClosedByUser"
+      label="Users closed the TabSelectionEditorV2 explictly."/>
+  <suffix name="CloseTabs"
+      label="Users tapped on the close tabs button in TabSelectionEditorV2."/>
+  <suffix name="DeselectAll"
+      label="Users tapped on the deselect all button in TabSelectionEditorV2."/>
+  <suffix name="GroupTabs"
+      label="Users tapped on the group tabs button in TabSelectionEditorV2."/>
+  <suffix name="OpenFromDialog"
+      label="Users opened TabSelectionEditorV2 from the Tab Dialog."/>
+  <suffix name="OpenFromGrid"
+      label="Users opened TabSelectionEditorV2 from the Tab Switcher."/>
+  <suffix name="SelectAll"
+      label="Users tapped on the select all button in TabSelectionEditorV2."/>
   <suffix name="SharedTabAsTextList"
       label="Users tapped on the share button for a single tab in
              TabSelectionEditorV2."/>
   <suffix name="SharedTabsListAsTextList"
       label="Users tapped on the share button for multiple tabs in
              TabSelectionEditorV2."/>
+  <suffix name="UngroupTabs"
+      label="Users tapped on the ungroup tabs button in TabSelectionEditorV2."/>
   <affected-action name="TabMultiSelectV2"/>
 </action-suffix>
 

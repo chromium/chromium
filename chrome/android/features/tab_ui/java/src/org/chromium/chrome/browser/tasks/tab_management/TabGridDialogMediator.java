@@ -260,6 +260,11 @@ public class TabGridDialogMediator
                 setupDialogSelectionEditor();
                 if (mTabSelectionEditorControllerSupplier.get() != null) {
                     mTabSelectionEditorControllerSupplier.get().show(tabs);
+                    if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+                        RecordUserAction.record("TabMultiSelectV2.OpenFromDialog");
+                    } else {
+                        RecordUserAction.record("TabMultiSelect.OpenFromDialog");
+                    }
                 }
             } else if (result == R.id.share_tab_group) {
                 Tab tab = mTabModelSelector.getTabById(mCurrentTabId);

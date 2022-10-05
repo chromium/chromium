@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -143,7 +144,8 @@ class TabSelectionEditorMediator
                 this, TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP);
 
         mNavigationProvider =
-                new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(this);
+                new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
+                        context, this);
         mBackPressChangedSupplier.set(isEditorVisible());
         mModel.addObserver((source, key) -> {
             if (key == TabSelectionEditorProperties.IS_VISIBLE) {
@@ -293,6 +295,9 @@ class TabSelectionEditorMediator
 
     @Override
     public void hide() {
+        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+            RecordUserAction.record("TabMultiSelectV2.Closed");
+        }
         mTabListCoordinator.cleanupTabGridView();
         mVisibleTabs.clear();
         mResetHandler.resetWithListOfTabs(null, 0, /*quickMode=*/false);

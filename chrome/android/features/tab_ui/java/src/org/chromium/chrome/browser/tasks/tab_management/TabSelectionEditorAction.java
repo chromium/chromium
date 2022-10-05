@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -232,6 +233,7 @@ public abstract class TabSelectionEditorAction {
         performAction(tabs);
         if (shouldHideEditorAfterAction()) {
             mActionDelegate.hide();
+            RecordUserAction.record("TabMultiSelectV2.ClosedAutomatically");
         }
         return true;
     }

@@ -30,9 +30,13 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tab.Tab;
@@ -82,7 +86,6 @@ public class TabSuggestionMessageServiceUnitTest {
     @Mock
     public Profile.Natives mMockProfileNatives;
 
-    @Mock
     Context mContext;
     @Mock
     TabModelSelector mTabModelSelector;
@@ -104,6 +107,9 @@ public class TabSuggestionMessageServiceUnitTest {
 
     @Before
     public void setUp() {
+        mContext = RuntimeEnvironment.application;
+        ContextUtils.initApplicationContextForTests(mContext);
+
         // After setUp there are three tabs in TabModel.
         MockitoAnnotations.initMocks(this);
         mocker.mock(ProfileJni.TEST_HOOKS, mMockProfileNatives);
@@ -144,12 +150,9 @@ public class TabSuggestionMessageServiceUnitTest {
     public void testReviewHandler_closeSuggestion() {
         TabSuggestion tabSuggestion = prepareTabSuggestion(
                 Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.CLOSE);
-        String closeSuggestionActionButtonText = "close";
+        String closeSuggestionActionButtonText = "Close";
         int expectedEnablingThreshold =
                 TabSuggestionMessageService.CLOSE_SUGGESTION_ACTION_ENABLING_THRESHOLD;
-        doReturn(closeSuggestionActionButtonText)
-                .when(mContext)
-                .getString(eq(CLOSE_SUGGESTION_ACTION_BUTTON_RESOURCE_ID));
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
         verify(mTabSelectionEditorController)
@@ -190,6 +193,9 @@ public class TabSuggestionMessageServiceUnitTest {
 
     @Test
     public void testClosingSuggestionNavigationHandler() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, true);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, true);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, true);
         List<Tab> suggestedTabs = Arrays.asList(mTab1, mTab2);
         TabSuggestion tabSuggestion =
                 prepareTabSuggestion(suggestedTabs, TabSuggestion.TabSuggestionAction.CLOSE);
@@ -205,6 +211,9 @@ public class TabSuggestionMessageServiceUnitTest {
                 mTabSuggestionFeedbackCallbackArgumentCaptor.getValue();
         assertEquals(tabSuggestion, capturedFeedback.tabSuggestion);
         assertEquals(DISMISSED, capturedFeedback.tabSuggestionResponse);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_ANDROID, null);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, null);
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, null);
     }
 
     // Tests for grouping suggestion
@@ -212,12 +221,9 @@ public class TabSuggestionMessageServiceUnitTest {
     public void testReviewHandler_groupSuggestion() {
         TabSuggestion tabSuggestion = prepareTabSuggestion(
                 Arrays.asList(mTab1, mTab2), TabSuggestion.TabSuggestionAction.GROUP);
-        String groupSuggestionActionButtonText = "group";
+        String groupSuggestionActionButtonText = "Group";
         int expectedEnablingThreshold =
                 TabSuggestionMessageService.GROUP_SUGGESTION_ACTION_ENABLING_THRESHOLD;
-        doReturn(groupSuggestionActionButtonText)
-                .when(mContext)
-                .getString(eq(GROUP_SUGGESTION_ACTION_BUTTON_RESOURCE_ID));
 
         mMessageService.review(tabSuggestion, mTabSuggestionFeedbackCallback);
         verify(mTabSelectionEditorController)
