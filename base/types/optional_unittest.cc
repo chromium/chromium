@@ -1227,6 +1227,14 @@ TEST(OptionalTest, Equals_DifferentType) {
   EXPECT_TRUE(a == b);
 }
 
+TEST(OptionalTest, Equals_Value) {
+  absl::optional<int> a(0);
+  absl::optional<int> b;
+
+  EXPECT_TRUE(a == 0);
+  EXPECT_FALSE(b == 0);
+}
+
 TEST(OptionalTest, NotEquals_TwoEmpty) {
   absl::optional<int> a;
   absl::optional<int> b;
@@ -1260,6 +1268,17 @@ TEST(OptionalTest, NotEquals_DifferentType) {
   absl::optional<double> b(0.0);
 
   EXPECT_FALSE(a != b);
+}
+
+TEST(OptionalTest, NotEquals_Value) {
+  absl::optional<int> a(0);
+  absl::optional<int> b;
+
+  EXPECT_TRUE(a != 1);
+  EXPECT_FALSE(a == 1);
+
+  EXPECT_TRUE(b != 1);
+  EXPECT_FALSE(b == 1);
 }
 
 TEST(OptionalTest, Less_LeftEmpty) {
