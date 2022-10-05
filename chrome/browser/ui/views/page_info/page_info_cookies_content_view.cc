@@ -322,12 +322,6 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
   if (fps_button_)
     return;
 
-  PageInfo::PermissionInfo info;
-  info.type = ContentSettingsType::COOKIES;
-  info.setting = CONTENT_SETTING_ALLOW;
-  // TODO(crbug.com/1346305): Change to the correct icon, after it's decided.
-  const ui::ImageModel icon_fps = PageInfoViewFactory::GetPermissionIcon(info);
-
   const std::u16string& tooltip =
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP);
 
@@ -338,7 +332,8 @@ void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
           base::BindRepeating(
               &PageInfoCookiesContentView::FpsSettingsButtonClicked,
               base::Unretained(this)),
-          icon_fps, IDS_PAGE_INFO_COOKIES, std::u16string(),
+          PageInfoViewFactory::GetFpsIcon(), IDS_PAGE_INFO_COOKIES,
+          std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS,
           tooltip, /*secondary_text=*/u" ",
           PageInfoViewFactory::GetLaunchIcon(),

@@ -115,6 +115,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sms.icon",
     "submenu_arrow.icon",
     "sync.icon",
+    "tenancy.icon",
     "troubleshoot.icon",
     "usb.icon",
     "videocam.icon",

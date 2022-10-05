@@ -477,6 +477,12 @@ const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
 }
 
 // static
+const ui::ImageModel PageInfoViewFactory::GetFpsIcon() {
+  return ui::ImageModel::FromVectorIcon(vector_icons::kTenancyIcon,
+                                        ui::kColorIcon, GetIconSize());
+}
+
+// static
 const ui::ImageModel PageInfoViewFactory::GetEnforcedCookieControlsIcon(
     CookieControlsEnforcement enforcement) {
   switch (enforcement) {
