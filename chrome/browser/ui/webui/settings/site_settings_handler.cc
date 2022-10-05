@@ -572,6 +572,30 @@ void ConvertSiteGroupMapToList(
   }
 }
 
+bool ShouldAddToNotificationPermissionReviewList(
+    site_engagement::SiteEngagementService* service,
+    GURL url,
+    int notification_count) {
+  // The notification permission should be added to the list if one of the
+  // criteria below holds:
+  // - Site engagement level is NONE OR MINIMAL and average daily notification
+  // count is more than 0.
+  // - Site engamment level is LOW and average daily notification count is
+  // more than 3. Otherwise, the notification permission should not be added
+  // to review list.
+  double score = service->GetScore(url);
+  bool is_low_engagement =
+      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
+          score, blink::mojom::EngagementLevel::MEDIUM) &&
+      notification_count > 3;
+  bool is_minimal_engagement =
+      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
+          score, blink::mojom::EngagementLevel::LOW) &&
+      notification_count > 0;
+
+  return is_minimal_engagement || is_low_engagement;
+}
+
 }  // namespace
 
 SiteSettingsHandler::SiteSettingsHandler(Profile* profile)
@@ -2047,8 +2071,17 @@ SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   auto notification_permissions = service->GetNotificationSiteListForReview();
 
+  site_engagement::SiteEngagementService* engagement_service =
+      site_engagement::SiteEngagementService::Get(profile_);
+
   base::Value::List result;
   for (const auto& notification_permission : notification_permissions) {
+    if (!ShouldAddToNotificationPermissionReviewList(
+            engagement_service, notification_permission.origin.GetURL(),
+            notification_permission.notification_count)) {
+      continue;
+    }
+
     base::Value::Dict permission;
     permission.Set(site_settings::kOrigin,
                    notification_permission.origin.Serialize());

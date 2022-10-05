@@ -26,9 +26,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -65,6 +68,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/site_engagement/content/site_engagement_score.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -282,6 +286,26 @@ class SiteSettingsHandlerTest : public testing::Test,
       if (partition)
         partition->WaitForDeletionTasksForTesting();
     }
+  }
+
+  void RecordNotification(permissions::NotificationsEngagementService* service,
+                          GURL url,
+                          int daily_avarage_count) {
+    base::Time date = base::Time::Now();
+    base::Time::Exploded date_exploded;
+    date.LocalExplode(&date_exploded);
+    int day_of_week = date_exploded.day_of_week;
+
+    // Notification count holds in buckets for each monday. So to calculate
+    // necessary notification count, here the day_of_week is calculated.
+    int total_count = day_of_week * daily_avarage_count;
+    service->RecordNotificationDisplayed(url, total_count);
+  }
+
+  base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2018 11:00:00 GMT", &time));
+    return time;
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -3199,4 +3223,67 @@ TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
 
+TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
+  // Add a couple of notification permission and check they appear in review
+  // list.
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  GURL hosts[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
+                  GURL("https://www.example.com/")};
+
+  map->SetContentSettingDefaultScope(hosts[0], GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(hosts[1], GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(hosts[2], GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_ALLOW);
+
+  // Record initial display date to enable comparing dictionaries for
+  // NotificationEngagementService.
+  auto* notification_engagement_service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile());
+  std::string displayedDate =
+      notification_engagement_service->GetBucketLabelForLastMonday(
+          base::Time::Now());
+
+  auto* site_engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
+
+  // Set a host to have minimum engagement. This should be in review list.
+  RecordNotification(notification_engagement_service, hosts[0], 1);
+  site_engagement::SiteEngagementScore score =
+      site_engagement_service->CreateEngagementScore(hosts[0]);
+  score.Reset(0.5, GetReferenceTime());
+  score.Commit();
+  EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
+            site_engagement_service->GetEngagementLevel(hosts[0]));
+
+  // Set a host to have large number of notifications, but low engagement. This
+  // should be in review list.
+  RecordNotification(notification_engagement_service, hosts[1], 4);
+  site_engagement_service->AddPointsForTesting(hosts[1], 1.0);
+  EXPECT_EQ(blink::mojom::EngagementLevel::LOW,
+            site_engagement_service->GetEngagementLevel(hosts[1]));
+
+  // Set a host to have medium engagement and high notification count. This
+  // should not be in review list.
+  RecordNotification(notification_engagement_service, hosts[2], 4);
+  site_engagement_service->AddPointsForTesting(hosts[2], 50.0);
+  EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
+            site_engagement_service->GetEngagementLevel(hosts[2]));
+
+  const auto& notification_permissions =
+      handler()->PopulateNotificationPermissionReviewData();
+  // Check there are 2 notification permissions in the list.
+  EXPECT_EQ(2UL, notification_permissions.size());
+  // Check minimal engagement item is in the list.
+  EXPECT_EQ("https://google.com",
+            *notification_permissions[0].FindStringKey(site_settings::kOrigin));
+  // Check low engagement item is in the list.
+  EXPECT_EQ("https://www.youtube.com",
+            *notification_permissions[1].FindStringKey(site_settings::kOrigin));
+}
 }  // namespace settings

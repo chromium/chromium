@@ -148,6 +148,8 @@ class SiteSettingsHandler
                            HandleBlockNotificationPermissionForOrigin);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleResetNotificationPermissionForOrigin);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           PopulateNotificationPermissionReviewData);
 
   // Creates the CookiesTreeModel if necessary.
   void EnsureCookiesTreeModelCreated();

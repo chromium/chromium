@@ -4,7 +4,6 @@
 
 #include "components/permissions/notifications_engagement_service.h"
 
-#include "base/logging.h"
 #include "components/permissions/permissions_client.h"
 #include "url/gurl.h"
 
@@ -66,6 +65,12 @@ void NotificationsEngagementService::Shutdown() {
 void NotificationsEngagementService::RecordNotificationDisplayed(
     const GURL& url) {
   IncrementCounts(url, 1 /*display_count_delta*/, 0 /*click_count_delta*/);
+}
+
+void NotificationsEngagementService::RecordNotificationDisplayed(
+    const GURL& url,
+    int display_count) {
+  IncrementCounts(url, display_count, 0 /*click_count_delta*/);
 }
 
 void NotificationsEngagementService::RecordNotificationInteraction(

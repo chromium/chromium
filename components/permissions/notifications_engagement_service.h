@@ -38,6 +38,7 @@ class NotificationsEngagementService : public KeyedService {
   void Shutdown() override;
 
   void RecordNotificationDisplayed(const GURL& url);
+  void RecordNotificationDisplayed(const GURL& url, int display_count);
   void RecordNotificationInteraction(const GURL& url);
 
   // ISO8601 defines Monday as the first day of the week. Additionally, in most
