@@ -394,7 +394,7 @@ void FinalizeWebAppLaunch(absl::optional<OpenMode> app_open_mode,
 
   // Log in a histogram the different ways web apps are opened. See
   // OpenMode enum for the values of the buckets.
-  base::UmaHistogramEnumeration("WebApp.OpenModes", mode);
+  base::UmaHistogramEnumeration("WebApp.OpenMode", mode);
 
   LaunchModeRecorder().SetLaunchMode(ConvertOpenModeToLaunchMode(mode));
 
