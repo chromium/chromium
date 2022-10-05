@@ -30,25 +30,18 @@
       <img class="illustration"
         src="waiting_for_approval_light_theme.svg">
     </picture>
-    <div id="block-reason">
-      <picture id="blocked-icon">
-        <source
-          srcset="blocked_icon_dark_theme.svg"
-          media="(prefers-color-scheme: dark)">
-        <img id="illustration"
-          src="blocked_icon_light_theme.svg">
-      </picture>
-      <div>
-        <h2 id="block-reason-header">$i18n{siteBlockHeader}</h2>
-        <p id="block-reason-message">$i18n{blockReasonMessage}</p>
-      </div>
-    </div>
     <div id="main-message">
       <h1 id="block-page-header" tabindex="-1">$i18n{blockPageHeader}</h1>
       <p id="block-page-message" tabindex="-1">$i18n{blockPageMessage}</p>
       <h1 id="request-failed-message" role="alert" hidden>$i18n{requestFailedMessage}</h1>
       <h1 id="request-sent-message" role="alert" hidden>$i18n{requestSentMessage}</h1>
       <p id="request-sent-description" hidden>$i18n{requestSentDescription}</p>
+    </div>
+    <div id="block-reason">
+      <div>
+        <h2 id="block-reason-header">$i18n{siteBlockHeader}</h2>
+        <p id="block-reason-message">$i18n{blockReasonMessage}</p>
+      </div>
     </div>
     <div id="custodians-information" hidden>
       <div id="custodian-information" class="custodian-information">

@@ -200,10 +200,6 @@ p {
   font-weight: bold;
 }
 
-#blocked-icon {
-  margin-right: 14px;
-}
-
 #block-reason {
   align-items: center;
   background-color: var(--callout-bg-color);
@@ -213,7 +209,7 @@ p {
   justify-content: flex-start;
   padding: 16px;
   max-width: 276px;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 #block-reason-header {

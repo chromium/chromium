@@ -192,14 +192,6 @@ p {
   font-weight: bold;
 }
 
-#blocked-icon {
-  margin-right: 14px;
-}
-
-#block-reason {
-  display: none;
-}
-
 picture {
   margin: auto;
 }
