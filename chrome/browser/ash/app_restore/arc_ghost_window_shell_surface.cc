@@ -121,7 +121,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
-      shell_surface.get(), window_id, display_id_value, local_bounds,
+      shell_surface.get(), window_id, app_id, display_id_value, local_bounds,
       window_state.value_or(chromeos::WindowStateType::kDefault)));
   shell_surface->set_close_callback(std::move(close_callback));
 
@@ -186,6 +186,7 @@ void ArcGhostWindowShellSurface::InitContentOverlay(const std::string& app_id,
                                                     uint32_t theme_color) {
   auto view =
       std::make_unique<ArcGhostWindowView>(type_, kDiameter, theme_color);
+  view_observer_ = view.get();
   view->LoadIcon(app_id);
   exo::ShellSurfaceBase::OverlayParams overlay_params(std::move(view));
   overlay_params.translucent = true;
@@ -208,6 +209,12 @@ void ArcGhostWindowShellSurface::SetShellAppId(
     property_handler->SetProperty(app_restore::kAppIdKey, *id);
   else
     property_handler->ClearProperty(app_restore::kAppIdKey);
+}
+
+void ArcGhostWindowShellSurface::SetWindowType(
+    arc::GhostWindowType window_type) {
+  DCHECK(view_observer_);
+  view_observer_->SetType(window_type);
 }
 
 }  // namespace ash::full_restore

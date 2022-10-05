@@ -128,6 +128,18 @@ bool ArcGhostWindowHandler::LaunchArcGhostWindow(
   return true;
 }
 
+bool ArcGhostWindowHandler::UpdateArcGhostWindowType(
+    int32_t session_id,
+    arc::GhostWindowType window_type) {
+  auto it = session_id_to_shell_surface_.find(session_id);
+  if (it == session_id_to_shell_surface_.end())
+    return false;
+  auto* shell_surface =
+      static_cast<ArcGhostWindowShellSurface*>(it->second.get());
+  shell_surface->SetWindowType(window_type);
+  return true;
+}
+
 void ArcGhostWindowHandler::CloseWindow(int session_id) {
   auto it = session_id_to_shell_surface_.find(session_id);
   if (it == session_id_to_shell_surface_.end())
