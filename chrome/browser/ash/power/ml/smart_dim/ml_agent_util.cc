@@ -27,13 +27,12 @@ bool PopulateMapFromNamesAndNodes(
     return false;
   }
 
-  if (nodes.GetListDeprecated().size() != 1 ||
-      !nodes.GetListDeprecated()[0].is_int()) {
+  if (nodes.GetList().size() != 1 || !nodes.GetList()[0].is_int()) {
     DVLOG(1) << "nodes should contain only 1 integer element.";
     return false;
   }
 
-  name_2_node_map->emplace(names[0], nodes.GetListDeprecated()[0].GetInt());
+  name_2_node_map->emplace(names[0], nodes.GetList()[0].GetInt());
   return true;
 }
 
