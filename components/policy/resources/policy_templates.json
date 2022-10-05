@@ -21531,6 +21531,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to sign into their device with Smart Lock',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to sign into their device with Smart Lock',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 488,
@@ -21552,6 +21562,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use Instant Tethering',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to use Instant Tethering',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 367,
@@ -21573,6 +21593,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Phone Hub to be enabled',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Phone Hub to be enabled',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 795,
@@ -21625,6 +21655,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Phone Hub notifications to be enabled',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Phone Hub notifications to be enabled',
+        },
+      ],
       'example_value': True,
       'id': 796,
       'caption': '''Allow Phone Hub notifications to be enabled.''',
@@ -21645,6 +21685,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Phone Hub task continuation to be enabled',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Phone Hub task continuation to be enabled',
+        },
+      ],
       'example_value': True,
       'id': 797,
       'caption': '''Allow Phone Hub task continuation to be enabled.''',
@@ -21696,6 +21746,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to enable Nearby Share',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from enabling Nearby Share',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 761,
@@ -22179,6 +22239,16 @@
         'per_profile': False,
         'metapolicy_type': 'precedence',
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Cloud machine policies take precedence over platform machine policies',
+        },
+        {
+          'value': False,
+          'caption': 'Platform machine policies take precedence over cloud machine policies',
+        },
+      ],
       'example_value': False,
       'id': 381,
       'caption': '''<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud policy overrides Platform policy.''',
@@ -22237,6 +22307,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Ask the user where to save the file before downloading',
+        },
+        {
+          'value': False,
+          'caption': 'Do not ask the user (downloads start immediately)',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': False,
       'id': 395,
       'caption': '''Ask where to save each file before downloading''',
@@ -22255,6 +22340,16 @@
       'features': {
         'dynamic_refresh': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow unaffiliated users to use Android apps',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow unaffiliated users to use Android apps',
+        },
+      ],
       'example_value': False,
       'id': 397,
       'caption': '''Allow unaffiliated users to use ARC''',
