@@ -2592,7 +2592,7 @@ void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
   // history navigation is completed. For history navigation that is not
   // restored from back/forward cache, we set a new value in
   // |CommitNavigationWithParams()|.
-  if (MainFrame()->IsWebLocalFrame()) {
+  if (MainFrame()->IsWebLocalFrame() && MainFrame()->IsOutermostMainFrame()) {
     MainFrame()->ToWebLocalFrame()->SetNotRestoredReasons(nullptr);
   }
 

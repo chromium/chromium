@@ -3041,30 +3041,43 @@ void WebLocalFrameImpl::SetSessionStorageArea(
 
 void WebLocalFrameImpl::SetNotRestoredReasons(
     const mojom::BackForwardCacheNotRestoredReasonsPtr& not_restored_reasons) {
-  not_restored_reasons_ =
-      not_restored_reasons.is_null()
-          ? mojom::BackForwardCacheNotRestoredReasonsPtr(nullptr)
-          : not_restored_reasons->Clone();
+  GetFrame()->SetNotRestoredReasons(
+      ConvertNotRestoredReasons(not_restored_reasons));
 }
 
 bool WebLocalFrameImpl::HasBlockingReasons() {
-  if (!not_restored_reasons_)
-    return false;
-  return HasBlockingReasonsHelper(not_restored_reasons_);
+  return GetFrame()->HasBlockingReasons();
 }
 
-bool WebLocalFrameImpl::HasBlockingReasonsHelper(
-    const mojom::BackForwardCacheNotRestoredReasonsPtr& not_restored) {
-  if (not_restored->blocked)
-    return true;
-  if (not_restored->same_origin_details) {
-    for (const auto& child : not_restored->same_origin_details->children) {
-      if (HasBlockingReasonsHelper(child))
-        return true;
+const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
+WebLocalFrameImpl::GetNotRestoredReasons() {
+  return GetFrame()->GetNotRestoredReasons();
+}
+
+mojom::blink::BackForwardCacheNotRestoredReasonsPtr
+WebLocalFrameImpl::ConvertNotRestoredReasons(
+    const mojom::BackForwardCacheNotRestoredReasonsPtr& reasons_to_copy) {
+  mojom::blink::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons;
+  if (!reasons_to_copy.is_null()) {
+    not_restored_reasons =
+        mojom::blink::BackForwardCacheNotRestoredReasons::New();
+    not_restored_reasons->blocked = reasons_to_copy->blocked;
+    auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();
+    if (reasons_to_copy->same_origin_details) {
+      details->id = reasons_to_copy->same_origin_details->id.c_str();
+      details->name = reasons_to_copy->same_origin_details->name.c_str();
+      details->src = reasons_to_copy->same_origin_details->src.c_str();
+      details->url = reasons_to_copy->same_origin_details->url.c_str();
+      for (const auto& reason : reasons_to_copy->same_origin_details->reasons) {
+        details->reasons.push_back(reason.c_str());
+      }
+      for (const auto& child : reasons_to_copy->same_origin_details->children) {
+        details->children.push_back(ConvertNotRestoredReasons(child));
+      }
     }
-    return false;
+    not_restored_reasons->same_origin_details = std::move(details);
   }
-  return not_restored->blocked;
+  return not_restored_reasons;
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

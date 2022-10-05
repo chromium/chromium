@@ -1313,5 +1313,11 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/custom-elements/scoped-registry"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"]
+  },
+  {
+    "prefix": "not-restored-reasons",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/performance-timeline/not-restored-reasons/"],
+    "args": ["--enable-features=BackForwardCacheSendNotRestoredReasons"]
   }
 ]

@@ -6552,6 +6552,7 @@ interface PerformanceNavigationTiming : PerformanceResourceTiming
     getter domInteractive
     getter loadEventEnd
     getter loadEventStart
+    getter notRestoredReasons
     getter redirectCount
     getter type
     getter unloadEventEnd
