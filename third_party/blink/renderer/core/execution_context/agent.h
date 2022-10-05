@@ -21,6 +21,7 @@ class EventLoop;
 }
 
 class ExecutionContext;
+class RejectedPromises;
 
 // Corresponding spec concept is:
 // https://html.spec.whatwg.org/C#integration-with-the-javascript-agent-formalism
@@ -103,6 +104,14 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   // for cases where the origin-keyed should be inherited from parent documents.
   void ForceOriginKeyedBecauseOfInheritance();
 
+  // Returns if this is a Window Agent or not.
+  virtual bool IsWindowAgent() const;
+
+  virtual void Dispose();
+  virtual void PerformMicrotaskCheckpoint();
+
+  RejectedPromises& GetRejectedPromises();
+
  protected:
   Agent(v8::Isolate* isolate,
         const base::UnguessableToken& cluster_id,
@@ -111,6 +120,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
         bool origin_agent_cluster_left_as_default);
 
  private:
+  scoped_refptr<RejectedPromises> rejected_promises_;
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
   bool origin_keyed_because_of_inheritance_;

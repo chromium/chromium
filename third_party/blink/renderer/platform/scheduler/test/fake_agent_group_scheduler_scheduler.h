@@ -49,6 +49,9 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
     return nullptr;
   }
 
+  void AddAgent(Agent* agent) override {}
+  void RemoveAgent(Agent* agent) override {}
+
  private:
   WebThreadScheduler& web_thread_scheduler_;
 };

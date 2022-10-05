@@ -24,6 +24,9 @@ class VirtualTimeController;
 namespace scheduler {
 namespace {
 
+std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+    v8::Isolate* isolate);
+
 class DummyWidgetScheduler final : public WidgetScheduler {
  public:
   DummyWidgetScheduler() = default;
@@ -219,6 +222,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
   // WebThreadScheduler implementation:
   void Shutdown() override {}
+  WebThreadScheduler* ToWebMainThreadScheduler() override { return this; }
 
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override { return false; }
@@ -259,7 +263,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   }
 
   std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return CreateDummyAgentGroupScheduler();
+    return CreateDummyAgentGroupSchedulerWithIsolate(isolate_);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
@@ -286,8 +290,10 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
 
 class DummyAgentGroupScheduler : public AgentGroupScheduler {
  public:
-  DummyAgentGroupScheduler()
-      : main_thread_scheduler_(new DummyWebMainThreadScheduler()) {}
+  explicit DummyAgentGroupScheduler(v8::Isolate* isolate)
+      : main_thread_scheduler_(new DummyWebMainThreadScheduler()) {
+    main_thread_scheduler_->SetV8Isolate(isolate);
+  }
   ~DummyAgentGroupScheduler() override = default;
 
   DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
@@ -314,10 +320,17 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
     return GetEmptyBrowserInterfaceBroker();
   }
   v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
+  void AddAgent(Agent* agent) override {}
+  void RemoveAgent(Agent* agent) override {}
 
  private:
   std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;
 };
+
+std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+    v8::Isolate* isolate) {
+  return std::make_unique<DummyAgentGroupScheduler>(isolate);
+}
 
 }  // namespace
 
@@ -330,7 +343,7 @@ std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
 }
 
 std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupScheduler() {
-  return std::make_unique<DummyAgentGroupScheduler>();
+  return std::make_unique<DummyAgentGroupScheduler>(/*isolate=*/nullptr);
 }
 
 std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {

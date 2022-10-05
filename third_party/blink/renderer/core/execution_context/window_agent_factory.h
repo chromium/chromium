@@ -12,11 +12,11 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace v8 {
-class Isolate;
-}
-
 namespace blink {
+
+namespace scheduler {
+class WebAgentGroupScheduler;
+}
 
 class SecurityOrigin;
 class WindowAgent;
@@ -32,7 +32,8 @@ class WindowAgent;
 // https://html.spec.whatwg.org/C#auxiliary-browsing-context
 class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
  public:
-  WindowAgentFactory();
+  explicit WindowAgentFactory(
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler);
 
   // Returns an instance of WindowAgent for |origin|.
   // This returns the same instance for origin A and origin B if either:
@@ -50,7 +51,6 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   //   * --run-web-tests is set,
   //   * or, the Blink instance is running for Android WebView.
   WindowAgent* GetAgentForOrigin(bool has_potential_universal_access_privilege,
-                                 v8::Isolate* isolate,
                                  const SecurityOrigin* origin,
                                  bool is_origin_agent_cluster,
                                  bool origin_agent_cluster_left_as_default);
@@ -116,6 +116,7 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
                                         SchemeAndRegistrableDomainHash,
                                         SchemeAndRegistrableDomainTraits>;
   TupleOriginAgents tuple_origin_agents_;
+  scheduler::WebAgentGroupScheduler& agent_group_scheduler_;
 };
 
 }  // namespace blink

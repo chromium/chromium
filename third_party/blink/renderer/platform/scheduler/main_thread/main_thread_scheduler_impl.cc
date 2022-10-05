@@ -1108,8 +1108,19 @@ void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
 }
 
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
+  // This will fallback to execute the microtask checkpoint for the
+  // default EventLoop for the isolate.
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
+  // Perform a microtask checkpoint for each AgentSchedulingGroup. This
+  // really should only be the ones that are not frozen but AgentSchedulingGroup
+  // does not have that concept yet.
+  // TODO(dtapuska): Move this to EndAgentGroupSchedulerScope so that we only
+  // run the microtask checkpoint for a given AgentGroupScheduler.
+  for (AgentGroupSchedulerImpl* agent_group_scheduler :
+       main_thread_only().agent_group_schedulers) {
+    agent_group_scheduler->PerformMicrotaskCheckpoint();
+  }
 }
 
 // static
@@ -2095,8 +2106,9 @@ MainThreadSchedulerImpl::CreateAgentGroupScheduler() {
 
 void MainThreadSchedulerImpl::RemoveAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
-  DCHECK(agent_group_schedulers_.Contains(agent_group_scheduler));
-  agent_group_schedulers_.erase(agent_group_scheduler);
+  DCHECK(main_thread_only().agent_group_schedulers.Contains(
+      agent_group_scheduler));
+  main_thread_only().agent_group_schedulers.erase(agent_group_scheduler);
 }
 
 WebAgentGroupScheduler*
@@ -2219,8 +2231,9 @@ base::TimeTicks MainThreadSchedulerImpl::NowTicks() const {
 
 void MainThreadSchedulerImpl::AddAgentGroupScheduler(
     AgentGroupSchedulerImpl* agent_group_scheduler) {
-  bool is_new_entry =
-      agent_group_schedulers_.insert(agent_group_scheduler).is_new_entry;
+  bool is_new_entry = main_thread_only()
+                          .agent_group_schedulers.insert(agent_group_scheduler)
+                          .is_new_entry;
   DCHECK(is_new_entry);
 }
 

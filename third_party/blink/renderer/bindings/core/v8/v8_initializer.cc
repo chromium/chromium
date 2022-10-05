@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -85,6 +86,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -233,8 +235,15 @@ void V8Initializer::MessageHandlerInWorker(v8::Local<v8::Message> message,
 
 namespace {
 
+bool IsRejectedPromisesPerWindowAgent() {
+  static bool g_rejected_promises_per_window_agent =
+      base::FeatureList::IsEnabled(scheduler::kRejectedPromisesPerWindowAgent);
+  return g_rejected_promises_per_window_agent;
+}
+
 static RejectedPromises& RejectedPromisesOnMainThread() {
   DCHECK(IsMainThread());
+  DCHECK(!IsRejectedPromisesPerWindowAgent());
   DEFINE_STATIC_LOCAL(scoped_refptr<RejectedPromises>, rejected_promises,
                       (RejectedPromises::Create()));
   return *rejected_promises;
@@ -243,6 +252,8 @@ static RejectedPromises& RejectedPromisesOnMainThread() {
 }  // namespace
 
 void V8Initializer::ReportRejectedPromisesOnMainThread() {
+  if (IsRejectedPromisesPerWindowAgent())
+    return;
   RejectedPromisesOnMainThread().ProcessQueue();
 }
 
@@ -323,7 +334,13 @@ static void PromiseRejectHandlerInMainThread(v8::PromiseRejectMessage data) {
   if (!script_state->ContextIsValid())
     return;
 
-  PromiseRejectHandler(data, RejectedPromisesOnMainThread(), script_state);
+  RejectedPromises* rejected_promises;
+  if (IsRejectedPromisesPerWindowAgent()) {
+    rejected_promises = &window->GetAgent()->GetRejectedPromises();
+  } else {
+    rejected_promises = &RejectedPromisesOnMainThread();
+  }
+  PromiseRejectHandler(data, *rejected_promises, script_state);
 }
 
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {

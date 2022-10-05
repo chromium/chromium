@@ -860,6 +860,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
 
     std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
+    WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers;
   };
 
   struct AnyThread {
@@ -936,7 +937,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   }
 
   PollableThreadSafeFlag policy_may_need_update_;
-  WTF::HashSet<AgentGroupSchedulerImpl*> agent_group_schedulers_;
   WebAgentGroupScheduler* current_agent_group_scheduler_{nullptr};
 
   base::WeakPtrFactory<MainThreadSchedulerImpl> weak_factory_{this};
