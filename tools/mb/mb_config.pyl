@@ -626,7 +626,7 @@
       'Network Service Linux': 'release_bot_reclient',
       'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
-      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
+      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
     },
 
     'chromium.mac': {
@@ -1192,7 +1192,7 @@
       'linux-example-builder': 'release_trybot',
       'linux-extended-tracing-rel': 'release_trybot_extended_tracing',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
-      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang_cxx11',
+      'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
       'linux-headless-shell-rel': 'headless_shell_release_bot',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on',
@@ -3552,8 +3552,8 @@
       'release_bot_reclient', 'minimal_symbols', 'enable_archive_compression'
     ],
 
-    'release_bot_minimal_symbols_no_clang_cxx11': [
-      'release_bot', 'minimal_symbols', 'no_clang', 'use_cxx11', 'no_goma',
+    'release_bot_minimal_symbols_no_clang': [
+      'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
 
     'release_bot_minimal_symbols_reclient': [
@@ -4784,10 +4784,6 @@
 
     'use_clang_coverage': {
       'gn_args': 'use_clang_coverage=true',
-    },
-
-    'use_cxx11': {
-      'gn_args': 'use_cxx11=true',
     },
 
     # TODO(crbug.com/869348): Remove this if we set this by default or don't use

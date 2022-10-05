@@ -85,9 +85,6 @@ declare_args() {
   # the needed gcov profiling data.
   auto_profile_path = ""
 
-  # Allow projects that wish to stay on C++11 to override Chromium's default.
-  use_cxx11 = false
-
   # Path to an AFDO profile to use while building with clang, if any. Empty
   # implies none.
   clang_sample_profile_path = ""

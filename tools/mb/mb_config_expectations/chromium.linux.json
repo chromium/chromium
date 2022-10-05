@@ -156,7 +156,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_cxx11": true,
       "use_goma": false
     }
   }
