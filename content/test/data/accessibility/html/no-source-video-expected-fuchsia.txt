@@ -12,9 +12,8 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN
 ++++++++++++++++BUTTON label='play'
 ++++++++++++++++++UNKNOWN
-++++++++++++++++UNKNOWN label='elapsed time: 0:00'
-++++++++++++++++++STATIC_TEXT label='0:00'
-++++++++++++++++++++UNKNOWN label='0:00'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='0:00'
 ++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++STATIC_TEXT hidden label='/ 0:00'
 ++++++++++++++++UNKNOWN hidden
@@ -26,7 +25,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++UNKNOWN
 ++++++++++++++++UNKNOWN label='show more media controls' secondary_label='more options'
 ++++++++++++++++++UNKNOWN
-++++++++++++++SLIDER label='video time scrubber 0:00 / 0:00' value='elapsed time: 0:00'
+++++++++++++++SLIDER label='video time scrubber' secondary_label='total time: 0:00' value='elapsed time: 0:00'
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
