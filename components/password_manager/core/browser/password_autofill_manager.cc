@@ -591,9 +591,16 @@ void PasswordAutofillManager::OnAddPasswordFillData(
   // If the `fill_data_` changes, then it's likely that the filling context
   // changed as well, so the biometric auth is now out of scope.
   CancelBiometricReauthIfOngoing();
+  RequestFavicon(fill_data.url);
+
+  // If there are no username or password suggestions, WebAuthn credentials
+  // can still cause a popup to appear.
+  if (fill_data.username_field.value.empty() &&
+      fill_data.password_field.value.empty()) {
+    return;
+  }
 
   fill_data_ = std::make_unique<autofill::PasswordFormFillData>(fill_data);
-  RequestFavicon(fill_data.url);
 
   if (!autofill_client_ || autofill_client_->GetPopupSuggestions().empty())
     return;

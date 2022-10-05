@@ -126,15 +126,7 @@ int ContentPasswordManagerDriver::GetId() const {
 
 void ContentPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
-  // If there are no username or password suggestions, WebAuthn credentials
-  // can still cause a SetPasswordFillData. The PasswordFormFillData is only
-  // relevant to the PasswordAutofillManager if there are saved passwords,
-  // so we don't propagate an empty one in order to make it explicit that none
-  // exist.
-  if (!form_data.username_field.value.empty() &&
-      !form_data.password_field.value.empty()) {
-    password_autofill_manager_.OnAddPasswordFillData(form_data);
-  }
+  password_autofill_manager_.OnAddPasswordFillData(form_data);
   if (const auto& agent = GetPasswordAutofillAgent()) {
     agent->SetPasswordFillData(autofill::MaybeClearPasswordValues(form_data));
   }

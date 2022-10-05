@@ -316,7 +316,8 @@ class PasswordAutofillManagerTest : public testing::Test {
     EXPECT_CALL(*client, GetFaviconService())
         .WillOnce(Return(&favicon_service));
     EXPECT_CALL(favicon_service,
-                GetFaviconImageForPageURL(fill_data_.url, _, _));
+                GetFaviconImageForPageURL(fill_data_.url, _, _))
+        .WillOnce(Invoke(RespondWithTestIcon));
     password_autofill_manager_->OnAddPasswordFillData(fill_data_);
     testing::Mock::VerifyAndClearExpectations(client);
     // Suppress the warnings in the tests.
@@ -2041,6 +2042,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
+  EXPECT_TRUE(
+      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
   ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
   ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
   EXPECT_EQ(open_args.suggestions[0].labels[0][0].value, kAuthenticator);
@@ -2099,6 +2102,58 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   // Check that the button shows the correct text.
   EXPECT_EQ(open_args.suggestions[1].main_text.value,
             l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DEVICE_PASSKEY));
+}
+
+// Regression test for crbug.com/1370037.
+TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
+  // Initialize a PasswordAutofillManager with an empty password form.
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  password_autofill_manager_ = std::make_unique<PasswordAutofillManager>(
+      client.mock_driver(), &autofill_client, &client);
+  autofill::PasswordFormFillData data;
+  data.url = GURL(kMainFrameUrl);
+  favicon::MockFaviconService favicon_service;
+  EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
+  EXPECT_CALL(favicon_service, GetFaviconImageForPageURL(data.url, _, _))
+      .WillOnce(Invoke(RespondWithTestIcon));
+  password_autofill_manager_->OnAddPasswordFillData(data);
+
+  // Enable WebAuthn autofill to return a credential.
+  const std::string kId = "abcd";
+  const std::u16string kName = u"nadeshiko@example.com";
+  const std::u16string kAuthenticator = u"Use device sign-in";
+  autofill::Suggestion webauthn_credential(kName);
+  webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+  webauthn_credential.payload = Suggestion::BackendId(kId);
+  webauthn_credential.labels = {{Suggestion::Text(kAuthenticator)}};
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials =
+      std::vector{webauthn_credential};
+  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillByDefault(Return(true));
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
+      .WillRepeatedly(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
+      .WillOnce(ReturnRef(webauthn_credentials));
+
+  // Show webauthn suggestions with the correct favicon.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+  gfx::RectF element_bounds;
+  password_autofill_manager_->OnShowPasswordSuggestions(
+      base::i18n::RIGHT_TO_LEFT, /*typed_username=*/std::u16string(),
+      autofill::ShowPasswordSuggestionsOptions::ACCEPTS_WEBAUTHN_CREDENTIALS,
+      element_bounds);
+  ASSERT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(ElementsAre(
+                  autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL,
+                  autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE,
+                  autofill::POPUP_ITEM_ID_SEPARATOR,
+                  autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY)));
+  EXPECT_TRUE(
+      AreImagesEqual(open_args.suggestions[0].custom_icon, kTestFavicon));
 }
 
 // Regression test for crbug.com/1362742.
