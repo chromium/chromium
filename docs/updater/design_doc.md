@@ -637,8 +637,57 @@ a scheduler.
 ### Legacy State
 TODO(crbug.com/1035895): Document usage of O3 registry on Windows.
 
-#### IPC
-TODO(crbug.com/1035895): Document COM.
+### COM on Windows
+
+The COM client and server code are implemented in terms of the Windows Runtime
+C++ (WRL) library provided by Windows SDK.
+
+For system installs, the updater installs a COM service. The COM service is
+started by the SCM when CoCreate is called on one of several CLSIDs that the
+service supports. This is used as:
+* The Server for the UI when installing Machine applications.
+* The On-Demand COM Server for Machine applications.
+* COM Server for launching processes at System Integrity, as an Elevator. See
+[process launcher](functional_spec.md#process-launcher) and
+[application commands](functional_spec.md#application-commands-applicable-to-the-windows-version-of-the-updater)
+in the functional spec.
+
+#### COM Security
+
+The legacy COM classes in
+[updater_legacy_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template)
+such as on-demand, application commands, and process launcher, allow non-admin
+callers because the interfaces expose functionality that non-admin callers need
+to use. These interfaces therefore only provide restricted functionality.
+
+The new COM classes in
+[updater_internal_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_internal_idl.template)
+and
+[updater_idl.template](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_idl.template)
+require the callers to be admin (enforced in `RuntimeClassInitialize()`). This
+is because the corresponding interfaces allow for unrestricted functionality,
+such as installing any app that the updater supports. For non-admins, COM
+creation will fail with E_ACCESSDENIED.
+
+#### COM System Service
+The updater installs an `internal` SxS system service for the new version
+alongside the existing `internal` service for the current version. This internal
+service is named in the following format:
+
+{ProductName}{InternalService/Service}{UpdaterVersion}.
+For instance: ChromiumUpdaterInternalService92.0.0.1.
+
+The internal service supports the SxS COM interfaces, but not the common COM
+interfaces. The latter interfaces are hosted only by the active version in a
+service that is named in the format ChromiumUpdaterService91.0.0.1.
+
+Once the new version is deemed operational, it will install the new active
+service, ChromiumUpdaterService92.0.0.1, and this service will take over the
+common COM interfaces. The old version will now uninstall itself, including its
+internal and active services.
+
+Service installation uses the `InstallServiceWorkItem` for installing and
+rolling back the service.
 
 ### Network
 On Windows, the updater uses WinHTTP to implement the network.
