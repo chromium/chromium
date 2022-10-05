@@ -2,17 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import asyncio
 import fnmatch
 import json
+import logging
 import os
 import sys
+import threading
 import time
 from typing import Any, Dict, List, Set
 import unittest
 
+import websockets  # pylint:disable=import-error
+import websockets.server as ws_server  # pylint: disable=import-error
+
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
-from gpu_tests.util import websocket_server
 
 import gpu_path_util
 
@@ -59,6 +64,37 @@ class WebGpuTestResult():
     self.log_pieces = []
 
 
+async def StartWebsocketServer() -> None:
+  async def HandleWebsocketConnection(
+      websocket: ws_server.WebSocketServerProtocol) -> None:
+    # We only allow one active connection - if there are multiple, something is
+    # wrong.
+    assert WebGpuCtsIntegrationTest.connection_stopper is None
+    assert WebGpuCtsIntegrationTest.websocket is None
+    WebGpuCtsIntegrationTest.connection_stopper = asyncio.Future()
+    WebGpuCtsIntegrationTest.websocket = websocket
+    WebGpuCtsIntegrationTest.connection_received_event.set()
+    await WebGpuCtsIntegrationTest.connection_stopper
+
+  async with websockets.serve(HandleWebsocketConnection, '127.0.0.1',
+                              0) as server:
+    WebGpuCtsIntegrationTest.event_loop = asyncio.get_running_loop()
+    WebGpuCtsIntegrationTest.server_port = server.sockets[0].getsockname()[1]
+    WebGpuCtsIntegrationTest.port_set_event.set()
+    WebGpuCtsIntegrationTest.server_stopper = asyncio.Future()
+    await WebGpuCtsIntegrationTest.server_stopper
+
+
+class ServerThread(threading.Thread):
+  def run(self) -> None:
+    try:
+      asyncio.run(StartWebsocketServer())
+    except asyncio.CancelledError:
+      pass
+    except Exception as e:  # pylint:disable=broad-except
+      sys.stdout.write('Server thread had exception: %s\n' % e)
+
+
 class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # Whether the test page has already been loaded. Caching this state here is
   # faster than checking the URL every time, and given how fast these tests are,
@@ -77,7 +113,14 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   total_tests_run = 0
 
-  websocket_server = None
+  server_stopper = None
+  connection_stopper = None
+  server_port = None
+  websocket = None
+  port_set_event = None
+  connection_received_event = None
+  event_loop = None
+  _server_thread = None
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -128,11 +171,24 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(WebGpuCtsIntegrationTest, cls).StartBrowser()
 
   @classmethod
+  def SetUpWebsocketServer(cls) -> None:
+    cls.port_set_event = threading.Event()
+    cls.connection_received_event = threading.Event()
+    cls._server_thread = ServerThread()
+    # Mark as a daemon so that the harness does not hang when shutting down if
+    # the thread fails to shut down properly.
+    cls._server_thread.daemon = True
+    cls._server_thread.start()
+    got_port = WebGpuCtsIntegrationTest.port_set_event.wait(
+        WEBSOCKET_PORT_TIMEOUT_SECONDS)
+    if not got_port:
+      raise RuntimeError('Server did not provide a port.')
+
+  @classmethod
   def SetUpProcess(cls) -> None:
     super(WebGpuCtsIntegrationTest, cls).SetUpProcess()
 
-    cls.websocket_server = websocket_server.WebsocketServer()
-    cls.websocket_server.StartServer()
+    cls.SetUpWebsocketServer()
     browser_args = [
         '--enable-unsafe-webgpu',
         '--disable-dawn-features=disallow_unsafe_apis',
@@ -160,9 +216,33 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ])
 
   @classmethod
+  def TearDownWebsocketServer(cls) -> None:
+    if cls.connection_stopper:
+      cls.connection_stopper.cancel()
+      try:
+        cls.connection_stopper.exception()
+      except asyncio.CancelledError:
+        pass
+    if cls.server_stopper:
+      cls.server_stopper.cancel()
+      try:
+        cls.server_stopper.exception()
+      except asyncio.CancelledError:
+        pass
+    cls.server_stopper = None
+    cls.connection_stopper = None
+    cls.server_port = None
+    cls.websocket = None
+
+    cls._server_thread.join(5)
+    if cls._server_thread.is_alive():
+      logging.error(
+          'WebSocket server did not shut down properly - this might be '
+          'indicative of an issue in the test harness')
+
+  @classmethod
   def TearDownProcess(cls) -> None:
-    cls.websocket_server.StopServer()
-    cls.websocket_server = None
+    cls.TearDownWebsocketServer()
     super(WebGpuCtsIntegrationTest, cls).TearDownProcess()
 
   @classmethod
@@ -221,12 +301,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     try:
       first_load = self._NavigateIfNecessary(test_path)
-      WebGpuCtsIntegrationTest.websocket_server.Send(
-          json.dumps({
-              'q': self._query,
-              'w': self._run_in_worker
-          }))
-      result = self.HandleMessageLoop(first_load)
+      asyncio.run_coroutine_threadsafe(
+          WebGpuCtsIntegrationTest.websocket.send(
+              json.dumps({
+                  'q': self._query,
+                  'w': self._run_in_worker
+              })), WebGpuCtsIntegrationTest.event_loop)
+      result = self.HandleMessageLoop(first_load=first_load)
 
       log_str = ''.join(result.log_pieces)
       status = result.status
@@ -235,7 +316,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                       log_str)
       elif status == 'fail':
         self.fail(log_str)
-    except websocket_server.ClientClosedConnectionError as e:
+    except websockets.exceptions.ConnectionClosedOK as e:
       raise RuntimeError(
           'Detected closed websocket - likely caused by renderer crash') from e
     except WebGpuMessageTimeoutError as e:
@@ -320,7 +401,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     while True:
       timeout = step_timeout * browser_timeout_multiplier
       try:
-        response = WebGpuCtsIntegrationTest.websocket_server.Receive(timeout)
+        future = asyncio.run_coroutine_threadsafe(
+            asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
+                             timeout), WebGpuCtsIntegrationTest.event_loop)
+        response = future.result()
         response = json.loads(response)
         response_type = response['type']
 
@@ -363,7 +447,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         else:
           raise WebGpuMessageProtocolError('Received unknown message type %s' %
                                            response_type)
-      except websocket_server.WebsocketReceiveMessageTimeoutError as e:
+      except asyncio.TimeoutError as e:
         self.HandleDurationTagOnFailure(message_state, global_timeout)
         raise WebGpuMessageTimeoutError(
             'Timed out waiting %.3f seconds for a message. Message state: %s' %
@@ -388,18 +472,32 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         and JAVASCRIPT_DURATION not in self.additionalTags):
       self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % test_timeout
 
+  @classmethod
+  def CleanUpExistingWebsocket(cls) -> None:
+    if cls.connection_stopper:
+      cls.connection_stopper.cancel()
+      try:
+        cls.connection_stopper.exception()
+      except asyncio.CancelledError:
+        pass
+    cls.connection_stopper = None
+    cls.websocket = None
+    cls.connection_received_event.clear()
+
   def _NavigateIfNecessary(self, path: str) -> bool:
     if WebGpuCtsIntegrationTest._page_loaded:
       return False
-    WebGpuCtsIntegrationTest.websocket_server.ClearCurrentConnection()
+    WebGpuCtsIntegrationTest.CleanUpExistingWebsocket()
     url = self.UrlOfStaticFilePath(path)
     self.tab.Navigate(url)
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window.setupWebsocket != undefined')
     self.tab.action_runner.ExecuteJavaScript(
-        'window.setupWebsocket("%s")' %
-        WebGpuCtsIntegrationTest.websocket_server.server_port)
-    WebGpuCtsIntegrationTest.websocket_server.WaitForConnection()
+        'window.setupWebsocket("%s")' % WebGpuCtsIntegrationTest.server_port)
+    WebGpuCtsIntegrationTest.connection_received_event.wait(
+        WEBSOCKET_SETUP_TIMEOUT_SECONDS)
+    if not WebGpuCtsIntegrationTest.websocket:
+      raise RuntimeError('Websocket connection was not established.')
     WebGpuCtsIntegrationTest._page_loaded = True
     return True
 
