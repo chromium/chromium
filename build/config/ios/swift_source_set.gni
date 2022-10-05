@@ -7,19 +7,7 @@
 # with all "/" and ":" replaced with "_".
 template("swift_source_set") {
   _target_name = target_name
-  if (defined(invoker.bridge_header)) {
-    _header_name = _target_name + "_bridge_header"
-    source_set(_header_name) {
-      forward_variables_from(invoker,
-                             [
-                               "deps",
-                               "public_deps",
-                             ])
-      visibility = [ ":$_target_name" ]
-      sources = [ invoker.bridge_header ]
-    }
-  }
-  source_set(_target_name) {
+  source_set(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     if (!defined(module_name)) {
@@ -30,18 +18,8 @@ template("swift_source_set") {
       module_name =
           string_replace(string_replace(_target_label, "/", "_"), ":", "_")
     }
-
-    # Use an additional source_set target to allow `gn check` to check the
-    # dependencies needed for `bridge_header` are present.
-    if (defined(invoker.bridge_header)) {
-      if (!defined(public_deps)) {
-        public_deps = []
-      }
-      public_deps += [ ":$_header_name" ]
-    }
   }
 }
-
 set_defaults("swift_source_set") {
   configs = default_compiler_configs
 }
