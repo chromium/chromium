@@ -454,11 +454,15 @@ constexpr size_t kInvalidBucketSize = 1;
 constexpr size_t kMac11MallocSizeHackRequestedSize = 32;
 // Usable size for allocations that require the hack.
 constexpr size_t kMac11MallocSizeHackUsableSize =
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) ||  \
+    defined(PA_REF_COUNT_STORE_REQUESTED_SIZE) || \
+    defined(PA_REF_COUNT_CHECK_COOKIE)
     40;
 #else
     44;
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) ||
+        // defined(PA_REF_COUNT_STORE_REQUESTED_SIZE) ||
+        // defined(PA_REF_COUNT_CHECK_COOKIE)
 #endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
 }  // namespace internal
 
