@@ -23,8 +23,6 @@
 
 namespace apps {
 
-class PreferredAppsList;
-
 // The implementation of the apps::mojom::AppService Mojo interface.
 //
 // See components/services/app_service/README.md.
@@ -95,19 +93,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
                                  int64_t display_id) override;
   void OpenNativeSettings(apps::mojom::AppType app_type,
                           const std::string& app_id) override;
-  void AddPreferredApp(apps::mojom::AppType app_type,
-                       const std::string& app_id,
-                       apps::mojom::IntentFilterPtr intent_filter,
-                       apps::mojom::IntentPtr intent,
-                       bool from_publisher) override;
-  void RemovePreferredApp(apps::mojom::AppType app_type,
-                          const std::string& app_id) override;
-  void SetSupportedLinksPreference(
-      apps::mojom::AppType app_type,
-      const std::string& app_id,
-      std::vector<apps::mojom::IntentFilterPtr> all_link_filters) override;
-  void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
-                                      const std::string& app_id) override;
   void SetResizeLocked(apps::mojom::AppType app_type,
                        const std::string& app_id,
                        apps::mojom::OptionalBool locked) override;
@@ -141,9 +126,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   // false.
   bool HasPublisher(AppType app_type) override;
 
-  // Retern the preferred_apps_list_ for testing.
-  PreferredAppsList& GetPreferredAppsListForTesting();
-
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);
 
@@ -156,8 +138,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
   // Must come after the publisher and subscriber maps to ensure it is
   // destroyed first, closing the connection to avoid dangling callbacks.
   mojo::ReceiverSet<apps::mojom::AppService> receivers_;
-
-  std::unique_ptr<PreferredAppsImpl> preferred_apps_impl_;
 };
 
 }  // namespace apps
