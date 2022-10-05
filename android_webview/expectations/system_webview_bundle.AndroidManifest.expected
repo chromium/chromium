@@ -161,6 +161,12 @@
         android:exported="true"
         android:process=":webview_service">
     </service>  # DIFF-ANCHOR: 47046f1b
+    <service  # DIFF-ANCHOR: c52936d7
+        android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
+        android:enabled="false"
+        android:exported="true">
+      <meta-data android:name="SET_DATA_DIRECTORY_SUFFIX:DEV" android:value="true"/>
+    </service>  # DIFF-ANCHOR: c52936d7
     <service  # DIFF-ANCHOR: dc926e35
         android:name="org.chromium.android_webview.services.VariationsSeedServer"
         android:exported="true"

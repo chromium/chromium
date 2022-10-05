@@ -33,7 +33,6 @@ by a child template that "extends" this file.
     <!-- Required to run the foreground service-->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-
     <application android:label="{{ application_label|default('Android System WebView') }}"
                  android:icon="@{{manifest_package|default('com.android.webview')}}:drawable/icon_webview"
                  android:name="{{ application_name|default('org.chromium.android_webview.nonembedded.WebViewApkApplication') }}"
@@ -44,7 +43,17 @@ by a child template that "extends" this file.
         {% macro common(manifest_package, webview_lib) %}
             <meta-data android:name="com.android.webview.WebViewLibrary"
                        android:value="{{ webview_lib }}" />
-
+            <!-- Service used to hold androidx.webkit startup feature metadata
+                 that can be read from other apps via PackageManager. -->
+            <service
+              android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
+              android:enabled="false"
+              android:exported="true"
+              tools:ignore="ExportedService">
+              <meta-data
+                  android:name="SET_DATA_DIRECTORY_SUFFIX:DEV"
+                  android:value="true"/>
+            </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
                  android_webview/test/shell/AndroidManifest.xml as well. -->
             <!--suppress HardcodedText -->
