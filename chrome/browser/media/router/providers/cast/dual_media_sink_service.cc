@@ -13,7 +13,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
-#include "components/cast_channel/cast_socket_service.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

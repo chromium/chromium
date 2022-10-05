@@ -18,11 +18,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/media/router/logger_list.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
-#include "components/cast_channel/cast_message_util.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 
 namespace base {
 class TickClock;

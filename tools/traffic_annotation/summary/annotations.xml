@@ -34,7 +34,7 @@ Refer to README.md for content description and update process.
  <item id="cablev2_websocket_from_authenticator" added_in_milestone="87" content_hash_code="0724f93c" os_list="linux,windows,chromeos,android" file_path="device/fido/cable/v2_authenticator.cc" />
  <item id="cablev2_websocket_from_client" added_in_milestone="86" content_hash_code="06f37377" os_list="windows,linux,chromeos" file_path="device/fido/cable/fido_tunnel_device.cc" />
  <item id="captive_portal_service" added_in_milestone="62" content_hash_code="04375eac" os_list="linux,windows,chromeos" file_path="components/captive_portal/content/captive_portal_service.cc" />
- <item id="cast_socket" added_in_milestone="66" content_hash_code="028e5273" os_list="linux,windows,chromeos,android" file_path="components/cast_channel/cast_socket.cc" />
+ <item id="cast_socket" added_in_milestone="66" content_hash_code="028e5273" os_list="linux,windows,chromeos,android" file_path="components/media_router/common/providers/cast/channel/cast_socket.cc" />
  <item id="cast_udp_socket" added_in_milestone="66" content_hash_code="047d6b2d" os_list="linux,windows,chromeos,android" file_path="components/mirroring/service/udp_socket_client.cc" />
  <item id="cast_udp_transport" added_in_milestone="65" content_hash_code="066a8189" os_list="linux,windows,chromeos,android" file_path="media/cast/net/udp_transport_impl.cc" />
  <item id="certificate_verifier_url_loader" added_in_milestone="80" content_hash_code="05856cc0" os_list="linux,windows,chromeos,android" file_path="services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.cc" />

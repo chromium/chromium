@@ -9,7 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
-#include "components/cast_channel/cast_socket_service.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 
 namespace media_router {
 

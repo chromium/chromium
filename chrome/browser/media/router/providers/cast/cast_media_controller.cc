@@ -11,8 +11,8 @@
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
-#include "components/cast_channel/cast_message_util.h"
-#include "components/cast_channel/enum_table.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using cast_channel::V2MessageType;

@@ -7,8 +7,8 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cast_channel/cast_message_util.h"
-#include "components/cast_channel/enum_table.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 namespace media_router {
 

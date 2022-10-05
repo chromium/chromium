@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_MEDIA_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/cast_channel/cast_message_util.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "components/media_router/common/mojom/media_status.mojom.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

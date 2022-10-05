@@ -51,7 +51,7 @@ static_library("common") {
     ]
 
     deps += [
-      "//components/cast_channel:cast_channel",
+      "//components/media_router/common/providers/cast/channel",
       "//third_party/openscreen/src/cast/common:public",
     ]
   }
@@ -101,9 +101,9 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "//components/cast_channel:cast_channel",
       "//components/media_router/common/mojom:media_router_test_interfaces",
       "//components/media_router/common/providers/cast/certificate:unit_tests",
+      "//components/media_router/common/providers/cast/channel",
       "//third_party/openscreen/src/cast/common:public",
     ]
   }

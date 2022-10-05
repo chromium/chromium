@@ -9,9 +9,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
-#include "components/cast_channel/cast_message_handler.h"
-#include "components/cast_channel/cast_socket.h"
-#include "components/cast_channel/cast_socket_service.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
 
 namespace media_router {
 

@@ -10,7 +10,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock.h"

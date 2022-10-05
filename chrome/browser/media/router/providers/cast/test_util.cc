@@ -4,7 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/test_util.h"
 
-#include "components/cast_channel/enum_table.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media_router {

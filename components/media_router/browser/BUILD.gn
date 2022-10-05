@@ -43,9 +43,9 @@ source_set("browser") {
 
   deps = [
     "//base",
-    "//components/cast_channel",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/media_router/common/providers/cast/channel",
     "//components/prefs",
     "//components/sessions",
     "//components/user_prefs",

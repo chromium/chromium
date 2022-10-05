@@ -4,7 +4,7 @@
 
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 
-#include "components/cast_channel/cast_message_util.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"

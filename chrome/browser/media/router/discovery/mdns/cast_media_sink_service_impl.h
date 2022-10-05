@@ -17,9 +17,9 @@
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
-#include "components/cast_channel/cast_channel_enum.h"
-#include "components/cast_channel/cast_socket.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "components/media_router/common/providers/cast/channel/cast_channel_enum.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 

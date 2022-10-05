@@ -12,10 +12,10 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
-#include "components/cast_channel/cast_message_handler.h"
-#include "components/cast_channel/cast_message_util.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 
 namespace media_router {
 

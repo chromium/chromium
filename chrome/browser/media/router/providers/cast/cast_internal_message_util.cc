@@ -13,10 +13,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
-#include "components/cast_channel/cast_socket.h"
-#include "components/cast_channel/enum_table.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_socket.h"
+#include "components/media_router/common/providers/cast/channel/enum_table.h"
 
 namespace cast_util {
 
