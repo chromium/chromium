@@ -34,8 +34,6 @@ class WebNode;
 class WebView;
 class WebFormControlElement;
 class WebFormElement;
-template <typename T>
-class WebVector;
 }  // namespace blink
 
 namespace autofill {
@@ -289,27 +287,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // cleared in this method.
   void OnFormNoLongerSubmittable();
 
-  // For no name forms, and unowned elements, try to see if there is a unique
-  // element in the updated form that corresponds to the |original_element|.
-  // Returns false if more than one element matches the |original_element|.
-  // Sets the matching element to |matching_element| and updates the
-  // |potential_match_encountered|, based on the search result. Returns false if
-  // more than one element match the name and section, therefore finding a
-  // unique match is impossible.
-  bool FindTheUniqueNewVersionOfOldElement(
-      const blink::WebVector<blink::WebFormControlElement>& elements,
-      bool& potential_match_encountered,
-      blink::WebFormControlElement& matching_element,
-      const blink::WebFormControlElement& original_element);
-
-  // Check whether |element_| was removed or replaced dynamically on the page.
-  // If so, looks for the same element in the updated |form| and replaces the
-  // |element_| with it if it's found.
-  void ReplaceElementIfNowInvalid(const FormData& form);
-
-  // Trigger a refill if needed for dynamic forms. A refill is needed if some
-  // properties of the form (name, number of fields), or fields (name, id,
-  // label, visibility, control type) have changed after an autofill.
+  // Trigger a refill if the `form` has just changed dynamically (other than the
+  // field values). The refill is triggered by informing the browser process
+  // about the form. The browser process makes the final decision whether or not
+  // to execute a refill.
   void TriggerRefillIfNeeded(const FormData& form);
 
   // Helpers for SelectFieldOptionsChanged() and DataListOptionsChanged(), which

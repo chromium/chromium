@@ -517,27 +517,6 @@ void AutofillAgent::UserGestureObserved() {
 }
 
 void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
-  // In some cases when the `element_` is non-focusable and the form dynamically
-  // changes, `ReplaceElementIfNowInvalid()` fails to find the proper matching
-  // element. As a result, we can't communicate to the browser process the
-  // potential change of the last interacted form.
-  // A form can be found based on its renderer id. Therefore, if the form has
-  // changed, we communicate this to the browser process and reparse the forms
-  // and potentially trigger a refill.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillRefillByFormRendererId)) {
-    ReplaceElementIfNowInvalid(form);
-
-    FormFieldData field;
-    FormData updated_form;
-    if (FindFormAndFieldForFormControlElement(
-            element_, field_data_manager_.get(), &updated_form, &field) &&
-        (!element_.IsAutofilled() ||
-         !form.DynamicallySameFormAs(updated_form))) {
-      GetAutofillDriver().FormsSeen({updated_form}, {});
-    }
-    return;
-  }
   WebFormElement updated_form_element = form_util::FindFormByUniqueRendererId(
       render_frame()->GetWebFrame()->GetDocument(), form.unique_renderer_id);
   FormData updated_form_data;
@@ -556,18 +535,12 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 void AutofillAgent::FillOrPreviewForm(int32_t query_id,
                                       const FormData& form,
                                       mojom::RendererFormDataAction action) {
-  // If `element_` is null or not focused, Autofill was triggered from another
-  // frame. In this case, set `element_` to some form field as if Autofill had
-  // been triggered from that field. This is necessary because currently
-  // AutofillAgent relies on `element_` in many places.
-  // Note: The `element_` needs to be updated for the new, parameterized
-  // sectioning algorithm regardless the `query_id`. Otherwise,
-  // `ReplaceElementIfNowInvalid()` choses the incorrect element as the
-  // corresponding element to the `element_`.
-  if ((base::FeatureList::IsEnabled(
-           features::kAutofillUseParameterizedSectioning) ||
-       query_id == kCrossFrameFill) &&
-      !form.fields.empty() && (element_.IsNull() || !element_.Focused())) {
+  // If `element_` is null or not focused, Autofill was either triggered from
+  // another frame or the `element_` has been detached from the DOM or the focus
+  // was moved otherwise. In these cases, we set `element_` to some form field
+  // as if Autofill had been triggered from that field. This is necessary
+  // because currently AutofillAgent relies on `element_` in many places.
+  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused())) {
     WebDocument document = render_frame()->GetWebFrame()->GetDocument();
     element_ = form_util::FindFormControlElementByUniqueRendererId(
         document, form.fields.front().unique_renderer_id);
@@ -591,10 +564,6 @@ void AutofillAgent::FillOrPreviewForm(int32_t query_id,
     GetAutofillDriver().DidPreviewAutofillFormData();
   } else {
     was_last_action_fill_ = true;
-
-    // If this is a re-fill, replace the triggering element if it's invalid.
-    if (query_id == kNoQueryId)
-      ReplaceElementIfNowInvalid(form);
 
     query_node_autofill_state_ = element_.GetAutofillState();
     bool filled_some_fields =
@@ -1383,127 +1352,6 @@ void AutofillAgent::UpdateLastInteractedForm(
 
 void AutofillAgent::OnFormNoLongerSubmittable() {
   submitted_forms_.clear();
-}
-
-bool AutofillAgent::FindTheUniqueNewVersionOfOldElement(
-    const WebVector<WebFormControlElement>& elements,
-    bool& potential_match_encountered,
-    WebFormControlElement& matching_element,
-    const WebFormControlElement& original_element) {
-  if (original_element.IsNull())
-    return false;
-
-  const auto original_element_section = original_element.AutofillSection();
-  for (const WebFormControlElement& current_element : elements) {
-    if (current_element.IsFocusable() &&
-        original_element.NameForAutofill() ==
-            current_element.NameForAutofill()) {
-      // If this is the first matching element, or is the first with the right
-      // section, this is the best match so far.
-      // In other words: bad, then good. => pick good.
-      if (!potential_match_encountered ||
-          (current_element.AutofillSection() == original_element_section &&
-           (matching_element.IsNull() ||
-            matching_element.AutofillSection() != original_element_section))) {
-        matching_element = current_element;
-        potential_match_encountered = true;
-      } else if (current_element.AutofillSection() !=
-                     original_element_section &&
-                 !matching_element.IsNull() &&
-                 matching_element.AutofillSection() !=
-                     original_element_section) {
-        // The so far matching fields are equally bad. Continue the search if
-        // none of them have the correct section.
-        // In other words: bad, then bad => pick none.
-        matching_element.Reset();
-      } else if (current_element.AutofillSection() ==
-                     original_element_section &&
-                 !matching_element.IsNull() &&
-                 matching_element.AutofillSection() ==
-                     original_element_section) {
-        // If two or more fields have the matching name and section, we can't
-        // decide. Two equally good fields => fail.
-        matching_element.Reset();
-        return false;
-      }  // For the good, then bad case => keep good. Continue the search.
-    }
-  }
-  return true;
-}
-
-// TODO(crbug.com/896689): Update this method to use the unique ids once they
-// are implemented.
-void AutofillAgent::ReplaceElementIfNowInvalid(const FormData& original_form) {
-  // If the document is invalid, bail out.
-  if (element_.GetDocument().IsNull())
-    return;
-
-  const auto original_element = element_;
-  WebFormControlElement matching_element;
-  bool potential_match_encountered = false;
-
-  if (original_form.name.empty()) {
-    // If the form has no name, check all the forms.
-    for (const WebFormElement& form : element_.GetDocument().Forms()) {
-      // If finding a unique element is impossible, don't look further.
-      if (!FindTheUniqueNewVersionOfOldElement(
-              form.GetFormControlElements(), potential_match_encountered,
-              matching_element, original_element))
-        return;
-    }
-    // If the element is not found, we should still check for unowned elements.
-    if (!matching_element.IsNull()) {
-      element_ = matching_element;
-      return;
-    }
-  }
-
-  // If |element_|'s parent form has no elements, |element_| is now invalid
-  // and should be updated.
-  if (!element_.Form().IsNull() &&
-      element_.Form().GetFormControlElements().empty()) {
-    return;
-  }
-
-  WebFormElement form_element;
-  bool form_is_found = false;
-  if (!original_form.name.empty()) {
-    // Try to find the new version of the form.
-    for (const WebFormElement& form : element_.GetDocument().Forms()) {
-      if (original_form.name == form.GetName().Utf16() ||
-          original_form.name == form.GetAttribute("id").Utf16()) {
-        if (!form_is_found)
-          form_element = form;
-        else  // multiple forms with the matching name.
-          return;
-      }
-    }
-  }
-
-  if (form_element.IsNull()) {
-    // Could not find the new version of the form, get all the unowned elements.
-    std::vector<WebElement> fieldsets;
-    WebVector<WebFormControlElement> elements =
-        form_util::GetUnownedAutofillableFormFieldElements(
-            element_.GetDocument(), &fieldsets);
-    // If a unique match was found.
-    if (FindTheUniqueNewVersionOfOldElement(
-            elements, potential_match_encountered, matching_element,
-            original_element) &&
-        !matching_element.IsNull()) {
-      element_ = matching_element;
-    }
-    return;
-  }
-  // This is the case for owned fields that belong to the right named form.
-  // Get all the elements of the new version of the form.
-  // If a unique match was found.
-  if (FindTheUniqueNewVersionOfOldElement(form_element.GetFormControlElements(),
-                                          potential_match_encountered,
-                                          matching_element, original_element) &&
-      !matching_element.IsNull()) {
-    element_ = matching_element;
-  }
 }
 
 mojom::AutofillDriver& AutofillAgent::GetAutofillDriver() {
