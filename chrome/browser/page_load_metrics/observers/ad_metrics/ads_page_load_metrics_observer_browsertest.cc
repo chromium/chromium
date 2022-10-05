@@ -137,9 +137,9 @@ class AdsPageLoadMetricsObserverBrowserTest
   }
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
-    std::vector<base::Feature> disabled = {};
+    std::vector<base::test::FeatureRef> disabled = {};
 
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
@@ -2434,9 +2434,9 @@ class AdsMemoryMeasurementBrowserTest
   void SetUp() override {
     performance_manager::v8_memory::internal::
         SetEagerMemoryMeasurementEnabledForTesting(true);
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging, features::kV8PerFrameMemoryMonitoring};
-    std::vector<base::Feature> disabled = {};
+    std::vector<base::test::FeatureRef> disabled = {};
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
 
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
