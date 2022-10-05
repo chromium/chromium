@@ -11,8 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/proximity_auth/fake_lock_handler.h"
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "ash/services/device_sync/public/cpp/fake_device_sync_client.h"
@@ -41,6 +39,8 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
+#include "chromeos/ash/components/proximity_auth/fake_lock_handler.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"

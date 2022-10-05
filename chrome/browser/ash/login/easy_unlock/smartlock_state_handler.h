@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 
 namespace proximity_auth {

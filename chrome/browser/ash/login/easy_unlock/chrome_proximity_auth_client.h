@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 
-#include "ash/components/proximity_auth/proximity_auth_client.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_client.h"
 
 class Profile;
 

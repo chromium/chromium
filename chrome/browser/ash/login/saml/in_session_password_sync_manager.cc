@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_switches.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"

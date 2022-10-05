@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/callback_forward.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"

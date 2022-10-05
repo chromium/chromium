@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 
-#include "ash/components/proximity_auth/proximity_auth_pref_names.h"
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "base/guid.h"
@@ -18,6 +16,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"

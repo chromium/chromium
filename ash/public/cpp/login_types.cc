@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/login_types.h"
 
-#include "ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 
 namespace ash {
 

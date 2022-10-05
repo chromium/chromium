@@ -5,12 +5,12 @@
 #ifndef ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 #define ASH_PUBLIC_CPP_LOGIN_TYPES_H_
 
-#include "ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom-forward.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/account_id/account_id.h"
 

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"

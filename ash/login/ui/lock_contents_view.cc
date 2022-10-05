@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
-#include "ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
@@ -61,6 +60,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/proximity_auth/public/mojom/auth_type.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/user_manager/known_user.h"

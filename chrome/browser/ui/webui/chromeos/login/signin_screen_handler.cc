@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/bind.h"
@@ -69,6 +68,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_registry_simple.h"

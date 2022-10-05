@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
 
-#include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 
 namespace ash {
 

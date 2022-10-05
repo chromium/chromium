@@ -9,7 +9,8 @@
 #include <set>
 #include <string>
 
-#include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -19,8 +20,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;

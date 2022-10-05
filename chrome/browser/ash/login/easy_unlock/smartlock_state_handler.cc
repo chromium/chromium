@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/bind.h"
@@ -16,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 

@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
