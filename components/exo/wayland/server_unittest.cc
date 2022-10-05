@@ -38,9 +38,9 @@ struct TestListener {
 };
 
 TestListener::TestListener() {
-  listener.notify = [](wl_listener* listener, void* data) {
-    TestListener* test_listener;
-    test_listener = wl_container_of(listener, test_listener, listener);
+  listener.notify = [](wl_listener* listener_ptr, void* data) {
+    TestListener* test_listener = wl_container_of(
+        listener_ptr, /*sample=*/test_listener, /*member=*/listener);
     test_listener->notified = true;
   };
 }
