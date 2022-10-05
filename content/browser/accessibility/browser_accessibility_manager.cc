@@ -309,6 +309,12 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
          !delegate_->AccessibilityRenderFrameHost()->IsInBackForwardCache();
 }
 
+BrowserAccessibility* BrowserAccessibilityManager::RetargetForEvents(
+    BrowserAccessibility* node,
+    RetargetEventType type) const {
+  return node;
+}
+
 void BrowserAccessibilityManager::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     BrowserAccessibility* node) {
@@ -382,7 +388,7 @@ void BrowserAccessibilityManager::ParentConnectionChanged(
   parent->OnDataChanged();
   parent->UpdatePlatformAttributes();
   BrowserAccessibilityManager* parent_manager = parent->manager();
-  parent = parent_manager->RetargetBrowserAccessibilityForEvents(
+  parent = parent_manager->RetargetForEvents(
       parent, RetargetEventType::RetargetEventTypeGenerated);
   parent_manager->FireGeneratedEvent(
       ui::AXEventGenerator::Event::CHILDREN_CHANGED, parent);
@@ -584,7 +590,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
-    event_target = RetargetBrowserAccessibilityForEvents(
+    event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
@@ -615,7 +621,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
-    event_target = RetargetBrowserAccessibilityForEvents(
+    event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
     if (!event_target)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
@@ -636,8 +642,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
         event.event_type == ax::mojom::Event::kHover
             ? RetargetEventType::RetargetEventTypeBlinkHover
             : RetargetEventType::RetargetEventTypeBlinkGeneral;
-    BrowserAccessibility* retargeted =
-        RetargetBrowserAccessibilityForEvents(event_target, type);
+    BrowserAccessibility* retargeted = RetargetForEvents(event_target, type);
     if (!retargeted)
       continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!retargeted->CanFireEvents())
@@ -2004,8 +2009,7 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
 
 bool BrowserAccessibilityManager::ShouldFireEventForNode(
     BrowserAccessibility* node) const {
-  node = RetargetBrowserAccessibilityForEvents(
-      node, RetargetEventType::RetargetEventTypeGenerated);
+  node = RetargetForEvents(node, RetargetEventType::RetargetEventTypeGenerated);
   if (!node || !node->CanFireEvents())
     return false;
 
@@ -2029,24 +2033,6 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
     return false;
 
   return true;
-}
-
-BrowserAccessibility*
-BrowserAccessibilityManager::RetargetBrowserAccessibilityForEvents(
-    BrowserAccessibility* node,
-    RetargetEventType event_type) const {
-  if (!node) {
-    // TODO(accessibility): |node| should never be null, however for
-    // reasons that are not yet clear, it is sometimes null.
-    // See https://crbug.com/1350627, https://crbug.com/1362266 and
-    // https://crbug.com/1362321.
-    // ClusterFuzz was able to come up with a reliably-reproducible test case
-    // which can be seen in https://crbug.com/1362230. This needs to be
-    // investigated further.
-    NOTREACHED();
-    return nullptr;
-  }
-  return GetFromAXNode(RetargetForEvents(node->node(), event_type));
 }
 
 float BrowserAccessibilityManager::device_scale_factor() const {

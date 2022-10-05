@@ -35,17 +35,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   ~AXTreeManager() override;
 
-  enum class RetargetEventType {
-    RetargetEventTypeGenerated = 0,
-    RetargetEventTypeBlinkGeneral,
-    RetargetEventTypeBlinkHover,
-  };
-
   // Subclasses override these methods to send native event notifications.
   virtual void FireFocusEvent(AXNode* node);
-  // Return |node| by default, but some platforms want to update the target node
-  // based on the event type.
-  virtual AXNode* RetargetForEvents(AXNode* node, RetargetEventType type) const;
 
   // Returns the AXNode with the given |node_id| from the tree that has the
   // given |tree_id|. This allows for callers to access nodes outside of their
