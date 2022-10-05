@@ -8857,7 +8857,7 @@ const EventPath::NodePath& Document::GetOrCalculateEventNodePath(Node& node) {
     event_node_path_dom_tree_version_ = dom_tree_version_;
   }
 
-  Member<EventPath::NodePath> event_node_path;
+  EventPath::NodePath* event_node_path = nullptr;
   {
     // Keep `result` within own scope to avoid dangling references into cache,
     // because it might get modified during pruning.
