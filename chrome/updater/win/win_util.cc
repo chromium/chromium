@@ -398,6 +398,8 @@ absl::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor() {
   if (!dacl.AddAllowedAce(sid_user, GENERIC_ALL))
     return absl::nullopt;
 
+  security_desc.SetDacl(dacl);
+
   return security_desc;
 }
 
