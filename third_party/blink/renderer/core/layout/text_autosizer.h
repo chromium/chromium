@@ -128,7 +128,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
    protected:
     TextAutosizer* text_autosizer_;
-    LayoutBox* box_;
+    LayoutBlock* block_;
   };
 
   class CORE_EXPORT DeferUpdatePageInfo {

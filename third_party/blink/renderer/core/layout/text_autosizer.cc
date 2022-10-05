@@ -1462,7 +1462,8 @@ TextAutosizer::DeferUpdatePageInfo::DeferUpdatePageInfo(Page* page)
 
 TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
                                             LayoutUnit inline_size)
-    : text_autosizer_(box->GetDocument().GetTextAutosizer()), box_(box) {
+    : text_autosizer_(box->GetDocument().GetTextAutosizer()),
+      block_(DynamicTo<LayoutBlock>(box)) {
   // Bail if:
   //  - Text autosizing isn't enabled.
   //  - If the chid isn't a LayoutBlock.
@@ -1470,8 +1471,8 @@ TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
   //    blocks, and using them to determine if we should autosize the text will
   //    typically false, overriding whatever its parent has already correctly
   //    determined).
-  if (!text_autosizer_ || !text_autosizer_->ShouldHandleLayout() ||
-      box_->IsLayoutNGOutsideListMarker() || !box_->IsLayoutBlock()) {
+  if (!text_autosizer_ || !text_autosizer_->ShouldHandleLayout() || !block_ ||
+      block_->IsLayoutNGOutsideListMarker()) {
     text_autosizer_ = nullptr;
     return;
   }
@@ -1480,14 +1481,14 @@ TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
   // know the inline size of the block. So set it. LayoutNG normally writes back
   // to the legacy tree *after* layout, but this one must be set before, at
   // least if the autosizer is enabled.
-  box_->SetLogicalWidth(inline_size);
+  block_->SetLogicalWidth(inline_size);
 
-  text_autosizer_->BeginLayout(To<LayoutBlock>(box_), nullptr);
+  text_autosizer_->BeginLayout(block_, nullptr);
 }
 
 TextAutosizer::NGLayoutScope::~NGLayoutScope() {
   if (text_autosizer_)
-    text_autosizer_->EndLayout(To<LayoutBlock>(box_));
+    text_autosizer_->EndLayout(block_);
 }
 
 TextAutosizer::DeferUpdatePageInfo::~DeferUpdatePageInfo() {
