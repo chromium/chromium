@@ -117,7 +117,6 @@ template <typename Request, typename Response>
 class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
  private:
   using Callback = typename KidsExternalFetcher<Request, Response>::Callback;
-  using Error = typename KidsExternalFetcher<Request, Response>::Error;
 
  public:
   FetcherImpl() = delete;
@@ -151,7 +150,8 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
         callback);  // https://chromium.googlesource.com/chromium/src/+/master/docs/callback.md#creating-a-callback-that-does-nothing
 
     if (!access_token.has_value()) {
-      std::move(callback).Run(Error::AUTHENTICATION_ERROR,
+      std::move(callback).Run(KidsExternalFetcherStatus::GoogleServiceAuthError(
+                                  access_token.error()),
                               std::make_unique<Response>());
       return;
     }
@@ -177,17 +177,20 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
       std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader) ||
         !HasHttpOkResponse(*simple_url_loader)) {
-      std::move(callback).Run(Error::HTTP_ERROR, std::make_unique<Response>());
+      std::move(callback).Run(KidsExternalFetcherStatus::HttpError(),
+                              std::make_unique<Response>());
       return;
     }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
-      std::move(callback).Run(Error::INVALID_RESPONSE, std::move(response));
+      std::move(callback).Run(KidsExternalFetcherStatus::InvalidResponse(),
+                              std::move(response));
       return;
     }
 
-    std::move(callback).Run(Error::NONE, std::move(response));
+    std::move(callback).Run(std::move(KidsExternalFetcherStatus::Ok()),
+                            std::move(response));
   }
 
   std::unique_ptr<KidsAccessTokenFetcher> access_token_fetcher_;
@@ -203,6 +206,52 @@ ListFamilyMembersRequest CreateListFamilyMembersRequest() {
   return request;
 }
 }  // namespace
+
+// Main constructor, referenced by the rest.
+KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+    State state,
+    class GoogleServiceAuthError google_service_auth_error)
+    : state_(state), google_service_auth_error_(google_service_auth_error) {}
+KidsExternalFetcherStatus::~KidsExternalFetcherStatus() = default;
+
+KidsExternalFetcherStatus::KidsExternalFetcherStatus(State state)
+    : state_(state) {
+  DCHECK(state != State::GOOGLE_SERVICE_AUTH_ERROR);
+}
+KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+    class GoogleServiceAuthError google_service_auth_error)
+    : KidsExternalFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR,
+                                google_service_auth_error) {}
+
+KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+    const KidsExternalFetcherStatus& other) = default;
+KidsExternalFetcherStatus& KidsExternalFetcherStatus::operator=(
+    const KidsExternalFetcherStatus& other) = default;
+
+KidsExternalFetcherStatus KidsExternalFetcherStatus::Ok() {
+  return KidsExternalFetcherStatus(State::NO_ERROR);
+}
+KidsExternalFetcherStatus KidsExternalFetcherStatus::GoogleServiceAuthError(
+    class GoogleServiceAuthError error) {
+  return KidsExternalFetcherStatus(error);
+}
+KidsExternalFetcherStatus KidsExternalFetcherStatus::HttpError() {
+  return KidsExternalFetcherStatus(State::HTTP_ERROR);
+}
+KidsExternalFetcherStatus KidsExternalFetcherStatus::InvalidResponse() {
+  return KidsExternalFetcherStatus(State::INVALID_RESPONSE);
+}
+
+bool KidsExternalFetcherStatus::IsOk() const {
+  return state_ == State::NO_ERROR;
+}
+KidsExternalFetcherStatus::State KidsExternalFetcherStatus::state() const {
+  return state_;
+}
+const GoogleServiceAuthError&
+KidsExternalFetcherStatus::google_service_auth_error() const {
+  return google_service_auth_error_;
+}
 
 std::unique_ptr<
     KidsExternalFetcher<ListFamilyMembersRequest, ListFamilyMembersResponse>>

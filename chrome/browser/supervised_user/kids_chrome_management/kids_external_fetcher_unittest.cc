@@ -53,21 +53,22 @@ Message ToProto(const std::string& input) {
 template <typename Request, typename Response>
 class Receiver {
  public:
-  using Error = typename KidsExternalFetcher<Request, Response>::Error;
-  const base::expected<std::unique_ptr<Response>, Error>& GetResult() const {
+  const base::expected<std::unique_ptr<Response>, KidsExternalFetcherStatus>&
+  GetResult() const {
     return result_;
   }
 
-  void Receive(Error error, std::unique_ptr<Response> response) {
-    if (error != Error::NONE) {
-      result_ = base::unexpected(error);
+  void Receive(KidsExternalFetcherStatus fetch_status,
+               std::unique_ptr<Response> response) {
+    if (!fetch_status.IsOk()) {
+      result_ = base::unexpected(fetch_status);
       return;
     }
     result_ = std::move(response);
   }
 
  private:
-  base::expected<std::unique_ptr<Response>, Error> result_;
+  base::expected<std::unique_ptr<Response>, KidsExternalFetcherStatus> result_;
 };
 
 TEST_F(KidsExternalFetcherTest, AcceptsProtocolBufferRequests) {
@@ -118,11 +119,11 @@ TEST_F(KidsExternalFetcherTest, NoAccessToken) {
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
 
-  auto expected_error =
-      Receiver<ListFamilyMembersRequest,
-               ListFamilyMembersResponse>::Error::AUTHENTICATION_ERROR;
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
-  EXPECT_EQ(receiver.GetResult().error(), expected_error);
+  EXPECT_EQ(receiver.GetResult().error().state(),
+            KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
+  EXPECT_EQ(receiver.GetResult().error().google_service_auth_error().state(),
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
 TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
@@ -153,6 +154,8 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "http://example.com/", malformed_value);
   EXPECT_FALSE(receiver.GetResult().has_value());
+  EXPECT_EQ(receiver.GetResult().error().state(),
+            KidsExternalFetcherStatus::State::INVALID_RESPONSE);
 }
 
 TEST_F(KidsExternalFetcherTest, HandlesServerError) {
@@ -183,6 +186,8 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       "http://example.com/", /*content=*/"", net::HTTP_BAD_REQUEST);
   EXPECT_FALSE(receiver.GetResult().has_value());
+  EXPECT_EQ(receiver.GetResult().error().state(),
+            KidsExternalFetcherStatus::State::HTTP_ERROR);
 }
 
 }  // namespace

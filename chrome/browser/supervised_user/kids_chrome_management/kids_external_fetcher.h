@@ -11,7 +11,61 @@
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_access_token_fetcher.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kidschromemanagement_messages.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+// Holds the status of the fetch. The callback's response will be set iff the
+// status is ok.
+class KidsExternalFetcherStatus {
+ public:
+  enum State {
+    NO_ERROR,                   // No error.
+    GOOGLE_SERVICE_AUTH_ERROR,  // Error occurred during the access token
+                                // fetching phase. See GetGoogleServiceAuthError
+                                // for details.
+    HTTP_ERROR,        // The request was performed, but http returned errors.
+    INVALID_RESPONSE,  // The request was performed without error, but http
+                       // response could not be processed or was unexpected.
+  };
+  // Status might be used in base::expected context as possible error, since it
+  // contains two error-enabled attributes which are copyable / assignable.
+  KidsExternalFetcherStatus(const KidsExternalFetcherStatus&);
+  KidsExternalFetcherStatus& operator=(const KidsExternalFetcherStatus&);
+
+  ~KidsExternalFetcherStatus();
+  KidsExternalFetcherStatus() = delete;
+
+  // Convenience creators instead of exposing KidsExternalFetcherStatus(State
+  // state).
+  static KidsExternalFetcherStatus Ok();
+  static KidsExternalFetcherStatus GoogleServiceAuthError(
+      GoogleServiceAuthError
+          error);  // The copy follows the interface of
+                   // https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/identity_manager/primary_account_access_token_fetcher.h;l=241;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd
+  static KidsExternalFetcherStatus HttpError();
+  static KidsExternalFetcherStatus InvalidResponse();
+
+  // KidsExternalFetcherStatus::IsOk iff google_service_auth_error_ is empty and
+  // fetch_error_ == NONE
+  bool IsOk() const;
+
+  State state() const;
+  const class GoogleServiceAuthError& google_service_auth_error() const;
+
+ private:
+  // Disallows impossible states.
+  explicit KidsExternalFetcherStatus(State state);
+  explicit KidsExternalFetcherStatus(
+      class GoogleServiceAuthError
+          google_service_auth_error);  // Implies State ==
+                                       // GOOGLE_SERVICE_AUTH_ERROR
+  KidsExternalFetcherStatus(
+      State state,
+      class GoogleServiceAuthError google_service_auth_error);
+
+  State state_;
+  class GoogleServiceAuthError google_service_auth_error_;
+};
 
 // Use instance of Fetcher to start request and write the result onto the
 // receiving delegate. Every instance of Fetcher is disposable and should be
@@ -19,15 +73,8 @@
 template <typename Request, typename Response>
 class KidsExternalFetcher {
  public:
-  enum Error {
-    NONE,
-    AUTHENTICATION_ERROR,  // The request could not be performed because the
-                           // peer's identity could not be verified.
-    HTTP_ERROR,        // The request was performed, but http returned errors.
-    INVALID_RESPONSE,  // The request was performed without error, but http
-                       // response could not be processed or was unexpected.
-  };
-  using Callback = base::OnceCallback<void(Error, std::unique_ptr<Response>)>;
+  using Callback = base::OnceCallback<void(KidsExternalFetcherStatus,
+                                           std::unique_ptr<Response>)>;
   virtual ~KidsExternalFetcher() = default;
 };
 
