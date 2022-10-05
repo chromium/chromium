@@ -131,10 +131,8 @@ struct ReliablePacketInfo {
   MCSProto protobuf;
 };
 
-ReliablePacketInfo::ReliablePacketInfo()
-  : stream_id(0), tag(0) {
-}
-ReliablePacketInfo::~ReliablePacketInfo() {}
+ReliablePacketInfo::ReliablePacketInfo() : stream_id(0), tag(0) {}
+ReliablePacketInfo::~ReliablePacketInfo() = default;
 
 int MCSClient::GetSendQueueSize() const {
   return to_send_.size();
@@ -145,7 +143,7 @@ int MCSClient::GetResendQueueSize() const {
 }
 
 std::string MCSClient::GetStateString() const {
-  switch(state_) {
+  switch (state_) {
     case UNINITIALIZED:
       return "UNINITIALIZED";
     case LOADED:
@@ -184,8 +182,7 @@ MCSClient::MCSClient(const std::string& version_string,
   DCHECK(io_task_runner_);
 }
 
-MCSClient::~MCSClient() {
-}
+MCSClient::~MCSClient() = default;
 
 void MCSClient::Initialize(
     const ErrorCallback& error_callback,
@@ -417,8 +414,7 @@ int MCSClient::GetMinHeartbeatIntervalMs() {
   int min_interval = custom_heartbeat_intervals_.begin()->second;
   for (std::map<std::string, int>::const_iterator it =
            custom_heartbeat_intervals_.begin();
-       it != custom_heartbeat_intervals_.end();
-       ++it) {
+       it != custom_heartbeat_intervals_.end(); ++it) {
     if (it->second < min_interval)
       min_interval = it->second;
   }
@@ -456,9 +452,8 @@ void MCSClient::ResetStateAndBuildLoginRequest(
   acked_server_ids_.clear();
 
   // Then build the request, consuming all pending acknowledgments.
-  request->Swap(BuildLoginRequest(android_id_,
-                                  security_token_,
-                                  version_string_).get());
+  request->Swap(
+      BuildLoginRequest(android_id_, security_token_, version_string_).get());
 
   // Set custom heartbeat interval if specified.
   if (heartbeat_manager_.HasClientHeartbeatInterval()) {
@@ -572,23 +567,20 @@ void MCSClient::SendPacketToWire(ReliablePacketInfo* packet_info) {
             packet_info->protobuf.get());
     uint64_t sent = data_message->sent();
     DCHECK_GT(sent, 0U);
-    int queued = (clock_->Now().ToInternalValue() /
-        base::Time::kMicrosecondsPerSecond) - sent;
+    int queued =
+        (clock_->Now().ToInternalValue() / base::Time::kMicrosecondsPerSecond) -
+        sent;
     DVLOG(1) << "Message was queued for " << queued << " seconds.";
     data_message->set_queued(queued);
-    recorder_->RecordDataSentToWire(
-        data_message->category(),
-        data_message->to(),
-        data_message->id(),
-        queued);
+    recorder_->RecordDataSentToWire(data_message->category(),
+                                    data_message->to(), data_message->id(),
+                                    queued);
   }
 
   // Set the proper last received stream id to acknowledge received server
   // packets.
-  DVLOG(1) << "Setting last stream id received to "
-           << stream_id_in_;
-  SetLastStreamIdReceived(stream_id_in_,
-                          packet_info->protobuf.get());
+  DVLOG(1) << "Setting last stream id received to " << stream_id_in_;
+  SetLastStreamIdReceived(stream_id_in_, packet_info->protobuf.get());
   if (stream_id_in_ != last_server_to_device_stream_id_received_) {
     last_server_to_device_stream_id_received_ = stream_id_in_;
     // Mark all acknowledged server messages as such. Note: they're not dropped,
@@ -618,7 +610,7 @@ void MCSClient::HandleMCSDataMesssage(
       new mcs_proto::DataMessageStanza());
   response->set_from(kGCMFromField);
   response->set_sent(clock_->Now().ToInternalValue() /
-                         base::Time::kMicrosecondsPerSecond);
+                     base::Time::kMicrosecondsPerSecond);
   response->set_ttl(0);
   bool send = false;
   for (int i = 0; i < data_message->app_data_size(); ++i) {
@@ -662,7 +654,8 @@ void MCSClient::HandlePacketFromWire(
     for (std::map<StreamId, PersistentIdList>::iterator iter =
              acked_server_ids_.begin();
          iter != acked_server_ids_.end() &&
-             iter->first <= last_stream_id_received; ++iter) {
+         iter->first <= last_stream_id_received;
+         ++iter) {
       acked_stream_ids_to_remove.push_back(iter->first);
     }
     for (StreamIdList::iterator iter = acked_stream_ids_to_remove.begin();
@@ -681,8 +674,8 @@ void MCSClient::HandlePacketFromWire(
 
   DVLOG(1) << "Received message of type " << protobuf->GetTypeName()
            << " with persistent id "
-           << (persistent_id.empty() ? "NULL" : persistent_id)
-           << ", stream id " << stream_id_in_ << " and last stream id received "
+           << (persistent_id.empty() ? "NULL" : persistent_id) << ", stream id "
+           << stream_id_in_ << " and last stream id received "
            << last_stream_id_received;
 
   if ((unacked_server_ids_.size() > 0 &&
@@ -744,8 +737,7 @@ void MCSClient::HandlePacketFromWire(
     case kHeartbeatPingTag:
       DCHECK_GE(stream_id_in_, 1U);
       DVLOG(1) << "Received heartbeat ping, sending ack.";
-      SendMessage(
-          MCSMessage(kHeartbeatAckTag, mcs_proto::HeartbeatAck()));
+      SendMessage(MCSMessage(kHeartbeatAckTag, mcs_proto::HeartbeatAck()));
       return;
     case kHeartbeatAckTag:
       DCHECK_GE(stream_id_in_, 1U);
@@ -766,8 +758,7 @@ void MCSClient::HandlePacketFromWire(
       switch (iq_extension.id()) {
         case kSelectiveAck: {
           PersistentIdList acked_ids;
-          if (BuildPersistentIdListFromProto(iq_extension.data(),
-                                             &acked_ids)) {
+          if (BuildPersistentIdListFromProto(iq_extension.data(), &acked_ids)) {
             HandleSelectiveAck(acked_ids);
           }
           return;
@@ -837,7 +828,7 @@ void MCSClient::HandleSelectiveAck(const PersistentIdList& id_list) {
   // First check the to_resend_ queue. Acknowledgments are always contiguous,
   // so if there's a pending message that hasn't been acked, all newer messages
   // must also be unacked.
-  while(!to_resend_.empty() && !remaining_ids.empty()) {
+  while (!to_resend_.empty() && !remaining_ids.empty()) {
     const MCSPacketInternal& outgoing_packet = to_resend_.front();
     if (remaining_ids.count(outgoing_packet->persistent_id) == 0)
       break;  // Newer message must be unacked too.
@@ -887,8 +878,8 @@ void MCSClient::HandleSelectiveAck(const PersistentIdList& id_list) {
     acked_ids = id_list;
   }
 
-  DVLOG(1) << "Server acked " << acked_ids.size()
-           << " messages, " << to_resend_.size() << " remaining unacked.";
+  DVLOG(1) << "Server acked " << acked_ids.size() << " messages, "
+           << to_resend_.size() << " remaining unacked.";
   gcm_store_->RemoveOutgoingMessages(
       acked_ids, base::BindOnce(&MCSClient::OnGCMUpdateFinished,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -909,10 +900,8 @@ void MCSClient::HandleServerConfirmedReceipt(StreamId device_stream_id) {
   PersistentIdList acked_incoming_ids;
   for (std::map<StreamId, PersistentIdList>::iterator iter =
            acked_server_ids_.begin();
-       iter != acked_server_ids_.end() &&
-           iter->first <= device_stream_id;) {
-    acked_incoming_ids.insert(acked_incoming_ids.end(),
-                              iter->second.begin(),
+       iter != acked_server_ids_.end() && iter->first <= device_stream_id;) {
+    acked_incoming_ids.insert(acked_incoming_ids.end(), iter->second.begin(),
                               iter->second.end());
     acked_server_ids_.erase(iter++);
   }
@@ -930,6 +919,7 @@ MCSClient::PersistentId MCSClient::GetNextPersistentId() {
 
 void MCSClient::OnConnectionResetByHeartbeat(
     ConnectionFactory::ConnectionResetReason reason) {
+  DVLOG(1) << "Connection reset by heartbeat with reason: " << reason;
   connection_factory_->SignalConnectionReset(reason);
 }
 
@@ -942,17 +932,12 @@ void MCSClient::NotifyMessageSendStatus(
   const mcs_proto::DataMessageStanza* data_message_stanza =
       reinterpret_cast<const mcs_proto::DataMessageStanza*>(&protobuf);
   recorder_->RecordNotifySendStatus(
-      data_message_stanza->category(),
-      data_message_stanza->to(),
-      data_message_stanza->id(),
-      status,
-      protobuf.ByteSize(),
+      data_message_stanza->category(), data_message_stanza->to(),
+      data_message_stanza->id(), status, protobuf.ByteSize(),
       data_message_stanza->ttl());
-  message_sent_callback_.Run(
-      data_message_stanza->device_user_id(),
-      data_message_stanza->category(),
-      data_message_stanza->id(),
-      status);
+  message_sent_callback_.Run(data_message_stanza->device_user_id(),
+                             data_message_stanza->category(),
+                             data_message_stanza->id(), status);
 }
 
 MCSClient::MCSPacketInternal MCSClient::PopMessageForSend() {
@@ -970,4 +955,4 @@ MCSClient::MCSPacketInternal MCSClient::PopMessageForSend() {
   return packet;
 }
 
-} // namespace gcm
+}  // namespace gcm

@@ -181,9 +181,13 @@ void RegistrationRequest::Start() {
   std::string body;
   BuildRequestBody(&body);
 
-  // TODO(crbug.com/1043347): Change back to DVLOG when the bug is resolved.
-  VLOG(1) << "Performing registration for: " << request_info_.app_id();
-  VLOG(1) << "Registration request: " << body;
+  DVLOG(1) << "Performing registration for: " << request_info_.app_id()
+           << ", with android id: " << request_info_.android_id
+           << " and security token: " << request_info_.security_token;
+  DVLOG(1) << "Registration URL: " << registration_url_.possibly_invalid_spec();
+  DVLOG(1) << "Registration request headers: " << request->headers.ToString();
+  DVLOG(1) << "Registration request body: " << body;
+
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   url_loader_->AttachStringForUpload(body, kRegistrationRequestContentType);

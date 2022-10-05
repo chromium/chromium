@@ -197,11 +197,12 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     return;
   }
 
-  if (listener_)
+  if (listener_) {
+    DVLOG(1) << "Notifying listener of disconnect due to connection reset.";
     listener_->OnDisconnected();
+  }
 
-  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason",
-                            reason,
+  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason", reason,
                             CONNECTION_RESET_COUNT);
   recorder_->RecordConnectionResetSignaled(reason);
   if (!last_login_time_.is_null()) {
@@ -467,6 +468,7 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
   if (result != net::OK) {
     // TODO(zea): Consider how to handle errors that may require some sort of
     // user intervention (login page, etc.).
+    LOG(ERROR) << "ConnectionHandler failed with net error: " << result;
     base::UmaHistogramSparse("GCM.ConnectionDisconnectErrorCode", result);
     SignalConnectionReset(SOCKET_FAILURE);
     return;
