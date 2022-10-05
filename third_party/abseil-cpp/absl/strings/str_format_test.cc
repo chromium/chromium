@@ -1074,7 +1074,8 @@ using FormatExtensionTest = ::testing::Test;
 
 struct Point {
   friend absl::FormatConvertResult<absl::FormatConversionCharSet::kString |
-                                   absl::FormatConversionCharSet::kIntegral>
+                                   absl::FormatConversionCharSet::kIntegral |
+                                   absl::FormatConversionCharSet::v>
   AbslFormatConvert(const Point& p, const absl::FormatConversionSpec& spec,
                     absl::FormatSink* s) {
     if (spec.conversion_char() == absl::FormatConversionChar::s) {
@@ -1093,6 +1094,7 @@ TEST_F(FormatExtensionTest, AbslFormatConvertExample) {
   Point p;
   EXPECT_EQ(absl::StrFormat("a %s z", p), "a x=10 y=20 z");
   EXPECT_EQ(absl::StrFormat("a %d z", p), "a 10,20 z");
+  EXPECT_EQ(absl::StrFormat("a %v z", p), "a 10,20 z");
 
   // Typed formatting will fail to compile an invalid format.
   // StrFormat("%f", p);  // Does not compile.
@@ -1100,6 +1102,21 @@ TEST_F(FormatExtensionTest, AbslFormatConvertExample) {
   absl::UntypedFormatSpec f1("%f");
   // FormatUntyped will return false for bad character.
   EXPECT_FALSE(absl::FormatUntyped(&actual, f1, {absl::FormatArg(p)}));
+}
+
+struct PointStringify {
+  template <typename FormatSink>
+  friend void AbslStringify(FormatSink& sink, const PointStringify& p) {
+    sink.Append(absl::StrCat("(", p.x, ", ", p.y, ")"));
+  }
+
+  double x = 10.0;
+  double y = 20.0;
+};
+
+TEST_F(FormatExtensionTest, AbslStringifyExample) {
+  PointStringify p;
+  EXPECT_EQ(absl::StrFormat("a %v z", p), "a (10, 20) z");
 }
 }  // namespace
 

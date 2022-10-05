@@ -27,6 +27,7 @@
 #include <cstddef>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/log_severity.h"
 #include "absl/log/internal/config.h"
@@ -45,9 +46,10 @@ class LogMessage;
 
 // LogEntry
 //
-// Represents a single entry in a log, i.e., one log message.
+// Represents a single entry in a log, i.e., one `LOG` statement or failed
+// `CHECK`.
 //
-// LogEntry is copyable and thread-compatible.
+// `LogEntry` is copyable and thread-compatible.
 class LogEntry final {
  public:
   using tid_t = log_internal::Tid;
@@ -59,84 +61,127 @@ class LogEntry final {
   LogEntry(const LogEntry&) = default;
   LogEntry& operator=(const LogEntry&) = default;
 
-  // Source file and line where the log message occurred.
-  // Take special care not to dereference the pointers returned by
-  // source_filename() and source_basename() after the lifetime of the
-  // `LogEntry`. This will usually work, because these are usually backed by a
-  // statically allocated char array obtained from the `__FILE__` macro, but
-  // it is nevertheless incorrect and will be broken by statements like
-  // `LOG(INFO).AtLocation(...)` (see above).  If you need the data later, you
-  // must copy it.
-  absl::string_view source_filename() const { return full_filename_; }
-  absl::string_view source_basename() const { return base_filename_; }
+  // Source file and line where the log message occurred.  Taken from `__FILE__`
+  // and `__LINE__` unless overridden by `LOG(...).AtLocation(...)`.
+  //
+  // Take special care not to use the values returned by `source_filename()` and
+  // `source_basename()` after the lifetime of the entry.  This is always
+  // incorrect, but it will often work in practice because they usually point
+  // into a statically allocated character array obtained from `__FILE__`.
+  // Statements like `LOG(INFO).AtLocation(std::string(...), ...)` will expose
+  // the bug.  If you need the data later, you must copy them.
+  absl::string_view source_filename() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return full_filename_;
+  }
+  absl::string_view source_basename() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return base_filename_;
+  }
   int source_line() const { return line_; }
 
   // LogEntry::prefix()
   //
-  // True unless cleared by LOG(...).NoPrefix(), which indicates suppression of
-  // the line prefix containing metadata like file, line, timestamp, etc.
+  // True unless the metadata prefix was suppressed once by
+  // `LOG(...).NoPrefix()` or globally by `absl::EnableLogPrefix(false)`.
+  // Implies `text_message_with_prefix() == text_message()`.
   bool prefix() const { return prefix_; }
 
   // LogEntry::log_severity()
   //
-  // Returns this LogEntry's severity.
+  // Returns this entry's severity.  For `LOG`, taken from the first argument;
+  // for `CHECK`, always `absl::LogSeverity::kFatal`.
   absl::LogSeverity log_severity() const { return severity_; }
 
   // LogEntry::verbosity()
   //
-  // Returns this LogEntry's verbosity, or kNoVerbosityLevel for a non-verbose
-  // LogEntry.
+  // Returns this entry's verbosity, or `kNoVerbosityLevel` for a non-verbose
+  // entry.  Verbosity control is not available outside of Google yet.
   int verbosity() const { return verbose_level_; }
 
   // LogEntry::timestamp()
   //
-  // Returns the time at which this LogEntry was written.
+  // Returns the time at which this entry was written.  Captured during
+  // evaluation of `LOG`, but can be overridden by
+  // `LOG(...).WithTimestamp(...)`.
+  //
+  // Take care not to rely on timestamps increasing monotonically, or even to
+  // rely on timestamps having any particular relationship with reality (since
+  // they can be overridden).
   absl::Time timestamp() const { return timestamp_; }
 
   // LogEntry::tid()
   //
-  // Returns the id of the thread that wrote this LogEntry.
+  // Returns the ID of the thread that wrote this entry.  Captured during
+  // evaluation of `LOG`, but can be overridden by `LOG(...).WithThreadID(...)`.
+  //
+  // Take care not to *rely* on reported thread IDs as they can be overridden as
+  // specified above.
   tid_t tid() const { return tid_; }
 
-  // Text-formatted version of the log message.  An underlying buffer holds:
+  // Text-formatted version of the log message.  An underlying buffer holds
+  // these contiguous data:
   //
   // * A prefix formed by formatting metadata (timestamp, filename, line number,
   //   etc.)
+  //   The prefix may be empty - see `LogEntry::prefix()` - and may rarely be
+  //   truncated if the metadata are very long.
   // * The streamed data
+  //   The data may be empty if nothing was streamed, or may be truncated to fit
+  //   the buffer.
   // * A newline
   // * A nul terminator
   //
-  // These methods give access to the most commonly-used substrings of the
+  // The newline and nul terminator will be present even if the prefix and/or
+  // data are truncated.
+  //
+  // These methods give access to the most commonly useful substrings of the
   // buffer's contents.  Other combinations can be obtained with substring
   // arithmetic.
-  absl::string_view text_message_with_prefix_and_newline() const {
+  //
+  // The buffer does not outlive the entry; if you need the data later, you must
+  // copy them.
+  absl::string_view text_message_with_prefix_and_newline() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return absl::string_view(
         text_message_with_prefix_and_newline_and_nul_.data(),
         text_message_with_prefix_and_newline_and_nul_.size() - 1);
   }
-  absl::string_view text_message_with_prefix() const {
+  absl::string_view text_message_with_prefix() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return absl::string_view(
         text_message_with_prefix_and_newline_and_nul_.data(),
         text_message_with_prefix_and_newline_and_nul_.size() - 2);
   }
-  absl::string_view text_message_with_newline() const {
+  absl::string_view text_message_with_newline() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return absl::string_view(
         text_message_with_prefix_and_newline_and_nul_.data() + prefix_len_,
         text_message_with_prefix_and_newline_and_nul_.size() - prefix_len_ - 1);
   }
-  absl::string_view text_message() const {
+  absl::string_view text_message() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return absl::string_view(
         text_message_with_prefix_and_newline_and_nul_.data() + prefix_len_,
         text_message_with_prefix_and_newline_and_nul_.size() - prefix_len_ - 2);
   }
-  const char* text_message_with_prefix_and_newline_c_str() const {
+  const char* text_message_with_prefix_and_newline_c_str() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return text_message_with_prefix_and_newline_and_nul_.data();
   }
 
   // LogEntry::stacktrace()
   //
-  // Optional stacktrace, e.g., for `FATAL` logs.
-  absl::string_view stacktrace() const { return stacktrace_; }
+  // Optional stacktrace, e.g. for `FATAL` logs and failed `CHECK`s.
+  //
+  // Fatal entries are dispatched to each sink twice: first with all data and
+  // metadata but no stacktrace, and then with the stacktrace.  This is done
+  // because stacktrace collection is sometimes slow and fallible, and it's
+  // critical to log enough information to diagnose the failure even if the
+  // stacktrace collection hangs.
+  //
+  // The buffer does not outlive the entry; if you need the data later, you must
+  // copy them.
+  absl::string_view stacktrace() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return stacktrace_;
+  }
 
  private:
   LogEntry() = default;

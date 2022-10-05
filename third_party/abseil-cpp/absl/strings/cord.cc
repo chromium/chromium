@@ -610,11 +610,11 @@ void Cord::PrependArray(absl::string_view src, MethodIdentifier method) {
     size_t cur_size = contents_.inline_size();
     if (cur_size + src.size() <= InlineRep::kMaxInline) {
       // Use embedded storage.
-      char data[InlineRep::kMaxInline + 1] = {0};
-      memcpy(data, src.data(), src.size());
-      memcpy(data + src.size(), contents_.data(), cur_size);
-      memcpy(contents_.data_.as_chars(), data, InlineRep::kMaxInline + 1);
-      contents_.set_inline_size(cur_size + src.size());
+      InlineData data;
+      memcpy(data.as_chars(), src.data(), src.size());
+      memcpy(data.as_chars() + src.size(), contents_.data(), cur_size);
+      data.set_inline_size(cur_size + src.size());
+      contents_.data_ = data;
       return;
     }
   }
@@ -638,12 +638,12 @@ void Cord::PrependPrecise(absl::string_view src, MethodIdentifier method) {
   assert(!src.empty());
   assert(src.size() <= cord_internal::kMaxFlatLength);
   if (contents_.remaining_inline_capacity() >= src.size()) {
-    const size_t inline_length = contents_.inline_size();
-    char data[InlineRep::kMaxInline + 1] = {0};
-    memcpy(data, src.data(), src.size());
-    memcpy(data + src.size(), contents_.data(), inline_length);
-    memcpy(contents_.data_.as_chars(), data, InlineRep::kMaxInline + 1);
-    contents_.set_inline_size(inline_length + src.size());
+    const size_t cur_size = contents_.inline_size();
+    InlineData data;
+    memcpy(data.as_chars(), src.data(), src.size());
+    memcpy(data.as_chars() + src.size(), contents_.data(), cur_size);
+    data.set_inline_size(cur_size + src.size());
+    contents_.data_ = data;
   } else {
     contents_.PrependTree(CordRepFlat::Create(src), method);
   }

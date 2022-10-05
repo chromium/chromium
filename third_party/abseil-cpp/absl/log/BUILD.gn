@@ -80,6 +80,7 @@ absl_source_set("log_entry") {
   public = [ "log_entry.h" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:log_severity",
     "//third_party/abseil-cpp/absl/log/internal:config",
     "//third_party/abseil-cpp/absl/strings",

@@ -57,6 +57,7 @@
 #include <cstdint>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "absl/base/port.h"
@@ -75,6 +76,27 @@ struct AlphaNumBuffer {
   std::array<char, max_size> data;
   size_t size;
 };
+
+class StringifySink {
+ public:
+  void Append(size_t count, char ch);
+
+  void Append(string_view v);
+
+  bool PutPaddedString(string_view v, int width, int precision, bool left);
+
+  template <typename T>
+  friend string_view ExtractStringification(StringifySink& sink, const T& v);
+
+ private:
+  std::string buffer_;
+};
+
+template <typename T>
+string_view ExtractStringification(StringifySink& sink, const T& v) {
+  AbslStringify(sink, v);
+  return sink.buffer_;
+}
 
 }  // namespace strings_internal
 
@@ -208,6 +230,15 @@ struct Dec {
 // `StrAppend()`, providing efficient conversion of numeric, boolean, and
 // hexadecimal values (through the `Hex` type) into strings.
 
+template <typename T, typename = void>
+struct HasAbslStringify : std::false_type {};
+
+template <typename T>
+struct HasAbslStringify<T, std::enable_if_t<std::is_void<decltype(AbslStringify(
+                               std::declval<strings_internal::StringifySink&>(),
+                               std::declval<const T&>()))>::value>>
+    : std::true_type {};
+
 class AlphaNum {
  public:
   // No bool ctor -- bools convert to an integral type.
@@ -254,6 +285,13 @@ class AlphaNum {
   AlphaNum(const char* c_str)                     // NOLINT(runtime/explicit)
       : piece_(NullSafeStringView(c_str)) {}      // NOLINT(runtime/explicit)
   AlphaNum(absl::string_view pc) : piece_(pc) {}  // NOLINT(runtime/explicit)
+
+  template <typename T, typename = typename std::enable_if<
+                            HasAbslStringify<T>::value>::type>
+  AlphaNum(                                         // NOLINT(runtime/explicit)
+      const T& v,                                   // NOLINT(runtime/explicit)
+      strings_internal::StringifySink&& sink = {})  // NOLINT(runtime/explicit)
+      : piece_(strings_internal::ExtractStringification(sink, v)) {}
 
   template <typename Allocator>
   AlphaNum(  // NOLINT(runtime/explicit)

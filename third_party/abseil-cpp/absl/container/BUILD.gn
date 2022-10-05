@@ -152,7 +152,26 @@ absl_source_set("hash_policy_testing") {
 
 absl_source_set("hash_policy_traits") {
   public = [ "internal/hash_policy_traits.h" ]
+  deps = [
+    ":common_policy_traits",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+  ]
+}
+
+absl_source_set("common_policy_traits") {
+  public = [ "internal/common_policy_traits.h" ]
+  visibility = [ "//third_party/abseil-cpp/absl/container:*" ]
   deps = [ "//third_party/abseil-cpp/absl/meta:type_traits" ]
+}
+
+absl_source_set("common_policy_traits_test") {
+  testonly = true
+  sources = [ "internal/common_policy_traits_test.cc" ]
+  deps = [
+    ":common_policy_traits",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
 }
 
 absl_source_set("hashtable_debug") {
@@ -358,6 +377,7 @@ absl_source_set("btree") {
   ]
   deps = [
     ":common",
+    ":common_policy_traits",
     ":compressed_tuple",
     ":container_memory",
     ":layout",

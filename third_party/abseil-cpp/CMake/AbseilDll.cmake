@@ -69,6 +69,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "container/internal/btree.h"
   "container/internal/btree_container.h"
   "container/internal/common.h"
+  "container/internal/common_policy_traits.h"
   "container/internal/compressed_tuple.h"
   "container/internal/container_memory.h"
   "container/internal/counting_allocator.h"

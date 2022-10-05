@@ -111,11 +111,11 @@ struct FloatTraits<double> {
   //
   // 9999999999999999999, with 19 nines but no decimal point, is the largest
   // "repeated nines" integer that fits in a uint64_t.
-  static constexpr int kEiselLemireMinInclExp10 = -324 - 18;
+  static constexpr int kEiselLemireMinInclusiveExp10 = -324 - 18;
 
   // The smallest positive integer N such that parsing 1eN produces infinity.
   // Parsing a smaller N will produce something finite.
-  static constexpr int kEiselLemireMaxExclExp10 = 309;
+  static constexpr int kEiselLemireMaxExclusiveExp10 = 309;
 
   static double MakeNan(const char* tagp) {
     // Support nan no matter which namespace it's in.  Some platforms
@@ -180,8 +180,8 @@ struct FloatTraits<float> {
   static constexpr int kExponentBias = 127;
   static constexpr int kEiselLemireShift = 38;
   static constexpr uint64_t kEiselLemireMask = uint64_t{0x3FFFFFFFFF};
-  static constexpr int kEiselLemireMinInclExp10 = -46 - 18;
-  static constexpr int kEiselLemireMaxExclExp10 = 39;
+  static constexpr int kEiselLemireMinInclusiveExp10 = -46 - 18;
+  static constexpr int kEiselLemireMaxExclusiveExp10 = 39;
 
   static float MakeNan(const char* tagp) {
     // Support nanf no matter which namespace it's in.  Some platforms
@@ -229,40 +229,45 @@ struct FloatTraits<float> {
 //
 //   2**63 <= Power10Mantissa(n) < 2**64.
 //
+// See the "Table of powers of 10" comment below for a "1e60" example.
+//
 // Lookups into the power-of-10 table must first check the Power10Overflow() and
 // Power10Underflow() functions, to avoid out-of-bounds table access.
 //
-// Indexes into these tables are biased by -kPower10TableMin, and the table has
-// values in the range [kPower10TableMin, kPower10TableMax].
+// Indexes into these tables are biased by -kPower10TableMinInclusive. Valid
+// indexes range from kPower10TableMinInclusive to kPower10TableMaxExclusive.
 extern const uint64_t kPower10MantissaHighTable[];  // High 64 of 128 bits.
 extern const uint64_t kPower10MantissaLowTable[];   // Low  64 of 128 bits.
-extern const int16_t kPower10ExponentTable[];
 
 // The smallest (inclusive) allowed value for use with the Power10Mantissa()
 // and Power10Exponent() functions below.  (If a smaller exponent is needed in
 // calculations, the end result is guaranteed to underflow.)
-constexpr int kPower10TableMin = -342;
+constexpr int kPower10TableMinInclusive = -342;
 
-// The largest (inclusive) allowed value for use with the Power10Mantissa() and
-// Power10Exponent() functions below.  (If a smaller exponent is needed in
-// calculations, the end result is guaranteed to overflow.)
-constexpr int kPower10TableMax = 308;
+// The largest (exclusive) allowed value for use with the Power10Mantissa() and
+// Power10Exponent() functions below.  (If a larger-or-equal exponent is needed
+// in calculations, the end result is guaranteed to overflow.)
+constexpr int kPower10TableMaxExclusive = 309;
 
 uint64_t Power10Mantissa(int n) {
-  return kPower10MantissaHighTable[n - kPower10TableMin];
+  return kPower10MantissaHighTable[n - kPower10TableMinInclusive];
 }
 
 int Power10Exponent(int n) {
-  return kPower10ExponentTable[n - kPower10TableMin];
+  // The 217706 etc magic numbers encode the results as a formula instead of a
+  // table. Their equivalence (over the kPower10TableMinInclusive ..
+  // kPower10TableMaxExclusive range) is confirmed by
+  // https://github.com/google/wuffs/blob/315b2e52625ebd7b02d8fac13e3cd85ea374fb80/script/print-mpb-powers-of-10.go
+  return (217706 * n >> 16) - 63;
 }
 
 // Returns true if n is large enough that 10**n always results in an IEEE
 // overflow.
-bool Power10Overflow(int n) { return n > kPower10TableMax; }
+bool Power10Overflow(int n) { return n >= kPower10TableMaxExclusive; }
 
 // Returns true if n is small enough that 10**n times a ParsedFloat mantissa
 // always results in an IEEE underflow.
-bool Power10Underflow(int n) { return n < kPower10TableMin; }
+bool Power10Underflow(int n) { return n < kPower10TableMinInclusive; }
 
 // Returns true if Power10Mantissa(n) * 2**Power10Exponent(n) is exactly equal
 // to 10**n numerically.  Put another way, this returns true if there is no
@@ -656,11 +661,11 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
                  FloatType* value, std::errc* ec) {
   uint64_t man = input.mantissa;
   int exp10 = input.exponent;
-  if (exp10 < FloatTraits<FloatType>::kEiselLemireMinInclExp10) {
+  if (exp10 < FloatTraits<FloatType>::kEiselLemireMinInclusiveExp10) {
     *value = negative ? -0.0 : 0.0;
     *ec = std::errc::result_out_of_range;
     return true;
-  } else if (exp10 >= FloatTraits<FloatType>::kEiselLemireMaxExclExp10) {
+  } else if (exp10 >= FloatTraits<FloatType>::kEiselLemireMaxExclusiveExp10) {
     // Return max (a finite value) consistent with from_chars and DR 3081. For
     // SimpleAtod and SimpleAtof, post-processing will return infinity.
     *value = negative ? -std::numeric_limits<FloatType>::max()
@@ -669,17 +674,16 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
     return true;
   }
 
-  // Assert that (kPower10TableMin <= exp10) and (exp10 <= kPower10TableMax).
+  // Assert kPower10TableMinInclusive <= exp10 < kPower10TableMaxExclusive.
   // Equivalently, !Power10Underflow(exp10) and !Power10Overflow(exp10).
-  //
-  // The +1 is because kEiselLemireMaxExclExp10 is an exclusive bound but
-  // kPower10TableMax is inclusive.
   static_assert(
-      FloatTraits<FloatType>::kEiselLemireMinInclExp10 >= kPower10TableMin,
-      "(exp10 - kPower10TableMin) within kPower10MantissaHighTable bounds");
+      FloatTraits<FloatType>::kEiselLemireMinInclusiveExp10 >=
+          kPower10TableMinInclusive,
+      "(exp10-kPower10TableMinInclusive) in kPower10MantissaHighTable bounds");
   static_assert(
-      FloatTraits<FloatType>::kEiselLemireMaxExclExp10 <= kPower10TableMax + 1,
-      "(exp10 - kPower10TableMin) within kPower10MantissaHighTable bounds");
+      FloatTraits<FloatType>::kEiselLemireMaxExclusiveExp10 <=
+          kPower10TableMaxExclusive,
+      "(exp10-kPower10TableMinInclusive) in kPower10MantissaHighTable bounds");
 
   // The terse (+) comments in this function body refer to sections of the
   // https://nigeltao.github.io/blog/2020/eisel-lemire.html blog post.
@@ -696,26 +700,25 @@ bool EiselLemire(const strings_internal::ParsedFloat& input, bool negative,
   // (+) Normalization.
   int clz = countl_zero(man);
   man <<= static_cast<unsigned int>(clz);
-  // The 217706 etc magic numbers encode the kPower10ExponentTable as a formula
-  // instead of a table. Their equivalence is confirmed by
-  // https://github.com/google/wuffs/blob/315b2e52625ebd7b02d8fac13e3cd85ea374fb80/script/print-mpb-powers-of-10.go
+  // The 217706 etc magic numbers are from the Power10Exponent function.
   uint64_t ret_exp2 =
       static_cast<uint64_t>((217706 * exp10 >> 16) + 64 +
                             FloatTraits<FloatType>::kExponentBias - clz);
 
   // (+) Multiplication.
-  uint128 x =
-      static_cast<uint128>(man) *
-      static_cast<uint128>(kPower10MantissaHighTable[exp10 - kPower10TableMin]);
+  uint128 x = static_cast<uint128>(man) *
+              static_cast<uint128>(
+                  kPower10MantissaHighTable[exp10 - kPower10TableMinInclusive]);
 
   // (+) Wider Approximation.
   static constexpr uint64_t high64_mask =
       FloatTraits<FloatType>::kEiselLemireMask;
   if (((Uint128High64(x) & high64_mask) == high64_mask) &&
       (man > (std::numeric_limits<uint64_t>::max() - Uint128Low64(x)))) {
-    uint128 y = static_cast<uint128>(man) *
-                static_cast<uint128>(
-                    kPower10MantissaLowTable[exp10 - kPower10TableMin]);
+    uint128 y =
+        static_cast<uint128>(man) *
+        static_cast<uint128>(
+            kPower10MantissaLowTable[exp10 - kPower10TableMinInclusive]);
     x += Uint128High64(y);
     // For example, parsing "4503599627370497.5" will take the if-true
     // branch here (for double precision), since:
@@ -926,15 +929,39 @@ from_chars_result from_chars(const char* first, const char* last, float& value,
 
 namespace {
 
-// Table of powers of 10, from kPower10TableMin to kPower10TableMax.
+// Table of powers of 10, from kPower10TableMinInclusive to
+// kPower10TableMaxExclusive.
 //
-// kPower10MantissaHighTable[i - kPower10TableMin] stores the 64-bit mantissa
-// (high bit always on), and kPower10ExponentTable[i - kPower10TableMin] stores
-// the power-of-two exponent.  For a given number i, this gives the unique
-// mantissa and exponent such that mantissa * 2**exponent <= 10**i < (mantissa
-// + 1) * 2**exponent.
+// kPower10MantissaHighTable[i - kPower10TableMinInclusive] stores the 64-bit
+// mantissa. The high bit is always on.
 //
 // kPower10MantissaLowTable extends that 64-bit mantissa to 128 bits.
+//
+// Power10Exponent(i) calculates the power-of-two exponent.
+//
+// For a number i, this gives the unique mantissaHigh and exponent such that
+// (mantissaHigh * 2**exponent) <= 10**i < ((mantissaHigh + 1) * 2**exponent).
+//
+// For example, Python can confirm that the exact hexadecimal value of 1e60 is:
+//    >>> a = 1000000000000000000000000000000000000000000000000000000000000
+//    >>> hex(a)
+//    '0x9f4f2726179a224501d762422c946590d91000000000000000'
+// Adding underscores at every 8th hex digit shows 50 hex digits:
+//    '0x9f4f2726_179a2245_01d76242_2c946590_d9100000_00000000_00'.
+// In this case, the high bit of the first hex digit, 9, is coincidentally set,
+// so we do not have to do further shifting to deduce the 128-bit mantissa:
+//   - kPower10MantissaHighTable[60 - kP10TMI] = 0x9f4f2726179a2245U
+//   - kPower10MantissaLowTable[ 60 - kP10TMI] = 0x01d762422c946590U
+// where kP10TMI is kPower10TableMinInclusive. The low 18 of those 50 hex
+// digits are truncated.
+//
+// 50 hex digits (with the high bit set) is 200 bits and mantissaHigh holds 64
+// bits, so Power10Exponent(60) = 200 - 64 = 136. Again, Python can confirm:
+//    >>> b = 0x9f4f2726179a2245
+//    >>> ((b+0)<<136) <= a
+//    True
+//    >>> ((b+1)<<136) <= a
+//    False
 //
 // The tables were generated by
 // https://github.com/google/wuffs/blob/315b2e52625ebd7b02d8fac13e3cd85ea374fb80/script/print-mpb-powers-of-10.go
@@ -1379,69 +1406,6 @@ const uint64_t kPower10MantissaLowTable[] = {
     0xe0470a63e6bd56c3U, 0x1858ccfce06cac74U, 0x0f37801e0c43ebc8U,
     0xd30560258f54e6baU, 0x47c6b82ef32a2069U, 0x4cdc331d57fa5441U,
     0xe0133fe4adf8e952U, 0x58180fddd97723a6U, 0x570f09eaa7ea7648U,
-};
-
-const int16_t kPower10ExponentTable[] = {
-    -1200, -1196, -1193, -1190, -1186, -1183, -1180, -1176, -1173, -1170, -1166,
-    -1163, -1160, -1156, -1153, -1150, -1146, -1143, -1140, -1136, -1133, -1130,
-    -1127, -1123, -1120, -1117, -1113, -1110, -1107, -1103, -1100, -1097, -1093,
-    -1090, -1087, -1083, -1080, -1077, -1073, -1070, -1067, -1063, -1060, -1057,
-    -1053, -1050, -1047, -1043, -1040, -1037, -1034, -1030, -1027, -1024, -1020,
-    -1017, -1014, -1010, -1007, -1004, -1000, -997,  -994,  -990,  -987,  -984,
-    -980,  -977,  -974,  -970,  -967,  -964,  -960,  -957,  -954,  -950,  -947,
-    -944,  -940,  -937,  -934,  -931,  -927,  -924,  -921,  -917,  -914,  -911,
-    -907,  -904,  -901,  -897,  -894,  -891,  -887,  -884,  -881,  -877,  -874,
-    -871,  -867,  -864,  -861,  -857,  -854,  -851,  -847,  -844,  -841,  -838,
-    -834,  -831,  -828,  -824,  -821,  -818,  -814,  -811,  -808,  -804,  -801,
-    -798,  -794,  -791,  -788,  -784,  -781,  -778,  -774,  -771,  -768,  -764,
-    -761,  -758,  -754,  -751,  -748,  -744,  -741,  -738,  -735,  -731,  -728,
-    -725,  -721,  -718,  -715,  -711,  -708,  -705,  -701,  -698,  -695,  -691,
-    -688,  -685,  -681,  -678,  -675,  -671,  -668,  -665,  -661,  -658,  -655,
-    -651,  -648,  -645,  -642,  -638,  -635,  -632,  -628,  -625,  -622,  -618,
-    -615,  -612,  -608,  -605,  -602,  -598,  -595,  -592,  -588,  -585,  -582,
-    -578,  -575,  -572,  -568,  -565,  -562,  -558,  -555,  -552,  -549,  -545,
-    -542,  -539,  -535,  -532,  -529,  -525,  -522,  -519,  -515,  -512,  -509,
-    -505,  -502,  -499,  -495,  -492,  -489,  -485,  -482,  -479,  -475,  -472,
-    -469,  -465,  -462,  -459,  -455,  -452,  -449,  -446,  -442,  -439,  -436,
-    -432,  -429,  -426,  -422,  -419,  -416,  -412,  -409,  -406,  -402,  -399,
-    -396,  -392,  -389,  -386,  -382,  -379,  -376,  -372,  -369,  -366,  -362,
-    -359,  -356,  -353,  -349,  -346,  -343,  -339,  -336,  -333,  -329,  -326,
-    -323,  -319,  -316,  -313,  -309,  -306,  -303,  -299,  -296,  -293,  -289,
-    -286,  -283,  -279,  -276,  -273,  -269,  -266,  -263,  -259,  -256,  -253,
-    -250,  -246,  -243,  -240,  -236,  -233,  -230,  -226,  -223,  -220,  -216,
-    -213,  -210,  -206,  -203,  -200,  -196,  -193,  -190,  -186,  -183,  -180,
-    -176,  -173,  -170,  -166,  -163,  -160,  -157,  -153,  -150,  -147,  -143,
-    -140,  -137,  -133,  -130,  -127,  -123,  -120,  -117,  -113,  -110,  -107,
-    -103,  -100,  -97,   -93,   -90,   -87,   -83,   -80,   -77,   -73,   -70,
-    -67,   -63,   -60,   -57,   -54,   -50,   -47,   -44,   -40,   -37,   -34,
-    -30,   -27,   -24,   -20,   -17,   -14,   -10,   -7,    -4,    0,     3,
-    6,     10,    13,    16,    20,    23,    26,    30,    33,    36,    39,
-    43,    46,    49,    53,    56,    59,    63,    66,    69,    73,    76,
-    79,    83,    86,    89,    93,    96,    99,    103,   106,   109,   113,
-    116,   119,   123,   126,   129,   132,   136,   139,   142,   146,   149,
-    152,   156,   159,   162,   166,   169,   172,   176,   179,   182,   186,
-    189,   192,   196,   199,   202,   206,   209,   212,   216,   219,   222,
-    226,   229,   232,   235,   239,   242,   245,   249,   252,   255,   259,
-    262,   265,   269,   272,   275,   279,   282,   285,   289,   292,   295,
-    299,   302,   305,   309,   312,   315,   319,   322,   325,   328,   332,
-    335,   338,   342,   345,   348,   352,   355,   358,   362,   365,   368,
-    372,   375,   378,   382,   385,   388,   392,   395,   398,   402,   405,
-    408,   412,   415,   418,   422,   425,   428,   431,   435,   438,   441,
-    445,   448,   451,   455,   458,   461,   465,   468,   471,   475,   478,
-    481,   485,   488,   491,   495,   498,   501,   505,   508,   511,   515,
-    518,   521,   524,   528,   531,   534,   538,   541,   544,   548,   551,
-    554,   558,   561,   564,   568,   571,   574,   578,   581,   584,   588,
-    591,   594,   598,   601,   604,   608,   611,   614,   617,   621,   624,
-    627,   631,   634,   637,   641,   644,   647,   651,   654,   657,   661,
-    664,   667,   671,   674,   677,   681,   684,   687,   691,   694,   697,
-    701,   704,   707,   711,   714,   717,   720,   724,   727,   730,   734,
-    737,   740,   744,   747,   750,   754,   757,   760,   764,   767,   770,
-    774,   777,   780,   784,   787,   790,   794,   797,   800,   804,   807,
-    810,   813,   817,   820,   823,   827,   830,   833,   837,   840,   843,
-    847,   850,   853,   857,   860,   863,   867,   870,   873,   877,   880,
-    883,   887,   890,   893,   897,   900,   903,   907,   910,   913,   916,
-    920,   923,   926,   930,   933,   936,   940,   943,   946,   950,   953,
-    956,   960,
 };
 
 }  // namespace

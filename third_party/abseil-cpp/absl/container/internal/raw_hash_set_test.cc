@@ -14,17 +14,25 @@
 
 #include "absl/container/internal/raw_hash_set.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cmath>
 #include <cstdint>
 #include <deque>
 #include <functional>
+#include <iterator>
+#include <list>
+#include <map>
 #include <memory>
 #include <numeric>
+#include <ostream>
 #include <random>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -33,10 +41,13 @@
 #include "absl/base/internal/cycleclock.h"
 #include "absl/base/internal/prefetch.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
+#include "absl/log/log.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
@@ -339,7 +350,7 @@ class StringPolicy {
     struct ctor {};
 
     template <class... Ts>
-    slot_type(ctor, Ts&&... ts) : pair(std::forward<Ts>(ts)...) {}
+    explicit slot_type(ctor, Ts&&... ts) : pair(std::forward<Ts>(ts)...) {}
 
     std::pair<std::string, std::string> pair;
   };
@@ -411,7 +422,7 @@ struct CustomAlloc : std::allocator<T> {
   CustomAlloc() {}
 
   template <typename U>
-  CustomAlloc(const CustomAlloc<U>& other) {}
+  explicit CustomAlloc(const CustomAlloc<U>& /*other*/) {}
 
   template<class U> struct rebind {
     using other = CustomAlloc<U>;
@@ -1275,6 +1286,7 @@ TEST(Table, DISABLED_EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
   for (size_t size : sizes) {
     auto& stat = stats[size];
     VerifyStats(size, expected, stat);
+    LOG(INFO) << size << " " << stat;
   }
 }
 
@@ -1370,6 +1382,7 @@ TEST(Table, DISABLED_EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
   for (size_t size : sizes) {
     auto& stat = stats[size];
     VerifyStats(size, expected, stat);
+    LOG(INFO) << size << " " << stat;
   }
 }
 
@@ -1504,7 +1517,7 @@ TEST(Table, RehashZeroForcesRehash) {
 TEST(Table, ConstructFromInitList) {
   using P = std::pair<std::string, std::string>;
   struct Q {
-    operator P() const { return {}; }
+    operator P() const { return {}; }  // NOLINT
   };
   StringTable t = {P(), Q(), {}, {{}, {}}};
 }
@@ -2027,7 +2040,7 @@ TEST(Table, UnstablePointers) {
 TEST(TableDeathTest, EraseOfEndAsserts) {
   // Use an assert with side-effects to figure out if they are actually enabled.
   bool assert_enabled = false;
-  assert([&]() {
+  assert([&]() {  // NOLINT
     assert_enabled = true;
     return true;
   }());
@@ -2047,7 +2060,7 @@ TEST(RawHashSamplerTest, Sample) {
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
-  std::unordered_set<const HashtablezInfo*> preexisting_info;
+  absl::flat_hash_set<const HashtablezInfo*> preexisting_info;
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
     preexisting_info.insert(&info);
     ++start_size;
@@ -2074,8 +2087,8 @@ TEST(RawHashSamplerTest, Sample) {
     }
   }
   size_t end_size = 0;
-  std::unordered_map<size_t, int> observed_checksums;
-  std::unordered_map<ssize_t, int> reservations;
+  absl::flat_hash_map<size_t, int> observed_checksums;
+  absl::flat_hash_map<ssize_t, int> reservations;
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     if (preexisting_info.count(&info) == 0) {
       observed_checksums[info.hashes_bitwise_xor.load(

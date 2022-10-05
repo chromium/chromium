@@ -460,7 +460,10 @@ cc_library(
     hdrs = ["internal/hash_policy_traits.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    deps = ["//absl/meta:type_traits"],
+    deps = [
+        ":common_policy_traits",
+        "//absl/meta:type_traits",
+    ],
 )
 
 cc_test(
@@ -470,6 +473,26 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash_policy_traits",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "common_policy_traits",
+    hdrs = ["internal/common_policy_traits.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = ["//visibility:private"],
+    deps = ["//absl/meta:type_traits"],
+)
+
+cc_test(
+    name = "common_policy_traits_test",
+    srcs = ["internal/common_policy_traits_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":common_policy_traits",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -614,6 +637,8 @@ cc_test(
     ],
     deps = [
         ":container_memory",
+        ":flat_hash_map",
+        ":flat_hash_set",
         ":hash_function_defaults",
         ":hash_policy_testing",
         ":hashtable_debug",
@@ -623,6 +648,7 @@ cc_test(
         "//absl/base:core_headers",
         "//absl/base:prefetch",
         "//absl/base:raw_logging_internal",
+        "//absl/log",
         "//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],
@@ -905,6 +931,7 @@ cc_library(
     visibility = ["//visibility:public"],
     deps = [
         ":common",
+        ":common_policy_traits",
         ":compressed_tuple",
         ":container_memory",
         ":layout",

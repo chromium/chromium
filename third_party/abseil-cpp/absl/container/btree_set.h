@@ -760,12 +760,6 @@ struct set_slot_policy {
   static void destroy(Alloc *alloc, slot_type *slot) {
     absl::allocator_traits<Alloc>::destroy(*alloc, slot);
   }
-
-  template <typename Alloc>
-  static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
-    construct(alloc, new_slot, old_slot);
-    destroy(alloc, old_slot);
-  }
 };
 
 // A parameters structure for holding the type parameters for a btree_set.

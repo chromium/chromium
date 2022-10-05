@@ -61,6 +61,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/container/internal/common.h"
+#include "absl/container/internal/common_policy_traits.h"
 #include "absl/container/internal/compressed_tuple.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/layout.h"
@@ -356,7 +357,7 @@ class map_value_compare {
 
 template <typename Key, typename Compare, typename Alloc, int TargetNodeSize,
           bool IsMulti, bool IsMap, typename SlotPolicy>
-struct common_params {
+struct common_params : common_policy_traits<SlotPolicy> {
   using original_key_compare = Compare;
 
   // If Compare is a common comparator for a string-like type, then we adapt it
@@ -438,28 +439,6 @@ struct common_params {
       absl::conditional_t<(kNodeSlotSpace / sizeof(slot_type) >
                            (std::numeric_limits<uint8_t>::max)()),
                           uint16_t, uint8_t>;  // NOLINT
-
-  // The following methods are necessary for passing this struct as PolicyTraits
-  // for node_handle and/or are used within btree.
-  static value_type &element(slot_type *slot) {
-    return slot_policy::element(slot);
-  }
-  static const value_type &element(const slot_type *slot) {
-    return slot_policy::element(slot);
-  }
-  template <class... Args>
-  static void construct(Alloc *alloc, slot_type *slot, Args &&...args) {
-    slot_policy::construct(alloc, slot, std::forward<Args>(args)...);
-  }
-  static void construct(Alloc *alloc, slot_type *slot, slot_type *other) {
-    slot_policy::construct(alloc, slot, other);
-  }
-  static void destroy(Alloc *alloc, slot_type *slot) {
-    slot_policy::destroy(alloc, slot);
-  }
-  static void transfer(Alloc *alloc, slot_type *new_slot, slot_type *old_slot) {
-    slot_policy::transfer(alloc, new_slot, old_slot);
-  }
 };
 
 // An adapter class that converts a lower-bound compare into an upper-bound

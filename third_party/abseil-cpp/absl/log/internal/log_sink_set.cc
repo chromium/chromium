@@ -69,6 +69,7 @@ bool& ThreadIsLoggingStatus() {
     }
     return true;
   }();
+  (void)unused;  // Fixes -wunused-variable warning
   bool* thread_is_logging_ptr =
       reinterpret_cast<bool*>(pthread_getspecific(thread_is_logging_key));
 

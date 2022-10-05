@@ -20,8 +20,7 @@
 // structure. A Cord is a string-like sequence of characters optimized for
 // specific use cases. Unlike a `std::string`, which stores an array of
 // contiguous characters, Cord data is stored in a structure consisting of
-// separate, reference-counted "chunks." (Currently, this implementation is a
-// tree structure, though that implementation may change.)
+// separate, reference-counted "chunks."
 //
 // Because a Cord consists of these chunks, data can be added to or removed from
 // a Cord during its lifetime. Chunks may also be shared between Cords. Unlike a
@@ -877,27 +876,12 @@ class Cord {
     bool IsSame(const InlineRep& other) const {
       return memcmp(&data_, &other.data_, sizeof(data_)) == 0;
     }
-    int BitwiseCompare(const InlineRep& other) const {
-      uint64_t x, y;
-      // Use memcpy to avoid aliasing issues.
-      memcpy(&x, &data_, sizeof(x));
-      memcpy(&y, &other.data_, sizeof(y));
-      if (x == y) {
-        memcpy(&x, reinterpret_cast<const char*>(&data_) + 8, sizeof(x));
-        memcpy(&y, reinterpret_cast<const char*>(&other.data_) + 8, sizeof(y));
-        if (x == y) return 0;
-      }
-      return absl::big_endian::FromHost64(x) < absl::big_endian::FromHost64(y)
-                 ? -1
-                 : 1;
-    }
     void CopyTo(std::string* dst) const {
       // memcpy is much faster when operating on a known size. On most supported
       // platforms, the small string optimization is large enough that resizing
       // to 15 bytes does not cause a memory allocation.
-      absl::strings_internal::STLStringResizeUninitialized(dst,
-                                                           sizeof(data_) - 1);
-      memcpy(&(*dst)[0], &data_, sizeof(data_) - 1);
+      absl::strings_internal::STLStringResizeUninitialized(dst, kMaxInline);
+      memcpy(&(*dst)[0], data_.as_chars(), kMaxInline);
       // erase is faster than resize because the logic for memory allocation is
       // not needed.
       dst->erase(inline_size());
@@ -1029,17 +1013,17 @@ namespace cord_internal {
 
 // Fast implementation of memmove for up to 15 bytes. This implementation is
 // safe for overlapping regions. If nullify_tail is true, the destination is
-// padded with '\0' up to 16 bytes.
+// padded with '\0' up to 15 bytes.
 template <bool nullify_tail = false>
 inline void SmallMemmove(char* dst, const char* src, size_t n) {
   if (n >= 8) {
-    assert(n <= 16);
+    assert(n <= 15);
     uint64_t buf1;
     uint64_t buf2;
     memcpy(&buf1, src, 8);
     memcpy(&buf2, src + n - 8, 8);
     if (nullify_tail) {
-      memset(dst + 8, 0, 8);
+      memset(dst + 7, 0, 8);
     }
     memcpy(dst, &buf1, 8);
     memcpy(dst + n - 8, &buf2, 8);
@@ -1050,7 +1034,7 @@ inline void SmallMemmove(char* dst, const char* src, size_t n) {
     memcpy(&buf2, src + n - 4, 4);
     if (nullify_tail) {
       memset(dst + 4, 0, 4);
-      memset(dst + 8, 0, 8);
+      memset(dst + 7, 0, 8);
     }
     memcpy(dst, &buf1, 4);
     memcpy(dst + n - 4, &buf2, 4);
@@ -1061,7 +1045,7 @@ inline void SmallMemmove(char* dst, const char* src, size_t n) {
       dst[n - 1] = src[n - 1];
     }
     if (nullify_tail) {
-      memset(dst + 8, 0, 8);
+      memset(dst + 7, 0, 8);
       memset(dst + n, 0, 8);
     }
   }
@@ -1190,7 +1174,7 @@ inline cord_internal::CordRepFlat* Cord::InlineRep::MakeFlatWithExtraCapacity(
   size_t len = data_.inline_size();
   auto* result = CordRepFlat::New(len + extra);
   result->length = len;
-  memcpy(result->Data(), data_.as_chars(), sizeof(data_));
+  memcpy(result->Data(), data_.as_chars(), InlineRep::kMaxInline);
   return result;
 }
 
@@ -1389,7 +1373,7 @@ extern template void Cord::Prepend(std::string&& src);
 
 inline int Cord::Compare(const Cord& rhs) const {
   if (!contents_.is_tree() && !rhs.contents_.is_tree()) {
-    return contents_.BitwiseCompare(rhs.contents_);
+    return contents_.data_.Compare(rhs.contents_.data_);
   }
 
   return CompareImpl(rhs);

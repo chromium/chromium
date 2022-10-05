@@ -582,6 +582,29 @@ class InlineData {
     tag() = static_cast<char>(size << 1);
   }
 
+  // Compares 'this' inlined data  with rhs. The comparison is a straightforward
+  // lexicographic comparison. `Compare()` returns values as follows:
+  //
+  //   -1  'this' InlineData instance is smaller
+  //    0  the InlineData instances are equal
+  //    1  'this' InlineData instance larger
+  int Compare(const InlineData& rhs) const {
+    uint64_t x, y;
+    memcpy(&x, as_chars(), sizeof(x));
+    memcpy(&y, rhs.as_chars(), sizeof(y));
+    if (x == y) {
+      memcpy(&x, as_chars() + 7, sizeof(x));
+      memcpy(&y, rhs.as_chars() + 7, sizeof(y));
+      if (x == y) {
+        if (inline_size() == rhs.inline_size()) return 0;
+        return inline_size() < rhs.inline_size() ? -1 : 1;
+      }
+    }
+    x = absl::big_endian::FromHost64(x);
+    y = absl::big_endian::FromHost64(y);
+    return x < y ? -1 : 1;
+  }
+
  private:
   // See cordz_info_t for forced alignment and size of `cordz_info` details.
   struct AsTree {
