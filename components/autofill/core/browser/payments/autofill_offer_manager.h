@@ -25,7 +25,6 @@ class AutofillClient;
 class AutofillOfferData;
 class OfferNotificationHandler;
 class PersonalDataManager;
-struct Suggestion;
 
 // A delegate class to expose relevant CouponService functionalities.
 class CouponServiceDelegate {
@@ -49,8 +48,8 @@ class CouponServiceDelegate {
 class AutofillOfferManager : public KeyedService,
                              public PersonalDataManagerObserver {
  public:
-  // Mapping from suggestion backend ID to offer data.
-  using OffersMap = std::map<std::string, AutofillOfferData*>;
+  // Mapping from credit card guid id to offer data.
+  using CardLinkedOffersMap = std::map<std::string, AutofillOfferData*>;
 
   AutofillOfferManager(PersonalDataManager* personal_data,
                        CouponServiceDelegate* coupon_service_delegate);
@@ -64,10 +63,10 @@ class AutofillOfferManager : public KeyedService,
   // Invoked when the navigation happens.
   void OnDidNavigateFrame(AutofillClient* client);
 
-  // Modifies any suggestion in |suggestions| if it has related offer data.
-  void UpdateSuggestionsWithOffers(
-      const GURL& last_committed_primary_main_frame_url,
-      std::vector<Suggestion>& suggestions);
+  // Gets a mapping between credit card's guid id and eligible card-linked
+  // offers on the |last_committed_primary_main_frame_url|.
+  CardLinkedOffersMap GetCardLinkedOffersMap(
+      const GURL& last_committed_primary_main_frame_url) const;
 
   // Returns true only if the domain of |last_committed_primary_main_frame_url|
   // has an offer.
@@ -89,11 +88,6 @@ class AutofillOfferManager : public KeyedService,
   // Queries |personal_data_| to reset the elements of
   // |eligible_merchant_domains_|
   void UpdateEligibleMerchantDomains();
-
-  // Creates a mapping from Suggestion Backend ID's to eligible card-linked
-  // offers.
-  OffersMap CreateCardLinkedOffersMap(
-      const GURL& last_committed_primary_main_frame_origin) const;
 
   raw_ptr<PersonalDataManager> personal_data_;
   raw_ptr<CouponServiceDelegate> coupon_service_delegate_;

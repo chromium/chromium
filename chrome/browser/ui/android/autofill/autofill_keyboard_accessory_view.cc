@@ -93,21 +93,9 @@ void AutofillKeyboardAccessoryView::Show() {
       label = controller_->GetSuggestionMinorTextAt(i);
     }
 
-    // Set the offer title to display as the item tag.
-    std::u16string item_tag = std::u16string();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableOffersInClankKeyboardAccessory) &&
-        !suggestion.offer_label.empty()) {
-      item_tag = suggestion.offer_label;
-      // If the offer label is not empty then replace the network icon by the
-      // offer tag.
-      android_icon_id =
-          ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
-    }
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
         env, data_array, position++, ConvertUTF16ToJavaString(env, value),
-        ConvertUTF16ToJavaString(env, label),
-        ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        ConvertUTF16ToJavaString(env, label), android_icon_id,
         suggestion.frontend_id,
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),

@@ -120,10 +120,6 @@ struct Suggestion {
   // the second line, third column in the grid view of label).
   std::vector<std::vector<Text>> labels;
 
-  // A label to be shown beneath |label| that will display information about any
-  // credit card offers or rewards.
-  std::u16string offer_label;
-
   // Used only for passwords to show the password value.
   // Also used to display an extra line of information if two line
   // display is enabled.

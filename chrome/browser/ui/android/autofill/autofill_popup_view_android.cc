@@ -94,16 +94,22 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
               : base::StrCat({controller_->GetSuggestionMainTextAt(i), u" ",
                               controller_->GetSuggestionMinorTextAt(i)}));
     }
-    ScopedJavaLocalRef<jstring> sublabel =
-        base::android::ConvertUTF8ToJavaString(env, std::string());
     std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
         controller_->GetSuggestionLabelsAt(i);
-    if (!suggestion_labels.empty()) {
-      DCHECK_EQ(suggestion_labels.size(), 1U);
+    std::u16string sublabel;
+    std::u16string item_tag;
+    DCHECK_LE(suggestion_labels.size(), 2U);
+    if (suggestion_labels.size() > 0) {
+      // TODO(crbug.com/1313616): Allow displaying more than one entry for each
+      // row once the card name is populated.
       DCHECK_EQ(suggestion_labels[0].size(), 1U);
-      sublabel = base::android::ConvertUTF16ToJavaString(
-          env, std::move(suggestion_labels[0][0].value));
+      sublabel = std::move(suggestion_labels[0][0].value);
     }
+    if (suggestion_labels.size() > 1) {
+      DCHECK_EQ(suggestion_labels[1].size(), 1U);
+      item_tag = std::move(suggestion_labels[1][0].value);
+    }
+
     int android_icon_id = 0;
 
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
@@ -119,13 +125,13 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
             POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE ||
         suggestion.frontend_id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO ||
         suggestion.frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
-    // Set the offer title to display as the item tag.
-    ScopedJavaLocalRef<jstring> item_tag =
-        base::android::ConvertUTF16ToJavaString(env, suggestion.offer_label);
+
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
-        env, data_array, i, label, secondary_label, sublabel, item_tag,
-        android_icon_id, suggestion.is_icon_at_start, suggestion.frontend_id,
-        is_deletable, is_label_multiline, /* isLabelBold= */ false,
+        env, data_array, i, label, secondary_label,
+        base::android::ConvertUTF16ToJavaString(env, sublabel),
+        base::android::ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        suggestion.is_icon_at_start, suggestion.frontend_id, is_deletable,
+        is_label_multiline, /*isLabelBold*/ false,
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
 
@@ -156,7 +162,7 @@ void AutofillPopupViewAndroid::DeletionRequested(
 
   std::u16string confirmation_title, confirmation_body;
   if (!controller_->GetRemovalConfirmationText(list_index, &confirmation_title,
-          &confirmation_body)) {
+                                               &confirmation_body)) {
     return;
   }
 

@@ -183,7 +183,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
      * @param label The first part of first line of the suggestion.
      * @param secondaryLabel The second part of first line of the suggestion.
      * @param sublabel The second line of the suggestion.
-     * @param itemTag The offer label of the suggestion.
+     * @param itemTag The third line of the suggestion.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param isIconAtStart {@code true} if {@param iconId} is displayed before {@param label}.
      * @param suggestionId Identifier for the suggestion type.

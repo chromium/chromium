@@ -47,7 +47,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     is_context_secure_ = is_context_secure;
   }
 
-  void set_suggestions(std::vector<Suggestion> suggestions);
+  // Invoked when |suggestions| are successfully fetched. |with_offer| indicates
+  // whether an offer is attached to any of the suggestion in the list.
+  void OnDidFetchSuggestion(const std::vector<Suggestion>& suggestions,
+                            bool with_offer);
 
   void OnDidShowSuggestions(const FormStructure& form,
                             const AutofillField& field,

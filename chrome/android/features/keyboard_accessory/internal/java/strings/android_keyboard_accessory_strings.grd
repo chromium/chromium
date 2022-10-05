@@ -250,6 +250,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
         Use your virtual card for added security
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_OFFER" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion has a card linked offer attached.">
+        Cashback linked
+      </message>
     </messages>
   </release>
 </grit>

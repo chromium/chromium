@@ -176,6 +176,8 @@ class KeyboardAccessoryIPHUtils {
                 return R.string.iph_keyboard_accessory_swipe_for_more;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
                 return R.string.iph_keyboard_accessory_payment_virtual_cards;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
+                return R.string.iph_keyboard_accessory_payment_offer;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

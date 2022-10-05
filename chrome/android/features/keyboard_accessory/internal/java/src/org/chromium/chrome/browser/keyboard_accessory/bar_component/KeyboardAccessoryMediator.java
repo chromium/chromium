@@ -340,10 +340,6 @@ class KeyboardAccessoryMediator
             return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;
         }
         if (containsCreditCardInfo(suggestion)) {
-            if (!suggestion.getItemTag().isEmpty()) {
-                // Prefer showing a linked cashback over the general IPH.
-                return FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE;
-            }
             return FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE;
         }
         if (containsAddressInfo(suggestion)) {

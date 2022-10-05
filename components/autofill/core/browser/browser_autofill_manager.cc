@@ -2372,12 +2372,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   credit_card_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
 
   std::vector<Suggestion> suggestions;
+  bool with_offer = false;
   if (!IsInAutofillSuggestionsDisabledExperiment()) {
     suggestions = suggestion_generator_->GetSuggestionsForCreditCards(
-        form_structure, field, type, app_locale_, should_display_gpay_logo);
+        field, type, app_locale_, should_display_gpay_logo, &with_offer);
   }
 
-  credit_card_form_event_logger_->set_suggestions(suggestions);
+  credit_card_form_event_logger_->OnDidFetchSuggestion(suggestions, with_offer);
   return suggestions;
 }
 

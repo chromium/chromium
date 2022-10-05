@@ -949,12 +949,6 @@ std::u16string AutofillPopupItemView::GetVoiceOverString() {
     }
   }
 
-  // TODO(siyua): Merge other labels to Suggestion::labels.
-  if (!suggestion.offer_label.empty()) {
-    // |offer_label| is only populated for credit card suggestions.
-    text.push_back(suggestion.offer_label);
-  }
-
   if (!suggestion.additional_label.empty()) {
     // |additional_label| is only populated in a passwords context.
     text.push_back(suggestion.additional_label);
@@ -1010,20 +1004,15 @@ AutofillPopupSuggestionView::CreateMainTextView() {
 
 std::vector<std::unique_ptr<views::View>>
 AutofillPopupSuggestionView::CreateSubtextViews() {
-  std::u16string second_row_label;
-  std::vector<std::vector<Suggestion::Text>> labels =
-      popup_view()->controller()->GetSuggestionLabelsAt(GetLineNumber());
-  if (!labels.empty()) {
-    DCHECK_EQ(labels.size(), 1U);
-    DCHECK_EQ(labels[0].size(), 1U);
-    second_row_label = std::move(labels[0][0].value);
-  }
-
-  const std::u16string& third_row_label =
-      popup_view()->controller()->GetSuggestionAt(GetLineNumber()).offer_label;
-
   std::vector<std::unique_ptr<views::View>> subtext_view;
-  for (const std::u16string& text : {second_row_label, third_row_label}) {
+  std::vector<std::vector<Suggestion::Text>> label_matrix =
+      popup_view()->controller()->GetSuggestionLabelsAt(GetLineNumber());
+
+  for (auto& label_row : label_matrix) {
+    // TODO(crbug.com/1313616): Allow displaying more than one entry for each
+    // row once the card name is populated.
+    DCHECK_EQ(label_row.size(), 1U);
+    const std::u16string& text = label_row[0].value;
     // If a row is missing, do not include any further rows.
     if (text.empty())
       return subtext_view;

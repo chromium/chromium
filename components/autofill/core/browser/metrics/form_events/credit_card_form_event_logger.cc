@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -34,16 +36,13 @@ CreditCardFormEventLogger::CreditCardFormEventLogger(
 
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
-void CreditCardFormEventLogger::set_suggestions(
-    std::vector<Suggestion> suggestions) {
+void CreditCardFormEventLogger::OnDidFetchSuggestion(
+    const std::vector<Suggestion>& suggestions,
+    bool with_offer) {
+  has_eligible_offer_ = with_offer;
   suggestions_.clear();
-  for (auto suggestion : suggestions) {
+  for (const auto& suggestion : suggestions)
     suggestions_.emplace_back(suggestion);
-
-    // Track whether or not offers are being shown
-    if (!suggestion.offer_label.empty())
-      has_eligible_offer_ = true;
-  }
 }
 
 void CreditCardFormEventLogger::OnDidShowSuggestions(
@@ -361,13 +360,13 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
 
 bool CreditCardFormEventLogger::DoesCardHaveOffer(
     const CreditCard& credit_card) {
-  for (auto& suggestion : suggestions_) {
-    if (suggestion.GetPayload<Suggestion::BackendId>().value() ==
-        credit_card.guid()) {
-      return !suggestion.offer_label.empty();
-    }
-  }
-  return false;
+  auto* offer_manager = client_->GetAutofillOfferManager();
+  if (!offer_manager)
+    return false;
+
+  auto card_linked_offer_map = offer_manager->GetCardLinkedOffersMap(
+      client_->GetLastCommittedPrimaryMainFrameURL());
+  return base::Contains(card_linked_offer_map, credit_card.guid());
 }
 
 bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {

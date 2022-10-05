@@ -43,20 +43,26 @@ class AutofillSuggestionGenerator {
   AutofillSuggestionGenerator& operator=(const AutofillSuggestionGenerator&) =
       delete;
 
-  // Generates suggestions for all available profiles.
+  // Generates suggestions for all available profiles based on the `form`,
+  // the value of `field` and the `autofill_field`. `app_locale` is the
+  // locale used by the application.
   std::vector<Suggestion> GetSuggestionsForProfiles(
       const FormStructure& form,
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const std::string& app_locale);
 
-  // Generates suggestions for all available credit cards.
+  // Generates suggestions for all available credit cards based on the `type`
+  // and the value of `field`. `app_locale` is the locale used by the
+  // application. `should_display_gpay_logo` will be set to true if there are no
+  // credit card suggestions, or all suggestions come from Payments server.
+  // `with_offer` is set to true if ANY card has card-linked offers.
   std::vector<Suggestion> GetSuggestionsForCreditCards(
-      const FormStructure& form_structure,
       const FormFieldData& field,
       const AutofillType& type,
       const std::string& app_locale,
-      bool* should_display_gpay_logo);
+      bool* should_display_gpay_logo,
+      bool* with_offer);
 
   // Generates suggestions for all available IBANs.
   static std::vector<Suggestion> GetSuggestionsForIBANs(
@@ -96,6 +102,8 @@ class AutofillSuggestionGenerator {
                            CreateCreditCardSuggestion_LocalCard);
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
                            CreateCreditCardSuggestion_ServerCard);
+  FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
+                           CreateCreditCardSuggestion_ServerCardWithOffer);
   FRIEND_TEST_ALL_PREFIXES(
       AutofillSuggestionGeneratorTest,
       CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNameField);
@@ -113,27 +121,41 @@ class AutofillSuggestionGenerator {
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
                            ShouldShowVirtualCardOption);
 
-  // Creates a suggestion for the given |credit_card|. |type| denotes the
+  // Creates a suggestion for the given `credit_card`. `type` denotes the
   // AutofillType of the field that is focused when the query is triggered.
-  // |prefix_matched_suggestion| indicates whether the suggestion has content
-  // that prefix-matches the field content. |virtual_card_option| suggests
+  // `prefix_matched_suggestion` indicates whether the suggestion has content
+  // that prefix-matches the field content. `virtual_card_option` suggests
   // whether the suggestion is a virtual card option.
+  // `card_linked_offer_available` indicates whether a card-linked offer is
+  // attached to the `credit_card`.
   Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
                                         const AutofillType& type,
                                         bool prefix_matched_suggestion,
                                         bool virtual_card_option,
-                                        const std::string& app_locale) const;
+                                        const std::string& app_locale,
+                                        bool card_linked_offer_available) const;
 
   // Helper function to decide whether to show the virtual card option for
-  // |candidate_card| given the |form_structure|.
-  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
-                                   const FormStructure& form_structure) const;
+  // |candidate_card|.
+  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
 
   // Returns a pointer to the server card that has duplicate information of the
   // |local_card|. It is not guaranteed that a server card is found. If not,
   // nullptr is returned.
   const CreditCard* GetServerCardForLocalCard(
       const CreditCard* local_card) const;
+
+  // Get the suggestion label for the `credit_card`. Note this does not account
+  // for virtual cards or card-linked offers.
+  std::u16string GetCardLabel(const CreditCard& credit_card,
+                              const AutofillType& type,
+                              const std::string& app_locale,
+                              int obfuscation_length) const;
+
+  // Adjust the content of |suggestion| if it is a virtual card suggestion.
+  void AdjustSuggestionContentForVirtualCard(Suggestion* suggestion,
+                                             const CreditCard& credit_card,
+                                             const AutofillType& type) const;
 
   // Maps suggestion backend ID to and from an internal ID identifying it. Two
   // of these intermediate internal IDs are packed by MakeFrontendID to make the
