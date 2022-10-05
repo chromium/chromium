@@ -334,6 +334,7 @@ class Port(object):
         for config in json_configs:
             name = config['name']
             args = config['args']
+            smoke_file = config.get('smoke_file')
             if not VALID_FILE_NAME_REGEX.match(name):
                 raise ValueError(
                     '{}: name "{}" contains invalid characters'.format(
@@ -341,11 +342,11 @@ class Port(object):
             if name in configs:
                 raise ValueError('{} contains duplicated name {}.'.format(
                     config_file, name))
-            if args in configs.values():
+            if args in [x for x, _ in configs.values()]:
                 raise ValueError(
                     '{}: name "{}" has the same args as another entry.'.format(
                         config_file, name))
-            configs[name] = args
+            configs[name] = (args, smoke_file)
         return configs
 
     def _specified_additional_driver_flags(self):
@@ -363,7 +364,7 @@ class Port(object):
 
         flag_specific_option = self.flag_specific_config_name()
         if flag_specific_option:
-            flags += self.flag_specific_configs()[flag_specific_option]
+            flags += self.flag_specific_configs()[flag_specific_option][0]
 
         flags += self.get_option('additional_driver_flag', [])
         return flags
@@ -395,9 +396,6 @@ class Port(object):
         return flags
 
     def supports_per_test_timeout(self):
-        return False
-
-    def default_smoke_test_only(self):
         return False
 
     def _default_timeout_ms(self):
@@ -1389,7 +1387,26 @@ class Port(object):
         smoke_tests = self._tests_from_file(smoke_test_filename)
         return test not in smoke_tests
 
+    def default_smoke_test_only(self):
+        config_name = self.flag_specific_config_name()
+        if config_name:
+            _, smoke_file = self.flag_specific_configs()[config_name]
+            if smoke_file is None:
+                return False
+            if not self._filesystem.exists(
+                    self._filesystem.join(self.web_tests_dir(), smoke_file)):
+                _log.error('Unable to find smoke file(%s) for %s', smoke_file,
+                           config_name)
+                return False
+            return True
+        return False
+
     def path_to_smoke_tests_file(self):
+        config_name = self.flag_specific_config_name()
+        if config_name:
+            _, smoke_file = self.flag_specific_configs()[config_name]
+            return self._filesystem.join(self.web_tests_dir(), smoke_file)
+
         # Historically we only have one smoke tests list. That one now becomes
         # the default
         return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
