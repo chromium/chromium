@@ -71,6 +71,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "fuchsia-arm64-chrome-rel",
+)
+
+try_.builder(
     name = "fuchsia-arm64-rel",
     # TODO(crbug.com/1294938): Make this FUCHSIA_LTS_MILESTONE once the mirrored
     # bot is moved to infra/config/subprojects/chromium/ci/chromium.fuchsia.star.
@@ -182,6 +186,10 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
+)
+
+try_.builder(
+    name = "fuchsia-x64-chrome-rel",
 )
 
 try_.builder(

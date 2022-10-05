@@ -55,29 +55,6 @@
       "use_goma": true
     }
   },
-  "fuchsia-fyi-arm64-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_os": "fuchsia",
-      "test_host_cpu": "arm64",
-      "use_goma": true
-    }
-  },
-  "fuchsia-fyi-x64-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_os": "fuchsia",
-      "use_cfv2_script": true,
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-lacros-amd-rel": {
     "gn_args": {
       "dcheck_always_on": true,

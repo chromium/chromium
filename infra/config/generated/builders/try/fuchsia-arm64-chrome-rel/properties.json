@@ -5,10 +5,6 @@
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "metrics_project": "chromium-reclient-metrics"
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -16,6 +12,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.linux",
+  "builder_group": "tryserver.chromium.fuchsia",
   "recipe": "chromium_trybot"
 }

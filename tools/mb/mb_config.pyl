@@ -277,6 +277,7 @@
 
     'chromium.fuchsia.fyi': {
       'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver',
+      'fuchsia-arm64-chrome-rel': 'release_bot_fuchsia_arm64',
        # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
       'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -284,6 +285,7 @@
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
       'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver',
+      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script',
       'fuchsia-x64-rel': 'release_bot_fuchsia',
     },
 
@@ -412,9 +414,7 @@
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
       'fuchsia-fyi-arm64-emu-arg': 'release_trybot_fuchsia_arm64',
-      'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
-      'fuchsia-fyi-x64-rel': 'release_bot_fuchsia_cfv2_script',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
@@ -1144,6 +1144,7 @@
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast_legacy',
       'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver',
+      'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-binary-size': 'release_fuchsia_arm64',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
@@ -1153,6 +1154,7 @@
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia-x64-cast': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
+      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
@@ -1167,8 +1169,6 @@
       'cast_shell_linux_arm64': 'cast_arm64_release_bot',
       'cast_shell_linux_dbg': 'cast_debug_bot',
       'chromium_presubmit': 'presubmit',
-      'fuchsia-fyi-arm64-rel': 'release_trybot_fuchsia_arm64',
-      'fuchsia-fyi-x64-rel': 'release_trybot_fuchsia_cfv2_script',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot',

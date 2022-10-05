@@ -212,24 +212,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-fyi-arm64-rel",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|arm64",
-            short_name = "rel",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|arm64",
-            short_name = "fyi-rel",
-        ),
-    ],
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_DEFAULT,
-)
-
-ci.builder(
     name = "fuchsia-fyi-cfv2-script",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -300,24 +282,6 @@ ci.builder(
             short_name = "cfv2",
         ),
     ],
-    os = os.LINUX_DEFAULT,
-)
-
-ci.builder(
-    name = "fuchsia-fyi-x64-rel",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "rel",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|x64",
-            short_name = "fyi-rel",
-        ),
-    ],
-    notifies = ["cr-fuchsia"],
     os = os.LINUX_DEFAULT,
 )
 

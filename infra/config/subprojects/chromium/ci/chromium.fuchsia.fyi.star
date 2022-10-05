@@ -29,7 +29,7 @@ consoles.console_view(
     name = "chromium.fuchsia.fyi",
 )
 
-# The chromium.fuchsia.fyi console includes some entries for builders from the chrome project
+# The chromium.fuchsia.fyi console includes some entries for builders from the chrome project.
 [branches.console_view_entry(
     builder = "chrome:ci/{}".format(name),
     console_view = "chromium.fuchsia.fyi",
@@ -80,6 +80,25 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
         run_tests_serially = True,
     ),
+)
+
+ci.builder(
+    name = "fuchsia-arm64-chrome-rel",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "release",
+            short_name = "a64-chrome",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            # TODO(crbug.com/1370134): Move to "fuchsia ci|arm64" once green.
+            category = "fyi|arm64",
+            short_name = "chrome",
+        ),
+    ],
+    notifies = ["cr-fuchsia"],
+    os = os.LINUX_DEFAULT,
 )
 
 # TODO(crbug.com/1294938): Move to 'chromium.fuchsia' and update accordingly.
@@ -314,4 +333,23 @@ ci.builder(
         build_gs_bucket = "chromium-fyi-archive",
         run_tests_serially = True,
     ),
+)
+
+ci.builder(
+    name = "fuchsia-x64-chrome-rel",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "release",
+            short_name = "x64-chrome",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            # TODO(crbug.com/1370134): Move to "fuchsia ci|x64" once green.
+            category = "fyi|x64",
+            short_name = "chrome",
+        ),
+    ],
+    notifies = ["cr-fuchsia"],
+    os = os.LINUX_DEFAULT,
 )

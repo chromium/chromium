@@ -71,14 +71,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-fyi-arm64-rel",
-)
-
-try_.builder(
-    name = "fuchsia-fyi-x64-rel",
-)
-
-try_.builder(
     name = "layout_test_leak_detection",
     mirrors = [
         "ci/WebKit Linux Leak",

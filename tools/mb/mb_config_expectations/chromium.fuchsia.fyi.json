@@ -12,6 +12,17 @@
       "use_goma": true
     }
   },
+  "fuchsia-arm64-chrome-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "fuchsia-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -62,6 +73,16 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "fuchsia-x64-chrome-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_cfv2_script": true,
       "use_goma": true
     }
   },

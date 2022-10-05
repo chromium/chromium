@@ -1965,7 +1965,37 @@
       'base_unittests': {},
     },
 
-    'fuchsia_chrome_gtests': {
+    'fuchsia_chrome_large_gtests': {
+      'browser_tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
+          '--',
+          '--test-launcher-timeout=60000',
+        ],
+        'swarming': {
+          'shards': 40,
+        },
+      },
+      # TODO(crbug.com/1071095): Move to one of the fuchsia_common_gtests* sets.
+      'content_browsertests': {
+        'args': [
+          '--',
+          '--disable-gpu',
+          '--headless',
+          '--ozone-platform=headless',
+        ],
+        'swarming': {
+          'shards': 8,
+        },
+      },
+      'unit_tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
+        ],
+      },
+    },
+
+    'fuchsia_chrome_small_gtests': {
       'courgette_unittests': {},
       'extensions_unittests': {},
       'headless_unittests': {},
@@ -2070,35 +2100,6 @@
       'viz_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter',
-        ],
-      },
-    },
-
-    'fuchsia_experimental_gtests': {
-      'browser_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
-          '--',
-          '--test-launcher-timeout=60000',
-        ],
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'content_browsertests': {
-        'args': [
-          '--',
-          '--disable-gpu',
-          '--headless',
-          '--ozone-platform=headless',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'unit_tests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
         ],
       },
     },
@@ -5732,7 +5733,7 @@
 
     # All gtests that can be run on Fuchsia CI/CQ
     'fuchsia_gtests': [
-      'fuchsia_chrome_gtests',
+      'fuchsia_chrome_small_gtests',
       'fuchsia_common_gtests',
       'fuchsia_common_gtests_with_graphical_output',
       'web_engine_gtests',

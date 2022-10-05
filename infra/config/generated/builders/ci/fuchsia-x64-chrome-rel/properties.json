@@ -12,6 +12,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium"
+  "builder_group": "chromium.fuchsia.fyi",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "fuchsia"
+  ]
 }

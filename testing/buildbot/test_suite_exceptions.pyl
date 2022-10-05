@@ -423,18 +423,18 @@
           'shards': 2,
         },
       },
-      'fuchsia-fyi-x64-rel': {
+      'fuchsia-x64-cast-receiver-rel': {
         'args': [
           '--platform=fuchsia',
+          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
         },
       },
-      'fuchsia-x64-cast-receiver-rel': {
+      'fuchsia-x64-chrome-rel': {
         'args': [
           '--platform=fuchsia',
-          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
@@ -727,18 +727,18 @@
           '--additional-driver-flag=--use-gpu-in-tests',
         ],
       },
-      'fuchsia-fyi-x64-rel': {
+      'fuchsia-x64-cast-receiver-rel': {
         'args': [
           '--platform=fuchsia',
+          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
         },
       },
-      'fuchsia-x64-cast-receiver-rel': {
+      'fuchsia-x64-chrome-rel': {
         'args': [
           '--platform=fuchsia',
-          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
@@ -2366,14 +2366,14 @@
           '--expected-device-id', '1050',
         ],
       },
-      'fuchsia-fyi-x64-rel': {
+      'fuchsia-fyi-x64-wst': {
         'args': [
           # Swarming does not report a GPU since tests are run in a VM, but
           # the VM does report that a GPU is present.
           '--expected-device-id', 'c0de',
         ],
       },
-      'fuchsia-fyi-x64-wst': {
+      'fuchsia-x64-chrome-rel': {
         'args': [
           # Swarming does not report a GPU since tests are run in a VM, but
           # the VM does report that a GPU is present.
@@ -2408,7 +2408,7 @@
           '--expected-vendor-id': '106b',
         },
       },
-      'fuchsia-fyi-x64-rel': {
+      'fuchsia-fyi-x64-wst': {
         'args': {
           # The GPU information is not exposed in swarming since Fuchsia
           # launches an emulator on the GCE machine.
@@ -2416,7 +2416,7 @@
           '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': None,
         },
       },
-      'fuchsia-fyi-x64-wst': {
+      'fuchsia-x64-chrome-rel': {
         'args': {
           # The GPU information is not exposed in swarming since Fuchsia
           # launches an emulator on the GCE machine.
@@ -2710,7 +2710,7 @@
   },
   'mediapipe_validating_tests': {
     'modifications': { # TODO(crbug.com/1201887): Remove once tests are stable.
-      'fuchsia-fyi-x64-rel': {
+      'fuchsia-x64-chrome-rel': {
         'experiment_percentage': 100,
       },
     },
@@ -3128,7 +3128,7 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
-      'fuchsia-fyi-x64-rel': { # https://crbug.com/1302427
+      'fuchsia-x64-chrome-rel': { # https://crbug.com/1302427
         'experiment_percentage': 100,
       },
     },
@@ -3520,7 +3520,7 @@
       'Android FYI Release (Samsung A23)',
     ],
     'modifications': {
-      'fuchsia-fyi-x64-rel': { # https://crbug.com/1269976
+      'fuchsia-x64-chrome-rel': { # https://crbug.com/1269976
         'experiment_percentage': 100,
       },
     },
