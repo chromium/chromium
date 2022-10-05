@@ -482,7 +482,10 @@ const char kAttestationExtensionAllowlist[] = "attestation.extension_allowlist";
 // applications. If set to true, the Desk API bridge component extension will be
 // installed.
 const char kDeskAPIThirdPartyAccessEnabled[] =
-    "desk_api_third_party_access_enabled";
+    "desk_api.third_party_access_enabled";
+
+// A list of third party web application domains allowed to use the Desk API.
+const char kDeskAPIThirdPartyAllowlist[] = "desk_api.third_party_allowlist";
 
 // The list of extensions allowed to skip print job confirmation dialog when
 // they use the chrome.printing.submitJob() function. Note that this used to be

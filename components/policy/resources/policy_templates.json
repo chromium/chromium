@@ -35276,6 +35276,25 @@ This policy has no effect if the option to keep existing browsing data is not av
       'desc': '''Setting the policy to Enabled allows third-party web applications to use Desk API to control ChromeOS desks. If the policy is not set or disabled, the Desk API will be unavailable.'''
     },
     {
+      'name': 'DeskAPIThirdPartyAllowlist',
+      'owners': ['aprilzhou@google.com', 'yzd@google.com'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os'],
+      'example_value': ['https://*.chromium.org/*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'id': 1023,
+      'caption': '''Enable Desk API for a list of third-party domains''',
+      'tags': [],
+      'desc': '''Specifies the list of third-party web application domains that are allowed to use Desk API to control ChromeOS desks. These URL patterns should follow the format defined for "matches" property in https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference'''
+    },
+    {
       'name': 'DefaultHandlersForFileExtensions',
       'owners': ['greengrape@google.com', 'file://ui/file_manager/OWNERS'],
       'type': 'dict',
@@ -36328,6 +36347,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1022,
+  'highest_id_currently_used': 1023,
   'highest_atomic_group_id_currently_used': 43
 }
