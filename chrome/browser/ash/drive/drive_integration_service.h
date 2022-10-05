@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
@@ -260,6 +261,8 @@ class DriveIntegrationService : public KeyedService,
   // Retrieves a list of paths being synced.
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
+
+  drivefs::SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path);
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
   void PollHostedFilePinStates();

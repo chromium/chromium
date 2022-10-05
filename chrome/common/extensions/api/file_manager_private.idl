@@ -291,7 +291,8 @@ enum EntryPropertyName {
   canPin,
   isMachineRoot,
   isExternalMedia,
-  isArbitrarySyncFolder
+  isArbitrarySyncFolder,
+  syncStatus
 };
 
 // Source of the volume data.
@@ -398,6 +399,15 @@ enum DlpLevel {
   block,
   // No restriction.
   allow
+};
+
+enum SyncStatus {
+  // No sync status available for file.
+  not_found,
+  // File is currently being synced.
+  in_progress,
+  // There was an error syncing the file.
+  error
 };
 
 // These three fields together uniquely identify a task.
@@ -535,6 +545,9 @@ dictionary EntryProperties {
 
   // True if the entry is an arbitrary sync folder.
   boolean? isArbitrarySyncFolder;
+
+  // Sync status for files tracked by different cloud filesystem providers.
+  SyncStatus? sync_status;
 };
 
 // Information about total and remaining size on the mount point.
