@@ -2221,25 +2221,23 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
     EXPECT_TRUE(Open(bucket_locator4, "cool"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
+    // Ensure that the index files have been written to disk before calling
+    // `GetStorageKeys()`.
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator2_));
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator3));
+    if (partitioning_enabled) {
+      EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator4));
+    }
+    disk_cache::FlushCacheThreadForTesting();
+    content::RunAllTasksUntilIdle();
+
     std::vector<blink::StorageKey> storage_keys = GetStorageKeys();
 
-    // TODO(https://crbug.com/1218097): In memory-only mode this works as
-    // expected, but otherwise the list gets populated with the named buckets as
-    // if they were default buckets. This will work correctly once we store the
-    // bucket names in the index files and can use those when determining the
-    // corresponding bucket locator to use.
-    if (MemoryOnly()) {
-      ASSERT_EQ(2ULL, storage_keys.size());
-      EXPECT_NE(storage_keys[0].origin(), test_origin);
-      EXPECT_NE(storage_keys[1].origin(), test_origin);
-    } else {
-      if (base::FeatureList::IsEnabled(
-              net::features::kThirdPartyStoragePartitioning)) {
-        ASSERT_EQ(4ULL, storage_keys.size());
-      } else {
-        ASSERT_EQ(3ULL, storage_keys.size());
-      }
-    }
+    ASSERT_EQ(2ULL, storage_keys.size());
+    EXPECT_NE(storage_keys[0].origin(), test_origin);
+    EXPECT_NE(storage_keys[1].origin(), test_origin);
+
     ASSERT_EQ(partitioning_enabled ? 4ULL : 3ULL,
               GetAllStorageKeysUsage().size());
 
