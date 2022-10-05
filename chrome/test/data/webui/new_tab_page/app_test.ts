@@ -96,18 +96,6 @@ suite('NewTabPageAppTest', () => {
               Math.floor(document.documentElement.clientHeight)));
     });
 
-    test('realbox is not visible by default', async () => {
-      // Assert.
-      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
-
-      // Act.
-      callbackRouterRemote.setTheme(createTheme());
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert.
-      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
-    });
-
     test('open voice search event opens voice search overlay', async () => {
       // Act.
       $$(app, '#realbox')!.dispatchEvent(new Event('open-voice-search'));

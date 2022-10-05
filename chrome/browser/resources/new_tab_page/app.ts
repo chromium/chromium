@@ -180,11 +180,6 @@ export class AppElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('realboxLensSearch'),
       },
 
-      realboxShown_: {
-        type: Boolean,
-        computed: 'computeRealboxShown_(theme_)',
-      },
-
       logoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('logoEnabled'),
@@ -290,7 +285,6 @@ export class AppElement extends PolymerElement {
   private logoColor_: string;
   private singleColoredLogo_: boolean;
   private realboxLensSearchEnabled_: boolean;
-  private realboxShown_: boolean;
   private logoEnabled_: boolean;
   private oneGoogleBarEnabled_: boolean;
   private shortcutsEnabled_: boolean;
@@ -440,13 +434,6 @@ export class AppElement extends PolymerElement {
     return this.theme_ && this.theme_.backgroundImageAttributionUrl ?
         this.theme_.backgroundImageAttributionUrl.url :
         '';
-  }
-
-  private computeRealboxShown_(): boolean {
-    // If realbox is to match the Omnibox's theme, keep it hidden until the
-    // theme arrives. Otherwise mismatching colors will cause flicker.
-    return !loadTimeData.getBoolean('realboxMatchOmniboxTheme') ||
-        !!this.theme_;
   }
 
   private computePromoAndModulesLoaded_(): boolean {
