@@ -20,6 +20,10 @@ void MockAutofillAssistantAgent::BindPendingReceiver(
                      std::move(handle)));
 }
 
+void MockAutofillAssistantAgent::ResetReceiversForTesting() {
+  receivers_.Clear();
+}
+
 // static
 void MockAutofillAssistantAgent::RegisterForAllFrames(
     content::WebContents* web_contents,

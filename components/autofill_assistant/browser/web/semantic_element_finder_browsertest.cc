@@ -57,6 +57,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Return;
@@ -722,6 +723,97 @@ IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, FillInputInOOPIF) {
         native_run_loop.Quit();
       }));
   native_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, HandlesDeletedIframe) {
+  // Frames return an error by default.
+  EXPECT_CALL(autofill_assistant_agent_, GetSemanticNodes)
+      .WillRepeatedly(RunOnceCallback<4>(
+          mojom::NodeDataStatus::kUnexpectedError, std::vector<NodeData>()));
+  EXPECT_CALL(autofill_assistant_agent_, SetElementValue).Times(0);
+
+  Selector css_selector({"#iframe", "#input"});
+  ClientStatus input_status;
+  content::GlobalRenderFrameHostId frame_id;
+  int backend_node_id =
+      GetBackendNodeId(css_selector, &input_status, &frame_id);
+  ASSERT_TRUE(input_status.ok());
+
+  auto* frame = content::RenderFrameHost::FromID(frame_id);
+  ASSERT_TRUE(frame != nullptr);
+  EXPECT_THAT(frame, Not(Eq(web_contents()->GetPrimaryMainFrame())));
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+
+  MockAutofillAssistantAgent frame_autofill_assistant_agent_;
+  frame->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+      mojom::AutofillAssistantAgent::Name_,
+      base::BindRepeating(&MockAutofillAssistantAgent::BindPendingReceiver,
+                          base::Unretained(&frame_autofill_assistant_agent_)));
+  EXPECT_CALL(frame_autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, _, _))
+      .WillOnce(RunOnceCallback<4>(mojom::NodeDataStatus::kSuccess,
+                                   std::vector<NodeData>{node_data}));
+
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+  semantic_filter->set_model_timeout_ms(100);
+
+  ElementFinderResult element;
+  ClientStatus element_status;
+
+  base::RunLoop run_loop;
+  web_controller_->FindElement(
+      Selector(proto), /* strict_mode= */ true,
+      base::BindOnce(&SemanticElementFinderBrowserTest::OnFindElement,
+                     base::Unretained(this), run_loop.QuitClosure(),
+                     base::Unretained(&element_status),
+                     base::Unretained(&element)));
+
+  EXPECT_TRUE(content::ExecJs(shell(),
+                              R"javascript(
+      document.querySelector('[name="test_iframe"]').remove();
+  )javascript"));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(element_status.ok());
+  EXPECT_EQ(element_status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+}
+
+IN_PROC_BROWSER_TEST_F(SemanticElementFinderBrowserTest, RespectsTimeout) {
+  // This element is unique.
+  SelectorProto baseline_selector = ToSelectorProto("#select");
+
+  ClientStatus element_status;
+  int backend_node_id =
+      GetBackendNodeId(Selector(baseline_selector), &element_status);
+  EXPECT_TRUE(element_status.ok());
+
+  NodeData node_data;
+  node_data.backend_node_id = backend_node_id;
+
+  // Reset receivers to simulate deletion during the callback
+  EXPECT_CALL(autofill_assistant_agent_,
+              GetSemanticNodes(1, 2, false, base::Milliseconds(10), _))
+      .WillOnce(Invoke(
+          [this] { autofill_assistant_agent_.ResetReceiversForTesting(); }));
+
+  SelectorProto proto;
+  auto* semantic_filter = proto.add_filters()->mutable_semantic();
+  semantic_filter->set_role(1);
+  semantic_filter->set_objective(2);
+  semantic_filter->set_model_timeout_ms(10);
+  proto.add_filters()->set_css_selector("option:nth-child(2)");
+
+  ClientStatus option_status;
+  ElementFinderResult option_result;
+  FindElement(Selector(proto), &option_status, &option_result);
+  EXPECT_FALSE(option_status.ok());
+  EXPECT_EQ(option_status.proto_status(), TIMED_OUT);
 }
 
 }  // namespace autofill_assistant

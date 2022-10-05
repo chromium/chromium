@@ -25,6 +25,8 @@ class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
   static void RegisterForAllFrames(content::WebContents* web_contents,
                                    MockAutofillAssistantAgent* agent);
 
+  void ResetReceiversForTesting();
+
   MOCK_METHOD(void,
               GetSemanticNodes,
               (int32_t role,
