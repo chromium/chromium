@@ -19,10 +19,8 @@ namespace partition_alloc {
 
 // Posts and handles memory reclaim tasks for PartitionAlloc.
 //
-// Thread safety: |RegisterPartition()| and |UnregisterPartition()| can be
-// called from any thread, concurrently with reclaim. Reclaim itself runs in the
-// context of the provided |SequencedTaskRunner|, meaning that the caller must
-// take care of this runner being compatible with the various partitions.
+// PartitionAlloc users are responsible for scheduling and calling the
+// reclamation methods with their own timers / event loops.
 //
 // Singleton as this runs as long as the process is alive, and
 // having multiple instances would be wasteful.

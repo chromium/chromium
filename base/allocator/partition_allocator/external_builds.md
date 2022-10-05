@@ -25,6 +25,18 @@ PartitionAlloc's build will expect them at
 In addition, something must provide `build_with_chromium = false` to
 the PA build system.
 
+## Periodic Memory Reduction Routines
+
+PartitionAlloc provides APIs to
+
+* reclaim memory (see [memory\_reclaimer.h](./memory_reclaimer.h)) and
+
+* purge thread caches (see [thread\_cache.h](./thread_cache.h)).
+
+Both of these must be called by the embedder external to PartitionAlloc.
+PA provides neither an event loop nor timers of its own, delegating this
+to its clients.
+
 ## Build Considerations
 
 External clients create constraints on PartitionAlloc's implementation.
