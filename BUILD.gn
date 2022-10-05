@@ -1337,6 +1337,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/custom-elements/",
       "//third_party/blink/web_tests/custom-properties/",
       "//third_party/blink/web_tests/dark-mode/",
+      "//third_party/blink/web_tests/display-lock/",
       "//third_party/blink/web_tests/document-transition/",
       "//third_party/blink/web_tests/dom/",
       "//third_party/blink/web_tests/editing/",

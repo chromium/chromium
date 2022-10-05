@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf8">
+<title>Content Visibility: resize observer interaction</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
+<meta name="assert" content="the test doesn't cause resize observer to produce a console error">
+
+<style>
+div {
+  contain-intrinsic-size: auto 200px;
+  content-visibility: auto;
+  min-height: 50px;
+}
+</style>
+
+<span><div></div></span>
+<div></div>
+
+<script>
+if (testRunner)
+  testRunner.dumpAsText();
+
+new ResizeObserver(() => {});
+</script>

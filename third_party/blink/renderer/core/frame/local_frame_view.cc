@@ -2157,13 +2157,9 @@ void LocalFrameView::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
   // phase of this full lifecycle update.
 }
 
-bool LocalFrameView::NotifyResizeObservers(
-    DocumentLifecycle::LifecycleState target_state) {
+bool LocalFrameView::NotifyResizeObservers() {
   // Return true if lifecycles need to be re-run
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::NotifyResizeObservers");
-
-  if (target_state < DocumentLifecycle::kPaintClean)
-    return false;
 
   // Controller exists only if ResizeObserver was created.
   ResizeObserverController* resize_controller =
@@ -2462,6 +2458,22 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // observations led to content-visibility intersection changing visibility
     // state synchronously (which happens on the first intersection
     // observeration of a context).
+    //
+    // Note that we run the content-visibility intersection observation first.
+    // The idea is that we want to synchronously determine the initial,
+    // first-time-rendered state of on- or off-screen `content-visibility:
+    // auto` subtrees before dispatching any kind of resize observations,
+    // including the contain-intrinsic-size resize observer. If we repeat the
+    // lifecycle here or in the resize observer, the second observation will be
+    // asynchronous and will always defer posting observations. This is
+    // contrasted with the alternative in which both resize observer and
+    // intersection observer can repeat the lifecycle causing another resize
+    // observer call to now see different sizes and in the worst case issue a
+    // console error and schedule an additional frame of work.
+    needs_to_repeat_lifecycle = RunPostLayoutIntersectionObserverSteps();
+    if (needs_to_repeat_lifecycle)
+      continue;
+
     {
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
       needs_to_repeat_lifecycle = RunResizeObserverSteps(target_state);
@@ -2474,13 +2486,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // shared elements to UA created elements. This may dirty style/layout
     // requiring another lifecycle update.
     needs_to_repeat_lifecycle = RunDocumentTransitionSteps(target_state);
-    if (needs_to_repeat_lifecycle)
-      continue;
-
-    {
-      ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      needs_to_repeat_lifecycle = RunPostLayoutIntersectionObserverSteps();
-    }
     if (!needs_to_repeat_lifecycle)
       break;
   }
@@ -2555,15 +2560,15 @@ bool LocalFrameView::RunDocumentTransitionSteps(
 
 bool LocalFrameView::RunResizeObserverSteps(
     DocumentLifecycle::LifecycleState target_state) {
+  if (target_state != DocumentLifecycle::kPaintClean)
+    return false;
+
   bool re_run_lifecycles = false;
-  if (target_state == DocumentLifecycle::kPaintClean) {
-    ForAllNonThrottledLocalFrameViews(
-        [&re_run_lifecycles](LocalFrameView& frame_view) {
-          bool result =
-              frame_view.NotifyResizeObservers(DocumentLifecycle::kPaintClean);
-          re_run_lifecycles = re_run_lifecycles || result;
-        });
-  }
+  ForAllNonThrottledLocalFrameViews(
+      [&re_run_lifecycles](LocalFrameView& frame_view) {
+        bool result = frame_view.NotifyResizeObservers();
+        re_run_lifecycles = re_run_lifecycles || result;
+      });
   return re_run_lifecycles;
 }
 
