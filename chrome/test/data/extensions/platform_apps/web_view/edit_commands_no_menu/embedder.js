@@ -45,6 +45,12 @@ embedder.waitForResponseFromGuest_ =
       }, 0);
       return;
     }
+    if (response == 'testinput-focused') {
+      setTimeout(function () {
+        chrome.test.sendMessage('Focused');
+      }, 0);
+      return;
+    }
     console.log('response: ' + response);
     var name = data[1];
     if ((response != expectedResponse) || (name != testName)) {

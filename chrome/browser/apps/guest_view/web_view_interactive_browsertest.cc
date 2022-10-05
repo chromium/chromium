@@ -855,13 +855,14 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, EditCommands) {
 }
 
 // Tests that guests receive edit commands and respond appropriately.
-// Flaky test - crbug.com/859478
-IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, DISABLED_EditCommandsNoMenu) {
+IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, EditCommandsNoMenu) {
+  ExtensionTestMessageListener focus_listener("Focused");
   SetupTest("web_view/edit_commands_no_menu",
             "/extensions/platform_apps/web_view/edit_commands_no_menu/"
             "guest.html");
-
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
+  // Ensure that an input gets focused before sending a key event.
+  ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
 
   // Flush any pending events to make sure we start with a clean slate.
   content::RunAllPendingInMessageLoop();

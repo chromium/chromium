@@ -44,6 +44,11 @@ found in the LICENSE file.
           var response = 'caret-position-' + this.selectionStart;
           notifyEmbedder([response, embedderTestName]);
         });
+        document.getElementById('testinput').addEventListener('focus',
+            function(e) {
+          var response = 'testinput-focused';
+          notifyEmbedder([response, embedderTestName]);
+        });
       });
 
     </script>
