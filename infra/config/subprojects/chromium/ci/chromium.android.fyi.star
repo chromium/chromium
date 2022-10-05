@@ -19,9 +19,6 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     reclient_jobs = reclient.jobs.DEFAULT,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
