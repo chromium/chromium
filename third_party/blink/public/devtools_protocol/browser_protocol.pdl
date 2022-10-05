@@ -7682,8 +7682,9 @@ domain Page
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
 
-  # Returns all browser cookies. Depending on the backend support, will return detailed cookie
-  # information in the `cookies` field.
+  # Returns all browser cookies for the page and all of its subframes. Depending
+  # on the backend support, will return detailed cookie information in the
+  # `cookies` field.
   experimental deprecated command getCookies
     # Use 'Network.getCookies' instead
     redirect Network
