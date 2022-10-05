@@ -4451,9 +4451,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220412",
+                    "name": "Enabled_20220919",
                     "enable_features": [
-                        "FastPair"
+                        "FastPair",
+                        "FastPairSavedDevices"
                     ]
                 }
             ]
