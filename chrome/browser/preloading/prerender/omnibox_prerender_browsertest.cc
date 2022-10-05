@@ -314,7 +314,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
 
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(true,
             EvalJs(GetActiveWebContents(), "document.prerendering === false"));
   EXPECT_EQ(0, EvalJs(GetActiveWebContents(),
@@ -322,15 +321,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPrerenderDefaultPrerender2BrowserTest,
                       "activationStart"));
   EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
                          "'onprerenderingchange' in document"));
-#else
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "document.prerendering === undefined"));
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "performance.getEntriesByType('navigation')[0]."
-                         "activationStart === undefined"));
-  EXPECT_EQ(true, EvalJs(GetActiveWebContents(),
-                         "document.onprerenderingchange === undefined"));
-#endif
 }
 
 class PrerenderOmniboxSearchSuggestionBrowserTest

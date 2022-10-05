@@ -2089,7 +2089,7 @@
     {
       // https://crbug.com/1126305
       name: "Prerender2",
-      status: {"Android": "stable"},
+      status: "stable",
       base_feature: "Prerender2",
     },
     // This RTE feature is used to indicate the status of RTE feature Prerender2
