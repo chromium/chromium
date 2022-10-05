@@ -39,6 +39,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/tracing_controller.h"
 #include "content/public/common/content_switches.h"
@@ -154,6 +155,15 @@ void LogShutdownMetrics() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Utility function to verify that globals are accessed on the UI/Main thread.
+void CheckAccessedOnCorrectThread() {
+  // Some APIs below are accessed after UI thread has been torn down, so cater
+  // for both situations here.
+  DCHECK(
+      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
+}
+
 }  // namespace
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
@@ -165,6 +175,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void OnShutdownStarting(ShutdownType type) {
+  CheckAccessedOnCorrectThread();
   if (g_shutdown_type != ShutdownType::kNotValid)
     return;
 
@@ -206,15 +217,18 @@ void OnShutdownStarting(ShutdownType type) {
 }
 
 bool HasShutdownStarted() {
+  CheckAccessedOnCorrectThread();
   return g_shutdown_type != ShutdownType::kNotValid;
 }
 
 bool ShouldIgnoreUnloadHandlers() {
+  CheckAccessedOnCorrectThread();
   return g_shutdown_type == ShutdownType::kEndSession ||
          g_shutdown_type == ShutdownType::kSilentExit;
 }
 
 ShutdownType GetShutdownType() {
+  CheckAccessedOnCorrectThread();
   return g_shutdown_type;
 }
 
@@ -248,6 +262,7 @@ bool ShutdownPreThreadsStop() {
 }
 
 bool RecordShutdownInfoPrefs() {
+  CheckAccessedOnCorrectThread();
   PrefService* prefs = g_browser_process->local_state();
   if (g_shutdown_type != ShutdownType::kNotValid &&
       g_shutdown_num_processes > 0) {
@@ -270,6 +285,7 @@ bool RecordShutdownInfoPrefs() {
 }
 
 void ShutdownPostThreadsStop(RestartMode restart_mode) {
+  CheckAccessedOnCorrectThread();
   delete g_browser_process;
   g_browser_process = nullptr;
 
@@ -431,6 +447,7 @@ void ReadLastShutdownInfo() {
 }
 
 void SetTryingToQuit(bool quitting) {
+  CheckAccessedOnCorrectThread();
   g_trying_to_quit = quitting;
 
   if (quitting)
@@ -453,15 +470,18 @@ void SetTryingToQuit(bool quitting) {
 }
 
 bool IsTryingToQuit() {
+  CheckAccessedOnCorrectThread();
   return g_trying_to_quit;
 }
 
 base::AutoReset<ShutdownType> SetShutdownTypeForTesting(
     ShutdownType shutdown_type) {
+  CheckAccessedOnCorrectThread();
   return base::AutoReset<ShutdownType>(&g_shutdown_type, shutdown_type);
 }
 
 void ResetShutdownGlobalsForTesting() {
+  CheckAccessedOnCorrectThread();
   if (g_shutdown_started) {
     delete g_shutdown_started;
     g_shutdown_started = nullptr;
