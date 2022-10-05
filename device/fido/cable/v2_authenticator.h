@@ -145,7 +145,8 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     // TODO: name this constant.
     base::span<const uint8_t, 16> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity,
-    absl::optional<std::vector<uint8_t>> contact_id);
+    absl::optional<std::vector<uint8_t>> contact_id,
+    bool use_new_crypter_construction);
 
 // TransactFromFCM starts a network-based transaction based on the decoded
 // contents of a cloud message.
