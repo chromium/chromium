@@ -51,7 +51,6 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

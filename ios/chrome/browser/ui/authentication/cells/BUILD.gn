@@ -67,8 +67,6 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/version_info",
-    "//ios/chrome/app/strings:ios_chromium_strings_grit",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",

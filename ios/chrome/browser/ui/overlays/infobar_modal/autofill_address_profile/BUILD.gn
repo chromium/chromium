@@ -16,7 +16,7 @@ source_set("autofill_address_profile") {
   deps = [
     "//base",
     "//components/autofill/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_modal",
@@ -43,7 +43,6 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/infobars/core",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",

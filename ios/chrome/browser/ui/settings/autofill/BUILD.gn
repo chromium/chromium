@@ -123,7 +123,7 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//components/autofill/core/browser:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",
     "//ios/chrome/browser/ui/autofill:eg_test_support+eg2",

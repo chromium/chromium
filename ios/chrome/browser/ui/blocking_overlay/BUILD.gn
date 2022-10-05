@@ -12,7 +12,7 @@ source_set("blocking_overlay") {
   deps = [
     "//base",
     "//ios/chrome/app:blocking_scene_commands",
-    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

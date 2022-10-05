@@ -17,7 +17,7 @@ source_set("translate") {
   deps = [
     "//base",
     "//components/metrics",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/translate/core/browser",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",

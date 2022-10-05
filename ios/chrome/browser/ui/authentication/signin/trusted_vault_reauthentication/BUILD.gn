@@ -11,9 +11,9 @@ source_set("trusted_vault_reauthentication") {
     "trusted_vault_reauthentication_coordinator.mm",
   ]
   deps = [
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/sync",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:trusted_vault",

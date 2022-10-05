@@ -17,7 +17,7 @@ source_set("incognito_reauth_util") {
     "incognito_reauth_util.mm",
   ]
   deps = [
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ui/base",
   ]
   frameworks = [
@@ -37,7 +37,7 @@ source_set("incognito_reauth_ui") {
   ]
   deps = [
     ":incognito_reauth_util",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/incognito_reauth/resources:incognito_logo_reauth",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -61,7 +61,7 @@ source_set("incognito_reauth_scene_agent") {
     "//base/ios",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui:feature_flags",

@@ -40,7 +40,7 @@ source_set("infobar_banner") {
     "//components/infobars/core",
     "//components/password_manager/core/common",
     "//components/translate/core/browser",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/infobars/overlays:overlay_type",

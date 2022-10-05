@@ -57,7 +57,7 @@ source_set("tab_helper") {
     "//components/feature_engagement/public",
     "//components/history/core/browser",
     "//components/keyed_service/core",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",

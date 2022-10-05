@@ -12,7 +12,7 @@ source_set("text_fragments") {
   deps = [
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/ios",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/commands:commands",
@@ -36,7 +36,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/shared_highlighting/core/common",
     "//components/shared_highlighting/ios",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

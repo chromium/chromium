@@ -25,7 +25,7 @@ source_set("post_restore_signin") {
   deps = [
     ":features",
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",

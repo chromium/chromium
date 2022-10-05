@@ -18,7 +18,7 @@ source_set("suggested_actions") {
   deps = [
     "resources",
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",
@@ -37,7 +37,7 @@ source_set("unit_tests") {
     ":suggested_actions",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//third_party/ocmock",

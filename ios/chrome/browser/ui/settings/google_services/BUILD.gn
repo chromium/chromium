@@ -194,7 +194,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync/driver",
     "//components/variations:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/signin",

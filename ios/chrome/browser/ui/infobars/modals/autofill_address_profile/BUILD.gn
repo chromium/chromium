@@ -18,7 +18,7 @@ source_set("modals") {
     "//base",
     "//components/autofill/core/common:features",
     "//components/strings",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ios/chrome/browser/ui/autofill/cells",

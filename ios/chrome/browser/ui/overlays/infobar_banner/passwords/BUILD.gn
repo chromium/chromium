@@ -14,7 +14,7 @@ source_set("passwords") {
 
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/ui/icons:infobar_icons",
@@ -41,9 +41,9 @@ source_set("unit_tests") {
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/common",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/url_formatter",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",

@@ -64,7 +64,7 @@ source_set("first_follow_ui") {
   deps = [
     ":follow",
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

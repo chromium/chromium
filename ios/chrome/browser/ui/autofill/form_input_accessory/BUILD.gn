@@ -40,7 +40,7 @@ source_set("form_input_accessory") {
     "//components/password_manager/core/browser",
     "//components/password_manager/ios",
     "//components/prefs",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:utils",

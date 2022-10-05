@@ -28,7 +28,6 @@ source_set("ssl") {
     "//components/strings",
     "//components/url_formatter",
     "//components/url_param_filter/core",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/safe_browsing",

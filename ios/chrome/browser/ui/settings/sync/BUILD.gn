@@ -110,7 +110,7 @@ source_set("eg2_tests") {
   sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
   deps = [
     "//base/test:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings:constants",
