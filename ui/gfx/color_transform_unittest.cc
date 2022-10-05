@@ -451,12 +451,7 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
   for (const auto& src : common_color_spaces) {
     for (const auto& dst : common_color_spaces) {
       auto transform = ColorTransform::NewColorTransform(src, dst);
-      std::string source = "half4 main(half4 color) {\n" +
-                           transform->GetSkShaderSource() + " return color; }";
-      SkRuntimeEffect::Result result = SkRuntimeEffect::MakeForColorFilter(
-          SkString(source.c_str(), source.length()), /*options=*/{});
-      EXPECT_NE(result.effect, nullptr);
-      EXPECT_STREQ(result.errorText.c_str(), "");
+      EXPECT_NE(transform->GetSkRuntimeEffect(), nullptr);
     }
   }
 }

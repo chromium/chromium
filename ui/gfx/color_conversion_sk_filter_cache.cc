@@ -13,21 +13,10 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/color_transform.h"
 
 namespace gfx {
-
-namespace {
-
-// Additional YUV information to skia renderer to draw 9- and 10- bits color.
-struct YUVInput {
-  float offset = 0.f;
-  float multiplier = 0.f;
-};
-
-}  // namespace
 
 ColorConversionSkFilterCache::ColorConversionSkFilterCache() = default;
 ColorConversionSkFilterCache::~ColorConversionSkFilterCache() = default;
@@ -35,9 +24,7 @@ ColorConversionSkFilterCache::~ColorConversionSkFilterCache() = default;
 bool ColorConversionSkFilterCache::Key::Key::operator==(
     const Key& other) const {
   return src == other.src && dst == other.dst &&
-         sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
-         src_hdr_metadata == other.src_hdr_metadata &&
-         dst_max_luminance_relative == other.dst_max_luminance_relative;
+         sdr_max_luminance_nits == other.sdr_max_luminance_nits;
 }
 
 bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
@@ -45,23 +32,14 @@ bool ColorConversionSkFilterCache::Key::operator!=(const Key& other) const {
 }
 
 bool ColorConversionSkFilterCache::Key::operator<(const Key& other) const {
-  return std::tie(src, dst, sdr_max_luminance_nits,
-                  dst_max_luminance_relative) <
-         std::tie(other.src, other.dst, other.sdr_max_luminance_nits,
-                  other.dst_max_luminance_relative);
+  return std::tie(src, dst, sdr_max_luminance_nits) <
+         std::tie(other.src, other.dst, other.sdr_max_luminance_nits);
 }
 
-ColorConversionSkFilterCache::Key::Key(
-    const gfx::ColorSpace& src,
-    const gfx::ColorSpace& dst,
-    absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-    float sdr_max_luminance_nits,
-    float dst_max_luminance_relative)
-    : src(src),
-      dst(dst),
-      src_hdr_metadata(src_hdr_metadata),
-      sdr_max_luminance_nits(sdr_max_luminance_nits),
-      dst_max_luminance_relative(dst_max_luminance_relative) {}
+ColorConversionSkFilterCache::Key::Key(const gfx::ColorSpace& src,
+                                       const gfx::ColorSpace& dst,
+                                       float sdr_max_luminance_nits)
+    : src(src), dst(dst), sdr_max_luminance_nits(sdr_max_luminance_nits) {}
 
 sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     const gfx::ColorSpace& src,
@@ -87,60 +65,22 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     }
   }
 
-  const Key key(src, dst, src_hdr_metadata, sdr_max_luminance_nits,
-                dst_max_luminance_relative);
+  const Key key(src, dst, sdr_max_luminance_nits);
   sk_sp<SkRuntimeEffect>& effect = cache_[key];
 
+  gfx::ColorTransform::Options options;
+  options.tone_map_pq_and_hlg_to_dst = true;
+  options.sdr_max_luminance_nits = sdr_max_luminance_nits;
+  options.src_hdr_metadata = src_hdr_metadata;
+  options.dst_max_luminance_relative = dst_max_luminance_relative;
   if (!effect) {
-    gfx::ColorTransform::Options options;
-    options.tone_map_pq_and_hlg_to_dst = true;
-    options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
-    // TODO(https://crbug.com/1286076): Ensure that, when tone mapping using
-    // `dst_max_luminance_relative` is implemented, the gfx::ColorTransform's
-    // SkShaderSource not depend on that parameter (rather, that it be left
-    // as a uniform in the shader). If that is not the case, then it will need
-    // to be part of the key.
-    options.src_hdr_metadata = src_hdr_metadata;
-    options.dst_max_luminance_relative = dst_max_luminance_relative;
     std::unique_ptr<gfx::ColorTransform> transform =
         gfx::ColorTransform::NewColorTransform(src, dst, options);
-
-    const char* hdr = R"(
-uniform half offset;
-uniform half multiplier;
-
-half4 main(half4 color) {
-  // un-premultiply alpha
-  if (color.a > 0)
-    color.rgb /= color.a;
-
-  color.rgb -= offset;
-  color.rgb *= multiplier;
-)";
-    const char* ftr = R"(
-  // premultiply alpha
-  color.rgb *= color.a;
-  return color;
-}
-)";
-
-    std::string shader = hdr + transform->GetSkShaderSource() + ftr;
-
-    auto result = SkRuntimeEffect::MakeForColorFilter(
-        SkString(shader.c_str(), shader.size()),
-        /*options=*/{});
-    DCHECK(result.effect) << std::endl
-                          << result.errorText.c_str() << "\n\nShader Source:\n"
-                          << shader;
-    effect = result.effect;
+    effect = transform->GetSkRuntimeEffect();
   }
 
-  YUVInput input;
-  input.offset = resource_offset;
-  input.multiplier = resource_multiplier;
-  sk_sp<SkData> data = SkData::MakeWithCopy(&input, sizeof(input));
-
-  return effect->makeColorFilter(std::move(data));
+  return effect->makeColorFilter(gfx::ColorTransform::GetSkShaderUniforms(
+      src, dst, resource_offset, resource_multiplier, options));
 }
 
 sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(

@@ -60,27 +60,16 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
   struct Key {
     Key(const gfx::ColorSpace& src,
         const gfx::ColorSpace& dst,
-        absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-        float sdr_max_luminance_nits,
-        float dst_max_luminance_relative);
+        float sdr_max_luminance_nits);
 
     gfx::ColorSpace src;
     gfx::ColorSpace dst;
-    absl::optional<gfx::HDRMetadata> src_hdr_metadata;
     float sdr_max_luminance_nits = 0.f;
-    float dst_max_luminance_relative = 0.f;
 
     bool operator==(const Key& other) const;
     bool operator!=(const Key& other) const;
     bool operator<(const Key& other) const;
   };
-  static Key KeyForParams(const gfx::ColorSpace& src,
-                          const gfx::ColorSpace& dst,
-                          float resource_offset,
-                          float resource_multiplier,
-                          float sdr_max_luminance_nits,
-                          absl::optional<gfx::HDRMetadata> src_hdr_metadata,
-                          float dst_max_luminance_relative);
 
   base::flat_map<Key, sk_sp<SkRuntimeEffect>> cache_;
 };

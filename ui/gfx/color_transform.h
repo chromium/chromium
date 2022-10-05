@@ -9,6 +9,8 @@
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -61,9 +63,15 @@ class COLOR_SPACE_EXPORT ColorTransform {
   // Perform transformation of colors, |colors| is both input and output.
   virtual void Transform(TriStim* colors, size_t num) const = 0;
 
-  // Return SKSL shader sources that modifies an "inout half4 color" according
-  // to this transform. Input and output are non-premultiplied alpha.
-  virtual std::string GetSkShaderSource() const = 0;
+  // Return an SkRuntimeEffect to perform this transform.
+  virtual sk_sp<SkRuntimeEffect> GetSkRuntimeEffect() const = 0;
+
+  // Return the uniforms used by the above SkRuntimeEffect.
+  static sk_sp<SkData> GetSkShaderUniforms(const ColorSpace& src,
+                                           const ColorSpace& dst,
+                                           float offset,
+                                           float multiplier,
+                                           const Options& options);
 
   // Returns true if this transform is the identity.
   virtual bool IsIdentity() const = 0;
