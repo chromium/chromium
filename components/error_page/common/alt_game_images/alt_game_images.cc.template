@@ -124,8 +124,8 @@ std::unique_ptr<crypto::SymmetricKey> GetKey() {
 
 }  // namespace
 
-const base::Feature kNetErrorAltGameMode{"NetErrorAltGameMode",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kNetErrorAltGameMode, "NetErrorAltGameMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kNetErrorAltGameModeKey{
     &kNetErrorAltGameMode, "Key", ""};
 
