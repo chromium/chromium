@@ -74,6 +74,8 @@ namespace base {
 struct RawPtrMayDangle {};
 struct RawPtrBanDanglingIfSupported {};
 
+struct RawPtrNoOp {};
+
 namespace raw_ptr_traits {
 template <typename T>
 struct RawPtrTypeToImpl;
@@ -888,6 +890,11 @@ struct RawPtrTypeToImpl<RawPtrBanDanglingIfSupported> {
 #endif
 };
 
+template <>
+struct RawPtrTypeToImpl<RawPtrNoOp> {
+  using Impl = internal::RawPtrNoOpImpl;
+};
+
 }  // namespace raw_ptr_traits
 
 // `raw_ptr<T>` is a non-owning smart pointer that has improved memory-safety
@@ -1450,14 +1457,13 @@ using DanglingUntriaged = DisableDanglingPtrDetection;
 #if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 // Direct pass-through to no-op implementation.
-using DegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+using DegradeToNoOpWhenMTE = base::RawPtrNoOp;
 
 // As above, but with the "untriaged dangling" annotation.
-using DanglingUntriagedDegradeToNoOpWhenMTE = base::internal::RawPtrNoOpImpl;
+using DanglingUntriagedDegradeToNoOpWhenMTE = base::RawPtrNoOp;
 
 // As above, but with the "explicitly disable protection" annotation.
-using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE =
-    base::internal::RawPtrNoOpImpl;
+using DisableDanglingPtrDetectionDegradeToNoOpWhenMTE = base::RawPtrNoOp;
 
 #else
 
