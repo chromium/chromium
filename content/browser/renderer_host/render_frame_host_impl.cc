@@ -5821,6 +5821,25 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
   if (!frame_)
     return;
 
+  // Disregard if the IPC payload would have been empty.
+  //
+  // Examples of when this can happen:
+  // 1. DevTools tries to inject its proxies by calling this method on *all*
+  //    frames, regardless of whether a frame has actually used one or more
+  //    NetworkService-based URLLoaderFactory.  See also
+  //    RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories.
+  // 2. The RenderFrameHostImpl::CreateNetworkServiceDefaultFactory method
+  //    (exposed via //content/public) is called on a frame that doesn't
+  //    actually use a NetworkService-backed URLLoaderFactory.  This means
+  //    that CreateNetworkServiceDefaultFactoryAndObserve sets up
+  //    `network_service_disconnect_handler_holder_`, but
+  //    `recreate_default_url_loader_factory_after_network_service_crash_` is
+  //    false.
+  if (!recreate_default_url_loader_factory_after_network_service_crash_ &&
+      isolated_worlds_requiring_separate_url_loader_factory_.empty()) {
+    return;
+  }
+
   // The `subresource_loader_factories_config` of the new factories might need
   // to depend on the pending (rather than the last committed) navigation,
   // because we can't predict if an in-flight Commit IPC might be present when

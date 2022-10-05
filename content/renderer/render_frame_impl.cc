@@ -3121,6 +3121,23 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
         loader_factories_.get())
         ->UpdateThisAndAllClones(std::move(subresource_loader_factories));
   } else {
+    // RFHI::recreate_default_url_loader_factory_after_network_service_crash_ is
+    // only set for frames that directly get their factory bundle from the
+    // browser (HostChildURLLoaderFactoryBundle) rather than inheriting the
+    // bundle from another frame (TrackedChildURLLoaderFactoryBundle).
+    // Therefore the default factory *may* be present in the `if`/true branch
+    // and *must* be missing in the `else` branch.
+    DCHECK(!subresource_loader_factories->pending_default_factory().is_valid());
+
+    // If there is no `pending_default_factory` (see the DCHECK above) and no
+    // empty-payload IPCs are sent, then the only way to get here should be
+    // because of `pending_isolated_world_factories`.
+    //
+    // TODO(https://crbug.com/1152550): Remove the whole `else` branch once
+    // Chrome Platform Apps and `pending_isolated_world_factories` are gone.
+    DCHECK(!subresource_loader_factories->pending_isolated_world_factories()
+                .empty());
+
 #if DCHECK_IS_ON()
     // This situation should happen only if the frame hosts a document that
     // isn't related to a real navigation (i.e. if an initial empty document
