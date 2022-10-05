@@ -41,8 +41,8 @@ unit tests.
      All files are from the src/test/testdada directory in
      https://code.google.com/p/certificate-transparency/
 
-- thepaverbros.com.pem : A certificate issued by a public trust anchor valid
-    for the domain thepaverbros.com, which expires on 2022-03-26.
+- caninesonduty.com.pem : A certificate issued by a public trust anchor valid
+    for the domain caninesonduty.com, which expires on 2023-11-06.
 
 - gms.hongleong.com.my-verisign-chain.pem: A certificate chain for
   gms.hongleong.com.my issued by VeriSign Class 3 Public Primary Certification
