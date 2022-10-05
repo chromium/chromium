@@ -21089,6 +21089,14 @@ should be able to be added at any place in this file.
     from the user's default search engine. I.e., emitted when it looks like--via
     a simple pattern match--the user navigated to a search results page.
 
+    Prior to M-108, this was possible to be emitted for all navigations, even
+    within profiles such as &quot;system&quot; profiles that don't allow the
+    user to search. (We expect it was rarely if even logged in those settings.)
+    In those settings, it looked for the search engine used by default in this
+    install of Chrome. This is typically Google. In M-108 and later, this user
+    action is eligible to be emitted only for profiles that allow the user to
+    search: regular profiles, Incognito profiles, and Guest profiles.
+
     NavEntryCommitted will also always be emitted at the same time (in the same
     code, just a few lines before).
 

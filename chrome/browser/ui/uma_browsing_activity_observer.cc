@@ -69,16 +69,18 @@ void UMABrowsingActivityObserver::Observe(
     // Track whether the page loaded is a search results page (SRP). Track
     // the non-SRP navigations as well so there is a control.
     base::RecordAction(base::UserMetricsAction("NavEntryCommitted"));
-    // Attempting to determine the cause of a crash originating from
-    // IsSearchResultsPageFromDefaultSearchProvider but manifesting in
-    // TemplateURLRef::ExtractSearchTermsFromURL(...).
-    // See http://crbug.com/291348.
+
     CHECK(load.entry);
-    if (TemplateURLServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(controller->GetBrowserContext()))
-            ->IsSearchResultsPageFromDefaultSearchProvider(
-                load.entry->GetURL())) {
-      base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
+    // If the user is allowed to do searches in this profile (e.g., it's a
+    // regular profile, not something like a "system" profile), then record if
+    // this navigation appeared to go the default search engine.
+    auto* turl_service = TemplateURLServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(controller->GetBrowserContext()));
+    if (turl_service) {
+      if (turl_service->IsSearchResultsPageFromDefaultSearchProvider(
+              load.entry->GetURL())) {
+        base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
+      }
     }
 
     if (!load.is_navigation_to_different_page())

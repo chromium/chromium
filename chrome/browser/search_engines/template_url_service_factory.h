@@ -32,7 +32,7 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
+      content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   bool ServiceIsNULLWhileTesting() const override;

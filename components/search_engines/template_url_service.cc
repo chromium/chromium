@@ -1068,8 +1068,8 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   }
 
   if (default_search_provider_) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Search.DefaultSearchProviderType",
+    base::UmaHistogramEnumeration(
+        "Search.DefaultSearchProviderType2",
         default_search_provider_->GetEngineType(search_terms_data()),
         SEARCH_ENGINE_MAX);
   }
