@@ -239,7 +239,7 @@ TEST_P(X509CertificateModel, SubjectAltNameSanityTest) {
       bssl::UpRef(cert->cert_buffer()), GetParam());
 
   auto extensions = model.GetExtensions("critical", "notcrit");
-  ASSERT_EQ(2U, extensions.size());
+  ASSERT_EQ(3U, extensions.size());
   EXPECT_EQ("Certificate Subject Alternative Name", extensions[1].name);
   EXPECT_EQ(
       "notcrit\n"
@@ -260,7 +260,7 @@ TEST_P(X509CertificateModel, CertificatePoliciesSanityTest) {
       bssl::UpRef(cert->cert_buffer()), GetParam());
 
   auto extensions = model.GetExtensions("critical", "notcrit");
-  ASSERT_EQ(1U, extensions.size());
+  ASSERT_EQ(2U, extensions.size());
   EXPECT_EQ("Certificate Policies", extensions[0].name);
   EXPECT_EQ(
       "notcrit\nOID.1.2.3.4.5\nOID.1.3.5.8.12:\n"
