@@ -10,7 +10,10 @@
 
 namespace net::der {
 
-Input::Input(const base::StringPiece& in)
+Input::Input(base::StringPiece in)
+    : data_(reinterpret_cast<const uint8_t*>(in.data())), len_(in.length()) {}
+
+Input::Input(std::string_view in)
     : data_(reinterpret_cast<const uint8_t*>(in.data())), len_(in.length()) {}
 
 Input::Input(const std::string* s) : Input(base::StringPiece(*s)) {}
@@ -21,6 +24,10 @@ std::string Input::AsString() const {
 
 base::StringPiece Input::AsStringPiece() const {
   return base::StringPiece(reinterpret_cast<const char*>(data_), len_);
+}
+
+std::string_view Input::AsStringView() const {
+  return std::string_view(reinterpret_cast<const char*>(data_), len_);
 }
 
 base::span<const uint8_t> Input::AsSpan() const {

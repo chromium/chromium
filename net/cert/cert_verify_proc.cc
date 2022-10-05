@@ -230,9 +230,10 @@ void BestEffortCheckOCSP(const std::string& raw_response,
         certificate.intermediate_buffers().front().get());
   }
 
-  verify_result->revocation_status =
-      CheckOCSP(raw_response, cert_der, issuer_der, base::Time::Now(),
-                kMaxRevocationLeafUpdateAge, &verify_result->response_status);
+  verify_result->revocation_status = CheckOCSP(
+      raw_response, std::string_view(cert_der.data(), cert_der.size()),
+      std::string_view(issuer_der.data(), issuer_der.size()), base::Time::Now(),
+      kMaxRevocationLeafUpdateAge, &verify_result->response_status);
 }
 
 // Records details about the most-specific trust anchor in |hashes|, which is

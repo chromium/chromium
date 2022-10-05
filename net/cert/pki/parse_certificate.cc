@@ -10,6 +10,7 @@
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/general_names.h"
+#include "net/cert/pki/string_util.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
@@ -805,8 +806,8 @@ bool ParseAuthorityInfoAccess(
 
 bool ParseAuthorityInfoAccessURIs(
     const der::Input& authority_info_access_tlv,
-    std::vector<base::StringPiece>* out_ca_issuers_uris,
-    std::vector<base::StringPiece>* out_ocsp_uris) {
+    std::vector<std::string_view>* out_ca_issuers_uris,
+    std::vector<std::string_view>* out_ocsp_uris) {
   std::vector<AuthorityInfoAccessDescription> access_descriptions;
   if (!ParseAuthorityInfoAccess(authority_info_access_tlv,
                                 &access_descriptions)) {
@@ -825,8 +826,8 @@ bool ParseAuthorityInfoAccessURIs(
     // GeneralName ::= CHOICE {
     if (access_location_tag == der::ContextSpecificPrimitive(6)) {
       // uniformResourceIdentifier       [6]     IA5String,
-      base::StringPiece uri = access_location_value.AsStringPiece();
-      if (!base::IsStringASCII(uri))
+      std::string_view uri = access_location_value.AsStringView();
+      if (!net::string_util::IsAscii(uri))
         return false;
 
       if (access_description.access_method_oid == der::Input(kAdCaIssuersOid))

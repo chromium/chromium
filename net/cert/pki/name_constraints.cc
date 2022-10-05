@@ -10,9 +10,9 @@
 
 #include "base/check.h"
 #include "base/numerics/clamped_math.h"
-#include "base/strings/string_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/common_cert_errors.h"
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/der/input.h"
 #include "net/der/parser.h"
@@ -52,8 +52,8 @@ enum WildcardMatchType { WILDCARD_PARTIAL_MATCH, WILDCARD_FULL_MATCH };
 // |wildcard_matching| controls handling of wildcard names (|name| starts with
 // "*."). Wildcard handling is not specified by RFC 5280, but certificate
 // verification allows it, name constraints must check it similarly.
-bool DNSNameMatches(base::StringPiece name,
-                    base::StringPiece dns_constraint,
+bool DNSNameMatches(std::string_view name,
+                    std::string_view dns_constraint,
                     WildcardMatchType wildcard_matching) {
   // Everything matches the empty DNS name constraint.
   if (dns_constraint.empty())
@@ -74,20 +74,20 @@ bool DNSNameMatches(base::StringPiece name,
       name[0] == '*' && name[1] == '.') {
     size_t dns_constraint_dot_pos = dns_constraint.find('.');
     if (dns_constraint_dot_pos != std::string::npos) {
-      base::StringPiece dns_constraint_domain =
+      std::string_view dns_constraint_domain =
           dns_constraint.substr(dns_constraint_dot_pos + 1);
-      base::StringPiece wildcard_domain = name.substr(2);
-      if (base::EqualsCaseInsensitiveASCII(wildcard_domain,
-                                           dns_constraint_domain)) {
+      std::string_view wildcard_domain = name.substr(2);
+      if (net::string_util::IsEqualNoCase(wildcard_domain,
+                                          dns_constraint_domain)) {
         return true;
       }
     }
   }
 
-  if (!base::EndsWith(name, dns_constraint,
-                      base::CompareCase::INSENSITIVE_ASCII)) {
+  if (!net::string_util::EndsWithNoCase(name, dns_constraint)) {
     return false;
   }
+
   // Exact match.
   if (name.size() == dns_constraint.size())
     return true;
@@ -361,7 +361,7 @@ void NameConstraints::IsPermittedCert(const der::Input& subject_rdn_sequence,
   }
 }
 
-bool NameConstraints::IsPermittedDNSName(base::StringPiece name) const {
+bool NameConstraints::IsPermittedDNSName(std::string_view name) const {
   for (const auto& excluded_name : excluded_subtrees_.dns_names) {
     // When matching wildcard hosts against excluded subtrees, consider it a
     // match if the constraint would match any expansion of the wildcard. Eg,

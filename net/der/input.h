@@ -40,7 +40,10 @@ class NET_EXPORT_PRIVATE Input {
       : data_(data), len_(len) {}
 
   // Creates an Input from a base::StringPiece.
-  explicit Input(const base::StringPiece& sp);
+  explicit Input(base::StringPiece sp);
+
+  // Creates an Input from a std::string_view
+  explicit Input(std::string_view sp);
 
   // Creates an Input from a std::string. The lifetimes are a bit subtle when
   // using this function: The constructed Input is only valid so long as |s| is
@@ -63,6 +66,11 @@ class NET_EXPORT_PRIVATE Input {
   // StringPiece must not outlive the data that was used to construct this
   // Input.
   base::StringPiece AsStringPiece() const;
+
+  // Returns a std::string_view pointing to the same data as the Input. The
+  // resulting string_view must not outlive the data that was used to construct
+  // this Input.
+  std::string_view AsStringView() const;
 
   // Returns a base::span pointing to the same data as the Input. The resulting
   // base::span must not outlive the data that was used to construct this

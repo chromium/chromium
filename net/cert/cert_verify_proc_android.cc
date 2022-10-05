@@ -97,9 +97,9 @@ scoped_refptr<ParsedCertificate> FindLastCertWithUnknownIssuer(
 // successful and the result could be parsed as a certificate, and false
 // otherwise.
 bool PerformAIAFetchAndAddResultToVector(scoped_refptr<CertNetFetcher> fetcher,
-                                         base::StringPiece uri,
+                                         std::string_view uri,
                                          ParsedCertificateList* cert_list) {
-  GURL url(uri);
+  GURL url(base::StringPiece(uri.data(), uri.size()));
   if (!url.is_valid())
     return false;
   std::unique_ptr<CertNetFetcher::Request> request(fetcher->FetchCaIssuers(

@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/pki/cert_issuer_source.h"
 #include "net/cert/pki/certificate_policies.h"
@@ -25,6 +24,7 @@
 #include "net/cert/pki/verify_name_match.h"
 #include "net/der/parser.h"
 #include "net/der/tag.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace net {
 
@@ -34,8 +34,10 @@ using CertIssuerSources = std::vector<CertIssuerSource*>;
 
 // Returns a hex-encoded sha256 of the DER-encoding of |cert|.
 std::string FingerPrintParsedCertificate(const net::ParsedCertificate* cert) {
-  std::string hash = crypto::SHA256HashString(cert->der_cert().AsStringPiece());
-  return base::HexEncode(hash.data(), hash.size());
+  uint8_t digest[SHA256_DIGEST_LENGTH];
+  SHA256(cert->der_cert().AsSpan().data(), cert->der_cert().AsSpan().size(),
+         digest);
+  return base::HexEncode(digest, sizeof(digest));
 }
 
 // TODO(mattm): decide how much debug logging to keep.
@@ -225,7 +227,7 @@ class CertIssuersIter {
   // duplicates. This is based on the full DER of the cert to allow different
   // versions of the same certificate to be tried in different candidate paths.
   // This points to data owned by |issuers_|.
-  std::unordered_set<base::StringPiece, base::StringPieceHash> present_issuers_;
+  std::unordered_set<std::string_view> present_issuers_;
 
   // Tracks which requests have been made yet.
   bool did_initial_query_ = false;
@@ -304,10 +306,10 @@ void CertIssuersIter::GetNextIssuer(IssuerEntry* out) {
 
 void CertIssuersIter::AddIssuers(ParsedCertificateList new_issuers) {
   for (scoped_refptr<ParsedCertificate>& issuer : new_issuers) {
-    if (present_issuers_.find(issuer->der_cert().AsStringPiece()) !=
+    if (present_issuers_.find(issuer->der_cert().AsStringView()) !=
         present_issuers_.end())
       continue;
-    present_issuers_.insert(issuer->der_cert().AsStringPiece());
+    present_issuers_.insert(issuer->der_cert().AsStringView());
 
     // Look up the trust for this issuer.
     IssuerEntry entry;
@@ -420,8 +422,7 @@ class CertIssuerIterPath {
   }
 
  private:
-  using Key =
-      std::tuple<base::StringPiece, base::StringPiece, base::StringPiece>;
+  using Key = std::tuple<std::string_view, std::string_view, std::string_view>;
 
   static Key GetKey(const ParsedCertificate* cert) {
     // TODO(mattm): ideally this would use a normalized version of
@@ -430,9 +431,9 @@ class CertIssuerIterPath {
     // Note that subject_alt_names_extension().value will be empty if the cert
     // had no SubjectAltName extension, so there is no need for a condition on
     // has_subject_alt_names().
-    return Key(cert->normalized_subject().AsStringPiece(),
-               cert->subject_alt_names_extension().value.AsStringPiece(),
-               cert->tbs().spki_tlv.AsStringPiece());
+    return Key(cert->normalized_subject().AsStringView(),
+               cert->subject_alt_names_extension().value.AsStringView(),
+               cert->tbs().spki_tlv.AsStringView());
   }
 
   std::vector<std::unique_ptr<CertIssuersIter>> cur_path_;

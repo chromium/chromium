@@ -176,12 +176,12 @@ class NET_EXPORT ParsedCertificate
   }
 
   // Returns any caIssuers URIs from the AuthorityInfoAccess extension.
-  const std::vector<base::StringPiece>& ca_issuers_uris() const {
+  const std::vector<std::string_view>& ca_issuers_uris() const {
     return ca_issuers_uris_;
   }
 
   // Returns any OCSP URIs from the AuthorityInfoAccess extension.
-  const std::vector<base::StringPiece>& ocsp_uris() const { return ocsp_uris_; }
+  const std::vector<std::string_view>& ocsp_uris() const { return ocsp_uris_; }
 
   // Returns true if the certificate has a Policies extension.
   bool has_policy_oids() const { return has_policy_oids_; }
@@ -294,8 +294,8 @@ class NET_EXPORT ParsedCertificate
   // CaIssuers and Ocsp URIs parsed from the AuthorityInfoAccess extension. Note
   // that the AuthorityInfoAccess may have contained other AccessDescriptions
   // which are not represented here.
-  std::vector<base::StringPiece> ca_issuers_uris_;
-  std::vector<base::StringPiece> ocsp_uris_;
+  std::vector<std::string_view> ca_issuers_uris_;
+  std::vector<std::string_view> ocsp_uris_;
 
   // Policies extension.
   bool has_policy_oids_ = false;

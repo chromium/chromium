@@ -465,19 +465,19 @@ bool VerifyHash(const EVP_MD* type,
 //     subjectPublicKey     BIT STRING
 // }
 bool GetSubjectPublicKeyBytes(const der::Input& spki_tlv, der::Input* spk_tlv) {
+  // TODO(bbe) decide what to do with the asn1 utilities, bring them into pki
+  // or use the boringssl stuff internally..
   base::StringPiece spk_strpiece;
   if (!asn1::ExtractSubjectPublicKeyFromSPKI(spki_tlv.AsStringPiece(),
                                              &spk_strpiece)) {
     return false;
   }
-
   // ExtractSubjectPublicKeyFromSPKI() includes the unused bit count. For this
   // application, the unused bit count must be zero, and is not included in the
   // result.
   if (!base::StartsWith(spk_strpiece, "\0"))
     return false;
   spk_strpiece.remove_prefix(1);
-
   *spk_tlv = der::Input(spk_strpiece);
   return true;
 }
@@ -524,15 +524,16 @@ bool CheckCertIDMatchesCertificate(
 // TODO(eroman): Revisit how certificate parsing is used by this file. Ideally
 // would either pass in the parsed bits, or have a better abstraction for lazily
 // parsing.
-scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
+scoped_refptr<ParsedCertificate> OCSPParseCertificate(std::string_view der) {
   ParseCertificateOptions parse_options;
   parse_options.allow_invalid_serial_numbers = true;
 
   // TODO(eroman): Swallows the parsing errors. However uses a permissive
   // parsing model.
   CertErrors errors;
-  return ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der), {},
-                                   &errors);
+  return ParsedCertificate::Create(
+      x509_util::CreateCryptoBuffer(base::StringPiece(der.data(), der.size())),
+      {}, &errors);
 }
 
 // Checks that the ResponderID |id| matches the certificate |cert| either
@@ -626,7 +627,7 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
   //  (3) Has signed the OCSP response using its public key.
   for (const auto& responder_cert_tlv : response.certs) {
     scoped_refptr<ParsedCertificate> cur_responder_certificate =
-        OCSPParseCertificate(responder_cert_tlv.AsStringPiece());
+        OCSPParseCertificate(responder_cert_tlv.AsStringView());
 
     // If failed parsing the certificate, keep looking.
     if (!cur_responder_certificate)
@@ -782,10 +783,10 @@ OCSPRevocationStatus GetRevocationStatusForCert(
 }
 
 OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    base::StringPiece certificate_der,
+    std::string_view raw_response,
+    std::string_view certificate_der,
     const ParsedCertificate* certificate,
-    base::StringPiece issuer_certificate_der,
+    std::string_view issuer_certificate_der,
     const ParsedCertificate* issuer_certificate,
     const base::Time& verify_time,
     const base::TimeDelta& max_age,
@@ -886,9 +887,9 @@ OCSPRevocationStatus CheckOCSP(
 }  // namespace
 
 OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    base::StringPiece certificate_der,
-    base::StringPiece issuer_certificate_der,
+    std::string_view raw_response,
+    std::string_view certificate_der,
+    std::string_view issuer_certificate_der,
     const base::Time& verify_time,
     const base::TimeDelta& max_age,
     OCSPVerifyResult::ResponseStatus* response_details) {
@@ -898,15 +899,15 @@ OCSPRevocationStatus CheckOCSP(
 }
 
 OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
+    std::string_view raw_response,
     const ParsedCertificate* certificate,
     const ParsedCertificate* issuer_certificate,
     const base::Time& verify_time,
     const base::TimeDelta& max_age,
     OCSPVerifyResult::ResponseStatus* response_details) {
-  return CheckOCSP(raw_response, base::StringPiece(), certificate,
-                   base::StringPiece(), issuer_certificate, verify_time,
-                   max_age, response_details);
+  return CheckOCSP(raw_response, std::string_view(), certificate,
+                   std::string_view(), issuer_certificate, verify_time, max_age,
+                   response_details);
 }
 
 bool CreateOCSPRequest(const ParsedCertificate* cert,
@@ -1002,7 +1003,7 @@ bool CreateOCSPRequest(const ParsedCertificate* cert,
 //    the OCSPRequest}
 GURL CreateOCSPGetURL(const ParsedCertificate* cert,
                       const ParsedCertificate* issuer,
-                      base::StringPiece ocsp_responder_url) {
+                      std::string_view ocsp_responder_url) {
   std::vector<uint8_t> ocsp_request_der;
   if (!CreateOCSPRequest(cert, issuer, &ocsp_request_der)) {
     // Unexpected (means BoringSSL failed an operation).
@@ -1010,11 +1011,15 @@ GURL CreateOCSPGetURL(const ParsedCertificate* cert,
   }
 
   // Base64 encode the request data.
-  std::string b64_encoded;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(ocsp_request_der.data()),
-                        ocsp_request_der.size()),
-      &b64_encoded);
+  size_t len;
+  if (!EVP_EncodedLength(&len, ocsp_request_der.size())) {
+    return GURL();
+  }
+  std::vector<uint8_t> encoded(len);
+  len = EVP_EncodeBlock(encoded.data(), ocsp_request_der.data(),
+                        ocsp_request_der.size());
+
+  std::string b64_encoded(encoded.begin(), encoded.begin() + len);
 
   // In theory +, /, and = are valid in paths and don't need to be escaped.
   // However from the example in RFC 5019 section 5 it is clear that the intent

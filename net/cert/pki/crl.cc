@@ -34,12 +34,11 @@ inline constexpr uint8_t kIssuingDistributionPointOid[] = {0x55, 0x1d, 0x1c};
          !parser.HasMore();
 }
 
-bool ContainsExactMatchingName(std::vector<base::StringPiece> a,
-                               std::vector<base::StringPiece> b) {
+bool ContainsExactMatchingName(std::vector<std::string_view> a,
+                               std::vector<std::string_view> b) {
   std::sort(a.begin(), a.end());
   std::sort(b.begin(), b.end());
-  return !base::STLSetIntersection<std::vector<base::StringPiece>>(a, b)
-              .empty();
+  return !base::STLSetIntersection<std::vector<std::string_view>>(a, b).empty();
 }
 
 }  // namespace
@@ -362,7 +361,7 @@ CRLRevocationStatus GetCRLStatusForCert(
 ParsedCrlTbsCertList::ParsedCrlTbsCertList() = default;
 ParsedCrlTbsCertList::~ParsedCrlTbsCertList() = default;
 
-CRLRevocationStatus CheckCRL(base::StringPiece raw_crl,
+CRLRevocationStatus CheckCRL(std::string_view raw_crl,
                              const ParsedCertificateList& valid_chain,
                              size_t target_cert_index,
                              const ParsedDistributionPoint& cert_dp,
