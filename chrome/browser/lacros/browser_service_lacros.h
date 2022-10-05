@@ -47,6 +47,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       NewWindowForDetachingTabCallback callback) override;
   void NewTab(bool should_trigger_session_restore,
               NewTabCallback callback) override;
+  void NewTabWithoutParameter(NewTabWithoutParameterCallback callback) override;
   void Launch(LaunchCallback callback) override;
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,

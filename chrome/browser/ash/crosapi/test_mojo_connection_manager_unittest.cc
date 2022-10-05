@@ -85,6 +85,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void NewGuestWindow(NewGuestWindowCallback callback) override {}
   void NewTab(bool should_trigger_session_restore,
               NewTabCallback callback) override {}
+  void NewTabWithoutParameter(
+      NewTabWithoutParameterCallback callback) override {}
   void Launch(LaunchCallback callback) override {}
   void OpenUrl(const GURL& url,
                crosapi::mojom::OpenUrlParamsPtr params,

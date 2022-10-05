@@ -310,6 +310,11 @@ void BrowserServiceLacros::NewTab(bool should_trigger_session_restore,
       /*can_trigger_fre=*/true);
 }
 
+void BrowserServiceLacros::NewTabWithoutParameter(
+    NewTabWithoutParameterCallback callback) {
+  return NewTab(false, std::move(callback));
+}
+
 void BrowserServiceLacros::Launch(LaunchCallback callback) {
   if (ShowProfilePickerIfNeeded(false)) {
     std::move(callback).Run();

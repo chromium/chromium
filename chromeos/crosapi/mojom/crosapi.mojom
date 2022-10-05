@@ -1403,8 +1403,8 @@ struct OpenUrlParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 71.
-// Next ID: 20
+// Next MinVersion: 72.
+// Next ID: 21
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -1458,9 +1458,12 @@ interface BrowserService {
   // Added in M91.
   // The `should_trigger_session_restore` parameter is deprecated in M108. Do
   // not add new uses that pass `true` (see Launch for something similar).
-  // TODO(neis): Remove parameter in M110.
+  // TODO(neis): Remove NewTab@7 in M110. See crbug.com/1368399.
   [MinVersion=10]
   NewTab@7([MinVersion=68] bool should_trigger_session_restore) => ();
+  // Replacement for NewTab. Will eventually be renamed to NewTab.
+  [MinVersion=71]
+  NewTabWithoutParameter@20() => ();
 
   // Opens the specified URL in the browser with, currently, the main profile.
   // This opens a new tab and loads the page at specified URL.
