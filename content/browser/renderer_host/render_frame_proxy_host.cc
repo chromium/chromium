@@ -587,11 +587,14 @@ void RenderFrameProxyHost::RouteMessageEvent(
     }
   }
 
-  // Record UKM metrics for the postMessage event.
-  post_message_counter_.RecordMessage(
-      source_page_ukm_source_id, source_storage_key,
-      target_rfh->GetPageUkmSourceId(), target_rfh->storage_key(),
-      ukm::UkmRecorder::Get());
+  // Record UKM metrics for the postMessage event and don't send message if
+  // gating indicates it should be dropped.
+  if (!post_message_counter_.RecordMessageAndCheckIfShouldSend(
+          source_page_ukm_source_id, source_storage_key,
+          target_rfh->GetPageUkmSourceId(), target_rfh->storage_key(),
+          ukm::UkmRecorder::Get())) {
+    return;
+  };
 
   target_rfh->PostMessageEvent(translated_source_token, source_origin,
                                target_origin, std::move(message));

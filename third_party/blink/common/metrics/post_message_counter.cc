@@ -5,7 +5,9 @@
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 constexpr size_t kMaxRecordedPostsSize = 20;
@@ -13,16 +15,34 @@ constexpr size_t kMaxRecordedPostsSize = 20;
 
 namespace blink {
 
-void PostMessageCounter::RecordMessage(ukm::SourceId source_id,
-                                       const StorageKey& source_storage_key,
-                                       ukm::SourceId target_id,
-                                       const StorageKey& target_storage_key,
-                                       ukm::UkmRecorder* recorder) {
+bool PostMessageCounter::RecordMessageAndCheckIfShouldSend(
+    ukm::SourceId source_id,
+    const StorageKey& source_storage_key,
+    ukm::SourceId target_id,
+    const StorageKey& target_storage_key,
+    ukm::UkmRecorder* recorder) {
   DCHECK_LE(recorded_posts_.size(), kMaxRecordedPostsSize);
   std::pair<ukm::SourceId, ukm::SourceId> new_pair(source_id, target_id);
 
-  if (base::Contains(recorded_posts_, new_pair))
-    return;
+  // We want these storage keys to behave as though storage partitioning is on
+  // for convenience.
+  const auto& source_3psp_key =
+      source_storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
+  const auto& target_3psp_key =
+      target_storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
+
+  // If the feature is on, we want to block postMessages between the same
+  // origin on different top level sites (cross-partition).
+  bool should_send_post_message =
+      source_3psp_key == target_3psp_key || source_3psp_key.origin().opaque() ||
+      target_3psp_key.origin().opaque() ||
+      source_3psp_key.origin() != target_3psp_key.origin() ||
+      !base::FeatureList::IsEnabled(
+          features::kPostMessageDifferentPartitionSameOriginBlocked);
+
+  if (base::Contains(recorded_posts_, new_pair)) {
+    return should_send_post_message;
+  }
   if (recorded_posts_.size() == kMaxRecordedPostsSize)
     recorded_posts_.pop_back();
   recorded_posts_.push_front(new_pair);
@@ -42,12 +62,6 @@ void PostMessageCounter::RecordMessage(ukm::SourceId source_id,
     }
   }
 
-  // We want these storage keys to behave as though storage partitioning is on
-  // for convenience.
-  StorageKey source_3psp_key =
-      source_storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
-  StorageKey target_3psp_key =
-      target_storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
   if (source_3psp_key.origin().opaque() ||
       source_3psp_key.top_level_site().opaque() ||
       target_3psp_key.origin().opaque() ||
@@ -119,6 +133,8 @@ void PostMessageCounter::RecordMessage(ukm::SourceId source_id,
       builder.Record(recorder);
     }
   }
+
+  return should_send_post_message;
 }
 
 }  // namespace blink

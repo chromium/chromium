@@ -806,6 +806,12 @@
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
   {
+    "prefix": "post-message-different-partition-same-origin-blocked",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/html/browsers/windows/post-message"],
+    "args": ["--enable-features=PostMessageDifferentPartitionSameOriginBlocked"]
+  },
+  {
     "prefix": "threaded-composited-iframes",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/is-input-pending"],

@@ -877,6 +877,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kDocumentMaxEventNodePathCachedEntries;
 
+// Whether same-origin different-partition post messages are currently blocked.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPostMessageDifferentPartitionSameOriginBlocked);
+
 }  // namespace features
 }  // namespace blink
 

@@ -1080,10 +1080,13 @@ Navigator* LocalDOMWindow::navigator() {
 void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   LocalDOMWindow* source = posted_message->source;
 
-  // Record UKM metrics for postMessage event.
-  post_message_counter_.RecordMessage(source->UkmSourceID(),
-                                      source->GetStorageKey(), UkmSourceID(),
-                                      GetStorageKey(), UkmRecorder());
+  // Record UKM metrics for the postMessage event and don't send message if
+  // gating indicates it should be dropped.
+  if (!post_message_counter_.RecordMessageAndCheckIfShouldSend(
+          source->UkmSourceID(), source->GetStorageKey(), UkmSourceID(),
+          GetStorageKey(), UkmRecorder())) {
+    return;
+  };
 
   // Notify the host if the message contained a delegated capability. That state
   // should be tracked by the browser, and messages from remote hosts already

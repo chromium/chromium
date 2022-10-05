@@ -1646,5 +1646,9 @@ BASE_FEATURE(kDocumentEventNodePathCaching,
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
     &kDocumentEventNodePathCaching, "max-cache-entries", 100};
 
+BASE_FEATURE(kPostMessageDifferentPartitionSameOriginBlocked,
+             "PostMessageDifferentPartitionSameOriginBlocked",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink
