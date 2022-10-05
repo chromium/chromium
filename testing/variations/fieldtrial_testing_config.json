@@ -3323,6 +3323,21 @@
             ]
         }
     ],
+    "CrosQuickSettingsNetworkRevamp": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "QuickSettingsNetworkRevamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrostiniLxd4Rollout": [
         {
             "platforms": [
