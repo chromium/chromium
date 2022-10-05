@@ -28,16 +28,13 @@ class SyncSetupServiceMock : public SyncSetupService {
   MOCK_METHOD(SyncServiceState, GetSyncServiceState, (), (override));
   MOCK_METHOD(bool, IsDataTypePreferred, (syncer::ModelType), (const override));
   MOCK_METHOD(bool, IsDataTypeActive, (syncer::ModelType), (const override));
+  MOCK_METHOD(bool, IsInitialSetupOngoing, (), (override));
   MOCK_METHOD(bool, HasFinishedInitialSetup, (), (override));
   MOCK_METHOD(void, PrepareForFirstSyncSetup, (), (override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,
               (syncer::SyncFirstSetupCompleteSource),
               (override));
-
-  // Allow the real SyncSetupService::HasFinishedInitialSetup() to be used when
-  // mocking HasFinishedInitialSetup().
-  bool SyncSetupServiceHasFinishedInitialSetup();
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SYNC_SETUP_SERVICE_MOCK_H_

@@ -153,7 +153,7 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         .WillByDefault(Return(true));
     ON_CALL(*sync_setup_service_mock_, IsSyncingAllDataTypes())
         .WillByDefault(Return(true));
-    ON_CALL(*sync_setup_service_mock_, HasFinishedInitialSetup())
+    ON_CALL(*sync_setup_service_mock_, IsInitialSetupOngoing())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service_mock_, GetTransportState())
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));

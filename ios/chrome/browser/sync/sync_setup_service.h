@@ -99,9 +99,13 @@ class SyncSetupService : public KeyedService {
   // Returns whether all sync data is being encrypted.
   virtual bool IsEncryptEverythingEnabled() const;
 
-  // Returns true if the user has gone through the initial sync configuration.
+  // Returns true if the initial sync setup is currently ongoing.
+  // Returns false if it is either finished or not started.
   // This method is guaranteed not to start the sync backend so it can be
   // called at start-up.
+  virtual bool IsInitialSetupOngoing();
+
+  // TODO(crbug.com/1254659): Remove this.
   virtual bool HasFinishedInitialSetup();
 
   // Pauses sync allowing the user to configure what data to sync before

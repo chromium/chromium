@@ -13,10 +13,6 @@ SyncSetupServiceMock::SyncSetupServiceMock(syncer::SyncService* sync_service)
 
 SyncSetupServiceMock::~SyncSetupServiceMock() {}
 
-bool SyncSetupServiceMock::SyncSetupServiceHasFinishedInitialSetup() {
-  return SyncSetupService::HasFinishedInitialSetup();
-}
-
 std::unique_ptr<KeyedService> SyncSetupServiceMock::CreateKeyedService(
     web::BrowserState* context) {
   ChromeBrowserState* browser_state =

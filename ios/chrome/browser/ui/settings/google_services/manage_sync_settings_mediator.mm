@@ -769,7 +769,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
 // Updates the sync errors section. If `notifyConsumer` is YES, the consumer is
 // notified about model changes.
 - (void)updateSyncErrorsSection:(BOOL)notifyConsumer {
-  if (!self.syncSetupService->HasFinishedInitialSetup()) {
+  if (self.syncSetupService->IsInitialSetupOngoing()) {
     return;
   }
 
