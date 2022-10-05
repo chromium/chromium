@@ -342,13 +342,6 @@ void AuthFactorEditor::RemovePinFactor(std::unique_ptr<UserContext> context,
   DCHECK(features::IsUseAuthFactorsEnabled());
   DCHECK(!context->GetAuthSessionId().empty());
 
-  const cryptohome::AuthFactor* pin_factor =
-      context->GetAuthFactorsData().FindPinFactor();
-  if (!pin_factor) {
-    std::move(callback).Run(std::move(context), absl::nullopt);
-    return;
-  }
-
   LOGIN_LOG(EVENT) << "Removing pin factor";
 
   user_data_auth::RemoveAuthFactorRequest req;
