@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
+#include "entropy_provider.h"
+#include "variations_layers.h"
 
 namespace variations {
 namespace {
@@ -189,6 +191,36 @@ bool ProcessedStudy::Init(const Study* study) {
   all_assignments_to_one_group_ = all_assignments_to_one_group;
   associated_features_.swap(associated_features);
   return true;
+}
+
+bool ProcessedStudy::ShouldStudyUseLowEntropy() const {
+  // This should be kept in sync with the server-side layer validation
+  // code: go/chrome-variations-layer-validation
+  for (const auto& experiment : study_->experiment()) {
+    if (experiment.has_google_web_experiment_id() ||
+        experiment.has_google_web_trigger_experiment_id() ||
+        experiment.has_chrome_sync_experiment_id()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+const base::FieldTrial::EntropyProvider&
+ProcessedStudy::SelectEntropyProviderForStudy(
+    const EntropyProviders& entropy_providers) const {
+  if (!study_->has_consistency() ||
+      study_->consistency() != Study_Consistency_PERMANENT ||
+      // If all assignments are to a single group, no need to enable one time
+      // randomization (which is more expensive to compute), since the result
+      // will be the same.
+      all_assignments_to_one_group_) {
+    return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
+  }
+  if (ShouldStudyUseLowEntropy()) {
+    return entropy_providers.low_entropy();
+  }
+  return entropy_providers.default_entropy();
 }
 
 int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {

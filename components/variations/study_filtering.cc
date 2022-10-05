@@ -249,9 +249,10 @@ const std::string& GetClientCountryForStudy(
   return base::EmptyString();
 }
 
-bool ShouldAddStudy(const Study& study,
+bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers) {
+  const Study& study = *processed_study.study();
   if (study.has_expiry_date()) {
     DVLOG(1) << "Filtered out study " << study.name()
              << " due to unsupported expiry_date field.";
@@ -266,7 +267,7 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
-    if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(study) &&
+    if (processed_study.ShouldStudyUseLowEntropy() &&
         layers.IsLayerUsingDefaultEntropy(study.layer().layer_id())) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to requiring a low entropy source yet being a member "
@@ -382,10 +383,8 @@ void FilterAndValidateStudies(const VariationsSeed& seed,
     if (!processed_study.Init(&study))
       continue;
 
-    if (!internal::ShouldAddStudy(*processed_study.study(), client_state,
-                                  layers)) {
+    if (!internal::ShouldAddStudy(processed_study, client_state, layers))
       continue;
-    }
 
     if (!base::Contains(created_studies, processed_study.study()->name())) {
       filtered_studies->push_back(processed_study);

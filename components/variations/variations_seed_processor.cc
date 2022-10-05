@@ -209,29 +209,6 @@ void CreateTrialWithFeatureConflictGroup(const std::string& trial_name) {
   trial->Activate();
 }
 
-bool ShouldSessionRandomizeStudy(const ProcessedStudy& processed_study) {
-  return !processed_study.study()->has_consistency() ||
-         processed_study.study()->consistency() !=
-             Study_Consistency_PERMANENT ||
-         // If all assignments are to a single group, no need to enable one time
-         // randomization (which is more expensive to compute), since the result
-         // will be the same.
-         processed_study.all_assignments_to_one_group();
-}
-
-const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
-    const ProcessedStudy& processed_study,
-    const EntropyProviders& entropy_providers) {
-  if (ShouldSessionRandomizeStudy(processed_study)) {
-    return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
-  }
-  if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(
-          *processed_study.study())) {
-    return entropy_providers.low_entropy();
-  }
-  return entropy_providers.default_entropy();
-}
-
 }  // namespace
 
 VariationsSeedProcessor::VariationsSeedProcessor() = default;
@@ -255,21 +232,6 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     CreateTrialFromStudy(study, override_callback, entropy_providers,
                          feature_list);
   }
-}
-
-// static
-bool VariationsSeedProcessor::ShouldStudyUseLowEntropy(const Study& study) {
-  // This should be kept in sync with the server-side layer validation
-  // code: https://go/chrome-variations-layer-validation
-  for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study::Experiment& experiment = study.experiment(i);
-    if (experiment.has_google_web_experiment_id() ||
-        experiment.has_google_web_trigger_experiment_id() ||
-        experiment.has_chrome_sync_experiment_id()) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void VariationsSeedProcessor::CreateTrialFromStudy(
@@ -362,7 +324,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     return;
 
   const auto& entropy_provider =
-      SelectEntropyProviderForStudy(processed_study, entropy_providers);
+      processed_study.SelectEntropyProviderForStudy(entropy_providers);
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(

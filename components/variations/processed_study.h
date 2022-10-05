@@ -32,6 +32,8 @@ enum class InvalidStudyReason {
 };
 
 class Study;
+class EntropyProviders;
+class VariationsLayers;
 
 // Wrapper over Study with extra information computed during pre-processing,
 // such as whether the study is expired and its total probability.
@@ -60,6 +62,13 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   const std::vector<std::string>& associated_features() const {
     return associated_features_;
   }
+
+  bool ShouldStudyUseLowEntropy() const;
+
+  // Returns the entropy provider that should be used to select a group for
+  // this study.
+  const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
+      const EntropyProviders& entropy_providers) const;
 
   // Gets the index of the experiment with the given |name|. Returns -1 if no
   // experiment is found.

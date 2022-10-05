@@ -48,18 +48,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   virtual ~VariationsSeedProcessor();
 
   // Creates field trials from the specified variations |seed|, filtered
-  // according to the client's |client_state|. Any study that should use low
-  // entropy will use |low_entropy_provider| for group selection. These studies
-  // are defined by ShouldStudyUseLowEntropy;
+  // according to the client's |client_state|.
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             const ClientFilterableState& client_state,
                             const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
                             base::FeatureList* feature_list);
-
-  // If the given |study| should alwoys use low entropy. This is true for any
-  // study that can send data to other Google properties.
-  static bool ShouldStudyUseLowEntropy(const Study& study);
 
  private:
   friend void CreateTrialFromStudyFuzzer(const Study& study);
@@ -69,9 +63,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // (Otherwise, forcing_flag and variation_id are mutually exclusive.)
   bool AllowVariationIdWithForcingFlag(const Study& study);
 
-  // Creates and registers a field trial from the |processed_study| data. Uses
-  // |low_entropy_provider| if ShouldStudyUseLowEntropy returns true for the
-  // study.
+  // Creates and registers a field trial from the |processed_study| data.
   void CreateTrialFromStudy(const ProcessedStudy& processed_study,
                             const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,

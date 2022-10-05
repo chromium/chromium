@@ -102,7 +102,7 @@ bool IsStudyExpired(const Study& study, const base::Time& date_time);
 // Returns whether |study| should be disabled according to the restriction
 // parameters in the |config|.
 COMPONENT_EXPORT(VARIATIONS)
-bool ShouldAddStudy(const Study& study,
+bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers);
 

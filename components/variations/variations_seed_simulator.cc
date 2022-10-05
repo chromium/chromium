@@ -198,10 +198,8 @@ VariationsSeedSimulator::PermanentStudyGroupChanged(
   const Study& study = *processed_study.study();
   DCHECK_EQ(Study_Consistency_PERMANENT, study.consistency());
 
-  const base::FieldTrial::EntropyProvider& entropy_provider =
-      VariationsSeedProcessor::ShouldStudyUseLowEntropy(study)
-          ? entropy_providers_.low_entropy()
-          : entropy_providers_.default_entropy();
+  const auto& entropy_provider =
+      processed_study.SelectEntropyProviderForStudy(entropy_providers_);
 
   const std::string simulated_group =
       SimulateGroupAssignment(entropy_provider, processed_study);
