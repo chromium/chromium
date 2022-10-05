@@ -1220,8 +1220,10 @@ bool VideoFrame::RequiresExternalSampler() const {
       (format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_YV12 ||
        format() == PIXEL_FORMAT_P016LE) &&
       NumTextures() == 1;
+  // The texture target can be 0 for Fuchsia.
   DCHECK(!result ||
-         mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES);
+         (mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES ||
+          mailbox_holder(0).texture_target == 0u));
   return result;
 }
 

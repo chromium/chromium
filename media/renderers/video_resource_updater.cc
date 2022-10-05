@@ -84,7 +84,8 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
   const size_t num_textures = frame.NumTextures();
 
   if (frame.RequiresExternalSampler()) {
-    DCHECK_EQ(target, static_cast<GLuint>(GL_TEXTURE_EXTERNAL_OES))
+    // The texture |target| can be 0 for Fuchsia.
+    DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
         << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
     DCHECK_EQ(num_textures, 1u);
     absl::optional<gfx::BufferFormat> buffer_format =
