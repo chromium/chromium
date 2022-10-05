@@ -160,8 +160,18 @@ int main(int argc, char** argv) {
   base::win::EnableHighDPISupport();
 #endif  // BUILDFLAG(IS_WIN)
 
+  // For ash chrome, it's using multiple X11 windows to host the browser.
+  // Also, {emulating|injecting} keyboard and mouse events happen at ozone
+  // level, not OS level. So it is fine to run tests in parallel.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
+  if (parallel_jobs == 0) {
+    parallel_jobs = 1;
+  }
+#else
   // Run interactive_ui_tests serially, they do not support running in parallel.
-  size_t parallel_jobs = 1U;
+  size_t parallel_jobs = 1;
+#endif
 
   InteractiveUITestSuiteRunner runner;
   InteractiveUITestLauncherDelegate delegate(&runner);
