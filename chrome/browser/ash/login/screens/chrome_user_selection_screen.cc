@@ -126,7 +126,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
   if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
       entry->value(base::Value::Type::LIST)) {
     for (const auto& locale_entry :
-         entry->value(base::Value::Type::LIST)->GetListDeprecated()) {
+         entry->value(base::Value::Type::LIST)->GetList()) {
       if (!locale_entry.is_string()) {
         NOTREACHED();
         new_recommended_locales.clear();
