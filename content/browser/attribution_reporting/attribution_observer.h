@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 
 namespace url {
@@ -50,10 +51,11 @@ class AttributionObserver : public base::CheckedObserver {
                                 const CreateReportResult& result) {}
 
   // Called when the source header registration json parser fails.
-  virtual void OnFailedSourceRegistration(const std::string& header_value,
-                                          base::Time source_time,
-                                          const url::Origin& reporting_origin) {
-  }
+  virtual void OnFailedSourceRegistration(
+      const std::string& header_value,
+      base::Time source_time,
+      const url::Origin& reporting_origin,
+      attribution_reporting::mojom::SourceRegistrationError) {}
 };
 
 }  // namespace content

@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace base {
@@ -75,7 +76,8 @@ class AttributionManager {
   // Called by `AttributionDataHostManagerImpl`.
   virtual void NotifyFailedSourceRegistration(
       const std::string& header_value,
-      const url::Origin& reporting_origin) = 0;
+      const url::Origin& reporting_origin,
+      attribution_reporting::mojom::SourceRegistrationError) = 0;
 
   // Deletes all data in storage for storage keys matching `filter`, between
   // `delete_begin` and `delete_end` time.

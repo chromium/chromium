@@ -19,3 +19,13 @@ enum SourceType {
   // A source that was not associated with a top-level navigation.
   kEvent = 1,
 };
+
+enum SourceRegistrationError {
+  kInvalidJson,
+  kRootWrongType,
+  kDestinationMissing,
+  kDestinationWrongType,
+  kDestinationUntrustworthy,
+  kFilterDataInvalid,
+  kAggregationKeysInvalid,
+};

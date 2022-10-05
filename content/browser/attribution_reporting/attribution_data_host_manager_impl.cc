@@ -14,12 +14,14 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -35,6 +37,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::mojom::SourceRegistrationError;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -264,8 +268,8 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
   if (header_value.empty()) {
-    attribution_manager_->NotifyFailedSourceRegistration(header_value,
-                                                         reporting_origin);
+    attribution_manager_->NotifyFailedSourceRegistration(
+        header_value, reporting_origin, SourceRegistrationError::kInvalidJson);
     return;
   }
 
@@ -709,23 +713,28 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   NavigationRedirectSourceRegistrations& registrations = it->second;
   registrations.pending_source_data--;
 
-  absl::optional<StorableSource> source;
-  if (result.has_value() && result->is_dict()) {
-    source = ParseSourceRegistration(
-        std::move(*result).TakeDict(), /*source_time*/ base::Time::Now(),
-        reporting_origin, registrations.source_origin,
-        AttributionSourceType::kNavigation);
+  base::expected<StorableSource, SourceRegistrationError> source =
+      base::unexpected(SourceRegistrationError::kInvalidJson);
+  if (result.has_value()) {
+    if (result->is_dict()) {
+      source = ParseSourceRegistration(
+          std::move(*result).TakeDict(), /*source_time*/ base::Time::Now(),
+          reporting_origin, registrations.source_origin,
+          AttributionSourceType::kNavigation);
+    } else {
+      source = base::unexpected(SourceRegistrationError::kRootWrongType);
+    }
   }
 
-  if (!source) {
-    attribution_manager_->NotifyFailedSourceRegistration(header_value,
-                                                         reporting_origin);
+  if (!source.has_value()) {
+    attribution_manager_->NotifyFailedSourceRegistration(
+        header_value, reporting_origin, source.error());
   }
 
   // An opaque destination means that navigation has not finished, delay
   // handling.
   if (registrations.destination.opaque()) {
-    if (source)
+    if (source.has_value())
       registrations.sources.push_back(std::move(*source));
     return;
   }
@@ -733,7 +742,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   // Process the registration if it was valid.
   // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
   // aren't matched.
-  if (source &&
+  if (source.has_value() &&
       source->common_info().DestinationSite() == registrations.destination) {
     attribution_manager_->HandleSource(std::move(*source));
   }

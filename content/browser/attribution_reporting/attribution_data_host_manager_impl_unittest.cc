@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_aggregation_keys.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -1381,8 +1382,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
-  EXPECT_CALL(mock_manager_,
-              NotifyFailedSourceRegistration("!!!invalid json", reporter));
+  EXPECT_CALL(
+      mock_manager_,
+      NotifyFailedSourceRegistration(
+          "!!!invalid json", reporter,
+          attribution_reporting::mojom::SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(

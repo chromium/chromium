@@ -129,7 +129,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                  base::OnceClosure done) override;
   void NotifyFailedSourceRegistration(
       const std::string& header_value,
-      const url::Origin& reporting_origin) override;
+      const url::Origin& reporting_origin,
+      attribution_reporting::mojom::SourceRegistrationError) override;
 
  private:
   friend class AttributionManagerImplTest;

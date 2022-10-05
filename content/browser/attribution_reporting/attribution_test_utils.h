@@ -35,6 +35,7 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -334,7 +335,8 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(void,
               NotifyFailedSourceRegistration,
               (const std::string& header_value,
-               const url::Origin& reporting_origin),
+               const url::Origin& reporting_origin,
+               attribution_reporting::mojom::SourceRegistrationError),
               (override));
 
   void AddObserver(AttributionObserver* observer) override;
@@ -350,8 +352,10 @@ class MockAttributionManager : public AttributionManager {
                         const SendResult& info);
   void NotifyTriggerHandled(const AttributionTrigger& trigger,
                             const CreateReportResult& result);
-  void NotifySourceRegistrationFailure(const std::string& header_value,
-                                       const url::Origin& reporting_origin);
+  void NotifySourceRegistrationFailure(
+      const std::string& header_value,
+      const url::Origin& reporting_origin,
+      attribution_reporting::mojom::SourceRegistrationError);
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager> manager);
 

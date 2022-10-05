@@ -24,6 +24,7 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_reporting_constants.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -357,12 +358,14 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
     const std::string& header_value,
     base::Time source_time,
-    const url::Origin& reporting_origin) {
+    const url::Origin& reporting_origin,
+    attribution_reporting::mojom::SourceRegistrationError error) {
   auto web_ui_log =
       attribution_internals::mojom::FailedSourceRegistration::New();
   web_ui_log->header_value = header_value;
   web_ui_log->time = source_time.ToJsTime();
   web_ui_log->reporting_origin = reporting_origin;
+  web_ui_log->error = error;
 
   for (auto& observer : observers_) {
     observer->OnFailedSourceRegistration(web_ui_log->Clone());

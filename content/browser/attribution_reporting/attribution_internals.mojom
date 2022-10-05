@@ -179,6 +179,7 @@ struct FailedSourceRegistration {
   double time;
   string header_value;
   url.mojom.Origin reporting_origin;
+  attribution_reporting.mojom.SourceRegistrationError error;
 };
 
 // Observer for events relevant to the attribution internals WebUI.

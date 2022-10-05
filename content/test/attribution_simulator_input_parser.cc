@@ -20,12 +20,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger_data.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_parser_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -253,14 +255,14 @@ class AttributionSimulatorInputParser {
     ParseAttributionEvent(
         source_dict, "Attribution-Reporting-Register-Source",
         base::BindLambdaForTesting([&](const base::Value::Dict& dict) {
-          absl::optional<StorableSource> storable_source =
-              ParseSourceRegistration(dict.Clone(), source_time,
-                                      std::move(reporting_origin),
-                                      std::move(source_origin), *source_type);
+          base::expected<StorableSource,
+                         attribution_reporting::mojom::SourceRegistrationError>
+              storable_source = ParseSourceRegistration(
+                  dict.Clone(), source_time, std::move(reporting_origin),
+                  std::move(source_origin), *source_type);
 
-          // TODO(apaseltiner): Report finer-grained errors.
-          if (!storable_source) {
-            *Error() << "invalid source";
+          if (!storable_source.has_value()) {
+            *Error() << storable_source.error();
             return;
           }
 

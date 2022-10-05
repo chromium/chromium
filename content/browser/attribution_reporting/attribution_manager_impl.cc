@@ -37,6 +37,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -888,11 +889,12 @@ void AttributionManagerImpl::NotifyReportsChanged(
 
 void AttributionManagerImpl::NotifyFailedSourceRegistration(
     const std::string& header_value,
-    const url::Origin& reporting_origin) {
+    const url::Origin& reporting_origin,
+    attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnFailedSourceRegistration(header_value, source_time,
-                                        reporting_origin);
+                                        reporting_origin, error);
   }
 }
 

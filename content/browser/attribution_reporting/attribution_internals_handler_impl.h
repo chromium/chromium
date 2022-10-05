@@ -81,9 +81,11 @@ class AttributionInternalsHandlerImpl
                     const SendResult& info) override;
   void OnTriggerHandled(const AttributionTrigger& trigger,
                         const CreateReportResult& result) override;
-  void OnFailedSourceRegistration(const std::string& header_value,
-                                  base::Time source_time,
-                                  const url::Origin& reporting_origin) override;
+  void OnFailedSourceRegistration(
+      const std::string& header_value,
+      base::Time source_time,
+      const url::Origin& reporting_origin,
+      attribution_reporting::mojom::SourceRegistrationError) override;
 
   raw_ptr<WebUI> web_ui_;
 

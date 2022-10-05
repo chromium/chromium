@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -44,6 +45,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::mojom::SourceRegistrationError;
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -353,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
           table.children[0].children.length >= 4 &&
-          table.children[0].children[1].innerText === 'Bad JSON' &&
+          table.children[0].children[1].innerText === 'invalid JSON' &&
           table.children[0].children[2].innerText === 'https://a.test' &&
           table.children[0].children[3].innerText === '!')  {
         obs.disconnect();
@@ -367,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
 
   manager()->NotifySourceRegistrationFailure(
-      "!", url::Origin::Create(GURL("https://a.test")));
+      "!", url::Origin::Create(GURL("https://a.test")),
+      SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 

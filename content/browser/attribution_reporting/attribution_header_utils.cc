@@ -11,8 +11,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_filter_data.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -25,6 +27,8 @@
 namespace content {
 
 namespace {
+
+using ::attribution_reporting::mojom::SourceRegistrationError;
 
 absl::optional<uint64_t> ParseDebugKey(const base::Value::Dict& dict) {
   const std::string* s = dict.FindString("debug_key");
@@ -47,7 +51,7 @@ int64_t ParsePriority(const base::Value::Dict& dict) {
 
 }  // namespace
 
-absl::optional<StorableSource> ParseSourceRegistration(
+base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
     base::Value::Dict registration,
     base::Time source_time,
     url::Origin reporting_origin,
@@ -55,13 +59,19 @@ absl::optional<StorableSource> ParseSourceRegistration(
     AttributionSourceType source_type) {
   url::Origin destination;
   {
-    const std::string* s = registration.FindString("destination");
+    const base::Value* v = registration.Find("destination");
+    if (!v)
+      return base::unexpected(SourceRegistrationError::kDestinationMissing);
+
+    const std::string* s = v->GetIfString();
     if (!s)
-      return absl::nullopt;
+      return base::unexpected(SourceRegistrationError::kDestinationWrongType);
 
     destination = url::Origin::Create(GURL(*s));
-    if (!network::IsOriginPotentiallyTrustworthy(destination))
-      return absl::nullopt;
+    if (!network::IsOriginPotentiallyTrustworthy(destination)) {
+      return base::unexpected(
+          SourceRegistrationError::kDestinationUntrustworthy);
+    }
   }
 
   uint64_t source_event_id = 0;
@@ -84,13 +94,13 @@ absl::optional<StorableSource> ParseSourceRegistration(
   absl::optional<AttributionFilterData> filter_data =
       AttributionFilterData::FromSourceJSON(registration.Find("filter_data"));
   if (!filter_data)
-    return absl::nullopt;
+    return base::unexpected(SourceRegistrationError::kFilterDataInvalid);
 
   absl::optional<AttributionAggregationKeys> aggregation_keys =
       AttributionAggregationKeys::FromJSON(
           registration.Find("aggregation_keys"));
   if (!aggregation_keys)
-    return absl::nullopt;
+    return base::unexpected(SourceRegistrationError::kAggregationKeysInvalid);
 
   return StorableSource(CommonSourceInfo(
       source_event_id, std::move(source_origin), std::move(destination),

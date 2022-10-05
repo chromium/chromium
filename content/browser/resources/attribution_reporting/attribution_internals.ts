@@ -11,7 +11,7 @@ import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
-import {ReportType, SourceType} from './attribution_reporting.mojom-webui.js';
+import {ReportType, SourceRegistrationError, SourceType} from './attribution_reporting.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value
@@ -661,8 +661,35 @@ class Log {
   constructor(mojo: FailedSourceRegistration) {
     this.time = new Date(mojo.time);
     this.json = mojo.headerValue;
-    this.failureReason = 'Bad JSON';
     this.reportingOrigin = originToText(mojo.reportingOrigin);
+
+    switch (mojo.error) {
+      case SourceRegistrationError.kInvalidJson:
+        this.failureReason = 'invalid JSON';
+        break;
+      case SourceRegistrationError.kRootWrongType:
+        this.failureReason =
+            'root JSON value has wrong type (should be a dictionary)';
+        break;
+      case SourceRegistrationError.kDestinationMissing:
+        this.failureReason = 'destination missing';
+        break;
+      case SourceRegistrationError.kDestinationWrongType:
+        this.failureReason = 'destination has wrong type (should be a string)';
+        break;
+      case SourceRegistrationError.kDestinationUntrustworthy:
+        this.failureReason = 'destination not potentially trustworthy';
+        break;
+      case SourceRegistrationError.kFilterDataInvalid:
+        this.failureReason = 'filter_data invalid';
+        break;
+      case SourceRegistrationError.kAggregationKeysInvalid:
+        this.failureReason = 'aggregation_keys invalid';
+        break;
+      default:
+        this.failureReason = 'unknown error';
+        break;
+    }
   }
 }
 
