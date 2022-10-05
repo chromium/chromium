@@ -233,7 +233,8 @@ class Remote {
   // default SequencedTaskRunner (i.e. base::SequencedTaskRunnerHandle::Get() at
   // the time of this call). Must only be called on an unbound Remote.
   [[nodiscard]] PendingReceiver<Interface> BindNewPipeAndPassReceiver() {
-    DCHECK(!is_bound()) << "Remote is already bound";
+    DCHECK(!is_bound()) << "Remote for " << Interface::Name_
+                        << " is already bound";
     return BindNewPipeAndPassReceiver(nullptr);
   }
 
@@ -243,7 +244,8 @@ class Remote {
   // owns this Remote.
   [[nodiscard]] PendingReceiver<Interface> BindNewPipeAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    DCHECK(!is_bound()) << "Remote is already bound";
+    DCHECK(!is_bound()) << "Remote for " << Interface::Name_
+                        << " is already bound";
     MessagePipe pipe;
     Bind(PendingRemote<Interface>(std::move(pipe.handle0), 0),
          std::move(task_runner));
@@ -256,7 +258,8 @@ class Remote {
   // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
   // be called on an unbound Remote.
   void Bind(PendingRemote<Interface> pending_remote) {
-    DCHECK(!is_bound()) << "Remote is already bound";
+    DCHECK(!is_bound()) << "Remote for " << Interface::Name_
+                        << " is already bound";
     DCHECK(pending_remote.is_valid());
     Bind(std::move(pending_remote), nullptr);
   }
@@ -267,7 +270,8 @@ class Remote {
   // |task_runner| must run tasks on the same sequence that owns this Remote.
   void Bind(PendingRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    DCHECK(!is_bound()) << "Remote is already bound";
+    DCHECK(!is_bound()) << "Remote for " << Interface::Name_
+                        << " is already bound";
     if (!pending_remote) {
       reset();
       return;

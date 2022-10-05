@@ -183,7 +183,8 @@ class AssociatedRemote {
   [[nodiscard]] PendingAssociatedReceiver<Interface>
   BindNewEndpointAndPassReceiver(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     ScopedInterfaceEndpointHandle remote_handle;
     ScopedInterfaceEndpointHandle receiver_handle;
@@ -201,7 +202,8 @@ class AssociatedRemote {
   // SequencedTaskRunner.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedRemote is already bound";
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     if (!pending_remote) {
       reset();
@@ -231,7 +233,8 @@ class AssociatedRemote {
   // endpoints in tests.
   [[nodiscard]] PendingAssociatedReceiver<Interface>
   BindNewEndpointAndPassDedicatedReceiver() {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+    DCHECK(!is_bound()) << "AssociatedRemote for " << Interface::Name_
+                        << " is already bound";
 
     PendingAssociatedReceiver<Interface> receiver =
         BindNewEndpointAndPassReceiver();

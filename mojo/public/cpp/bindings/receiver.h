@@ -134,7 +134,8 @@ class Receiver {
   // |task_runner| must run tasks on the same sequence that owns this Receiver.
   [[nodiscard]] PendingRemote<Interface> BindNewPipeAndPassRemote(
       scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    DCHECK(!is_bound()) << "Receiver is already bound";
+    DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
+                        << " is already bound";
     PendingRemote<Interface> remote;
     Bind(remote.InitWithNewPipeAndPassReceiver(), std::move(task_runner));
     return remote;
@@ -155,7 +156,8 @@ class Receiver {
   // disconnection notifications on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of this call).
   void Bind(PendingReceiver<Interface> pending_receiver) {
-    DCHECK(!is_bound()) << "Receiver is already bound";
+    DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
+                        << " is already bound";
     Bind(std::move(pending_receiver), nullptr);
   }
 
@@ -166,7 +168,8 @@ class Receiver {
   // Receiver.
   void Bind(PendingReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    DCHECK(!is_bound()) << "Receiver is already bound";
+    DCHECK(!is_bound()) << "Receiver for " << Interface::Name_
+                        << " is already bound";
     if (pending_receiver) {
       internal_state_.Bind(pending_receiver.internal_state(),
                            std::move(task_runner));

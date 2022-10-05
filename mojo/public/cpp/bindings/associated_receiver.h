@@ -182,7 +182,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // current SequencedTaskRunner.
   [[nodiscard]] PendingAssociatedRemote<Interface> BindNewEndpointAndPassRemote(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+    DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
+                        << " is already bound";
 
     PendingAssociatedRemote<Interface> remote;
     Bind(remote.InitWithNewEndpointAndPassReceiver(), std::move(task_runner));
@@ -196,7 +197,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // current SequencedTaskRunner.
   void Bind(PendingAssociatedReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+    DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
+                        << " is already bound";
 
     if (pending_receiver) {
       BindImpl(pending_receiver.PassHandle(), &stub_,
@@ -221,7 +223,8 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // endpoints in tests.
   [[nodiscard]] PendingAssociatedRemote<Interface>
   BindNewEndpointAndPassDedicatedRemote() {
-    DCHECK(!is_bound()) << "AssociatedReceiver is already bound";
+    DCHECK(!is_bound()) << "AssociatedReceiver for " << Interface::Name_
+                        << " is already bound";
 
     PendingAssociatedRemote<Interface> remote = BindNewEndpointAndPassRemote();
     remote.EnableUnassociatedUsage();
