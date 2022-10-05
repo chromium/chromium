@@ -2253,9 +2253,8 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageTearDown) {
 
 // This test makes sure the browser process does not crash if browser is shut
 // down while an error page is being shown in guest.
-// Flaky. http://crbug.com/627962.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest,
-                       DISABLED_ErrorPageTearDownOnBrowserShutdown) {
+                       ErrorPageTearDownOnBrowserShutdown) {
   SSLTestHelper();
 
   // Now close the app while error page being shown in guest.
