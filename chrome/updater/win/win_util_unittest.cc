@@ -178,6 +178,13 @@ TEST(WinUtil, RunDeElevated_Exe) {
   EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 }
 
+TEST(WinUtil, RunDeElevated_Url) {
+  if (!::IsUserAnAdmin() || !IsUACOn())
+    return;
+
+  EXPECT_HRESULT_SUCCEEDED(RunDeElevated(L"https://www.chrome.com/", {}));
+}
+
 TEST(WinUtil, GetOSVersion) {
   absl::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
   ASSERT_NE(rtl_os_version, absl::nullopt);
