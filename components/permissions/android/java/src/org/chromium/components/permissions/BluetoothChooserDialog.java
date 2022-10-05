@@ -208,7 +208,7 @@ public class BluetoothChooserDialog
                 mDelegate.createAutocompleteSchemeClassifier();
 
         OmniboxUrlEmphasizer.emphasizeUrl(origin, mContext, autocompleteSchemeClassifier,
-                mSecurityLevel, false, useDarkColors, true);
+                mSecurityLevel, useDarkColors, true);
         autocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =

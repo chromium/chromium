@@ -54,7 +54,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
-import java.net.URISyntaxException;
 import java.util.Objects;
 
 /**
@@ -378,13 +377,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         SpannableStringBuilder spannableDisplayText = new SpannableStringBuilder(displayText);
         if (mNativeLocationBarModelAndroid != 0 && spannableDisplayText.length() > 0
                 && shouldEmphasizeUrl()) {
-            boolean isInternalPage = false;
-            try {
-                isInternalPage = UrlUtilities.isInternalScheme(new URI(url));
-            } catch (URISyntaxException e) {
-                // Ignore as this only is for applying color
-            }
-
             final @BrandedColorScheme int brandedColorScheme =
                     OmniboxResourceProvider.getBrandedColorScheme(
                             mContext, isIncognito(), getPrimaryColor());
@@ -415,7 +407,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                     return UrlBarData.forUrlAndText(url, cachedSpannableDisplayText, editingText);
                 } else {
                     OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
-                            autocompleteSchemeClassifier, getSecurityLevel(), isInternalPage,
+                            autocompleteSchemeClassifier, getSecurityLevel(),
                             shouldEmphasizeHttpsScheme(), nonEmphasizedColor, emphasizedColor,
                             dangerColor, secureColor);
                     if (mOptimizationsEnabled) {

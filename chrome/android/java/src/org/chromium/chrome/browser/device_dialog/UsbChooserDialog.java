@@ -70,8 +70,8 @@ public class UsbChooserDialog implements ItemChooserDialog.ItemSelectedCallback 
         ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                 new ChromeAutocompleteSchemeClassifier(mProfile);
         OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, activity,
-                chromeAutocompleteSchemeClassifier, securityLevel, false /* isInternalPage */,
-                useDarkColors, true /* emphasizeHttpsScheme */);
+                chromeAutocompleteSchemeClassifier, securityLevel, useDarkColors,
+                true /* emphasizeHttpsScheme */);
         chromeAutocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =

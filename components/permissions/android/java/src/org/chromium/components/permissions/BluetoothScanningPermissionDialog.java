@@ -115,8 +115,7 @@ public class BluetoothScanningPermissionDialog {
         AutocompleteSchemeClassifier autocompleteSchemeClassifier =
                 mDelegate.createAutocompleteSchemeClassifier();
         OmniboxUrlEmphasizer.emphasizeUrl(originSpannableString, mContext,
-                autocompleteSchemeClassifier, securityLevel,
-                /*isInternalPage=*/false, useDarkColors,
+                autocompleteSchemeClassifier, securityLevel, useDarkColors,
                 /*emphasizeScheme=*/true);
         autocompleteSchemeClassifier.destroy();
 

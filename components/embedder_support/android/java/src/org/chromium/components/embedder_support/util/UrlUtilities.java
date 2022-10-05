@@ -121,6 +121,13 @@ public class UrlUtilities {
     }
 
     /**
+     * Returns whether the scheme represented by the given string is for a internal chrome page.
+     */
+    public static boolean isInternalScheme(String scheme) {
+        return INTERNAL_SCHEMES.contains(scheme);
+    }
+
+    /**
      * @param url A URL.
      *
      * @return Whether the URL's scheme is HTTP or HTTPS.

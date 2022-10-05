@@ -87,8 +87,8 @@ class ContextMenuHeaderCoordinator {
             ChromeAutocompleteSchemeClassifier chromeAutocompleteSchemeClassifier =
                     new ChromeAutocompleteSchemeClassifier(profile);
             OmniboxUrlEmphasizer.emphasizeUrl(spannableUrl, activity,
-                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, false,
-                    useDarkColors, false);
+                    chromeAutocompleteSchemeClassifier, ConnectionSecurityLevel.NONE, useDarkColors,
+                    false);
             chromeAutocompleteSchemeClassifier.destroy();
             url = spannableUrl;
         }

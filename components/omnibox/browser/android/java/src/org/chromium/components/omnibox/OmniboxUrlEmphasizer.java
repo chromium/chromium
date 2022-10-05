@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 
 import java.util.Locale;
@@ -140,22 +141,20 @@ public class OmniboxUrlEmphasizer {
 
     /**
      * Modifies the given URL to emphasize the host and scheme.
-     *
-     * @param url The URL spannable to add emphasis to. This variable is
+     *  @param url The URL spannable to add emphasis to. This variable is
      *            modified.
      * @param context Context to resolve colors against.
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier used to emphasize the
      *         given URL.
      * @param securityLevel A valid ConnectionSecurityLevel for the specified
      *                      web contents.
-     * @param isInternalPage Whether this page is an internal Chrome page.
      * @param useDarkForegroundColors Whether the text colors should be dark (i.e.
      *                      appropriate for use on a light background).
      * @param emphasizeScheme Whether the scheme should be emphasized.
      */
     public static void emphasizeUrl(Spannable url, Context context,
             AutocompleteSchemeClassifier autocompleteSchemeClassifier, int securityLevel,
-            boolean isInternalPage, boolean useDarkForegroundColors, boolean emphasizeScheme) {
+            boolean useDarkForegroundColors, boolean emphasizeScheme) {
         final @ColorRes int nonEmphasizedColorId = useDarkForegroundColors
                 ? R.color.url_emphasis_non_emphasized_text
                 : R.color.url_emphasis_light_non_emphasized_text;
@@ -167,24 +166,21 @@ public class OmniboxUrlEmphasizer {
         final @ColorRes int secureColorId =
                 useDarkForegroundColors ? R.color.default_green_dark : R.color.default_green_light;
 
-        emphasizeUrl(url, autocompleteSchemeClassifier, securityLevel, isInternalPage,
-                emphasizeScheme, context.getColor(nonEmphasizedColorId),
-                context.getColor(emphasizedColorId), context.getColor(dangerColorId),
-                context.getColor(secureColorId));
+        emphasizeUrl(url, autocompleteSchemeClassifier, securityLevel, emphasizeScheme,
+                context.getColor(nonEmphasizedColorId), context.getColor(emphasizedColorId),
+                context.getColor(dangerColorId), context.getColor(secureColorId));
     }
 
     /**
      * Modifies the given URL to emphasize the host and scheme.
      * TODO(sashab): Make this take an EmphasizeComponentsResponse object to
      *               prevent calling parseForEmphasizeComponents() again.
-     *
-     * @param url The URL spannable to add emphasis to. This variable is
+     *  @param url The URL spannable to add emphasis to. This variable is
      *            modified.
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier used to emphasize the
      *         given URL.
      * @param securityLevel A valid ConnectionSecurityLevel for the specified
      *                      web contents.
-     * @param isInternalPage Whether this page is an internal Chrome page.
      * @param emphasizeScheme Whether the scheme should be emphasized.
      * @param nonEmphasizedColor Color of the non-emphasized components.
      * @param emphasizedColor Color of the emphasized components.
@@ -193,7 +189,7 @@ public class OmniboxUrlEmphasizer {
      */
     public static void emphasizeUrl(Spannable url,
             AutocompleteSchemeClassifier autocompleteSchemeClassifier, int securityLevel,
-            boolean isInternalPage, boolean emphasizeScheme, @ColorInt int nonEmphasizedColor,
+            boolean emphasizeScheme, @ColorInt int nonEmphasizedColor,
             @ColorInt int emphasizedColor, @ColorInt int dangerColor, @ColorInt int secureColor) {
         String urlString = url.toString();
         EmphasizeComponentsResponse emphasizeResponse =
@@ -204,6 +200,8 @@ public class OmniboxUrlEmphasizer {
 
         int startHostIndex = emphasizeResponse.hostStart;
         int endHostIndex = emphasizeResponse.hostStart + emphasizeResponse.hostLength;
+        boolean isInternalPage =
+                UrlUtilities.isInternalScheme(emphasizeResponse.extractScheme(urlString));
 
         // Format the scheme, if present, based on the security level.
         ForegroundColorSpan span;
