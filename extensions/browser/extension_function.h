@@ -240,11 +240,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Retrieves any error string from the function.
   virtual const std::string& GetError() const;
 
-  virtual void SetBadMessage();
+  void SetBadMessage();
 
   // Specifies the name of the function. A long-lived string (such as a string
   // literal) must be provided.
-  virtual void SetName(const char* name);
+  void SetName(const char* name);
   const char* name() const { return name_; }
 
   int context_id() const { return context_id_; }
