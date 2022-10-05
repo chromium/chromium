@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 
 namespace ash {
 

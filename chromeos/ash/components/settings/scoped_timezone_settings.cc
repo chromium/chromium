@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/settings/scoped_timezone_settings.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 
 #include <string>
 
-#include "ash/components/settings/timezone_settings.h"
 #include "base/check.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 namespace ash::system {
 namespace {

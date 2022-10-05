@@ -15,7 +15,7 @@
 namespace ash {
 
 namespace {
-// This list is from "ash/components/settings/timezone_settings.cc"
+// This list is from "chromeos/ash/components/settings/timezone_settings.cc".
 const char* kAllTimeZones[] = {"Pacific/Midway",
                                "Pacific/Honolulu",
                                "America/Anchorage",

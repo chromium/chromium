@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "ash/components/settings/timezone_settings_helper.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/settings/timezone_settings_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -17,15 +17,9 @@ using icu::TimeZone;
 using icu::UnicodeString;
 
 const char* kTimeZones[] = {
-    "America/Los_Angeles",
-    "America/Vancouver",
-    "America/Chicago",
-    "America/Winnipeg",
-    "America/Mexico_City",
-    "America/Buenos_Aires",
-    "Asia/Ho_Chi_Minh",
-    "Asia/Seoul",
-    "Europe/Athens",
+    "America/Los_Angeles", "America/Vancouver",   "America/Chicago",
+    "America/Winnipeg",    "America/Mexico_City", "America/Buenos_Aires",
+    "Asia/Ho_Chi_Minh",    "Asia/Seoul",          "Europe/Athens",
     "Asia/Ulaanbaatar",
 };
 

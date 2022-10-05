@@ -8,7 +8,6 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_utils.h"

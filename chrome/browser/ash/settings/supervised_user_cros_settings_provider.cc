@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 

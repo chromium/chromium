@@ -558,7 +558,6 @@ static_library("test_support") {
     public_deps += [
       "//ash",
       "//ash:test_support",
-      "//ash/components/settings",
       "//ash/components/tpm",
       "//ash/constants",
       "//ash/public/cpp:test_support",
@@ -568,6 +567,7 @@ static_library("test_support") {
       "//chromeos/ash/components/dbus/session_manager",
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/components/install_attributes:test_support",
+      "//chromeos/ash/components/settings",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/login/login_state",
       "//components/exo",
@@ -10854,11 +10854,11 @@ if (is_chromeos_ash) {
     ]
     deps = [
       ":consistency_golden_proto",
-      "//ash/components/settings",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/ash",
+      "//chromeos/ash/components/settings",
       "//components/exo/wayland:weston_test_stub",
       "//testing/gmock",
       "//testing/gtest",

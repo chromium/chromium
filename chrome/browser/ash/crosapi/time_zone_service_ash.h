@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

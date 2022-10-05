@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

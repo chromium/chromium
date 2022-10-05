@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -21,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"

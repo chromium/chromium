@@ -30,7 +30,7 @@ std::unique_ptr<icu::TimeZone> CreateTimezone(const char* timezone_id) {
 }
 
 std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
-  return chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
+  return system::TimezoneSettings::GetTimezoneID(timezone);
 }
 
 // Base test fixture.

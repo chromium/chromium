@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/mock_report_queue.h"

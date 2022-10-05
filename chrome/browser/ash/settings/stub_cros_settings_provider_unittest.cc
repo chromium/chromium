@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/values.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

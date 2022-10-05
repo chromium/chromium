@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/configured_sampler.h"
 #include "components/reporting/metrics/metric_data_collector.h"

@@ -9,12 +9,12 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/settings/timezone_settings.h"
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

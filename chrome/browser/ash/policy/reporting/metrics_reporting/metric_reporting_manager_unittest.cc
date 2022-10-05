@@ -9,11 +9,11 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/metrics/event_driven_telemetry_sampler_pool.h"
 #include "components/reporting/metrics/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fake_reporting_settings.h"

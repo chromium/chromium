@@ -7,7 +7,7 @@ import("//testing/test.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("settings") {
-  defines = [ "IS_ASH_SETTINGS_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SETTINGS_IMPL" ]
   deps = [
     "//ash/constants",
     "//base",

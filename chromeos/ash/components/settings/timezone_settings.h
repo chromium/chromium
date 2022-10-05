@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
-#define ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
+#define CHROMEOS_ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
 
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-namespace ash {
-namespace system {
+namespace ash::system {
 
 // Canonical name of UTC timezone.
-COMPONENT_EXPORT(ASH_SETTINGS) extern const char kUTCTimezoneName[];
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+extern const char kUTCTimezoneName[];
 
 // This interface provides access to Chrome OS timezone settings.
-class COMPONENT_EXPORT(ASH_SETTINGS) TimezoneSettings {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) TimezoneSettings {
  public:
   class Observer {
    public:
     // Called when the timezone has changed. |timezone| is non-null.
     virtual void TimezoneChanged(const icu::TimeZone& timezone) = 0;
+
    protected:
     virtual ~Observer();
   };
@@ -49,17 +50,14 @@ class COMPONENT_EXPORT(ASH_SETTINGS) TimezoneSettings {
   static std::u16string GetTimezoneID(const icu::TimeZone& timezone);
 
  protected:
-  virtual ~TimezoneSettings() {}
+  virtual ~TimezoneSettings() = default;
 };
 
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos {
-namespace system {
+namespace chromeos::system {
 using ::ash::system::TimezoneSettings;
-}  // namespace system
-}  // namespace chromeos
+}
 
-#endif  // ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_

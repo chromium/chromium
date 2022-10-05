@@ -39,7 +39,6 @@
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/ash_interfaces.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -50,6 +49,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
 #endif

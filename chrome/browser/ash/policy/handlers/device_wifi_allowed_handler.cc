@@ -6,11 +6,11 @@
 
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "base/bind.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace policy {

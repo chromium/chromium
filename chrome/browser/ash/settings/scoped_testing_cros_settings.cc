@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 
-#include "ash/components/settings/system_settings_provider.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/system_settings_provider.h"
 
 namespace ash {
 

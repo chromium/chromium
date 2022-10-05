@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 namespace base {
 class Clock;

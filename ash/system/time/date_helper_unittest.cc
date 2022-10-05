@@ -4,10 +4,10 @@
 
 #include "ash/system/time/date_helper.h"
 
-#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 
 namespace ash {
 

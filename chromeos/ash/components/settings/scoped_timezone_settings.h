@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_
-#define ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_
+#define CHROMEOS_ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_
 
 #include <string>
 
@@ -13,7 +13,8 @@ namespace ash::system {
 
 // Helper class to temporary change current timezone in tests and return it back
 // to the original value on destruction.
-class COMPONENT_EXPORT(ASH_SETTINGS) ScopedTimezoneSettings {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
+    ScopedTimezoneSettings {
  public:
   ScopedTimezoneSettings();
   explicit ScopedTimezoneSettings(const std::u16string& new_timezone_id);
@@ -32,4 +33,4 @@ class COMPONENT_EXPORT(ASH_SETTINGS) ScopedTimezoneSettings {
 
 }  // namespace ash::system
 
-#endif  // ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SETTINGS_SCOPED_TIMEZONE_SETTINGS_H_

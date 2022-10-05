@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/components/settings",
+  "+chromeos/ash/components/settings",
   "+mojo/public/cpp/bindings",
   "+ui/gfx/win",
 ]

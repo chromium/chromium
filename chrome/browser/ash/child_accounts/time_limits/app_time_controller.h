@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/timezone_settings.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_notification_delegate.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace ash {
 

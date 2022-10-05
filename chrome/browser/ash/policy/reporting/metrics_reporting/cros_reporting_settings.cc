@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 
-#include "ash/components/settings/cros_settings_provider.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 
 namespace reporting {
 base::CallbackListSubscription CrosReportingSettings::AddSettingsObserver(

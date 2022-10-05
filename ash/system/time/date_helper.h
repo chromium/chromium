@@ -8,11 +8,11 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"

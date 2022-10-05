@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 
 namespace virtual_machines {
 

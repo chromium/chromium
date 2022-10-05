@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/metrics/metrics_service.h"
 #include "components/signin/public/identity_manager/account_info.h"

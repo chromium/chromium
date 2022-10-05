@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

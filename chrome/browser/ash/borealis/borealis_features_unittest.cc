@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <limits>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"

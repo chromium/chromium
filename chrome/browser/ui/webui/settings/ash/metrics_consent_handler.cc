@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/ash/metrics_consent_handler.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
 

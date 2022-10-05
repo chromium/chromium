@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 
 #include <stddef.h>
 
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/timezone_settings_helper.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,6 +23,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/settings/timezone_settings_helper.h"
 
 namespace ash {
 namespace system {
@@ -217,8 +217,7 @@ std::string GetTimezoneIDAsString() {
 
   // Look at kTimezoneSymlink, see which timezone we are symlinked to.
   char buf[256];
-  const ssize_t len = readlink(kTimezoneSymlink, buf,
-                               sizeof(buf)-1);
+  const ssize_t len = readlink(kTimezoneSymlink, buf, sizeof(buf) - 1);
   if (len == -1) {
     LOG(ERROR) << "GetTimezoneID: Cannot read timezone symlink "
                << kTimezoneSymlink;
@@ -229,8 +228,7 @@ std::string GetTimezoneIDAsString() {
   // Remove kTimezoneFilesDir from the beginning.
   if (!base::StartsWith(timezone, kTimezoneFilesDir,
                         base::CompareCase::SENSITIVE)) {
-    LOG(ERROR) << "GetTimezoneID: Timezone symlink is wrong "
-               << timezone;
+    LOG(ERROR) << "GetTimezoneID: Timezone symlink is wrong " << timezone;
     return std::string();
   }
 
@@ -418,8 +416,8 @@ TimezoneSettingsImpl::TimezoneSettingsImpl() {
     LOG(ERROR) << "Got an empty string for timezone, default to '" << id;
   }
 
-  timezone_.reset(icu::TimeZone::createTimeZone(
-      icu::UnicodeString::fromUTF8(id)));
+  timezone_.reset(
+      icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(id)));
 
   // Store a known timezone equivalent to id in |timezone_|.
   const icu::TimeZone* known_timezone = GetKnownTimezoneOrNull(*timezone_);

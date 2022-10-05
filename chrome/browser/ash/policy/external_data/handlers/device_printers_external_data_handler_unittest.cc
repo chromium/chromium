@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/bulk_printers_calculator.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_namespace.h"

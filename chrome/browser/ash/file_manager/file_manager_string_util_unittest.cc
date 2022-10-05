@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
-#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/rtl.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class FileManagerStringUtilTest : public ChromeAshTestBase {

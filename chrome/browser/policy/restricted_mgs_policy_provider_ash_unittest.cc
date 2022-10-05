@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"

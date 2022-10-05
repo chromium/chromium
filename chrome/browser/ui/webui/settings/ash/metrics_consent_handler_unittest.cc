@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/ash/metrics_consent_handler.h"
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
@@ -24,6 +23,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"

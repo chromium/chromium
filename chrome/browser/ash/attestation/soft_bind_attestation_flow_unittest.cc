@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
@@ -20,6 +19,7 @@
 #include "chromeos/ash/components/dbus/attestation/attestation.pb.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_certificate.h"

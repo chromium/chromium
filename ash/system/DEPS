@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/ash/components/settings",
   "+components/account_id",
   "+components/device_event_log/device_event_log.h",
   "+components/global_media_controls",

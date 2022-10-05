@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crosapi/extension_info_private_ash.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -29,6 +28,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/metrics/metrics_service.h"

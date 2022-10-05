@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/crd_event.pb.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "remoting/host/chromeos/host_event_reporter_impl.h"
 

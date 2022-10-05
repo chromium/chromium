@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/settings/cros_settings_names.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
