@@ -4529,6 +4529,13 @@
       }
      },
      "popups": {
+      "popup-dialog-crash.tentative.html": [
+       "01b8a05318d2a8904bcd25c4a94aebeb7211607c",
+       [
+        null,
+        {}
+       ]
+      ],
       "popup-manual-crash.tentative.html": [
        "b3430a451333c4ce8a6b808472f4da83b14b2dd1",
        [
@@ -99740,6 +99747,19 @@
         {}
        ]
       ],
+      "dynamic-change-paint-fully-obscuring-child-001.html": [
+       "781a11ca40a36b4ce5d99c6c0b665ee2ef4d4e2c",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "element-reassigned-to-skipped-slot.html": [
        "a47b46388dfe73cc01e0e8384c0ccc7d87c0390a",
        [
@@ -121473,7 +121493,7 @@
        ]
       ],
       "grid-baseline-align-cycles-001.html": [
-       "c00a9ab56e4ca91077524770d5029369a6e987b6",
+       "b6b04144ed9e2196da98b69310f1e62c6c1ef966",
        [
         null,
         [
@@ -241878,6 +241898,19 @@
         {}
        ]
       ],
+      "popup-dialog-appearance.tentative.html": [
+       "57afa91766563646b29816ac1ec9c2c0fb8a600f",
+       [
+        null,
+        [
+         [
+          "/html/semantics/popups/popup-dialog-appearance-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "popup-hidden-display.tentative.html": [
        "acc3c62d114c1c257f89b2b20c4f22590f280425",
        [
@@ -253014,7 +253047,7 @@
      ]
     },
     "web-identity": [
-     "6f50363785538924af15210d27b607cf7bbd917b",
+     "f3a99e2f397f567096fb02bc73ea16e3c1bfca6a",
      []
     ]
    },
@@ -258887,11 +258920,11 @@
       []
      ],
      "accounts.py": [
-      "ffe0d31716ca48bd574ca8ca989d71cfb603a1ff",
+      "e9828cfbb103c4873120fe59a9c0a10aee69e526",
       []
      ],
      "client_metadata.py": [
-      "51393c5dd4604304fcb946f83cd8170d9cca7073",
+      "e9ae7221fb04211d81262e3a65e833c49c682bc7",
       []
      ],
      "echoing-nester.html": [
@@ -258957,7 +258990,7 @@
       []
      ],
      "token.py": [
-      "e9b07767c8d9cb430a77e34f2a7669117fa24fa2",
+      "1ce4348500cb1c7b4c66ca58ff6cab787c6fef98",
       []
      ]
     }
@@ -272225,7 +272258,7 @@
       []
      ],
      "flexbox-align-self-baseline-horiz-006-ref.xhtml": [
-      "50036ff6d271ca2db4ef779ebf4429907a8aec2e",
+      "248ca88a2f2dfb1627bf99b06585f3e2c6986dae",
       []
      ],
      "flexbox-align-self-baseline-horiz-007-ref.xhtml": [
@@ -282227,7 +282260,7 @@
         []
        ],
        "grid-baseline-align-cycles-001-ref.html": [
-        "ca1097e171e8f4b18fd72c1e7614bff860b2cb36",
+        "e8932cba9f8a37adc5e6904c64b771ac4bb94f62",
         []
        ],
        "grid-baseline-justify-001-ref.html": [
@@ -282277,11 +282310,11 @@
         []
        ],
        "grid-self-baseline-horiz-002-ref.html": [
-        "a99656f94e2f3947dc9e2d1e8d479f534d661ecf",
+        "735ea557868ab9e2f4c4bcd3b2b8eebd60f9d150",
         []
        ],
        "grid-self-baseline-horiz-003-ref.html": [
-        "58f68d5b258398158d7e47b1cfa6e5c271f4bbe7",
+        "fd966d16a152cf0748f390acc9f651c3124651ea",
         []
        ],
        "grid-self-baseline-horiz-004-ref.html": [
@@ -282289,7 +282322,7 @@
         []
        ],
        "grid-self-baseline-horiz-005-ref.html": [
-        "5e2f6da9d5f475dff69f2b6763d042570a9273e7",
+        "c38b6c76115724d05b284c197b9012bcff86c9d9",
         []
        ],
        "grid-self-baseline-horiz-006-ref.html": [
@@ -282305,7 +282338,7 @@
         []
        ],
        "grid-self-baseline-vertical-lr-002-ref.html": [
-        "1aef905f16bc8041814603ca31cd3c362e8cda04",
+        "9a7a53969d3aad4e0453b104a536387c24fc0487",
         []
        ],
        "grid-self-baseline-vertical-lr-003-ref.html": [
@@ -282313,11 +282346,11 @@
         []
        ],
        "grid-self-baseline-vertical-lr-004-ref.html": [
-        "cd6569ffbfd6851d7494f3c1af141429905a056d",
+        "1ce8267ee7d3a381116afd1dcd62c9bdc40c71c5",
         []
        ],
        "grid-self-baseline-vertical-lr-005-ref.html": [
-        "571a77d3431bb52be8b7b140eafa2ecb89cd1d1d",
+        "fb68579d9aef3c511550337204383649840b6942",
         []
        ],
        "grid-self-baseline-vertical-lr-006-ref.html": [
@@ -282333,19 +282366,19 @@
         []
        ],
        "grid-self-baseline-vertical-rl-002-ref.html": [
-        "3be7c42ee5dabe379621b57a3b27a90a717c1021",
+        "ef6b45c9c97e91620982683da957d49a817b7422",
         []
        ],
        "grid-self-baseline-vertical-rl-003-ref.html": [
-        "03307a601de91b703b6a564e962e712add6e0f11",
+        "b72fc8817a4986cae1b0143f74ddc9cb58ef0366",
         []
        ],
        "grid-self-baseline-vertical-rl-004-ref.html": [
-        "2e3e032ac8ca7430a7de88d78ecd44afcd60f8bb",
+        "bab359226660df446219a578da60da73f2855e00",
         []
        ],
        "grid-self-baseline-vertical-rl-005-ref.html": [
-        "067129b8dc9afdac338df0d00798fa8782240a08",
+        "da72a5f0179f01204c49e1fcaa62f5b16a60918d",
         []
        ],
        "grid-self-baseline-vertical-rl-006-ref.html": [
@@ -310761,7 +310794,7 @@
     },
     "http-cache": {
      "README.md": [
-      "a32d500a7ef07f8536e7cf508dd45a6117472b0b",
+      "512c422e1087c5ef726b24242b7bfc7af4e43170",
       []
      ],
      "basic-auth-cache-test-ref.html": [
@@ -314090,7 +314123,7 @@
       "remote-context-helper-tests": {
        "resources": {
         "test-helper.js": [
-         "95d516e2752803c8de2f137de1b11f8d29405c2b",
+         "5f8e07711cbcaadece8fb40ea6219c258e52faf7",
          []
         ],
         "test-script.js": [
@@ -326029,6 +326062,10 @@
       ],
       "popup-defaultopen-display-ref.tentative.html": [
        "d6e4279a5402621b4e6b1d0816e2bd96951abbb8",
+       []
+      ],
+      "popup-dialog-appearance-ref.tentative.html": [
+       "41681c75495b11c977642c7658c77842099041db",
        []
       ],
       "popup-hidden-display-ref.tentative.html": [
@@ -343541,7 +343578,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "28e5c9f376cf2f6a6cd39c8d603aad7096e0d7ad",
+      "5d95ea9e2de4359c42a2557c9b922dec929fe80e",
       []
      ]
     }
@@ -350600,6 +350637,10 @@
       "9d9e0b8ac5ccdff2fd4358766fa219979b1ad589",
       []
      ],
+     "sessionStorage-about-blank-partitioned-iframe.html": [
+      "dd530a7c221a2c4cd4403b0fa5ea5469784bdece",
+      []
+     ],
      "session_change_item_iframe.html": [
       "1e1867e51ec8b0cfc9a0d5053a942921c80c063a",
       []
@@ -350629,6 +350670,10 @@
       []
      ]
     },
+    "sessionStorage-basic-partitioned.tentative.sub-expected.txt": [
+     "e6debe66cb5db0bc965d742def29b3f5b5c5f0d5",
+     []
+    ],
     "set.window-expected.txt": [
      "bcc6fbbd97ad456565a0cea6f7fad8ce3a9d0daa",
      []
@@ -396452,7 +396497,7 @@
        ]
       ],
       "grid-row-axis-self-baseline-synthesized-004.html": [
-       "f40d06386ed871758ef5c550db626512eb6a039f",
+       "f3f70790c9811fea794a1cb892405a434073acec",
        [
         null,
         {}
@@ -397005,21 +397050,21 @@
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-001.html": [
-       "5ddf4495921573bb5c56e1e9a0738098c7d6138e",
+       "723f3d3090299573b4598b44c8d2a83a25947bb4",
        [
         null,
         {}
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-002.html": [
-       "f1ab2ef8ad1eb22af7d7c4a6d18b13fb2b6fe071",
+       "462daece10b8b3541ef29acf39bc6afc9dfd289d",
        [
         null,
         {}
        ]
       ],
       "grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html": [
-       "96ae131d4cb5987dd5d6d9ae08684d8b53f2168f",
+       "d50263320ce2fd7e5448648c08e7d0a044978488",
        [
         null,
         {}
@@ -397827,7 +397872,7 @@
      ],
      "layout-algorithm": {
       "baseline-alignment-affects-intrinsic-size-001.html": [
-       "d48e9aefcc6228cdb8c239966dde7d8aafdaac6e",
+       "f6ec2bb9973ff7e120dcbdb962471b1ccfdff11d",
        [
         null,
         {}
@@ -397841,14 +397886,14 @@
        ]
       ],
       "baseline-alignment-affects-intrinsic-size-003.html": [
-       "bbc7b049d99d7aeb7d45e09e2cd1aed26b0e7bf4",
+       "302453478578544f7793391881108e1de4396bcf",
        [
         null,
         {}
        ]
       ],
       "baseline-alignment-affects-intrinsic-size-004.html": [
-       "ae91e8115094e253bc374fc75ab4b8d3f024de93",
+       "3fb71ab90d984ffc175ddad66fb406f4f2c44267",
        [
         null,
         {}
@@ -522590,6 +522635,188 @@
       {}
      ]
     ],
+    "not-restored-reasons": {
+     "performance-navigation-timing-bfcache.window.js": [
+      "549e72b30dd639d0711f79654e6c93909e585949",
+      [
+       "performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "RemoteContextHelper navigation using BFCache"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "performance-navigation-timing-cross-origin-bfcache.window.js": [
+      "f906b4b0735af1fb3a53836a6d0cbc104e101144",
+      [
+       "performance-timeline/not-restored-reasons/performance-navigation-timing-cross-origin-bfcache.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "RemoteContextHelper navigation using BFCache"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+         ],
+         [
+          "script",
+          "/websockets/constants.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "performance-navigation-timing-not-bfcached.window.js": [
+      "ac8af0e88c8a4188871c447a58becdeb3449d404",
+      [
+       "performance-timeline/not-restored-reasons/performance-navigation-timing-not-bfcached.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "RemoteContextHelper navigation using BFCache"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+         ],
+         [
+          "script",
+          "/websockets/constants.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "performance-navigation-timing-same-origin-bfcache.window.js": [
+      "fb5ec50400e5a04917bb19a5bf25e8c3bfa03ddc",
+      [
+       "performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "RemoteContextHelper navigation using BFCache"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js"
+         ],
+         [
+          "script",
+          "/websockets/constants.sub.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    },
     "observer-buffered-false.any.js": [
      "a28100b0fdba2e00579809a581935d312cf1245e",
      [
@@ -549180,6 +549407,24 @@
       }
      ]
     ],
+    "image-lcp-followed-by-image-softnav-lcp.tentative.html": [
+     "5865755f8105aaf2c595cd46aec3826f45ec6ad5",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "image-lcp-followed-by-text-softnav-lcp.tentative.html": [
+     "f4205d9611c504c6575ad663678abe18a5f16733",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "soft-navigation-detection-main-descendent.tentative.html": [
      "bd4cd9967ce430134f65941bce6e27b994f8f3fc",
      [
@@ -549218,6 +549463,24 @@
     ],
     "soft-navigation-no-url.tentative.html": [
      "9a9e2b7d91a9055fe4dde12e86fd74515333b3e8",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "text-lcp-followed-by-image-softnav-lcp.tentative.html": [
+     "e3428f6208429464558a8ceb943b96cef05eb157",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "text-lcp-followed-by-text-softnav-lcp.tentative.html": [
+     "a00d05882f21a73c9f6603f87d2151801ea978c0",
      [
       null,
       {
@@ -589338,6 +589601,13 @@
      "2e41a22ec70cedc30bae3bb3b0974572b85ee6c7",
      [
       "webstorage/missing_arguments.window.html",
+      {}
+     ]
+    ],
+    "sessionStorage-basic-partitioned.tentative.sub.html": [
+     "30575bfaf1a579a7667ad677718684d181d7187d",
+     [
+      null,
       {}
      ]
     ],

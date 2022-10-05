@@ -307,7 +307,7 @@ crbug.com/1276999 virtual/document-transition-wide-gamut/* [ Pass ]
 crbug.com/1351556 virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Failure Timeout ]
 crbug.com/1351556 virtual/document-transition/document-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/document-transition-wide-gamut/document-transition/capture-callback-exception.html [ Failure ]
-crbug.com/1366886 [ Mac12-arm64 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/iframe-transition.sub.html [ Timeout Failure ]
+crbug.com/1366886 [ Mac12-arm64 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/iframe-transition.sub.html [ Failure Timeout ]
 
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
