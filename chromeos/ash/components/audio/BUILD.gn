@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   sources = [
+    "audio_device_selection_unittest.cc",
     "audio_devices_pref_handler_impl_unittest.cc",
     "cras_audio_handler_unittest.cc",
     "cros_audio_config_impl_unittest.cc",
