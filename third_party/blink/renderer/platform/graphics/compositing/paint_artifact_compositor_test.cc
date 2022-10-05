@@ -305,9 +305,9 @@ TEST_P(PaintArtifactCompositorTest, OneTransform) {
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
-    gfx::RectF mapped_rect(0, 0, 100, 100);
-    layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
-    EXPECT_EQ(gfx::RectF(100, 0, 100, 100), mapped_rect);
+    EXPECT_EQ(
+        gfx::RectF(100, 0, 100, 100),
+        layer->ScreenSpaceTransform().MapRect(gfx::RectF(0, 0, 100, 100)));
   }
   {
     const cc::Layer* layer = LayerAt(1);
@@ -347,9 +347,9 @@ TEST_P(PaintArtifactCompositorTest, OneTransformWithAlias) {
 
     EXPECT_THAT(layer->GetPicture(),
                 Pointee(DrawsRectangles(rects_with_color)));
-    gfx::RectF mapped_rect(0, 0, 100, 100);
-    layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
-    EXPECT_EQ(gfx::RectF(100, 0, 100, 100), mapped_rect);
+    EXPECT_EQ(
+        gfx::RectF(100, 0, 100, 100),
+        layer->ScreenSpaceTransform().MapRect(gfx::RectF(0, 0, 100, 100)));
   }
   {
     const cc::Layer* layer = LayerAt(1);
@@ -384,9 +384,9 @@ TEST_P(PaintArtifactCompositorTest, TransformCombining) {
     EXPECT_THAT(
         layer->GetPicture(),
         Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kWhite)));
-    gfx::RectF mapped_rect(0, 0, 300, 200);
-    layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
-    EXPECT_EQ(gfx::RectF(-10, -10, 600, 400), mapped_rect);
+    EXPECT_EQ(
+        gfx::RectF(-10, -10, 600, 400),
+        layer->ScreenSpaceTransform().MapRect(gfx::RectF(0, 0, 300, 200)));
   }
   {
     const cc::Layer* layer = LayerAt(1);
@@ -394,9 +394,8 @@ TEST_P(PaintArtifactCompositorTest, TransformCombining) {
     EXPECT_THAT(
         layer->GetPicture(),
         Pointee(DrawsRectangle(gfx::RectF(0, 0, 300, 200), Color::kBlack)));
-    gfx::RectF mapped_rect(0, 0, 300, 200);
-    layer->ScreenSpaceTransform().TransformRect(&mapped_rect);
-    EXPECT_EQ(gfx::RectF(0, 0, 600, 400), mapped_rect);
+    EXPECT_EQ(gfx::RectF(0, 0, 600, 400), layer->ScreenSpaceTransform().MapRect(
+                                              gfx::RectF(0, 0, 300, 200)));
   }
   EXPECT_NE(LayerAt(0)->transform_tree_index(),
             LayerAt(1)->transform_tree_index());
@@ -481,8 +480,8 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     // half as wide. If the transform was not flattened, we should see an
     // empty rectangle (as the total 90 degree rotation makes it
     // perpendicular to the viewport).
-    gfx::RectF rect(0, 0, 100, 100);
-    layer->ScreenSpaceTransform().TransformRect(&rect);
+    gfx::RectF rect =
+        layer->ScreenSpaceTransform().MapRect(gfx::RectF(0, 0, 100, 100));
     if (transform_is_flattened)
       EXPECT_RECTF_EQ(gfx::RectF(0, 0, 50, 100), rect);
     else
@@ -536,8 +535,8 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     // half as wide. If the transform was not flattened, we should see an
     // empty rectangle (as the total 90 degree rotation makes it
     // perpendicular to the viewport).
-    gfx::RectF rect(0, 0, 100, 100);
-    layer->ScreenSpaceTransform().TransformRect(&rect);
+    gfx::RectF rect =
+        layer->ScreenSpaceTransform().MapRect(gfx::RectF(0, 0, 100, 100));
     if (transform_is_flattened)
       EXPECT_RECTF_EQ(gfx::RectF(0, 0, 50, 100), rect);
     else

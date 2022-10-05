@@ -129,17 +129,17 @@ void ApplyClip(OverlayCandidate& candidate, const gfx::RectF& clip_rect) {
     gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
         absl::get<gfx::OverlayTransform>(candidate.transform),
         gfx::SizeF(1, 1));
-    buffer_transform.TransformRect(&candidate.uv_rect);
+    candidate.uv_rect = buffer_transform.MapRect(candidate.uv_rect);
 
     gfx::RectF intersect_clip_display = clip_rect;
     intersect_clip_display.Intersect(candidate.display_rect);
     gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
         candidate.uv_rect, candidate.display_rect, intersect_clip_display);
     candidate.display_rect = intersect_clip_display;
-    candidate.uv_rect = uv_rect;
 
     // Return |uv_rect| to buffer uv space.
-    buffer_transform.TransformRectReverse(&candidate.uv_rect);
+    candidate.uv_rect =
+        buffer_transform.InverseMapRect(uv_rect).value_or(uv_rect);
   }
 }
 
@@ -365,7 +365,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     }
     candidate.transform = overlay_transform;
 
-    sqs->quad_to_target_transform.TransformRect(&candidate.display_rect);
+    candidate.display_rect =
+        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
   }
 
   candidate.clip_rect = sqs->clip_rect;
@@ -423,7 +424,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       // when delegating |clip_rect|.
       if (quad->visible_rect != quad->rect) {
         auto visible_rect = gfx::RectF(quad->visible_rect);
-        sqs->quad_to_target_transform.TransformRect(&visible_rect);
+        visible_rect = sqs->quad_to_target_transform.MapRect(visible_rect);
         clip_to_apply.Intersect(visible_rect);
       }
 
@@ -484,7 +485,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromVideoHoleQuad(
     if (overlay_transform == gfx::OVERLAY_TRANSFORM_INVALID)
       return CandidateStatus::kFailNotAxisAligned;
     candidate.transform = overlay_transform;
-    sqs->quad_to_target_transform.TransformRect(&candidate.display_rect);
+    candidate.display_rect =
+        sqs->quad_to_target_transform.MapRect(candidate.display_rect);
   }
   candidate.is_opaque =
       !quad->ShouldDrawWithBlendingForReasonOtherThanMaskFilter();
@@ -651,7 +653,7 @@ void OverlayCandidateFactory::AssignDamage(const DrawQuad* quad,
   auto transformed_damage = damage_rect;
   gfx::Transform inv;
   if (transform.GetInverse(&inv)) {
-    inv.TransformRect(&transformed_damage);
+    transformed_damage = inv.MapRect(transformed_damage);
     // The quad's |rect| is in content space. To get to buffer space we need
     // to remove the |rect|'s pixel offset.
     auto buffer_damage_origin =

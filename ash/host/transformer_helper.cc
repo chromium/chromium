@@ -52,8 +52,8 @@ class SimpleRootWindowTransformer : public RootWindowTransformer {
     gfx::Rect host_bounds_in_pixels(host_size);
     gfx::RectF host_bounds_in_dips = gfx::ConvertRectToDips(
         host_bounds_in_pixels, root_window_->layer()->device_scale_factor());
-    gfx::RectF root_window_bounds = host_bounds_in_dips;
-    GetInverseTransform().TransformRect(&root_window_bounds);
+    gfx::RectF root_window_bounds =
+        GetInverseTransform().MapRect(host_bounds_in_dips);
     return gfx::Rect(gfx::ToFlooredSize(root_window_bounds.size()));
   }
 

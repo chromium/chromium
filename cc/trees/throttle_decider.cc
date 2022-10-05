@@ -51,8 +51,8 @@ void ThrottleDecider::ProcessRenderPass(
         gfx::RectF blur_bounds(child_rp.output_rect);
         if (child_rp.backdrop_filter_bounds)
           blur_bounds.Intersect(child_rp.backdrop_filter_bounds->rect());
-        quad->shared_quad_state->quad_to_target_transform.TransformRect(
-            &blur_bounds);
+        blur_bounds = quad->shared_quad_state->quad_to_target_transform.MapRect(
+            blur_bounds);
         if (quad->shared_quad_state->clip_rect) {
           blur_bounds.Intersect(
               gfx::RectF(*quad->shared_quad_state->clip_rect));
@@ -62,9 +62,9 @@ void ThrottleDecider::ProcessRenderPass(
     } else if (quad->material == viz::DrawQuad::Material::kSurfaceContent) {
       bool inside_backdrop_filter_bounds = false;
       if (!foreground_blurred && !blur_backdrop_filter_bounds.empty()) {
-        gfx::RectF rect_in_target_space(quad->visible_rect);
-        quad->shared_quad_state->quad_to_target_transform.TransformRect(
-            &rect_in_target_space);
+        gfx::RectF rect_in_target_space =
+            quad->shared_quad_state->quad_to_target_transform.MapRect(
+                gfx::RectF(quad->visible_rect));
         if (quad->shared_quad_state->clip_rect) {
           rect_in_target_space.Intersect(
               gfx::RectF(*quad->shared_quad_state->clip_rect));

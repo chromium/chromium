@@ -852,7 +852,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
   const AXNode* original_node = node;
   while (node != nullptr) {
     if (node->data().relative_bounds.transform)
-      node->data().relative_bounds.transform->TransformRect(&bounds);
+      bounds = node->data().relative_bounds.transform->MapRect(bounds);
     // Apply any transforms and offsets for each node and then walk up to
     // its offset container. If no offset container is specified, coordinates
     // are relative to the root node.

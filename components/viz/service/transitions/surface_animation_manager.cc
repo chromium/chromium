@@ -160,14 +160,6 @@ void ReplaceSharedElementWithRenderPass(
   const gfx::Rect& shared_pass_output_rect =
       shared_element_content_pass->output_rect;
 
-  gfx::RectF quad_rect(shared_element_quad.rect);
-  shared_element_quad.shared_quad_state->quad_to_target_transform.TransformRect(
-      &quad_rect);
-
-  gfx::RectF visible_quad_rect(shared_element_quad.visible_rect);
-  shared_element_quad.shared_quad_state->quad_to_target_transform.TransformRect(
-      &visible_quad_rect);
-
   auto* copied_quad_state =
       target_render_pass->CreateAndAppendSharedQuadState();
   *copied_quad_state = *shared_element_quad.shared_quad_state;

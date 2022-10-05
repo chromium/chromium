@@ -5841,7 +5841,7 @@ LayoutRect AXObject::GetBoundsInFrameCoordinates() const {
       computed_bounds.Offset(-container->GetScrollOffset().x(),
                              -container->GetScrollOffset().y());
     }
-    transform.TransformRect(&computed_bounds);
+    computed_bounds = transform.MapRect(computed_bounds);
     container->GetRelativeBounds(&container, bounds, transform);
   }
   return LayoutRect(computed_bounds);

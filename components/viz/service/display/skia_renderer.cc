@@ -1689,8 +1689,7 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // subpixel device-space geometry, do not drop the scissor. Otherwise Skia
   // sees an unclipped anti-aliased hairline and uses different AA methods that
   // would cause the rasterized result to extend beyond the scissor.
-  gfx::RectF device_bounds(visible_rect);
-  content_device_transform.TransformRect(&device_bounds);
+  gfx::RectF device_bounds = content_device_transform.MapRect(visible_rect);
   device_bounds.Intersect(gfx::RectF(*scissor_rect));
   if (device_bounds.width() < 1.0f || device_bounds.height() < 1.0f) {
     return;
@@ -1700,10 +1699,13 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   // does not leave sufficient precision to round-trip the scissor rect to-from
   // device->local->device space, the explicitly "clipped" geometry does not
   // necessarily respect the original scissor.
-  gfx::RectF local_scissor(*scissor_rect);
-  content_device_transform.TransformRectReverse(&local_scissor);
-  gfx::RectF remapped_scissor(local_scissor);
-  content_device_transform.TransformRect(&remapped_scissor);
+  absl::optional<gfx::RectF> local_scissor =
+      content_device_transform.InverseMapRect(gfx::RectF(*scissor_rect));
+  if (!local_scissor) {
+    return;
+  }
+  gfx::RectF remapped_scissor =
+      content_device_transform.MapRect(*local_scissor);
   if (gfx::ToRoundedRect(remapped_scissor) != *scissor_rect) {
     return;
   }
@@ -1717,16 +1719,16 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
   float y_epsilon = kAAEpsilon / content_device_transform.rc(1, 1);
 
   // The scissor is a non-AA clip, so unset the bit flag for clipped edges.
-  if (local_scissor.x() - visible_rect.x() >= x_epsilon)
+  if (local_scissor->x() - visible_rect.x() >= x_epsilon)
     aa_flags &= ~SkCanvas::kLeft_QuadAAFlag;
-  if (local_scissor.y() - visible_rect.y() >= y_epsilon)
+  if (local_scissor->y() - visible_rect.y() >= y_epsilon)
     aa_flags &= ~SkCanvas::kTop_QuadAAFlag;
-  if (visible_rect.right() - local_scissor.right() >= x_epsilon)
+  if (visible_rect.right() - local_scissor->right() >= x_epsilon)
     aa_flags &= ~SkCanvas::kRight_QuadAAFlag;
-  if (visible_rect.bottom() - local_scissor.bottom() >= y_epsilon)
+  if (visible_rect.bottom() - local_scissor->bottom() >= y_epsilon)
     aa_flags &= ~SkCanvas::kBottom_QuadAAFlag;
 
-  visible_rect.Intersect(local_scissor);
+  visible_rect.Intersect(*local_scissor);
   vis_tex_coords = visible_rect;
   scissor_rect.reset();
 }
@@ -3387,7 +3389,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // TODO(dbaron): This operation is likely not to be valid if
     // quad_to_target_transform_inverse.HasPerspective().
     gfx::RectF clip_rect(*shared_quad_state->clip_rect);
-    quad_to_target_transform_inverse->TransformRect(&clip_rect);
+    clip_rect = quad_to_target_transform_inverse->MapRect(clip_rect);
     auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect.value(),
                                  gfx::ToEnclosedRect(clip_rect));
   }
@@ -3574,9 +3576,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // Adjust |display_rect| to be include the expanded |filter_bounds|, and
   // transformed.
   // TODO(fangzhoug): Merge Ozone and Apple code paths of delegated compositing.
-  overlay->display_rect = gfx::RectF(filter_bounds);
-  quad->shared_quad_state->quad_to_target_transform.TransformRect(
-      &overlay->display_rect);
+  overlay->display_rect =
+      quad->shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(filter_bounds));
   // TODO(petermcneeley): This clipping is only correct for translation and
   // scale. For other transforms we will need to send the rect over as a
   // separate parameter.

@@ -1054,8 +1054,8 @@ void EffectTree::TakeCopyRequestsAndTransformToSurface(
     // ratios are provided integer coordinates, the basis vector determines the
     // precision w.r.t. the fractional part of the Transform's scale factors.
     constexpr gfx::Vector2d kContentVector(1024, 1024);
-    gfx::RectF surface_rect(0, 0, kContentVector.x(), kContentVector.y());
-    transform.TransformRect(&surface_rect);
+    gfx::RectF surface_rect = transform.MapRect(
+        gfx::RectF(0, 0, kContentVector.x(), kContentVector.y()));
 
     for (auto it = range.first; it != range.second; ++it) {
       viz::CopyOutputRequest* const request = it->second.get();

@@ -65,7 +65,7 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
 void OverlayCandidate::TransformRectToTargetSpace(
     gfx::RectF& content_rect) const {
   if (absl::holds_alternative<gfx::Transform>(transform)) {
-    absl::get<gfx::Transform>(transform).TransformRect(&content_rect);
+    content_rect = absl::get<gfx::Transform>(transform).MapRect(content_rect);
   }
 }
 

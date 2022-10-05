@@ -3839,9 +3839,9 @@ void DragToMinimizedOverviewWindowStep2(
   EXPECT_FALSE(dragged_window->GetProperty(chromeos::kIsShowingInOverviewKey));
 
   // Now drag the tabs to a point that is contained by |target_window|.
-  gfx::RectF target_window_bounds(target_window->bounds());
   gfx::Transform transform = target_window->layer()->GetTargetTransform();
-  transform.TransformRect(&target_window_bounds);
+  gfx::RectF target_window_bounds =
+      transform.MapRect(gfx::RectF(target_window->bounds()));
   gfx::Point target_point(target_window_bounds.CenterPoint().x(),
                           target_window_bounds.CenterPoint().y());
 

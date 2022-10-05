@@ -54,9 +54,10 @@ float GetDragWindowOpacity(aura::Window* root_window,
   // contained in |root_window|.
   gfx::RectF dragged_window_bounds(dragged_window->bounds());
   ::wm::TranslateRectToScreen(dragged_window->parent(), &dragged_window_bounds);
-  gfx::TransformAboutPivot(dragged_window_bounds.origin(),
-                           dragged_window->transform())
-      .TransformRect(&dragged_window_bounds);
+  dragged_window_bounds =
+      gfx::TransformAboutPivot(dragged_window_bounds.origin(),
+                               dragged_window->transform())
+          .MapRect(dragged_window_bounds);
   gfx::RectF visible_bounds(root_window->GetBoundsInScreen());
   visible_bounds.Intersect(dragged_window_bounds);
   return kDragPhantomMaxOpacity * visible_bounds.size().GetArea() /

@@ -245,14 +245,14 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
   // calibration.
   if (target_screen_calibration_view->state() ==
       TouchCalibratorView::CALIBRATION_COMPLETE) {
-    gfx::RectF calibration_bounds(
-        target_screen_calibration_view->GetLocalBounds());
-    Shell::Get()
-        ->window_tree_host_manager()
-        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
-        ->AsWindowTreeHost()
-        ->GetRootTransform()
-        .TransformRect(&calibration_bounds);
+    gfx::RectF calibration_bounds =
+        Shell::Get()
+            ->window_tree_host_manager()
+            ->GetAshWindowTreeHostForDisplayId(target_display_.id())
+            ->AsWindowTreeHost()
+            ->GetRootTransform()
+            .MapRect(
+                gfx::RectF(target_screen_calibration_view->GetLocalBounds()));
     CompleteCalibration(touch_point_quad_,
                         gfx::ToRoundedSize(calibration_bounds.size()));
     return;

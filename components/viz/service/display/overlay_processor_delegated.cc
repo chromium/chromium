@@ -163,8 +163,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     auto& transform = it->shared_quad_state->quad_to_target_transform;
-    auto display_rect = gfx::RectF(it->rect);
-    transform.TransformRect(&display_rect);
+    auto display_rect = transform.MapRect(gfx::RectF(it->rect));
     DBG_DRAW_TEXT(
         "delegated.overlay.type",
         gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),

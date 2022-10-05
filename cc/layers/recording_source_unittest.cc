@@ -44,12 +44,6 @@ TEST(RecordingSourceTest, DiscardableImagesWithTransform) {
   rotate_transform.Rotate(45);
   discardable_image[1][1] = CreateDiscardablePaintImage(gfx::Size(32, 32));
 
-  gfx::RectF rect(0, 0, 32, 32);
-  gfx::RectF translate_rect = rect;
-  translate_transform.TransformRect(&translate_rect);
-  gfx::RectF rotate_rect = rect;
-  rotate_transform.TransformRect(&rotate_rect);
-
   recording_source->add_draw_image_with_transform(discardable_image[0][0],
                                                   identity_transform);
   recording_source->add_draw_image_with_transform(discardable_image[1][0],

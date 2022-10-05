@@ -598,8 +598,7 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
 
   for (auto* quad : root_render_pass.quad_list) {
     auto& transform = quad->shared_quad_state->quad_to_target_transform;
-    auto display_rect = gfx::RectF(quad->rect);
-    transform.TransformRect(&display_rect);
+    auto display_rect = transform.MapRect(gfx::RectF(quad->rect));
     DBG_DRAW_TEXT_OPT("frame.root.material", DBG_OPT_GREEN,
                       display_rect.origin(),
                       base::NumberToString(static_cast<int>(quad->material)));

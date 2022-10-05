@@ -108,9 +108,8 @@ class RTLAnimationTestDelegate : public gfx::AnimationDelegate {
     const gfx::Rect start_rect_in_screen = parent->GetMirroredRect(start_);
     const gfx::Rect target_rect_in_screen = parent->GetMirroredRect(target_);
 
-    gfx::RectF current_bounds_in_screen(
-        parent->GetMirroredRect(view_->bounds()));
-    transform.TransformRect(&current_bounds_in_screen);
+    gfx::Rect current_bounds_in_screen =
+        transform.MapRect(parent->GetMirroredRect(view_->bounds()));
 
     // Verify that |view_|'s current bounds in screen are valid.
     EXPECT_GE(current_bounds_in_screen.x(),

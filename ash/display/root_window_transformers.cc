@@ -144,7 +144,7 @@ class AshRootWindowTransformer : public RootWindowTransformer {
 
     gfx::RectF new_bounds = gfx::RectF(gfx::SizeF(host_size));
     new_bounds.Inset(gfx::InsetsF(host_insets_));
-    root_window_bounds_transform_.TransformRect(&new_bounds);
+    new_bounds = root_window_bounds_transform_.MapRect(new_bounds);
 
     // Root window origin will be (0,0) except during bounds changes.
     // Set to exactly zero to avoid rounding issues.
@@ -215,9 +215,8 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       rotation_transform = CreateRotationTransform(
           source_display_info.GetActiveRotation(), display::Display::ROTATE_0,
           gfx::SizeF(root_bounds_.size()));
-      gfx::RectF rotated_bounds(root_bounds_);
-      rotation_transform.TransformRect(&rotated_bounds);
-      root_bounds_ = gfx::ToNearestRect(rotated_bounds);
+      root_bounds_ = gfx::ToNearestRect(
+          rotation_transform.MapRect(gfx::RectF(root_bounds_)));
       active_root_rotation = display::Display::ROTATE_0;
     }
 

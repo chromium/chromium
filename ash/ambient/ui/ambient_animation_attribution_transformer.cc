@@ -146,8 +146,7 @@ void AmbientAnimationAttributionTransformer::TransformTextBox(
                                            ->GetCurrentTransformPropertyValues()
                                            .at(attribution_node_id)
                                            .position.OffsetFromOrigin());
-    attribution_layer_shift.TransformRect(&new_text_box);
-    attribution_val.set_box(std::move(new_text_box));
+    attribution_val.set_box(attribution_layer_shift.MapRect(new_text_box));
   }
 }
 

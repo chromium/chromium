@@ -266,15 +266,13 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   gfx::RectF GetTargetLayerBounds(views::View* view) {
-    gfx::RectF bounds(view->layer()->GetTargetBounds());
-    view->layer()->GetTargetTransform().TransformRect(&bounds);
-    return bounds;
+    return view->layer()->GetTargetTransform().MapRect(
+        gfx::RectF(view->layer()->GetTargetBounds()));
   }
 
   gfx::RectF GetCurrentLayerBounds(views::View* view) {
-    gfx::RectF bounds(view->layer()->bounds());
-    view->layer()->transform().TransformRect(&bounds);
-    return bounds;
+    return view->layer()->transform().MapRect(
+        gfx::RectF(view->layer()->bounds()));
   }
 
   std::vector<gfx::RectF> GetCurrentLayerBoundsForAllTaskViews() {

@@ -506,10 +506,10 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   // The dragged window cannot exceed the top or bottom of the display. So
   // calculate the expected transformed bounds and then adjust the transform if
   // needed.
-  gfx::RectF transformed_bounds(window_->bounds());
   const gfx::Transform new_tranform =
-      TransformAboutPivot(transformed_bounds.origin(), transform);
-  new_tranform.TransformRect(&transformed_bounds);
+      TransformAboutPivot(gfx::PointF(window_->bounds().origin()), transform);
+  gfx::RectF transformed_bounds =
+      new_tranform.MapRect(gfx::RectF(window_->bounds()));
   ::wm::TranslateRectToScreen(window_->parent(), &transformed_bounds);
   if (transformed_bounds.y() < display_bounds.y()) {
     transform.Translate(0,

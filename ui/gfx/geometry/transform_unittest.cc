@@ -2751,20 +2751,16 @@ TEST(XFormTest, To2dTranslation) {
   EXPECT_EQ(translation.ToString(), transform.To2dTranslation().ToString());
 }
 
-TEST(XFormTest, TransformRect) {
-  auto translation = Transform::MakeTranslation(3.25f, 7.75f);
+TEST(XFormTest, MapRect) {
+  Transform translation = Transform::MakeTranslation(3.25f, 7.75f);
   RectF rect(1.25f, 2.5f, 3.75f, 4.f);
   RectF expected(4.5f, 10.25f, 3.75f, 4.f);
-  translation.TransformRect(&rect);
-  EXPECT_EQ(expected, rect);
+  EXPECT_EQ(expected, translation.MapRect(rect));
 
-  expected = rect;
-  Transform().TransformRect(&rect);
-  EXPECT_EQ(expected, rect);
+  EXPECT_EQ(rect, Transform().MapRect(rect));
 
   auto singular = Transform::MakeScale(0.f);
-  singular.TransformRect(&rect);
-  EXPECT_EQ(RectF(0, 0, 0, 0), rect);
+  EXPECT_EQ(RectF(0, 0, 0, 0), singular.MapRect(rect));
 }
 
 TEST(XFormTest, MapIntRect) {
@@ -2781,15 +2777,12 @@ TEST(XFormTest, TransformRectReverse) {
   auto translation = Transform::MakeTranslation(3.25f, 7.75f);
   RectF rect(1.25f, 2.5f, 3.75f, 4.f);
   RectF expected(-2.f, -5.25f, 3.75f, 4.f);
-  EXPECT_TRUE(translation.TransformRectReverse(&rect));
-  EXPECT_EQ(expected.ToString(), rect.ToString());
+  EXPECT_EQ(expected, translation.InverseMapRect(rect));
 
-  expected = rect;
-  EXPECT_TRUE(Transform().TransformRectReverse(&rect));
-  EXPECT_EQ(expected, rect);
+  EXPECT_EQ(rect, Transform().InverseMapRect(rect));
 
   auto singular = Transform::MakeScale(0.f);
-  EXPECT_FALSE(singular.TransformRectReverse(&rect));
+  EXPECT_FALSE(singular.InverseMapRect(rect));
 }
 
 TEST(XFormTest, InverseMapIntRect) {

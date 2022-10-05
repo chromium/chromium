@@ -272,14 +272,14 @@ TEST_F(SquareInkDropRippleCalculateTransformsTest, RippleIsPixelAligned) {
       // what the target size was you should get an integer aligned bounding
       // box.
       gfx::Transform transform = transforms[PaintedShape::HORIZONTAL_RECT];
-      gfx::RectF horizontal_rect(kDrawnRectBounds);
-      transform.TransformRect(&horizontal_rect);
+      gfx::RectF horizontal_rect =
+          transform.MapRect(gfx::RectF(kDrawnRectBounds));
       horizontal_rect.Scale(dsf);
       verify_bounds(horizontal_rect);
 
       transform = transforms[PaintedShape::VERTICAL_RECT];
-      gfx::RectF vertical_rect(kDrawnRectBounds);
-      transform.TransformRect(&vertical_rect);
+      gfx::RectF vertical_rect =
+          transform.MapRect(gfx::RectF(kDrawnRectBounds));
       vertical_rect.Scale(dsf);
       verify_bounds(vertical_rect);
     }

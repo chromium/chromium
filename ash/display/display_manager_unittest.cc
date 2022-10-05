@@ -4689,11 +4689,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
     EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
 
     // Test the target display's bounds after the transforms are applied.
-    gfx::RectF transformed_rect1(
-        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-        &transformed_rect1);
-    host_list[0]->window()->transform().TransformRect(&transformed_rect1);
+    gfx::RectF transformed_rect1 =
+        Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+            display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+    transformed_rect1 =
+        host_list[0]->window()->transform().MapRect(transformed_rect1);
     EXPECT_EQ(gfx::RectF(0.0f, 50.0f, 800.0f, 600.0f), transformed_rect1);
 
     // Rotate the source display by 90 degrees.
@@ -4707,11 +4707,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
     EXPECT_EQ(gfx::Size(300, 400), host_list[0]->window()->bounds().size());
 
     // Test the target display's bounds after the transforms are applied.
-    gfx::RectF transformed_rect2(
-        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-        &transformed_rect2);
-    host_list[0]->window()->transform().TransformRect(&transformed_rect2);
+    gfx::RectF transformed_rect2 =
+        Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+            display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+    transformed_rect2 =
+        host_list[0]->window()->transform().MapRect(transformed_rect2);
     // Use gfx::EncolosingRect because `transformed_rect2` has rounding errors:
     //   137.000000,0.000000 524.999939x699.999939
     EXPECT_EQ(gfx::Rect(137.0f, 0.0f, 525.0f, 700.0f),
@@ -4729,11 +4729,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
     EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
 
     // Test the target display's bounds after the transforms are applied.
-    gfx::RectF transformed_rect3(
-        display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-    Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-        &transformed_rect3);
-    host_list[0]->window()->transform().TransformRect(&transformed_rect3);
+    gfx::RectF transformed_rect3 =
+        Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+            display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+    transformed_rect3 =
+        host_list[0]->window()->transform().MapRect(transformed_rect3);
     EXPECT_EQ(gfx::RectF(0.0f, 50.0f, 800.0f, 600.0f), transformed_rect3);
   }
 }
@@ -4753,11 +4753,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
   EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
 
   // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect1(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect1);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect1);
+  gfx::RectF transformed_rect1 =
+      Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+          display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+  transformed_rect1 =
+      host_list[0]->window()->transform().MapRect(transformed_rect1);
   EXPECT_EQ(gfx::RectF(0.0f, 50.0f, 800.0f, 600.0f), transformed_rect1);
 
   // Rotate the source display by 90 degrees.
@@ -4771,11 +4771,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
   EXPECT_EQ(gfx::Size(300, 400), host_list[0]->window()->bounds().size());
 
   // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect2(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect2);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect2);
+  gfx::RectF transformed_rect2 =
+      Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+          display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+  transformed_rect2 =
+      host_list[0]->window()->transform().MapRect(transformed_rect2);
   EXPECT_EQ(gfx::RectF(50.0f, 0.0f, 600.0f, 800.0f), transformed_rect2);
 
   // Change the bounds of the source display and rotate the source display by 90
@@ -4790,11 +4790,11 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
   EXPECT_EQ(gfx::Size(400, 300), host_list[0]->window()->bounds().size());
 
   // Test the target display's bounds after the transforms are applied.
-  gfx::RectF transformed_rect3(
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
-  Shell::Get()->GetPrimaryRootWindow()->transform().TransformRect(
-      &transformed_rect3);
-  host_list[0]->window()->transform().TransformRect(&transformed_rect3);
+  gfx::RectF transformed_rect3 =
+      Shell::Get()->GetPrimaryRootWindow()->transform().MapRect(gfx::RectF(
+          display::Screen::GetScreen()->GetPrimaryDisplay().bounds()));
+  transformed_rect3 =
+      host_list[0]->window()->transform().MapRect(transformed_rect3);
   // Use gfx::EncolosingRect because `transformed_rect3` has rounding errors.
   EXPECT_EQ(gfx::Rect(0.0f, 137.0f, 700.0f, 525.0f),
             gfx::ToEnclosingRect(transformed_rect3));

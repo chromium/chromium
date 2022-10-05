@@ -40,15 +40,13 @@ class StaticWindowTargeter : public WindowTargeter {
 };
 
 gfx::RectF GetEffectiveVisibleBoundsInRootWindow(Window* window) {
-  gfx::RectF bounds = gfx::RectF(gfx::SizeF(window->bounds().size()));
   Window* root = window->GetRootWindow();
   CHECK(window->layer());
   CHECK(root->layer());
   gfx::Transform transform;
   if (!window->layer()->GetTargetTransformRelativeTo(root->layer(), &transform))
     return gfx::RectF();
-  transform.TransformRect(&bounds);
-  return bounds;
+  return transform.MapRect(gfx::RectF(gfx::SizeF(window->bounds().size())));
 }
 
 using WindowTargeterTest = test::AuraTestBase;

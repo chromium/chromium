@@ -967,16 +967,17 @@ void UiElement::ClipChildren(const gfx::RectF& abs_clip) {
       continue;
 
     DCHECK(child->LocalTransform().IsScaleOrTranslation());
-    auto child_abs_clip = abs_clip;
-    child->LocalTransform().TransformRectReverse(&child_abs_clip);
+    absl::optional<gfx::RectF> child_abs_clip =
+        child->LocalTransform().InverseMapRect(abs_clip);
+    DCHECK(child_abs_clip);
     if (!child->size().IsEmpty()) {
-      child->clip_rect_ = child_abs_clip;
+      child->clip_rect_ = *child_abs_clip;
       child->clip_rect_.Scale(1.0f / child->size().width(),
                               1.0f / child->size().height());
     } else {
       child->clip_rect_ = kRelativeFullRectClip;
     }
-    child->ClipChildren(child_abs_clip);
+    child->ClipChildren(*child_abs_clip);
   }
 }
 

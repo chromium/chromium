@@ -470,8 +470,8 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
     if (need_transpose)
       expected_rect.Transpose();
 
-    gfx::RectF rect(transformer->GetRootWindowBounds(gfx::Size()));
-    transformer->GetTransform().TransformRect(&rect);
+    gfx::RectF rect = transformer->GetTransform().MapRect(
+        gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));
     EXPECT_EQ(expected_rect, rect);
   }
 }

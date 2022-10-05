@@ -2974,7 +2974,7 @@ bool View::ConvertRectForAncestor(const View* ancestor,
   gfx::Transform trans;
   // TODO(sad): Have some way of caching the transformation results.
   bool result = GetTransformRelativeTo(ancestor, &trans);
-  trans.TransformRect(rect);
+  *rect = trans.MapRect(*rect);
   return result;
 }
 
@@ -2982,7 +2982,7 @@ bool View::ConvertRectFromAncestor(const View* ancestor,
                                    gfx::RectF* rect) const {
   gfx::Transform trans;
   bool result = GetTransformRelativeTo(ancestor, &trans);
-  trans.TransformRectReverse(rect);
+  *rect = trans.InverseMapRect(*rect).value_or(*rect);
   return result;
 }
 

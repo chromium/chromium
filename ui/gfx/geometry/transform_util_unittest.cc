@@ -321,9 +321,7 @@ TEST(TransformUtilTest, TransformBetweenRects) {
 
     // Applies |transform| to calculate the target rectangle from |src_rect|.
     // Notes that |transform| is in |src_rect|'s local coordinates.
-    RectF dst_in_src_coordinates = RectF(src_rect.size());
-    transform.TransformRect(&dst_in_src_coordinates);
-    RectF dst_in_parent_coordinates = dst_in_src_coordinates;
+    RectF dst_in_parent_coordinates = transform.MapRect(RectF(src_rect.size()));
     dst_in_parent_coordinates.Offset(src_rect.OffsetFromOrigin());
 
     // Verifies that the target rectangle is expected.

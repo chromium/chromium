@@ -130,9 +130,9 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
              event->type() == ui::ET_GESTURE_SCROLL_UPDATE ||
              event->type() == ui::ET_GESTURE_SCROLL_END ||
              event->type() == ui::ET_GESTURE_SWIPE)) {
-          gfx::RectF rect(owner_->item_->GetSwipeInputRect());
-          owner_->surface_->GetContentWindow()->transform().TransformRect(
-              &rect);
+          gfx::RectF rect =
+              owner_->surface_->GetContentWindow()->transform().MapRect(
+                  gfx::RectF(owner_->item_->GetSwipeInputRect()));
           gfx::Point location = located_event->location();
           views::View::ConvertPointFromWidget(owner_, &location);
           bool contains = rect.Contains(gfx::PointF(location));

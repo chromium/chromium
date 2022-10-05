@@ -92,8 +92,8 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
         gfx::InvertOverlayTransform(display_transform_),
         gfx::SizeF(viewport_size_));
-    display_inverse.TransformRect(&orig_display_rect);
-    display_inverse.TransformRect(&display_rect);
+    orig_display_rect = display_inverse.MapRect(orig_display_rect);
+    display_rect = display_inverse.MapRect(display_rect);
 
     candidate.unclipped_display_rect = orig_display_rect;
     candidate.unclipped_uv_rect = candidate.uv_rect;
@@ -123,7 +123,7 @@ void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
   const gfx::Transform display_inverse = gfx::OverlayTransformToTransform(
       gfx::InvertOverlayTransform(display_transform_),
       gfx::SizeF(viewport_size_));
-  display_inverse.TransformRect(&plane.display_rect);
+  plane.display_rect = display_inverse.MapRect(plane.display_rect);
   plane.display_rect = gfx::RectF(gfx::ToEnclosingRect(plane.display_rect));
 
   // Call the base class implementation.

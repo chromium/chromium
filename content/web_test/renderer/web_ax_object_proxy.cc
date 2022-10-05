@@ -91,7 +91,7 @@ gfx::RectF BoundsForObject(const blink::WebAXObject& object) {
     computed_bounds.Offset(bounds.x(), bounds.y());
     computed_bounds.Offset(-container.GetScrollOffset().x(),
                            -container.GetScrollOffset().y());
-    transform.TransformRect(&computed_bounds);
+    computed_bounds = transform.MapRect(computed_bounds);
     container.GetRelativeBounds(container, bounds, transform);
   }
   return computed_bounds;

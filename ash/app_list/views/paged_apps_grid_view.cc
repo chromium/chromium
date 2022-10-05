@@ -135,8 +135,8 @@ int GetFadeoutMaskHeight() {
 gfx::Rect ApplyTransformAtOrigin(gfx::Rect bounds, gfx::Transform transform) {
   gfx::Vector2d origin_offset = bounds.OffsetFromOrigin();
 
-  gfx::RectF bounds_f(gfx::SizeF(bounds.size()));
-  transform.TransformRect(&bounds_f);
+  gfx::RectF bounds_f =
+      transform.MapRect(gfx::RectF(gfx::SizeF(bounds.size())));
   bounds_f.Offset(origin_offset);
 
   return gfx::ToRoundedRect(bounds_f);

@@ -2542,9 +2542,10 @@ DOMRectList* Internals::nonFastScrollableRects(
       transform_tree.UpdateTransforms(layer->transform_tree_index());
       const gfx::Transform& to_screen =
           transform_tree.ToScreen(layer->transform_tree_index());
-      to_screen.TransformRect(&layer_rect);
+      gfx::Rect screen_rect =
+          gfx::ToEnclosingRect(to_screen.MapRect(layer_rect));
 
-      layer_non_fast_scrollable_rects.push_back(ToEnclosingRect(layer_rect));
+      layer_non_fast_scrollable_rects.push_back(screen_rect);
     }
   }
 

@@ -84,8 +84,7 @@ gfx::Rect OverviewTestBase::GetTransformedBounds(aura::Window* window) {
   wm::TranslateRectToScreen(window->parent(), &bounds);
   const gfx::Transform transform =
       gfx::TransformAboutPivot(bounds.origin(), window->layer()->transform());
-  transform.TransformRect(&bounds);
-  return ToStableSizeRoundedRect(bounds);
+  return ToStableSizeRoundedRect(transform.MapRect(bounds));
 }
 
 gfx::Rect OverviewTestBase::GetTransformedTargetBounds(aura::Window* window) {
@@ -93,8 +92,7 @@ gfx::Rect OverviewTestBase::GetTransformedTargetBounds(aura::Window* window) {
   wm::TranslateRectToScreen(window->parent(), &bounds);
   const gfx::Transform transform = gfx::TransformAboutPivot(
       bounds.origin(), window->layer()->GetTargetTransform());
-  transform.TransformRect(&bounds);
-  return ToStableSizeRoundedRect(bounds);
+  return ToStableSizeRoundedRect(transform.MapRect(bounds));
 }
 
 gfx::Rect OverviewTestBase::GetTransformedBoundsInRootWindow(

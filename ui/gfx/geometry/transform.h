@@ -331,18 +331,19 @@ class GEOMETRY_SKIA_EXPORT Transform {
   [[nodiscard]] absl::optional<Point3F> InverseMapPoint(
       const Point3F& point) const;
 
-  // Applies transformation on the given rect. After the function completes,
-  // |rect| will be the smallest axis aligned bounding rect containing the
-  // transformed rect.
-  void TransformRect(RectF* rect) const;
+  // Returns the rect that is the smallest axis aligned bounding rect
+  // containing the transformed rect.
+  [[nodiscard]] RectF MapRect(const RectF& rect) const;
   [[nodiscard]] Rect MapRect(const Rect& rect) const;
 
-  // Applies the reverse transformation on the given rect. After the function
-  // completes, |rect| will be the smallest axis aligned bounding rect
-  // containing the transformed rect. Returns false if the matrix cannot be
-  // inverted.
-  bool TransformRectReverse(RectF* rect) const;
+  // Applies the reverse transformation on the given rect. Returns
+  // `absl::nullopt` if the transformation cannot be inverted, or the rect that
+  // is the smallest axis aligned bounding rect containing the transformed rect.
+  [[nodiscard]] absl::optional<RectF> InverseMapRect(const RectF& rect) const;
   [[nodiscard]] absl::optional<Rect> InverseMapRect(const Rect& rect) const;
+
+  // TODO(crbug.com/1359528): Remove these in favor of MapRect().
+  void TransformRect(RectF* rect) const;
 
   // Applies transformation on the given |rrect|. Returns false if the transform
   // matrix cannot be applied to rrect.

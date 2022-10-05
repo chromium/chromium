@@ -665,8 +665,7 @@ Vector2dF ComputeTransform2dScaleComponents(const Transform& transform,
 }
 
 float ComputeApproximateMaxScale(const Transform& transform) {
-  RectF unit(0.f, 0.f, 1.f, 1.f);
-  transform.TransformRect(&unit);
+  gfx::RectF unit = transform.MapRect(RectF(0.f, 0.f, 1.f, 1.f));
   return std::max(unit.width(), unit.height());
 }
 

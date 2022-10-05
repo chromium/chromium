@@ -273,8 +273,8 @@ absl::optional<int> RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(
   //  We will notify the delegate to request a new screenshot once the x of b is
   //  within |kMinDistanceBeforeScreenshotDp| of the x of a, not including the
   //  edge padding (i.e. translation of (-190, 0)).
-  gfx::RectF transformed_animation_layer_bounds(animation_layer->bounds());
-  transform.TransformRect(&transformed_animation_layer_bounds);
+  gfx::RectF transformed_animation_layer_bounds =
+      transform.MapRect(gfx::RectF(animation_layer->bounds()));
 
   // `reached_edge_` becomes true if the user has scrolled `animation_layer` to
   // its limits.
@@ -361,8 +361,8 @@ int RootWindowDeskSwitchAnimator::EndSwipeAnimation(bool is_fast_swipe) {
     if (layer) {
       const gfx::Transform transform =
           animation_layer_owner_->root()->transform();
-      gfx::RectF screenshot_bounds(layer->bounds());
-      transform.TransformRect(&screenshot_bounds);
+      gfx::RectF screenshot_bounds =
+          transform.MapRect(gfx::RectF(layer->bounds()));
 
       const gfx::RectF root_window_bounds(root_window_->bounds());
       const gfx::RectF intersection_rect =
@@ -395,8 +395,7 @@ int RootWindowDeskSwitchAnimator::GetIndexOfMostVisibleDeskScreenshot() const {
     if (!layer)
       continue;
 
-    gfx::RectF bounds(layer->bounds());
-    transform.TransformRect(&bounds);
+    gfx::Rect bounds = transform.MapRect(layer->bounds());
     const int distance = std::abs(bounds.x());
     if (distance < min_distance) {
       min_distance = distance;

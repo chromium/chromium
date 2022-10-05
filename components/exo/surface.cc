@@ -1472,8 +1472,8 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   // work with 0,0 1x1 quads. This also means that quads that do not fall on
   // pixel boundaries (rotated or subpixel rects) cannot be removed by the
   // algorithm.
-  gfx::RectF target_space_rect(quad_rect);
-  quad_to_target_transform.TransformRect(&target_space_rect);
+  gfx::RectF target_space_rect =
+      quad_to_target_transform.MapRect(gfx::RectF(quad_rect));
   CHECK(quad_to_target_transform.Preserves2dAxisAlignment());
   // This simple rect representation cannot mathematically express a rotation
   // (and currently does not express flip/mirror) hence the
@@ -1494,11 +1494,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       uv_crop = gfx::RectF(state_.basic_state.crop);
       gfx::Size transformed_buffer_size(ToTransformedSize(
           current_resource_.size, state_.basic_state.buffer_transform));
-      if (!transformed_buffer_size.IsEmpty())
+      if (!transformed_buffer_size.IsEmpty()) {
         uv_crop.InvScale(transformed_buffer_size.width(),
                          transformed_buffer_size.height());
-
-      buffer_transform_.TransformRectReverse(&uv_crop);
+      }
+      uv_crop = buffer_transform_.InverseMapRect(uv_crop).value_or(uv_crop);
     }
 
     SkColor4f background_color = SkColors::kTransparent;

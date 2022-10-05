@@ -418,15 +418,15 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
     gfx::RectF window_bounds(window->GetTargetBounds());
     const gfx::Transform new_transform = TransformAboutPivot(
         window_bounds.origin(), window->layer()->GetTargetTransform());
-    new_transform.TransformRect(&window_bounds);
+    window_bounds = new_transform.MapRect(window_bounds);
 
     // The preview title is shown above the preview window. Hide the window
     // header for apps or browser windows with no tabs (web apps) to avoid
     // showing both the window header and the preview title.
     if (top_inset > 0) {
-      gfx::RectF header_bounds(window_bounds);
+      gfx::RectF header_bounds = window_bounds;
       header_bounds.set_height(top_inset);
-      new_transform.TransformRect(&header_bounds);
+      header_bounds = new_transform.MapRect(header_bounds);
       window_bounds.Inset(gfx::InsetsF::TLBR(header_bounds.height(), 0, 0, 0));
     }
     ::wm::TranslateRectToScreen(window->parent(), &window_bounds);

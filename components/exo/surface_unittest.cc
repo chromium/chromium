@@ -853,8 +853,7 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
   for (int j = 0; j < 2; j++) {
     const bool kTestCaseRotation = (j == 1);
     for (size_t i = 0; i < std::size(kTestRects); i++) {
-      auto rect_in_dip = kTestRects[i];
-      device_scale_transform.TransformRect(&rect_in_dip);
+      auto rect_in_dip = device_scale_transform.MapRect(kTestRects[i]);
       sub_surface->SetPosition(rect_in_dip.origin());
       child_surface->SetViewport(rect_in_dip.size());
       const int kChildBufferScale = 2;
@@ -873,8 +872,7 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
       ASSERT_EQ(2u, quad_list.size());
       auto transform =
           quad_list.front()->shared_quad_state->quad_to_target_transform;
-      auto rect = gfx::RectF(quad_list.front()->rect);
-      transform.TransformRect(&rect);
+      auto rect = transform.MapRect(gfx::RectF(quad_list.front()->rect));
       if (kExpectedAligned[i] && !kTestCaseRotation) {
         // A transformed rect cannot express a rotation.
         // Manipulation of texture coordinates, in addition to a transformed

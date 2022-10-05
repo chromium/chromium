@@ -687,16 +687,16 @@ TEST_F(SwipeHomeToOverviewControllerTest, ScaleChangesDuringDrag) {
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold - 50),
        0.f, 1.f);
 
-  gfx::RectF last_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&last_home_bounds);
+  gfx::RectF last_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_GT(original_home_bounds.width(), last_home_bounds.width());
 
   // Moving up should shrink home bounds further.
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold + 10),
        0.f, 1.f);
 
-  gfx::RectF current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  gfx::RectF current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_GT(last_home_bounds.width(), current_home_bounds.width());
   last_home_bounds = current_home_bounds;
 
@@ -704,16 +704,16 @@ TEST_F(SwipeHomeToOverviewControllerTest, ScaleChangesDuringDrag) {
   Drag(shelf_bounds.top_center() - gfx::Vector2d(0, transition_threshold - 40),
        0.f, 1.f);
 
-  current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_LT(last_home_bounds.width(), current_home_bounds.width());
   last_home_bounds = current_home_bounds;
 
   // Horizontal movement should not change bounds.
   Drag(shelf_bounds.top_center() - gfx::Vector2d(50, transition_threshold - 40),
        1.f, 0.f);
-  current_home_bounds = original_home_bounds;
-  home_screen_window->transform().TransformRect(&current_home_bounds);
+  current_home_bounds =
+      home_screen_window->transform().MapRect(original_home_bounds);
   EXPECT_EQ(last_home_bounds, current_home_bounds);
 
   // At shelf top the home window should have no transform.

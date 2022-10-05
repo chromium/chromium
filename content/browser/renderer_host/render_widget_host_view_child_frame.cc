@@ -702,18 +702,19 @@ const viz::LocalSurfaceId& RenderWidgetHostViewChildFrame::GetLocalSurfaceId()
 
 void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     const viz::AggregatedHitTestRegion& region) {
-  gfx::RectF screen_rect(region.rect);
-  if (!region.transform.TransformRectReverse(&screen_rect)) {
+  absl::optional<gfx::RectF> screen_rect =
+      region.transform.InverseMapRect(gfx::RectF(region.rect));
+  if (!screen_rect) {
     last_stable_screen_rect_ = gfx::RectF();
     screen_rect_stable_since_ = base::TimeTicks::Now();
     return;
   }
-  if ((ToRoundedSize(screen_rect.size()) !=
+  if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_.size())) ||
-      (std::abs(last_stable_screen_rect_.x() - screen_rect.x()) +
-           std::abs(last_stable_screen_rect_.y() - screen_rect.y()) >
+      (std::abs(last_stable_screen_rect_.x() - screen_rect->x()) +
+           std::abs(last_stable_screen_rect_.y() - screen_rect->y()) >
        blink::mojom::kMaxChildFrameScreenRectMovement)) {
-    last_stable_screen_rect_ = screen_rect;
+    last_stable_screen_rect_ = *screen_rect;
     screen_rect_stable_since_ = base::TimeTicks::Now();
   }
 }

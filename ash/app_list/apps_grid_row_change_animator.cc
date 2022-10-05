@@ -52,15 +52,14 @@ void AppsGridRowChangeAnimator::AnimateBetweenRows(AppListItemView* view,
 
     // Calculate 'target_in' so that 'view' can start its animation in the place
     // of the layer copy.
-    gfx::RectF layer_copy_bounds = gfx::RectF(row_change_layer->bounds());
-    row_change_layer->transform().TransformRect(&layer_copy_bounds);
+    gfx::RectF layer_copy_bounds = row_change_layer->transform().MapRect(
+        gfx::RectF(row_change_layer->bounds()));
     target_in = gfx::RectF(apps_grid_view_->items_container_->GetMirroredRect(
         gfx::ToRoundedRect(layer_copy_bounds)));
 
     // Calculate the current bounds of `view` including its layer transform.
-    gfx::RectF current_bounds_in_animation =
-        gfx::RectF(view->GetMirroredBounds());
-    view->layer()->transform().TransformRect(&current_bounds_in_animation);
+    gfx::RectF current_bounds_in_animation = view->layer()->transform().MapRect(
+        gfx::RectF(view->GetMirroredBounds()));
 
     // Set the bounds of the layer copy to the current bounds of'view'.
     row_change_layer->SetBounds(

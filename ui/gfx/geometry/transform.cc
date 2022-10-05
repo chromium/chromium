@@ -488,45 +488,48 @@ absl::optional<Point3F> Transform::InverseMapPoint(const Point3F& point) const {
   return absl::make_optional(MapPointInternal(inverse, point));
 }
 
-void Transform::TransformRect(RectF* rect) const {
+RectF Transform::MapRect(const RectF& rect) const {
   if (IsIdentity())
-    return;
+    return rect;
 
-  SkRect src = RectFToSkRect(*rect);
+  // TODO(crbug.com/1359528): Use local implementation.
+  SkRect src = RectFToSkRect(rect);
   TransformToFlattenedSkMatrix(*this).mapRect(&src);
-  *rect = SkRectToRectF(src);
+  return SkRectToRectF(src);
 }
 
 Rect Transform::MapRect(const Rect& rect) const {
   if (IsIdentity())
     return rect;
 
-  RectF rect_f(rect);
-  TransformRect(&rect_f);
-  return ToEnclosingRect(rect_f);
+  return ToEnclosingRect(MapRect(RectF(rect)));
 }
 
-bool Transform::TransformRectReverse(RectF* rect) const {
+// TODO(crbug.com/1359528): Remove this.
+void Transform::TransformRect(RectF* rect) const {
+  *rect = MapRect(*rect);
+}
+
+absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
   if (IsIdentity())
-    return true;
+    return rect;
 
   Transform inverse(kSkipInitialization);
   if (!GetInverse(&inverse))
-    return false;
+    return absl::nullopt;
 
-  SkRect src = RectFToSkRect(*rect);
+  // TODO(crbug.com/1359528): Use local implementation.
+  SkRect src = RectFToSkRect(rect);
   TransformToFlattenedSkMatrix(inverse).mapRect(&src);
-  *rect = SkRectToRectF(src);
-  return true;
+  return SkRectToRectF(src);
 }
 
 absl::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
   if (IsIdentity())
     return rect;
 
-  RectF rect_f(rect);
-  if (TransformRectReverse(&rect_f))
-    return ToEnclosingRect(rect_f);
+  if (absl::optional<RectF> mapped = InverseMapRect(RectF(rect)))
+    return ToEnclosingRect(mapped.value());
   return absl::nullopt;
 }
 

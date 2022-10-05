@@ -1674,10 +1674,8 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledQuadsShifted) {
     EXPECT_EQ(draw_quad->material, viz::DrawQuad::Material::kTiledContent);
 
     auto transform = [draw_quad](const gfx::Rect& rect) {
-      gfx::RectF result(rect);
-      draw_quad->shared_quad_state->quad_to_target_transform.TransformRect(
-          &result);
-      return result;
+      return draw_quad->shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(rect));
     };
 
     gfx::RectF transformed_rect = transform(draw_quad->rect);
@@ -1752,10 +1750,8 @@ TEST_F(LegacySWPictureLayerImplTest, FarScrolledSolidColorQuadsShifted) {
     EXPECT_EQ(draw_quad->material, viz::DrawQuad::Material::kSolidColor);
 
     auto transform = [draw_quad](const gfx::Rect& rect) {
-      gfx::RectF result(rect);
-      draw_quad->shared_quad_state->quad_to_target_transform.TransformRect(
-          &result);
-      return result;
+      return draw_quad->shared_quad_state->quad_to_target_transform.MapRect(
+          gfx::RectF(rect));
     };
 
     gfx::RectF transformed_rect = transform(draw_quad->rect);

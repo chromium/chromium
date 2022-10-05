@@ -228,7 +228,7 @@ void LogCursorSizeCounter(LocalFrame* frame, const ui::Cursor& cursor) {
 gfx::QuadF GetQuadForTimelinePaintEvent(const scoped_refptr<cc::Layer>& layer) {
   gfx::RectF rect(layer->update_rect());
   if (layer->transform_tree_index() != -1)
-    layer->ScreenSpaceTransform().TransformRect(&rect);
+    rect = layer->ScreenSpaceTransform().MapRect(rect);
   return gfx::QuadF(rect);
 }
 
