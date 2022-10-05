@@ -121,6 +121,8 @@ class ReadAnythingAppController
   // and others are not).
   bool SelectionContainsNode(ui::AXNode* ax_node);
 
+  bool NodeIsContentNode(ui::AXNodeID ax_node_id);
+
   content::RenderFrame* render_frame_;
   mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
   mojo::Remote<read_anything::mojom::PageHandler> page_handler_;

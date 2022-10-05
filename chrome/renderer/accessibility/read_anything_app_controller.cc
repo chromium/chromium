@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -393,7 +394,9 @@ std::string ReadAnythingAppController::GetLanguage(ui::AXNodeID ax_node_id) {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   if (!ax_node)
     return std::string();
-  return ax_node->GetLanguage();
+  if (NodeIsContentNode(ax_node_id))
+    return ax_node->GetLanguage();
+  return ax_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
 }
 
 std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {
@@ -497,4 +500,8 @@ bool ReadAnythingAppController::SelectionContainsNode(ui::AXNode* ax_node) {
           end_node_->IsDescendantOf(ax_node) ||
           (ax_node->CompareTo(*start_node_) > 0 &&
            ax_node->CompareTo(*end_node_) < 0));
+}
+
+bool ReadAnythingAppController::NodeIsContentNode(ui::AXNodeID ax_node_id) {
+  return base::Contains(content_node_ids_, ax_node_id);
 }

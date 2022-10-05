@@ -212,7 +212,7 @@ suite('ReadAnythingAppTest', () => {
     // root htmlTag='#document' id=1
     // ++paragraph htmlTag='p' id=2 language='en'
     // ++++staticText name='This is in English' id=3
-    // ++++link htmlTag='a' url='http://www.google.cn/' id=4
+    // ++++link htmlTag='a' url='http://www.google.com/' id=4
     // ++++++staticText name='This link has no language set' id=5
     const axTree = {
       rootId: 1,
