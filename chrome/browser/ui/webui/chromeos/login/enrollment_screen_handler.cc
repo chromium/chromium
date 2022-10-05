@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -40,7 +38,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/core/browser/cloud/message_util.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -209,13 +206,12 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
       histogram_helper_(new ErrorScreensHistogramHelper("Enrollment")) {
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
-  network_state_informer_->AddObserver(this);
   set_user_acted_method_path_deprecated(
       "login.OAuthEnrollmentScreen.userActed");
 }
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() {
-  network_state_informer_->RemoveObserver(this);
+  scoped_network_observation_.Reset();
   if (screen_)
     screen_->OnViewDestroyed(this);
 }
@@ -264,7 +260,9 @@ void EnrollmentScreenHandler::Show() {
     DoShow();
 }
 
-void EnrollmentScreenHandler::Hide() {}
+void EnrollmentScreenHandler::Hide() {
+  scoped_network_observation_.Reset();
+}
 
 void EnrollmentScreenHandler::Bind(ash::EnrollmentScreen* screen) {
   screen_ = screen;
@@ -277,7 +275,8 @@ void EnrollmentScreenHandler::Unbind() {
 }
 
 void EnrollmentScreenHandler::ShowSigninScreen() {
-  observe_network_failure_ = true;
+  if (!scoped_network_observation_.IsObserving())
+    scoped_network_observation_.Observe(network_state_informer_.get());
   ShowStep(kEnrollmentStepSignin);
 }
 
@@ -311,7 +310,7 @@ void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
     const std::string& machine_name,
     const std::string& username,
     authpolicy::ErrorType error) {
-  observe_network_failure_ = false;
+  scoped_network_observation_.Reset();
   if (active_directory_join_type_ == ActiveDirectoryDomainJoinType::COUNT) {
     active_directory_join_type_ =
         ActiveDirectoryDomainJoinType::WITHOUT_CONFIGURATION;
@@ -811,11 +810,10 @@ void EnrollmentScreenHandler::UpdateStateInternal(
     return;
   }
 
-  if (!force_update && !observe_network_failure_)
+  if (!force_update && !scoped_network_observation_.IsObserving())
     return;
 
   NetworkStateInformer::State state = network_state_informer_->state();
-  const std::string network_path = network_state_informer_->network_path();
   const bool is_online = (state == NetworkStateInformer::ONLINE);
   const bool is_behind_captive_portal =
       (state == NetworkStateInformer::CAPTIVE_PORTAL);
@@ -926,7 +924,7 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "HandleCompleteLogin";
-  observe_network_failure_ = false;
+  scoped_network_observation_.Reset();
 
   // When the network service is enabled, the webRequest API doesn't expose
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
@@ -1024,7 +1022,6 @@ void EnrollmentScreenHandler::HandleAdCompleteLogin(
     const std::string& encryption_types,
     const std::string& user_name,
     const std::string& password) {
-  observe_network_failure_ = false;
   DCHECK(controller_);
   controller_->OnActiveDirectoryCredsProvided(
       machine_name, distinguished_name,

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace chromeos {
@@ -210,16 +210,17 @@ class EnrollmentScreenHandler
   // True if screen was not shown yet.
   bool first_show_ = true;
 
-  // Whether we should handle network errors on enrollment screen.
-  // True when signin screen step is shown.
-  bool observe_network_failure_ = false;
-
   // Set true when chrome is being restarted to pick up enrollment changes. The
   // renderer processes will be destroyed and can no longer be talked to.
   bool shutdown_ = false;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
+
+  // Used to control observation of network errors on enrollment screen
+  // depending on whenever signin screen is shown.
+  base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
+      scoped_network_observation_{this};
 
   ErrorScreen* error_screen_ = nullptr;
   ash::EnrollmentScreen* screen_ = nullptr;
