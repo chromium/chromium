@@ -732,11 +732,15 @@ void CacheStorageManager::GetStorageKeys(
       std::tuple<storage::BucketLocator, storage::mojom::StorageUsageInfoPtr>>
       usage_tuples;
 
+  // Note that we don't want `GetStorageKeysAndLastModifiedOnTaskRunner()` to
+  // call `QuotaManagerProxy::UpdateOrCreateBucket()` because this method is
+  // sometimes used by the QuotaManager to bootstrap the quota database (and
+  // a call to `UpdateOrCreateBucket` could create a deadlock). We don't need
+  // the bucket ID to build a list of StorageKeys anyway.
   cache_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &GetStorageKeysAndLastModifiedOnTaskRunner,
-          base::WrapRefCounted(quota_manager_proxy_.get()),
+          &GetStorageKeysAndLastModifiedOnTaskRunner, nullptr,
           base::WrapRefCounted(scheduler_task_runner_.get()),
           std::move(usage_tuples), profile_path_, owner,
           base::BindOnce(&CacheStorageManager::ListStorageKeysOnTaskRunner,
@@ -1056,12 +1060,13 @@ void CacheStorageManager::ListStorageKeysOnTaskRunner(
     storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
     std::vector<std::tuple<storage::BucketLocator,
                            storage::mojom::StorageUsageInfoPtr>> usage_tuples) {
+  // Note that bucket IDs will not be populated in the `usage_tuples` entries.
   std::vector<blink::StorageKey> out_storage_keys;
   for (const std::tuple<storage::BucketLocator,
                         storage::mojom::StorageUsageInfoPtr>& usage_tuple :
        usage_tuples) {
     const storage::BucketLocator bucket_locator = std::get<0>(usage_tuple);
-    if (!bucket_locator.id || !bucket_locator.is_default) {
+    if (!bucket_locator.is_default) {
       continue;
     }
     out_storage_keys.emplace_back(bucket_locator.storage_key);
