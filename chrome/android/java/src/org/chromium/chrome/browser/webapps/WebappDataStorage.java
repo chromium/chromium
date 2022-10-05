@@ -61,6 +61,7 @@ public class WebappDataStorage {
     static final String KEY_WEBAPK_INSTALL_TIMESTAMP = "webapk_install_timestamp";
     static final String KEY_WEBAPK_UNINSTALL_TIMESTAMP = "webapk_uninstall_timestamp";
     static final String KEY_WEBAPK_MANIFEST_URL = "webapk_manifest_url";
+    static final String KEY_WEBAPK_MANIFEST_ID = "webapk_manifest_id";
     static final String KEY_WEBAPK_VERSION_CODE = "webapk_version_code";
 
     // The completion time of the last check for whether the WebAPK's Web Manifest was updated.
@@ -278,6 +279,7 @@ public class WebappDataStorage {
             if (info.isForWebApk()) {
                 editor.putString(KEY_WEBAPK_PACKAGE_NAME, info.webApkPackageName());
                 editor.putString(KEY_WEBAPK_MANIFEST_URL, info.manifestUrl());
+                editor.putString(KEY_WEBAPK_MANIFEST_ID, info.manifestId());
                 editor.putInt(KEY_WEBAPK_VERSION_CODE, info.webApkVersionCode());
                 editor.putLong(KEY_WEBAPK_INSTALL_TIMESTAMP,
                         fetchWebApkInstallTimestamp(info.webApkPackageName()));
@@ -683,6 +685,13 @@ public class WebappDataStorage {
      */
     public String getWebApkManifestUrl() {
         return mPreferences.getString(KEY_WEBAPK_MANIFEST_URL, null);
+    }
+
+    /**
+     * Returns cached Web Manifest ID.
+     */
+    public String getWebApkManifestId() {
+        return mPreferences.getString(KEY_WEBAPK_MANIFEST_ID, null);
     }
 
     /**

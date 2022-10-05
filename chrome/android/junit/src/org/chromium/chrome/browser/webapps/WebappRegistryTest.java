@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -699,6 +700,51 @@ public class WebappRegistryTest {
                 new WebApkIntentDataProviderBuilder("org.chromium.webapk", startUrl).build();
         registerWebapp(webApkIntentDataProvider);
         assertTrue(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testFindWebApkWithManifestId() throws Exception {
+        final String testManifestId = START_URL + "/id";
+        final String testPackageName = "org.chromium.webapk";
+
+        assertNull(WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId));
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder =
+                new WebApkIntentDataProviderBuilder(testPackageName, START_URL);
+        webApkIntentDataProviderBuilder.setWebApkManifestId(testManifestId);
+        registerWebapp(webApkIntentDataProviderBuilder.build());
+
+        WebappDataStorage storage =
+                WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId);
+        assertNotNull(storage);
+        assertEquals(storage.getWebApkManifestId(), testManifestId);
+        assertEquals(storage.getWebApkPackageName(), testPackageName);
+
+        final String anotherManifestId = START_URL + "/test_page.html";
+        assertNull(
+                WebappRegistry.getInstance().getWebappDataStorageForManifestId(anotherManifestId));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testFindWebApkPackageWithManifestId() throws Exception {
+        final String testManifestId = START_URL + "/id";
+        final String testPackageName = "org.chromium.webapk";
+
+        assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder =
+                new WebApkIntentDataProviderBuilder(testPackageName, START_URL);
+        webApkIntentDataProviderBuilder.setWebApkManifestId(testManifestId);
+        registerWebapp(webApkIntentDataProviderBuilder.build());
+
+        assertEquals(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
+                testPackageName);
+
+        final String anotherManifestId = START_URL + "/test_page.html";
+        assertNull(
+                WebappRegistry.getInstance().getWebappDataStorageForManifestId(anotherManifestId));
     }
 
     private Set<String> addWebappsToRegistry(String... webapps) {

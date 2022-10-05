@@ -11,6 +11,7 @@ import android.text.format.DateUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -272,6 +273,39 @@ public class WebappRegistry {
             }
         }
         return webApkIdsWithPendingUpdate;
+    }
+
+    /**
+     * Returns the WebAPK PackageName whose manifestId matches the provided one. Returns null
+     * if no matches.
+     * @param manifestId The manifestId to search for.
+     * @return The package name for the WebAPK, or null if one cannot be found.
+     **/
+    public @Nullable String findWebApkWithManifestId(String manifestId) {
+        WebappDataStorage storage = getWebappDataStorageForManifestId(manifestId);
+        if (storage != null) {
+            return storage.getWebApkPackageName();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the WebappDataStorage object whose manifestId matches the provided manifestId.
+     * Note: this function skips any storage object associated with WebAPKs.
+     * @param manifestId The manifestId to search for.
+     * @return The storage object for the WebAPK, or null if one cannot be found.
+     */
+    WebappDataStorage getWebappDataStorageForManifestId(final String manifestId) {
+        if (TextUtils.isEmpty(manifestId)) return null;
+
+        for (WebappDataStorage storage : mStorages.values()) {
+            if (!storage.getId().startsWith(WebApkConstants.WEBAPK_ID_PREFIX)) continue;
+
+            if (TextUtils.equals(storage.getWebApkManifestId(), manifestId)) {
+                return storage;
+            }
+        }
+        return null;
     }
 
     /**
