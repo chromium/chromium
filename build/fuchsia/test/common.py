@@ -181,19 +181,10 @@ def get_component_uri(package: str) -> str:
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
     for package in packages:
-        # Try destroying the component to force an update.
         run_ffx_command(
-            ['component', 'destroy', f'/core/ffx-laboratory:{package}'],
+            ['component', 'reload', f'/core/ffx-laboratory:{package}'],
             target_id,
             check=False)
-
-        run_ffx_command([
-            'component', 'create', f'/core/ffx-laboratory:{package}',
-            f'fuchsia-pkg://{REPO_ALIAS}/{package}#meta/{package}.cm'
-        ], target_id)
-        run_ffx_command(
-            ['component', 'resolve', f'/core/ffx-laboratory:{package}'],
-            target_id)
 
 
 # TODO(crbug.com/1342460): Remove when Telemetry tests are using CFv2 packages.
