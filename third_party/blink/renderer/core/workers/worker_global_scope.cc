@@ -30,6 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -625,6 +626,15 @@ WorkerGlobalScope::WorkerGlobalScope(
   DCHECK(creation_params->worker_permissions_policy);
   GetSecurityContext().SetPermissionsPolicy(
       std::move(creation_params->worker_permissions_policy));
+
+  // UKM recorder is needed in the Dispose() method but sometimes it is not
+  // initialized by then because of a race problem.
+  // If the Identifiability Study is enabled, we need the UKM recorder in any
+  // case so it should not affect anything if we initialize it here.
+  // TODO(crbug.com/1370978): Check if there is another fix instead of
+  // initializing UKM Recorder here.
+  if (blink::IdentifiabilityStudySettings::Get()->IsActive())
+    UkmRecorder();
 }
 
 void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {

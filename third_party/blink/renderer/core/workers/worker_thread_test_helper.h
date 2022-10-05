@@ -40,6 +40,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
+
 namespace blink {
 
 class FakeWorkerGlobalScope : public WorkerGlobalScope {
@@ -52,9 +56,20 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
                           base::TimeTicks::Now(),
                           false) {
     ReadyToRunWorkerScript();
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        ukm::mojom::UkmRecorderInterface::Name_,
+        WTF::BindRepeating(
+            [](ScopedFakeUkmRecorder* interface,
+               mojo::ScopedMessagePipeHandle handle) {
+              interface->SetHandle(std::move(handle));
+            },
+            WTF::Unretained(&scoped_fake_ukm_recorder_)));
   }
 
-  ~FakeWorkerGlobalScope() override = default;
+  ~FakeWorkerGlobalScope() override {
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        ukm::mojom::UkmRecorderInterface::Name_, {});
+  }
 
   // EventTarget
   const AtomicString& InterfaceName() const override {
@@ -111,6 +126,8 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }
+
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 
  private:
   SharedWorkerToken token_;

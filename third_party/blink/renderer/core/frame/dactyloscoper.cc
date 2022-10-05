@@ -50,13 +50,10 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const IdentifiableToken& value) {
   if (!context || !ShouldSample(feature))
     return;
-  auto* window = DynamicTo<LocalDOMWindow>(context);
-  if (!window)
-    return;
-  Document* document = window->document();
-  IdentifiabilityMetricBuilder(document->UkmSourceID())
+
+  IdentifiabilityMetricBuilder(context->UkmSourceID())
       .AddWebFeature(feature, value)
-      .Record(document->UkmRecorder());
+      .Record(context->UkmRecorder());
 }
 
 // static

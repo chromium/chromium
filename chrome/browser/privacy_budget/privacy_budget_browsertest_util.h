@@ -32,11 +32,16 @@ class WebContents;
 }  // namespace content
 
 class PrivacyBudgetBrowserTestBaseWithTestRecorder
-    : public PlatformBrowserTest {
+    : public PlatformBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
  public:
   PrivacyBudgetBrowserTestBaseWithTestRecorder();
   ~PrivacyBudgetBrowserTestBaseWithTestRecorder() override;
   void SetUpOnMainThread() override;
+
+  // Returns the reported surface keys which are among the expected keys.
+  base::flat_set<uint64_t> GetReportedSurfaceKeys(
+      std::vector<uint64_t> expected_keys);
 
   ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
 
