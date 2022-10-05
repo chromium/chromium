@@ -4,6 +4,7 @@
 
 #include "net/base/network_anonymization_key.h"
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -382,7 +383,7 @@ TEST_P(NetworkAnonymizationKeyTest, Getters) {
   if (IsCrossSiteFlagEnabled()) {
     EXPECT_TRUE(key.GetIsCrossSite());
   } else {
-    EXPECT_DEATH_IF_SUPPORTED(key.GetIsCrossSite(), "");
+    EXPECT_DCHECK_DEATH(key.GetIsCrossSite());
   }
 }
 
@@ -409,9 +410,10 @@ TEST_P(NetworkAnonymizationKeyTest, ToDebugString) {
         kNonce.ToString() + ")";
     EXPECT_EQ(key.ToDebugString(),
               double_key_with_cross_site_flag_expected_string_value);
-    // is_cross_site_ must be populated if
-    // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
-    EXPECT_DEATH_IF_SUPPORTED(empty_key.ToDebugString(), "");
+    // is_cross_site_ will be stored as nullopt when it's not populated even if
+    // IsCrossSiteFlagEnabled is enabled.
+    EXPECT_EQ(empty_key.ToDebugString(),
+              "null null with empty is_cross_site value");
   } else {
     // When neither `kEnableDoubleKeyNetworkAnonymizationKey` or
     // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled,

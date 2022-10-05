@@ -5,6 +5,7 @@
 #include "net/base/isolation_info.h"
 
 #include <iostream>
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "isolation_info.h"
@@ -203,8 +204,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
     EXPECT_EQ(
         absl::nullopt,
         isolation_info.network_anonymization_key().GetFrameSiteForTesting());
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetIsCrossSite(), "");
+    EXPECT_DCHECK_DEATH(
+        isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
@@ -217,8 +218,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
         absl::nullopt,
         isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetIsCrossSite(), "");
+    EXPECT_DCHECK_DEATH(
+        isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
@@ -227,8 +228,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
     EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
               net::SchemefulSite(kOrigin2));
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-    EXPECT_DEATH_IF_SUPPORTED(
-        isolation_info.network_anonymization_key().GetIsCrossSite(), "");
+    EXPECT_DCHECK_DEATH(
+        isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
