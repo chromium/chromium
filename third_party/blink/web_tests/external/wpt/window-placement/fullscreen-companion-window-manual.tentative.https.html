@@ -4,7 +4,7 @@
 <!-- user agents are not required to support open features other than `noopener`
      and on some platforms position and size features don't make sense -->
 <meta name="flags" content="may">
-<title>Multi-Screen Window Placement test: Fullscreen Companion Window</title>
+<title>Multi-Screen Window Management test: Fullscreen Companion Window</title>
 <link rel="help" href="https://w3c.github.io/window-placement/">
 This test uses multi-screen details to request fullscreen and open a pop-up<br>
 (companion window) in the same user activation.<br>
@@ -48,7 +48,7 @@ async function testPopupOnScreen(popupTest, screen, expectPopup) {
 }
 
 promise_test(async setUpTest => {
-  await setUpWindowPlacement(setUpTest, setUpButton);
+  await setUpWindowManagement(setUpTest, setUpButton);
   const screenDetails = await getScreenDetails();
   assert_true(!!screenDetails, 'Error getting screen details');
   for (const [i, fullscreenScreen] of screenDetails.screens.entries()) {

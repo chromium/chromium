@@ -4,7 +4,7 @@
 <!-- user agents are not required to support open features other than `noopener`
      and on some platforms position and size features don't make sense -->
 <meta name="flags" content="may">
-<title>Multi-Screen Window Placement test: window.open()</title>
+<title>Multi-Screen Window Management test: window.open()</title>
 <link rel="help" href="https://w3c.github.io/window-placement/">
 This test uses multi-screen details to open a popup window on each screen.<br>
 It runs automated or manually with `wpt serve` and a compatible browser.<br><br>
@@ -83,7 +83,7 @@ async function testPopupOnScreen(popupTest, screen) {
 }
 
 promise_test(async setUpTest => {
-  await setUpWindowPlacement(setUpTest, setUpButton);
+  await setUpWindowManagement(setUpTest, setUpButton);
   const screenDetails = await getScreenDetails();
   assert_true(!!screenDetails, 'Error getting screen details');
   assert_greater_than(screenDetails.screens.length, 0, 'Connect a screen');
