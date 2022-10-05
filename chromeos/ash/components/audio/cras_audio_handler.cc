@@ -351,7 +351,11 @@ bool CrasAudioHandler::IsOutputMutedForDevice(uint64_t device_id) {
 }
 
 bool CrasAudioHandler::IsOutputMutedByPolicy() {
-  return output_mute_locked_;
+  return output_mute_forced_by_policy_;
+}
+
+bool CrasAudioHandler::IsOutputMutedBySecurityCurtain() {
+  return output_mute_forced_by_security_curtain_;
 }
 
 bool CrasAudioHandler::IsOutputVolumeBelowDefaultMuteLevel() {
@@ -735,6 +739,14 @@ void CrasAudioHandler::SetOutputMute(bool mute_on) {
 
   for (auto& observer : observers_)
     observer.OnOutputMuteChanged(output_mute_on_);
+}
+
+void CrasAudioHandler::SetOutputMuteLockedBySecurityCurtain(bool mute_on) {
+  if (output_mute_forced_by_security_curtain_ == mute_on)
+    return;
+
+  output_mute_forced_by_security_curtain_ = mute_on;
+  UpdateAudioMute();
 }
 
 void CrasAudioHandler::AdjustOutputVolumeToAudibleLevel() {
@@ -1192,20 +1204,28 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
-  output_mute_locked_ = false;
-  if (!audio_pref_handler_->GetAudioOutputAllowedValue()) {
+  bool mute_on = !audio_pref_handler_->GetAudioOutputAllowedValue();
+
+  if (output_mute_forced_by_policy_ == mute_on)
+    return;
+
+  output_mute_forced_by_policy_ = mute_on;
+  UpdateAudioMute();
+  // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome
+  // media system.
+}
+
+void CrasAudioHandler::UpdateAudioMute() {
+  if (output_mute_forced_by_policy_ ||
+      output_mute_forced_by_security_curtain_) {
     // Mute the device, but do not update the preference.
     SetOutputMuteInternal(true);
-    output_mute_locked_ = true;
   } else {
     // Restore the mute state.
     const AudioDevice* device = GetDeviceFromId(active_output_node_id_);
     if (device)
       SetOutputMuteInternal(audio_pref_handler_->GetMuteValue(*device));
   }
-
-  // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome
-  // media system.
 }
 
 void CrasAudioHandler::SetOutputNodeVolume(uint64_t node_id, int volume) {
@@ -1231,8 +1251,13 @@ void CrasAudioHandler::SetOutputNodeVolumePercent(uint64_t node_id,
 }
 
 bool CrasAudioHandler::SetOutputMuteInternal(bool mute_on) {
-  if (output_mute_locked_)
+  bool is_output_mute_forced = (output_mute_forced_by_policy_ ||
+                                output_mute_forced_by_security_curtain_);
+
+  if (is_output_mute_forced && !mute_on) {
+    // Do not allow unmuting if the policy forces the device to remain muted.
     return false;
+  }
 
   output_mute_on_ = mute_on;
   CrasAudioClient::Get()->SetOutputUserMute(mute_on);

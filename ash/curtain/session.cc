@@ -4,12 +4,15 @@
 
 #include "ash/curtain/session.h"
 
+#include <memory>
+
 #include "ash/curtain/security_curtain_widget_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash::curtain {
 
@@ -52,13 +55,28 @@ void Session::RootWindowsObserver::OnRootWindowAdded(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//  ScopedAudioMuter
+////////////////////////////////////////////////////////////////////////////////
+class Session::ScopedAudioMuter {
+ public:
+  ScopedAudioMuter() {
+    CrasAudioHandler::Get()->SetOutputMuteLockedBySecurityCurtain(true);
+  }
+
+  ~ScopedAudioMuter() {
+    CrasAudioHandler::Get()->SetOutputMuteLockedBySecurityCurtain(false);
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 //  Session
 ////////////////////////////////////////////////////////////////////////////////
 
 Session::Session(Shell* shell)
     : shell_(*shell),
       root_windows_observer_(
-          std::make_unique<RootWindowsObserver>(this, shell)) {
+          std::make_unique<RootWindowsObserver>(this, shell)),
+      scoped_audio_muter_(std::make_unique<ScopedAudioMuter>()) {
   CurtainOffAllRootWindows();
 }
 

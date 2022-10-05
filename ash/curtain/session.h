@@ -40,9 +40,12 @@ class Session {
 
   // Helper class observing all root windows being added/removed.
   class RootWindowsObserver;
+  // Helper class to mute the audio output during the session.
+  class ScopedAudioMuter;
 
   raw_ref<Shell> shell_;
   std::unique_ptr<RootWindowsObserver> root_windows_observer_;
+  std::unique_ptr<ScopedAudioMuter> scoped_audio_muter_;
 };
 
 }  // namespace ash::curtain

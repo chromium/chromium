@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
@@ -148,6 +149,11 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(window.GetBoundsInScreen().CenterPoint());
     event_generator->ClickLeftButton();
+  }
+
+  bool IsOutputMuted() {
+    return CrasAudioHandler::Get()->IsOutputMutedBySecurityCurtain() &&
+           CrasAudioHandler::Get()->IsOutputMuted();
   }
 
  private:
@@ -326,6 +332,17 @@ TEST_F(SecurityCurtainControllerImplTest,
     EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false))
         << "No curtain should be shown on display " << display.ToString();
   }
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldToggleAudioHandlerWhenEnabledAndDisabled) {
+  CreateSingleDisplay();
+
+  security_curtain_controller().Enable();
+  EXPECT_TRUE(IsOutputMuted());
+
+  security_curtain_controller().Disable();
+  EXPECT_FALSE(IsOutputMuted());
 }
 
 }  // namespace

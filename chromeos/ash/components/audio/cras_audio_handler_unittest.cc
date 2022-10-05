@@ -356,7 +356,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   void SetUpCrasAudioHandler(const AudioNodeList& audio_nodes) {
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
-    audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -375,7 +375,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
       const AudioDevice& active_device_in_pref,
       bool activate_by_user) {
     CrasAudioClient::InitializeFake();
-    audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     bool active;
     for (const AudioNode& node : audio_nodes_in_pref) {
       active = node.id == active_device_in_pref.id;
@@ -405,7 +405,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
     fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
-    audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -423,7 +423,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
     fake_cras_audio_client()->SetNoiseCancellationSupported(
         /*noise_cancellation_supported=*/true);
-    audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_enabled);
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
@@ -4565,6 +4565,76 @@ TEST_P(CrasAudioHandlerTest, HasActiveInputDeviceForSimpleUsage) {
     EXPECT_FALSE(cras_audio_handler_->HasActiveInputDeviceForSimpleUsage())
         << description;
   }
+}
+
+TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedByAudioPolicy) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  for (bool previous_value : {true, false}) {
+    cras_audio_handler_->SetOutputMute(previous_value);
+
+    audio_pref_handler_->SetAudioOutputAllowedValue(false);
+    EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
+    EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
+
+    audio_pref_handler_->SetAudioOutputAllowedValue(true);
+    EXPECT_FALSE(cras_audio_handler_->IsOutputMutedByPolicy());
+    EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
+  }
+}
+
+TEST_P(CrasAudioHandlerTest, ShouldBeForcefullyMutedBySecurityCurtainMode) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  for (bool previous_value : {true, false}) {
+    cras_audio_handler_->SetOutputMute(previous_value);
+
+    cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(true);
+    EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
+    EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
+
+    cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(false);
+    EXPECT_FALSE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
+    EXPECT_EQ(cras_audio_handler_->IsOutputMuted(), previous_value);
+  }
+}
+
+TEST_P(CrasAudioHandlerTest,
+       ShouldNotBreakPolicyMutingByDisablingSecurityCurtain) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
+  SetUpCrasAudioHandler(audio_nodes);
+  cras_audio_handler_->SetOutputMute(false);
+
+  // Forced mute through a policy
+  audio_pref_handler_->SetAudioOutputAllowedValue(false);
+
+  // Then enable and disable forced mute through the security curtain.
+  cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(true);
+  cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(false);
+
+  // The force mute through the policy should still be in effect.
+  EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
+  EXPECT_TRUE(cras_audio_handler_->IsOutputMutedByPolicy());
+}
+
+TEST_P(CrasAudioHandlerTest,
+       ShouldNotBreakSecurityCurtainMutingByAudioPolicyChange) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalSpeaker});
+  SetUpCrasAudioHandler(audio_nodes);
+  cras_audio_handler_->SetOutputMute(false);
+
+  // Forced mute by security curtain
+  cras_audio_handler_->SetOutputMuteLockedBySecurityCurtain(true);
+
+  // Then enable and disable mute through audio policy
+  audio_pref_handler_->SetAudioOutputAllowedValue(false);
+  audio_pref_handler_->SetAudioOutputAllowedValue(true);
+
+  // The force mute through the policy should still be in effect.
+  EXPECT_TRUE(cras_audio_handler_->IsOutputMuted());
+  EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
 }
 
 }  // namespace ash
