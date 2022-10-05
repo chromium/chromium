@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "android-marshmallow-x86-rel-reclient-compilator",
-    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -10,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-marshmallow-x86-rel",
+              "builder": "android-nougat-x86-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -18,12 +14,9 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x86_builder"
+                "config": "x86_builder_mb"
               },
               "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
                 "build_config": "Release",
                 "config": "android",
                 "target_bits": 32,
@@ -32,8 +25,8 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "android",
-                  "enable_wpr_tests",
-                  "enable_reclient"
+                  "enable_reclient",
+                  "enable_wpr_tests"
                 ],
                 "config": "chromium"
               }
@@ -44,7 +37,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-marshmallow-x86-rel",
+          "builder": "android-nougat-x86-rel",
           "project": "chromium"
         }
       ],
@@ -63,6 +56,18 @@
   "$build/flakiness": {
     "check_for_flakiness": true
   },
+  "$build/goma": {
+    "enable_ats": true,
+    "jobs": 300,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 300,
+    "metrics_project": "chromium-reclient-metrics"
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -71,5 +76,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
-  "recipe": "chromium/orchestrator"
+  "recipe": "chromium/compilator"
 }

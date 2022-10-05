@@ -45,6 +45,10 @@
         {
           "builder": "android-nougat-x86-rel",
           "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-nougat-x86-rel-reclient",
+          "group": "tryserver.chromium.android"
         }
       ]
     }
