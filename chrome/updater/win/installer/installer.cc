@@ -29,6 +29,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -292,6 +293,10 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
             << command_line.GetCommandLineString();
     return ProcessExitResult(UNABLE_TO_DE_ELEVATE_METAINSTALLER);
   }
+
+  base::win::ScopedCOMInitializer com_initializer(
+      base::win::ScopedCOMInitializer::kMTA);
+  DCHECK(com_initializer.Succeeded());
 
   // Deelevate the metainstaller.
   HRESULT hr =
