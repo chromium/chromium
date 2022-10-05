@@ -14,7 +14,6 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher_helper.h"
@@ -304,8 +303,6 @@ class CONTENT_EXPORT ChildProcessLauncher {
   bool should_launch_elevated_ = false;
 
   scoped_refptr<internal::ChildProcessLauncherHelper> helper_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
 };

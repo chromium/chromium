@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -110,7 +111,7 @@ ChildProcessLauncher::ChildProcessLauncher(
       terminate_child_on_shutdown_(terminate_on_shutdown)
 #endif
 {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_WIN)
   should_launch_elevated_ = delegate->ShouldLaunchElevated();
@@ -127,7 +128,7 @@ ChildProcessLauncher::ChildProcessLauncher(
 }
 
 ChildProcessLauncher::~ChildProcessLauncher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (process_.process.IsValid() && terminate_child_on_shutdown_) {
     // Client has gone away, so just kill the process.
     ChildProcessLauncherHelper::ForceNormalProcessTerminationAsync(
@@ -137,7 +138,7 @@ ChildProcessLauncher::~ChildProcessLauncher() {
 
 void ChildProcessLauncher::SetProcessPriority(
     const ChildProcessLauncherPriority& priority) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::Process to_pass = process_.process.Duplicate();
   GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE,
@@ -151,7 +152,7 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
                                   DWORD last_error,
 #endif
                                   int error_code) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   starting_ = false;
   process_ = std::move(process);
 
@@ -171,19 +172,19 @@ void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
 }
 
 bool ChildProcessLauncher::IsStarting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return starting_;
 }
 
 const base::Process& ChildProcessLauncher::GetProcess() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!starting_);
   return process_.process;
 }
 
 ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
     bool known_dead) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!process_.process.IsValid()) {
     // Make sure to avoid using the default termination status if the process
