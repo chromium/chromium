@@ -311,12 +311,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
   std::vector<std::unique_ptr<ui::DCRendererLayerParams>> overlays;
   std::swap(pending_overlays_, overlays);
 
-  // Sort layers by z-order.
-  std::sort(overlays.begin(), overlays.end(),
-            [](const auto& a, const auto& b) -> bool {
-              return a->z_order < b->z_order;
-            });
-
   // If we need to grow or shrink swap chain presenters, we'll need to add or
   // remove visuals.
   if (video_swap_chains_.size() != overlays.size()) {
@@ -338,9 +332,31 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     needs_rebuild_visual_tree_ = true;
   }
 
+  // Add a placeholder overlay for the root surface, at a z-order of 0.
+  auto root_params = std::make_unique<ui::DCRendererLayerParams>();
+  root_params->z_order = 0;
+  overlays.emplace_back(std::move(root_params));
+
+  // Sort layers by z-order.
+  std::sort(overlays.begin(), overlays.end(),
+            [](const auto& a, const auto& b) -> bool {
+              return a->z_order < b->z_order;
+            });
+
+  // |overlays| and |video_swap_chains_| do not have a 1:1 mapping because the
+  // root surface placeholder overlay does not have SwapChainPresenter, so there
+  // is one less element in |video_swap_chains_| than |overlays|. In subsequent
+  // loops over |overlay|, we either skip over the root surface placeholder or
+  // handle it differently without using a SwapChainPresenter, so we need an
+  // iterator to keep track of the next SwapChainPresenter to use.
+  auto video_swap_iter = video_swap_chains_.begin();
   // Present to each swap chain and update its visual subtree.
   for (size_t i = 0; i < overlays.size(); ++i) {
-    auto& video_swap_chain = video_swap_chains_[i];
+    if (overlays[i]->z_order == 0) {
+      continue;
+    }
+
+    auto& video_swap_chain = *(video_swap_iter++);
 
     gfx::Transform transform;
     gfx::Rect clip_rect;
@@ -380,26 +396,19 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     needs_rebuild_visual_tree_ = false;
     dcomp_root_visual_->RemoveAllVisuals();
 
-    // Add layers with negative z-order first.
-    size_t i = 0;
-    for (; i < overlays.size() && overlays[i]->z_order < 0; ++i) {
-      // We call AddVisual with insertAbove FALSE and referenceVisual nullptr
-      // which is equivalent to saying that the visual should be below no other
-      // visual, or in other words it should be above all other visuals.
-      dcomp_root_visual_->AddVisual(
-          video_swap_chains_[i]->visual_subtree().visual(), FALSE, nullptr);
-    }
-
-    // Add root surface visual at z-order 0.
-    dcomp_root_visual_->AddVisual(root_surface_visual_.Get(), FALSE, nullptr);
-
-    // Add visuals with positive z-order.
-    for (; i < overlays.size(); ++i) {
-      // There shouldn't be a layer with z-order 0.  Otherwise, we can't tell
-      // its order with respect to root surface.
-      DCHECK_GT(overlays[i]->z_order, 0);
-      dcomp_root_visual_->AddVisual(
-          video_swap_chains_[i]->visual_subtree().visual(), FALSE, nullptr);
+    video_swap_iter = video_swap_chains_.begin();
+    for (size_t i = 0; i < overlays.size(); ++i) {
+      if (overlays[i]->z_order != 0) {
+        // We call AddVisual with insertAbove FALSE and referenceVisual nullptr
+        // which is equivalent to saying that the visual should be below no
+        // other visual, or in other words it should be above all other visuals.
+        dcomp_root_visual_->AddVisual(
+            (*video_swap_iter)->visual_subtree().visual(), FALSE, nullptr);
+        video_swap_iter++;
+      } else {
+        dcomp_root_visual_->AddVisual(root_surface_visual_.Get(), FALSE,
+                                      nullptr);
+      }
     }
 
     // Only add the ink visual to the tree if it has already been initialized.
