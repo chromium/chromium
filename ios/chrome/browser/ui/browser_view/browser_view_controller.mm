@@ -3658,7 +3658,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (NTPHelper->IsActive()) {
     [self.ntpCoordinator ntpDidChangeVisibility:YES];
     self.ntpCoordinator.webState = webState;
-    self.ntpCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
+    [self.ntpCoordinator selectFeedType:NTPHelper->GetNextNTPFeedType()];
     self.ntpCoordinator.shouldScrollIntoFeed =
         NTPHelper->GetNextNTPScrolledToFeed();
   } else {

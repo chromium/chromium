@@ -10,11 +10,11 @@
 // Protocol containing the properties to configure the NTP.
 @protocol NewTabPageConfiguring
 
-// Currently selected feed.
-@property(nonatomic, assign) FeedType selectedFeed;
-
 // Whether the NTP should initially be scrolled into the feed.
 @property(nonatomic, assign) BOOL shouldScrollIntoFeed;
+
+// Changes the selected feed on the NTP to be `feedType`.
+- (void)selectFeedType:(FeedType)feedType;
 
 @end
 

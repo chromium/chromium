@@ -57,6 +57,9 @@ class WebState;
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
+// Currently selected feed.
+@property(nonatomic, assign, readonly) FeedType selectedFeed;
+
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
@@ -91,9 +94,6 @@ class WebState;
 
 // Called when the given `feedType` has completed updates.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
-
-// Changes the selected feed on the NTP to be `feedType`.
-- (void)selectFeedType:(FeedType)feedType;
 
 @end
 
