@@ -336,13 +336,21 @@ void ManagePasswordsUIController::OnBiometricAuthenticationForFilling(
   prefs->SetInteger(promo_shown_counter,
                     prefs->GetInteger(promo_shown_counter) + 1);
 
-  passwords_data_.OnBiometricAuthenticationForFilling();
+  passwords_data_.TransitionToState(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   was_biometric_authentication_for_filling_promo_shown_ = true;
   UpdateBubbleAndIconVisibility();
 #else
   NOTIMPLEMENTED();
 #endif
+}
+
+void ManagePasswordsUIController::ShowBiometricActivationConfirmation() {
+  passwords_data_.TransitionToState(
+      password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE);
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
 }
 
 void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
@@ -494,6 +502,8 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   bubble_status_ = BubbleStatus::NOT_SHOWN;
   if (GetState() == password_manager::ui::CONFIRMATION_STATE ||
       GetState() == password_manager::ui::AUTO_SIGNIN_STATE ||
+      GetState() ==
+          password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||
       GetState() == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
       GetState() == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX) {
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);

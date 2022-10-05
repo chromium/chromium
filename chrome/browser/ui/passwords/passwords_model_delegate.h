@@ -192,6 +192,10 @@ class PasswordsModelDelegate {
   // opened.
   virtual bool ArePasswordsRevealedWhenBubbleIsOpened() const = 0;
 
+  // Called from Biometric Authentication promo dialog when the feature is
+  // enabled.
+  virtual void ShowBiometricActivationConfirmation() = 0;
+
  protected:
   virtual ~PasswordsModelDelegate() = default;
 };

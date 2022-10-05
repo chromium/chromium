@@ -31,6 +31,7 @@
 #include "ui/views/controls/button/button.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/views/passwords/biometric_authentication_confirmation_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/biometric_authentication_for_filling_bubble_view.h"
 #endif
 
@@ -110,6 +111,10 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
         Profile::FromBrowserContext(web_contents->GetBrowserContext())
             ->GetPrefs(),
         reason);
+  } else if (model_state == password_manager::ui::
+                                BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE) {
+    view = new BiometricAuthenticationConfirmationBubbleView(web_contents,
+                                                             anchor_view);
 #endif
   } else {
     NOTREACHED();

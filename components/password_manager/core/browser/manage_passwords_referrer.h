@@ -62,7 +62,11 @@ enum class ManagePasswordsReferrer {
   // password manager" after a successful automated password change run.
   // Only used on Desktop.
   kAutomatedPasswordChangeSuccessLink = 14,
-  kMaxValue = kAutomatedPasswordChangeSuccessLink,
+  // On Mac and Win after enenabling Biometric authentication before filling
+  // a confirmation dialog is shown with an instructions on how to control the
+  // feature from settings.
+  kBiometricAuthenticationBeforeFillingDialog = 15,
+  kMaxValue = kBiometricAuthenticationBeforeFillingDialog,
 };
 
 }  // namespace password_manager

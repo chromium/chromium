@@ -64412,6 +64412,7 @@ from previous Chrome versions.
   <int value="12" label="Password Generation Prompt in Autofill Dropdown"/>
   <int value="13" label="Passwords Google Website"/>
   <int value="14" label="Link after successful automated password change"/>
+  <int value="15" label="Biometric Authentication before filling"/>
 </enum>
 
 <enum name="ManifestFetchResultType">

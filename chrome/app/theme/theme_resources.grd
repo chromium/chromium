@@ -65,6 +65,8 @@
       </if>
       <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_PROMPT_LIGHT" file="common/biometric_password_auth_light.png" />
       <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_PROMPT_DARK" file="common/biometric_password_auth_dark.png" />
+      <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_CONFIRMATION_PROMPT_LIGHT" file="common/biometric_password_success_light.png" />
+      <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_CONFIRMATION_PROMPT_DARK" file="common/biometric_password_success_dark.png" />
       <if expr="chromeos_ash">
         <structure type="chrome_scaled_image" name="IDR_BLUETOOTH_PAIRING_TICK" file="cros/bluetooth_pairing_tick.png" />
       </if>

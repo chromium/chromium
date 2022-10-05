@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,6 +110,7 @@ TEST_F(BiometricAuthenticationForFillingBubbleControllerTest,
   EXPECT_CALL(*delegate(), AuthenticateUserWithMessage)
       .WillOnce(testing::WithArg<1>(
           [](auto callback) { std::move(callback).Run(/*success=*/true); }));
+  EXPECT_CALL(*delegate(), ShowBiometricActivationConfirmation);
   controller()->OnAccepted();
   EXPECT_TRUE(test_pref_service()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));

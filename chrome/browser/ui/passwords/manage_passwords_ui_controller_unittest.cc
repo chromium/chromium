@@ -1757,6 +1757,10 @@ TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldShowBiometricAuthenticationForFillingPromo) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
   profile()->GetPrefs()->SetInteger(
@@ -1853,6 +1857,10 @@ TEST_F(ManagePasswordsUIControllerTest,
 // than once.
 TEST_F(ManagePasswordsUIControllerTest,
        ShouldNotShowBiometricAuthenticationForFillingPromoTwiceOnTheSameTab) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+
   profile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
   profile()->GetPrefs()->SetInteger(
@@ -1867,6 +1875,20 @@ TEST_F(ManagePasswordsUIControllerTest,
 
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(0);
   controller()->OnBiometricAuthenticationForFilling(profile()->GetPrefs());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
+  std::vector<const PasswordForm*> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  controller()->ShowBiometricActivationConfirmation();
+  EXPECT_EQ(password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
+            controller()->GetState());
+
+  // After closing buble state switches automatically to MANAGE_STATE.
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnBubbleHidden();
+  ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

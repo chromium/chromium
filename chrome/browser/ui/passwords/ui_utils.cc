@@ -215,6 +215,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kPasswordBreachDialog:
       case ManagePasswordsReferrer::kSafetyCheck:
       case ManagePasswordsReferrer::kAutomatedPasswordChangeSuccessLink:
+      case ManagePasswordsReferrer::kBiometricAuthenticationBeforeFillingDialog:
         NOTREACHED();
     }
 

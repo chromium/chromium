@@ -15,7 +15,9 @@
 
 namespace {
 
-void OnReauthCompleted(PrefService* prefs, bool success) {
+void OnReauthCompleted(PrefService* prefs,
+                       base::WeakPtr<PasswordsModelDelegate> delegate,
+                       bool success) {
   if (!success) {
     return;
   }
@@ -24,6 +26,9 @@ void OnReauthCompleted(PrefService* prefs, bool success) {
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
   prefs->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, true);
+
+  if (delegate)
+    delegate->ShowBiometricActivationConfirmation();
 }
 
 password_manager::metrics_util::UIDisplayDisposition GetDisplayDisposition(
@@ -91,7 +96,7 @@ int BiometricAuthenticationForFillingBubbleController::GetImageID(
 
 void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
   base::OnceCallback<void(bool)> on_reauth_completed =
-      base::BindOnce(&OnReauthCompleted, prefs_);
+      base::BindOnce(OnReauthCompleted, prefs_, delegate_);
 
   delegate_->AuthenticateUserWithMessage(
       l10n_util::GetStringUTF16(

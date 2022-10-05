@@ -176,16 +176,16 @@ void ManagePasswordsState::OnPasswordMovable(
   SetState(password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
 
-void ManagePasswordsState::OnBiometricAuthenticationForFilling() {
-  SetState(password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE);
-}
-
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   DCHECK_NE(password_manager::ui::INACTIVE_STATE, state_);
   DCHECK(state == password_manager::ui::MANAGE_STATE ||
          state == password_manager::ui::PASSWORD_UPDATED_SAFE_STATE ||
-         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX)
+         state == password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX ||
+         state ==
+             password_manager::ui::BIOMETRIC_AUTHENTICATION_FOR_FILLING_STATE ||
+         state ==
+             password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE)
       << state_;
   if (state_ == password_manager::ui::CREDENTIAL_REQUEST_STATE) {
     if (!credentials_callback_.is_null()) {
