@@ -687,6 +687,28 @@ TEST(WeakPtrTest, NonOwnerThreadCanDeleteWeakPtr) {
   background.DeleteArrow(arrow);
 }
 
+TEST(WeakPtrTest, ConstUpCast) {
+  Target target;
+  // WeakPtrs can upcast to const T from a non-const T.
+  WeakPtr<const Target> const_weak_ptr = target.AsWeakPtr();
+}
+
+TEST(WeakPtrTest, GetMutableWeakPtr) {
+  struct TestStruct {
+    int member = 0;
+    WeakPtrFactory<TestStruct> weak_ptr_factory{this};
+  };
+  TestStruct test_struct;
+  EXPECT_EQ(test_struct.member, 0);
+
+  // GetMutableWeakPtr() grants non-const access to T.
+  const TestStruct& const_test_struct = test_struct;
+  WeakPtr<TestStruct> weak_ptr =
+      const_test_struct.weak_ptr_factory.GetMutableWeakPtr();
+  weak_ptr->member = 1;
+  EXPECT_EQ(test_struct.member, 1);
+}
+
 TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).

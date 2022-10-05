@@ -346,7 +346,16 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
 
   ~WeakPtrFactory() = default;
 
-  WeakPtr<T> GetWeakPtr() const {
+  // TODO(crbug.com/1366168): Replace all uses of this with GetMutableWeakPtr()
+  // in the codebase and make this return WeakPtr<const T>.
+  WeakPtr<T> GetWeakPtr() const { return GetMutableWeakPtr(); }
+
+  WeakPtr<T> GetWeakPtr() {
+    return WeakPtr<T>(weak_reference_owner_.GetRef(),
+                      reinterpret_cast<T*>(ptr_));
+  }
+
+  WeakPtr<T> GetMutableWeakPtr() const {
     return WeakPtr<T>(weak_reference_owner_.GetRef(),
                       reinterpret_cast<T*>(ptr_));
   }
