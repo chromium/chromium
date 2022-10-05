@@ -12,12 +12,13 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/translate/core/common/translate_errors.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-class GURL;
 class JSTranslateWebFrameManagerFactory;
 
 namespace web {
@@ -28,7 +29,8 @@ namespace translate {
 
 // TranslateController controls the translation of the page, by injecting the
 // translate scripts and monitoring the status.
-class TranslateController : public web::WebStateObserver {
+class TranslateController : public web::WebStateObserver,
+                            public web::WebStateUserData<TranslateController> {
  public:
   // Observer class to monitor the progress of the translation.
   class Observer {
@@ -45,9 +47,6 @@ class TranslateController : public web::WebStateObserver {
                                      const std::string& source_language,
                                      double translation_time) = 0;
   };
-
-  TranslateController(web::WebState* web_state,
-                      JSTranslateWebFrameManagerFactory* js_manager_factory);
 
   TranslateController(const TranslateController&) = delete;
   TranslateController& operator=(const TranslateController&) = delete;
@@ -68,12 +67,20 @@ class TranslateController : public web::WebStateObserver {
   void StartTranslation(const std::string& source_language,
                         const std::string& target_language);
 
+  // Called when a JavaScript command is received.
+  void OnJavascriptCommandReceived(const base::Value::Dict& payload);
+
   // Changes the JSTranslateWebFrameManagerFactory used by this
   // TranslateController. Only used for testing.
   void SetJsTranslateWebFrameManagerFactoryForTesting(
       JSTranslateWebFrameManagerFactory* manager);
 
  private:
+  TranslateController(web::WebState* web_state,
+                      JSTranslateWebFrameManagerFactory* js_manager_factory);
+  friend class web::WebStateUserData<TranslateController>;
+  WEB_STATE_USER_DATA_KEY_DECL();
+
   FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
                            OnJavascriptCommandReceived);
   FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
@@ -92,17 +99,12 @@ class TranslateController : public web::WebStateObserver {
   FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
                            OnTranslateSendRequestWithBadMethod);
 
-  // Called when a JavaScript command is received.
-  bool OnJavascriptCommandReceived(const base::Value& command,
-                                   const GURL& url,
-                                   bool interacting,
-                                   web::WebFrame* sender_frame);
   // Methods to handle specific JavaScript commands.
-  // Return false if the command is invalid.
-  bool OnTranslateReady(const base::Value& command);
-  bool OnTranslateComplete(const base::Value& command);
-  bool OnTranslateLoadJavaScript(const base::Value& command);
-  bool OnTranslateSendRequest(const base::Value& command);
+  // The command is ignored if `payload` format is unexpected.
+  void OnTranslateReady(const base::Value::Dict& payload);
+  void OnTranslateComplete(const base::Value::Dict& payload);
+  void OnTranslateLoadJavaScript(const base::Value::Dict& payload);
+  void OnTranslateSendRequest(const base::Value::Dict& payload);
 
   // The callback when the script is fetched or a server error occurred.
   void OnScriptFetchComplete(std::unique_ptr<std::string> response_body);
@@ -133,9 +135,6 @@ class TranslateController : public web::WebStateObserver {
   std::set<std::unique_ptr<network::SimpleURLLoader>> request_fetchers_;
   // Used to fetch additional scripts needed for translate.
   std::unique_ptr<network::SimpleURLLoader> script_fetcher_;
-
-  // Subscription for JS message.
-  base::CallbackListSubscription subscription_;
 
   Observer* observer_;
   JSTranslateWebFrameManagerFactory* js_manager_factory_;
