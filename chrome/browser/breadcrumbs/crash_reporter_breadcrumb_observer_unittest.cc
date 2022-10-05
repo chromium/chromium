@@ -83,7 +83,7 @@ TEST_F(CrashReporterBreadcrumbObserverTest, EventsAttachedToCrashReport) {
 
   breadcrumb_service->AddEvent(std::string("Breadcrumb Event"));
 
-  const std::list<std::string> events = breadcrumb_service->GetEvents();
+  const auto events = breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
   std::string expected_breadcrumbs;
   for (const auto& event : events)
     expected_breadcrumbs += event + "\n";

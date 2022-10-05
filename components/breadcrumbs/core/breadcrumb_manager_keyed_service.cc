@@ -25,10 +25,6 @@ void BreadcrumbManagerKeyedService::RemoveObserver(
   BreadcrumbManager::GetInstance().RemoveObserver(observer);
 }
 
-const std::list<std::string> BreadcrumbManagerKeyedService::GetEvents() const {
-  return BreadcrumbManager::GetInstance().GetEvents();
-}
-
 BreadcrumbManagerKeyedService::BreadcrumbManagerKeyedService(
     bool is_off_the_record)
     // Set "I" for Incognito (Chrome branded OffTheRecord implementation) and

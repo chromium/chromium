@@ -32,10 +32,6 @@ class BreadcrumbManagerKeyedService : public KeyedService {
   void AddObserver(BreadcrumbManagerObserver* observer);
   void RemoveObserver(BreadcrumbManagerObserver* observer);
 
-  // Returns events from the BreadcrumbManager. See
-  // `BreadcrumbManager::GetEvents` for returned event details.
-  const std::list<std::string> GetEvents() const;
-
  private:
   // A short string identifying the browser used to initialize the receiver. For
   // example, "I" for "I"ncognito browsing mode. This value is prepended to

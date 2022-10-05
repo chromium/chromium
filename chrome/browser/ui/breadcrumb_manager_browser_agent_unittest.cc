@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/breadcrumb_manager_browser_agent.h"
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -16,6 +15,14 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+std::list<std::string> GetEvents() {
+  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
+}
+
+}  // namespace
+
 // Test fixture for testing BreadcrumbManagerBrowserAgent class.
 class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
  protected:
@@ -25,10 +32,7 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    breadcrumb_service_ =
-        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
-            BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-                profile()));
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(profile());
   }
 
   void InsertTab(Browser* browser) {
@@ -38,14 +42,8 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
                                                   /*foreground=*/true);
   }
 
-  std::list<std::string> GetEvents() const {
-    return breadcrumb_service_->GetEvents();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_ =
-      nullptr;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for

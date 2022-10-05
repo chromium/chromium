@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -12,7 +11,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/download_test_observer.h"
@@ -40,6 +39,10 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+std::list<std::string> GetEvents() {
+  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
+}
+
 }  // namespace
 
 // Test fixture for BreadcrumbManagerTabHelper class.
@@ -48,28 +51,22 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     BreadcrumbManagerTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    breadcrumb_service_ =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-            browser()->profile());
   }
-
-  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
 };
 
 // Tests download navigation.
 IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
-  const size_t num_startup_breadcrumbs =
-      breadcrumb_service_->GetEvents().size();
+  const size_t num_startup_breadcrumbs = GetEvents().size();
 
   const GURL url =
       ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
                                 base::FilePath().AppendASCII("a_zip_file.zip"));
   ui_test_utils::DownloadURL(browser(), url);
 
-  const std::list<std::string> events = breadcrumb_service_->GetEvents();
+  const auto events = GetEvents();
   // Breadcrumbs should have been logged for starting and finishing the
   // navigation, and the navigation should be labeled as a download.
-  ASSERT_EQ(2ul, events.size() - num_startup_breadcrumbs);
+  ASSERT_EQ(2u, events.size() - num_startup_breadcrumbs);
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
@@ -94,9 +91,8 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
   void SetUpOnMainThread() override {
     BreadcrumbManagerTabHelper::CreateForWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
-    breadcrumb_service_ =
-        BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
-            browser()->profile());
+    BreadcrumbManagerKeyedServiceFactory::GetForBrowserContext(
+        browser()->profile());
     ASSERT_TRUE(https_server_.Start());
   }
 
@@ -111,7 +107,6 @@ class BreadcrumbManagerTabHelperSecurityStateBrowserTest
     mock_cert_verifier()->AddResultForCert(cert, verify_result, net_result);
   }
 
-  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
@@ -124,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperSecurityStateBrowserTest,
       browser(), https_server_.GetURL("/ssl/google.html")));
 
   // The breadcrumb event for broken authentication should have been logged.
-  auto events = breadcrumb_service_->GetEvents();
+  auto events = GetEvents();
   EXPECT_NE(std::string::npos,
             events.back().find(breadcrumbs::kBreadcrumbPageLoaded));
   events.pop_back();
