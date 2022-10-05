@@ -72,6 +72,9 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-arm64-chrome-rel",
+    mirrors = [
+        "ci/fuchsia-arm64-chrome-rel",
+    ],
 )
 
 try_.builder(
@@ -190,6 +193,9 @@ try_.builder(
 
 try_.builder(
     name = "fuchsia-x64-chrome-rel",
+    mirrors = [
+        "ci/fuchsia-x64-chrome-rel",
+    ],
 )
 
 try_.builder(
