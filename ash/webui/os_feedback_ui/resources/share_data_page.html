@@ -241,7 +241,8 @@
         <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
       </div>
       <!-- Assistant Logs (Googler Internal Only) -->
-      <div id="assistantLogsContainer" class="checkbox-field-container">
+      <div id="assistantLogsContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowAssistantCheckbox]]">
         <cr-checkbox id="assiatantLogsCheckbox" aria-labelledby="assistantLogsLabel" checked>
         </cr-checkbox>
         <label id="assistantLogsLabel" inner-h-t-m-l="[[assistantLogsCheckboxLabel_]]"></label>

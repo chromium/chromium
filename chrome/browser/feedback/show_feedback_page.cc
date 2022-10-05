@@ -50,10 +50,12 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kExtraDiagnosticsQueryParam[] = "extra_diagnostics";
 constexpr char kDescriptionTemplateQueryParam[] = "description_template";
+constexpr char kFromAssistantQueryParam[] = "from_assistant";
 constexpr char kCategoryTagParam[] = "category_tag";
 constexpr char kPageURLParam[] = "page_url";
 constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
+constexpr char kFromAssistantQueryParamValue[] = "true";
 
 // Concat query parameter with escaped value.
 std::string StrCatQueryParam(const std::string query_param,
@@ -66,7 +68,8 @@ std::string StrCatQueryParam(const std::string query_param,
 GURL BuildFeedbackUrl(const std::string extra_diagnostics,
                       const std::string description_template,
                       const std::string category_tag,
-                      const GURL page_url) {
+                      const GURL page_url,
+                      bool from_assistant) {
   std::vector<std::string> query_params;
 
   if (!extra_diagnostics.empty()) {
@@ -86,6 +89,11 @@ GURL BuildFeedbackUrl(const std::string extra_diagnostics,
 
   if (!page_url.is_empty()) {
     query_params.emplace_back(StrCatQueryParam(kPageURLParam, page_url.spec()));
+  }
+
+  if (from_assistant) {
+    query_params.emplace_back(StrCatQueryParam(kFromAssistantQueryParam,
+                                               kFromAssistantQueryParamValue));
   }
 
   // Use default URL if no extra parameters to be added.
@@ -171,8 +179,10 @@ void RequestFeedbackFlow(const GURL& page_url,
   }
   if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     ash::SystemAppLaunchParams params{};
-    params.url = BuildFeedbackUrl(extra_diagnostics, description_template,
-                                  category_tag, page_url);
+    params.url =
+        BuildFeedbackUrl(extra_diagnostics, description_template, category_tag,
+                         page_url, source == kFeedbackSourceAssistant);
+
     ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::OS_FEEDBACK,
                                  std::move(params));
     return;

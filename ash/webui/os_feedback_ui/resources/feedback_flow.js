@@ -55,6 +55,7 @@ export const AdditionalContextQueryParam = {
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
+  FROM_ASSISTANT: 'from_assistant',
 };
 
 /**
@@ -181,6 +182,12 @@ export class FeedbackFlowElement extends PolymerElement {
      */
     this.shouldShowBluetoothCheckbox_;
 
+    /**
+     * Whether to show the bluetooth Logs checkbox in share data page.
+     * @type {boolean}
+     */
+    this.shouldShowAssistantCheckbox_;
+
     /** @private {!FeedbackServiceProviderInterface} */
     this.feedbackServiceProvider_ = getFeedbackServiceProvider();
 
@@ -242,6 +249,9 @@ export class FeedbackFlowElement extends PolymerElement {
     this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
       this.feedbackContext_ = response.feedbackContext;
       this.setAdditionalContextFromQueryParams_();
+      this.shouldShowAssistantCheckbox_ = !!this.feedbackContext_ &&
+          this.feedbackContext_.isInternalAccount &&
+          this.feedbackContext_.fromAssistant;
     });
 
     window.addEventListener('message', event => {
@@ -331,6 +341,9 @@ export class FeedbackFlowElement extends PolymerElement {
     if (pageUrl) {
       this.feedbackContext_.pageUrl = {url: pageUrl};
     }
+    const fromAssistant =
+        params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
+    this.feedbackContext_.fromAssistant = !!fromAssistant;
   }
 
   /**

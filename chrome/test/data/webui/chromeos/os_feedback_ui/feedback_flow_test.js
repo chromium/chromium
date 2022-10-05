@@ -115,6 +115,36 @@ export function FeedbackFlowTestSuite() {
     verifyRecordExitPathCalled(/*metric_emitted=*/ true, exitPath);
   }
 
+  /**
+   * @private
+   */
+  function testWithInternalAccount() {
+    feedbackServiceProvider = new FakeFeedbackServiceProvider();
+    feedbackServiceProvider.setFakeFeedbackContext(
+        fakeInternalUserFeedbackContext);
+    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
+  }
+
+  /**
+   * @param {boolean} from_assistant
+   * @private
+   */
+  function setFromAssistantFlag(from_assistant) {
+    if (from_assistant) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const from_assistant = 'true';
+      queryParams.set(
+          AdditionalContextQueryParam.FROM_ASSISTANT, from_assistant);
+
+      window.history.replaceState(null, '', '?' + queryParams.toString());
+    } else {
+      window.history.replaceState(
+          null, '',
+          '?' +
+              '');
+    }
+  }
+
   // Test that the search page is shown by default.
   test('SearchPageIsShownByDefault', async () => {
     await initializePage();
@@ -313,10 +343,7 @@ export function FeedbackFlowTestSuite() {
   // Test the bluetooth logs will show up if logged with internal account and
   // input description is related.
   test('ShowBluetoothLogsWithRelatedDescription', async () => {
-    feedbackServiceProvider = new FakeFeedbackServiceProvider();
-    feedbackServiceProvider.setFakeFeedbackContext(
-        fakeInternalUserFeedbackContext);
-    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
+    testWithInternalAccount();
     await initializePage();
 
     // Check the bluetooth checkbox component hidden when input is not related
@@ -376,6 +403,75 @@ export function FeedbackFlowTestSuite() {
         activePage.shadowRoot.querySelector('#bluetoothCheckboxContainer');
     assertTrue(!!bluetoothCheckbox);
     assertFalse(isVisible(bluetoothCheckbox));
+  });
+
+  // Test the assistant logs will show up if logged with internal account and
+  // the fromAssistant flag is true.
+  test('ShowAssistantCheckboxWithInternalAccountAndFlagSetTrue', async () => {
+    // Replacing the query string to set the fromAssistant flag as true.
+    setFromAssistantFlag(true);
+    testWithInternalAccount();
+    await initializePage();
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
+
+    const feedbackContext = getFeedbackContext_();
+    assertTrue(feedbackContext.isInternalAccount);
+    assertTrue(feedbackContext.fromAssistant);
+    // Check the assistant checkbox component visible when input is not
+    // related to bluetooth.
+    const activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('shareDataPage', activePage.id);
+
+    const assistantCheckbox =
+        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+
+    assertTrue(!!assistantCheckbox);
+    assertTrue(isVisible(assistantCheckbox));
+  });
+
+  // Test the assistant checkbox will not show up to external account user
+  // with fromAssistant flag passed.
+  test('AssistantCheckboxHiddenWithExternalAccount', async () => {
+    // Replacing the query string to set the fromAssistant flag as true.
+    setFromAssistantFlag(true);
+    await initializePage();
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
+
+    const feedbackContext = getFeedbackContext_();
+    assertFalse(feedbackContext.isInternalAccount);
+    assertTrue(feedbackContext.fromAssistant);
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+
+    assertEquals('shareDataPage', activePage.id);
+    const assistantCheckbox =
+        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+    assertTrue(!!assistantCheckbox);
+    assertFalse(isVisible(assistantCheckbox));
+  });
+
+  // Test the assistant logs will not show up if fromAssistant flag is not
+  // passed but logged in with Internal google account.
+  test('AssistantCheckboxHiddenWithoutFlagPassed', async () => {
+    // Replace the current querystring back to default.
+    setFromAssistantFlag(false);
+    // Set Internal Account flag as true.
+    testWithInternalAccount();
+    await initializePage();
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
+
+    const feedbackContext = getFeedbackContext_();
+    assertTrue(feedbackContext.isInternalAccount);
+    assertFalse(feedbackContext.fromAssistant);
+    // Set input description related to bluetooth.
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+
+    assertEquals('shareDataPage', activePage.id);
+    const assistantCheckbox =
+        activePage.shadowRoot.querySelector('#assistantLogsContainer');
+    assertTrue(!!assistantCheckbox);
+    assertFalse(isVisible(assistantCheckbox));
   });
 
   // Test the navigation from confirmation page to search page after the
@@ -472,8 +568,8 @@ export function FeedbackFlowTestSuite() {
     assertEquals(1, feedbackServiceProvider.getFeedbackContextCallCount());
   });
 
-  // Test that the extra diagnostics, category tag and page_url get set
-  // when query parameter is non-empty.
+  // Test that the extra diagnostics, category tag, page_url and fromAssistant
+  // flag get set when query parameter is non-empty.
   test(
       'AdditionalContextParametersProvidedInUrl_FeedbackContext_Matches',
       async () => {
@@ -489,6 +585,9 @@ export function FeedbackFlowTestSuite() {
         queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
         const page_url = 'some%20page%20url';
         queryParams.set(AdditionalContextQueryParam.PAGE_URL, page_url);
+        const from_assistant = 'true';
+        queryParams.set(
+            AdditionalContextQueryParam.FROM_ASSISTANT, from_assistant);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
@@ -505,6 +604,7 @@ export function FeedbackFlowTestSuite() {
             decodeURIComponent(description_template), descriptionElement.value);
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
+        assertTrue(feedbackContext.fromAssistant);
 
         // Set the pageUrl in fake feedback context back to its origin value
         // because it's overwritten by the page_url passed from the app.
@@ -532,6 +632,7 @@ export function FeedbackFlowTestSuite() {
         assertEquals('', feedbackContext.extraDiagnostics);
         assertEquals('', descriptionElement.value);
         assertEquals('', feedbackContext.categoryTag);
+        assertFalse(feedbackContext.fromAssistant);
       });
 
   /**

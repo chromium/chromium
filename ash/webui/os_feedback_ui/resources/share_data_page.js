@@ -52,6 +52,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       screenshotUrl: {type: String, readOnly: false, notify: true},
       shouldShowBluetoothCheckbox:
           {type: Boolean, readOnly: false, notify: true},
+      shouldShowAssistantCheckbox:
+          {type: Boolean, readOnly: false, notify: true},
     };
   }
 
@@ -72,6 +74,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {boolean}
      */
     this.shouldShowBluetoothCheckbox;
+
+    /**
+     * @type {boolean}
+     */
+    this.shouldShowAssistantCheckbox;
 
     /**
      * @type {string}

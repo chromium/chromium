@@ -100,6 +100,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 // - `description_template` string.
 // - `category_tag` string.
 // - `page_url` GURL.
+// - `from_assistant` set true.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackAdditionalContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
@@ -118,13 +119,16 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
        "&category_tag=",
        base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
        "&page_url=",
-       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false)}));
+       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false),
+       "&from_assistant=",
+       base::EscapeQueryParamValue("true", /*use_plus=*/false)}));
+
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                true);
-  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceBrowserCommand,
+  chrome::ShowFeedbackPage(browser(), chrome::kFeedbackSourceAssistant,
                            /*description_template=*/description_template,
                            /*description_placeholder_text=*/unused,
                            /*category_tag=*/category_tag,

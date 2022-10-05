@@ -74,6 +74,8 @@ struct FeedbackContext {
   string? email;
   // Whether or not the signed in email is an internal google account.
   bool is_internal_account;
+  // Whether or not the feedback app is opened from Assistant.
+  bool from_assistant;
   // The URL of the page that this issue was being experienced on.
   url.mojom.Url?  page_url;
   // Extra diagnostics information provided by source CrOS application by
