@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
 #import "base/values.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/google/core/common/google_util.h"
@@ -31,7 +32,7 @@
 
 namespace {
 // The delay given to the web page to render after the PageLoaded callback.
-const int64_t kPageLoadDelayInSeconds = 2;
+constexpr base::TimeDelta kPageLoadDelay = base::Seconds(2);
 
 // This script retrieve the href parameter of the <link rel="amphtml"> element
 // of the page if it exists. If it does not exist, it returns the src of the
@@ -181,7 +182,7 @@ void ReadingListDistillerPage::OnLoadURLDone(
       FROM_HERE,
       base::BindOnce(&ReadingListDistillerPage::DelayedOnLoadURLDone, weak_this,
                      delayed_task_id_),
-      base::Seconds(kPageLoadDelayInSeconds));
+      kPageLoadDelay);
 }
 
 void ReadingListDistillerPage::DelayedOnLoadURLDone(int delayed_task_id) {
