@@ -754,13 +754,13 @@ async def test_scriptGetRealms(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_disown_releasesObject(websocket, context_id):
+async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
     result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "({foo:'bar'})",
             "target": {
-                "context": context_id,
+                "realm": default_realm,
             },
             "awaitPromise": True,
             "resultOwnership": "root"}})
@@ -769,7 +769,7 @@ async def test_disown_releasesObject(websocket, context_id):
             "type": "object",
             "value": any_value,
             "handle": any_string},
-        "realm": any_string
+        "realm": default_realm
     }, result)
 
     handle = result["result"]["handle"]
@@ -781,7 +781,8 @@ async def test_disown_releasesObject(websocket, context_id):
             "arguments": [{
                 "handle": handle
             }],
-            "target": {"context": context_id},
+            "target": {
+                "realm": default_realm},
             "awaitPromise": True,
             "resultOwnership": "none"}})
 
@@ -792,30 +793,61 @@ async def test_disown_releasesObject(websocket, context_id):
         "realm": any_string
     }, result)
 
+    # Disown in the wrong realm does not have any effect.
     result = await execute_command(websocket, {
         "method": "script.disown",
         "params": {
             "handles": [handle],
-            "target": {"context": context_id}}})
+            "target": {
+                "realm": sandbox_realm}}})
 
     recursive_compare({}, result)
 
-    await send_JSON_command(websocket, {
-        "id": 99,
+    # Assert the object is not disposed.
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj;}",
             "arguments": [{
                 "handle": handle
             }],
-            "target": {"context": context_id},
+            "target": {
+                "realm": default_realm},
             "awaitPromise": True,
             "resultOwnership": "none"}})
 
-    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "result": {
+            "type": "object",
+            "value": any_value},
+        "realm": any_string
+    }, result)
+
+    # Disown the object in proper realm.
+    result = await execute_command(websocket, {
+        "method": "script.disown",
+        "params": {
+            "handles": [handle],
+            "target": {
+                "realm": default_realm}}})
+
+    recursive_compare({}, result)
+
+    # Assert the object is disposed.
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "(obj)=>{return obj;}",
+                "arguments": [{
+                    "handle": handle
+                }],
+                "target": {
+                    "realm": default_realm},
+                "awaitPromise": True,
+                "resultOwnership": "none"}})
 
     recursive_compare({
-        "id": 99,
         "error": "invalid argument",
         "message": "Handle was not found."
-    }, resp)
+    }, exception_info.value.args[0])

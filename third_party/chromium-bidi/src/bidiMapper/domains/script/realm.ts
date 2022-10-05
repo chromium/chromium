@@ -121,6 +121,7 @@ export class Realm {
 
   delete() {
     Realm.#realmMap.delete(this.realmId);
+    ScriptEvaluator.realmDestroyed(this);
   }
 
   readonly #realmId: string;
@@ -220,25 +221,18 @@ export class Realm {
     );
     await context.awaitUnblocked();
 
-    return ScriptEvaluator.scriptEvaluate(
-      this,
-      expression,
-      awaitPromise,
-      resultOwnership
-    );
+    return {
+      result: await ScriptEvaluator.scriptEvaluate(
+        this,
+        expression,
+        awaitPromise,
+        resultOwnership
+      ),
+    };
   }
 
   async disown(handle: string): Promise<void> {
-    try {
-      await this.#cdpClient.Runtime.releaseObject({ objectId: handle });
-    } catch (e: any) {
-      // Heuristic to determine if the problem is in the unknown handler.
-      // Ignore the error if so.
-      if (e.code === -32000 && e.message === 'Invalid remote object id') {
-        return;
-      }
-      throw e;
-    }
+    await ScriptEvaluator.disown(this, handle);
   }
 
   /**

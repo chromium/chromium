@@ -37,6 +37,34 @@ async def websocket():
 
 
 @pytest.fixture
+async def default_realm(context_id, websocket):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "globalThis",
+            "target": {
+                "context": context_id,
+            },
+            "awaitPromise": True}})
+
+    return result["realm"]
+
+
+@pytest.fixture
+async def sandbox_realm(context_id, websocket):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "globalThis",
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'},
+            "awaitPromise": True}})
+
+    return result["realm"]
+
+
+@pytest.fixture
 async def context_id(websocket):
     result = await execute_command(websocket, {
         "method": "browsingContext.getTree",
@@ -167,7 +195,7 @@ async def goto_url(websocket, context_id, url):
 
 
 # noinspection PySameParameterValue
-async def execute_command(websocket, command, result_field="result"):
+async def execute_command(websocket, command):
     command_id = get_next_command_id()
     command["id"] = command_id
 
@@ -177,10 +205,11 @@ async def execute_command(websocket, command, result_field="result"):
         # Wait for the command to be finished.
         resp = await read_JSON_message(websocket)
         if "id" in resp and resp["id"] == command_id:
-            assert result_field in resp, \
-                f"Field `{result_field}` should be in the result object:" \
-                f"\n {resp}"
-            return resp[result_field]
+            if "result" in resp:
+                return resp["result"]
+            raise Exception({
+                "error": resp["error"],
+                "message": resp["message"]})
 
 
 # Wait and return a specific event from Bidi server
