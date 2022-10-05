@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 
 #include "base/check_op.h"
-#include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -20,9 +19,6 @@ using storage::FileSystemURL;
 
 namespace ash::cloud_upload {
 namespace {
-
-// The default folder where the file should be uploaded.
-const char kDestinationFolder[] = "from Chromebook";
 
 // The maximum amount of time allowed, in seconds, between the syncing
 // completion of a file and the update of its metadata with the expected (Google
@@ -85,7 +81,7 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   }
 
   file_manager::VolumeManager* volume_manager =
-      (file_manager::VolumeManager::Get(profile_));
+      file_manager::VolumeManager::Get(profile_);
   if (!volume_manager) {
     OnEndUpload(GURL(), "No volume manager");
     return;
