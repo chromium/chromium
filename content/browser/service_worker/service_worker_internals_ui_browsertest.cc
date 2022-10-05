@@ -584,8 +584,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   TearDownWindow(sw_internal_ui_window);
 }
 
+// The test is flaky on Mac. crbug.com/1324856
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_StopStartSWReflectedOnInternalUI \
+  DISABLED_StopStartSWReflectedOnInternalUI
+#else
+#define MAYBE_StopStartSWReflectedOnInternalUI StopStartSWReflectedOnInternalUI
+#endif
 IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
-                       StopStartSWReflectedOnInternalUI) {
+                       MAYBE_StopStartSWReflectedOnInternalUI) {
   Shell* sw_internal_ui_window = CreateNewWindow();
   NavigateToServiceWorkerInternalUI();
 
