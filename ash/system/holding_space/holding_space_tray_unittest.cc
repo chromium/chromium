@@ -3683,6 +3683,47 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceTrayRefreshTest,
                          /*refresh_enabled=*/testing::Bool());
 
+TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
+  StartSession();
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  if (IsHoldingSpaceRefreshEnabled()) {
+    // Background.
+    auto* background = bubble->GetBackground();
+    ASSERT_TRUE(background);
+    EXPECT_EQ(background->get_color(),
+              AshColorProvider::Get()->GetBaseLayerColor(
+                  AshColorProvider::BaseLayerType::kTransparent80));
+    EXPECT_EQ(bubble->layer()->background_blur(),
+              ColorProvider::kBackgroundBlurSigma);
+
+    // Border.
+    EXPECT_TRUE(bubble->GetBorder());
+
+    // Corner radius.
+    EXPECT_TRUE(bubble->layer()->is_fast_rounded_corner());
+    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
+              gfx::RoundedCornersF(kBubbleCornerRadius));
+  } else {
+    // Background.
+    auto* background = bubble->GetBackground();
+    ASSERT_TRUE(background);
+    EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
+    EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
+
+    // Border.
+    EXPECT_FALSE(bubble->GetBorder());
+
+    // Corner radius.
+    EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
+    EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
+              gfx::RoundedCornersF(0.f));
+  }
+}
+
 TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayAccessibilityText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();

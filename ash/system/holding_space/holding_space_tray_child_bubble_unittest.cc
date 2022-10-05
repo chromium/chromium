@@ -17,8 +17,10 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 namespace {
@@ -70,15 +72,15 @@ class TestHoldingSpaceTrayChildBubble : public HoldingSpaceTrayChildBubble {
   // HoldingSpaceChildBubble:
   std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>> CreateSections()
       override {
-    EXPECT_TRUE(params_.create_sections_callback)
-        << "Sections created more than once.";
-    return std::move(params_.create_sections_callback).Run(delegate());
+    return params_.create_sections_callback
+               ? std::move(params_.create_sections_callback).Run(delegate())
+               : std::vector<std::unique_ptr<HoldingSpaceItemViewsSection>>();
   }
 
   std::unique_ptr<views::View> CreatePlaceholder() override {
-    EXPECT_TRUE(params_.create_sections_callback)
-        << "Placeholder created more than once.";
-    return std::move(params_.create_placeholder_callback).Run();
+    return params_.create_placeholder_callback
+               ? std::move(params_.create_placeholder_callback).Run()
+               : nullptr;
   }
 
   Params params_;
@@ -86,12 +88,12 @@ class TestHoldingSpaceTrayChildBubble : public HoldingSpaceTrayChildBubble {
 
 }  // namespace
 
-// HoldingSpaceTrayChildBubbleTest ---------------------------------------------
+// HoldingSpaceTrayChildBubbleTestBase -----------------------------------------
 
-class HoldingSpaceTrayChildBubbleTest : public HoldingSpaceAshTestBase {
+class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
  protected:
   const HoldingSpaceTrayChildBubble* child_bubble() const {
-    return child_bubble_.get();
+    return child_bubble_;
   }
 
  private:
@@ -99,16 +101,24 @@ class HoldingSpaceTrayChildBubbleTest : public HoldingSpaceAshTestBase {
   void SetUp() override {
     HoldingSpaceAshTestBase::SetUp();
 
+    // Widget.
+    // NOTE: The `widget_` is needed so that the `child_bubble_` added to it
+    // below will receive prod-like `OnThemeChanged()` events when attached.
+    widget_ = std::make_unique<views::Widget>();
+    widget_->Init(views::Widget::InitParams{});
+
+    // View delegate.
     view_delegate_ = std::make_unique<HoldingSpaceViewDelegate>(
         /*bubble=*/nullptr);
 
-    child_bubble_ = CreateChildBubble(view_delegate_.get());
-    ASSERT_TRUE(child_bubble_);
+    // Child bubble.
+    child_bubble_ = widget_->GetRootView()->AddChildView(
+        CreateChildBubble(view_delegate_.get()));
     child_bubble_->Init();
   }
 
   void TearDown() override {
-    child_bubble_.reset();
+    widget_.reset();
     view_delegate_.reset();
 
     AshTestBase::TearDown();
@@ -116,16 +126,20 @@ class HoldingSpaceTrayChildBubbleTest : public HoldingSpaceAshTestBase {
 
   // Invoked from `SetUp()` to create the `child_bubble()`.
   virtual std::unique_ptr<HoldingSpaceTrayChildBubble> CreateChildBubble(
-      HoldingSpaceViewDelegate* view_delegate) = 0;
+      HoldingSpaceViewDelegate* view_delegate) {
+    return std::make_unique<TestHoldingSpaceTrayChildBubble>(
+        view_delegate, TestHoldingSpaceTrayChildBubble::Params{});
+  }
 
+  views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
-  std::unique_ptr<HoldingSpaceTrayChildBubble> child_bubble_;
+  HoldingSpaceTrayChildBubble* child_bubble_ = nullptr;
 };
 
 // HoldingSpaceTrayChildBubblePlaceholderTest ----------------------------------
 
 class HoldingSpaceTrayChildBubblePlaceholderTest
-    : public HoldingSpaceTrayChildBubbleTest,
+    : public HoldingSpaceTrayChildBubbleTestBase,
       public testing::WithParamInterface</*has_placeholder=*/bool> {
  protected:
   void ExpectPlaceholderOrGone() {
@@ -156,7 +170,7 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
   bool has_placeholder() const { return GetParam(); }
 
  private:
-  // HoldingSpaceTrayChildBubbleTest:
+  // HoldingSpaceTrayChildBubbleTestBase:
   std::unique_ptr<HoldingSpaceTrayChildBubble> CreateChildBubble(
       HoldingSpaceViewDelegate* view_delegate) override {
     return std::make_unique<TestHoldingSpaceTrayChildBubble>(
@@ -216,6 +230,58 @@ TEST_P(HoldingSpaceTrayChildBubblePlaceholderTest,
   {
     SCOPED_TRACE(testing::Message() << "Empty state.");
     ExpectPlaceholderOrGone();
+  }
+}
+
+// HoldingSpaceTrayChildBubbleRefreshTest --------------------------------------
+
+class HoldingSpaceTrayChildBubbleRefreshTest
+    : public HoldingSpaceTrayChildBubbleTestBase,
+      public testing::WithParamInterface</*refresh_enabled=*/bool> {
+ public:
+  HoldingSpaceTrayChildBubbleRefreshTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRefresh,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceTrayChildBubbleRefreshTest,
+                         /*refresh_enabled=*/testing::Bool());
+
+TEST_P(HoldingSpaceTrayChildBubbleRefreshTest, HasExpectedBubbleTreatment) {
+  if (features::IsHoldingSpaceRefreshEnabled()) {
+    // Background.
+    EXPECT_FALSE(child_bubble()->GetBackground());
+    EXPECT_EQ(child_bubble()->layer()->background_blur(), 0.f);
+
+    // Border.
+    EXPECT_FALSE(child_bubble()->GetBorder());
+
+    // Corner radius.
+    EXPECT_FALSE(child_bubble()->layer()->is_fast_rounded_corner());
+    EXPECT_EQ(child_bubble()->layer()->rounded_corner_radii(),
+              gfx::RoundedCornersF(0.f));
+  } else {
+    // Background.
+    auto* background = child_bubble()->GetBackground();
+    ASSERT_TRUE(background);
+    EXPECT_EQ(background->get_color(),
+              AshColorProvider::Get()->GetBaseLayerColor(
+                  AshColorProvider::BaseLayerType::kTransparent80));
+    EXPECT_EQ(child_bubble()->layer()->background_blur(),
+              ColorProvider::kBackgroundBlurSigma);
+
+    // Border.
+    EXPECT_TRUE(child_bubble()->GetBorder());
+
+    // Corner radius.
+    EXPECT_TRUE(child_bubble()->layer()->is_fast_rounded_corner());
+    EXPECT_EQ(child_bubble()->layer()->rounded_corner_radii(),
+              gfx::RoundedCornersF(kBubbleCornerRadius));
   }
 }
 

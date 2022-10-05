@@ -147,11 +147,14 @@ void HoldingSpaceTrayChildBubble::Init() {
                                                      : ui::LAYER_SOLID_COLOR);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetIsFastRoundedCorner(true);
   layer()->SetOpacity(0.f);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
+
+  if (!features::IsHoldingSpaceRefreshEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetIsFastRoundedCorner(true);
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
+  }
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {
@@ -330,6 +333,11 @@ bool HoldingSpaceTrayChildBubble::OnMousePressed(const ui::MouseEvent& event) {
 
 void HoldingSpaceTrayChildBubble::OnThemeChanged() {
   views::View::OnThemeChanged();
+
+  // When refresh is enabled, backgrounds and borders are implemented in the
+  // top-level bubble rather than per child bubble.
+  if (features::IsHoldingSpaceRefreshEnabled())
+    return;
 
   if (!features::IsDarkLightModeEnabled()) {
     layer()->SetColor(AshColorProvider::Get()->GetBaseLayerColor(

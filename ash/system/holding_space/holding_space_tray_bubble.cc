@@ -352,7 +352,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.close_on_deactivate = true;
   init_params.has_shadow = false;
   init_params.reroute_event_handler = true;
-  init_params.transparent = true;
+  init_params.translucent = features::IsHoldingSpaceRefreshEnabled();
+  init_params.transparent = !features::IsHoldingSpaceRefreshEnabled();
 
   // Create and customize bubble view.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
