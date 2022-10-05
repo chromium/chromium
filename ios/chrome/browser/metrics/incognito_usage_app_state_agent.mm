@@ -15,7 +15,7 @@
 
 namespace {
 // Minimum amount of time for a normal/incognito transition to be considered.
-const int kMinimumDelayInSeconds = 10;
+constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 }
 
 @interface IncognitoUsageAppStateAgent () <AppStateObserver, SceneStateObserver>
@@ -58,7 +58,7 @@ const int kMinimumDelayInSeconds = 10;
   DCHECK(!self.incognitoUsageStart.is_null());
   DCHECK(!self.incognitoUsageEnd.is_null());
   base::TimeDelta duration = self.incognitoUsageEnd - self.incognitoUsageStart;
-  if (duration.InSecondsF() < kMinimumDelayInSeconds) {
+  if (duration < kMinimumDelay) {
     return;
   }
   base::UmaHistogramCustomTimes("IOS.Incognito.TimeSpent", duration,
@@ -78,15 +78,15 @@ const int kMinimumDelayInSeconds = 10;
   if (incognitoContentVisible) {
     base::TimeTicks now = base::TimeTicks::Now();
     if (!self.incognitoUsageEnd.is_null() &&
-        (now - self.incognitoUsageEnd).InSecondsF() < kMinimumDelayInSeconds) {
+        (now - self.incognitoUsageEnd) < kMinimumDelay) {
       // The pausing of incognito is too short, resume session.
       self.incognitoUsageEnd = base::TimeTicks();
     } else {
       // Incognito has been paused for a long time. This is a new session.
       if (!self.incognitoUsageEnd.is_null() &&
           !self.incognitoUsageStart.is_null() &&
-          (self.incognitoUsageEnd - self.incognitoUsageStart).InSecondsF() >=
-              kMinimumDelayInSeconds) {
+          (self.incognitoUsageEnd - self.incognitoUsageStart) >=
+              kMinimumDelay) {
         // There was a previous session to report.
         [self reportIncognitoUsageTime];
       }
@@ -95,8 +95,7 @@ const int kMinimumDelayInSeconds = 10;
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
     if (!self.incognitoUsageStart.is_null() &&
-        (now - self.incognitoUsageStart).InSecondsF() >=
-            kMinimumDelayInSeconds) {
+        (now - self.incognitoUsageStart) >= kMinimumDelay) {
       self.incognitoUsageEnd = now;
     } else {
       // This incognito session was too short.
@@ -111,8 +110,7 @@ const int kMinimumDelayInSeconds = 10;
   }
   if (!self.incognitoUsageEnd.is_null() &&
       !self.incognitoUsageStart.is_null() &&
-      (self.incognitoUsageEnd - self.incognitoUsageStart).InSecondsF() >=
-          kMinimumDelayInSeconds) {
+      (self.incognitoUsageEnd - self.incognitoUsageStart) >= kMinimumDelay) {
     [self reportIncognitoUsageTime];
   }
 }
