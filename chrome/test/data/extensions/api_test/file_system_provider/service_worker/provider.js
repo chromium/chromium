@@ -72,13 +72,43 @@ export class TestFileSystemProvider {
         },
         contents: TestFileSystemProvider.INITIAL_TEXT,
       },
-      // Read blocks indefinitely
+      // Read and write blocks indefinitely.
       ['/' + TestFileSystemProvider.FILE_BLOCKS_FOREVER]: {
         metadata: {
           isDirectory: false,
           name: TestFileSystemProvider.FILE_BLOCKS_FOREVER,
           size: TestFileSystemProvider.INITIAL_TEXT.length,
           modificationTime: new Date(2014, 1, 26, 8, 37, 13),
+        },
+        contents: TestFileSystemProvider.INITIAL_TEXT,
+      },
+      // Open blocks until unblocked manually.
+      ['/' + TestFileSystemProvider.FILE_STALL_OPEN]: {
+        metadata: {
+          isDirectory: false,
+          name: TestFileSystemProvider.FILE_STALL_OPEN,
+          size: TestFileSystemProvider.INITIAL_TEXT.length,
+          modificationTime: new Date(2014, 1, 26, 8, 37, 13),
+        },
+        contents: TestFileSystemProvider.INITIAL_TEXT,
+      },
+      // Read blocks until unblocked manually.
+      ['/' + TestFileSystemProvider.FILE_STALL_READ]: {
+        metadata: {
+          isDirectory: false,
+          name: TestFileSystemProvider.FILE_STALL_READ,
+          size: TestFileSystemProvider.INITIAL_TEXT.length,
+          modificationTime: new Date(2014, 1, 26, 8, 37, 13),
+        },
+        contents: TestFileSystemProvider.INITIAL_TEXT,
+      },
+      // Read returns data in chunks.
+      ['/' + TestFileSystemProvider.FILE_READ_SUCCESS]: {
+        metadata: {
+          isDirectory: false,
+          name: TestFileSystemProvider.FILE_READ_SUCCESS,
+          size: TestFileSystemProvider.INITIAL_TEXT.length,
+          modificationTime: new Date(2014, 1, 25, 7, 36, 12)
         },
         contents: TestFileSystemProvider.INITIAL_TEXT,
       },
@@ -92,26 +122,68 @@ export class TestFileSystemProvider {
     this.openedFiles = {};
 
     /**
-     * A queue of recorded calls per FSP function.
+     * Records max number of opened files any time a file is opened.
+     *
+     * @private {number}
+     */
+    this.maxOpenedFiles = 0;
+
+    /**
+     * A queue of recorded event per event name.
      *
      * @private {!Object<string, !Queue>}
      */
-    this.callQueues = {};
+    this.eventQueues = {};
+
+    /**
+     * A map of FSP handler name to a Bound FSP handler, so handlers can be
+     * added or removed mid-test.
+     *
+     * @private {!Object<string, !Function>}
+     */
+    this.handlers = {};
+
+    /**
+     * A map of FSP requests that's been deliberately stalled. The key is FSP
+     * request ID, and the value are the arguments passed to the request
+     * handler.
+     *
+     * @private {!Object<number, function()>}
+     */
+    this.stalledRequests = {};
   }
 
   setUpProviderListeners() {
-    chrome.fileSystemProvider.onGetMetadataRequested.addListener(
-        this.onGetMetadataRequested.bind(this));
-    chrome.fileSystemProvider.onOpenFileRequested.addListener(
-        this.onOpenFileRequested.bind(this));
-    chrome.fileSystemProvider.onCloseFileRequested.addListener(
-        this.onCloseFileRequested.bind(this));
-    chrome.fileSystemProvider.onCreateFileRequested.addListener(
-        this.onCreateFileRequested.bind(this));
-    chrome.fileSystemProvider.onWriteFileRequested.addListener(
-        this.onWriteFileRequested.bind(this));
-    chrome.fileSystemProvider.onAbortRequested.addListener(
-        this.onAbortRequested.bind(this));
+    this.setHandlerEnabled('onGetMetadataRequested', true);
+    this.setHandlerEnabled('onOpenFileRequested', true);
+    this.setHandlerEnabled('onCloseFileRequested', true);
+    this.setHandlerEnabled('onCreateFileRequested', true);
+    this.setHandlerEnabled('onReadFileRequested', true);
+    this.setHandlerEnabled('onWriteFileRequested', true);
+    this.setHandlerEnabled('onAbortRequested', true);
+  }
+
+  /**
+   * Enable or disable the listener for a named FSP event (e.g.
+   * onOpenFileRequested, onAbortRequested).
+   *
+   * @suppress {checkTypes}
+   */
+  setHandlerEnabled(handlerName, enabled) {
+    if (!(handlerName in this)) {
+      throw new Error(
+        `${this.constructor.name} does not implement ${handlerName}`);
+    }
+    if (!(handlerName in this.handlers)) {
+      this.handlers[handlerName] = this[handlerName].bind(this);
+    }
+    if (enabled) {
+      chrome.fileSystemProvider[handlerName].addListener(
+          this.handlers[handlerName]);
+    } else {
+      chrome.fileSystemProvider[handlerName].removeListener(
+          this.handlers[handlerName]);
+    }
   }
 
   setUpCommandListener(serviceWorker) {
@@ -158,46 +230,79 @@ export class TestFileSystemProvider {
   }
 
   /**
-   * Called by the test. Gets the least recent call recorded for an FSP
-   * function. Will block until there is at least one in the queue.
+   * Called by the test. Returns the number of files that are currently open.
+   *
+   * @returns {number}
+   */
+  getOpenedFiles() {
+    return Object.keys(this.openedFiles).length;
+  }
+
+  /**
+   * Called by the test. Gets the least recent event recorded for a given event
+   * name. Will block until there is at least one in the queue.
    *
    * @param {string} funcName FSP function name.
    * @returns {!Object} the 'options' argument passed to the FSP call.
    */
-  async waitForCall(funcName) {
-    return this.getCallQueue(funcName).pop();
+  async waitForEvent(funcName) {
+    return this.getEventQueue(funcName).pop();
   }
 
   /**
    * Called by the FSP. Adds a record of a function call to the queue. The test
    * will read from this queue to wait for a specific FSP call to happen.
    *
-   * @param {string} funcName FSP function name.
-   * @param {!Object} optionsArg the 'options' arguments passed to this FSP
-   *     call.
+   * @param {string} name event name.
+   * @param {!Object} arg additional data associated with the event.
    */
-  recordCall(funcName, optionsArg) {
-    this.getCallQueue(funcName).push(optionsArg);
+  recordEvent(name, arg) {
+    this.getEventQueue(name).push(arg);
+  }
+
+  async stallRequest(name, options) {
+    this.recordEvent(`${name}Stalled`, options);
+    return new Promise(resolve => {
+      this.stalledRequests[options.requestId] = resolve;
+    })
   }
 
   /**
-   * Gets or creates a call queue for a function.
+   * Called by the test to resume a stalled request.
    *
-   * @param {string} funcName
+   * @param {number} requestId
+   */
+  continueRequest(requestId) {
+    const continueFn = this.stalledRequests[requestId];
+    if (continueFn) {
+      continueFn();
+    } else {
+      throw new Error(`continue request: request ID not found: ${requestId}`);
+    }
+  }
+
+  /**
+   * Gets or creates a test event queue for a function.
+   *
+   * @param {string} name
    * @returns {!Queue}
    */
-  getCallQueue(funcName) {
-    if (!(funcName in this.callQueues)) {
-      this.callQueues[funcName] = new Queue();
+  getEventQueue(name) {
+    if (!(name in this.eventQueues)) {
+      this.eventQueues[name] = new Queue();
     }
-    return this.callQueues[funcName];
+    return this.eventQueues[name];
   }
 
   /**
-   * Clears all the call queues for all functions.
+   * Clears all the state mutated by FSP handlers (test queues, max open file
+   * count).
    */
-  resetCallQueues() {
-    this.callQueues = {};
+  resetState() {
+    this.openedFiles = {};
+    this.eventQueues = {};
+    this.maxOpenedFiles = 0;
+    this.stalledRequests = {};
   }
 
   /**
@@ -235,18 +340,29 @@ export class TestFileSystemProvider {
    *     callback.
    */
   onOpenFileRequested(options, onSuccess, onError) {
+    this.recordEvent('onOpenFileRequested', options);
+
     if (options.fileSystemId !== this.fileSystemId) {
       onError(chrome.fileSystemProvider.ProviderError.SECURITY);
       return;
     }
 
     const metadata = this.files[options.filePath].metadata;
-    if (metadata && !metadata.is_directory) {
-      this.openedFiles[options.requestId] = options.filePath;
-      onSuccess();
-    } else {
+    if (!metadata || metadata.is_directory) {
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
     }
+
+    this.openedFiles[options.requestId] = options.filePath;
+    this.maxOpenedFiles =
+        Math.max(this.maxOpenedFiles, Object.keys(this.openedFiles).length);
+
+    if (options.filePath === '/' + TestFileSystemProvider.FILE_STALL_OPEN) {
+      this.stallRequest('onOpenFileRequested', options).then(onSuccess);
+      return;
+    }
+
+    onSuccess();
   };
 
   /**
@@ -260,6 +376,8 @@ export class TestFileSystemProvider {
    *     callback.
    */
   onCloseFileRequested(options, onSuccess, onError) {
+    this.recordEvent('onCloseFileRequested', options);
+
     if (options.fileSystemId !== this.fileSystemId ||
         !this.openedFiles[options.openRequestId]) {
       onError(chrome.fileSystemProvider.ProviderError.SECURITY);
@@ -309,6 +427,67 @@ export class TestFileSystemProvider {
   };
 
   /**
+   * FSP: requests reading contents of a file, previously opened with <code>
+   * openRequestId</code>.
+   *
+   * @param {!chrome.fileSystemProvider.ReadFileRequestedOptions} options
+   *     Options.
+   * @param {function(ArrayBuffer, boolean)} onSuccess Success callback.
+   * @param {function(string)} onError Error callback.
+   */
+  onReadFileRequested(options, onSuccess, onError) {
+    this.recordEvent('onReadFileRequested', options);
+
+    if (options.fileSystemId !== this.fileSystemId ||
+        !this.openedFiles[options.openRequestId]) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    const sendFileInChunks = (file) => {
+      const array = new TextEncoder().encode(file.contents);
+      const CHUNK_SIZE = 5;
+      for (let i = 0; i < array.length; i += CHUNK_SIZE) {
+        onSuccess(
+            /*data=*/ array.slice(i, Math.min(array.length, i + CHUNK_SIZE))
+                .buffer,
+            /*hasMore=*/ i + CHUNK_SIZE < array.length);
+      }
+    };
+
+    const filePath = this.openedFiles[options.openRequestId];
+    if (filePath === '/' + TestFileSystemProvider.FILE_READ_SUCCESS) {
+      sendFileInChunks(this.files[filePath]);
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_FAIL) {
+      onError(chrome.fileSystemProvider.ProviderError.FAILED);
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_DENIED) {
+      onError(chrome.fileSystemProvider.ProviderError.ACCESS_DENIED);
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_BLOCKS_FOREVER) {
+      // This simulates a very slow read.
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_STALL_READ) {
+      // Block the read until it's unblocked.
+      const file = this.files[filePath];
+      this.stallRequest('onReadFileRequested', options)
+          .then(() => sendFileInChunks(file));
+      return;
+    }
+
+    onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+  }
+
+  /**
    * FSP: requests writing contents to a file, previously opened with <code>
    * openRequestId</code>.
    *
@@ -319,7 +498,7 @@ export class TestFileSystemProvider {
    *     callback.
    */
   onWriteFileRequested(options, onSuccess, onError) {
-    this.recordCall('onWriteFileRequested', options);
+    this.recordEvent('onWriteFileRequested', options);
 
     if (options.fileSystemId !== this.fileSystemId ||
         !this.openedFiles[options.openRequestId]) {
@@ -338,6 +517,11 @@ export class TestFileSystemProvider {
 
     if (filePath === '/' + TestFileSystemProvider.FILE_FAIL) {
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_DENIED) {
+      onError(chrome.fileSystemProvider.ProviderError.ACCESS_DENIED);
       return;
     }
 
@@ -368,7 +552,7 @@ export class TestFileSystemProvider {
   }
 
   onAbortRequested(options, onSuccess, onError) {
-    this.recordCall('onAbortRequested', options);
+    this.recordEvent('onAbortRequested', options);
     if (options.fileSystemId !== this.fileSystemId) {
       onError('SECURITY');  // enum ProviderError.
       return;
@@ -429,12 +613,36 @@ export class TestFileSystemProvider {
 TestFileSystemProvider.FILESYSTEM_ID = 'test-fs';
 
 /**
- * Reads and writes on this file always fail.
+ * Reads and writes of this file always fail.
  *
  * @type {string}
  * @const
  */
 TestFileSystemProvider.FILE_FAIL = 'fail.txt';
+
+/**
+ * Reads and writes of this file fail with ACCESS_DENIED error.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_DENIED = 'denied.txt';
+
+/**
+ * Open requests on this file are blocked until they are manually unblocked.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_STALL_OPEN = 'stall-open.txt';
+
+/**
+ * Read requests on this file are blocked until they are manually unblocked.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_STALL_READ = 'stall-read.txt';
 
 /**
  * Reads and writes on this file never finish.
@@ -443,6 +651,14 @@ TestFileSystemProvider.FILE_FAIL = 'fail.txt';
  * @const
  */
 TestFileSystemProvider.FILE_BLOCKS_FOREVER = 'blocks-forever.txt';
+
+/**
+ * File reads return data normally (in multiple callbacks).
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
 
 /**
  * Initial contents of default testing files.

@@ -46,16 +46,22 @@ export async function getVolumeInfo(fileSystemId) {
  * Mounts a testing file system and calls the callback in case of a success.
  * On failure, the current test case is failed on an assertion.
  *
+ * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
+ *     unspecified, then not limited.
  * @returns {!Promise<{fileSystem: !Object, volumeId: string}>} mounted
  *     filesystem and its volume ID.
  */
-export async function mountTestFileSystem() {
+export async function mountTestFileSystem(openedFilesLimit) {
   const fileSystemId = TestFileSystemProvider.FILESYSTEM_ID;
-  await promisifyWithLastError(chrome.fileSystemProvider.mount, {
+  const options = {
     fileSystemId,
     displayName: 'Test Filesystem',
     writable: true,
-  });
+  };
+  if (openedFilesLimit) {
+    options.openedFilesLimit = openedFilesLimit;
+  }
+  await promisifyWithLastError(chrome.fileSystemProvider.mount, options);
   const volumeInfo = await getVolumeInfo(fileSystemId);
   if (!volumeInfo) {
     throw new Error(`volume not found for filesystem: ${fileSystemId}`);
@@ -96,15 +102,21 @@ async function callServiceWorker(commandId, ...args) {
     };
     setTimeout(() => {
       swContainer.removeEventListener('message', onReply);
-      reject(new Error(`request to service worker timed out: ${commandId}`));
+      reject(new Error(
+          `request to service worker timed out: ${commandId} args: ` +
+          JSON.stringify(args)));
     }, 5000);
     swContainer.addEventListener('message', onReply)
     sw.postMessage({requestId, commandId, args});
   });
 }
 
-// A proxy to a FileSystemProvider instance running in a service worker to be
-// called from test code.
+/**
+ * A proxy to a FileSystemProvider instance running in a service worker to be
+ * called from test code. All the calls and arguments are forwarded as is to the
+ * test provider, see corresponding functions in FileSystemProvider for
+ * descriptions.
+ */
 export const remoteProvider = {
   /**
    * @param {!Object<string, !Object>} files
@@ -112,18 +124,34 @@ export const remoteProvider = {
    */
   addFiles: async (files) => callServiceWorker('addFiles', files),
   /**
+   * @param {number} requestId
+   * @returns {!Promise<void>}
+   */
+  continueRequest: async (requestId) =>
+      callServiceWorker('continueRequest', requestId),
+  /**
    * @param {string} filePath
    * @returns {!Promise<string>}
    */
   getFileContents: async (filePath) =>
       callServiceWorker('getFileContents', filePath),
   /**
+   * @returns {!Promise<number>}
+   */
+  getOpenedFiles: async () => callServiceWorker('getOpenedFiles'),
+  /**
+   * @param {string} handlerName
+   * @param {boolean} enabled
+   */
+  setHandlerEnabled: async (handlerName, enabled) =>
+      callServiceWorker('setHandlerEnabled', handlerName, enabled),
+  /**
    * @returns {!Promise<void>}
    */
-  resetCallQueues: async () => callServiceWorker('resetCallQueues'),
+  resetState: async () => callServiceWorker('resetState'),
   /**
    * @param {string} funcName
    * @returns {!Promise<!Object>}
    */
-  waitForCall: async (funcName) => callServiceWorker('waitForCall', funcName),
+  waitForEvent: async (funcName) => callServiceWorker('waitForEvent', funcName),
 };

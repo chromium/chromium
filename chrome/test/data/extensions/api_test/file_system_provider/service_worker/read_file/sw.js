@@ -1,0 +1,11 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
+
+const provider =
+    new TestFileSystemProvider(TestFileSystemProvider.FILESYSTEM_ID);
+
+provider.setUpProviderListeners();
+provider.setUpCommandListener(self);

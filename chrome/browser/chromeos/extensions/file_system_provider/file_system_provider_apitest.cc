@@ -352,6 +352,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_App) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadFile) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/read_file",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, WriteFile) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/write_file",
                                {.extension_url = "test.html"},

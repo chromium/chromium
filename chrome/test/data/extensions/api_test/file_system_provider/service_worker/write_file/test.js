@@ -183,7 +183,7 @@ async function main() {
     // Abort writing to a valid file with a registered abort handler. Should
     // result in a gracefully terminated writing operation.
     async function abortWritingSuccess() {
-      await remoteProvider.resetCallQueues();
+      await remoteProvider.resetState();
       let writePromise;
       try {
         // A write to this file will be stuck forever.
@@ -194,11 +194,11 @@ async function main() {
 
         // Start a write request, wait for it to reach the provider.
         writePromise = writeTextToFile(fileWriter, 'A lot of cherries.');
-        await remoteProvider.waitForCall('onWriteFileRequested');
+        await remoteProvider.waitForEvent('onWriteFileRequested');
 
         // Abort the operation after it's started.
         fileWriter.abort();
-        await remoteProvider.waitForCall('onAbortRequested');
+        await remoteProvider.waitForEvent('onAbortRequested');
       } catch (e) {
         chrome.test.fail(e);
       }

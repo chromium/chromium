@@ -15,6 +15,8 @@ js_library("service_worker") {
   sources = [
     "helpers.js",
     "provider.js",
+    "read_file/sw.js",
+    "read_file/test.js",
     "write_file/sw.js",
     "write_file/test.js",
   ]
