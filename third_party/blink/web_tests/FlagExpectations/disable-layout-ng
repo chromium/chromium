@@ -483,6 +483,7 @@ crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-horiz-002.xhtml
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-001a.xhtml [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-001b.xhtml [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-003.xhtml [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-006.xhtml [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-007.xhtml [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-vert-001.xhtml [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flexbox-align-self-vert-002.xhtml [ Failure ]

@@ -1514,9 +1514,8 @@ crbug.com/606208 external/wpt/css/css-flexbox/order/order-abs-children-painting-
 # We paint in an incorrect order when layers are present. Blocked on composite-after-paint.
 crbug.com/370604 external/wpt/css/css-flexbox/flexbox-paint-ordering-002.xhtml [ Failure ]
 
-# We haven't implemented last baseline alignment.
-crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-006.xhtml [ Failure ]
-crbug.com/886585 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
+# We don't currently support sideways writing-modes.
+crbug.com/680331 external/wpt/css/css-flexbox/flexbox-align-self-baseline-horiz-008.xhtml [ Failure ]
 
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item.html [ Failure ]
