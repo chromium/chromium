@@ -102,8 +102,6 @@ ci.gpu.mac_builder(
         category = "Mac|Builder|Chromium",
         short_name = "x64",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
 )
 
 ci.thin_tester(
@@ -150,8 +148,6 @@ ci.gpu.mac_builder(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",
     ),
-    goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = None,
     xcode = xcode.x14main,
 )
 
