@@ -186,10 +186,11 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
 
   output_surface_->ScheduleGpuTaskForTesting(std::move(closure), {sync_token});
   BlockMainThread();
-  EXPECT_TRUE(on_finished_called);
 
   // Let the cb to come back.
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(on_finished_called);
   EXPECT_TRUE(on_return_release_fence_called);
 }
 

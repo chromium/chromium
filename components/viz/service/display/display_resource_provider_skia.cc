@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "build/build_config.h"
+#include "components/viz/service/display/resource_fence.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
@@ -186,8 +188,10 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
         break;
     }
 
-    if (resource.resource_fence)
-      resource.resource_fence->Set();
+    if (resource.resource_fence) {
+      resource.resource_fence->set();
+      resource.resource_fence->TrackDeferredResource(id);
+    }
   }
 
   DCHECK(base::Contains(resources_, std::make_pair(id, &resource)));

@@ -7,19 +7,24 @@
 
 #include "base/memory/ref_counted.h"
 
+#include "base/memory/weak_ptr.h"
+#include "components/viz/common/resources/resource_id.h"
+#include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace viz {
 
+class DisplayResourceProvider;
+
 // An abstract interface used to ensure reading from resources passed between
 // client and service does not happen before writing is completed.
-class ResourceFence : public base::RefCountedThreadSafe<ResourceFence> {
+// Instances of this class are accessed from the display compositor thread.
+class VIZ_SERVICE_EXPORT ResourceFence
+    : public base::RefCounted<ResourceFence> {
  public:
   ResourceFence(const ResourceFence&) = delete;
   ResourceFence& operator=(const ResourceFence&) = delete;
 
-  // Notifies the fence is needed.
-  virtual void Set() = 0;
   // Tells if the fence is ready.
   virtual bool HasPassed() = 0;
   // A release fence which availability depends on the type of resource fence
@@ -29,10 +34,26 @@ class ResourceFence : public base::RefCountedThreadSafe<ResourceFence> {
   // Otherwise, it's not guaranteed that the fence handle is valid.
   virtual gfx::GpuFenceHandle GetGpuFenceHandle() = 0;
 
+  // Notifies the fence is needed.
+  void set() { set_ = true; }
+  bool was_set() const { return set_; }
+
+  // Tracks a resource that will be released when this ResourceFence passes.
+  void TrackDeferredResource(ResourceId id);
+
  protected:
-  friend class base::RefCountedThreadSafe<ResourceFence>;
-  ResourceFence() = default;
-  virtual ~ResourceFence() = default;
+  friend class base::RefCounted<ResourceFence>;
+
+  explicit ResourceFence(DisplayResourceProvider* resource_provider);
+  virtual ~ResourceFence();
+
+  // Conveys to |resource_provider_| that this resource fence has passed.
+  void FencePassed();
+
+ private:
+  bool set_ = false;
+  base::flat_set<ResourceId> deferred_resources_;
+  base::WeakPtr<DisplayResourceProvider> resource_provider_;
 };
 
 }  // namespace viz

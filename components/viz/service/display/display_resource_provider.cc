@@ -119,6 +119,10 @@ bool DisplayResourceProvider::OnMemoryDump(
   return true;
 }
 
+base::WeakPtr<DisplayResourceProvider> DisplayResourceProvider::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) {
   ChildResource* resource = GetResource(id);
@@ -307,6 +311,19 @@ DisplayResourceProvider::ChildResource* DisplayResourceProvider::TryGetResource(
   if (it == resources_.end())
     return nullptr;
   return &it->second;
+}
+
+void DisplayResourceProvider::OnResourceFencePassed(
+    ResourceFence* resource_fence,
+    base::flat_set<ResourceId> resources) {
+  for (auto local_id : resources) {
+    auto it = resources_.find(local_id);
+    if (it == resources_.end() ||
+        resource_fence != it->second.resource_fence.get()) {
+      continue;
+    }
+    TryReleaseResource(local_id, &it->second);
+  }
 }
 
 void DisplayResourceProvider::TryReleaseResource(ResourceId id,

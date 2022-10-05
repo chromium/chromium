@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -70,6 +71,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
+  base::WeakPtr<DisplayResourceProvider> GetWeakPtr();
+
 #if BUILDFLAG(IS_ANDROID)
   // Indicates if this resource is backed by an Android SurfaceTexture, and thus
   // can't really be promoted to an overlay.
@@ -103,6 +106,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
 
   // Checks whether a resource is in use.
   bool InUse(ResourceId id);
+
+  // Try removing the resources that are pending the |resource_fence|.
+  void OnResourceFencePassed(ResourceFence* resource_fence,
+                             base::flat_set<ResourceId> resources);
 
   // The following lock classes are part of the DisplayResourceProvider API and
   // are needed to read the resource contents. The user must ensure that they
@@ -367,6 +374,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // ReleaseImageContexts() are expected to finish in finite time. It's always
   // true for Chrome, but on WebView we need to have access to RenderThread.
   bool can_access_gpu_thread_ = true;
+
+  // OnResourceFencePassed() may be called by resource_fence that lives past
+  // destruction of this class.
+  base::WeakPtrFactory<DisplayResourceProvider> weak_factory_{this};
 };
 
 }  // namespace viz

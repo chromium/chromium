@@ -88,6 +88,7 @@ viz_component("service") {
     "display/renderer_utils.h",
     "display/resolved_frame_data.cc",
     "display/resolved_frame_data.h",
+    "display/resource_fence.cc",
     "display/resource_fence.h",
     "display/shared_bitmap_manager.h",
     "display/skia_output_surface.cc",

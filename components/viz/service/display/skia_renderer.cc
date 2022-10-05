@@ -14,9 +14,10 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,6 +42,7 @@
 #include "components/viz/service/display/delegated_ink_handler.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
 #include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -721,63 +723,65 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
 
 // A read lock based fence that is signaled after gpu commands are completed
 // meaning the resource has been read.
+// TODO(fangzhoug): Move this out of this file s.t. it can be referenced in
+// display_resource_provider_skia_unittest.cc.
 class SkiaRenderer::FrameResourceGpuCommandsCompletedFence
     : public ResourceFence {
  public:
-  FrameResourceGpuCommandsCompletedFence() = default;
+  explicit FrameResourceGpuCommandsCompletedFence(
+      DisplayResourceProviderSkia* resource_provider)
+      : ResourceFence(resource_provider) {}
+  FrameResourceGpuCommandsCompletedFence() = delete;
   FrameResourceGpuCommandsCompletedFence(
       const FrameResourceGpuCommandsCompletedFence&) = delete;
   FrameResourceGpuCommandsCompletedFence& operator=(
       const FrameResourceGpuCommandsCompletedFence&) = delete;
 
   // ResourceFence implementation.
-  void Set() override { set_ = true; }
-  bool HasPassed() override { return event_.IsSignaled(); }
+  bool HasPassed() override { return passed_; }
   gfx::GpuFenceHandle GetGpuFenceHandle() override {
     NOTREACHED();
     return gfx::GpuFenceHandle();
   }
 
-  bool WasSet() { return set_; }
-  void Signal() { event_.Signal(); }
+  void Signal() {
+    passed_ = true;
+    FencePassed();
+  }
 
  private:
   ~FrameResourceGpuCommandsCompletedFence() override = default;
 
-  // Accessed only from compositor thread.
-  bool set_ = false;
-
-  base::WaitableEvent event_;
+  bool passed_ = false;
 };
 
 // FrameResourceFence that gets a ReleaseFence which is later set to returned
 // resources.
+// TODO(fangzhoug): Move this out of this file s.t. it can be referenced in
+// display_resource_provider_skia_unittest.cc.
 class SkiaRenderer::FrameResourceReleaseFence : public ResourceFence {
  public:
-  FrameResourceReleaseFence() = default;
+  explicit FrameResourceReleaseFence(
+      DisplayResourceProviderSkia* resource_provider)
+      : ResourceFence(resource_provider) {}
+  FrameResourceReleaseFence() = delete;
   FrameResourceReleaseFence(const FrameResourceReleaseFence&) = delete;
   FrameResourceReleaseFence& operator=(const FrameResourceReleaseFence&) =
       delete;
 
   // ResourceFence implementation:
-  void Set() override { set_ = true; }
-  // If the fence handle has been set, |this| has passed aka the callback has
-  // been called.
   bool HasPassed() override { return release_fence_.has_value(); }
   gfx::GpuFenceHandle GetGpuFenceHandle() override {
     return HasPassed() ? release_fence_.value().Clone() : gfx::GpuFenceHandle();
   }
 
-  bool WasSet() { return set_; }
   void SetReleaseFenceCallback(gfx::GpuFenceHandle release_fence) {
     release_fence_ = std::move(release_fence);
+    FencePassed();
   }
 
  private:
   ~FrameResourceReleaseFence() override = default;
-
-  // Accessed only from compositor thread.
-  bool set_ = false;
 
   // This is made optional so that the value is set after
   // SetReleaseFenceCallback is called. Otherwise, there is no way to know if
@@ -811,8 +815,10 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   // is flushed and external resources are released. However, other resources
   // require additional setup, which helps to handle that.
   current_gpu_commands_completed_fence_ =
-      base::MakeRefCounted<FrameResourceGpuCommandsCompletedFence>();
-  current_release_fence_ = base::MakeRefCounted<FrameResourceReleaseFence>();
+      base::MakeRefCounted<FrameResourceGpuCommandsCompletedFence>(
+          resource_provider);
+  current_release_fence_ =
+      base::MakeRefCounted<FrameResourceReleaseFence>(resource_provider);
   this->resource_provider()->SetGpuCommandsCompletedFence(
       current_gpu_commands_completed_fence_.get());
   this->resource_provider()->SetReleaseFence(current_release_fence_.get());
@@ -844,8 +850,8 @@ bool SkiaRenderer::CanPartialSwap() {
 void SkiaRenderer::BeginDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::BeginDrawingFrame");
 
-  DCHECK(!current_gpu_commands_completed_fence_->WasSet());
-  DCHECK(!current_release_fence_->WasSet());
+  DCHECK(!current_gpu_commands_completed_fence_->was_set());
+  DCHECK(!current_release_fence_->was_set());
 }
 
 void SkiaRenderer::FinishDrawingFrame() {
@@ -2616,8 +2622,8 @@ void SkiaRenderer::DrawUnsupportedQuad(const DrawQuad* quad,
 }
 
 void SkiaRenderer::ScheduleOverlays() {
-  DCHECK(!current_gpu_commands_completed_fence_->WasSet());
-  DCHECK(!current_release_fence_->WasSet());
+  DCHECK(!current_gpu_commands_completed_fence_->was_set());
+  DCHECK(!current_release_fence_->was_set());
 
   // Always add an empty set of locks to be used in either SwapBuffersSkipped()
   // or SwapBuffersComplete().
@@ -2742,8 +2748,8 @@ void SkiaRenderer::ScheduleOverlays() {
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  DCHECK(!current_gpu_commands_completed_fence_->WasSet());
-  DCHECK(!current_release_fence_->WasSet());
+  DCHECK(!current_gpu_commands_completed_fence_->was_set());
+  DCHECK(!current_release_fence_->was_set());
 
   skia_output_surface_->ScheduleOverlays(
       std::move(current_frame()->overlay_list), std::move(sync_tokens));
@@ -3597,24 +3603,27 @@ void SkiaRenderer::EndPaint(bool failed) {
   if (!failed) {
     // Signal |current_frame_resource_fence_| when the root render pass is
     // finished.
-    if (current_gpu_commands_completed_fence_->WasSet()) {
-      on_finished_callback =
+    if (current_gpu_commands_completed_fence_->was_set()) {
+      on_finished_callback = base::BindPostTask(
+          base::ThreadTaskRunnerHandle::Get(),
           base::BindOnce(&FrameResourceGpuCommandsCompletedFence::Signal,
-                         std::move(current_gpu_commands_completed_fence_));
+                         std::move(current_gpu_commands_completed_fence_)));
       current_gpu_commands_completed_fence_ =
-          base::MakeRefCounted<FrameResourceGpuCommandsCompletedFence>();
+          base::MakeRefCounted<FrameResourceGpuCommandsCompletedFence>(
+              resource_provider());
       resource_provider()->SetGpuCommandsCompletedFence(
           current_gpu_commands_completed_fence_.get());
     }
 
     // Return a release fence to the |current_release_fence_|
     // when the root render pass is finished.
-    if (current_release_fence_->WasSet()) {
-      on_return_release_fence_cb =
+    if (current_release_fence_->was_set()) {
+      on_return_release_fence_cb = base::BindPostTask(
+          base::ThreadTaskRunnerHandle::Get(),
           base::BindOnce(&FrameResourceReleaseFence::SetReleaseFenceCallback,
-                         std::move(current_release_fence_));
+                         std::move(current_release_fence_)));
       current_release_fence_ =
-          base::MakeRefCounted<FrameResourceReleaseFence>();
+          base::MakeRefCounted<FrameResourceReleaseFence>(resource_provider());
       resource_provider()->SetReleaseFence(current_release_fence_.get());
     }
   }
