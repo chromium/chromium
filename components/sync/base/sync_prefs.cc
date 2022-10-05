@@ -204,14 +204,15 @@ bool SyncPrefs::IsSyncAllOsTypesEnabled() const {
 
 UserSelectableOsTypeSet SyncPrefs::GetSelectedOsTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsSyncAllOsTypesEnabled()) {
-    return UserSelectableOsTypeSet::All();
-  }
   UserSelectableOsTypeSet selected_types;
+  const bool sync_all_os_types = IsSyncAllOsTypesEnabled();
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     const char* pref_name = GetPrefNameForOsType(type);
     DCHECK(pref_name);
-    if (pref_service_->GetBoolean(pref_name)) {
+    // If the preference is managed, |sync_all_os_types| is ignored for this
+    // preference.
+    if (pref_service_->GetBoolean(pref_name) ||
+        (sync_all_os_types && !pref_service_->IsManagedPreference(pref_name))) {
       selected_types.Put(type);
     }
   }

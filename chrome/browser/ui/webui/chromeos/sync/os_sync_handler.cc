@@ -63,8 +63,7 @@ void OSSyncHandler::OnJavascriptDisallowed() {
 }
 
 void OSSyncHandler::OnStateChanged(syncer::SyncService* service) {
-  if (!is_setting_prefs_)
-    PushSyncPrefs();
+  PushSyncPrefs();
 }
 
 void OSSyncHandler::HandleDidNavigateToOsSyncPage(
@@ -120,8 +119,6 @@ void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
   SyncUserSettings* settings = service->GetUserSettings();
   selected_types.RetainAll(settings->GetRegisteredSelectableOsTypes());
 
-  // Don't send updates back to JS while processing values sent from JS.
-  base::AutoReset<bool> reset(&is_setting_prefs_, true);
   settings->SetSelectedOsTypes(sync_all_os_types, selected_types);
 
   // TODO(jamescook): Add metrics for selected types.

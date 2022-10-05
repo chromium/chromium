@@ -2095,6 +2095,29 @@
       }
     ]
   },
+  "SyncTypesListDisabled.OSTypes": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SyncTypesListDisabled": [
+            "apps",
+            "preferences"
+          ]
+        },
+        "prefs": {
+          "sync.os_apps": {
+            "value": false
+          },
+          "sync.os_preferences": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "SigninAllowed": {
     "os": [
       "win",

@@ -54,9 +54,6 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   void RemoveSyncServiceObserver();
 
   Profile* const profile_;
-
-  // Prevents messages to JS layer while data type prefs are being set.
-  bool is_setting_prefs_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SYNC_OS_SYNC_HANDLER_H_
