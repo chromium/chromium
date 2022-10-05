@@ -5263,6 +5263,13 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
       shell()->web_contents()->GetPrimaryMainFrame());
 }
 
+// The test below verifies that error pages have a functional URLLoaderFactory.
+IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest, URLLoaderFactoryInErrorPage) {
+  GURL error_url(embedded_test_server()->GetURL("/close-socket"));
+  EXPECT_FALSE(NavigateToURL(shell(), error_url));
+  VerifyImageSubresourceLoads(shell()->web_contents()->GetPrimaryMainFrame());
+}
+
 // The test below verifies that an initial empty document has a functional
 // URLLoaderFactory.
 IN_PROC_BROWSER_TEST_F(

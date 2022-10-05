@@ -2571,9 +2571,9 @@ RenderFrameHostImpl::CreateSubresourceLoaderFactoriesForInitialEmptyDocument() {
           subresource_loader_factories->pending_default_factory()
               .InitWithNewPipeAndPassReceiver());
 
-      // The caller will send the returned factory to the renderer process.
-      // Therefore, after a NetworkService crash we need to push to the renderer
-      // an updated factory.
+      // The caller will send the returned factory to the renderer process (as
+      // the default factory).  Therefore, after a NetworkService crash we need
+      // to push to the renderer an updated factory.
       recreate_default_url_loader_factory_after_network_service_crash_ = true;
       break;
   }
@@ -9344,6 +9344,7 @@ void RenderFrameHostImpl::FailedNavigation(
           blink::PendingURLLoaderFactoryBundle::SchemeMap(),
           blink::PendingURLLoaderFactoryBundle::OriginMap(),
           bypass_redirect_checks);
+  recreate_default_url_loader_factory_after_network_service_crash_ = true;
 
   mojom::NavigationClient* navigation_client =
       navigation_request->GetCommitNavigationClient();
