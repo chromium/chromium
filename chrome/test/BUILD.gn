@@ -1139,6 +1139,20 @@ if (enable_pdf) {
   }
 }
 
+if (is_chromeos_ash) {
+  static_library("ash_crosapi_tests_runner") {
+    testonly = true
+
+    sources = [
+      "../browser/ash/crosapi/test/ash_crosapi_tests_env.cc",
+      "../browser/ash/crosapi/test/ash_crosapi_tests_env.h",
+      "../browser/ash/crosapi/test/ash_crosapi_tests_main.cc",
+    ]
+
+    deps = [ ":test_support" ]
+  }
+}
+
 static_library("browser_tests_runner") {
   testonly = true
   sources = []
@@ -11091,11 +11105,11 @@ if (is_chromeos_ash) {
       "../browser/ash/crosapi/test/crosapi_test_base.h",
     ]
     deps = [
-      ":browser_tests_runner",
+      ":ash_crosapi_tests_runner",
+      ":test_ash_chrome",
       "//ash/constants",
       "//base",
       "//base/test:test_support",
-      "//chrome",
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
       "//mojo/core/embedder",
