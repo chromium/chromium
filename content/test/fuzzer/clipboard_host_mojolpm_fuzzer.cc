@@ -68,8 +68,6 @@ class ClipboardHostTestcase
 
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
   content::TestRenderFrameHost* render_frame_host_ = nullptr;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 ClipboardHostTestcase::ClipboardHostTestcase(const ProtoTestcase& testcase)
@@ -83,7 +81,7 @@ ClipboardHostTestcase::~ClipboardHostTestcase() {
 
 void ClipboardHostTestcase::RunAction(const ProtoAction& action,
                                       base::OnceClosure run_closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
   const auto ThreadId_UI =
       content::fuzzing::clipboard_host::proto::RunThreadAction_ThreadId_UI;
   const auto ThreadId_IO =
@@ -119,7 +117,7 @@ void ClipboardHostTestcase::RunAction(const ProtoAction& action,
 }
 
 void ClipboardHostTestcase::SetUp(base::OnceClosure done_closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -137,7 +135,7 @@ void ClipboardHostTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
 }
 
 void ClipboardHostTestcase::TearDown(base::OnceClosure done_closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ClipboardHostTestcase::TearDownOnUIThread,
@@ -164,7 +162,7 @@ static void AddClipboardHostInstance(
 
 void ClipboardHostTestcase::AddClipboardHost(uint32_t id,
                                              base::OnceClosure run_closure) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
   mojo::Remote<blink::mojom::ClipboardHost> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
