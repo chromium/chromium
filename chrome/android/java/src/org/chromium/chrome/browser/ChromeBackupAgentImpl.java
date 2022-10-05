@@ -387,10 +387,9 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        // Because FirstRunSignInProcessor.FIRST_RUN_FLOW_SIGNIN_COMPLETE is not restored Chrome
-        // will sign in the user on first run to the account in FIRST_RUN_FLOW_SIGNIN_ACCOUNT_NAME
-        // if any. If the rest of FRE has been completed this will happen silently.
-        editor.putString(ChromePreferenceKeys.FIRST_RUN_FLOW_SIGNIN_ACCOUNT_NAME, restoredUserName);
+        // This will sign in the user on first run to the account in BACKUP_FLOW_SIGNIN_ACCOUNT_NAME
+        // if any.
+        editor.putString(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME, restoredUserName);
         editor.apply();
 
         // The silent first run will change things, so there is no point in trying to prevent

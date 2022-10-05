@@ -11,6 +11,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/AppIndexingUtil.java",
   "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
   "java/src/org/chromium/chrome/browser/BackPressHelper.java",
+  "java/src/org/chromium/chrome/browser/BackupSigninProcessor.java",
   "java/src/org/chromium/chrome/browser/BrowserRestartActivity.java",
   "java/src/org/chromium/chrome/browser/ChromeActionModeHandler.java",
   "java/src/org/chromium/chrome/browser/ChromeActivitySessionTracker.java",
