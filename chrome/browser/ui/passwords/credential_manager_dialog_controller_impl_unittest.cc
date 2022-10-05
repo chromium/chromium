@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -57,6 +58,15 @@ class CredentialManagerDialogControllerTest : public testing::Test {
   CredentialManagerDialogControllerTest()
       : controller_(&profile_, &ui_controller_mock_) {}
 
+  void SetUp() override {
+    ON_CALL(ui_controller_mock_, GetPasswordFeatureManager)
+        .WillByDefault(testing::Return(&feature_manager_));
+  }
+
+  password_manager::MockPasswordFeatureManager& feature_manager() {
+    return feature_manager_;
+  }
+
   PasswordsModelDelegateMock& ui_controller_mock() {
     return ui_controller_mock_;
   }
@@ -68,7 +78,9 @@ class CredentialManagerDialogControllerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  StrictMock<PasswordsModelDelegateMock> ui_controller_mock_;
+  testing::NiceMock<password_manager::MockPasswordFeatureManager>
+      feature_manager_;
+  testing::NiceMock<PasswordsModelDelegateMock> ui_controller_mock_;
   CredentialManagerDialogControllerImpl controller_;
 };
 
@@ -93,6 +105,10 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooser) {
 
   // Close the dialog.
   EXPECT_CALL(prompt, ControllerGone());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(false));
+#endif
   EXPECT_CALL(ui_controller_mock(),
               ChooseCredential(
                   local_form,
@@ -122,6 +138,10 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooserAndSignIn) {
 
   // Close the dialog.
   EXPECT_CALL(prompt, ControllerGone());
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(false));
+#endif
   EXPECT_CALL(ui_controller_mock(),
               ChooseCredential(
                   local_form,
@@ -215,5 +235,120 @@ TEST_F(CredentialManagerDialogControllerTest, AutoSigninPromoTurnOff) {
       "PasswordManager.AutoSigninFirstRunDialog",
       password_manager::metrics_util::AUTO_SIGNIN_TURN_OFF, 1);
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(CredentialManagerDialogControllerTest, SignInBiometricsEnabled) {
+  StrictMock<MockPasswordPrompt> prompt;
+  password_manager::PasswordForm local_form = GetLocalForm();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form));
+
+  EXPECT_CALL(prompt, ShowAccountChooser);
+  controller().ShowAccountChooser(&prompt, std::move(locals));
+
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(ui_controller_mock(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>([](auto callback) {
+        // Simulate successful authentication.
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(prompt, ControllerGone);
+  EXPECT_CALL(ui_controller_mock(),
+              ChooseCredential(
+                  local_form,
+                  password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD));
+  controller().OnSignInClicked();
+}
+
+TEST_F(CredentialManagerDialogControllerTest,
+       SignInBiometricsEnabledButFailed) {
+  StrictMock<MockPasswordPrompt> prompt;
+  password_manager::PasswordForm local_form = GetLocalForm();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form));
+
+  EXPECT_CALL(prompt, ShowAccountChooser);
+  controller().ShowAccountChooser(&prompt, std::move(locals));
+
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(ui_controller_mock(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>([](auto callback) {
+        // Simulate failed authentication.
+        std::move(callback).Run(false);
+      }));
+  EXPECT_CALL(prompt, ControllerGone).Times(0);
+  EXPECT_CALL(ui_controller_mock(), ChooseCredential).Times(0);
+  controller().OnSignInClicked();
+
+  testing::Mock::VerifyAndClearExpectations(&prompt);
+  testing::Mock::VerifyAndClearExpectations(&ui_controller_mock());
+
+  controller().OnCloseDialog();
+}
+
+TEST_F(CredentialManagerDialogControllerTest,
+       OnChooseCredentialsBiometricsEnabled) {
+  StrictMock<MockPasswordPrompt> prompt;
+
+  EXPECT_CALL(prompt, ShowAccountChooser);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(GetLocalForm()));
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(GetLocalForm()));
+  controller().ShowAccountChooser(&prompt, std::move(locals));
+
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(ui_controller_mock(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>([](auto callback) {
+        // Simulate successful authentication.
+        std::move(callback).Run(true);
+      }));
+  EXPECT_CALL(prompt, ControllerGone);
+  EXPECT_CALL(ui_controller_mock(),
+              ChooseCredential(
+                  GetLocalForm(),
+                  password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD));
+  controller().OnChooseCredentials(
+      GetLocalForm(),
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
+}
+
+TEST_F(CredentialManagerDialogControllerTest,
+       OnChooseCredentialsBiometricsEnabledButFailed) {
+  StrictMock<MockPasswordPrompt> prompt;
+
+  EXPECT_CALL(prompt, ShowAccountChooser);
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(GetLocalForm()));
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(GetLocalForm()));
+  controller().ShowAccountChooser(&prompt, std::move(locals));
+
+  EXPECT_CALL(feature_manager(), IsBiometricAuthenticationBeforeFillingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(ui_controller_mock(), AuthenticateUserWithMessage)
+      .WillOnce(testing::WithArg<1>([](auto callback) {
+        // Simulate failed authentication.
+        std::move(callback).Run(false);
+      }));
+  EXPECT_CALL(prompt, ControllerGone).Times(0);
+  EXPECT_CALL(ui_controller_mock(), ChooseCredential).Times(0);
+  controller().OnChooseCredentials(
+      GetLocalForm(),
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
+
+  testing::Mock::VerifyAndClearExpectations(&prompt);
+  testing::Mock::VerifyAndClearExpectations(&ui_controller_mock());
+
+  controller().OnCloseDialog();
+}
+#endif
 
 }  // namespace

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 
 class AccountChooserPrompt;
@@ -56,6 +57,10 @@ class CredentialManagerDialogControllerImpl
  private:
   // Release |current_dialog_| and close the open dialog.
   void ResetDialog();
+  void OnBiometricReauthCompleted(
+      password_manager::PasswordForm password_form,
+      password_manager::CredentialType credential_type,
+      bool result);
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<PasswordsModelDelegate> delegate_;
@@ -63,6 +68,8 @@ class CredentialManagerDialogControllerImpl
   raw_ptr<AutoSigninFirstRunPrompt> autosignin_dialog_;
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_;
+  base::WeakPtrFactory<CredentialManagerDialogControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_MANAGER_DIALOG_CONTROLLER_IMPL_H_
