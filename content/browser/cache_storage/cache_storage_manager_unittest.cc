@@ -2107,6 +2107,17 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
     EXPECT_TRUE(Open(bucket_locator4, "cool"));
     EXPECT_TRUE(CachePut(callback_cache_handle_.value(), test_url));
 
+    // Ensure that the index files have been written to disk before calling
+    // `GetStorageKeys()`.
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator2_));
+    EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator3));
+    if (toggle) {
+      EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator4));
+    }
+    disk_cache::FlushCacheThreadForTesting();
+    content::RunAllTasksUntilIdle();
+
     std::vector<blink::StorageKey> storage_keys = GetStorageKeys();
     ASSERT_EQ(2ULL, storage_keys.size());
     EXPECT_NE(storage_keys[0].origin(), test_origin);
