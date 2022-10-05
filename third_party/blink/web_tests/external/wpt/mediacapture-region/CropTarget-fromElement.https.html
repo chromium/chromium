@@ -14,7 +14,7 @@
 
   <div id='test-div'></div>
   <iframe id='test-iframe' src="about:blank"></iframe>
-  <a id='test-a'></a>
+  <img id='test-img' alt='Alt text' width="500" height="600">
   <div id='log'></div>
 
   <script src=/resources/testharness.js></script>
@@ -37,6 +37,15 @@
       assert_equals(crop_target.constructor.name, 'CropTarget');
     }, "Produces a CropTarget for Elements of subtype div.");
 
+    // TODO(crbug.com/1247761): Re-enable after rolling out the
+    // experiment to allow any Element.
+    // promise_test(function (t) {
+    //   assert_true(!!CropTarget.fromElement);
+    //
+    //   return promise_rejects_dom(t, "NotSupportedError",
+    //     CropTarget.fromElement(document.getElementById("test-img")));
+    // }, "Produces a CropTarget for Elements of subtype img.");
+
     promise_test(t => {
       assert_true(!!CropTarget.fromElement);
       return promise_rejects_js(t, TypeError,
@@ -47,13 +56,6 @@
       assert_true(!!CropTarget.fromElement);
       return promise_rejects_js(t, TypeError, CropTarget.fromElement(123));
     }, "Rejects a non-Element with a TypeError.");
-
-    promise_test(function (t) {
-      assert_true(!!CropTarget.fromElement);
-
-      return promise_rejects_dom(t, "NotSupportedError",
-        CropTarget.fromElement(document.getElementById("test-a")));
-    }, "Rejects unimplemented Element subtypes with a NotSupportedError");
 
     promise_test(async () => {
       assert_true(!!CropTarget.fromElement);
