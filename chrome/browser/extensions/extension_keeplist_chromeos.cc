@@ -75,7 +75,6 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
 #endif
 
         extension_misc::kGoogleKeepAppId, extension_misc::kCalculatorAppId,
-        extension_misc::kTextEditorAppId,
         extension_misc::kInAppPaymentsSupportAppId,
         extension_misc::kIdentityApiUiAppId
   });
