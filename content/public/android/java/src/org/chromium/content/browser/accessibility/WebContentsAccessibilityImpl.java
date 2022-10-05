@@ -80,6 +80,7 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -282,6 +283,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     protected WebContentsAccessibilityImpl(AccessibilityDelegate delegate) {
+        TraceEvent.begin("WebContentsAccessibilityImpl.ctor");
         mDelegate = delegate;
         mView = mDelegate.getContainerView();
         mContext = mView.getContext();
@@ -383,6 +385,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 Log.e(TAG, "AutofillManager did not resolve before time limit.");
             }
         }
+
+        TraceEvent.end("WebContentsAccessibilityImpl.ctor");
     }
 
     /**
@@ -390,6 +394,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
      * to do initialization that is not required until the native is set up.
      */
     protected void onNativeInit() {
+        TraceEvent.begin("WebContentsAccessibilityImpl.onNativeInit");
         mAccessibilityFocusId = View.NO_ID;
         mSelectionNodeId = View.NO_ID;
         mIsHovering = false;
@@ -418,6 +423,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             };
             mView.post(serviceMaskRunnable);
         }
+
+        TraceEvent.end("WebContentsAccessibilityImpl.onNativeInit");
     }
 
     @CalledByNative
@@ -517,10 +524,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onAttachedToWindow() {
+        TraceEvent.begin("WebContentsAccessibilityImpl.onAttachedToWindow");
         mAccessibilityManager.addAccessibilityStateChangeListener(this);
         refreshState();
         mCaptioningController.startListening();
         registerLocaleChangeReceiver();
+        TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
     }
 
     private void registerLocaleChangeReceiver() {
@@ -537,6 +546,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
+        TraceEvent.begin("WebContentsAccessibilityImpl.onWindowAndroidChanged");
         // Delete this object when switching between WindowAndroids/Activities.
         if (mDelegate.getWebContents() != null) {
             WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
@@ -545,17 +555,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         deleteEarly();
+        TraceEvent.end("WebContentsAccessibilityImpl.onWindowAndroidChanged");
     }
 
     @Override
     public void destroy() {
+        TraceEvent.begin("WebContentsAccessibilityImpl.destroy");
         if (mDelegate.getWebContents() == null) deleteEarly();
+        TraceEvent.end("WebContentsAccessibilityImpl.destroy");
     }
 
     protected void deleteEarly() {
         if (mNativeObj != 0) {
+            TraceEvent.begin("WebContentsAccessibilityImpl.deleteEarly");
             WebContentsAccessibilityImplJni.get().deleteEarly(mNativeObj);
             assert mNativeObj == 0;
+            TraceEvent.end("WebContentsAccessibilityImpl.deleteEarly");
         }
     }
 
