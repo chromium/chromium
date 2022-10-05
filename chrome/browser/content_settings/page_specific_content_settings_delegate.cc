@@ -14,6 +14,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -203,6 +204,29 @@ PageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
     state |= PageSpecificContentSettings::CAMERA_ACCESSED;
 
   return state;
+}
+
+content::WebContents* PageSpecificContentSettingsDelegate::
+    MaybeGetSyncedWebContentsForPictureInPicture(
+        content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  content::WebContents* parent_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetWebContents();
+  content::WebContents* child_web_contents =
+      PictureInPictureWindowManager::GetInstance()->GetChildWebContents();
+
+  // For document picture-in-picture window, return the opener web contents.
+  if (web_contents == child_web_contents) {
+    DCHECK(parent_web_contents);
+    return parent_web_contents;
+  }
+
+  // For browser window that has opened a document picture-in-picture window,
+  // return the PiP window web contents.
+  if ((web_contents == parent_web_contents) && child_web_contents) {
+    return child_web_contents;
+  }
+  return nullptr;
 }
 
 void PageSpecificContentSettingsDelegate::OnContentAllowed(

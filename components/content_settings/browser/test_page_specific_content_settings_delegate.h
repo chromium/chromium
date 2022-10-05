@@ -35,6 +35,8 @@ class TestPageSpecificContentSettingsDelegate
       const std::string& media_stream_selected_video_device) override;
   PageSpecificContentSettings::MicrophoneCameraState GetMicrophoneCameraState()
       override;
+  content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
+      content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
   void OnStorageAccessAllowed(

@@ -54,6 +54,7 @@ class TestVideoPictureInPictureWindowController
     web_contents_ = web_contents;
   }
   content::WebContents* GetWebContents() override { return web_contents_; }
+  content::WebContents* GetChildWebContents() override { return nullptr; }
   bool TogglePlayPause() override { return false; }
   void SkipAd() override {}
   void NextTrack() override {}

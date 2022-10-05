@@ -163,6 +163,10 @@ WebContents* VideoPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
+WebContents* VideoPictureInPictureWindowControllerImpl::GetChildWebContents() {
+  return nullptr;
+}
+
 void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
   if (!window_)
     return;

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "content/public/browser/web_contents.h"
 #endif
 
@@ -40,6 +42,19 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
   LocationBar* location_bar = browser->window()->GetLocationBar();
   if (location_bar)
     location_bar->UpdateContentSettingsIcons();
+
+// TODO(https://crbug.com/1346734): Enable this on all platforms.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // The document PiP window does not have a location bar, but has some content
+  // setting views that need to be updated too.
+  if (browser->is_type_picture_in_picture()) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+        browser_view->frame()->GetFrameView());
+    frame_view->UpdateContentSettingsIcons();
+  }
+#endif
+
 #endif
 }
 

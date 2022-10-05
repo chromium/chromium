@@ -641,4 +641,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
   WaitForTitle(u"leavepictureinpicture");
 }
 
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
+                       EnterPictureInPictureHasNoChildWebContents) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+  ASSERT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
+
+  ASSERT_TRUE(window_controller()->GetWebContents());
+  ASSERT_FALSE(window_controller()->GetChildWebContents());
+}
+
 }  // namespace content

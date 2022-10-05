@@ -200,6 +200,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        MAYBE_CreateTwice) {
   LoadTabAndEnterPictureInPicture(browser());
 
+  ASSERT_TRUE(window_controller()->GetWebContents());
   ASSERT_TRUE(window_controller()->GetChildWebContents());
   DestructionObserver w(window_controller()->GetChildWebContents());
 

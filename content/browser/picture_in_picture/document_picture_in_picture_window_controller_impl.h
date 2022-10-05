@@ -53,10 +53,10 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
   WebContents* GetWebContents() override;
+  WebContents* GetChildWebContents() override;
 
   // DocumentPictureInPictureWindowController:
   void SetChildWebContents(WebContents* child_contents) override;
-  WebContents* GetChildWebContents() override;
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;

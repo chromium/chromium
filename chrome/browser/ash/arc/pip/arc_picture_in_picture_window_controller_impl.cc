@@ -46,4 +46,9 @@ ArcPictureInPictureWindowControllerImpl::GetWebContents() {
   return nullptr;
 }
 
+content::WebContents*
+ArcPictureInPictureWindowControllerImpl::GetChildWebContents() {
+  return nullptr;
+}
+
 }  // namespace arc

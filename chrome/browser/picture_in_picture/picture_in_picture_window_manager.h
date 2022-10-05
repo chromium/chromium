@@ -54,7 +54,12 @@ class PictureInPictureWindowManager {
 
   void ExitPictureInPicture();
 
-  content::WebContents* GetWebContents();
+  // Gets the web contents in the opener browser window.
+  content::WebContents* GetWebContents() const;
+
+  // Gets the web contents in the PiP window. This only applies to document PiP
+  // and will be null for video PiP.
+  content::WebContents* GetChildWebContents() const;
 
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;

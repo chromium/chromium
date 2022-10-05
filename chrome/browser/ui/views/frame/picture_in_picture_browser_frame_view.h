@@ -8,10 +8,12 @@
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "content/public/browser/web_contents.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -20,10 +22,13 @@ namespace views {
 class Label;
 }
 
-class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView,
-                                         public ChromeLocationBarModelDelegate,
-                                         public LocationIconView::Delegate,
-                                         public IconLabelBubbleView::Delegate {
+class PictureInPictureBrowserFrameView
+    : public BrowserNonClientFrameView,
+      public ChromeLocationBarModelDelegate,
+      public LocationIconView::Delegate,
+      public IconLabelBubbleView::Delegate,
+      public ContentSettingImageView::Delegate,
+      public device::GeolocationManager::PermissionObserver {
  public:
   METADATA_HEADER(PictureInPictureBrowserFrameView);
 
@@ -74,12 +79,30 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView,
   SkColor GetIconLabelBubbleSurroundingForegroundColor() const override;
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
+  // ContentSettingImageView::Delegate:
+  bool ShouldHideContentSettingImage() override;
+  content::WebContents* GetContentSettingWebContents() override;
+  ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
+      override;
+
+  // GeolocationManager::PermissionObserver:
+  void OnSystemPermissionUpdated(
+      device::LocationSystemPermissionStatus new_status) override;
+
+  // Convert the bounds of a child view of |controls_container_view_| to use
+  // the system's coordinate system.
+  gfx::Rect ConvertControlViewBounds(views::View* control_view) const;
+
   // Gets the bounds of the controls.
   gfx::Rect GetLocationIconViewBounds() const;
+  gfx::Rect GetContentSettingViewBounds(size_t index) const;
   gfx::Rect GetBackToTabControlsBounds() const;
   gfx::Rect GetCloseControlsBounds() const;
 
   LocationIconView* GetLocationIconView();
+
+  // Updates the state of the images showing the content settings status.
+  void UpdateContentSettingsIcons();
 
  private:
   // A model required to use LocationIconView.
@@ -94,6 +117,10 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView,
   raw_ptr<LocationIconView> location_icon_view_ = nullptr;
 
   raw_ptr<views::Label> window_title_ = nullptr;
+
+  // The content setting views for icons and bubbles.
+  std::vector<ContentSettingImageView*> content_setting_views_;
+
   raw_ptr<CloseImageButton> close_image_button_ = nullptr;
   raw_ptr<views::View> back_to_tab_button_ = nullptr;
 };

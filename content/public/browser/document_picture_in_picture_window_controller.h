@@ -17,9 +17,6 @@ class DocumentPictureInPictureWindowController
   // Sets the contents inside the Picture in Picture window.
   virtual void SetChildWebContents(WebContents* child_contents) = 0;
 
-  // Returns the child WebContents for DocumentPip
-  virtual WebContents* GetChildWebContents() = 0;
-
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to
   // create an instance.

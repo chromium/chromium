@@ -491,6 +491,8 @@ include_rules = [
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux_x11.h",
   "+chrome/browser/ui/views/extensions/request_file_system_dialog_view.h",
+  "+chrome/browser/ui/views/frame/browser_view.h",
+  "+chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h",
   "+chrome/browser/ui/views/notifications/request_pin_view_chromeos.h",
   "+chrome/browser/ui/views/try_chrome_dialog_win/try_chrome_dialog.h",
 

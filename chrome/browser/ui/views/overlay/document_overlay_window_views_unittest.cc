@@ -62,13 +62,13 @@ class TestDocumentPictureInPictureWindowController
   void CloseAndFocusInitiator() override {}
   MOCK_METHOD(void, OnWindowDestroyed, (bool));
   content::WebContents* GetWebContents() override { return web_contents_; }
+  content::WebContents* GetChildWebContents() override {
+    return child_web_contents_;
+  }
 
   // DocumentPictureInPictureWindowController
   void SetChildWebContents(content::WebContents* child) override {
     child_web_contents_ = child;
-  }
-  content::WebContents* GetChildWebContents() override {
-    return child_web_contents_;
   }
 
   void set_web_contents(content::WebContents* web_contents) {

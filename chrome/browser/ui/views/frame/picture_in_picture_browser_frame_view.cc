@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -104,6 +106,23 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           .Build());
   controls_container_view_->SetFlexForView(window_title_, 1);
 
+  // Creates the content setting models. Currently we only support geo location
+  // and camera and microphone settings.
+  constexpr ContentSettingImageModel::ImageType kContentSettingImageOrder[] = {
+      ContentSettingImageModel::ImageType::GEOLOCATION,
+      ContentSettingImageModel::ImageType::MEDIASTREAM};
+  std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+  for (auto type : kContentSettingImageOrder)
+    models.push_back(ContentSettingImageModel::CreateForContentType(type));
+
+  // Creates the content setting views.
+  for (auto& model : models) {
+    auto image_view = std::make_unique<ContentSettingImageView>(
+        std::move(model), this, this, font_list);
+    content_setting_views_.push_back(
+        controls_container_view_->AddChildView(std::move(image_view)));
+  }
+
   // Creates the back to tab button.
   back_to_tab_button_ = controls_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
@@ -163,6 +182,11 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
       GetCloseControlsBounds().Contains(point))
     return HTCLIENT;
 
+  for (size_t i = 0; i < content_setting_views_.size(); i++) {
+    if (GetContentSettingViewBounds(i).Contains(point))
+      return HTCLIENT;
+  }
+
   // Allow dragging and resizing the window.
   int window_component = GetHTComponentForFrame(
       point, gfx::Insets(kWindowBorderThickness), kResizeAreaCornerSize,
@@ -204,6 +228,8 @@ void PictureInPictureBrowserFrameView::OnThemeChanged() {
   controls_container_view_->SetBackground(views::CreateSolidBackground(
       SkColorSetA(color_provider->GetColor(kColorPipWindowControlsBackground),
                   SK_AlphaOPAQUE)));
+  for (ContentSettingImageView* view : content_setting_views_)
+    view->SetIconColor(color_provider->GetColor(kColorOmniboxResultsIcon));
 }
 
 void PictureInPictureBrowserFrameView::Layout() {
@@ -299,25 +325,72 @@ SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// ContentSettingImageView::Delegate implementations:
+
+bool PictureInPictureBrowserFrameView::ShouldHideContentSettingImage() {
+  return false;
+}
+
+content::WebContents*
+PictureInPictureBrowserFrameView::GetContentSettingWebContents() {
+  // Use the opener web contents for content settings since it has full info
+  // such as last committed URL, etc. that are called to be used.
+  return GetWebContents();
+}
+
+ContentSettingBubbleModelDelegate*
+PictureInPictureBrowserFrameView::GetContentSettingBubbleModelDelegate() {
+  // Use the opener browser delegate to open any new tab.
+  Browser* browser = chrome::FindBrowserWithWebContents(GetWebContents());
+  return browser->content_setting_bubble_model_delegate();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// GeolocationManager::PermissionObserver implementations:
+void PictureInPictureBrowserFrameView::OnSystemPermissionUpdated(
+    device::LocationSystemPermissionStatus new_status) {
+  // Update icons if the macOS location permission is updated.
+  UpdateContentSettingsIcons();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
+gfx::Rect PictureInPictureBrowserFrameView::ConvertControlViewBounds(
+    views::View* control_view) const {
+  gfx::RectF bounds(control_view->GetMirroredBounds());
+  views::View::ConvertRectToTarget(controls_container_view_, this, &bounds);
+  return gfx::ToEnclosingRect(bounds);
+}
 
 gfx::Rect PictureInPictureBrowserFrameView::GetLocationIconViewBounds() const {
   DCHECK(location_icon_view_);
-  return location_icon_view_->GetMirroredBounds();
+  return ConvertControlViewBounds(location_icon_view_);
+}
+
+gfx::Rect PictureInPictureBrowserFrameView::GetContentSettingViewBounds(
+    size_t index) const {
+  DCHECK(index < content_setting_views_.size());
+  return ConvertControlViewBounds(content_setting_views_[index]);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
   DCHECK(back_to_tab_button_);
-  return back_to_tab_button_->GetMirroredBounds();
+  return ConvertControlViewBounds(back_to_tab_button_);
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetCloseControlsBounds() const {
   DCHECK(close_image_button_);
-  return close_image_button_->GetMirroredBounds();
+  return ConvertControlViewBounds(close_image_button_);
 }
 
 LocationIconView* PictureInPictureBrowserFrameView::GetLocationIconView() {
   return location_icon_view_;
+}
+
+void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
+  for (auto* view : content_setting_views_) {
+    view->Update();
+  }
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)

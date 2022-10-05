@@ -127,6 +127,12 @@ class PageSpecificContentSettings
     // media stream request.
     virtual MicrophoneCameraState GetMicrophoneCameraState() = 0;
 
+    // If there is a document picture-in-picture window open, check if the given
+    // web contents is the opener web contents or child web contents, and return
+    // the other web contents to be synced.
+    virtual content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
+        content::WebContents* web_contents) = 0;
+
     // Notifies the delegate a particular content settings type was allowed for
     // the first time on this page.
     virtual void OnContentAllowed(ContentSettingsType type) = 0;
@@ -444,6 +450,18 @@ class PageSpecificContentSettings
   void MaybeUpdateLocationBar();
 
   content::WebContents* GetWebContents() const;
+
+  // Document picture-in-picture allows changing content settings in both the
+  // browser window and the PiP window. When the settings is changed in one
+  // place, return the settings in another place to be synced as well. We should
+  // update settings in either place at most once, so we will avoid getting into
+  // deadlock by using |is_updating_synced_pscs_|.
+  PageSpecificContentSettings* MaybeGetSyncedSettingsForPictureInPicture();
+
+  // An auto reset variable to make sure we do not get into deadlock when
+  // updating synced PageSpecificContentSettings for the document
+  // picture-in-picture case.
+  bool is_updating_synced_pscs_ = false;
 
   raw_ptr<Delegate> delegate_;
 

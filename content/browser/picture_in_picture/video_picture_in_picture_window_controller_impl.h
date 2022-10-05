@@ -71,6 +71,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void UpdateLayerBounds() override;
   bool IsPlayerActive() override;
   WebContents* GetWebContents() override;
+  WebContents* GetChildWebContents() override;
   bool TogglePlayPause() override;
   void SkipAd() override;
   void NextTrack() override;

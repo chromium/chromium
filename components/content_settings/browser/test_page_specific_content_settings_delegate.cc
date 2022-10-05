@@ -53,6 +53,12 @@ TestPageSpecificContentSettingsDelegate::GetMicrophoneCameraState() {
   return PageSpecificContentSettings::MICROPHONE_CAMERA_NOT_ACCESSED;
 }
 
+content::WebContents* TestPageSpecificContentSettingsDelegate::
+    MaybeGetSyncedWebContentsForPictureInPicture(
+        content::WebContents* web_contents) {
+  return nullptr;
+}
+
 void TestPageSpecificContentSettingsDelegate::OnContentAllowed(
     ContentSettingsType type) {}
 
