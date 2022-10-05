@@ -125,7 +125,7 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   const auto a_result = a.result();
   EXPECT_OK(a_result) << a_result;
 
-  EXPECT_THAT(test_storage_module()->priority(), priority_);
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
 
   absl::optional<base::Value> value_result =
       base::JSONReader::Read(test_storage_module()->record().data());
@@ -294,7 +294,7 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
-  constexpr char kTestString[] = "record";
+  static constexpr char kTestString[] = "record";
   test::TestEvent<Status> test_event;
 
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -312,7 +312,7 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueDeletedAfterQneueue) {
-  constexpr char kTestString[] = "record";
+  static constexpr char kTestString[] = "record";
   test::TestEvent<Status> test_event;
   {
     auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
