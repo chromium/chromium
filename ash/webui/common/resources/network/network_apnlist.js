@@ -18,7 +18,7 @@ import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
 import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ApnProperties, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 
 import {getTemplate} from './network_apnlist.html.js';
 
@@ -73,9 +73,9 @@ Polymer({
     },
 
     /**
-     * The user settable properties for a new ('other') APN. The values for
-     * accessPointName, username, and password will be set to the currently
-     * active APN if it does not match an existing list entry.
+     * The user settable properties for a new ('other') APN. The values are
+     * set to default and will be set to the currently active APN if it does
+     * not match an existing list entry.
      * @private {!ApnProperties}
      */
     otherApn_: {
@@ -84,6 +84,10 @@ Polymer({
         return {
           accessPointName: kDefaultAccessPointName,
           name: kOtherAccessPointName,
+          state: ApnState.kEnabled,
+          authenticationType: ApnAuthenticationType.kAutomatic,
+          ipType: ApnIpType.kAutomatic,
+          apnTypes: [ApnType.kDefault],
         };
       },
     },
@@ -144,6 +148,13 @@ Polymer({
       name: OncMojo.getActiveString(apn.name),
       password: OncMojo.getActiveString(apn.password),
       username: OncMojo.getActiveString(apn.username),
+      // Because this UI is for kApnRevamp=false, these are all default
+      // values for fields to pass compilation. None of these fields
+      // should be used by CrosNetworkConfig.
+      state: ApnState.kEnabled,
+      authenticationType: ApnAuthenticationType.kAutomatic,
+      ipType: ApnIpType.kAutomatic,
+      apnTypes: [ApnType.kDefault],
     };
   },
 
@@ -242,6 +253,13 @@ Polymer({
       name: kOtherAccessPointName,
       username: otherApn.username,
       password: otherApn.password,
+      // Because this UI is for kApnRevamp=false, these are all default
+      // values for fields to pass compilation. None of these fields
+      // should be used by CrosNetworkConfig.
+      state: ApnState.kEnabled,
+      authenticationType: ApnAuthenticationType.kAutomatic,
+      ipType: ApnIpType.kAutomatic,
+      apnTypes: [ApnType.kDefault],
     };
     apnList.push(this.otherApn_);
 

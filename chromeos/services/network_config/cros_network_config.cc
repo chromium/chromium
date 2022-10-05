@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -138,7 +139,7 @@ std::string MojoIPConfigTypeToOnc(mojom::IPConfigType type) {
     case mojom::IPConfigType::kIPv6:
       return ::onc::ipconfig::kIPv6;
   }
-  NOTREACHED() << "Unexpeted mojo IPConfig type: " << type;
+  NOTREACHED() << "Unexpected mojo IPConfig type: " << type;
   return ::onc::ipconfig::kIPv4;
 }
 
@@ -663,6 +664,29 @@ absl::optional<std::vector<std::string>> GetStringList(const base::Value* dict,
   return result;
 }
 
+std::vector<std::string> GetRequiredStringList(const base::Value* dict,
+                                               const char* key) {
+  const base::Value* v = dict->FindKey(key);
+  if (!v) {
+    NOTREACHED() << "Required key missing: " << key;
+    return {};
+  }
+  if (!v->is_list()) {
+    NET_LOG(ERROR) << "Expected list, found: " << *v;
+    return {};
+  }
+  std::vector<std::string> result;
+  result.reserve(v->GetList().size());
+  for (const base::Value& e : v->GetList()) {
+    if (!e.is_string()) {
+      NET_LOG(ERROR) << "Expected string, found: " << e;
+      break;
+    }
+    result.push_back(e.GetString());
+  }
+  return result;
+}
+
 void SetString(const char* key,
                const absl::optional<std::string>& property,
                base::Value* dict) {
@@ -1072,6 +1096,137 @@ mojom::ManagedProxySettingsPtr GetManagedProxySettings(
   return proxy_settings;
 }
 
+mojom::ApnState OncApnStateTypeToMojo(const std::string* state) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  // State can be empty, because database/modem APNs won't have a state.
+  if (!state || state->empty() || *state == ::onc::cellular_apn::kStateEnabled)
+    return mojom::ApnState::kEnabled;
+  if (*state == ::onc::cellular_apn::kStateDisabled)
+    return mojom::ApnState::kDisabled;
+
+  NOTREACHED() << "Unexpected ONC APN State type: " << state;
+  return mojom::ApnState::kEnabled;
+}
+
+std::string MojoApnStateTypeToOnc(mojom::ApnState state) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  switch (state) {
+    case mojom::ApnState::kDisabled:
+      return ::onc::cellular_apn::kStateDisabled;
+    case mojom::ApnState::kEnabled:
+      return ::onc::cellular_apn::kStateEnabled;
+  }
+  NOTREACHED() << "Unexpected mojo ApnState type: " << state;
+  return ::onc::cellular_apn::kStateEnabled;
+}
+
+mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
+    const std::string& authentication_type) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  if (authentication_type.empty() ||
+      authentication_type ==
+          ::onc::cellular_apn::kAuthenticationTypeAutomatic) {
+    return mojom::ApnAuthenticationType::kAutomatic;
+  }
+  if (authentication_type == ::onc::cellular_apn::kAuthenticationTypePap)
+    return mojom::ApnAuthenticationType::kPap;
+  if (authentication_type == ::onc::cellular_apn::kAuthenticationTypeChap)
+    return mojom::ApnAuthenticationType::kChap;
+
+  NOTREACHED() << "Unexpected ONC APN Authentication type: "
+               << authentication_type;
+  return mojom::ApnAuthenticationType::kAutomatic;
+}
+
+std::string MojoApnAuthenticationTypeToOnc(
+    mojom::ApnAuthenticationType authentication_type) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  switch (authentication_type) {
+    case mojom::ApnAuthenticationType::kAutomatic:
+      return ::onc::cellular_apn::kAuthenticationTypeAutomatic;
+    case mojom::ApnAuthenticationType::kPap:
+      return ::onc::cellular_apn::kAuthenticationTypePap;
+    case mojom::ApnAuthenticationType::kChap:
+      return ::onc::cellular_apn::kAuthenticationTypeChap;
+  }
+  NOTREACHED() << "Unexpected mojo AuthenticationType type: "
+               << authentication_type;
+  return ::onc::cellular_apn::kAuthenticationTypeAutomatic;
+}
+
+mojom::ApnIpType OncApnIpTypeToMojo(const std::string& ip_type) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  if (ip_type.empty() || ip_type == ::onc::cellular_apn::kIpTypeAutomatic)
+    return mojom::ApnIpType::kAutomatic;
+  if (ip_type == ::onc::cellular_apn::kIpTypeIpv4)
+    return mojom::ApnIpType::kIpv4;
+  if (ip_type == ::onc::cellular_apn::kIpTypeIpv6)
+    return mojom::ApnIpType::kIpv6;
+  if (ip_type == ::onc::cellular_apn::kIpTypeIpv4Ipv6)
+    return mojom::ApnIpType::kIpv4Ipv6;
+
+  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type;
+  return mojom::ApnIpType::kAutomatic;
+}
+
+std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  switch (ip_type) {
+    case mojom::ApnIpType::kAutomatic:
+      return ::onc::cellular_apn::kIpTypeAutomatic;
+    case mojom::ApnIpType::kIpv4:
+      return ::onc::cellular_apn::kIpTypeIpv4;
+    case mojom::ApnIpType::kIpv6:
+      return ::onc::cellular_apn::kIpTypeIpv6;
+    case mojom::ApnIpType::kIpv4Ipv6:
+      return ::onc::cellular_apn::kIpTypeIpv4Ipv6;
+  }
+  NOTREACHED() << "Unexpected mojo ApnIpType type: " << ip_type;
+  return ::onc::cellular_apn::kIpTypeAutomatic;
+}
+
+std::vector<mojom::ApnType> OncApnTypesToMojo(
+    const std::vector<std::string>& apn_types) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(!apn_types.empty());
+  std::vector<mojom::ApnType> apn_types_result;
+  apn_types_result.reserve(apn_types.size());
+  for (const std::string& apn_type : apn_types) {
+    if (apn_type == ::onc::cellular_apn::kApnTypeDefault) {
+      apn_types_result.push_back(mojom::ApnType::kDefault);
+      continue;
+    }
+    if (apn_type == ::onc::cellular_apn::kApnTypeAttach) {
+      apn_types_result.push_back(mojom::ApnType::kAttach);
+      continue;
+    }
+
+    NOTREACHED() << "Unexpected ONC APN Type: " << apn_type;
+  }
+
+  return apn_types_result;
+}
+
+std::vector<std::string> MojoApnTypesToOnc(
+    const std::vector<mojom::ApnType>& apn_types) {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  DCHECK(!apn_types.empty());
+  std::vector<std::string> apn_types_result;
+  apn_types_result.reserve(apn_types.size());
+  for (const mojom::ApnType& type : apn_types) {
+    switch (type) {
+      case mojom::ApnType::kDefault:
+        apn_types_result.push_back(::onc::cellular_apn::kApnTypeDefault);
+        continue;
+      case mojom::ApnType::kAttach:
+        apn_types_result.push_back(::onc::cellular_apn::kApnTypeAttach);
+        continue;
+    }
+  }
+
+  return apn_types_result;
+}
+
 mojom::ApnPropertiesPtr GetApnProperties(const base::Value* dict) {
   auto apn = mojom::ApnProperties::New();
   apn->access_point_name =
@@ -1083,6 +1238,17 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value* dict) {
   apn->password = GetString(dict, ::onc::cellular_apn::kPassword);
   apn->username = GetString(dict, ::onc::cellular_apn::kUsername);
   apn->attach = GetString(dict, ::onc::cellular_apn::kAttach);
+
+  if (ash::features::IsApnRevampEnabled()) {
+    apn->id = GetString(dict, ::onc::cellular_apn::kId);
+    apn->authentication_type = OncApnAuthenticationTypeToMojo(
+        GetRequiredString(dict, ::onc::cellular_apn::kAuthenticationType));
+    apn->ip_type = OncApnIpTypeToMojo(
+        GetRequiredString(dict, ::onc::cellular_apn::kIpType));
+    apn->apn_types = OncApnTypesToMojo(
+        GetRequiredStringList(dict, ::onc::cellular_apn::kApnTypes));
+  }
+
   return apn;
 }
 
@@ -1909,7 +2075,7 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
         *properties->type_config->get_cellular();
     if (cellular.apn) {
       const mojom::ApnProperties& apn = *cellular.apn;
-      base::Value apn_dict(base::Value::Type::DICTIONARY);
+      base::Value apn_dict(base::Value::Type::DICT);
       apn_dict.SetStringKey(::onc::cellular_apn::kAccessPointName,
                             apn.access_point_name);
       SetString(::onc::cellular_apn::kAuthentication, apn.authentication,
@@ -1921,6 +2087,16 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
       SetString(::onc::cellular_apn::kPassword, apn.password, &apn_dict);
       SetString(::onc::cellular_apn::kUsername, apn.username, &apn_dict);
       SetString(::onc::cellular_apn::kAttach, apn.attach, &apn_dict);
+      if (ash::features::IsApnRevampEnabled()) {
+        SetString(::onc::cellular_apn::kId, apn.id, &apn_dict);
+        SetString(::onc::cellular_apn::kAuthenticationType,
+                  MojoApnAuthenticationTypeToOnc(apn.authentication_type),
+                  &apn_dict);
+        SetString(::onc::cellular_apn::kIpType, MojoApnIpTypeToOnc(apn.ip_type),
+                  &apn_dict);
+        SetStringList(::onc::cellular_apn::kApnTypes,
+                      MojoApnTypesToOnc(apn.apn_types), &apn_dict);
+      }
       type_dict.SetKey(::onc::cellular::kAPN, std::move(apn_dict));
     }
     if (cellular.roaming) {
@@ -2889,6 +3065,21 @@ void CrosNetworkConfig::UpdateCustomAPNList(
   SetString(::onc::cellular_apn::kAttach, cellular_config.apn->attach,
             &custom_apn);
 
+  if (ash::features::IsApnRevampEnabled()) {
+    SetString(::onc::cellular_apn::kId, cellular_config.apn->id, &custom_apn);
+    SetString(::onc::cellular_apn::kState,
+              MojoApnStateTypeToOnc(cellular_config.apn->state), &custom_apn);
+    SetString(::onc::cellular_apn::kAuthenticationType,
+              MojoApnAuthenticationTypeToOnc(
+                  cellular_config.apn->authentication_type),
+              &custom_apn);
+    SetString(::onc::cellular_apn::kIpType,
+              MojoApnIpTypeToOnc(cellular_config.apn->ip_type), &custom_apn);
+    SetStringList(::onc::cellular_apn::kApnTypes,
+                  MojoApnTypesToOnc(cellular_config.apn->apn_types),
+                  &custom_apn);
+  }
+
   // The UI currently only supports setting a single custom apn.
   base::Value custom_apn_list(base::Value::Type::LIST);
   custom_apn_list.Append(std::move(custom_apn));
@@ -2925,6 +3116,20 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomAPNList(
         GetString(&apn, ::onc::cellular_apn::kLocalizedName);
     mojo_apn->language = GetString(&apn, ::onc::cellular_apn::kLanguage);
     mojo_apn->attach = GetString(&apn, ::onc::cellular_apn::kAttach);
+
+    if (ash::features::IsApnRevampEnabled()) {
+      mojo_apn->id = GetString(&apn, ::onc::cellular_apn::kId);
+      const auto state = GetString(&apn, ::onc::cellular_apn::kState);
+      mojo_apn->state = OncApnStateTypeToMojo(
+          base::OptionalToPtr(GetString(&apn, ::onc::cellular_apn::kState)));
+      mojo_apn->authentication_type = OncApnAuthenticationTypeToMojo(
+          GetRequiredString(&apn, ::onc::cellular_apn::kAuthenticationType));
+      mojo_apn->ip_type = OncApnIpTypeToMojo(
+          GetRequiredString(&apn, ::onc::cellular_apn::kIpType));
+      mojo_apn->apn_types = OncApnTypesToMojo(
+          GetRequiredStringList(&apn, ::onc::cellular_apn::kApnTypes));
+    }
+
     mojo_custom_apns.push_back(std::move(mojo_apn));
   }
   return mojo_custom_apns;

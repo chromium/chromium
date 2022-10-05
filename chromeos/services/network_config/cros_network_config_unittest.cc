@@ -64,6 +64,15 @@ constexpr char kCellularTestApnName1[] = "Test Apn 1";
 constexpr char kCellularTestApnUsername1[] = "Test User";
 constexpr char kCellularTestApnPassword1[] = "Test Pass";
 constexpr char kCellularTestApnAttach1[] = "";
+constexpr char kCellularTestApnId1[] = "1";
+constexpr char kCellularTestApnAuthenticationType1[] = "";
+constexpr char kCellularTestApnIpType1[] = "";
+constexpr char kCellularTestApnTypes1[] = "Default";
+
+// TODO(b/162365553) Remove when shill constants are added.
+constexpr char kShillApnId[] = "id";
+constexpr char kShillApnAuthenticationType[] = "authentication_type";
+constexpr char kShillApnTypes[] = "apn_types";
 
 constexpr char kCellularTestApn2[] = "TEST.APN2";
 constexpr char kCellularTestApnName2[] = "Test Apn 2";
@@ -139,12 +148,16 @@ void CompareTrafficCounters(
 
 std::string CreateApnShillDict() {
   return base::StringPrintf(
-      R"({"%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s"})",
+      R"({"%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s", "%s": "%s",
+          "%s": "%s", "%s": "%s", "%s": "%s", "%s": ["%s"]})",
       shill::kApnProperty, kCellularTestApn1, shill::kApnNameProperty,
       kCellularTestApnName1, shill::kApnUsernameProperty,
       kCellularTestApnUsername1, shill::kApnPasswordProperty,
       kCellularTestApnPassword1, shill::kApnAttachProperty,
-      kCellularTestApnAttach1);
+      kCellularTestApnAttach1, kShillApnId, kCellularTestApnId1,
+      kShillApnAuthenticationType, kCellularTestApnAuthenticationType1,
+      shill::kApnIpTypeProperty, kCellularTestApnIpType1, kShillApnTypes,
+      kCellularTestApnTypes1);
 }
 
 }  // namespace

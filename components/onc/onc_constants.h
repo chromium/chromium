@@ -182,6 +182,22 @@ COMPONENT_EXPORT(ONC) extern const char kAuthentication[];
 COMPONENT_EXPORT(ONC) extern const char kLocalizedName[];
 COMPONENT_EXPORT(ONC) extern const char kLanguage[];
 COMPONENT_EXPORT(ONC) extern const char kAttach[];
+COMPONENT_EXPORT(ONC) extern const char kId[];
+COMPONENT_EXPORT(ONC) extern const char kState[];
+COMPONENT_EXPORT(ONC) extern const char kStateEnabled[];
+COMPONENT_EXPORT(ONC) extern const char kStateDisabled[];
+COMPONENT_EXPORT(ONC) extern const char kAuthenticationType[];
+COMPONENT_EXPORT(ONC) extern const char kAuthenticationTypeAutomatic[];
+COMPONENT_EXPORT(ONC) extern const char kAuthenticationTypePap[];
+COMPONENT_EXPORT(ONC) extern const char kAuthenticationTypeChap[];
+COMPONENT_EXPORT(ONC) extern const char kIpType[];
+COMPONENT_EXPORT(ONC) extern const char kIpTypeAutomatic[];
+COMPONENT_EXPORT(ONC) extern const char kIpTypeIpv4[];
+COMPONENT_EXPORT(ONC) extern const char kIpTypeIpv6[];
+COMPONENT_EXPORT(ONC) extern const char kIpTypeIpv4Ipv6[];
+COMPONENT_EXPORT(ONC) extern const char kApnTypes[];
+COMPONENT_EXPORT(ONC) extern const char kApnTypeDefault[];
+COMPONENT_EXPORT(ONC) extern const char kApnTypeAttach[];
 }  // namespace cellular_apn
 
 namespace cellular_found_network {

@@ -318,8 +318,46 @@ struct NetworkFilter {
 
 // Specialized unmanaged property types.
 
+// Refers to whether the user or admin is allowing the APN to be used.
+enum ApnState {
+  // The APN is enabled in network settings. This indicates that the APN may be
+  // used for cellular connectivity. However, it does not necessarily mean that
+  // the APN *will* be used. If there are multiple custom APNs marked as
+  // |kEnabled|, it is possible that one enabled APN will be used and another
+  // will not be used.
+  kEnabled,
+  // The APN is disabled in network settings. This indicates that the APN won't
+  // be used for cellular connectivity.
+  kDisabled,
+};
+
+// Authentication types for APNs.
+enum ApnAuthenticationType {
+  kAutomatic,
+  // Password Authentication Protocol
+  kPap,
+  // Challenge-Handshake Authentication Protocol
+  kChap,
+};
+
+// IP types for APNs.
+enum ApnIpType {
+  kAutomatic,
+  kIpv4,
+  kIpv6,
+  kIpv4Ipv6,
+};
+
+// Supported APN types.
+enum ApnType {
+  kDefault,
+  kAttach,
+};
+
 struct ApnProperties {
   string access_point_name;
+  // This id will only be set for custom APNs.
+  string? id;
   string? authentication;
   string? language;
   string? localized_name;
@@ -328,7 +366,17 @@ struct ApnProperties {
   string? username;
   // The attach property uses a string? instead of an enum to allow for possible
   // free-form entry in the future.
+  // TODO(b/249550650) Remove attach after APN Revamp feature
+  // has been completely transitioned.
+  // TODO(b/249550650) Add all new properties to the onc_spec.md documentation.
   string? attach;
+  // The state property will be used by Chrome to determine whether a custom APN
+  // is disabled by the user or not. Chrome will filter out disabled APNs before
+  // passing them to Shill.
+  ApnState state;
+  ApnAuthenticationType authentication_type;
+  ApnIpType ip_type;
+  array<ApnType> apn_types;
 };
 
 struct RoamingProperties {
@@ -626,6 +674,8 @@ struct ManagedCellularProperties {
   CellularProviderProperties? home_provider;
   string? iccid;
   string? imei;
+  // TODO(b/249550650) Remove last_good_apn after APN Revamp
+  // feature has been completely transitioned.
   ApnProperties? last_good_apn;
   // The APN used to connect to the network. Note: This field is not
   // part of ONC, and it is set only when the kApnRevamp flag is enabled.
@@ -639,6 +689,8 @@ struct ManagedCellularProperties {
   PaymentPortalProperties? payment_portal;
   string? roaming_state;
   // The current user selected APN. This corresponds to APN field in ONC.
+  // TODO(b/249550650) Remove selected_apn after APN Revamp
+  // feature has been completely transitioned.
   ManagedApnProperties? selected_apn;
   CellularProviderProperties? serving_operator;
   int32 signal_strength = 0;
@@ -871,6 +923,8 @@ struct WireGuardConfigProperties {
 // Only one of {Cellular|Ethernet|VPN|Wifi}ConfigProperties is allowed.
 // TODO(stevenjb): Make these a union.
 struct CellularConfigProperties {
+  // TODO(b/249550650) Remove apn after APN Revamp feature
+  // has been completely transitioned.
   ApnProperties? apn;
   // If not provided the default allow_roaming behavior will be used for the
   // network.
