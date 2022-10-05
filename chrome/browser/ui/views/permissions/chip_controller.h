@@ -63,12 +63,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Initializes the permission prompt model as well as the permission request
-  // manager and observes the prompt bubble
-  void InitializePermissionPrompt(
-      content::WebContents* web_contents,
-      permissions::PermissionPrompt::Delegate* delegate);
-
   // Displays a permission prompt using the chip UI.
   void ShowPermissionPrompt(content::WebContents* web_contents,
                             permissions::PermissionPrompt::Delegate* delegate);

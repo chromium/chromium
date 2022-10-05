@@ -48,7 +48,8 @@ std::u16string GetQuietPermissionMessage(
   DCHECK(delegate);
   auto quiet_request_text = delegate->Requests()[0]->GetRequestChipText(
       permissions::PermissionRequest::QUIET_REQUEST);
-  return quiet_request_text.value_or(u"");
+  DCHECK(quiet_request_text.has_value());
+  return quiet_request_text.value();
 }
 
 std::u16string GetLoudPermissionMessage(

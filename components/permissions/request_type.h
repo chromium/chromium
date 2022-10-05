@@ -76,9 +76,6 @@ RequestType ContentSettingsTypeToRequestType(
 absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     RequestType request_type);
 
-// Returns whether confirmation chips can be displayed
-bool IsConfirmationChipSupported(RequestType for_request_type);
-
 // Returns the icon to display.
 IconId GetIconId(RequestType type);
 
