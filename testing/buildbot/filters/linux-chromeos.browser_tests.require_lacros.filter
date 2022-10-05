@@ -13,6 +13,7 @@ Dictation*
 SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
+WebAppsCrosapiBrowserTest*
 # TODO(crbug.com/1245416) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.SwipeLeftRight4ByContainers
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
