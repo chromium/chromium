@@ -7214,3 +7214,6 @@ crbug.com/1370307 external/wpt/encoding-detection/vi-windows-1258-late.tentative
 crbug.com/1370307 external/wpt/encoding-detection/yi-windows-1255-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/zh-Big5-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ Failure Pass ]
+
+# Temporarily disable tests to land cache storage changes
+crbug.com/1363138 http/tests/inspector-protocol/cachestorage/read-cached-response.js [ Skip ]
