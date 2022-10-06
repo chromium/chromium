@@ -16,6 +16,7 @@
 #import "base/system/sys_info.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
@@ -25,7 +26,7 @@
 
 namespace {
 // Delay between each invocations of `UpdateMemoryValues`.
-const int64_t kMemoryMonitorDelayInSeconds = 30;
+constexpr base::TimeDelta kMemoryMonitorDelay = base::Seconds(30);
 
 // Checks the values of free RAM and free disk space and updates breakpad with
 // these values. Also updates available free disk space for PreviousSessionInfo.
@@ -57,13 +58,12 @@ void UpdateMemoryValues() {
 }
 
 // Invokes `UpdateMemoryValues` and schedules itself to be called after
-// `kMemoryMonitorDelayInSeconds`.
+// `kMemoryMonitorDelay`.
 void AsynchronousFreeMemoryMonitor() {
   UpdateMemoryValues();
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&AsynchronousFreeMemoryMonitor),
-      base::Seconds(kMemoryMonitorDelayInSeconds));
+      base::BindOnce(&AsynchronousFreeMemoryMonitor), kMemoryMonitorDelay);
 }
 }  // namespace
 
