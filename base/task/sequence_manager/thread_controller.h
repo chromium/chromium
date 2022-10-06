@@ -380,7 +380,7 @@ class BASE_EXPORT ThreadController {
       RunLevel(RunLevel&& other);
       RunLevel& operator=(RunLevel&&) = delete;
 
-      void UpdateState(State new_state, LazyNow& lazy_now);
+      void UpdateState(State new_state);
 
       State state() const { return state_; }
 
