@@ -6,24 +6,45 @@
 #define UI_GL_GL_IMAGE_IO_SURFACE_H_
 
 #include <CoreVideo/CVPixelBuffer.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <IOSurface/IOSurface.h>
 #include <stdint.h>
+#include <map>
 
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/generic_shared_memory_id.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
-#if defined(__OBJC__)
-@class CALayer;
-#else
-typedef void* CALayer;
-#endif
-
 namespace gl {
+
+class GLDisplayEGL;
+class EGLAccess;
+
+class EGLAccess {
+ public:
+  explicit EGLAccess(GLDisplayEGL* display);
+  ~EGLAccess();
+
+  const GLDisplayEGL* display() { return display_; }
+  EGLConfig dummy_config() { return dummy_config_; }
+  EGLint texture_target() { return texture_target_; }
+  EGLSurface pbuffer() { return pbuffer_; }
+
+  void set_pbuffer(EGLSurface pbuffer) { pbuffer_ = pbuffer; }
+
+ private:
+  raw_ptr<GLDisplayEGL> display_ = nullptr;
+  EGLConfig dummy_config_ = EGL_NO_CONFIG_KHR;
+  EGLint texture_target_ = EGL_NO_TEXTURE;
+  EGLSurface pbuffer_ = EGL_NO_SURFACE;
+};
 
 class GL_EXPORT GLImageIOSurface : public GLImage {
  public:
@@ -60,6 +81,8 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   unsigned GetInternalFormat() override;
   unsigned GetDataType() override;
   BindOrCopy ShouldBindOrCopy() override;
+  bool BindTexImage(unsigned target) override;
+  void ReleaseTexImage(unsigned target) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -69,8 +92,10 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   void DisableInUseByWindowServer() override;
 
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface();
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer();
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface() { return io_surface_; }
+  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer() {
+    return cv_pixel_buffer_;
+  }
 
   // Downcasts from |image|. Returns |nullptr| on failure.
   static GLImageIOSurface* FromGLImage(GLImage* image);
@@ -79,9 +104,8 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;
 
-  static bool ValidFormat(gfx::BufferFormat format);
   Type GetType() const override;
-  class RGBConverter;
+  EGLAccess& GetEGLAccessForCurrentContext();
 
   const gfx::Size size_;
   gfx::BufferFormat format_ = gfx::BufferFormat::RGBA_8888;
@@ -97,6 +121,8 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ThreadChecker thread_checker_;
 
   bool disable_in_use_by_window_server_ = false;
+  std::map<const GLDisplayEGL*, EGLAccess> egl_access_map_;
+  bool texture_bound_ = false;
 };
 
 }  // namespace gl

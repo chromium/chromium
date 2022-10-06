@@ -409,11 +409,6 @@ component("gl") {
     ]
 
     if (use_egl) {
-      sources += [
-        "gl_image_io_surface_egl.h",
-        "gl_image_io_surface_egl.mm",
-      ]
-
       data_deps += [
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
