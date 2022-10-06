@@ -5144,6 +5144,7 @@ crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-inline-orientation.html [ Failure ]
 crbug.com/1279648 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
+crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Pass Failure Timeout ]
 
 crbug.com/1071189 [ Debug ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
 
