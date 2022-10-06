@@ -39,7 +39,6 @@ class AXWidgetObjWrapper : public AXAuraObjWrapper, public WidgetObserver {
   // WidgetObserver overrides.
   void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetDestroyed(Widget* widget) override;
-  void OnWidgetVisibilityChanged(Widget*, bool) override;
 
  private:
   raw_ptr<Widget> widget_;

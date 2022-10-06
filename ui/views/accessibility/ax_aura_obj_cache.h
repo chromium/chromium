@@ -88,9 +88,6 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // Get the object that has focus.
   AXAuraObjWrapper* GetFocus();
 
-  // Send a notification that the focused view may have changed.
-  void OnFocusedViewChanged();
-
   // Tell our delegate to fire an event on a given object.
   void FireEvent(AXAuraObjWrapper* aura_obj, ax::mojom::Event event_type);
 
@@ -121,6 +118,9 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   class A11yOverrideWindowObserver;
 
   View* GetFocusedView();
+
+  // Send a notification that the focused view may have changed.
+  void OnFocusedViewChanged();
 
   // aura::client::FocusChangeObserver override.
   void OnWindowFocused(aura::Window* gained_focus,

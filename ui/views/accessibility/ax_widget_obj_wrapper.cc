@@ -73,10 +73,4 @@ void AXWidgetObjWrapper::OnWidgetDestroyed(Widget* widget) {
   aura_obj_cache_->Remove(widget);
 }
 
-void AXWidgetObjWrapper::OnWidgetVisibilityChanged(Widget*, bool) {
-  // If a widget changes visibility it may affect what's focused, in particular
-  // when a widget that contains the focused view gets hidden.
-  aura_obj_cache_->OnFocusedViewChanged();
-}
-
 }  // namespace views
