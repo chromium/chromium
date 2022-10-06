@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -110,17 +110,17 @@ class DropdownItemViewInfoListManager {
      * Specify the input list of DropdownItemViewInfo elements.
      *
      * @param sourceList Source list of ViewInfo elements.
-     * @param groupsDetails Group ID to GroupDetails map carrying group collapsed state information.
+     * @param groupsDetails Group ID to GroupConfig map carrying group collapsed state information.
      */
     void setSourceViewInfoList(@NonNull List<DropdownItemViewInfo> sourceList,
-            @NonNull SparseArray<AutocompleteResult.GroupDetails> groupsDetails) {
+            @NonNull SparseArray<GroupConfig> groupsDetails) {
         mSourceViewInfoList = sourceList;
         mGroupsCollapsedState.clear();
 
         // Clone information about the recommended group collapsed state.
         for (int index = 0; index < groupsDetails.size(); index++) {
-            mGroupsCollapsedState.put(
-                    groupsDetails.keyAt(index), groupsDetails.valueAt(index).collapsedByDefault);
+            mGroupsCollapsedState.put(groupsDetails.keyAt(index),
+                    groupsDetails.valueAt(index).getVisibility() == GroupConfig.Visibility.HIDDEN);
         }
 
         // Build a new list of suggestions. Honor the default collapsed state.

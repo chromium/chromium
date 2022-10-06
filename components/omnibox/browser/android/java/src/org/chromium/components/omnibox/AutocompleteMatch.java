@@ -15,6 +15,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.GroupsProto.GroupId;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
@@ -29,7 +30,7 @@ import java.util.Set;
  * Container class with information about each omnibox suggestion item.
  */
 public class AutocompleteMatch {
-    public static final int INVALID_GROUP = -1;
+    public static final int INVALID_GROUP = GroupId.GROUP_INVALID_VALUE;
     public static final int INVALID_TYPE = -1;
 
     /**
