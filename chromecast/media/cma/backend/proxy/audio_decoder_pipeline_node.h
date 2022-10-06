@@ -52,7 +52,6 @@ class AudioDecoderPipelineNode : public CmaBackend::Decoder::Delegate,
   CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp() override;
   int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override;
 
  protected:
   inline void CheckCalledOnCorrectThread() const {

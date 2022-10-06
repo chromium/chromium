@@ -41,7 +41,6 @@ class MockMultizoneAudioDecoderProxy : public MultizoneAudioDecoderProxy {
   MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
   MOCK_METHOD1(GetStatistics, void(Statistics*));
   MOCK_METHOD0(RequiresDecryption, bool());
-  MOCK_METHOD1(SetObserver, void(Observer*));
 
  private:
   // Used only for the ctor parameter.

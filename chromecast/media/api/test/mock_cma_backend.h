@@ -43,7 +43,6 @@ class MockCmaBackend : public CmaBackend {
     MOCK_METHOD0(GetAudioTrackTimestamp, AudioTrackTimestamp());
     MOCK_METHOD0(GetStartThresholdInFrames, int());
     MOCK_METHOD0(RequiresDecryption, bool());
-    MOCK_METHOD1(SetObserver, void(Observer*));
   };
 
   class VideoDecoder : public CmaBackend::VideoDecoder {

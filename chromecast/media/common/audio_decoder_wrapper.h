@@ -53,7 +53,6 @@ class ActiveAudioDecoderWrapper : public DestructableAudioDecoder {
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
   int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   AudioDecoderSoftwareWrapper decoder_;
   const AudioContentType content_type_;
@@ -96,7 +95,6 @@ class AudioDecoderWrapper : public CmaBackend::AudioDecoder {
   AudioTrackTimestamp GetAudioTrackTimestamp() override;
   int GetStartThresholdInFrames() override;
   bool RequiresDecryption() override;
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   bool decoder_revoked_;
 

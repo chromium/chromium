@@ -130,14 +130,6 @@ void CmaAudioOutput::Initialize(
   timestamp_helper_.SetBaseTimestamp(base::TimeDelta());
 }
 
-void CmaAudioOutput::SetObserver(CmaBackend::AudioDecoder::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
-  DCHECK(observer);
-  if (audio_decoder_) {
-    audio_decoder_->SetObserver(observer);
-  }
-}
-
 bool CmaAudioOutput::Start(int64_t start_pts) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   if (!cma_backend_ || !cma_backend_->Start(start_pts)) {
@@ -178,7 +170,8 @@ bool CmaAudioOutput::SetVolume(double volume) {
 }
 
 void CmaAudioOutput::PushBuffer(
-    scoped_refptr<CastDecoderBufferImpl> decoder_buffer) {
+    scoped_refptr<CastDecoderBufferImpl> decoder_buffer,
+    bool is_silence) {
   DCHECK_CALLED_ON_VALID_THREAD(media_thread_checker_);
   DCHECK_GT(decoder_buffer->data_size(), 0u);
   DCHECK_EQ(
@@ -186,15 +179,16 @@ void CmaAudioOutput::PushBuffer(
       0u);
   DCHECK(audio_decoder_);
 
-  if (!use_hw_av_sync_) {
-    // Keep the timestamp of the buffer if the stream is on hardware av sync
-    // mode.
-    decoder_buffer->set_timestamp(timestamp_helper_.GetTimestamp());
+  if (!is_silence) {
+    if (!use_hw_av_sync_) {
+      // Keep the timestamp of the buffer if the stream is on hardware av sync
+      // mode.
+      decoder_buffer->set_timestamp(timestamp_helper_.GetTimestamp());
+    }
+    int frame_count =
+        decoder_buffer->data_size() / (sample_size_ * audio_params_.channels());
+    timestamp_helper_.AddFrames(frame_count);
   }
-  int frame_count =
-      decoder_buffer->data_size() / (sample_size_ * audio_params_.channels());
-  timestamp_helper_.AddFrames(frame_count);
-
   CmaBackend::BufferStatus status =
       audio_decoder_->PushBuffer(std::move(decoder_buffer));
   if (status != CmaBackend::BufferStatus::kBufferPending)

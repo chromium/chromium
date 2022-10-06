@@ -232,7 +232,7 @@ void CmaAudioOutputStream::PushBuffer() {
   audio_bus_->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
       frame_count, reinterpret_cast<int16_t*>(decoder_buffer->writable_data()));
   push_in_progress_ = true;
-  output_->PushBuffer(std::move(decoder_buffer));
+  output_->PushBuffer(std::move(decoder_buffer), false /*is_silence*/);
 }
 
 void CmaAudioOutputStream::OnPushBufferComplete(BufferStatus status) {

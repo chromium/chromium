@@ -79,13 +79,6 @@ bool AudioDecoderPipelineNode::RequiresDecryption() {
   return delegated_decoder_->RequiresDecryption();
 }
 
-void AudioDecoderPipelineNode::SetObserver(
-    CmaBackend::AudioDecoder::Observer* observer) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  delegated_decoder_->SetObserver(observer);
-}
-
 void AudioDecoderPipelineNode::SetOwnedDecoder(
     std::unique_ptr<AudioDecoderPipelineNode> delegated_decoder) {
   DCHECK_EQ(delegated_decoder.get(), delegated_decoder_);

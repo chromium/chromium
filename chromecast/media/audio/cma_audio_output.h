@@ -45,15 +45,14 @@ class CmaAudioOutput {
   CmaAudioOutput& operator=(const CmaAudioOutput&) = delete;
   ~CmaAudioOutput();
 
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer);
-
   bool Start(int64_t start_pts);
   void Stop();
   bool Pause();
   bool Resume();
   bool SetVolume(double volume);
 
-  void PushBuffer(scoped_refptr<CastDecoderBufferImpl> decoder_buffer);
+  void PushBuffer(scoped_refptr<CastDecoderBufferImpl> decoder_buffer,
+                  bool is_silence);
   CmaBackend::AudioDecoder::RenderingDelay GetRenderingDelay();
   CmaBackend::AudioDecoder::AudioTrackTimestamp GetAudioTrackTimestamp();
   int64_t GetTotalFrames();

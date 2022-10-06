@@ -91,11 +91,6 @@ TEST_F(AudioDecoderPipelineNodeTests, TestAudioDecoderCalls) {
   EXPECT_EQ(test_node.RequiresDecryption(), true);
   EXPECT_EQ(test_node.RequiresDecryption(), false);
   testing::Mock::VerifyAndClearExpectations(child_node_.get());
-
-  // SetDelegate.
-  EXPECT_CALL(*child_node_, SetObserver(nullptr));
-  test_node.SetObserver(nullptr);
-  testing::Mock::VerifyAndClearExpectations(child_node_.get());
 }
 
 TEST_F(AudioDecoderPipelineNodeTests, TestDecoderDelegateCalls) {

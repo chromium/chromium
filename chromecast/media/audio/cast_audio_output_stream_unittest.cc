@@ -140,7 +140,6 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
     return 0;
   }
   bool RequiresDecryption() override { return false; }
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   const AudioConfig& config() const { return config_; }
   float volume() const { return volume_; }

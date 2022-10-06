@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/memory/ref_counted.h"
-#include "base/observer_list_types.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -51,18 +50,6 @@ class CmaBackend {
     using AudioTrackTimestamp =
         MediaPipelineBackend::AudioDecoder::AudioTrackTimestamp;
 
-    class Observer : public base::CheckedObserver {
-     public:
-      // Called when the audio is ready to play. In general the audio will start
-      // playing immediately once it's ready to play, so no need to wait for
-      // this signal. But in multizone mode, we delay the playback in order to
-      // allow time for other devices to receive the audio.
-      virtual void OnAudioReadyToPlay() = 0;
-
-     protected:
-      ~Observer() override = default;
-    };
-
     // These methods have the same behavior as the corresponding methods on
     // MediaPipelineBackend::AudioDecoder.
     // See chromecast/public/media/media_pipeline_backend.h for documentation.
@@ -77,8 +64,6 @@ class CmaBackend {
     // decrypted before being passed to PushBuffer(). The return value may
     // change whenever SetConfig() is called or the backend is initialized.
     virtual bool RequiresDecryption() = 0;
-
-    virtual void SetObserver(Observer* observer) = 0;
 
    protected:
     ~AudioDecoder() override = default;

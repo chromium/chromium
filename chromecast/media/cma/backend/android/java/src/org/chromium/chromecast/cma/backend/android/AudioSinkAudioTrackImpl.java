@@ -636,20 +636,6 @@ class AudioSinkAudioTrackImpl {
                 mRenderingDelayBuffer.putLong(8, nowUsecs);
                 return;
             }
-            AudioTimestamp timestamp = new AudioTimestamp();
-            if (mPendingFramesWithoutTimestamp != null && mAudioTrack.getTimestamp(timestamp)) {
-                // mPendingFramesWithoutTimestamp is not null indicates we are using the playback
-                // position instead of the rendering delay to do av sync. Therefore, it is not
-                // necessary to wait for a stable timestamp reference point. Immediately return a
-                // valid rendering delay when it is available could reduce the silence buffer
-                // pushed by cma backend.
-                playoutTimeUsecs = convertNsecsToUsecs(timestamp.nanoTime
-                        + convertFramesToNanoTime(mTotalFramesWritten - timestamp.framePosition));
-                delayUsecs = playoutTimeUsecs - nowUsecs;
-                mRenderingDelayBuffer.putLong(0, delayUsecs);
-                mRenderingDelayBuffer.putLong(8, nowUsecs);
-                return;
-            }
             // No timestamp available yet, just put dummy values and return.
             mRenderingDelayBuffer.putLong(0, 0);
             mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
