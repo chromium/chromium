@@ -11,9 +11,22 @@
 
 namespace safe_browsing {
 
+enum class TailoredSecurityServiceMessageState {
+  // Triggers message prompt when account level enhanced safe browsing is
+  // enabled and user is synced.
+  kConsentedAndFlowEnabled = 1,
+  // Triggers message prompt when account level enhanced safe browsing is
+  // disabled and user is synced.
+  kConsentedAndFlowDisabled = 2,
+  // Triggers message prompt when account level enhanced safe browsing is
+  // disabled and user is not synced.
+  kUnconsentedAndFlowEnabled = 3,
+};
+
 class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
-  TailoredSecurityServiceInfobarDelegate(bool consent_status);
+  explicit TailoredSecurityServiceInfobarDelegate(
+      TailoredSecurityServiceMessageState message_state);
   TailoredSecurityServiceInfobarDelegate(
       const TailoredSecurityServiceInfobarDelegate&) = delete;
   TailoredSecurityServiceInfobarDelegate& operator=(
@@ -31,7 +44,7 @@ class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetDescription() const;
 
   // Returns the consent status of the user.
-  bool consent_status() const { return consent_status_; }
+  bool IsConsented() const;
 
   // ConfirmInfoBarDelegate
   std::u16string GetMessageText() const override;
@@ -39,10 +52,9 @@ class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
  private:
-  // Returns the consent status based on if the user has enabled Account
-  // Enhanced Safe Browsing. Default value is false since Account Enhanced Safe
-  // Browsing is disabled by default.
-  bool consent_status_ = false;
+  // Stores the state of the consent flow and is used to
+  // return appropriate messages for the prompt.
+  TailoredSecurityServiceMessageState message_state_;
 };
 
 }  // namespace safe_browsing

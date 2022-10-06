@@ -46,6 +46,7 @@ using autofill_address_profile_infobar_overlays::
 using confirm_infobar_overlays::ConfirmBannerRequestConfig;
 using infobars::InfoBar;
 using infobars::InfoBarDelegate;
+using safe_browsing::TailoredSecurityServiceMessageState;
 using save_card_infobar_overlays::SaveCardBannerRequestConfig;
 using save_card_infobar_overlays::SaveCardModalRequestConfig;
 using tailored_security_service_infobar_overlays::
@@ -191,7 +192,8 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveAddressProfile) {
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, TailoredSecurityService) {
   std::unique_ptr<InfoBarDelegate> delegate =
       safe_browsing::MockTailoredSecurityServiceInfobarDelegate::Create(
-          /*consent_status*/ true);
+          /*message_state*/ TailoredSecurityServiceMessageState::
+              kConsentedAndFlowEnabled);
   InfoBarIOS infobar(InfobarType::kInfobarTypeTailoredSecurityService,
                      std::move(delegate));
 

@@ -34,7 +34,8 @@ class TailoredSecurityInfobarBannerInteractionHandlerTest
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeTailoredSecurityService,
         safe_browsing::MockTailoredSecurityServiceInfobarDelegate::Create(
-            /*consent_status*/ true));
+            /*message_state*/ safe_browsing::
+                TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled));
     infobar_ = infobar.get();
     InfoBarManagerImpl::FromWebState(&web_state_)
         ->AddInfoBar(std::move(infobar));

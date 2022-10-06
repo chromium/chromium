@@ -14,14 +14,16 @@ namespace safe_browsing {
 
 // static
 std::unique_ptr<MockTailoredSecurityServiceInfobarDelegate>
-MockTailoredSecurityServiceInfobarDelegate::Create(bool consent_status) {
-  return base::WrapUnique(
-      new MockTailoredSecurityServiceInfobarDelegate(consent_status));
+MockTailoredSecurityServiceInfobarDelegate::Create(
+    TailoredSecurityServiceMessageState message_state) {
+  return std::make_unique<MockTailoredSecurityServiceInfobarDelegate>(
+      message_state);
 }
 
 MockTailoredSecurityServiceInfobarDelegate::
-    MockTailoredSecurityServiceInfobarDelegate(bool consent_status)
-    : TailoredSecurityServiceInfobarDelegate(consent_status) {}
+    MockTailoredSecurityServiceInfobarDelegate(
+        TailoredSecurityServiceMessageState message_state)
+    : TailoredSecurityServiceInfobarDelegate(message_state) {}
 
 MockTailoredSecurityServiceInfobarDelegate::
     ~MockTailoredSecurityServiceInfobarDelegate() = default;

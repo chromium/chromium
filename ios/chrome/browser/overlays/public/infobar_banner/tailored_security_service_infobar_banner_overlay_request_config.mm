@@ -36,7 +36,7 @@ TailoredSecurityServiceBannerRequestConfig::
   button_label_text_ = delegate->GetMessageActionText();
   description_ = delegate->GetDescription();
   icon_image_name_ = kIconImageName;
-  has_badge_ = delegate->consent_status();
+  has_badge_ = delegate->IsConsented();
 }
 
 TailoredSecurityServiceBannerRequestConfig::

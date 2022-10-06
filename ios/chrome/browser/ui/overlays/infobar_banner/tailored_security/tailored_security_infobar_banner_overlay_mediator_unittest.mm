@@ -19,6 +19,7 @@
 
 using safe_browsing::MockTailoredSecurityServiceInfobarDelegate;
 using safe_browsing::TailoredSecurityServiceInfobarDelegate;
+using safe_browsing::TailoredSecurityServiceMessageState;
 using tailored_security_service_infobar_overlays::
     TailoredSecurityServiceBannerRequestConfig;
 
@@ -31,7 +32,8 @@ TEST_F(TailoredSecurityInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   // Create an InfoBarIOS with a TailoredSecurityServiceInfobarDelegate.
   std::unique_ptr<TailoredSecurityServiceInfobarDelegate> passed_delegate =
       MockTailoredSecurityServiceInfobarDelegate::Create(
-          /*consent_status*/ true);
+          /*message_state*/ TailoredSecurityServiceMessageState::
+              kConsentedAndFlowEnabled);
   TailoredSecurityServiceInfobarDelegate* delegate = passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeTailoredSecurityService,
                      std::move(passed_delegate));

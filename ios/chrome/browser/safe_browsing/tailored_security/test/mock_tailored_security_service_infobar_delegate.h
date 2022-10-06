@@ -16,13 +16,13 @@ namespace safe_browsing {
 class MockTailoredSecurityServiceInfobarDelegate
     : public TailoredSecurityServiceInfobarDelegate {
  public:
-  MockTailoredSecurityServiceInfobarDelegate(bool consent_status);
+  explicit MockTailoredSecurityServiceInfobarDelegate(
+      TailoredSecurityServiceMessageState message_state);
   ~MockTailoredSecurityServiceInfobarDelegate() override;
 
   // Factory method that creates a mock tailored security service delegate..
   static std::unique_ptr<MockTailoredSecurityServiceInfobarDelegate> Create(
-      bool consent_status);
-
+      TailoredSecurityServiceMessageState message_state);
   MOCK_METHOD0(InfoBarDismissed, void());
   MOCK_METHOD0(Accept, bool());
   MOCK_METHOD0(Cancel, bool());

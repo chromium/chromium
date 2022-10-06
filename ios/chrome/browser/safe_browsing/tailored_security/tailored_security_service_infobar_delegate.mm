@@ -11,15 +11,19 @@
 namespace {
 
 // TODO(crbug.com/1358259): Replace test strings.
-const std::u16string test_consent_string = u"test_consent_string";
-const std::u16string test_unconsent_string = u"test_unconsent_string";
+const std::u16string test_consent_enabled_string =
+    u"test_consent_enabled_string";
+const std::u16string test_consent_disabled_string =
+    u"test_consent_disabled_string";
+const std::u16string test_unconsent_enabled_string =
+    u"test_unconsent_enabled_string";
 
 }  // namespace
 
 namespace safe_browsing {
 TailoredSecurityServiceInfobarDelegate::TailoredSecurityServiceInfobarDelegate(
-    bool consent_status)
-    : consent_status_(consent_status) {}
+    TailoredSecurityServiceMessageState message_state)
+    : message_state_(message_state) {}
 
 TailoredSecurityServiceInfobarDelegate*
 TailoredSecurityServiceInfobarDelegate::FromInfobarDelegate(
@@ -30,16 +34,47 @@ TailoredSecurityServiceInfobarDelegate::FromInfobarDelegate(
 }
 
 std::u16string TailoredSecurityServiceInfobarDelegate::GetMessageText() const {
-  return consent_status_ ? test_consent_string : test_unconsent_string;
+  switch (message_state_) {
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
+      return test_consent_enabled_string;
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+      return test_consent_disabled_string;
+    case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+      return test_unconsent_enabled_string;
+  }
 }
 
 std::u16string TailoredSecurityServiceInfobarDelegate::GetDescription() const {
-  return consent_status_ ? test_consent_string : nil;
+  switch (message_state_) {
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
+      return test_consent_enabled_string;
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+      return test_consent_disabled_string;
+    case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+      return nil;
+  }
 }
 
 std::u16string TailoredSecurityServiceInfobarDelegate::GetMessageActionText()
     const {
-  return consent_status_ ? test_consent_string : test_unconsent_string;
+  switch (message_state_) {
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
+      return test_consent_enabled_string;
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+      return test_consent_disabled_string;
+    case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+      return test_unconsent_enabled_string;
+  }
+}
+
+bool TailoredSecurityServiceInfobarDelegate::IsConsented() const {
+  switch (message_state_) {
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
+    case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+      return true;
+    case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+      return false;
+  }
 }
 
 bool TailoredSecurityServiceInfobarDelegate::EqualsDelegate(
