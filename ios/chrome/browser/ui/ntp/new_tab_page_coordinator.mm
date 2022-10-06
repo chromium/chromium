@@ -351,10 +351,6 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
     }
   }
 
-  if (IsDiscoverFeedTopSyncPromoEnabled()) {
-    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
-  }
-
   self.contentSuggestionsCoordinator =
       [self createContentSuggestionsCoordinator];
 
@@ -1151,6 +1147,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   self.ntpViewController.feedTopSectionViewController = nil;
   self.feedWrapperViewController = nil;
   self.feedViewController = nil;
+  self.feedTopSectionCoordinator = nil;
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
@@ -1176,6 +1173,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
       self.feedWrapperViewController;
 
   [self.ntpViewController layoutContentInParentCollectionView];
+  [self updateFeedLayout];
 }
 
 // Creates and configures the feed and feed header based on user prefs.
@@ -1184,6 +1182,10 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
   self.ntpViewController.feedHeaderViewController =
       self.feedHeaderViewController;
+
+  if ([self isFeedTopSectionVisible]) {
+    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
+  }
 
   // Requests feeds here if the correct flags and prefs are enabled.
   if ([self shouldFeedBeVisible]) {
