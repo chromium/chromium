@@ -107,8 +107,8 @@ NGGridProperties InitializeGridProperties(
         grid_item.IsBaselineSpecifiedForDirection(kForColumns);
     grid_properties.has_baseline_row |=
         grid_item.IsBaselineSpecifiedForDirection(kForRows);
-    grid_properties.has_orthogonal_item |= !IsParallelWritingMode(
-        container_writing_mode, grid_item.node.Style().GetWritingMode());
+    grid_properties.has_orthogonal_item |=
+        !grid_item.is_parallel_with_root_grid;
   }
   return grid_properties;
 }
@@ -902,9 +902,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   const auto& item_style = node.Style();
 
   const bool is_for_columns = track_direction == kForColumns;
-  const bool is_parallel = IsParallelWritingMode(Style().GetWritingMode(),
-                                                 item_style.GetWritingMode());
-  const bool is_parallel_with_track_direction = is_for_columns == is_parallel;
+  const bool is_parallel_with_track_direction =
+      is_for_columns == grid_item->is_parallel_with_root_grid;
 
   // TODO(ikilpatrick): We'll need to record if any child used an indefinite
   // size for its contribution, such that we can then do the 2nd pass on the
@@ -931,7 +930,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
             .block_start;
   };
 
-  auto MinOrMaxContentSize = [&](const bool is_min_size) -> LayoutUnit {
+  auto MinOrMaxContentSize = [&](bool is_min_size) -> LayoutUnit {
     const auto result = ComputeMinAndMaxContentContributionForSelf(node, space);
 
     // The min/max contribution may depend on the block-size of the grid-area:
@@ -945,21 +944,23 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     // </div>
     // Mark ourselves as requiring an additional pass to re-resolve the column
     // tracks for this case.
-    if (is_parallel && result.depends_on_block_constraints)
+    if (grid_item->is_parallel_with_root_grid &&
+        result.depends_on_block_constraints) {
       grid_item->is_sizing_dependent_on_block_size = true;
+    }
 
-    const LayoutUnit size =
+    const LayoutUnit content_size =
         is_min_size ? result.sizes.min_size : result.sizes.max_size;
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
       CalculateBaselineShim(GetSynthesizedLogicalBaseline(
-          size,
+          content_size,
           grid_item->BaselineWritingDirection(track_direction).IsFlippedLines(),
           grid_item->IsLastBaselineSpecifiedForDirection(track_direction)));
     }
-
-    return size + baseline_shim;
+    return content_size + baseline_shim;
   };
+
   auto MinContentSize = [&]() -> LayoutUnit {
     return MinOrMaxContentSize(/* is_min_size */ true);
   };
@@ -1402,18 +1403,18 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
 
     const auto baseline_writing_direction =
         grid_item.BaselineWritingDirection(track_direction);
-    const auto margins =
-        ComputeMarginsFor(space, item_style, baseline_writing_direction);
     const NGBoxFragment baseline_fragment(
         baseline_writing_direction,
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+
+    const bool has_synthesized_baseline =
+        !baseline_fragment.FirstBaseline().has_value();
+    grid_item.SetAlignmentFallback(track_direction, has_synthesized_baseline);
+
+    const auto margins =
+        ComputeMarginsFor(space, item_style, baseline_writing_direction);
     const bool is_last_baseline =
         grid_item.IsLastBaselineSpecifiedForDirection(track_direction);
-
-    grid_item.SetAlignmentFallback(
-        track_direction, Style(),
-        /* has_synthesized_baseline */
-        !baseline_fragment.FirstBaseline().has_value());
 
     LayoutUnit baseline =
         (is_last_baseline ? margins.block_end : margins.block_start) +
@@ -2744,16 +2745,14 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
   builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
 
-  const bool is_parallel_grid_item =
-      IsParallelWritingMode(container_constraint_space.GetWritingMode(),
-                            grid_item.node.Style().GetWritingMode());
-
   if (grid_item.has_subgridded_columns) {
-    const auto& range_indices = is_parallel_grid_item
+    const auto& range_indices = grid_item.is_parallel_with_root_grid
                                     ? grid_item.column_range_indices
                                     : grid_item.row_range_indices;
-    const auto* track_collection =
-        is_parallel_grid_item ? layout_data.Columns() : layout_data.Rows();
+
+    const auto* track_collection = grid_item.is_parallel_with_root_grid
+                                       ? layout_data.Columns()
+                                       : layout_data.Rows();
 
     builder.SetSubgriddedColumns(std::make_unique<NGGridLayoutTrackCollection>(
         track_collection->CreateSubgridCollection(
@@ -2761,11 +2760,13 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   }
 
   if (grid_item.has_subgridded_rows) {
-    const auto& range_indices = is_parallel_grid_item
+    const auto& range_indices = grid_item.is_parallel_with_root_grid
                                     ? grid_item.row_range_indices
                                     : grid_item.column_range_indices;
-    const auto* track_collection =
-        is_parallel_grid_item ? layout_data.Rows() : layout_data.Columns();
+
+    const auto* track_collection = grid_item.is_parallel_with_root_grid
+                                       ? layout_data.Rows()
+                                       : layout_data.Columns();
 
     builder.SetSubgriddedRows(std::make_unique<NGGridLayoutTrackCollection>(
         track_collection->CreateSubgridCollection(

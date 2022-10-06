@@ -30,12 +30,11 @@ struct OutOfFlowItemPlacement {
 
 struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   GridItemData(const NGBlockNode node,
-               const ComputedStyle& container_style,
+               const ComputedStyle& root_grid_style,
                bool parent_must_consider_grid_items_for_column_sizing = false,
                bool parent_must_consider_grid_items_for_row_sizing = false);
 
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
-                            const ComputedStyle& container_style,
                             bool has_synthesized_baseline);
 
   AxisEdge InlineAxisAlignment() const {
@@ -191,10 +190,11 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   bool has_subgridded_columns : 1;
   bool has_subgridded_rows : 1;
   bool is_block_axis_overflow_safe : 1;
-  bool is_inline_axis_overflow_safe : 1;
-  bool is_sizing_dependent_on_block_size : 1;
   bool is_considered_for_column_sizing : 1;
   bool is_considered_for_row_sizing : 1;
+  bool is_inline_axis_overflow_safe : 1;
+  bool is_parallel_with_root_grid : 1;
+  bool is_sizing_dependent_on_block_size : 1;
   bool must_consider_grid_items_for_column_sizing : 1;
   bool must_consider_grid_items_for_row_sizing : 1;
 

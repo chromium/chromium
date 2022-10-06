@@ -145,19 +145,14 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
         /* is_subgridded_to_parent */ true, subgrid.Style(),
         CachedPlacementData().line_resolver);
 
-    {
-      const bool subgrid_is_parallel_with_root_grid = IsParallelWritingMode(
-          root_grid_style.GetWritingMode(), subgrid.Style().GetWritingMode());
+    if (current_item.has_subgridded_columns) {
+      subgrid_placement_data.column_subgrid_span_size = current_item.SpanSize(
+          current_item.is_parallel_with_root_grid ? kForColumns : kForRows);
+    }
 
-      if (current_item.has_subgridded_columns) {
-        subgrid_placement_data.column_subgrid_span_size = current_item.SpanSize(
-            subgrid_is_parallel_with_root_grid ? kForColumns : kForRows);
-      }
-
-      if (current_item.has_subgridded_rows) {
-        subgrid_placement_data.row_subgrid_span_size = current_item.SpanSize(
-            subgrid_is_parallel_with_root_grid ? kForRows : kForColumns);
-      }
+    if (current_item.has_subgridded_rows) {
+      subgrid_placement_data.row_subgrid_span_size = current_item.SpanSize(
+          current_item.is_parallel_with_root_grid ? kForRows : kForColumns);
     }
 
     // TODO(ethavar): Compute automatic repetitions for subgridded axes as
