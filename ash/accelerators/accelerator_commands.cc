@@ -5,7 +5,6 @@
 #include "ash/accelerators/accelerator_commands.h"
 
 #include "accelerator_notifications.h"
-#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
@@ -91,6 +90,17 @@
 
 // Keep the functions in this file in alphabetical order.
 namespace ash {
+
+const char kAccessibilityHighContrastShortcut[] =
+    "Accessibility.Shortcuts.CrosHighContrast";
+const char kAccessibilitySpokenFeedbackShortcut[] =
+    "Accessibility.Shortcuts.CrosSpokenFeedback";
+const char kAccessibilityScreenMagnifierShortcut[] =
+    "Accessibility.Shortcuts.CrosScreenMagnifier";
+const char kAccessibilityDockedMagnifierShortcut[] =
+    "Accessibility.Shortcuts.CrosDockedMagnifier";
+const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
+
 namespace accelerators {
 
 namespace {
@@ -879,10 +889,12 @@ void RotateScreen() {
           ->HasDisplayRotationAcceleratorDialogBeenAccepted();
 
   if (!dialog_ever_accepted) {
-    Shell::Get()->accelerator_controller()->MaybeShowConfirmationDialog(
-        IDS_ASH_ROTATE_SCREEN_TITLE, IDS_ASH_ROTATE_SCREEN_BODY,
+    Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
+        l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_TITLE),
+        l10n_util::GetStringUTF16(IDS_ASH_ROTATE_SCREEN_BODY),
         base::BindOnce(&OnRotationDialogAccepted),
-        base::BindOnce(&OnRotationDialogCancelled));
+        base::BindOnce(&OnRotationDialogCancelled),
+        /*on_close_callback=*/base::DoNothing());
   } else {
     RecordRotationAcceleratorAction(
         RotationAcceleratorAction::kAlreadyAcceptedDialog);
@@ -1122,8 +1134,9 @@ void ToggleDockedMagnifier() {
       accessibility_controller->docked_magnifier().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
-    shell->accelerator_controller()->MaybeShowConfirmationDialog(
-        IDS_ASH_DOCKED_MAGNIFIER_TITLE, IDS_ASH_DOCKED_MAGNIFIER_BODY,
+    accessibility_controller->ShowConfirmationDialog(
+        l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_TITLE),
+        l10n_util::GetStringUTF16(IDS_ASH_DOCKED_MAGNIFIER_BODY),
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
@@ -1131,7 +1144,8 @@ void ToggleDockedMagnifier() {
               .SetDialogAccepted();
           SetDockedMagnifierEnabled(true);
         }),
-        base::DoNothing());
+        /*on_cancel_callback=*/base::DoNothing(),
+        /*on_close_callback=*/base::DoNothing());
   } else {
     SetDockedMagnifierEnabled(!current_enabled);
   }
@@ -1186,8 +1200,9 @@ void ToggleFullscreenMagnifier() {
       accessibility_controller->fullscreen_magnifier().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
-    shell->accelerator_controller()->MaybeShowConfirmationDialog(
-        IDS_ASH_SCREEN_MAGNIFIER_TITLE, IDS_ASH_SCREEN_MAGNIFIER_BODY,
+    accessibility_controller->ShowConfirmationDialog(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_TITLE),
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY),
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
@@ -1195,7 +1210,8 @@ void ToggleFullscreenMagnifier() {
               .SetDialogAccepted();
           SetFullscreenMagnifierEnabled(true);
         }),
-        base::DoNothing());
+        /*on_cancel_callback=*/base::DoNothing(),
+        /*on_close_callback=*/base::DoNothing());
   } else {
     SetFullscreenMagnifierEnabled(!current_enabled);
   }
@@ -1223,8 +1239,9 @@ void ToggleHighContrast() {
       controller->high_contrast().WasDialogAccepted();
 
   if (!current_enabled && !dialog_ever_accepted) {
-    shell->accelerator_controller()->MaybeShowConfirmationDialog(
-        IDS_ASH_HIGH_CONTRAST_TITLE, IDS_ASH_HIGH_CONTRAST_BODY,
+    controller->ShowConfirmationDialog(
+        l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_TITLE),
+        l10n_util::GetStringUTF16(IDS_ASH_HIGH_CONTRAST_BODY),
         base::BindOnce([]() {
           Shell::Get()
               ->accessibility_controller()
@@ -1232,7 +1249,8 @@ void ToggleHighContrast() {
               .SetDialogAccepted();
           SetHighContrastEnabled(true);
         }),
-        base::DoNothing());
+        /*on_cancel_callback=*/base::DoNothing(),
+        /*on_close_callback=*/base::DoNothing());
   } else {
     SetHighContrastEnabled(!current_enabled);
   }

@@ -796,8 +796,9 @@ void AccessibilityControllerImpl::FeatureWithDialog::SetEnabledWithDialog(
     return;
   // We should not show the dialog when the feature is already enabled.
   if (enabled && !this->enabled() && !WasDialogAccepted()) {
-    Shell::Get()->accelerator_controller()->MaybeShowConfirmationDialog(
-        dialog_.title_resource_id, dialog_.body_resource_id,
+    Shell::Get()->accessibility_controller()->ShowConfirmationDialog(
+        l10n_util::GetStringUTF16(dialog_.title_resource_id),
+        l10n_util::GetStringUTF16(dialog_.body_resource_id),
         // Callback for if the user accepts the dialog
         base::BindOnce(
             [](base::WeakPtr<AccessibilityControllerImpl> owner,
@@ -813,7 +814,8 @@ void AccessibilityControllerImpl::FeatureWithDialog::SetEnabledWithDialog(
             },
             owner_->weak_ptr_factory_.GetWeakPtr(), type_,
             std::move(completion_callback)),
-        base::DoNothing());
+        /*on_cancel_callback=*/base::DoNothing(),
+        /*on_close_callback=*/base::DoNothing());
 
     return;
   }

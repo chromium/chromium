@@ -26,6 +26,7 @@
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -44,18 +45,6 @@
 #include "ui/display/manager/managed_display_info.h"
 
 namespace ash {
-
-const char kAccessibilityHighContrastShortcut[] =
-    "Accessibility.Shortcuts.CrosHighContrast";
-const char kAccessibilitySpokenFeedbackShortcut[] =
-    "Accessibility.Shortcuts.CrosSpokenFeedback";
-const char kAccessibilityScreenMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosScreenMagnifier";
-const char kAccessibilityDockedMagnifierShortcut[] =
-    "Accessibility.Shortcuts.CrosDockedMagnifier";
-
-const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
-
 namespace {
 
 using ::base::UserMetricsAction;
@@ -302,11 +291,6 @@ AcceleratorControllerImpl::TestApi::GetDeprecatedAcceleratorData(
     AcceleratorAction action) {
   return controller_->accelerator_configuration()->GetDeprecatedAcceleratorData(
       action);
-}
-
-AccessibilityConfirmationDialog*
-AcceleratorControllerImpl::TestApi::GetConfirmationDialog() {
-  return controller_->confirmation_dialog_.get();
 }
 
 ExitWarningHandler*
@@ -1392,22 +1376,6 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
     return AcceleratorProcessingStatus::STOP;
 
   return AcceleratorProcessingStatus::PROCEED;
-}
-
-void AcceleratorControllerImpl::MaybeShowConfirmationDialog(
-    int window_title_text_id,
-    int dialog_text_id,
-    base::OnceClosure on_accept_callback,
-    base::OnceClosure on_cancel_callback) {
-  // An active dialog exists already.
-  if (confirmation_dialog_)
-    return;
-
-  auto* dialog = new AccessibilityConfirmationDialog(
-      l10n_util::GetStringUTF16(window_title_text_id),
-      l10n_util::GetStringUTF16(dialog_text_id), std::move(on_accept_callback),
-      std::move(on_cancel_callback), /* on close */ base::DoNothing());
-  confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
 void AcceleratorControllerImpl::SetPreventProcessingAccelerators(

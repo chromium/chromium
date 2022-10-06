@@ -443,11 +443,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DisablePolicyRecommendationRestorerForTesting() override;
   void SuspendSwitchAccessKeyHandling(bool suspend) override;
   void EnableChromeVoxVolumeSlideGesture() override;
-  void ShowConfirmationDialog(const std::u16string& title,
-                              const std::u16string& description,
-                              base::OnceClosure on_accept_callback,
-                              base::OnceClosure on_cancel_callback,
-                              base::OnceClosure on_close_callback) override;
   void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
       int download_progress) override;
   void ShowSpeechRecognitionDownloadNotificationForDictation(
@@ -460,6 +455,22 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints)
       override;
   void SilenceSpokenFeedback() override;
+
+  // A confirmation dialog will be shown the first time an accessibility feature
+  // is enabled using the specified accelerator key sequence. Only one dialog
+  // will be shown at a time, and will not be shown again if the user has
+  // selected "accept" on a given dialog. The dialog was added to ensure that
+  // users would be aware of the shortcut they have just enabled, and to prevent
+  // users from accidentally triggering the feature. The dialog is currently
+  // shown when enabling the following features: high contrast, full screen
+  // magnifier, docked magnifier and screen rotation and when requested by the
+  // AccessibilityPrivate extension API. The shown dialog is stored as a weak
+  // pointer in the variable |confirmation_dialog_| below.
+  void ShowConfirmationDialog(const std::u16string& title,
+                              const std::u16string& description,
+                              base::OnceClosure on_accept_callback,
+                              base::OnceClosure on_cancel_callback,
+                              base::OnceClosure on_close_callback) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;

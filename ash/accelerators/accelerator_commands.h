@@ -16,6 +16,29 @@
 //
 // Keep the functions in this file in alphabetical order.
 namespace ash {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Captures usage of Alt+[ and Alt+].
+enum class WindowSnapAcceleratorAction {
+  kCycleLeftSnapInClamshellNoOverview = 0,
+  kCycleLeftSnapInClamshellOverview = 1,
+  kCycleLeftSnapInTablet = 2,
+  kCycleRightSnapInClamshellNoOverview = 3,
+  kCycleRightSnapInClamshellOverview = 4,
+  kCycleRightSnapInTablet = 5,
+  kMaxValue = kCycleRightSnapInTablet,
+};
+
+// UMA accessibility histogram names.
+ASH_EXPORT extern const char kAccessibilityHighContrastShortcut[];
+ASH_EXPORT extern const char kAccessibilitySpokenFeedbackShortcut[];
+ASH_EXPORT extern const char kAccessibilityScreenMagnifierShortcut[];
+ASH_EXPORT extern const char kAccessibilityDockedMagnifierShortcut[];
+
+// Name of histogram corresponding to |WindowSnapAcceleratorAction|.
+ASH_EXPORT extern const char kAccelWindowSnap[];
+
 namespace accelerators {
 
 //////////////////////////////////////////////////////////////////////////////

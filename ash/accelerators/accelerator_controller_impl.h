@@ -17,6 +17,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/exit_warning_handler.h"
 #include "ash/accelerators/tablet_volume_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
@@ -34,28 +35,6 @@ namespace ash {
 
 struct AcceleratorData;
 class ExitWarningHandler;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Captures usage of Alt+[ and Alt+].
-enum class WindowSnapAcceleratorAction {
-  kCycleLeftSnapInClamshellNoOverview = 0,
-  kCycleLeftSnapInClamshellOverview = 1,
-  kCycleLeftSnapInTablet = 2,
-  kCycleRightSnapInClamshellNoOverview = 3,
-  kCycleRightSnapInClamshellOverview = 4,
-  kCycleRightSnapInTablet = 5,
-  kMaxValue = kCycleRightSnapInTablet,
-};
-
-// UMA accessibility histogram names.
-ASH_EXPORT extern const char kAccessibilityHighContrastShortcut[];
-ASH_EXPORT extern const char kAccessibilitySpokenFeedbackShortcut[];
-ASH_EXPORT extern const char kAccessibilityScreenMagnifierShortcut[];
-ASH_EXPORT extern const char kAccessibilityDockedMagnifierShortcut[];
-
-// Name of histogram corresponding to |WindowSnapAcceleratorAction|.
-ASH_EXPORT extern const char kAccelWindowSnap[];
 
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
@@ -174,20 +153,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
-  // A confirmation dialog will be shown the first time an accessibility feature
-  // is enabled using the specified accelerator key sequence. Only one dialog
-  // will be shown at a time, and will not be shown again if the user has
-  // selected "accept" on a given dialog. The dialog was added to ensure that
-  // users would be aware of the shortcut they have just enabled, and to prevent
-  // users from accidentally triggering the feature. The dialog is currently
-  // shown when enabling the following features: high contrast, full screen
-  // magnifier, docked magnifier and screen rotation. The shown dialog is stored
-  // as a weak pointer in the variable |confirmation_dialog_| below.
-  void MaybeShowConfirmationDialog(int window_title_text_id,
-                                   int dialog_text_id,
-                                   base::OnceClosure on_accept_callback,
-                                   base::OnceClosure on_cancel_callback);
-
   // If set to true, all accelerators will not be processed.
   void SetPreventProcessingAccelerators(bool prevent_processing_accelerators);
   bool ShouldPreventProcessingAccelerators() const;
@@ -278,9 +243,6 @@ class ASH_EXPORT AcceleratorControllerImpl
   std::set<int> actions_needing_window_;
   // Actions that can be performed without closing the menu (if one is present).
   std::set<int> actions_keeping_menu_open_;
-
-  // Holds a weak pointer to the accessibility confirmation dialog.
-  base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
 
   // Prevents the processing of all KB shortcuts in the controller.
   bool prevent_processing_accelerators_ = false;

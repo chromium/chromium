@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/accelerators/accelerator_notifications.h"
@@ -323,18 +324,22 @@ class AcceleratorControllerTest : public AshTestBase {
                           kFullscreenMagnifierToggleAccelNotificationId);
   }
 
-  bool IsConfirmationDialogOpen() {
-    return !!(test_api_->GetConfirmationDialog());
+  AccessibilityConfirmationDialog* GetConfirmationDialog() {
+    return Shell::Get()
+        ->accessibility_controller()
+        ->GetConfirmationDialogForTest();
   }
 
+  bool IsConfirmationDialogOpen() { return !!GetConfirmationDialog(); }
+
   void AcceptConfirmationDialog() {
-    DCHECK(test_api_->GetConfirmationDialog());
-    test_api_->GetConfirmationDialog()->AcceptDialog();
+    DCHECK(GetConfirmationDialog());
+    GetConfirmationDialog()->AcceptDialog();
   }
 
   void CancelConfirmationDialog() {
-    DCHECK(test_api_->GetConfirmationDialog());
-    test_api_->GetConfirmationDialog()->CancelDialog();
+    DCHECK(GetConfirmationDialog());
+    GetConfirmationDialog()->CancelDialog();
   }
 
   void TriggerRotateScreenShortcut() {
