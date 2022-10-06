@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/user_image_source.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -149,7 +150,12 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
+    // After the default avatar images are moved to cloud, the user
+    // will have image bytes when using default images. Therefore, after
+    // the migration, remove this if case.
     if (user->HasDefaultImage()) {
+      if (ash::features::IsAvatarsCloudMigrationEnabled())
+        LOG(ERROR) << "No image bytes found for default user image";
       return LoadUserImageFrameForScaleFactor(
           default_user_image::GetDefaultImageResourceId(user->image_index()),
           frame, scale_factor);
