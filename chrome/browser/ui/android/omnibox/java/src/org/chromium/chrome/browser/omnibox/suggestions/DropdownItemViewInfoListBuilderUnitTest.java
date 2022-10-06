@@ -34,6 +34,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -59,6 +60,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     private @Mock AutocompleteController mAutocompleteController;
     private @Mock SuggestionProcessor mMockSuggestionProcessor;
     private @Mock HeaderProcessor mMockHeaderProcessor;
+    private @Mock DividerLineProcessor mMockDividerLineProcessor;
     private @Mock OmniboxPedalDelegate mMockOmniboxPedalDelegate;
     DropdownItemViewInfoListBuilder mBuilder;
 
@@ -484,5 +486,58 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         // Skipping scenario where all suggestions are below the keyboard, because in this scenario
         // the user can't realistically interact with them.
+    }
+
+    @Test
+    @SmallTest
+    public void dividerLineOnTop() {
+        when(mMockDividerLineProcessor.createModel())
+                .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
+        when(mMockDividerLineProcessor.getViewTypeId())
+                .thenReturn(OmniboxSuggestionUiType.DIVIDER_LINE);
+        mBuilder.setDividerLineProcessorForTest(mMockDividerLineProcessor);
+
+        final List<AutocompleteMatch> actualList = new ArrayList<>();
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+        groupsDetails.put(1, new GroupDetails("Header 1", false));
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
+
+        actualList.add(suggestion);
+        actualList.add(suggestion);
+
+        final List<DropdownItemViewInfo> infoList = mBuilder.buildDropdownViewInfoList(
+                AutocompleteResult.fromCache(actualList, groupsDetails));
+        Assert.assertEquals(4, infoList.size()); // 1 divider line + 1 header + 2 suggestions.
+
+        Assert.assertEquals(infoList.get(0).type, OmniboxSuggestionUiType.DIVIDER_LINE);
+        Assert.assertEquals(infoList.get(1).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(infoList.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(infoList.get(3).type, OmniboxSuggestionUiType.DEFAULT);
+
+        mBuilder.setDividerLineProcessorForTest(null);
+    }
+
+    @Test
+    @SmallTest
+    public void noDividerLineForEmptyList() {
+        when(mMockDividerLineProcessor.createModel())
+                .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
+        when(mMockDividerLineProcessor.getViewTypeId())
+                .thenReturn(OmniboxSuggestionUiType.DIVIDER_LINE);
+        mBuilder.setDividerLineProcessorForTest(mMockDividerLineProcessor);
+
+        final List<AutocompleteMatch> actualList = new ArrayList<>();
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+
+        final List<DropdownItemViewInfo> infoList = mBuilder.buildDropdownViewInfoList(
+                AutocompleteResult.fromCache(actualList, groupsDetails));
+        Assert.assertEquals(0, infoList.size());
+
+        mBuilder.setDividerLineProcessorForTest(null);
     }
 }

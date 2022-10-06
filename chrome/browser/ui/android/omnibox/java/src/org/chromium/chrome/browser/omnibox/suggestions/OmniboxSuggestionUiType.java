@@ -26,7 +26,8 @@ import java.lang.annotation.RetentionPolicy;
         OmniboxSuggestionUiType.ANSWER_SUGGESTION, OmniboxSuggestionUiType.ENTITY_SUGGESTION,
         OmniboxSuggestionUiType.TAIL_SUGGESTION, OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
         OmniboxSuggestionUiType.HEADER, OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-        OmniboxSuggestionUiType.PEDAL_SUGGESTION, OmniboxSuggestionUiType.COUNT})
+        OmniboxSuggestionUiType.PEDAL_SUGGESTION, OmniboxSuggestionUiType.DIVIDER_LINE,
+        OmniboxSuggestionUiType.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface OmniboxSuggestionUiType {
     int DEFAULT = 0;
@@ -38,6 +39,7 @@ public @interface OmniboxSuggestionUiType {
     int HEADER = 6;
     int TILE_NAVSUGGEST = 7;
     int PEDAL_SUGGESTION = 8;
+    int DIVIDER_LINE = 9;
 
-    int COUNT = 9;
+    int COUNT = 10;
 }

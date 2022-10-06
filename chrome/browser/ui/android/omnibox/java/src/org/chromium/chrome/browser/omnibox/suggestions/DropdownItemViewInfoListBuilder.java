@@ -14,11 +14,13 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.clipboard.ClipboardSuggestionProcessor;
+import org.chromium.chrome.browser.omnibox.suggestions.dividerline.DividerLineProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.editurl.EditUrlSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
@@ -53,6 +55,7 @@ class DropdownItemViewInfoListBuilder {
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
     private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
 
+    private @Nullable DividerLineProcessor mDividerLineProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
     private @Nullable Supplier<ShareDelegate> mShareDelegateSupplier;
     private @Nullable ImageFetcher mImageFetcher;
@@ -91,6 +94,12 @@ class DropdownItemViewInfoListBuilder {
 
         mFaviconFetcher = new FaviconFetcher(context, iconBridgeSupplier);
 
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            // Only create DividerLineProcessor when feature is enabled.
+            // Feature is enabled on non-tablet devices.
+            mDividerLineProcessor = new DividerLineProcessor(context);
+        }
         mHeaderProcessor = new HeaderProcessor(context, host, delegate);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
                 context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
@@ -138,6 +147,15 @@ class DropdownItemViewInfoListBuilder {
      */
     void setHeaderProcessorForTest(HeaderProcessor processor) {
         mHeaderProcessor = processor;
+    }
+
+    /**
+     * Specify instance of the DividerLineProcessor that will be used to run tests.
+     *
+     * @param processor divider line processor used to build the suggestion divider line.
+     */
+    void setDividerLineProcessorForTest(DividerLineProcessor processor) {
+        mDividerLineProcessor = processor;
     }
 
     /**
@@ -274,6 +292,12 @@ class DropdownItemViewInfoListBuilder {
 
         // Build ViewInfo structures.
         int currentGroup = AutocompleteMatch.INVALID_GROUP;
+
+        // Add the divider line on top if the suggestion list is not empty.
+        if (mDividerLineProcessor != null && newSuggestionsCount > 0) {
+            final PropertyModel model = mDividerLineProcessor.createModel();
+            viewInfoList.add(new DropdownItemViewInfo(mDividerLineProcessor, model, currentGroup));
+        }
         for (int index = 0; index < newSuggestionsCount; index++) {
             final Pair<AutocompleteMatch, SuggestionProcessor> suggestionAndProcessorPair =
                     suggestionsPairedWithProcessors.get(index);

@@ -192,6 +192,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
             setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
             setMaxRecycledViews(OmniboxSuggestionUiType.PEDAL_SUGGESTION, 3);
+            setMaxRecycledViews(OmniboxSuggestionUiType.DIVIDER_LINE, 1);
         }
 
         @Override
