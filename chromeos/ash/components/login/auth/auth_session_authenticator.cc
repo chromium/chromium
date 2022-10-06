@@ -323,8 +323,8 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
   DCHECK(context);
   DCHECK(context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
          context->GetUserType() == user_manager::USER_TYPE_CHILD ||
-         context->GetUserType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-
+         context->GetUserType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY ||
+         context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   PrepareForNewAttempt("AuthenticateToLogin", "Returning regular user");
 
   bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
@@ -341,6 +341,34 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
       AuthSessionIntent::kDecrypt,
       base::BindOnce(&AuthSessionAuthenticator::DoLoginAsExistingUser,
                      weak_factory_.GetWeakPtr()));
+}
+
+void AuthSessionAuthenticator::AuthenticateToUnlock(
+    std::unique_ptr<UserContext> user_context) {
+  DCHECK(user_context);
+  DCHECK(user_context->GetUserType() == user_manager::USER_TYPE_REGULAR ||
+         user_context->GetUserType() == user_manager::USER_TYPE_CHILD ||
+         user_context->GetUserType() ==
+             user_manager::USER_TYPE_ACTIVE_DIRECTORY ||
+         user_context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  PrepareForNewAttempt("AuthenticateToUnlock", "Returning regular user");
+
+  bool challenge_response_auth =
+      !user_context->GetChallengeResponseKeys().empty();
+
+  // For now we don't support empty passwords:
+  if (user_context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
+    if (user_context->GetKey()->GetSecret().empty() &&
+        !challenge_response_auth) {
+      // TODO(crbug.com/1325411): Restore non-empty password check.
+      LOGIN_LOG(ERROR) << "Empty password used in AuthenticateToLogin";
+    }
+  }
+  StartAuthSessionWithChecks(std::move(user_context),
+                             is_ephemeral_mount_enforced_,
+                             AuthSessionIntent::kVerifyOnly,
+                             base::BindOnce(&AuthSessionAuthenticator::DoUnlock,
+                                            weak_factory_.GetWeakPtr()));
 }
 
 void AuthSessionAuthenticator::DoLoginAsExistingUser(
@@ -401,6 +429,54 @@ void AuthSessionAuthenticator::DoLoginAsExistingUser(
     steps.push_back(
         base::BindOnce(&AuthSessionAuthenticator::CheckOwnershipOperation,
                        weak_factory_.GetWeakPtr()));
+  }
+  RunOperationChain(std::move(context), std::move(steps),
+                    std::move(success_callback), std::move(error_callback));
+}
+
+void AuthSessionAuthenticator::DoUnlock(
+    bool user_exists,
+    std::unique_ptr<UserContext> context,
+    absl::optional<AuthenticationError> error) {
+  AuthErrorCallback error_callback =
+      base::BindOnce(&AuthSessionAuthenticator::ProcessCryptohomeError,
+                     weak_factory_.GetWeakPtr(), AuthFailure::UNLOCK_FAILED);
+  if (error.has_value()) {
+    LOGIN_LOG(ERROR) << "Error starting authsession for Regular user for "
+                        "verification intent "
+                     << error.value().get_cryptohome_code();
+    std::move(error_callback).Run(std::move(context), error.value());
+    return;
+  }
+  LOGIN_LOG(EVENT) << "Regular User Unlock " << user_exists;
+
+  if (!user_exists &&
+      !is_ephemeral_mount_enforced_) {  // Scenario where user does not exist
+                                        // and ephemeral mount is not enforced.
+    LOGIN_LOG(ERROR)
+        << "User directory does not exist for supposedly existing user";
+    std::move(error_callback)
+        .Run(std::move(context),
+             AuthenticationError{
+                 user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND});
+    return;
+  }
+  DCHECK(user_exists && !is_ephemeral_mount_enforced_);
+
+  bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
+
+  AuthSuccessCallback success_callback = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+
+  std::vector<AuthOperation> steps;
+  if (challenge_response_auth) {
+    steps.push_back(
+        base::BindOnce(&AuthPerformer::AuthenticateUsingChallengeResponseKey,
+                       auth_performer_->AsWeakPtr()));
+  } else {
+    steps.push_back(
+        base::BindOnce(&AuthPerformer::AuthenticateUsingKnowledgeKey,
+                       auth_performer_->AsWeakPtr()));
   }
   RunOperationChain(std::move(context), std::move(steps),
                     std::move(success_callback), std::move(error_callback));

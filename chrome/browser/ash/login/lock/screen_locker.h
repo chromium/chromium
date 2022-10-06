@@ -261,6 +261,10 @@ class ScreenLocker
 
   void OnPinAttemptDone(const UserContext& user_context, bool success);
 
+  // Called to select the appropriate Authenticator and perform unlock
+  // operation.
+  void AttemptUnlock(const UserContext& user_context);
+
   // Called to continue authentication against cryptohome after the pin login
   // check has completed.
   void ContinueAuthenticate(const UserContext& user_context);

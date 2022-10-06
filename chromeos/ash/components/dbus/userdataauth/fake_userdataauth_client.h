@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
@@ -118,6 +119,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // Represents the ongoing AuthSessions.
   struct AuthSessionData {
+    explicit AuthSessionData();
+    AuthSessionData(const AuthSessionData& other);
+    AuthSessionData& operator=(const AuthSessionData&);
+    ~AuthSessionData();
     // AuthSession id.
     std::string id;
     // Whether the `AUTH_SESSION_FLAGS_EPHEMERAL_USER` flag was passed on
@@ -127,6 +132,16 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     cryptohome::AccountIdentifier account;
     // True if session is authenticated.
     bool authenticated = false;
+    // The requested AuthIntent.
+    user_data_auth::AuthIntent requested_auth_session_intent =
+        user_data_auth::AUTH_INTENT_DECRYPT;
+
+    using AuthProtoIntents =
+        base::EnumSet<user_data_auth::AuthIntent,
+                      user_data_auth::AuthIntent::AUTH_INTENT_UNSPECIFIED,
+                      user_data_auth::AuthIntent::AUTH_INTENT_WEBAUTHN>;
+    // List of Authorized AuthIntents.
+    AuthProtoIntents authorized_auth_session_intent;
   };
 
   FakeUserDataAuthClient();

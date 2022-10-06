@@ -332,6 +332,15 @@ class ReplyOnReturn {
 
 }  // namespace
 
+// =============== `AuthSessionData` =====================
+FakeUserDataAuthClient::AuthSessionData::AuthSessionData() = default;
+FakeUserDataAuthClient::AuthSessionData::AuthSessionData(
+    const AuthSessionData& other) = default;
+FakeUserDataAuthClient::AuthSessionData&
+FakeUserDataAuthClient::AuthSessionData::operator=(const AuthSessionData&) =
+    default;
+FakeUserDataAuthClient::AuthSessionData::~AuthSessionData() = default;
+
 // static
 FakeUserDataAuthClient::TestApi* FakeUserDataAuthClient::TestApi::Get() {
   // TestApi assumes that the FakeUserDataAuthClient singleton is initialized.
@@ -914,6 +923,7 @@ void FakeUserDataAuthClient::StartAuthSession(
       (request.flags() & ::user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER) !=
       0;
   session.account = request.account_id();
+  session.requested_auth_session_intent = request.intent();
 
   if (cryptohome_error_ !=
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
@@ -1399,7 +1409,12 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   }
 
   session.authenticated = true;
-  reply.set_authenticated(true);
+  session.authorized_auth_session_intent.Put(
+      session.requested_auth_session_intent);
+  if (session.requested_auth_session_intent ==
+      user_data_auth::AUTH_INTENT_DECRYPT)
+    reply.set_authenticated(true);
+  reply.add_authorized_for(session.requested_auth_session_intent);
   reply.set_seconds_left(kSessionTimeoutSeconds);
 }
 

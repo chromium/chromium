@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -334,6 +335,10 @@ const AuthFactorsConfiguration& UserContext::GetAuthFactorsConfiguration() {
 
 const std::string& UserContext::GetAuthSessionId() const {
   return authsession_id_;
+}
+
+void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {
+  authorized_for_.Put(auth_intent);
 }
 
 void UserContext::ClearSecrets() {

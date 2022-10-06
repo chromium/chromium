@@ -42,6 +42,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) Authenticator
   virtual void AuthenticateToLogin(
       std::unique_ptr<UserContext> user_context) = 0;
 
+  // Given a user credentials in |user_context|,
+  // this method attempts to authenticate to unlock.
+  // Must be called on the UI thread.
+  virtual void AuthenticateToUnlock(
+      std::unique_ptr<UserContext> user_context) = 0;
+
   // Initiates incognito ("browse without signing in") login.
   virtual void LoginOffTheRecord() = 0;
 

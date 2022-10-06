@@ -41,13 +41,27 @@ bool IsKioskUserType(user_manager::UserType type) {
          type == user_manager::USER_TYPE_WEB_KIOSK_APP;
 }
 
-user_data_auth::AuthIntent AuthIntentToProto(AuthSessionIntent intent) {
+user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
   switch (intent) {
     case AuthSessionIntent::kDecrypt:
       return user_data_auth::AUTH_INTENT_DECRYPT;
     case AuthSessionIntent::kVerifyOnly:
       return user_data_auth::AUTH_INTENT_VERIFY_ONLY;
   }
+}
+
+absl::optional<AuthSessionIntent> DeserializeIntent(
+    user_data_auth::AuthIntent intent) {
+  switch (intent) {
+    case user_data_auth::AUTH_INTENT_DECRYPT:
+      return AuthSessionIntent::kDecrypt;
+    case user_data_auth::AUTH_INTENT_VERIFY_ONLY:
+      return AuthSessionIntent::kVerifyOnly;
+    default:
+      NOTIMPLEMENTED() << "Other intents not implemented yet, intent: "
+                       << intent;
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -89,7 +103,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
   user_data_auth::StartAuthSessionRequest request;
   *request.mutable_account_id() =
       cryptohome::CreateAccountIdentifierFromAccountId(context->GetAccountId());
-  request.set_intent(AuthIntentToProto(intent));
+  request.set_intent(SerializeIntent(intent));
 
   if (ephemeral) {
     request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER);
@@ -538,7 +552,14 @@ void AuthPerformer::OnAuthenticateAuthFactor(
     return;
   }
   CHECK(reply.has_value());
-  DCHECK(reply->authenticated());
+  DCHECK(reply->authorized_for_size() > 0);
+  for (auto& authorized_for : reply->authorized_for()) {
+    auto intent = DeserializeIntent(
+        static_cast<user_data_auth::AuthIntent>(authorized_for));
+    if (intent.has_value()) {
+      context->AddAuthorizedIntent(intent.value());
+    }
+  }
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback).Run(std::move(context), absl::nullopt);
 }

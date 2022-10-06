@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_INTENT_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_INTENT_H_
 
+#include "base/containers/enum_set.h"
+
 namespace ash {
 
 // This enum represents the intent of the authentication, i.e., the set of
@@ -26,6 +28,9 @@ enum class AuthSessionIntent {
   kVerifyOnly,
 };
 
+using AuthSessionIntents = base::EnumSet<AuthSessionIntent,
+                                         AuthSessionIntent::kDecrypt,
+                                         AuthSessionIntent::kVerifyOnly>;
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC_AUTH_SESSION_INTENT_H_

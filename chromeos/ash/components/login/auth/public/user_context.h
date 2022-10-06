@@ -8,7 +8,10 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
+
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
@@ -173,6 +176,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   void ResetAuthSessionId();
   const std::string& GetAuthSessionId() const;
 
+  void AddAuthorizedIntent(AuthSessionIntent auth_intent);
+
   void ClearSecrets();
 
  private:
@@ -204,6 +209,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   // i.e. user used some input method to log in.
   std::string login_input_method_id_used_;
   std::string authsession_id_;
+  AuthSessionIntents authorized_for_;
 
   // For password reuse detection use.
   absl::optional<password_manager::PasswordHashData> sync_password_data_;

@@ -174,6 +174,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void MigrateKey(const UserContext& user_context,
                   const std::string& old_password);
 
+  void AuthenticateToUnlock(std::unique_ptr<UserContext> user_context) override;
+
  protected:
   ~CryptohomeAuthenticator() override;
 

@@ -79,6 +79,11 @@ void StubAuthenticator::AuthenticateToLogin(
                                 AuthFailure::FromNetworkAuthFailure(error)));
 }
 
+void StubAuthenticator::AuthenticateToUnlock(
+    std::unique_ptr<UserContext> user_context) {
+  NOTREACHED() << "Only available in AuthSessionAuthenticator.";
+}
+
 void StubAuthenticator::LoginOffTheRecord() {
   consumer_->OnOffTheRecordAuthSuccess();
 }

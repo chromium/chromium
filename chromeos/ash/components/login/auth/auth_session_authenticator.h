@@ -82,6 +82,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void CompleteLogin(std::unique_ptr<UserContext> user_context) override;
 
   void AuthenticateToLogin(std::unique_ptr<UserContext> user_context) override;
+  void AuthenticateToUnlock(std::unique_ptr<UserContext> user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
   void LoginAsKioskAccount(const AccountId& app_account_id) override;
@@ -118,6 +119,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void DoCompleteLogin(bool user_exists,
                        std::unique_ptr<UserContext> context,
                        absl::optional<AuthenticationError> error);
+  void DoUnlock(bool user_exists,
+                std::unique_ptr<UserContext> context,
+                absl::optional<AuthenticationError> error);
 
   // Common part of login logic shared by user creation flow and flow when
   // user have changed password elsewhere and decides to re-create cryptohome.

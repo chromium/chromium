@@ -43,6 +43,7 @@ using testing::AllOf;
 using testing::AtMost;
 using user_data_auth::AddCredentialsReply;
 using user_data_auth::AUTH_INTENT_DECRYPT;
+using user_data_auth::AUTH_INTENT_VERIFY_ONLY;
 using user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER;
 using user_data_auth::AUTH_SESSION_FLAGS_NONE;
 using user_data_auth::AuthenticateAuthSessionReply;
@@ -622,6 +623,67 @@ TEST_F(AuthSessionAuthenticatorTest, LoginAsKioskAccountEphemeralStaleData) {
   // Assert.
   EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
   EXPECT_EQ(got_user_context.GetAuthSessionId(), kSecondAuthSessionId);
+}
+
+// Test the `AuthenticateToUnlock()` method in the successful scenario.
+TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlock) {
+  // Arrange.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  auto user_context = std::make_unique<UserContext>(
+      user_manager::USER_TYPE_REGULAR, kAccountId);
+  user_context->SetKey(Key(kPassword));
+  EXPECT_CALL(userdataauth(),
+              StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
+                                                     AUTH_INTENT_VERIFY_ONLY),
+                               _))
+      .WillOnce(ReplyWith(
+          BuildStartReply(kFirstAuthSessionId,
+                          /*user_exists=*/true,
+                          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}})));
+  EXPECT_CALL(
+      userdataauth(),
+      AuthenticateAuthSession(AllOf(WithFirstAuthSessionId(),
+                                    WithPasswordKey(kCryptohomeGaiaKeyLabel)),
+                              _))
+      .WillOnce(ReplyWith(BuildAuthenticateSuccessReply()));
+
+  // Act.
+  authenticator().AuthenticateToUnlock(std::move(user_context));
+  const UserContext got_user_context = on_auth_success_future().Get();
+
+  // Assert.
+  EXPECT_EQ(got_user_context.GetAccountId(), kAccountId);
+  EXPECT_EQ(got_user_context.GetAuthSessionId(), kFirstAuthSessionId);
+}
+
+// Test the `AuthenticateToUnlock()` method in the authentication failure
+// scenario.
+TEST_F(AuthSessionAuthenticatorTest, AuthenticateToUnlockinAuthFailure) {
+  // Arrange.
+  CreateAuthenticator(/*is_ephemeral_mount_enforced=*/false);
+  auto user_context = std::make_unique<UserContext>(
+      user_manager::USER_TYPE_REGULAR, kAccountId);
+  user_context->SetKey(Key(kPassword));
+  EXPECT_CALL(userdataauth(),
+              StartAuthSession(WithAccountIdAndFlags(AUTH_SESSION_FLAGS_NONE,
+                                                     AUTH_INTENT_VERIFY_ONLY),
+                               _))
+      .WillOnce(ReplyWith(
+          BuildStartReply(kFirstAuthSessionId, /*user_exists=*/true,
+                          /*keys=*/{{kCryptohomeGaiaKeyLabel, KeyData()}})));
+  EXPECT_CALL(
+      userdataauth(),
+      AuthenticateAuthSession(AllOf(WithFirstAuthSessionId(),
+                                    WithPasswordKey(kCryptohomeGaiaKeyLabel)),
+                              _))
+      .WillOnce(ReplyWith(BuildAuthenticateFailureReply()));
+
+  // Act.
+  authenticator().AuthenticateToUnlock(std::move(user_context));
+  const AuthFailure auth_failure = on_auth_failure_future().Get();
+
+  // Assert.
+  EXPECT_EQ(auth_failure.reason(), AuthFailure::UNLOCK_FAILED);
 }
 
 }  // namespace ash

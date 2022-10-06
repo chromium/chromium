@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
@@ -512,13 +513,20 @@ void ScreenLocker::ContinueAuthenticate(const UserContext& user_context) {
         user_context.GetAccountId().GetObjGuid(),
         user_context.GetKey()->GetSecret());
   }
-
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ExtendedAuthenticator::AuthenticateToCheck,
-                     extended_authenticator_.get(), user_context,
-                     base::BindOnce(&ScreenLocker::OnPasswordAuthSuccess,
-                                    weak_factory_.GetWeakPtr(), user_context)));
+      FROM_HERE, base::BindOnce(&ScreenLocker::AttemptUnlock,
+                                weak_factory_.GetWeakPtr(), user_context));
+}
+
+void ScreenLocker::AttemptUnlock(const UserContext& user_context) {
+  if (features::IsUseAuthFactorsEnabled()) {
+    authenticator_->AuthenticateToUnlock(
+        std::make_unique<UserContext>(user_context));
+  } else {
+    extended_authenticator_->AuthenticateToCheck(
+        user_context, base::BindOnce(&ScreenLocker::OnPasswordAuthSuccess,
+                                     weak_factory_.GetWeakPtr(), user_context));
+  }
 }
 
 const user_manager::User* ScreenLocker::FindUnlockUser(

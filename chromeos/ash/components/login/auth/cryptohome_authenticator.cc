@@ -500,6 +500,11 @@ void CryptohomeAuthenticator::AuthenticateToLogin(
              false /* ephemeral */, false /* create_if_nonexistent */);
 }
 
+void CryptohomeAuthenticator::AuthenticateToUnlock(
+    std::unique_ptr<UserContext> user_context) {
+  NOTREACHED() << "Only available in AuthSessionAuthenticator.";
+}
+
 void CryptohomeAuthenticator::CompleteLogin(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(user_context);
