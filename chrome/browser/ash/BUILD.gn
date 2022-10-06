@@ -2120,6 +2120,8 @@ source_set("ash") {
     "policy/dlp/dlp_content_manager_ash.h",
     "policy/dlp/dlp_files_controller.cc",
     "policy/dlp/dlp_files_controller.h",
+    "policy/dlp/dlp_files_event_storage.cc",
+    "policy/dlp/dlp_files_event_storage.h",
     "policy/dlp/dlp_window_observer.cc",
     "policy/dlp/dlp_window_observer.h",
     "policy/enrollment/account_status_check_fetcher.cc",

@@ -1670,6 +1670,7 @@ source_set("unit_tests") {
     "../ash/policy/core/user_cloud_policy_token_forwarder_unittest.cc",
     "../ash/policy/dlp/dlp_content_manager_ash_unittest.cc",
     "../ash/policy/dlp/dlp_files_controller_unittest.cc",
+    "../ash/policy/dlp/dlp_files_event_storage_unittest.cc",
     "../ash/policy/enrollment/account_status_check_fetcher_unittest.cc",
     "../ash/policy/enrollment/auto_enrollment_client_impl_unittest.cc",
     "../ash/policy/enrollment/auto_enrollment_type_checker_unittest.cc",

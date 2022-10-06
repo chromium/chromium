@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
 
+#include <sys/types.h>
+#include <cstddef>
+#include <functional>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -29,6 +32,7 @@ class Widget;
 namespace policy {
 
 class DlpWarnNotifier;
+class DlpFilesEventStorage;
 
 // DlpFilesController is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
@@ -90,7 +94,7 @@ class DlpFilesController {
   // daemon.
   struct FileDaemonInfo {
     FileDaemonInfo() = delete;
-    FileDaemonInfo(ino_t inode,
+    FileDaemonInfo(ino64_t inode,
                    const base::FilePath& path,
                    const std::string& source_url);
 
@@ -103,7 +107,7 @@ class DlpFilesController {
     }
 
     // File inode.
-    ino_t inode;
+    ino64_t inode;
     // File path.
     base::FilePath path;
     // Source URL from which the file was downloaded.
@@ -113,6 +117,7 @@ class DlpFilesController {
   // DlpFileDestination represents the destination for file transfer. It either
   // has a url or a component.
   struct DlpFileDestination {
+    DlpFileDestination();
     explicit DlpFileDestination(const std::string& url);
     explicit DlpFileDestination(const dlp::DlpComponent component);
     explicit DlpFileDestination(const DlpRulesManager::Component component);
@@ -121,6 +126,13 @@ class DlpFilesController {
     DlpFileDestination& operator=(const DlpFileDestination&);
     DlpFileDestination(DlpFileDestination&&);
     DlpFileDestination& operator=(DlpFileDestination&&);
+
+    bool operator==(const DlpFileDestination&) const;
+    bool operator!=(const DlpFileDestination&) const;
+    bool operator<(const DlpFileDestination& other) const;
+    bool operator<=(const DlpFileDestination& other) const;
+    bool operator>(const DlpFileDestination& other) const;
+    bool operator>=(const DlpFileDestination& other) const;
 
     ~DlpFileDestination();
 
@@ -200,6 +212,8 @@ class DlpFilesController {
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
 
+  DlpFilesEventStorage* GetEventStorageForTesting();
+
  private:
   // Called back from warning dialog. Passes blocked files sources along
   // to |callback|. In case |should_proceed| is true, passes only
@@ -223,13 +237,17 @@ class DlpFilesController {
       FilterDisallowedUploadsCallback result_callback,
       dlp::CheckFilesTransferResponse response);
 
-  void ReturnDlpMetadata(std::vector<absl::optional<ino_t>> inodes,
+  void ReturnDlpMetadata(std::vector<absl::optional<ino64_t>> inodes,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
 
   // Reports an event if a `DlpReportingManager` instance exists.
-  void MaybeReportEvent(const std::string& src,
-                        const absl::optional<DlpFileDestination>& dst,
+  void MaybeReportEvent(const FileDaemonInfo& file,
+                        const DlpFileDestination& dst,
+                        const absl::optional<std::string>& dst_pattern,
+                        DlpRulesManager::Level level);
+  void MaybeReportEvent(const FileDaemonInfo& file,
+                        const DlpFileDestination& dst,
                         DlpRulesManager::Level level);
   void MaybeReportWarnProceededEvent(const std::string& src,
                                      const DlpFileDestination& dst);
@@ -244,6 +262,9 @@ class DlpFilesController {
   // Pointer to the associated DlpWarnDialog widget.
   // Not null only while the dialog is opened.
   base::WeakPtr<views::Widget> warn_dialog_widget_ = nullptr;
+
+  // Keeps track of events and detects duplicate ones using time based approach.
+  std::unique_ptr<DlpFilesEventStorage> event_storage_;
 
   base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
 };

@@ -889,6 +889,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.Dlp.ActiveFileEventsCount" units="entries"
+    expires_after="2023-03-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Number of non-expired file events stored in the
+    DlpFilesController::EventStorage. It is recorded each time an entry is added
+    or updated.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
     expires_after="2022-12-01">
   <owner>poromov@chromium.org</owner>

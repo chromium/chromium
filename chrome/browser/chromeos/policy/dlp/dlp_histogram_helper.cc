@@ -19,9 +19,7 @@ void DlpBooleanHistogram(const std::string& suffix, bool value) {
   base::UmaHistogramBoolean(GetDlpHistogramPrefix() + suffix, value);
 }
 
-void DlpConfidentialContentsCountHistogram(const std::string& suffix,
-                                           int sample,
-                                           int max) {
+void DlpCountHistogram(const std::string& suffix, int sample, int max) {
   base::UmaHistogramExactLinear(GetDlpHistogramPrefix() + suffix, sample,
                                 max + 1);
 }

@@ -185,8 +185,8 @@ void DlpConfidentialContentsCache::Cache(
   if (entries_.size() > cache_size_limit_) {
     entries_.pop_back();
   }
-  DlpConfidentialContentsCountHistogram(dlp::kConfidentialContentsCount,
-                                        entries_.size(), cache_size_limit_);
+  DlpCountHistogram(dlp::kConfidentialContentsCount, entries_.size(),
+                    cache_size_limit_);
 }
 
 bool DlpConfidentialContentsCache::Contains(
