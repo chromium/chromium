@@ -43,6 +43,7 @@ using testing::StrictMock;
 namespace {
 
 constexpr char16_t kTitle[] = u"A title";
+constexpr char16_t kAccessibilityTitle[] = u"An accessibility title";
 constexpr char16_t kDescription[] = u"And a description";
 constexpr char16_t kPromptText1[] = u"Choice 1";
 constexpr char16_t kPromptText2[] = u"Choice 2";
@@ -386,6 +387,22 @@ TEST_F(PasswordChangeRunViewTest, SetTitle) {
   EXPECT_EQ(static_cast<views::Label*>(title_container->children().front())
                 ->GetText(),
             kTitle);
+}
+
+TEST_F(PasswordChangeRunViewTest, SetTitleWithAccessibility) {
+  views::Label* title;
+  // When not present, accessible name is the same as the title.
+  view()->SetTitle(kTitle);
+  title = static_cast<views::Label*>(GetTitleContainer()->children().front());
+  EXPECT_EQ(title->GetText(), kTitle);
+  EXPECT_EQ(title->GetAccessibleName(), kTitle);
+
+  // Otherwise use accessible name.
+  // When not present, accessible name is the same as the title.
+  view()->SetTitle(kTitle, kAccessibilityTitle);
+  title = static_cast<views::Label*>(GetTitleContainer()->children().front());
+  EXPECT_EQ(title->GetText(), kTitle);
+  EXPECT_EQ(title->GetAccessibleName(), kAccessibilityTitle);
 }
 
 TEST_F(PasswordChangeRunViewTest, SetDescription) {

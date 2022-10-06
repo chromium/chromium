@@ -217,7 +217,8 @@ void PasswordChangeRunView::SetTitle(
           .Build());
 
   if (!title.empty()) {
-    title_ptr->SetAccessibleName(title);
+    title_ptr->SetAccessibleName(
+        !accessibility_title.empty() ? accessibility_title : title);
     title_ptr->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
     if (last_title_accessibility_name_announced_ != title) {
       last_title_accessibility_name_announced_ = title;
