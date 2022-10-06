@@ -241,6 +241,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeForceTabletFirstRun[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOobeLargeScreenSpecialScaling[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeScreenshotDirectory[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kOobeShowAccessibilityButtonOnMarketingOptInForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipPostLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeSkipToLogin[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kOobeTimerInterval[];
@@ -324,6 +326,10 @@ bool ShouldTetherHostScansIgnoreWiredConnections();
 
 // Returns true if we should skip all other OOBE pages after user login.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldSkipOobePostLogin();
+
+// Returns true if we should show a11y button on the marketing opt in screen.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting();
 
 // Returns true if the device is of tablet form factor.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabletFormFactor();

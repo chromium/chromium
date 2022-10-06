@@ -747,6 +747,11 @@ const char kOobeLargeScreenSpecialScaling[] =
 // Specifies directory for screenshots taken with OOBE UI Debugger.
 const char kOobeScreenshotDirectory[] = "oobe-screenshot-dir";
 
+// Shows a11y button on the marketing opt in without visiting gesture navigation
+// screen.
+const char kOobeShowAccessibilityButtonOnMarketingOptInForTesting[] =
+    "oobe-show-accessibility-button-on-marketing-opt-in-for-testing";
+
 // Skips all other OOBE pages after user login.
 const char kOobeSkipPostLogin[] = "oobe-skip-postlogin";
 
@@ -943,6 +948,11 @@ bool ShouldTetherHostScansIgnoreWiredConnections() {
 
 bool ShouldSkipOobePostLogin() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kOobeSkipPostLogin);
+}
+
+bool ShouldShowAccessibilityButtonOnMarketingOptInForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kOobeShowAccessibilityButtonOnMarketingOptInForTesting);
 }
 
 bool IsTabletFormFactor() {

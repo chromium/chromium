@@ -118,6 +118,9 @@ class WizardContext {
   // current user is an owner of the device we reuse this value. It is set
   // during ConsolidatedConsentScreen.
   absl::optional<bool> is_owner_flow;
+
+  // True when gesture navigation screen was shown during the OOBE.
+  bool is_gesture_navigation_screen_was_shown = false;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

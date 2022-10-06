@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -147,10 +148,8 @@ void MarketingOptInScreen::ShowImpl() {
   // screen was shown.
   if (view_) {
     view_->UpdateA11ySettingsButtonVisibility(
-        static_cast<GestureNavigationScreen*>(
-            WizardController::default_controller()->screen_manager()->GetScreen(
-                GestureNavigationScreenView::kScreenId))
-            ->was_shown());
+        context()->is_gesture_navigation_screen_was_shown ||
+        switches::ShouldShowAccessibilityButtonOnMarketingOptInForTesting());
 
     view_->UpdateA11yShelfNavigationButtonToggle(prefs->GetBoolean(
         prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));

@@ -86,6 +86,7 @@ void GestureNavigationScreen::ShowImpl() {
   // metrics.
   current_page_ = kGestureIntroPage;
   start_time_ = base::TimeTicks::Now();
+  context()->is_gesture_navigation_screen_was_shown = true;
   if (view_) {
     view_->Show();
   }
@@ -102,7 +103,6 @@ void GestureNavigationScreen::OnUserAction(const base::Value::List& args) {
         prefs::kGestureEducationNotificationShown, true);
 
     RecordPageShownTimeMetrics();
-    was_shown_ = true;
     exit_callback_.Run(Result::NEXT);
     return;
   }

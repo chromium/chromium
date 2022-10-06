@@ -319,10 +319,82 @@ class AssistantScreenTester extends ScreenElementApi {
 class MarketingOptInScreenTester extends ScreenElementApi {
   constructor() {
     super('marketing-opt-in');
+    this.accessibilityButton =
+        new PolymerElementApi(this, '#marketing-opt-in-accessibility-button');
+    this.accessibilityStep =
+        new PolymerElementApi(this, '#finalAccessibilityPage');
+    this.accessibilityToggle =
+        new PolymerElementApi(this, '#a11yNavButtonToggle');
+    this.marketingOptInGameDeviceTitle =
+        new PolymerElementApi(this, '#marketingOptInGameDeviceTitle');
   }
   /** @override */
   shouldSkip() {
     return !loadTimeData.getBoolean('testapi_isBrandedBuild');
+  }
+
+  /**
+   * Returns whether accessibility step is shown.
+   * @returns {boolean}
+   */
+  isAccessibilityStepReadyForTesting() {
+    return this.accessibilityStep.isVisible();
+  }
+
+  /**
+   * Returns whether a11y button is visible on the marketing-opt-in screen.
+   * @returns {boolean}
+   */
+  isAccessibilityButtonVisible() {
+    return this.accessibilityButton.isVisible();
+  }
+
+  /**
+   * Returns whether a11y toggle is on.
+   * @returns {boolean}
+   */
+  isAccessibilityToggleOn() {
+    return this.accessibilityToggle.element().checked;
+  }
+
+  /**
+   * Returns whether gaming-specific title is visible.
+   * @returns {boolean}
+   */
+  isMarketingOptInGameDeviceTitleVisible() {
+    return this.marketingOptInGameDeviceTitle.isVisible();
+  }
+
+  /**
+   * Returns a11y button name.
+   * @returns {string}
+   */
+  getAccessibilityButtonName() {
+    return loadTimeData.getString('marketingOptInA11yButtonLabel');
+  }
+
+  /**
+   * Returns name of Done button on a11y page.
+   * @returns {string}
+   */
+  getAccessibilityDoneButtonName() {
+    return loadTimeData.getString('finalA11yPageDoneButtonTitle');
+  }
+
+  /**
+   * Returns name of Get Started button.
+   * @returns {string}
+   */
+  getGetStartedButtonName() {
+    return loadTimeData.getString('marketingOptInScreenAllSet');
+  }
+
+  /**
+   * Returns gaming-specific title.
+   * @returns {string}
+   */
+  getCloudGamingDeviceTitle() {
+    return loadTimeData.getString('marketingOptInScreenGameDeviceTitle');
   }
 }
 
