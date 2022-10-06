@@ -26,4 +26,8 @@ void PermissionRequestObserver::OnRequestsFinalized() {
   loop_.Quit();
 }
 
+void PermissionRequestObserver::OnPermissionRequestManagerDestructed() {
+  observation_.Reset();
+}
+
 }  // namespace permissions

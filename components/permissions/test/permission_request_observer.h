@@ -29,6 +29,7 @@ class PermissionRequestObserver : public PermissionRequestManager::Observer {
   // PermissionRequestManager::Observer:
   void OnBubbleAdded() override;
   void OnRequestsFinalized() override;
+  void OnPermissionRequestManagerDestructed() override;
 
  private:
   base::ScopedObservation<PermissionRequestManager,
