@@ -133,7 +133,14 @@ void InvokeAndErasePendingContainerCallbacks(
   for (auto it = range.first; it != range.second; ++it) {
     VLOG(1) << "Invoking pending container callback for "
             << it->first.container_name;
-    std::move(it->second).Run(result);
+    // We end up here when triggered by an observer method, which is
+    // synchronous. Post the callback instead of continuing to run it in the
+    // same task so other observers of e.g. ContainerStarted have a chance to
+    // run and update first, so callers get a consistent view across GuestOS
+    // services. See e.g. b/249219794 for an example of what can break without
+    // this.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(it->second), result));
   }
   container_callbacks->erase(range.first, range.second);
 }

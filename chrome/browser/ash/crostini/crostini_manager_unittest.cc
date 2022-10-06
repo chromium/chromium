@@ -1687,6 +1687,7 @@ TEST_F(CrostiniManagerRestartTest, VmStoppedDuringRestart) {
   vm_stopped_signal.set_owner_id(CryptohomeIdForProfile(profile()));
   vm_stopped_signal.set_name(kVmName);
   crostini_manager()->OnVmStopped(vm_stopped_signal);
+  run_loop()->RunUntilIdle();
   EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id_));
   EXPECT_EQ(1, restart_crostini_callback_count_);
 }
