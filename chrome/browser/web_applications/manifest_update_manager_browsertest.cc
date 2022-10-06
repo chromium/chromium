@@ -621,8 +621,8 @@ class ManifestUpdateManagerBrowserTest_UpdateDialog
       public testing::WithParamInterface<UpdateDialogParam> {
  public:
   ManifestUpdateManagerBrowserTest_UpdateDialog() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsUpdateDialogEnabled()) {
       enabled_features.push_back(features::kPwaUpdateDialogForName);
       enabled_features.push_back(features::kPwaUpdateDialogForIcon);
@@ -4364,8 +4364,8 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
           std::tuple<AppIdTestParam, AppIdTestParam, AppIdTestParam>> {
  public:
   ManifestUpdateManagerBrowserTest_AppIdentityParameterized() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsAppIdentityUpdateDialogForIconEnabled()) {
       enabled_features.push_back(features::kPwaUpdateDialogForIcon);
     } else {

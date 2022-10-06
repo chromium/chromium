@@ -438,8 +438,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
  protected:
   void BuildAndInitFeatureList() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     enabled_features.push_back(
         features::kDesktopPWAsEnforceWebAppSettingsPolicy);
     // Add external pref migration enable flags.
