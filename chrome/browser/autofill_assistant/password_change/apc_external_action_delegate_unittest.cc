@@ -34,8 +34,9 @@ using ::testing::ReturnRef;
 using ::testing::SaveArg;
 using DomUpdateCallback =
     autofill_assistant::ExternalActionDelegate::DomUpdateCallback;
-using ProgressStep = autofill_assistant::password_change::ProgressStep;
-using TopIcon = autofill_assistant::password_change::TopIcon;
+using autofill_assistant::password_change::FlowType;
+using autofill_assistant::password_change::ProgressStep;
+using autofill_assistant::password_change::TopIcon;
 
 namespace {
 
@@ -142,6 +143,18 @@ autofill_assistant::external::Action CreateAction(
   autofill_assistant::external::Action action;
   autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
   *spec.mutable_update_side_panel() = proto;
+  *action.mutable_info()->mutable_generic_password_change_specification() =
+      spec;
+
+  return action;
+}
+
+autofill_assistant::external::Action CreateAction(
+    const autofill_assistant::password_change::SetFlowTypeSpecification&
+        proto) {
+  autofill_assistant::external::Action action;
+  autofill_assistant::password_change::GenericPasswordChangeSpecification spec;
+  *spec.mutable_set_flow_type() = proto;
   *action.mutable_info()->mutable_generic_password_change_specification() =
       spec;
 
@@ -257,7 +270,8 @@ TEST_F(ApcExternalActionDelegateTest, ShowStartingScreen) {
 TEST_F(ApcExternalActionDelegateTest, ShowCompletionScreen) {
   base::RepeatingClosure show_completion_screen_callback;
   EXPECT_CALL(*display(),
-              ShowCompletionScreen(show_completion_screen_callback));
+              ShowCompletionScreen(FlowType::FLOW_TYPE_UNSPECIFIED,
+                                   show_completion_screen_callback));
 
   action_delegate()->ShowCompletionScreen(show_completion_screen_callback);
 }
@@ -649,6 +663,36 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveUpdateSidePanelAction) {
       result_callback.Get());
 
   EXPECT_TRUE(result.success());
+}
+
+TEST_F(ApcExternalActionDelegateTest, ReceiveSetFlowTypeAction) {
+  base::MockOnceCallback<void(
+      const autofill_assistant::external::Result& result)>
+      result_callback;
+  base::MockOnceCallback<void(DomUpdateCallback)> start_dom_checks_callback;
+
+  autofill_assistant::password_change::SetFlowTypeSpecification spec;
+  spec.set_flow_type(FlowType::FLOW_TYPE_PASSWORD_RESET);
+
+  autofill_assistant::external::Result result;
+  EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));
+
+  // DOM checks will never be started.
+  EXPECT_CALL(start_dom_checks_callback, Run).Times(0);
+
+  action_delegate()->OnActionRequested(CreateAction(spec),
+                                       /*is_interrupt=*/false,
+                                       start_dom_checks_callback.Get(),
+                                       result_callback.Get());
+
+  // Check that the correct value was written into the model and is used when
+  // the completion scren is supposed to be shown.
+  base::RepeatingClosure show_completion_screen_callback;
+  EXPECT_CALL(*display(),
+              ShowCompletionScreen(FlowType::FLOW_TYPE_PASSWORD_RESET,
+                                   show_completion_screen_callback));
+
+  action_delegate()->ShowCompletionScreen(show_completion_screen_callback);
 }
 
 TEST_F(ApcExternalActionDelegateTest, PauseProgressBarAnimation) {

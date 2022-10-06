@@ -30,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using autofill_assistant::password_change::FlowType;
 using autofill_assistant::password_change::GenericPasswordChangeSpecification;
 
 ApcExternalActionDelegate::ApcExternalActionDelegate(
@@ -78,6 +79,9 @@ void ApcExternalActionDelegate::OnActionRequested(
         kUpdateSidePanel:
       HandleUpdateSidePanel(
           generic_password_change_specification.update_side_panel());
+      break;
+    case GenericPasswordChangeSpecification::SpecificationCase::kSetFlowType:
+      HandleSetFlowType(generic_password_change_specification.set_flow_type());
       break;
     case GenericPasswordChangeSpecification::SpecificationCase::
         SPECIFICATION_NOT_SET:
@@ -268,9 +272,9 @@ void ApcExternalActionDelegate::ShowStartingScreen(const GURL& url) {
 }
 
 void ApcExternalActionDelegate::ShowCompletionScreen(
-    base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) {
+    base::RepeatingClosure done_button_callback) {
   password_change_run_display_->ShowCompletionScreen(
-      std::move(onShowCompletionScreenDoneButtonClicked));
+      model_.flow_type, std::move(done_button_callback));
 }
 
 void ApcExternalActionDelegate::OpenPasswordManager() {
@@ -347,6 +351,13 @@ void ApcExternalActionDelegate::HandleUpdateSidePanel(
     SetTitle(base::UTF8ToUTF16(specification.title()));
   }
   EndAction(true);
+}
+
+void ApcExternalActionDelegate::HandleSetFlowType(
+    const autofill_assistant::password_change::SetFlowTypeSpecification&
+        specification) {
+  model_.flow_type = specification.flow_type();
+  EndAction(/*success=*/true);
 }
 
 void ApcExternalActionDelegate::OnBasePromptDomUpdateReceived(

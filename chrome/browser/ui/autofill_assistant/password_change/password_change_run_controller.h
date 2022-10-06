@@ -37,6 +37,10 @@ class PasswordChangeRunController {
     autofill_assistant::password_change::ProgressStep progress_step;
     // Whether the icon animation on the progress bar is paused.
     bool progress_bar_animation_is_paused = false;
+    // The flow type (i.e. password change vs. password reset). It is used to
+    // decide which completion screen to display at the end.
+    autofill_assistant::password_change::FlowType flow_type =
+        autofill_assistant::password_change::FlowType::FLOW_TYPE_UNSPECIFIED;
   };
 
   // Factory function to create the controller.
@@ -80,7 +84,7 @@ class PasswordChangeRunController {
   // from the script controller.
   virtual void ShowStartingScreen(const GURL& url) = 0;
 
-  // Shows the ending screen, displayed after script completion.
+  // Shows the ending screen that is displayed after script completion.
   virtual void ShowCompletionScreen(
       base::RepeatingClosure done_button_callback) = 0;
 
