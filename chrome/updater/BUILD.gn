@@ -549,7 +549,10 @@ if (is_win || is_mac || is_linux) {
 
         # Mac ASAN builds have an extra dylib that must be packaged in the CRX.
         if (is_asan) {
-          inputs += [ "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+          inputs += [
+            "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+            "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+          ]
         }
       }
 

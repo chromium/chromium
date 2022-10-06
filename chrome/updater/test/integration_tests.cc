@@ -738,8 +738,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 #if !defined(COMPONENT_BUILD)
 // Disabled on Windows due to undiagnosed typelib errors even after
 // instrumenting the build; see https://crbug.com/1341471.
-// Test is failing on Mac: https://crbug.com/1371069.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SelfUpdateFromOldReal DISABLED_SelfUpdateFromOldReal
 #else
 #define MAYBE_SelfUpdateFromOldReal SelfUpdateFromOldReal
