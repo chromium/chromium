@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
@@ -4607,13 +4608,14 @@ CSSValue* ConsumeFontStretch(CSSParserTokenRange& range,
 CSSValue* ConsumeFontWeight(CSSParserTokenRange& range,
                             const CSSParserContext& context) {
   const CSSParserToken& token = range.Peek();
-  if (token.Id() >= CSSValueID::kNormal && token.Id() <= CSSValueID::kLighter)
-    return ConsumeIdent(range);
-
-  if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-      token.Id() == CSSValueID::kAuto &&
-      context.Mode() == kCSSFontFaceRuleMode) {
-    return ConsumeIdent(range);
+  if (context.Mode() != kCSSFontFaceRuleMode) {
+    if (token.Id() >= CSSValueID::kNormal && token.Id() <= CSSValueID::kLighter)
+      return ConsumeIdent(range);
+  } else {
+    if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
+        (token.Id() == CSSValueID::kAuto || token.Id() == CSSValueID::kNormal ||
+         token.Id() == CSSValueID::kBold))
+      return ConsumeIdent(range);
   }
 
   // Avoid consuming the first zero of font: 0/0; e.g. in the Acid3 test.  In

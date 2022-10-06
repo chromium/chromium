@@ -756,13 +756,6 @@ FontSelectionCapabilities FontFace::GetFontSelectionCapabilities() const {
   if (weight_) {
     if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(weight_.Get())) {
       switch (identifier_value->GetValueID()) {
-        // Although 'lighter' and 'bolder' are valid keywords for
-        // font-weights, they are invalid inside font-face rules so they are
-        // ignored. Reference:
-        // http://www.w3.org/TR/css3-fonts/#descdef-font-weight.
-        case CSSValueID::kLighter:
-        case CSSValueID::kBolder:
-          break;
         case CSSValueID::kNormal:
           capabilities.weight = {NormalWeightValue(), NormalWeightValue(),
                                  FontSelectionRange::RangeType::kSetExplicitly};
