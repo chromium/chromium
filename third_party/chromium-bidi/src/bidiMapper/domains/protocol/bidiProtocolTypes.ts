@@ -179,8 +179,15 @@ export namespace CommonDataTypes {
     ])
   );
 
+  // Order is important, as `parse` is processed in the same order.
+  // `RemoteReferenceSchema` has higher priority.
+  const LocalOrRemoteValueSchema = zod.union([
+    RemoteReferenceSchema,
+    LocalValueSchema,
+  ]);
+
   // ListLocalValue = [*LocalValue];
-  const ListLocalValueSchema = zod.array(LocalValueSchema);
+  const ListLocalValueSchema = zod.array(LocalOrRemoteValueSchema);
   export type ListLocalValue = zod.infer<typeof ListLocalValueSchema>;
 
   // ArrayLocalValue = {
@@ -207,7 +214,10 @@ export namespace CommonDataTypes {
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
   const MappingLocalValueSchema: any = zod.lazy(() =>
-    zod.tuple([zod.union([zod.string(), LocalValueSchema]), LocalValueSchema])
+    zod.tuple([
+      zod.union([zod.string(), LocalOrRemoteValueSchema]),
+      LocalOrRemoteValueSchema,
+    ])
   );
   export type MappingLocalValue = zod.infer<typeof MappingLocalValueSchema>;
 
@@ -515,7 +525,9 @@ export namespace Script {
   //   RealmTarget //
   //   ContextTarget
   // );
-  const TargetSchema = zod.union([ContextTargetSchema, RealmTargetSchema]);
+  // Order is important, as `parse` is processed in the same order.
+  // `RealmTargetSchema` has higher priority.
+  const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
   export type Target = zod.infer<typeof TargetSchema>;
 
   const OwnershipModelSchema = zod.enum(['root', 'none']);
