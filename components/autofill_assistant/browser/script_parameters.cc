@@ -77,9 +77,6 @@ const char kEnableObserversParameter[] = "ENABLE_OBSERVER_WAIT_FOR_DOM";
 // Parameter to specify experiments.
 const char kExperimentsParameterName[] = "EXPERIMENT_IDS";
 
-// Parameter to disable CUP RPC signing. Intended for internal use only.
-const char kDisableRpcSigningParamaterName[] = "DISABLE_RPC_SIGNING";
-
 // Parameter to send the annotate DOM model version. Should only be used if we
 // expect the model to be used.
 const char kSendAnnotateDomModelVersion[] = "SEND_ANNOTATE_DOM_MODEL_VERSION";
@@ -272,7 +269,8 @@ std::vector<std::string> ScriptParameters::GetExperiments() const {
 }
 
 bool ScriptParameters::GetDisableRpcSigning() const {
-  return GetBoolParameter(parameters_, kDisableRpcSigningParamaterName);
+  return GetBoolParameter(
+      parameters_, public_script_parameters::kDisableRpcSigningParameterName);
 }
 
 bool ScriptParameters::GetSendAnnotateDomModelVersion() const {

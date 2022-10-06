@@ -43,6 +43,9 @@ constexpr char kCallerParameterName[] = "CALLER";
 // values are integers, corresponding to the source proto in the backend.
 constexpr char kSourceParameterName[] = "SOURCE";
 
+// The name of the parameter that allows turning off RPC signing.
+constexpr char kDisableRpcSigningParameterName[] = "DISABLE_RPC_SIGNING";
+
 // Name of the debug script bundle. It has the following format:
 // `{LDAP}/{BUNDLE_ID}/{INTENT_NAME}/{DOMAIN}`.
 constexpr char kDebugBundleIdParameterName[] = "DEBUG_BUNDLE_ID";

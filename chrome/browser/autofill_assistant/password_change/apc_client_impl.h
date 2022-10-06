@@ -103,6 +103,10 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
  private:
   friend class content::WebContentsUserData<ApcClientImpl>;
 
+  // Returns a map of script parameters that used to start an Autofill Assistant
+  // flow.
+  base::flat_map<std::string, std::string> GetScriptParameters() const;
+
   // Registers whether onboarding was successful or not (i.e. whether consent
   // has been given). Used in callbacks.
   void OnOnboardingComplete(bool success);
