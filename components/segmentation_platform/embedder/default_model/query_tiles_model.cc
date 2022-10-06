@@ -6,8 +6,11 @@
 
 #include <array>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/query_tiles/switches.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -24,6 +27,18 @@ constexpr int64_t kQueryTilesSignalStorageLength = 28;
 constexpr int64_t kQueryTilesMinSignalCollectionLength = 7;
 constexpr int64_t kMvThreshold = 1;
 
+// See
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java
+const char kNumDaysKeepShowingQueryTiles[] =
+    "num_days_keep_showing_query_tiles";
+const char kNumDaysMVCkicksBelowThreshold[] =
+    "num_days_mv_clicks_below_threshold";
+
+// DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES
+constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
+// DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD
+constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
+
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
@@ -31,7 +46,39 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kQueryTilesUMAFeatures = {
         "Search.QueryTiles.NTP.Tile.Clicked",
         7)};
 
+std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          query_tiles::features::kQueryTilesSegmentation,
+          kDefaultModelEnabledParam, false)) {
+    return nullptr;
+  }
+  return std::make_unique<QueryTilesModel>();
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<Config> QueryTilesModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          query_tiles::features::kQueryTilesSegmentation)) {
+    return nullptr;
+  }
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kQueryTilesSegmentationKey;
+  config->segmentation_uma_name = kQueryTilesUmaName;
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
+                       GetQueryTilesDefaultModel());
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      query_tiles::features::kQueryTilesSegmentation,
+      kNumDaysKeepShowingQueryTiles, kQueryTilesDefaultSelectionTTLDays);
+  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      query_tiles::features::kQueryTilesSegmentation,
+      kNumDaysMVCkicksBelowThreshold, kQueryTilesDefaultUnknownTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+  return config;
+}
 
 QueryTilesModel::QueryTilesModel() : ModelProvider(kQueryTilesSegmentId) {}
 

@@ -47,6 +47,8 @@ constexpr uint64_t kCrossDeviceUserBucketDuration = 1;
 constexpr int64_t kCrossDeviceUserSignalStorageLength = 28;
 constexpr int64_t kCrossDeviceUserMinSignalCollectionLength = 1;
 constexpr int64_t kCrossDeviceUserResultTTL = 1;
+constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
+constexpr int kCrossDeviceUserSegmentUnknownSelectionTTLDays = 7;
 
 // Discrete mapping parameters.
 constexpr char kCrossDeviceUserDiscreteMappingKey[] = "cross_device_user";
@@ -118,6 +120,20 @@ std::string CrossDeviceUserSubsegmentToString(
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<Config> CrossDeviceUserSegment::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kCrossDeviceUserKey;
+  config->segmentation_uma_name = kCrossDeviceUserUmaName;
+  config->AddSegmentId(SegmentId::CROSS_DEVICE_USER_SEGMENT,
+                       std::make_unique<CrossDeviceUserSegment>());
+  config->segment_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentSelectionTTLDays);
+  config->unknown_selection_ttl =
+      base::Days(kCrossDeviceUserSegmentUnknownSelectionTTLDays);
+  return config;
+}
 
 CrossDeviceUserSegment::CrossDeviceUserSegment()
     : ModelProvider(kCrossDeviceUserSegmentId) {}

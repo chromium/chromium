@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation intentional user model provider. Provides a default model and
 // metadata for the intentional user segment.
 // TODO(crbug/1357107): Add support for non-android platforms.
@@ -20,6 +22,8 @@ class IntentionalUserModel : public ModelProvider {
   // Disallow copy/assign.
   IntentionalUserModel(IntentionalUserModel&) = delete;
   IntentionalUserModel& operator=(IntentionalUserModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(

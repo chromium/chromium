@@ -6,8 +6,12 @@
 
 #include <array>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -32,7 +36,36 @@ constexpr std::array<MetadataWriter::UMAFeature, 3> kChromeStartUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction("MobileNTPMostVisited", 7),
 };
 
+std::unique_ptr<ModelProvider> GetChromeStartAndroidModelV2() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          chrome::android::kStartSurfaceReturnTime, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<ChromeStartModelV2>();
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<Config> ChromeStartModelV2::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kChromeStartAndroidV2SegmentationKey;
+  config->segmentation_uma_name = kChromeStartAndroidV2UmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2,
+      GetChromeStartAndroidModelV2());
+
+  constexpr int kChromeStartV2DefaultSelectionTTLDays = 30;
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceReturnTime,
+      kVariationsParamNameSegmentSelectionTTLDays,
+      kChromeStartV2DefaultSelectionTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = config->segment_selection_ttl;
+
+  return config;
+}
 
 ChromeStartModelV2::ChromeStartModelV2()
     : ModelProvider(kChromeStartSegmentId) {}

@@ -6,9 +6,12 @@
 
 #include <array>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -19,6 +22,8 @@ using proto::SegmentId;
 
 // Default parameters for the model.
 constexpr SegmentId kSegmentId = SegmentId::RESUME_HEAVY_USER_SEGMENT;
+constexpr int kResumeHeavyUserSegmentSelectionTTLDays = 14;
+constexpr int kResumeHeavyUserSegmentUnknownSelectionTTLDays = 14;
 
 // InputFeatures.
 constexpr std::array<MetadataWriter::UMAFeature, 5> kUMAFeatures = {
@@ -33,6 +38,29 @@ constexpr std::array<MetadataWriter::UMAFeature, 5> kUMAFeatures = {
 };
 
 }  // namespace
+
+// static
+std::unique_ptr<Config> ResumeHeavyUserModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(features::kResumeHeavyUserSegmentFeature)) {
+    return nullptr;
+  }
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kResumeHeavyUserKey;
+  config->segmentation_uma_name = kResumeHeavyUserUmaName;
+  config->AddSegmentId(SegmentId::RESUME_HEAVY_USER_SEGMENT,
+                       std::make_unique<ResumeHeavyUserModel>());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kResumeHeavyUserSegmentFeature,
+          kVariationsParamNameSegmentSelectionTTLDays,
+          kResumeHeavyUserSegmentSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kResumeHeavyUserSegmentFeature,
+          kVariationsParamNameUnknownSelectionTTLDays,
+          kResumeHeavyUserSegmentUnknownSelectionTTLDays));
+  return config;
+}
 
 ResumeHeavyUserModel::ResumeHeavyUserModel() : ModelProvider(kSegmentId) {}
 

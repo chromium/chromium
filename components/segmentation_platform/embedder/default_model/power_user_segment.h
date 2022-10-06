@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation Chrome Power user model provider. Provides a default model and
 // metadata for the Power user optimization target.
 class PowerUserSegment : public ModelProvider {
@@ -18,6 +20,8 @@ class PowerUserSegment : public ModelProvider {
 
   PowerUserSegment(PowerUserSegment&) = delete;
   PowerUserSegment& operator=(PowerUserSegment&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // Returns the name of the subsegment for the given segment and the
   // `subsegment_rank`. The `subsegment_rank` should be computed based on the

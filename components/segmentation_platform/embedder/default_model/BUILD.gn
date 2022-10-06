@@ -8,16 +8,10 @@ static_library("default_model") {
     "cross_device_user_segment.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
-    "intentional_user_model.cc",
-    "intentional_user_model.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
-    "power_user_segment.cc",
-    "power_user_segment.h",
     "price_tracking_action_model.cc",
     "price_tracking_action_model.h",
-    "query_tiles_model.cc",
-    "query_tiles_model.h",
     "resume_heavy_user_model.cc",
     "resume_heavy_user_model.h",
     "search_user_model.cc",
@@ -32,6 +26,17 @@ static_library("default_model") {
     "//components/segmentation_platform/public",
     "//ui/base",
   ]
+  if (is_android) {
+    sources += [
+      "intentional_user_model.cc",
+      "intentional_user_model.h",
+      "power_user_segment.cc",
+      "power_user_segment.h",
+      "query_tiles_model.cc",
+      "query_tiles_model.h",
+    ]
+    deps += [ "//components/query_tiles:public" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -42,15 +47,20 @@ source_set("unit_tests") {
   sources = [
     "cross_device_user_segment_unittest.cc",
     "feed_user_segment_unittest.cc",
-    "intentional_user_model_unittest.cc",
     "low_user_engagement_model_unittest.cc",
-    "power_user_segment_unittest.cc",
     "price_tracking_action_model_unittest.cc",
-    "query_tiles_model_unittest.cc",
     "resume_heavy_user_model_unittest.cc",
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
   ]
+
+  if (is_android) {
+    sources += [
+      "intentional_user_model_unittest.cc",
+      "power_user_segment_unittest.cc",
+      "query_tiles_model_unittest.cc",
+    ]
+  }
 
   deps = [
     ":default_model",

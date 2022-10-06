@@ -9,7 +9,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/android/start_surface/start_surface_android.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -63,6 +65,10 @@ std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
 
 // static
 std::unique_ptr<Config> ChromeStartModel::GetConfig() {
+  if (!IsStartSurfaceBehaviouralTargetingEnabled()) {
+    return nullptr;
+  }
+
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
   config->segmentation_uma_name = kChromeStartAndroidUmaName;

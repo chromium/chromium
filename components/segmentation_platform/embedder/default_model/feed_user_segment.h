@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation Chrome Feed user model provider. Provides a default model and
 // metadata for the Feed user optimization target.
 class FeedUserSegment : public ModelProvider {
@@ -18,6 +20,8 @@ class FeedUserSegment : public ModelProvider {
 
   FeedUserSegment(FeedUserSegment&) = delete;
   FeedUserSegment& operator=(FeedUserSegment&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // Returns the name of the subsegment for the given segment and the
   // `subsegment_rank`. The `subsegment_rank` should be computed based on the

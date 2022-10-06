@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation Chrome cross device user model provider. Provides a default
 // model and metadata for the cross device user optimization target.
 class CrossDeviceUserSegment : public ModelProvider {
@@ -18,6 +20,8 @@ class CrossDeviceUserSegment : public ModelProvider {
 
   CrossDeviceUserSegment(CrossDeviceUserSegment&) = delete;
   CrossDeviceUserSegment& operator=(CrossDeviceUserSegment&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // Returns the name of the subsegment for the given segment and the
   // `subsegment_rank`. The `subsegment_rank` should be computed based on the

@@ -6,10 +6,13 @@
 
 #include <array>
 
-#include "base/strings/strcat.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -20,10 +23,12 @@ using proto::SegmentId;
 
 // Default parameters for search user model.
 constexpr uint64_t kSearchUserModelVersion = 1;
-constexpr SegmentId kSearchUserSubsegmentId =
+constexpr SegmentId kSearchUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
 constexpr int64_t kSearchUserSignalStorageLength = 28;
 constexpr int64_t kSearchUserMinSignalCollectionLength = 7;
+constexpr int kSearchUserSegmentSelectionTTLDays = 7;
+constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
 
 // List of sub-segments for Search User segment.
 enum class SearchUserSubsegment {
@@ -69,9 +74,41 @@ std::string SearchUserSubsegmentToString(SearchUserSubsegment subsegment) {
   }
 }
 
+std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<SearchUserModel>();
+}
+
 }  // namespace
 
-SearchUserModel::SearchUserModel() : ModelProvider(kSearchUserSubsegmentId) {}
+// static
+std::unique_ptr<Config> SearchUserModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformSearchUser)) {
+    return nullptr;
+  }
+
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kSearchUserKey;
+  config->segmentation_uma_name = kSearchUserUmaName;
+  config->AddSegmentId(kSearchUserSegmentId, GetSearchUserDefaultModel());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformSearchUser,
+          "segment_selection_ttl_days", kSearchUserSegmentSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformSearchUser,
+          "unknown_selection_ttl_days",
+          kSearchUserSegmentUnknownSelectionTTLDays));
+  return config;
+}
+
+SearchUserModel::SearchUserModel() : ModelProvider(kSearchUserSegmentId) {}
 
 absl::optional<std::string> SearchUserModel::GetSubsegmentName(
     int subsegment_rank) {
@@ -100,7 +137,7 @@ void SearchUserModel::InitAndFetchModel(
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindRepeating(
-                     model_updated_callback, kSearchUserSubsegmentId,
+                     model_updated_callback, kSearchUserSegmentId,
                      std::move(search_user_metadata), kSearchUserModelVersion));
 }
 

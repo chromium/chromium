@@ -6,10 +6,12 @@
 
 #include <array>
 
-#include "base/strings/strcat.h"
+#include "base/feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/aggregation.pb.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -165,6 +167,23 @@ std::string PowerUserSubsegmentToString(PowerUserSubsegment power_group) {
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<Config> PowerUserSegment::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformPowerUserFeature)) {
+    return nullptr;
+  }
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kPowerUserKey;
+  config->segmentation_uma_name = kPowerUserUmaName;
+  config->AddSegmentId(SegmentId::POWER_USER_SEGMENT,
+                       std::make_unique<PowerUserSegment>());
+  config->segment_selection_ttl = base::Days(7);
+  config->unknown_selection_ttl = base::Days(7);
+
+  return config;
+}
 
 PowerUserSegment::PowerUserSegment() : ModelProvider(kPowerUserSegmentId) {}
 

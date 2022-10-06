@@ -10,6 +10,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation search user model provider. Provides a default model and
 // metadata for the search user optimization target.
 class SearchUserModel : public ModelProvider {
@@ -20,6 +22,8 @@ class SearchUserModel : public ModelProvider {
   // Disallow copy/assign.
   SearchUserModel(SearchUserModel&) = delete;
   SearchUserModel& operator=(SearchUserModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // Returns the name of the subsegment for the given segment and the
   // `subsegment_rank`. The `subsegment_rank` should be computed based on the

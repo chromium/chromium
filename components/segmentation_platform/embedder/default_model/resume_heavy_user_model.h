@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation resume heavy user model provider. Provides a default model and
 // metadata for the resume heavy user segment.
 // TODO(shaktisahu): Find signals for desktop users.
@@ -20,6 +22,8 @@ class ResumeHeavyUserModel : public ModelProvider {
   // Disallow copy/assign.
   ResumeHeavyUserModel(ResumeHeavyUserModel&) = delete;
   ResumeHeavyUserModel& operator=(ResumeHeavyUserModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(

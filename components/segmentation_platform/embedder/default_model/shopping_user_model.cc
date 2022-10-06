@@ -6,9 +6,12 @@
 
 #include <array>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -23,6 +26,8 @@ constexpr SegmentId kShoppingUserSegmentId =
 constexpr int64_t kShoppingUserSignalStorageLength = 28;
 constexpr int64_t kShoppingUserMinSignalCollectionLength = 1;
 constexpr int64_t kModelVersion = 1;
+constexpr int kShoppingUserDefaultSelectionTTLDays = 7;
+constexpr int kShoppingUserDefaultUnknownSelectionTTLDays = 7;
 
 // InputFeatures.
 
@@ -37,7 +42,41 @@ constexpr std::array<MetadataWriter::UMAFeature, 2> kShoppingUserUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction(
         "Autofill_PolledCreditCardSuggestions",
         7)};
+
+std::unique_ptr<ModelProvider> GetShoppingUserDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          features::kShoppingUserSegmentFeature, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<ShoppingUserModel>();
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<Config> ShoppingUserModel::GetConfig() {
+  if (!base::FeatureList::IsEnabled(features::kShoppingUserSegmentFeature)) {
+    return nullptr;
+  }
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kShoppingUserSegmentationKey;
+  config->segmentation_uma_name = kShoppingUserUmaName;
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER,
+      GetShoppingUserDefaultModel());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kShoppingUserSegmentFeature,
+          kVariationsParamNameSegmentSelectionTTLDays,
+          kShoppingUserDefaultSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kShoppingUserSegmentFeature,
+          kVariationsParamNameUnknownSelectionTTLDays,
+          kShoppingUserDefaultUnknownSelectionTTLDays));
+  return config;
+}
 
 ShoppingUserModel::ShoppingUserModel()
     : ModelProvider(kShoppingUserSegmentId) {}

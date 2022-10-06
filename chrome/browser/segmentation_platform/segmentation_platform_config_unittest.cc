@@ -54,6 +54,14 @@ class SegmentationPlatformConfigTest : public testing::Test {
   std::unique_ptr<ScopedFeatureList> scoped_feature_list_;
 };
 
+TEST_F(SegmentationPlatformConfigTest, GetSegmentationPlatformConfig) {
+  std::vector<std::unique_ptr<Config>> configs =
+      GetSegmentationPlatformConfig(nullptr);
+  for (const auto& config : configs) {
+    EXPECT_TRUE(config.get());
+  }
+}
+
 TEST_F(SegmentationPlatformConfigTest, EmptyFeatures) {
   ScopedFeatureList scoped_feature_list_;
   std::vector<std::unique_ptr<Config>> configs;

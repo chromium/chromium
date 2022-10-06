@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation query tiles model provider. Provides a default model and
 // metadata for the query tiles optimization target.
 class QueryTilesModel : public ModelProvider {
@@ -19,6 +21,8 @@ class QueryTilesModel : public ModelProvider {
   // Disallow copy/assign.
   QueryTilesModel(QueryTilesModel&) = delete;
   QueryTilesModel& operator=(QueryTilesModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(

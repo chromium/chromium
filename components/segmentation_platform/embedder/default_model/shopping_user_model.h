@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+struct Config;
+
 // Segmentation shopping user model provider. Provides a default model and
 // metadata for the shopping user optimization target.
 class ShoppingUserModel : public ModelProvider {
@@ -19,6 +21,8 @@ class ShoppingUserModel : public ModelProvider {
   // Disallow copy/assign.
   ShoppingUserModel(ShoppingUserModel&) = delete;
   ShoppingUserModel& operator=(ShoppingUserModel&) = delete;
+
+  static std::unique_ptr<Config> GetConfig();
 
   // ModelProvider implementation.
   void InitAndFetchModel(

@@ -8,6 +8,7 @@
 
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -51,6 +52,19 @@ constexpr std::array<MetadataWriter::UMAFeature, 1>
             kLaunchCauseMainLauncherIcon.size())};
 
 }  // namespace
+
+// static
+std::unique_ptr<Config> IntentionalUserModel::GetConfig() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kIntentionalUserKey;
+  config->segmentation_uma_name = kIntentionalUserUmaName;
+  config->AddSegmentId(SegmentId::INTENTIONAL_USER_SEGMENT,
+                       std::make_unique<IntentionalUserModel>());
+  config->segment_selection_ttl = base::Days(7);
+  config->unknown_selection_ttl = base::Days(7);
+
+  return config;
+}
 
 IntentionalUserModel::IntentionalUserModel()
     : ModelProvider(kIntentionalUserSegmentId) {}

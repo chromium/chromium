@@ -6,9 +6,12 @@
 
 #include <array>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -55,6 +58,9 @@ constexpr SegmentId kFeedUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER;
 constexpr int64_t kFeedUserSignalStorageLength = 28;
 constexpr int64_t kFeedUserMinSignalCollectionLength = 7;
+
+constexpr int kFeedUserSegmentSelectionTTLDays = 14;
+constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 
 // InputFeatures.
 
@@ -136,7 +142,41 @@ std::string FeedUserSubsegmentToString(FeedUserSubsegment feed_group) {
   }
 }
 
+std::unique_ptr<ModelProvider> GetFeedUserSegmentDefautlModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformFeedSegmentFeature,
+          kDefaultModelEnabledParam, true)) {
+    return nullptr;
+  }
+  return std::make_unique<FeedUserSegment>();
+}
+
 }  // namespace
+
+// static
+std::unique_ptr<Config> FeedUserSegment::GetConfig() {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformFeedSegmentFeature)) {
+    return nullptr;
+  }
+
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kFeedUserSegmentationKey;
+  config->segmentation_uma_name = kFeedUserSegmentUmaName;
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
+                       GetFeedUserSegmentDefautlModel());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformFeedSegmentFeature,
+          kVariationsParamNameSegmentSelectionTTLDays,
+          kFeedUserSegmentSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformFeedSegmentFeature,
+          kVariationsParamNameUnknownSelectionTTLDays,
+          kFeedUserSegmentUnknownSelectionTTLDays));
+  return config;
+}
 
 FeedUserSegment::FeedUserSegment() : ModelProvider(kFeedUserSegmentId) {}
 

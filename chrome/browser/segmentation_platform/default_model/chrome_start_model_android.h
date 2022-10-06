@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_CHROME_START_MODEL_ANDROID_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_DEFAULT_MODEL_CHROME_START_MODEL_ANDROID_H_
 
-#include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {
+
+struct Config;
 
 // Segmentation Chrome Start model provider. Provides a default model and
 // metadata for the chrome start optimization target.
