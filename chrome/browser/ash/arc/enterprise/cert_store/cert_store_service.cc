@@ -496,7 +496,7 @@ void CertStoreService::OnBuiltAllowedCertDescriptions(
     // that's the only thread that knows if the system slot is enabled.
     ListCerts(context_, keymaster::mojom::ChapsSlot::kSystem,
               base::BindOnce(&CertStoreService::OnCertificatesListed,
-                             weak_ptr_factory_.GetWeakPtr(),
+                             weak_ptr_factory_.GetMutableWeakPtr(),
                              keymaster::mojom::ChapsSlot::kSystem,
                              std::move(cert_descriptions)));
     return;
@@ -508,7 +508,7 @@ void CertStoreService::OnBuiltAllowedCertDescriptions(
       PrepareChromeOsKeys(cert_descriptions);
   keymaster_bridge->UpdatePlaceholderKeys(
       std::move(keys), base::BindOnce(&CertStoreService::OnUpdatedKeymasterKeys,
-                                      weak_ptr_factory_.GetWeakPtr(),
+                                      weak_ptr_factory_.GetMutableWeakPtr(),
                                       std::move(cert_descriptions)));
 }
 
