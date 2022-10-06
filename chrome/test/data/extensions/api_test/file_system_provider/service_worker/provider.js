@@ -161,6 +161,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onReadFileRequested', true);
     this.setHandlerEnabled('onWriteFileRequested', true);
     this.setHandlerEnabled('onAbortRequested', true);
+    this.setHandlerEnabled('onCopyEntryRequested', true);
   }
 
   /**
@@ -557,6 +558,46 @@ export class TestFileSystemProvider {
       onError('SECURITY');  // enum ProviderError.
       return;
     }
+
+    onSuccess();
+  }
+
+  /**
+   * FSP: implementation of copying an entry within the same file system.
+   *
+   * @param {!chrome.fileSystemProvider.CopyEntryRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback with an error code.
+   */
+  onCopyEntryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.sourcePath === '/') {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (!(options.sourcePath in this.files)) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+
+    if (options.targetPath in this.files) {
+      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
+      return;
+    }
+
+    // Copy the metadata, but change the 'name' field.
+    const source = this.files[options.sourcePath];
+    /** @suppress {undefinedVars} */
+    const dest = structuredClone(source);
+    dest.name = options.targetPath.split('/').pop();
+    this.files[options.targetPath] = dest;
 
     onSuccess();
   }
