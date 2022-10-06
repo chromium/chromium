@@ -220,7 +220,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, NoProxy) {
   std::string expected_url = SetProbeUrl(kTestPortalUrl);
   controller_->ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
-  EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
+  EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
 
 TEST_F(NetworkPortalSigninControllerTest2022Update, ProxyDirect) {
@@ -229,7 +229,7 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, ProxyDirect) {
   SetNetworkProxyDirect();
   controller_->ShowSignin();
   EXPECT_EQ(controller_->tab_url(), expected_url);
-  EXPECT_FALSE(controller_->profile()->IsOffTheRecord());
+  EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
 }
 
 TEST_F(NetworkPortalSigninControllerTest2022Update,

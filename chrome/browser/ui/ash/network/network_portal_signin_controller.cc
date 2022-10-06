@@ -120,9 +120,11 @@ NetworkPortalSigninController::GetSigninMode() const {
   NET_LOG(DEBUG) << "GetSigninMode: 2022 UI Enabled";
 
   // This pref defaults to true but may be set to false by policy.
+  // Note: Generally we always want to show the portal signin UI in an incognito
+  // tab to avoid providing cookies, see b/245578628 for details.
   const bool ignore_proxy = profile->GetPrefs()->GetBoolean(
       prefs::kCaptivePortalAuthenticationIgnoresProxy);
-  if (!ignore_proxy || !ProxyActive(profile)) {
+  if (!ignore_proxy && ProxyActive(profile)) {
     return SigninMode::kNormalTab;
   }
 
