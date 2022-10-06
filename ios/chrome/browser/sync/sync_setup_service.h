@@ -105,9 +105,6 @@ class SyncSetupService : public KeyedService {
   // called at start-up.
   virtual bool IsInitialSetupOngoing();
 
-  // TODO(crbug.com/1254659): Remove this.
-  virtual bool HasFinishedInitialSetup();
-
   // Pauses sync allowing the user to configure what data to sync before
   // actually starting to sync data with the server.
   virtual void PrepareForFirstSyncSetup();

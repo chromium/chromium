@@ -192,10 +192,6 @@ bool SyncSetupService::IsInitialSetupOngoing() {
          !sync_service_->GetUserSettings()->IsFirstSetupComplete();
 }
 
-bool SyncSetupService::HasFinishedInitialSetup() {
-  return !IsInitialSetupOngoing();
-}
-
 void SyncSetupService::PrepareForFirstSyncSetup() {
   // `PrepareForFirstSyncSetup` should always be called while the user is signed
   // out. At that time, sync setup is not completed.
