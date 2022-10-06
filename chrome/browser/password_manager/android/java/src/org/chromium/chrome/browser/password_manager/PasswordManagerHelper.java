@@ -343,6 +343,8 @@ public class PasswordManagerHelper {
         return false;
     }
 
+    // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
+    // as this is covered by chrome://password-manager-internals page.
     public static void resetUpmUnenrollment() {
         // Exit early if Chrome doesn't need UPM UI. Assumes the unenroll pref isn't included in the
         // usesUnifiedPasswordManagementUI check.

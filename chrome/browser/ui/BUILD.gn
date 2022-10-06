@@ -932,6 +932,7 @@ static_library("ui") {
       "//components/page_info/android:android",
       "//components/page_info/core",
       "//components/page_info/core:proto",
+      "//components/password_manager/core/browser:browser",
       "//components/query_tiles",
       "//components/resources:android_resources",
       "//components/search_provider_logos",

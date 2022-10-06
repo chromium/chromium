@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
+#include "components/password_manager/core/browser/password_manager_eviction_util.h"
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
