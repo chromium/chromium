@@ -76,6 +76,9 @@ TEST_F(SyncErrorInfobarDelegateTest, IconConfigsUseSymbol) {
 // Tests that the delegate's icon configurations is correct when legacy image
 // asset is used.
 TEST_F(SyncErrorInfobarDelegateTest, IconConfigsNotUseSymbol) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kUseSFSymbols);
+
   id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));

@@ -329,6 +329,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/passwords:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/permissions:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card:unit_tests",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/tailored_security:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_modal:unit_tests",

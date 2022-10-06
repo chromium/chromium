@@ -39,6 +39,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/settings/sync/utils/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

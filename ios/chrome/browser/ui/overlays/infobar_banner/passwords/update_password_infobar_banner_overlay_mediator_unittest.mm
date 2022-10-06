@@ -84,6 +84,9 @@ TEST_F(UpdatePasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
 // consumer's icon with legacy assets.
 TEST_F(UpdatePasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerIconsNotUseSymbols) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kUseSFSymbols);
+
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
       MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);

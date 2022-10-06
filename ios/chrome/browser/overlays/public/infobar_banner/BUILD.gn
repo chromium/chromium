@@ -63,18 +63,25 @@ source_set("infobar_banner") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "confirm_infobar_banner_overlay_request_config_unittest.mm" ]
+  sources = [
+    "confirm_infobar_banner_overlay_request_config_unittest.mm",
+    "sync_error_infobar_banner_overlay_request_config_unittest.mm",
+  ]
   deps = [
     ":infobar_banner",
-    "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/settings/sync/utils/test",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public/test",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
   ]
