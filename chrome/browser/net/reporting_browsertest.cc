@@ -45,7 +45,7 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
  public:
   BaseReportingBrowserTest()
       : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
-    std::vector<base::Feature> required_features = {
+    std::vector<base::test::FeatureRef> required_features = {
         network::features::kReporting, network::features::kNetworkErrorLogging,
         features::kCrashReporting};
     if (UseDocumentReporting()) {

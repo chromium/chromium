@@ -181,7 +181,7 @@ class ChromeNetworkServiceMigrationBrowserTest : public InProcessBrowserTest {
   ChromeNetworkServiceMigrationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> disabled_features, enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features, enabled_features;
 #if BUILDFLAG(IS_WIN)
     // On Windows, the Network Sandbox requires that data migration be enabled
     // to function correctly. Thus, in order to correctly test the case when

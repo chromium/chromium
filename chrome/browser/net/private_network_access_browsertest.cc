@@ -193,8 +193,8 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
 class PrivateNetworkAccessBrowserTestBase : public InProcessBrowserTest {
  public:
   PrivateNetworkAccessBrowserTestBase(
-      std::vector<base::Feature> enabled_features,
-      std::vector<base::Feature> disabled_features) {
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features) {
     features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
