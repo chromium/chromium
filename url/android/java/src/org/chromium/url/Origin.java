@@ -39,7 +39,7 @@ public class Origin {
 
     /** @return The port of the origin. Returns 0 for an opaque origin. */
     public int getPort() {
-        return !isOpaque() ? mInternal.port : 0;
+        return !isOpaque() ? Short.toUnsignedInt(mInternal.port) : 0;
     }
 
     /** @return Whether the origin is opaque. */
