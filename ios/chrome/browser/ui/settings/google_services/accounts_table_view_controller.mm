@@ -243,7 +243,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   NSString* authenticatedEmail = [authenticatedIdentity userEmail];
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ChromeIdentity* identity =
+    id<SystemIdentity> identity =
         self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
     if (!identity) {
       // Ignore the case in which the identity is invalid at lookup time. This
@@ -345,7 +345,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return footer;
 }
 
-- (TableViewItem*)accountItem:(ChromeIdentity*)identity {
+- (TableViewItem*)accountItem:(id<SystemIdentity>)identity {
   TableViewAccountItem* item =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
   [self updateAccountItem:item withIdentity:identity];
@@ -353,7 +353,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateAccountItem:(TableViewAccountItem*)item
-             withIdentity:(ChromeIdentity*)identity {
+             withIdentity:(id<SystemIdentity>)identity {
   item.image = self.accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::TableViewIcon);
   item.text = identity.userEmail;
@@ -724,7 +724,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   TableViewAccountItem* item = base::mac::ObjCCastStrict<TableViewAccountItem>(
       [_identityMap objectForKey:identity.gaiaID]);
   if (!item) {

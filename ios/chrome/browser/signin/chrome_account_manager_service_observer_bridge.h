@@ -14,7 +14,7 @@
 @protocol ChromeAccountManagerServiceObserver <NSObject>
 @optional
 - (void)identityListChanged;
-- (void)identityChanged:(ChromeIdentity*)identity;
+- (void)identityChanged:(id<SystemIdentity>)identity;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.

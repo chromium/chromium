@@ -2141,7 +2141,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
   }

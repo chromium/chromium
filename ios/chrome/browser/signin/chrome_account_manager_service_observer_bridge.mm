@@ -32,8 +32,6 @@ void ChromeAccountManagerServiceObserverBridge::OnIdentityListChanged(
 
 void ChromeAccountManagerServiceObserverBridge::OnIdentityChanged(
     id<SystemIdentity> identity) {
-  ChromeIdentity* chrome_identity =
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
   if ([observer_ respondsToSelector:@selector(identityChanged:)])
-    [observer_ identityChanged:chrome_identity];
+    [observer_ identityChanged:identity];
 }

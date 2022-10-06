@@ -657,7 +657,7 @@ bool GetStatusForSigninPolicy() {
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   [self updateLeakCheckItemAndReload];
 }
 

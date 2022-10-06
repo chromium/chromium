@@ -782,7 +782,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
   }
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   [self sendConsumerNotificationWithIdentityChanged:NO];
 }
 

@@ -105,13 +105,10 @@ class ChromeIdentityService {
     // `user_info` is the user info dictionary in the original notification. It
     // should not be accessed directly but via helper methods (like
     // ChromeIdentityService::IsInvalidGrantError).
-    virtual void OnAccessTokenRefreshFailed(ChromeIdentity* identity,
-                                            NSDictionary* user_info);
     virtual void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                             NSDictionary* user_info) {}
 
     // Called when profile information or the profile image is updated.
-    virtual void OnProfileUpdate(ChromeIdentity* identity);
     virtual void OnProfileUpdate(id<SystemIdentity> identity) {}
 
     // Called when the ChromeIdentityService will be destroyed.

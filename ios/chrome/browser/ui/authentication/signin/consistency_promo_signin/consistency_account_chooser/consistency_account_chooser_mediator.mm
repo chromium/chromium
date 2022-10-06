@@ -79,8 +79,7 @@
   for (ChromeIdentity* identity in identities) {
     IdentityItemConfigurator* configurator =
         [[IdentityItemConfigurator alloc] init];
-    [self updateIdentityItemConfigurator:configurator
-                      withChromeIdentity:identity];
+    [self updateIdentityItemConfigurator:configurator withIdentity:identity];
     [configurators addObject:configurator];
     if (configurator.selected) {
       hasSelectedIdentity = YES;
@@ -98,9 +97,9 @@
   self.sortedIdentityItemConfigurators = configurators;
 }
 
-// Updates an IdentityItemConfigurator based on a ChromeIdentity.
+// Updates `configurator` based on `identity`.
 - (void)updateIdentityItemConfigurator:(IdentityItemConfigurator*)configurator
-                    withChromeIdentity:(ChromeIdentity*)identity {
+                          withIdentity:(id<SystemIdentity>)identity {
   configurator.gaiaID = identity.gaiaID;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
@@ -111,7 +110,7 @@
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   IdentityItemConfigurator* configurator = nil;
   for (IdentityItemConfigurator* cursor in self
            .sortedIdentityItemConfigurators) {
@@ -120,8 +119,7 @@
     }
   }
   DCHECK(configurator);
-  [self updateIdentityItemConfigurator:configurator
-                    withChromeIdentity:identity];
+  [self updateIdentityItemConfigurator:configurator withIdentity:identity];
   [self.consumer reloadIdentityForIdentityItemConfigurator:configurator];
 }
 

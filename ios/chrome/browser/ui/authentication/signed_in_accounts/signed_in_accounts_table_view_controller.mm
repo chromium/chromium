@@ -83,7 +83,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
-    ChromeIdentity* identity =
+    id<SystemIdentity> identity =
         _accountManagerService->GetIdentityWithGaiaID(account.gaia);
 
     // If the account with a refresh token is invalidated during this operation
@@ -100,7 +100,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       base::mac::ObjCCastStrict<TableViewIdentityItem>(
           [_identityMap objectForKey:identity.gaiaID]);
@@ -111,7 +111,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark Private
 
 // Creates an item and sets all the values based on a ChromeIdentity.
-- (TableViewIdentityItem*)accountItem:(ChromeIdentity*)identity {
+- (TableViewIdentityItem*)accountItem:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       [[TableViewIdentityItem alloc] initWithType:ItemTypeAccount];
   item.identityViewStyle = IdentityViewStyleIdentityChooser;
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Updates an item based on a ChromeIdentity.
 - (void)updateAccountItem:(TableViewIdentityItem*)item
-             withIdentity:(ChromeIdentity*)identity {
+             withIdentity:(id<SystemIdentity>)identity {
   item.gaiaID = identity.gaiaID;
   item.name = identity.userFullName;
   item.email = identity.userEmail;

@@ -293,7 +293,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   [self updateAccountImage];
 }
 

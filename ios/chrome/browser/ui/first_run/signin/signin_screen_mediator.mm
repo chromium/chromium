@@ -316,7 +316,7 @@
   }
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateConsumerIdentity];
   }

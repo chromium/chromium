@@ -269,10 +269,8 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 void ChromeAccountManagerService::OnAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     NSDictionary* user_info) {
-  ChromeIdentity* chrome_identity =
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
   for (auto& observer : observer_list_)
-    observer.OnAccessTokenRefreshFailed(chrome_identity, user_info);
+    observer.OnAccessTokenRefreshFailed(identity, user_info);
 }
 
 void ChromeAccountManagerService::OnIdentityListChanged(
@@ -282,10 +280,8 @@ void ChromeAccountManagerService::OnIdentityListChanged(
 }
 
 void ChromeAccountManagerService::OnProfileUpdate(id<SystemIdentity> identity) {
-  ChromeIdentity* chrome_identity =
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
   for (auto& observer : observer_list_)
-    observer.OnIdentityChanged(chrome_identity);
+    observer.OnIdentityChanged(identity);
 }
 
 void ChromeAccountManagerService::OnChromeIdentityServiceWillBeDestroyed() {

@@ -101,7 +101,7 @@
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:0];
     item.identityViewStyle = IdentityViewStyleIdentityChooser;
-    [self updateTableViewIdentityItem:item withChromeIdentity:identity];
+    [self updateTableViewIdentityItem:item withIdentity:identity];
     [items addObject:item];
   }
 
@@ -110,7 +110,7 @@
 
 // Updates an TableViewIdentityItem based on a ChromeIdentity.
 - (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
-                 withChromeIdentity:(ChromeIdentity*)identity {
+                       withIdentity:(id<SystemIdentity>)identity {
   item.gaiaID = identity.gaiaID;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
@@ -141,10 +141,10 @@
   }
 }
 
-- (void)identityChanged:(ChromeIdentity*)identity {
+- (void)identityChanged:(id<SystemIdentity>)identity {
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
-  [self updateTableViewIdentityItem:item withChromeIdentity:identity];
+  [self updateTableViewIdentityItem:item withIdentity:identity];
 }
 
 @end
