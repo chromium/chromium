@@ -1139,6 +1139,11 @@ const char kEnableShortcutCustomizationAppDescription[] =
     "Enable the shortcut customization SWA, allowing users to customize system "
     "shortcuts.";
 
+extern const char kEnableShortcutCustomizationName[] =
+    "Enable customization in new shortcuts app";
+extern const char kEnableShortcutCustomizationDescription[] =
+    "Enable customization of shortcuts in the new shortcuts app.";
+
 const char kExperimentalRgbKeyboardPatternsName[] =
     "Enable experimental RGB Keyboard patterns support";
 const char kExperimentalRgbKeyboardPatternsDescription[] =

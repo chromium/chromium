@@ -94,6 +94,14 @@ bool IsShortcutCustomizationAppEnabled() {
   return base::FeatureList::IsEnabled(kShortcutCustomizationApp);
 }
 
+BASE_FEATURE(kShortcutCustomization,
+             "ShortcutCustomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsShortcutCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kShortcutCustomization);
+}
+
 // Share the resource file with ash-chrome. This feature reduces the memory
 // consumption while the disk usage slightly increases.
 // https://crbug.com/1253280.

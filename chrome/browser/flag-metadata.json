@@ -2931,6 +2931,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-shortcut-customization",
+    "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 115

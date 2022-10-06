@@ -756,6 +756,9 @@ extern const char kEnableRgbKeyboardDescription[];
 extern const char kEnableShortcutCustomizationAppName[];
 extern const char kEnableShortcutCustomizationAppDescription[];
 
+extern const char kEnableShortcutCustomizationName[];
+extern const char kEnableShortcutCustomizationDescription[];
+
 extern const char kExperimentalRgbKeyboardPatternsName[];
 extern const char kExperimentalRgbKeyboardPatternsDescription[];
 

@@ -6914,6 +6914,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableShortcutCustomizationAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kShortcutCustomizationApp)},
 
+    {"enable-shortcut-customization",
+     flag_descriptions::kEnableShortcutCustomizationName,
+     flag_descriptions::kEnableShortcutCustomizationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kShortcutCustomization)},
+
     {"enable-firmware-updater-app",
      flag_descriptions::kEnableFirmwareUpdaterAppName,
      flag_descriptions::kEnableFirmwareUpdaterAppDescription, kOsCrOS,
