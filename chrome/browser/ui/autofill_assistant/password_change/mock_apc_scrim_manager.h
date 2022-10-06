@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_scrim_manager.h"
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 // Mocked ApcScrimManager used in unit tests.
@@ -17,7 +18,13 @@ class MockApcScrimManager : public ApcScrimManager {
 
   MOCK_METHOD(void, Show, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
-  MOCK_METHOD(bool, GetVisible, (), (override));
+  MOCK_METHOD(void,
+              HideAndRestoreAcessibilityModeWithDelay,
+              (base::TimeDelta, bool));
+  MOCK_METHOD(void, ShutDown, (), (override));
+  MOCK_METHOD(bool, GetVisible, (), (const override));
+  MOCK_METHOD(void, SetIsDisabled, (bool), (override));
+  MOCK_METHOD(bool, GetIsDisabled, (), (const override));
 };
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_MOCK_APC_SCRIM_MANAGER_H_
