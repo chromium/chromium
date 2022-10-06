@@ -148,6 +148,18 @@ BASE_FEATURE(kAutofillAssistantUrlHeuristic4,
 BASE_FEATURE(kAutofillAssistantUrlHeuristic5,
              "AutofillAssistantUrlHeuristic5",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAssistantUrlHeuristic6,
+             "AutofillAssistantUrlHeuristic6",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAssistantUrlHeuristic7,
+             "AutofillAssistantUrlHeuristic7",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAssistantUrlHeuristic8,
+             "AutofillAssistantUrlHeuristic8",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillAssistantUrlHeuristic9,
+             "AutofillAssistantUrlHeuristic9",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether Autofill Assistant is enabled on desktop.
 BASE_FEATURE(kAutofillAssistantDesktop,

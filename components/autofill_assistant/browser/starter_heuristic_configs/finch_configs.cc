@@ -24,6 +24,14 @@ constexpr base::FeatureParam<std::string> kUrlHeuristicParams4{
     &features::kAutofillAssistantUrlHeuristic4, kUrlHeuristicParametersKey, ""};
 constexpr base::FeatureParam<std::string> kUrlHeuristicParams5{
     &features::kAutofillAssistantUrlHeuristic5, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams6{
+    &features::kAutofillAssistantUrlHeuristic6, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams7{
+    &features::kAutofillAssistantUrlHeuristic7, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams8{
+    &features::kAutofillAssistantUrlHeuristic8, kUrlHeuristicParametersKey, ""};
+constexpr base::FeatureParam<std::string> kUrlHeuristicParams9{
+    &features::kAutofillAssistantUrlHeuristic9, kUrlHeuristicParametersKey, ""};
 
 }  // namespace
 
@@ -62,6 +70,30 @@ const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic5() {
   static base::NoDestructor<FinchStarterHeuristicConfig>
       starter_heuristic_config_5(kUrlHeuristicParams5);
   return starter_heuristic_config_5.get();
+}
+
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic6() {
+  static base::NoDestructor<FinchStarterHeuristicConfig>
+      starter_heuristic_config_6(kUrlHeuristicParams6);
+  return starter_heuristic_config_6.get();
+}
+
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic7() {
+  static base::NoDestructor<FinchStarterHeuristicConfig>
+      starter_heuristic_config_7(kUrlHeuristicParams7);
+  return starter_heuristic_config_7.get();
+}
+
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic8() {
+  static base::NoDestructor<FinchStarterHeuristicConfig>
+      starter_heuristic_config_8(kUrlHeuristicParams8);
+  return starter_heuristic_config_8.get();
+}
+
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic9() {
+  static base::NoDestructor<FinchStarterHeuristicConfig>
+      starter_heuristic_config_9(kUrlHeuristicParams9);
+  return starter_heuristic_config_9.get();
 }
 
 }  // namespace finch_configs

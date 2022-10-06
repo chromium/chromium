@@ -180,6 +180,10 @@ Starter::Starter(content::WebContents* web_contents,
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic3());
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic4());
   heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic5());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic6());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic7());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic8());
+  heuristic_configs_.emplace_back(finch_configs::GetOrCreateUrlHeuristic9());
 }
 
 Starter::~Starter() = default;

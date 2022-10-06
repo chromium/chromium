@@ -36,6 +36,10 @@ BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic2);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic3);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic4);
 BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic5);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic6);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic7);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic8);
+BASE_DECLARE_FEATURE(kAutofillAssistantUrlHeuristic9);
 BASE_DECLARE_FEATURE(kAutofillAssistantUseDidFinishNavigation);
 BASE_DECLARE_FEATURE(kAutofillAssistantVerifyGetActionsResponses);
 BASE_DECLARE_FEATURE(

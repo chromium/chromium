@@ -17,6 +17,10 @@ const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic2();
 const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic3();
 const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic4();
 const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic5();
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic6();
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic7();
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic8();
+const FinchStarterHeuristicConfig* GetOrCreateUrlHeuristic9();
 
 }  // namespace finch_configs
 }  // namespace autofill_assistant
