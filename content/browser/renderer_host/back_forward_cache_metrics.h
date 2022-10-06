@@ -58,6 +58,9 @@ class BackForwardCacheMetrics
     kRelatedActiveContentsExist = 2,
     kHTTPStatusNotOK = 3,
     kSchemeNotHTTPOrHTTPS = 4,
+    // DOMContentLoaded event has not yet fired. This means that deferred
+    // scripts have not run yet and pagehide/pageshow event handlers may not be
+    // installed yet.
     kLoading = 5,
     kWasGrantedMediaAccess = 6,
     kBlocklistedFeatures = 7,
