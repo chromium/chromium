@@ -27,7 +27,6 @@ class WebState;
 // - If a "captive portal detected" result arrives during this time,
 //   a captive portal interstitial is displayed.
 // - Otherwise, an SSL interstitial is displayed.
-extern const int64_t kSSLInterstitialDelayInSeconds;  // deprecated
 constexpr base::TimeDelta kSSLInterstitialDelay = base::Seconds(3);
 
 // This class is responsible for deciding what type of interstitial to show for

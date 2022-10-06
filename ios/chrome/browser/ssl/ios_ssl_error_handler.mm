@@ -29,12 +29,6 @@
 #error "This file requires ARC support."
 #endif
 
-// Keep this variable as it is used in the internal repository. Remove it
-// once the internal code has been converted to use kSSLInterstitialDelay
-// instead.
-const int64_t kSSLInterstitialDelayInSeconds =
-    kSSLInterstitialDelay.InSeconds();
-
 using captive_portal::CaptivePortalDetector;
 using security_interstitials::IOSBlockingPageTabHelper;
 
