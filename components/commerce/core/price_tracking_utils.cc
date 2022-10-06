@@ -220,7 +220,7 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
   power_bookmarks::ShoppingSpecifics* specifics =
       out_meta->mutable_shopping_specifics();
 
-  if (specifics->title() != info.title) {
+  if (!info.title.empty() && specifics->title() != info.title) {
     specifics->set_title(info.title);
     changed = true;
   }

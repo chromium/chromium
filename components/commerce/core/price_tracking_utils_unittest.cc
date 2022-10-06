@@ -330,5 +330,37 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_ImageRemoved) {
   EXPECT_TRUE(meta.lead_image().url().empty());
 }
 
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_TitleUpdated) {
+  ProductInfo new_info;
+  const uint64_t cluster_id = 12345L;
+  const std::string new_title = "New Title";
+  new_info.title = new_title;
+  new_info.product_cluster_id = cluster_id;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()->set_title("Nonempty Title");
+  meta.mutable_shopping_specifics()->set_product_cluster_id(cluster_id);
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(new_title, meta.shopping_specifics().title());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NonemptyTitleKept) {
+  ProductInfo new_info;
+  const uint64_t cluster_id = 12345L;
+  const std::string title = "Nonempty Title";
+  new_info.title = "";
+  new_info.product_cluster_id = cluster_id;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()->set_title(title);
+  meta.mutable_shopping_specifics()->set_product_cluster_id(cluster_id);
+
+  EXPECT_FALSE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(title, meta.shopping_specifics().title());
+}
+
 }  // namespace
 }  // namespace commerce
