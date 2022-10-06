@@ -7225,6 +7225,27 @@ class LayerTreeHostAcceptsDeltasFromImplWithoutRootLayer
 
 MULTI_THREAD_TEST_F(LayerTreeHostAcceptsDeltasFromImplWithoutRootLayer);
 
+// Make sure we don't block waiting for commit to finish if there are no
+// compositor changes to apply.
+class NoOpApplyCompositorChangesDoesNotBlock : public LayerTreeHostTest {
+ public:
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void WillApplyCompositorChanges() override {
+    num_blocking_calls_ = NumCallsToWaitForProtectedSequenceCompletion();
+  }
+
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {
+    EXPECT_EQ(num_blocking_calls_,
+              NumCallsToWaitForProtectedSequenceCompletion());
+    EndTest();
+  }
+
+  size_t num_blocking_calls_ = 0u;
+};
+
+MULTI_THREAD_TEST_F(NoOpApplyCompositorChangesDoesNotBlock);
+
 class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
  protected:
   LayerTreeHostTestCrispUpAfterPinchEnds()

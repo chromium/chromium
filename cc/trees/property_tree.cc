@@ -1910,7 +1910,7 @@ void ScrollTree::NotifyDidCompositorScroll(
 }
 
 void ScrollTree::NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
-                                                 bool hidden) {
+                                                 bool hidden) const {
   DCHECK(property_trees()->is_main_thread());
   if (callbacks_)
     callbacks_->DidChangeScrollbarsHidden(scroll_element_id, hidden);

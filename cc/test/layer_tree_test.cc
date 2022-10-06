@@ -592,6 +592,20 @@ class LayerTreeHostForTesting : public LayerTreeHost {
     LayerTreeHost::SetNeedsUpdateLayers();
   }
 
+  void ApplyCompositorChanges(CompositorCommitData* commit_data) override {
+    test_hooks_->WillApplyCompositorChanges();
+    LayerTreeHost::ApplyCompositorChanges(commit_data);
+  }
+
+  void WaitForProtectedSequenceCompletion() const override {
+    wait_count_++;
+    LayerTreeHost::WaitForProtectedSequenceCompletion();
+  }
+
+  size_t NumCallsToWaitForProtectedSequenceCompletion() const {
+    return wait_count_;
+  }
+
   void set_test_started(bool started) { test_started_ = started; }
 
  private:
@@ -602,6 +616,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
 
   raw_ptr<TestHooks> test_hooks_;
   bool test_started_ = false;
+  mutable size_t wait_count_ = 0u;
 };
 
 class LayerTreeTestLayerTreeFrameSinkClient
@@ -1228,6 +1243,11 @@ std::unique_ptr<viz::OutputSurface>
 LayerTreeTest::CreateSoftwareOutputSurfaceOnThread() {
   return std::make_unique<viz::FakeSoftwareOutputSurface>(
       std::make_unique<viz::SoftwareOutputDevice>());
+}
+
+size_t LayerTreeTest::NumCallsToWaitForProtectedSequenceCompletion() const {
+  return static_cast<LayerTreeHostForTesting*>(layer_tree_host_.get())
+      ->NumCallsToWaitForProtectedSequenceCompletion();
 }
 
 void LayerTreeTest::DestroyLayerTreeHost() {

@@ -421,6 +421,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   const Layer* root_layer() const {
     return thread_unsafe_commit_state().root_layer.get();
   }
+  bool has_root_layer() const { return root_layer(); }
 
   // Sets the collection of viewport property ids, defined to allow viewport
   // pinch-zoom etc. on the compositor thread. This is set only on the
@@ -735,7 +736,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       const gfx::PresentationFeedback& feedback);
   // Called when the compositor completed page scale animation.
   void DidCompletePageScaleAnimation();
-  void ApplyCompositorChanges(CompositorCommitData* commit_data);
+  // Virtual for testing
+  virtual void ApplyCompositorChanges(CompositorCommitData* commit_data);
   void ApplyMutatorEvents(std::unique_ptr<MutatorEvents> events);
   void RecordStartOfFrameMetrics();
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,

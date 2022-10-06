@@ -109,6 +109,7 @@ class TestHooks : public AnimationDelegate {
   // Main thread hooks.
   virtual void ApplyViewportChanges(const ApplyViewportChangesArgs& args) {}
   virtual void BeginMainFrameNotExpectedSoon() {}
+  virtual void WillApplyCompositorChanges() {}
   virtual void BeginMainFrame(const viz::BeginFrameArgs& args) {}
   virtual void WillBeginMainFrame() {}
   virtual void DidBeginMainFrame() {}

@@ -997,7 +997,10 @@ void LayerTreeHost::ApplyViewportChanges(
   }
   is_pinch_gesture_active_from_impl_ = commit_data.is_pinch_gesture_active;
 
-  if (const auto* inner_scroll = property_trees()->scroll_tree().Node(
+  // const_cast to ensure the compiler chooses to the const version of
+  // property_trees(), to avoid blocking on commit.
+  const auto* pt = const_cast<const LayerTreeHost*>(this)->property_trees();
+  if (const auto* inner_scroll = pt->scroll_tree().Node(
           pending_commit_state()->viewport_property_ids.inner_scroll)) {
     UpdateScrollOffsetFromImpl(
         inner_scroll->element_id, inner_viewport_scroll_delta,
@@ -1098,14 +1101,17 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
     swap_promise_manager_.QueueSwapPromise(std::move(swap_promise));
   }
 
-  if (root_layer()) {
+  if (has_root_layer()) {
     for (auto& scroll : commit_data->scrolls) {
       UpdateScrollOffsetFromImpl(scroll.element_id, scroll.scroll_delta,
                                  scroll.snap_target_element_ids);
     }
+    // const_cast to ensure the compiler chooses to the const version of
+    // property_trees(), to avoid blocking on commit.
+    const auto* pt = const_cast<const LayerTreeHost*>(this)->property_trees();
     for (auto& scrollbar : commit_data->scrollbars) {
-      property_trees()->scroll_tree_mutable().NotifyDidChangeScrollbarsHidden(
-          scrollbar.element_id, scrollbar.hidden);
+      pt->scroll_tree().NotifyDidChangeScrollbarsHidden(scrollbar.element_id,
+                                                        scrollbar.hidden);
     }
   }
 
@@ -1655,8 +1661,10 @@ void LayerTreeHost::SetPageScaleFromImplSide(float page_scale) {
       << "Setting PSF in oopif subframe: old psf = "
       << pending_commit_state()->page_scale_factor
       << ", new psf = " << page_scale;
+  bool changed = (page_scale != pending_commit_state()->page_scale_factor);
   pending_commit_state()->page_scale_factor = page_scale;
-  SetPropertyTreesNeedRebuild();
+  if (changed)
+    SetPropertyTreesNeedRebuild();
 }
 
 void LayerTreeHost::SetElasticOverscrollFromImplSide(

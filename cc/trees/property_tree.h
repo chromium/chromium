@@ -581,7 +581,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       const gfx::PointF& scroll_offset,
       const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
-                                       bool hidden);
+                                       bool hidden) const;
 
   // A composited scroll node is a scroll node that has an associated composited
   // layer, otherwise the scroll node corresponds to a scroller that requires

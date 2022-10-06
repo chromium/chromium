@@ -208,6 +208,8 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return image_worker_->task_runner().get();
   }
 
+  size_t NumCallsToWaitForProtectedSequenceCompletion() const;
+
   void UseBeginFrameSource(viz::BeginFrameSource* begin_frame_source) {
     begin_frame_source_ = begin_frame_source;
   }
