@@ -428,13 +428,13 @@ BASE_FEATURE(kCrosPrivacyHub,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Privacy Hub features selected for dogfooding.
-BASE_FEATURE(kCrosPrivacyHubDogfood,
-             "CrosPrivacyHubDogfood",
+BASE_FEATURE(kCrosPrivacyHubV0,
+             "CrosPrivacyHubV0",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables future features for Privacy Hub for ChromeOS.
-BASE_FEATURE(kCrosPrivacyHubFuture,
-             "CrosPrivacyHubFuture",
+BASE_FEATURE(kCrosPrivacyHubV2,
+             "CrosPrivacyHubV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables generation of attestation certificates used by Cross Device features,
@@ -2287,22 +2287,22 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 }
 
 bool IsCrosPrivacyHubEnabled() {
-  return IsCrosPrivacyHubDogfoodEnabled() || IsCrosPrivacyHubMVPEnabled() ||
-         IsCrosPrivacyHubFutureEnabled();
+  return IsCrosPrivacyHubV0Enabled() || IsCrosPrivacyHubV1Enabled() ||
+         IsCrosPrivacyHubV2Enabled();
 }
 
-bool IsCrosPrivacyHubDogfoodEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubDogfood) ||
-         IsCrosPrivacyHubMVPEnabled();
+bool IsCrosPrivacyHubV0Enabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubV0) ||
+         IsCrosPrivacyHubV1Enabled();
 }
 
-bool IsCrosPrivacyHubFutureEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubFuture);
+bool IsCrosPrivacyHubV2Enabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubV2);
 }
 
-bool IsCrosPrivacyHubMVPEnabled() {
+bool IsCrosPrivacyHubV1Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub) ||
-         IsCrosPrivacyHubFutureEnabled();
+         IsCrosPrivacyHubV2Enabled();
 }
 
 bool IsCrosNextWMPEnabled() {

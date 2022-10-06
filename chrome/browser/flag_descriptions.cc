@@ -6333,15 +6333,10 @@ const char kCrOSEnforceSystemAecNsAgcDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
-const char kCrosPrivacyHubDogfoodName[] =
-    "Enable ChromeOS Privacy Hub dogfood features";
-const char kCrosPrivacyHubDogfoodDescription[] =
-    "Enables ChromeOS Privacy Hub dogfood features.";
-
-const char kCrosPrivacyHubFutureName[] =
-    "Enable ChromeOS Privacy Hub future features";
-const char kCrosPrivacyHubFutureDescription[] =
-    "Enables ChromeOS Privacy Hub future features.";
+const char kCrosPrivacyHubV0Name[] =
+    "Enable ChromeOS Privacy Hub without the location switch.";
+const char kCrosPrivacyHubV0Description[] =
+    "Enables ChromeOS Privacy Hub without the location switch.";
 
 const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
 const char kDefaultCalculatorWebAppDescription[] =

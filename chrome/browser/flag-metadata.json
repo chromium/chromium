@@ -1176,12 +1176,12 @@
     "expiry_milestone": 110
   },
   {
-    "name": "cros-privacy-hub-dogfood",
+    "name": "cros-privacy-hub-v0",
     "owners": [ "chromeos-privacyhub@google.com" ],
     "expiry_milestone": 120
   },
   {
-    "name": "cros-privacy-hub-future",
+    "name": "cros-privacy-hub-v2",
     "owners": [ "chromeos-privacyhub@google.com" ],
     "expiry_milestone": 120
   },
