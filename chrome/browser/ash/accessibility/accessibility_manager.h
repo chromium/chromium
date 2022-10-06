@@ -521,8 +521,6 @@ class AccessibilityManager
 
   void OnPumpkinInstalled(bool success);
   void OnPumpkinError(const std::string& error);
-  std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
-  CreatePumpkinData();
   void OnPumpkinDataCreated(
       std::unique_ptr<::extensions::api::accessibility_private::PumpkinData>
           data);

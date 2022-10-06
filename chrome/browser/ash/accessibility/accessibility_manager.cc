@@ -276,6 +276,44 @@ void OnReadDlcFile(GetDlcContentsCallback callback,
   std::move(callback).Run(response.contents, response.error);
 }
 
+std::unique_ptr<PumpkinData> CreatePumpkinData(
+    base::FilePath base_pumpkin_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  PumpkinData data;
+  // TODO(https://crbug.com/1258190): Consider making action/pumpkin configs
+  // optional.
+  base::flat_map<std::string, std::vector<uint8_t>*> files_to_data({
+      {"js_pumpkin_tagger_bin.js", &data.js_pumpkin_tagger_bin_js},
+      {"tagger_wasm_main.js", &data.tagger_wasm_main_js},
+      {"tagger_wasm_main.wasm", &data.tagger_wasm_main_wasm},
+      {"en_us/action_config.binarypb", &data.en_us_action_config_binarypb},
+      {"en_us/pumpkin_config.binarypb", &data.en_us_pumpkin_config_binarypb},
+      {"fr_fr/action_config.binarypb", &data.fr_fr_action_config_binarypb},
+      {"fr_fr/pumpkin_config.binarypb", &data.fr_fr_pumpkin_config_binarypb},
+      {"it_it/action_config.binarypb", &data.it_it_action_config_binarypb},
+      {"it_it/pumpkin_config.binarypb", &data.it_it_pumpkin_config_binarypb},
+      {"de_de/action_config.binarypb", &data.de_de_action_config_binarypb},
+      {"de_de/pumpkin_config.binarypb", &data.de_de_pumpkin_config_binarypb},
+      {"es_es/action_config.binarypb", &data.es_es_action_config_binarypb},
+      {"es_es/pumpkin_config.binarypb", &data.es_es_pumpkin_config_binarypb},
+  });
+
+  for (const auto& iter : files_to_data) {
+    std::string file_name = iter.first;
+    std::vector<uint8_t>* file_data = iter.second;
+    ReadDlcFileResponse response =
+        ReadDlcFile(base_pumpkin_path.Append(file_name));
+    if (response.error.has_value())
+      return nullptr;
+
+    *file_data = response.contents;
+  }
+
+  return std::make_unique<PumpkinData>(std::move(data));
+}
+
 }  // namespace
 
 class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
@@ -2295,52 +2333,14 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
   }
 
   is_pumpkin_installed_for_testing_ = success;
+  base::FilePath base_pumpkin_path = dlc_path_for_test_.empty()
+                                         ? base::FilePath(kPumpkinDlcRootPath)
+                                         : dlc_path_for_test_;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&AccessibilityManager::CreatePumpkinData,
-                     base::Unretained(this)),
+      base::BindOnce(&CreatePumpkinData, base_pumpkin_path),
       base::BindOnce(&AccessibilityManager::OnPumpkinDataCreated,
-                     base::Unretained(this)));
-}
-
-std::unique_ptr<PumpkinData> AccessibilityManager::CreatePumpkinData() {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  PumpkinData data;
-  base::FilePath base_path = dlc_path_for_test_.empty()
-                                 ? base::FilePath(kPumpkinDlcRootPath)
-                                 : dlc_path_for_test_;
-
-  // TODO(https://crbug.com/1258190): Consider making action/pumpkin configs
-  // optional.
-  base::flat_map<std::string, std::vector<uint8_t>*> files_to_data({
-      {"js_pumpkin_tagger_bin.js", &data.js_pumpkin_tagger_bin_js},
-      {"tagger_wasm_main.js", &data.tagger_wasm_main_js},
-      {"tagger_wasm_main.wasm", &data.tagger_wasm_main_wasm},
-      {"en_us/action_config.binarypb", &data.en_us_action_config_binarypb},
-      {"en_us/pumpkin_config.binarypb", &data.en_us_pumpkin_config_binarypb},
-      {"fr_fr/action_config.binarypb", &data.fr_fr_action_config_binarypb},
-      {"fr_fr/pumpkin_config.binarypb", &data.fr_fr_pumpkin_config_binarypb},
-      {"it_it/action_config.binarypb", &data.it_it_action_config_binarypb},
-      {"it_it/pumpkin_config.binarypb", &data.it_it_pumpkin_config_binarypb},
-      {"de_de/action_config.binarypb", &data.de_de_action_config_binarypb},
-      {"de_de/pumpkin_config.binarypb", &data.de_de_pumpkin_config_binarypb},
-      {"es_es/action_config.binarypb", &data.es_es_action_config_binarypb},
-      {"es_es/pumpkin_config.binarypb", &data.es_es_pumpkin_config_binarypb},
-  });
-
-  for (const auto& iter : files_to_data) {
-    std::string file_name = iter.first;
-    std::vector<uint8_t>* file_data = iter.second;
-    ReadDlcFileResponse response = ReadDlcFile(base_path.Append(file_name));
-    if (response.error.has_value())
-      return nullptr;
-
-    *file_data = response.contents;
-  }
-
-  return std::make_unique<PumpkinData>(std::move(data));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AccessibilityManager::OnPumpkinDataCreated(
