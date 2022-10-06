@@ -484,18 +484,9 @@ void FillGlobalMotionParams(
       } else
         v4l2_gm->params[i][j] = base::checked_cast<uint32_t>(gm.params[j]);
     }
-  }
 
-  // HACK: Calling |SetupShear| in its own loop fixes an issue with corruption
-  // of |gm_array[i].params|. However the values should not get written to
-  // regardless of where loop |SetupShear| is called.
-  // TODO(b/249829041): Debug SetupShear to understand if there is a bug to fix
-  // in libgav1, or if something else is happening.
-  for (size_t i = 1; i < libgav1::kNumReferenceFrameTypes; ++i) {
-    // Copy |gm_array| to |gm| because SetupShear() updates the affine variables
-    // of the |gm_array|.
-    auto gm = gm_array[i];
-    v4l2_gm[i].invalid = !libgav1::SetupShear(&gm);
+    conditionally_set_flags(&v4l2_gm->invalid, !libgav1::SetupShear(&gm),
+                            V4L2_AV1_GLOBAL_MOTION_IS_INVALID(i));
   }
 }
 
