@@ -6268,8 +6268,6 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     auction_run_loop_->Run();
 
     // No bidder won, seller crashed.
-    EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
-                                    "%s crashed.", kSellerUrl.spec().c_str())));
     EXPECT_FALSE(result_.winning_group_id);
     EXPECT_FALSE(result_.ad_url);
     EXPECT_TRUE(result_.ad_component_urls.empty());
@@ -6277,11 +6275,18 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
     EXPECT_TRUE(result_.private_aggregation_requests.empty());
     if (crash_phase != CrashPhase::kReportResult) {
+      EXPECT_THAT(result_.errors,
+                  testing::ElementsAre(base::StringPrintf(
+                      "%s crashed.", kSellerUrl.spec().c_str())));
       EXPECT_EQ(5, result_.bidder1_bid_count);
       EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
       EXPECT_EQ(5, result_.bidder2_bid_count);
       EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
     } else {
+      EXPECT_THAT(result_.errors,
+                  testing::ElementsAre(base::StringPrintf(
+                      "%s crashed while trying to run reportResult().",
+                      kSellerUrl.spec().c_str())));
       // If the seller worklet crashes while calculating the report URL, still
       // report bids.
       EXPECT_EQ(6, result_.bidder1_bid_count);

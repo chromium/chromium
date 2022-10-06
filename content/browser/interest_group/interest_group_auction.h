@@ -41,6 +41,7 @@ struct AuctionConfig;
 
 namespace content {
 
+class InterestGroupAuctionReporter;
 class InterestGroupManagerImpl;
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
@@ -447,6 +448,18 @@ class CONTENT_EXPORT InterestGroupAuction
   // bidding and scoring phase has completed successfully.
   ScoredBid* top_bid();
 
+  // Gets the buyer experiment ID in `config` for buyer. Public so that
+  // InterestGroupAuctionReporter can use it.
+  static absl::optional<uint16_t> GetBuyerExperimentId(
+      const blink::AuctionConfig& config,
+      const url::Origin& buyer);
+
+  // Gets the buyer per-buyer-signals ID in `config` for buyer. Public so that
+  // InterestGroupAuctionReporter can use it.
+  static absl::optional<std::string> GetPerBuyerSignals(
+      const blink::AuctionConfig& config,
+      const url::Origin& buyer);
+
  private:
   using AuctionList = std::list<std::unique_ptr<InterestGroupAuction>>;
 
@@ -584,35 +597,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // worklet to report a win. Will ultimately invoke
   // `reporting_phase_callback_`, which will delete the auction.
   void ReportSellerResult(absl::optional<std::string> top_seller_signals);
-  void OnReportSellerResultComplete(
-      const absl::optional<std::string>& signals_for_winner,
-      const absl::optional<GURL>& seller_report_url,
-      const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
-      PrivateAggregationRequests pa_requests,
-      const std::vector<std::string>& error_msgs);
-  void LoadBidderWorkletToReportBidWin(const std::string& signals_for_winner);
-  void ReportBidWin(const std::string& signals_for_winner);
-  void OnReportBidWinComplete(
-      const absl::optional<GURL>& bidder_report_url,
-      const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
-      PrivateAggregationRequests pa_requests,
-      const std::vector<std::string>& error_msgs);
-
-  // Called when the component SellerWorklet with the bidder that won an
-  // auction has an out-of-band fatal error during the ReportResult() call.
-  void OnWinningComponentSellerWorkletFatalError(
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Called when the BidderWorklet that won an auction has an out-of-band
-  // fatal error during the ReportWin() call.
-  void OnWinningBidderWorkletFatalError(
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Invoked when the nested component auction with the winning bid's
-  // reporting phase is complete. Completes the reporting phase for `this`.
-  void OnComponentAuctionReportingPhaseComplete(bool success);
+  void OnReporterComplete(AuctionResult auction_result);
 
   // Called when the final phase of the auction completes. Unconditionally
   // sets `final_auction_result`, even if `auction_result` is
@@ -805,6 +790,12 @@ class CONTENT_EXPORT InterestGroupAuction
   // seller failed to load, since neither the bids nor the bidders were the
   // problem).
   bool all_bids_scored_ = false;
+
+  // Handles the reporting phase of the auction.
+  //
+  // TODO(mmenke): Make this class return the report, so the consumer can wire
+  // it up to the URN loading code.
+  std::unique_ptr<InterestGroupAuctionReporter> reporter_;
 
   // Receivers for OnScoreAd() callbacks. Owns Bids, which have raw pointers to
   // other objects, so must be last, to avoid triggering tooling to check for

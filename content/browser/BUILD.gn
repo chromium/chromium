@@ -1117,6 +1117,8 @@ source_set("browser") {
     "interest_group/debuggable_auction_worklet_tracker.h",
     "interest_group/interest_group_auction.cc",
     "interest_group/interest_group_auction.h",
+    "interest_group/interest_group_auction_reporter.cc",
+    "interest_group/interest_group_auction_reporter.h",
     "interest_group/interest_group_k_anonymity_manager.cc",
     "interest_group/interest_group_k_anonymity_manager.h",
     "interest_group/interest_group_manager_impl.cc",

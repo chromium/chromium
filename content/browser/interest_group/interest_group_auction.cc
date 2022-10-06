@@ -33,6 +33,7 @@
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_priority_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
@@ -574,7 +575,8 @@ class InterestGroupAuction::BuyerHelper
             ComputeKAnon(bid_state->bidder, kanon_mode)),
         kanon_mode, bid_state->bidder.joining_origin,
         auction_->config_->non_shared_params.auction_signals,
-        auction_->PerBuyerSignals(bid_state),
+        GetPerBuyerSignals(*auction_->config_,
+                           bid_state->bidder.interest_group.owner),
         auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,
         auction_->parent_ ? auction_->parent_->config_->seller
                           : absl::optional<url::Origin>(),
@@ -765,6 +767,7 @@ class InterestGroupAuction::BuyerHelper
       }
     }
 
+    // The mojom API declaration should ensure none of these are null.
     DCHECK(base::ranges::none_of(
         pa_requests,
         [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
@@ -1137,35 +1140,92 @@ void InterestGroupAuction::StartReportingPhase(
   DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
   DCHECK(top_bid_);
+  // This should only be called on top-level auctions.
+  DCHECK(!parent_);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "reporting_phase", trace_id_);
 
-  reporting_phase_callback_ = std::move(reporting_phase_callback);
+  InterestGroupAuctionReporter::WinningBidInfo winning_bid_info;
+  winning_bid_info.storage_interest_group = &top_bid_->bid->bid_state->bidder;
+  winning_bid_info.render_url = top_bid_->bid->render_url;
+  winning_bid_info.ad_components = top_bid_->bid->ad_components;
+  // Need the bid from the bidder itself. If the bid was from a component
+  // auction, then `top_bid_->bid` will be the bid from the component auction,
+  // which the component seller worklet may have modified, and thus the wrong
+  // bid. As a result, have to get the top bid from the component auction in
+  // that case. `top_bid_->bid->auction->top_bid()` is the same as `top_bid_` if
+  // the bid was from the top-level auction, and the original top bid from the
+  // component auction, otherwise, so will always be the bid returned by the
+  // winning bidder's generateBid() method.
+  winning_bid_info.bid = top_bid_->bid->auction->top_bid()->bid->bid;
+  winning_bid_info.bid_duration = top_bid_->bid->bid_duration;
+  winning_bid_info.bidding_signals_data_version =
+      top_bid_->bid->bidding_signals_data_version;
 
-  // Component auctions unload their seller worklets on completion, so need to
-  // reload the seller worklet in the case of a component auction.
-  if (!seller_worklet_handle_) {
-    DCHECK(parent_);
-    DCHECK(top_seller_signals);
-    if (!auction_worklet_manager_->RequestSellerWorklet(
-            config_->decision_logic_url, config_->trusted_scoring_signals_url,
-            config_->seller_experiment_group_id,
-            base::BindOnce(&InterestGroupAuction::ReportSellerResult,
-                           base::Unretained(this), top_seller_signals),
-            base::BindOnce(&InterestGroupAuction::
-                               OnWinningComponentSellerWorkletFatalError,
-                           base::Unretained(this)),
-            seller_worklet_handle_)) {
-      return;
-    }
-  } else {
-    DCHECK(!parent_);
-    DCHECK(!top_seller_signals);
+  InterestGroupAuctionReporter::SellerWinningBidInfo
+      top_level_seller_winning_bid_info;
+  top_level_seller_winning_bid_info.auction_config = config_;
+  top_level_seller_winning_bid_info.bid = top_bid_->bid->bid;
+  top_level_seller_winning_bid_info.score = top_bid_->score;
+  top_level_seller_winning_bid_info.highest_scoring_other_bid =
+      highest_scoring_other_bid_;
+  top_level_seller_winning_bid_info.highest_scoring_other_bid_owner =
+      highest_scoring_other_bid_owner_;
+  top_level_seller_winning_bid_info.scoring_signals_data_version =
+      top_bid_->scoring_signals_data_version;
+  top_level_seller_winning_bid_info.trace_id = trace_id_;
+
+  // Populate the SellerWinningBidInfo for the component auction that the
+  // winning bid came from, if any. This largely duplicates the above block.
+  //
+  // TODO(mmenke): Share code with the above block. This currently isn't
+  // possible because InterestGroupAuctionReporter depends on
+  // InterestGroupAuction, so it can return an auction completion status, so no
+  // InterestGroupAuction methods can take or return an
+  // InterestGroupAuctionReporter::SellerWinningBidInfo. Once that dependency is
+  // removed, it should be possible to make a helper method to construct both
+  // SellerWinningBidInfos.
+  absl::optional<InterestGroupAuctionReporter::SellerWinningBidInfo>
+      component_seller_winning_bid_info;
+  if (top_bid_->bid->auction != this) {
+    const InterestGroupAuction* component_auction = top_bid_->bid->auction;
+    component_seller_winning_bid_info.emplace();
+    component_seller_winning_bid_info->auction_config =
+        component_auction->config_;
+    component_seller_winning_bid_info->bid =
+        component_auction->top_bid_->bid->bid;
+    component_seller_winning_bid_info->score =
+        component_auction->top_bid_->score;
+    component_seller_winning_bid_info->highest_scoring_other_bid =
+        component_auction->highest_scoring_other_bid_;
+    component_seller_winning_bid_info->highest_scoring_other_bid_owner =
+        component_auction->highest_scoring_other_bid_owner_;
+    component_seller_winning_bid_info->scoring_signals_data_version =
+        component_auction->top_bid_->scoring_signals_data_version;
+    component_seller_winning_bid_info->trace_id = component_auction->trace_id_;
+    component_seller_winning_bid_info->component_auction_modified_bid_params =
+        component_auction->top_bid_->component_auction_modified_bid_params
+            ->Clone();
   }
-  ReportSellerResult(std::move(top_seller_signals));
+
+  reporting_phase_callback_ = std::move(reporting_phase_callback);
+  reporter_ = std::make_unique<InterestGroupAuctionReporter>(
+      auction_worklet_manager_, std::move(winning_bid_info),
+      std::move(top_level_seller_winning_bid_info),
+      std::move(component_seller_winning_bid_info),
+      std::move(private_aggregation_requests_));
+  reporter_->Start(base::BindOnce(&InterestGroupAuction::OnReporterComplete,
+                                  base::Unretained(this)));
+  // The seller worklet handle is no longer needed. It's useful to keep it
+  // alive until this point so that the InterestGroupAuctionReporter can reuse
+  // it.
+  seller_worklet_handle_.reset();
 }
 
 void InterestGroupAuction::ClosePipes() {
+  // Release any worklets the reporter is keeping alive.
+  reporter_.reset();
+
   // This is needed in addition to closing worklet pipes since the callbacks
   // passed to Mojo pipes this class doesn't own aren't cancellable.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -1362,16 +1422,6 @@ void InterestGroupAuction::TakeDebugReportUrls(
 }
 
 std::vector<GURL> InterestGroupAuction::TakeReportUrls() {
-  DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
-
-  // Retrieve data from winning component auction as well, if a bid from a
-  // component auction won.
-  if (top_bid_->bid->auction != this) {
-    std::vector<GURL> nested_report_urls =
-        top_bid_->bid->auction->TakeReportUrls();
-    report_urls_.insert(report_urls_.begin(), nested_report_urls.begin(),
-                        nested_report_urls.end());
-  }
   return std::move(report_urls_);
 }
 
@@ -1415,6 +1465,28 @@ InterestGroupAuction::ScoredBid* InterestGroupAuction::top_bid() {
   DCHECK(all_bids_scored_);
   DCHECK(top_bid_);
   return top_bid_.get();
+}
+
+absl::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
+    const blink::AuctionConfig& config,
+    const url::Origin& buyer) {
+  auto it = config.per_buyer_experiment_group_ids.find(buyer);
+  if (it != config.per_buyer_experiment_group_ids.end())
+    return it->second;
+  return config.all_buyer_experiment_group_id;
+}
+
+absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
+    const blink::AuctionConfig& config,
+    const url::Origin& buyer) {
+  const auto& auction_config_per_buyer_signals =
+      config.non_shared_params.per_buyer_signals;
+  if (auction_config_per_buyer_signals.has_value()) {
+    auto it = auction_config_per_buyer_signals.value().find(buyer);
+    if (it != auction_config_per_buyer_signals.value().end())
+      return it->second;
+  }
+  return absl::nullopt;
 }
 
 void InterestGroupAuction::OnInterestGroupRead(
@@ -1766,6 +1838,7 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   --bids_being_scored_;
 
+  // The mojom API declaration should ensure none of these are null.
   DCHECK(base::ranges::none_of(
       pa_requests,
       [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
@@ -1992,272 +2065,16 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   std::move(bidding_and_scoring_phase_callback_).Run(success);
 }
 
-void InterestGroupAuction::ReportSellerResult(
-    absl::optional<std::string> top_seller_signals) {
-  DCHECK(seller_worklet_handle_);
-  DCHECK(reporting_phase_callback_);
+void InterestGroupAuction::OnReporterComplete(AuctionResult auction_result) {
+  // Extract all results from the reporter, and then destroy it.
+  errors_.insert(errors_.end(), reporter_->errors().begin(),
+                 reporter_->errors().end());
+  private_aggregation_requests_ = reporter_->TakePrivateAggregationRequests();
+  ad_beacon_map_ = reporter_->TakeAdBeaconMap();
+  report_urls_ = reporter_->TakeReportUrls();
+  reporter_.reset();
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "seller_worklet_report_result",
-                                    trace_id_);
-
-  auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
-      browser_signals_component_auction_report_result_params;
-  if (parent_) {
-    DCHECK(top_seller_signals);
-    DCHECK(top_bid_->component_auction_modified_bid_params);
-    browser_signals_component_auction_report_result_params =
-        auction_worklet::mojom::ComponentAuctionReportResultParams::New(
-            /*top_level_seller_signals=*/std::move(top_seller_signals).value(),
-            /*modified_bid=*/
-            top_bid_->component_auction_modified_bid_params->bid,
-            /*has_modified_bid=*/
-            top_bid_->component_auction_modified_bid_params->has_bid);
-  }
-
-  seller_worklet_handle_->GetSellerWorklet()->ReportResult(
-      config_->non_shared_params, GetOtherSellerParam(*top_bid_->bid),
-      top_bid_->bid->interest_group->owner, top_bid_->bid->render_url,
-      top_bid_->bid->bid, top_bid_->score, highest_scoring_other_bid_,
-      std::move(browser_signals_component_auction_report_result_params),
-      top_bid_->scoring_signals_data_version.value_or(0),
-      top_bid_->scoring_signals_data_version.has_value(), trace_id_,
-      base::BindOnce(&InterestGroupAuction::OnReportSellerResultComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void InterestGroupAuction::OnReportSellerResultComplete(
-    const absl::optional<std::string>& signals_for_winner,
-    const absl::optional<GURL>& seller_report_url,
-    const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
-    PrivateAggregationRequests pa_requests,
-    const std::vector<std::string>& errors) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_report_result",
-                                  trace_id_);
-
-  // There should be no other report URLs at this point.
-  DCHECK(report_urls_.empty());
-
-  // Release the seller worklet handle. It's no longer needed, and not releasing
-  // it could theoretically trigger deadlock, if holding onto it prevents the
-  // winning component seller from reloading its worklet. It could also trigger
-  // an error if it crashes at this point, failing the auction unnecessarily.
-  seller_worklet_handle_.reset();
-
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-  if (!pa_requests.empty()) {
-    DCHECK(config_);
-    PrivateAggregationRequests& pa_requests_for_seller =
-        private_aggregation_requests_[config_->seller];
-    pa_requests_for_seller.insert(pa_requests_for_seller.end(),
-                                  std::move_iterator(pa_requests.begin()),
-                                  std::move_iterator(pa_requests.end()));
-  }
-
-  if (!seller_ad_beacon_map.empty()) {
-    for (const auto& element : seller_ad_beacon_map) {
-      if (!IsUrlValid(element.second)) {
-        mojo::ReportBadMessage(base::StrCat(
-            {"Invalid seller beacon URL for '", element.first, "'"}));
-        OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
-        return;
-      }
-    }
-    ad_beacon_map_.metadata[ReportingDestination::kSeller] =
-        seller_ad_beacon_map;
-  }
-
-  if (seller_report_url) {
-    if (!IsUrlValid(*seller_report_url)) {
-      mojo::ReportBadMessage("Invalid seller report URL");
-      OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
-      return;
-    }
-
-    report_urls_.push_back(*seller_report_url);
-  }
-
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
-
-  // Treat a null `signals_for_winner` value as a null JS response.
-  //
-  // TODO(mmenke): Consider making `signals_for_winner` itself non-optional, and
-  // clean this up.
-  std::string fixed_up_signals_for_winner = signals_for_winner.value_or("null");
-
-  // If a the winning bid is from a nested component auction, need to call into
-  // that Auction's report logic (which will invoke both that seller's
-  // ReportResult() method, and the bidder's ReportWin()).
-  if (top_bid_->bid->auction != this) {
-    top_bid_->bid->auction->StartReportingPhase(
-        std::move(fixed_up_signals_for_winner),
-        base::BindOnce(
-            &InterestGroupAuction::OnComponentAuctionReportingPhaseComplete,
-            base::Unretained(this)));
-    return;
-  }
-
-  LoadBidderWorkletToReportBidWin(std::move(fixed_up_signals_for_winner));
-}
-
-void InterestGroupAuction::LoadBidderWorkletToReportBidWin(
-    const std::string& signals_for_winner) {
-  // Worklet handle should have been destroyed once the bid was generated.
-  DCHECK(!top_bid_->bid->bid_state->worklet_handle);
-
-  if (RequestBidderWorklet(
-          *top_bid_->bid->bid_state,
-          base::BindOnce(&InterestGroupAuction::ReportBidWin,
-                         base::Unretained(this), signals_for_winner),
-          base::BindOnce(
-              &InterestGroupAuction::OnWinningBidderWorkletFatalError,
-              base::Unretained(this)))) {
-    ReportBidWin(signals_for_winner);
-  }
-}
-
-void InterestGroupAuction::ReportBidWin(const std::string& signals_for_winner) {
-  DCHECK(top_bid_);
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidder_worklet_report_win",
-                                    trace_id_);
-
-  top_bid_->bid->bid_state->worklet_handle->GetBidderWorklet()->ReportWin(
-      top_bid_->bid->interest_group->name,
-      config_->non_shared_params.auction_signals,
-      PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner,
-      top_bid_->bid->render_url, top_bid_->bid->bid,
-      /*browser_signal_highest_scoring_other_bid=*/highest_scoring_other_bid_,
-      highest_scoring_other_bid_owner_.has_value() &&
-          top_bid_->bid->interest_group->owner ==
-              highest_scoring_other_bid_owner_.value(),
-      config_->seller,
-      parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
-      top_bid_->bid->bidding_signals_data_version.value_or(0),
-      top_bid_->bid->bidding_signals_data_version.has_value(), trace_id_,
-      base::BindOnce(&InterestGroupAuction::OnReportBidWinComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void InterestGroupAuction::OnReportBidWinComplete(
-    const absl::optional<GURL>& bidder_report_url,
-    const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
-    PrivateAggregationRequests pa_requests,
-    const std::vector<std::string>& errors) {
-  // There should be at most one other report URL at this point.
-  DCHECK_LE(report_urls_.size(), 1u);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
-                                  trace_id_);
-
-  // The winning bidder worklet is no longer needed. Unload it to prevent a
-  // fatal error notification.
-  top_bid_->bid->bid_state->worklet_handle.reset();
-
-  DCHECK(base::ranges::none_of(
-      pa_requests,
-      [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
-             request_ptr) { return request_ptr.is_null(); }));
-  if (!pa_requests.empty()) {
-    DCHECK(config_);
-    PrivateAggregationRequests& pa_requests_for_bidder =
-        private_aggregation_requests_[top_bid_->bid->interest_group->owner];
-    pa_requests_for_bidder.insert(pa_requests_for_bidder.end(),
-                                  std::move_iterator(pa_requests.begin()),
-                                  std::move_iterator(pa_requests.end()));
-  }
-
-  if (!bidder_ad_beacon_map.empty()) {
-    for (const auto& element : bidder_ad_beacon_map) {
-      if (!IsUrlValid(element.second)) {
-        mojo::ReportBadMessage(base::StrCat(
-            {"Invalid bidder beacon URL for '", element.first, "'"}));
-        OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
-        return;
-      }
-    }
-    ad_beacon_map_.metadata[ReportingDestination::kBuyer] =
-        bidder_ad_beacon_map;
-  }
-
-  if (bidder_report_url) {
-    if (!IsUrlValid(*bidder_report_url)) {
-      mojo::ReportBadMessage("Invalid bidder report URL");
-      OnReportingPhaseComplete(AuctionResult::kBadMojoMessage);
-      return;
-    }
-
-    report_urls_.push_back(*bidder_report_url);
-  }
-
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
-  OnReportingPhaseComplete(AuctionResult::kSuccess);
-}
-
-void InterestGroupAuction::OnWinningComponentSellerWorkletFatalError(
-    AuctionWorkletManager::FatalErrorType fatal_error_type,
-    const std::vector<std::string>& errors) {
-  // Crashes are considered fatal errors, while load errors currently are not.
-  if (fatal_error_type ==
-      AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
-    OnReportingPhaseComplete(
-        AuctionResult::kWinningComponentSellerWorkletCrashed,
-        // Ignore default error message in case of crash. Instead, use a more
-        // specific one.
-        {base::StrCat({config_->decision_logic_url.spec(),
-                       " crashed while trying to run reportResult()."})});
-  } else {
-    // An error while reloading the worklet to call ReportResult() does not
-    // currently fail the auction.
-    OnReportSellerResultComplete(/*signals_for_winner=*/absl::nullopt,
-                                 /*seller_report_url=*/absl::nullopt,
-                                 /*seller_ad_beacon_map=*/{},
-                                 /*pa_requests=*/{}, errors);
-  }
-}
-
-void InterestGroupAuction::OnWinningBidderWorkletFatalError(
-    AuctionWorkletManager::FatalErrorType fatal_error_type,
-    const std::vector<std::string>& errors) {
-  // Crashes are considered fatal errors, while load errors currently are not.
-  if (fatal_error_type ==
-      AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
-    OnReportingPhaseComplete(
-        AuctionResult::kWinningBidderWorkletCrashed,
-        // Ignore default error message in case of crash. Instead, use a more
-        // specific one.
-        {base::StrCat({top_bid_->bid->interest_group->bidding_url->spec(),
-                       " crashed while trying to run reportWin()."})});
-  } else {
-    // An error while reloading the worklet to call ReportWin() does not
-    // currently fail the auction.
-    OnReportBidWinComplete(/*bidder_report_url=*/absl::nullopt,
-                           /*bidder_ad_beacon_map=*/{},
-                           /*pa_requests=*/{}, errors);
-  }
-}
-
-void InterestGroupAuction::OnComponentAuctionReportingPhaseComplete(
-    bool success) {
-  // Copy ad beacon registry.
-  DCHECK(top_bid_->bid->auction);
-  if (top_bid_->bid->auction->ad_beacon_map_.metadata.count(
-          ReportingDestination::kSeller) > 0) {
-    ad_beacon_map_.metadata[ReportingDestination::kComponentSeller] =
-        top_bid_->bid->auction->ad_beacon_map_
-            .metadata[ReportingDestination::kSeller];
-  }
-  if (top_bid_->bid->auction->ad_beacon_map_.metadata.count(
-          ReportingDestination::kBuyer) > 0) {
-    ad_beacon_map_.metadata[ReportingDestination::kBuyer] =
-        top_bid_->bid->auction->ad_beacon_map_
-            .metadata[ReportingDestination::kBuyer];
-  }
-
-  // Inherit the success or error from the nested auction.
-  OnReportingPhaseComplete(*top_bid_->bid->auction->final_auction_result_);
+  OnReportingPhaseComplete(auction_result);
 }
 
 void InterestGroupAuction::OnReportingPhaseComplete(
@@ -2265,13 +2082,20 @@ void InterestGroupAuction::OnReportingPhaseComplete(
     const std::vector<std::string>& errors) {
   DCHECK(reporting_phase_callback_);
   DCHECK(!final_auction_result_);
-  // There should be at most two report URLs.
-  DCHECK_LE(report_urls_.size(), 2u);
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   final_auction_result_ = auction_result;
+  // If there's a winning bid, set its auction result as well. If the winning
+  // bid came from a component auction, this will set that component auction's
+  // result as well. This is needed for auction result accessors.
+  //
+  // TODO(mmenke): Extract relevant data from `this` when creating the Reporter,
+  // and have it handle reporting only if auction results are loaded in a frame,
+  // or if there's no result.
+  if (top_bid_)
+    top_bid_->bid->auction->final_auction_result_ = auction_result;
 
   // Close all pipes, as they're no longer needed.
   ClosePipes();
@@ -2308,13 +2132,8 @@ bool InterestGroupAuction::RequestBidderWorklet(
 
   const blink::InterestGroup& interest_group = bid_state.bidder.interest_group;
 
-  absl::optional<uint16_t> experiment_group_id = absl::nullopt;
-  auto it = config_->per_buyer_experiment_group_ids.find(interest_group.owner);
-  if (it != config_->per_buyer_experiment_group_ids.end()) {
-    experiment_group_id = it->second;
-  } else {
-    experiment_group_id = config_->all_buyer_experiment_group_id;
-  }
+  absl::optional<uint16_t> experiment_group_id =
+      GetBuyerExperimentId(*config_, interest_group.owner);
 
   return auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
