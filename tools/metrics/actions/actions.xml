@@ -26307,6 +26307,35 @@ should be able to be added at any place in this file.
   <description>User pressed Search+9 to produce the F9 key.</description>
 </action>
 
+<action name="SearchResumptionModule.NTP.Click">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <description>
+    The search suggestion on the search resumption module is clicked.
+  </description>
+</action>
+
+<action name="SearchResumptionModule.NTP.Collapse">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <description>
+    Users click the header of the search resumption module to collapse the
+    suggestions.
+  </description>
+</action>
+
+<action name="SearchResumptionModule.NTP.Expand">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <description>
+    Users click the header of the search resumption module to expand and show
+    the suggestions.
+  </description>
+</action>
+
 <action name="SearchWidget.SearchMade">
   <owner>yusufo@chromium.org</owner>
   <description>
