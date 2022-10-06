@@ -266,9 +266,9 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       std::move(presence_monitor_client),
       base::BindRepeating(&EcheAppManagerFactory::LaunchEcheApp, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
-                          weak_ptr_factory_.GetWeakPtr(), profile),
+                          weak_ptr_factory_.GetMutableWeakPtr(), profile),
       base::BindRepeating(&EcheAppManagerFactory::CloseNotification,
-                          weak_ptr_factory_.GetWeakPtr(), profile));
+                          weak_ptr_factory_.GetMutableWeakPtr(), profile));
 }
 
 std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
