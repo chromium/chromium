@@ -131,6 +131,13 @@ class PageSpecificSiteDataDialogInteractiveUiTest
         row_view->menu_button_for_testing());
   }
 
+  ui::TrackedElement* GetDeleteButtonElement(ui::TrackedElement* row_element) {
+    auto* const row_view = views::AsViewClass<SiteDataRowView>(
+        row_element->AsA<views::TrackedElementViews>()->view());
+    return views::ElementTrackerViews::GetInstance()->GetElementForView(
+        row_view->delete_button_for_testing());
+  }
+
   ui::test::InteractionTestUtil test_util_;
 
  private:
@@ -206,14 +213,13 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                              test_util_.PressButton(
                                  GetMenuButtonElement(element));
                            })))
-          // Verify that the menu has "Block", "Clear on exit" and "Delete" menu
+          // Verify that the menu has "Block" and "Clear on exit" menu
           // items.
           .AddStep(CheckIsElementPresent(SiteDataRowView::kBlockMenuItem))
           .AddStep(CheckIsElementPresent(SiteDataRowView::kClearOnExitMenuItem))
+          // Verify that the site can be deleted.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetFindElementInAnyContext(true)
-                       .SetElementID(SiteDataRowView::kDeleteMenuItem)
-                       .SetMustRemainVisible(false)
+                       .SetElementName(kFirstPartyAllowedRow)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,
                                ui::TrackedElement* element) {
@@ -223,16 +229,10 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                                        GetElementByIdentifier(
                                            GetContext(element),
                                            SiteDataRowView::kAllowMenuItem));
-                             test_util_.SelectMenuItem(element);
+                             test_util_.PressButton(
+                                 GetDeleteButtonElement(element));
                            })))
-          // Wait until custom event happens (triggered when any menu item
-          // callback is called). Menu item is accepted on Mac async, after
-          // closure animation finished.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                                kSiteRowMenuItemClicked)
-                       .SetElementName(kFirstPartyAllowedRow))
-          // Verify that UI has updated as a result of clicking on a menu item
+          // Verify that UI has updated as a result of clicking on the button
           // and the correct histogram was logged.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kHidden)
@@ -332,10 +332,6 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                                        GetElementByIdentifier(
                                            GetContext(element),
                                            SiteDataRowView::kBlockMenuItem));
-                             EXPECT_EQ(nullptr,
-                                       GetElementByIdentifier(
-                                           GetContext(element),
-                                           SiteDataRowView::kDeleteMenuItem));
 
                              test_util_.SelectMenuItem(element);
                            })))
@@ -347,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                                 kSiteRowMenuItemClicked)
                        .SetElementName(kThirdPartyBlockedRow))
           // Verify that UI has updated as a result of clicking on a menu item
-          // and the correct histogram was logged.
+          // and the correct histogram was logged. Open the content menu again.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementName(kThirdPartyBlockedRow)
                        .SetStartCallback(base::BindLambdaForTesting(
@@ -357,6 +353,28 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                              ExpectActionCount(
                                  histograms,
                                  PageSpecificSiteDataDialogAction::kSiteAllowed,
+                                 1);
+                           })))
+          // Verify that after allowing a site, it can be deleted.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementName(kThirdPartyBlockedRow)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util_.PressButton(
+                                 GetDeleteButtonElement(element));
+                           })))
+          // Verify that UI has updated as a result of clicking on the delete
+          // button and the correct histogram was logged.
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kHidden)
+                       .SetElementName(kThirdPartyBlockedRow)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             ExpectActionCount(
+                                 histograms,
+                                 PageSpecificSiteDataDialogAction::kSiteDeleted,
                                  1);
                            })))
           .Build();

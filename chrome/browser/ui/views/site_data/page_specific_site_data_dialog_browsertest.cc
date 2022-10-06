@@ -124,12 +124,6 @@ class PageSpecificSiteDataDialogBrowserTest
     return tracked_elements[index]->AsA<views::TrackedElementViews>()->view();
   }
 
-  void ClickDeleteMenuItem(SiteDataRowView* row_view) {
-    // TODO(crbug.com/1344787): Get the menu item from the the menu runner and
-    // click on it.
-    row_view->OnDeleteMenuItemClicked(/*event_flags*/ 0);
-  }
-
   void ClickBlockMenuItem(SiteDataRowView* row_view) {
     // TODO(crbug.com/1344787): Get the menu item from the the menu runner and
     // click on it.
@@ -232,7 +226,10 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
-  ClickDeleteMenuItem(row_view);
+
+  EXPECT_TRUE(row_view->delete_button_for_testing()->GetVisible());
+  ClickButton(row_view->delete_button_for_testing());
+
   EXPECT_FALSE(row_view->GetVisible());
 
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
@@ -283,10 +280,10 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
-  ClickButton(row_view->menu_button_for_testing());
-  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
-  // correct menu item are displayed.
-  ClickDeleteMenuItem(row_view);
+
+  EXPECT_TRUE(row_view->delete_button_for_testing()->GetVisible());
+  ClickButton(row_view->delete_button_for_testing());
+
   EXPECT_FALSE(row_view->GetVisible());
 
   dialog->Close();
@@ -318,6 +315,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
 
   auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
+  // The delete button is available for not blocked sites.
+  EXPECT_TRUE(row_view->delete_button_for_testing()->GetVisible());
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
   ClickButton(row_view->menu_button_for_testing());
@@ -329,7 +328,8 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
-  // TODO(crbug.com/1344787): Check the histograms value.
+  // The delete button isn't available for blocked sites.
+  EXPECT_FALSE(row_view->delete_button_for_testing()->GetVisible());
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());

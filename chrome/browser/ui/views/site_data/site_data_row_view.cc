@@ -22,9 +22,10 @@
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
 
+// Not referenced directly but needed to use GetElementForView in tests.
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kMenuButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kDeleteButton);
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kDeleteMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kAllowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kBlockMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kClearOnExitMenuItem);
@@ -32,6 +33,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kClearOnExitMenuItem);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
 
 namespace {
+
+constexpr int kIconSize = 16;
 
 std::u16string GetSettingStateString(ContentSetting setting,
                                      bool is_fully_partitioned) {
@@ -66,6 +69,8 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
       views::InsetsMetric::INSETS_DIALOG);
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int button_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   auto layout = std::make_unique<views::TableLayout>();
   layout
       ->AddPaddingColumn(views::TableLayout::kFixedSize, dialog_insets.left())
@@ -80,10 +85,15 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
                  views::LayoutAlignment::kCenter, 1.0f,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
       .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      // Delete icon.
+      .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, kIconSize)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, button_spacing)
       // Menu icon.
       .AddColumn(views::LayoutAlignment::kEnd, views::LayoutAlignment::kStretch,
                  views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, kIconSize)
       .AddPaddingColumn(views::TableLayout::kFixedSize, dialog_insets.right())
       .AddRows(1, views::TableLayout::kFixedSize);
   return layout;
@@ -110,14 +120,13 @@ SiteDataRowView::SiteDataRowView(
       is_fully_partitioned_(is_fully_partitioned),
       delete_callback_(std::move(delete_callback)),
       create_exception_callback_(std::move(create_exception_callback)) {
-  const int icon_size = 16;
   const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
 
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   favicon_image_ = AddChildView(std::make_unique<NonAccessibleImageView>());
   favicon_image_->SetImage(
-      ui::ImageModel::FromVectorIcon(kGlobeIcon, ui::kColorIcon, icon_size));
+      ui::ImageModel::FromVectorIcon(kGlobeIcon, ui::kColorIcon, kIconSize));
 
   // It's safe to bind to this here because both the row view and the favicon
   // service have the same lifetime and all be destroyed when the dialog is
@@ -133,11 +142,23 @@ SiteDataRowView::SiteDataRowView(
       std::make_unique<views::Label>(base::UTF8ToUTF16(origin.host())));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
+  auto* delete_button_container = AddChildView(std::make_unique<views::View>());
+  delete_button_container->SetUseDefaultFillLayout(true);
+  delete_button_ = delete_button_container->AddChildView(
+      views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(&SiteDataRowView::OnDeleteIconClicked,
+                              base::Unretained(this)),
+          kTrashCanIcon, kIconSize));
+  views::InstallCircleHighlightPathGenerator(delete_button_);
+  delete_button_->SetAccessibleName(u"Delete storage");
+  delete_button_->SetVisible(setting_ != CONTENT_SETTING_BLOCK);
+  delete_button_->SetProperty(views::kElementIdentifierKey, kDeleteButton);
+
   // TODO(crbug.com/1344787): Use actual strings.
   menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
-      kBrowserToolsIcon, icon_size));
+      kBrowserToolsIcon, kIconSize));
   menu_button_->SetAccessibleName(u"Open context menu");
   menu_button_->SetProperty(views::kElementIdentifierKey, kMenuButton);
   views::InstallCircleHighlightPathGenerator(menu_button_);
@@ -165,12 +186,6 @@ void SiteDataRowView::OnMenuIconClicked() {
   // special options for it.
   auto builder = ui::DialogModel::Builder();
   if (setting_ != CONTENT_SETTING_BLOCK) {
-    // Provide delete option for the sites that aren't blocked.
-    builder.AddMenuItem(
-        ui::ImageModel(), u"Delete",
-        base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
-                            base::Unretained(this)),
-        ui::DialogModelMenuItem::Params().SetId(kDeleteMenuItem));
     // TODO(crbug.com/1344787): Consider clearing the data before blocking the
     // site to have a clean slate.
     builder.AddMenuItem(
@@ -211,13 +226,9 @@ void SiteDataRowView::OnMenuClosed() {
   dialog_model_.reset();
 }
 
-void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
+void SiteDataRowView::OnDeleteIconClicked() {
   DCHECK_NE(setting_, CONTENT_SETTING_BLOCK);
   delete_callback_.Run(origin_);
-
-  // Notify the event before hiding, the element has to be visible when event
-  // happens.
-  NotifyMenuItemClicked(this);
 
   // Hiding the view instead of trying to delete makes the lifecycle management
   // easier. All the related items to the dialog have the same lifecycle and are
@@ -245,7 +256,10 @@ void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   // After creating an explicit exception for the site, don't show the state as
   // partitioned because the exception applies to all cookies.
   is_fully_partitioned_ = false;
+
   state_label_->SetVisible(true);
   state_label_->SetText(GetSettingStateString(setting_, is_fully_partitioned_));
+  delete_button_->SetVisible(setting_ != CONTENT_SETTING_BLOCK);
+
   NotifyMenuItemClicked(this);
 }

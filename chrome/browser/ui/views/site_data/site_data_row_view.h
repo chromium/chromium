@@ -54,14 +54,15 @@ class SiteDataRowView : public views::View {
   ~SiteDataRowView() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuButton);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteButton);
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearOnExitMenuItem);
 
   views::Label* state_label_for_testing() { return state_label_; }
   views::ImageButton* menu_button_for_testing() { return menu_button_; }
+  views::ImageButton* delete_button_for_testing() { return delete_button_; }
 
  private:
   friend class PageSpecificSiteDataDialogBrowserTest;
@@ -71,7 +72,8 @@ class SiteDataRowView : public views::View {
   void OnMenuIconClicked();
   void OnMenuClosed();
 
-  void OnDeleteMenuItemClicked(int event_flags);
+  void OnDeleteIconClicked();
+
   void OnBlockMenuItemClicked(int event_flags);
   void OnAllowMenuItemClicked(int event_flags);
   void OnClearOnExitMenuItemClicked(int event_flags);
@@ -91,6 +93,7 @@ class SiteDataRowView : public views::View {
   raw_ptr<views::Label> state_label_ = nullptr;
   raw_ptr<views::ImageView> favicon_image_ = nullptr;
   raw_ptr<views::ImageButton> menu_button_ = nullptr;
+  raw_ptr<views::ImageButton> delete_button_ = nullptr;
 
   std::unique_ptr<ui::MenuModel> dialog_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;

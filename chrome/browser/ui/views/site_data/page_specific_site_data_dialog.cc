@@ -218,10 +218,20 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   void DeleteStoredObjects(const url::Origin& origin) {
     status_changed_ = true;
-    DCHECK(DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(),
-                                           origin))
-        << "The node with a matching origin should be found and deleted in the "
-           "allowed model.";
+
+    // The both models have to checked, as the site might be in the blocked
+    // model, then be allowed and deleted. Without reloading the page the site
+    // will remain in the blocked model.
+    bool deleted_from_allowed = DeleteMatchingHostNodeFromModel(
+        allowed_cookies_tree_model_.get(), origin);
+    bool deleted_from_blocked = DeleteMatchingHostNodeFromModel(
+        blocked_cookies_tree_model_.get(), origin);
+    // The node could be present in both models, for example if there is a mix
+    // of regular and partitioned cookies.
+    DCHECK(deleted_from_allowed || deleted_from_blocked)
+        << "The node with a matching origin should be found and deleted in one "
+           "of the models";
+
     RecordPageSpecificSiteDataDialogAction(
         PageSpecificSiteDataDialogAction::kSiteDeleted);
   }
