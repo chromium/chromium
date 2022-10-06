@@ -32,6 +32,8 @@ class LocalFileSuggestionProvider
     base::File::Info info;
   };
 
+  static const int kDefaultMaxLastModifiedTimeInDays = 8;
+
   LocalFileSuggestionProvider(
       Profile* profile,
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
@@ -62,8 +64,6 @@ class LocalFileSuggestionProvider
   // Any file not modified at least as recently as `max_last_modified_time_` ago
   // will be filtered out of results.
   const base::TimeDelta max_last_modified_time_;
-
-  const base::FilePath downloads_path_;
 
   std::unique_ptr<MrfuCache> files_ranker_;
 

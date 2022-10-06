@@ -7353,6 +7353,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/files/file_suggest_keyed_service_unittest.cc",
       "../browser/ui/app_list/search/files/item_suggest_cache_unittest.cc",
       "../browser/ui/app_list/search/files/justifications_unittest.cc",
+      "../browser/ui/app_list/search/files/local_file_suggestion_provider_unittest.cc",
       "../browser/ui/app_list/search/files/zero_state_drive_provider_unittest.cc",
       "../browser/ui/app_list/search/files/zero_state_file_provider_unittest.cc",
       "../browser/ui/app_list/search/games/game_provider_unittest.cc",

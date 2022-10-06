@@ -35,8 +35,7 @@ constexpr base::TimeDelta kSuggestionNotificationDebounce =
 std::pair<std::vector<LocalFileSuggestionProvider::LocalFileData>,
           std::vector<base::FilePath>>
 ValidateFiles(const std::vector<std::pair<std::string, float>>& ranker_results,
-              const base::TimeDelta& max_last_modified_time,
-              const base::FilePath& downloads_path) {
+              const base::TimeDelta& max_last_modified_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -71,9 +70,7 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
-          8))),
-      downloads_path_(
-          file_manager::util::GetDownloadsFolderForProfile(profile)) {
+          kDefaultMaxLastModifiedTimeInDays))) {
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -122,7 +119,7 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_, downloads_path_),
+                     max_last_modified_time_),
       base::BindOnce(&LocalFileSuggestionProvider::OnValidationComplete,
                      weak_factory_.GetWeakPtr()));
 }

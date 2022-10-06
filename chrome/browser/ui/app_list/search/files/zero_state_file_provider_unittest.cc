@@ -123,43 +123,6 @@ TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
   EXPECT_TRUE(LastResults().empty());
 }
 
-TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
-  WriteFile(Path("exists_1.txt"));
-  WriteFile(Path("exists_2.png"));
-  WriteFile(Path("exists_3.pdf"));
-
-  // Results are only added if they have been opened at least once.
-
-  auto* keyed_service =
-      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
-  keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
-      {OpenEvent(Path("exists_1.txt")), OpenEvent(Path("exists_2.png")),
-       OpenEvent(Path("nonexistent.txt"))});
-
-  StartZeroStateSearch();
-  Wait();
-
-  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"exists_1.txt"),
-                                                  Title(u"exists_2.png")));
-}
-
-TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
-  WriteFile(Path("new.txt"));
-  WriteFile(Path("old.png"));
-  auto now = base::Time::Now();
-  base::TouchFile(Path("old.png"), now, now - base::Days(8));
-
-  auto* keyed_service =
-      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
-  keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
-      {OpenEvent(Path("new.txt")), OpenEvent(Path("old.png"))});
-
-  StartZeroStateSearch();
-  Wait();
-
-  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"new.txt")));
-}
-
 TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
   WriteFile(Path("ScreenshotNonDownload.png"));
   WriteFile(DownloadsPath("ScreenshotNonPng.jpg"));
