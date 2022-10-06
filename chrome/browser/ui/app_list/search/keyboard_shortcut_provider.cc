@@ -9,7 +9,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
-#include "base/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,7 +24,7 @@ using ::ash::string_matching::TokenizedString;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
-constexpr double kResultRelevanceThreshold = 0.9;
+constexpr double kResultRelevanceThreshold = 0.89;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
