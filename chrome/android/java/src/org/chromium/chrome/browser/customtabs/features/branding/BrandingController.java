@@ -14,10 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
@@ -30,6 +32,7 @@ import java.util.concurrent.TimeUnit;
  * Controls the strategy to start branding, and the duration to show branding.
  */
 public class BrandingController {
+    private static final String TAG = "CctBrand";
     private static final String PARAM_BRANDING_CADENCE_NAME = "branding_cadence";
     private static final String PARAM_MAX_BLANK_TOOLBAR_TIMEOUT_MS = "max_blank_toolbar_timeout";
     private static final String PARAM_USE_TEMPORARY_STORAGE = "use_temporary_storage";
@@ -73,6 +76,7 @@ public class BrandingController {
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsBrandingShowing;
+    private boolean mIsDestroyed;
 
     /**
      * Branding controller responsible for showing branding.
@@ -96,6 +100,11 @@ public class BrandingController {
      * @param delegate {@link ToolbarBrandingDelegate} instance from CCT Toolbar.
      */
     public void onToolbarInitialized(@NonNull ToolbarBrandingDelegate delegate) {
+        if (mIsDestroyed) {
+            reportErrorMessage("BrandingController should not be access after destroyed.");
+            return;
+        }
+
         mToolbarInitializedTime = SystemClock.elapsedRealtime();
         mToolbarBrandingDelegate = delegate;
 
@@ -155,24 +164,35 @@ public class BrandingController {
     }
 
     private void showToastBranding(long durationMs) {
+        if (mIsDestroyed) {
+            reportErrorMessage("Toast should not get accessed after destroyed.");
+            return;
+        }
+
         String appName = mContext.getResources().getString(R.string.app_name);
         String toastText =
                 mContext.getResources().getString(R.string.twa_running_in_chrome_template, appName);
         TextView runInChromeTextView = (TextView) LayoutInflater.from(mContext).inflate(
                 R.layout.custom_tabs_toast_branding_layout, null, false);
         runInChromeTextView.setText(toastText);
-        mToast = new Toast(mContext, /*toastView*/ runInChromeTextView);
+        mToast = new Toast(mContext.getApplicationContext(), /*toastView*/ runInChromeTextView);
         mToast.setDuration((int) durationMs);
         mToast.show();
     }
 
-    /** Destroy this instance an cancel all scheduled callbacks */
+    /** Prevent any updates to this instance and cancel all scheduled callbacks. */
     public void destroy() {
+        mIsDestroyed = true;
         mCallbackController.destroy();
         mBrandingChecker.cancel(true);
         if (mToast != null) {
             mToast.cancel();
         }
+    }
+
+    private static void reportErrorMessage(String message) {
+        Log.e(TAG, message);
+        ChromePureJavaExceptionReporter.postReportJavaException(new Throwable(message));
     }
 
     @BrandingDecision
