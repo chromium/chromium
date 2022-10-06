@@ -117,11 +117,19 @@ void HighEfficiencyChipView::UpdateImpl() {
 
 void HighEfficiencyChipView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
+  // If the dialog bubble is currently open, close it.
   if (IsBubbleShowing()) {
     bubble_->Close();
     return;
   }
+
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+
+  // If the IPH is currently open, close it before opening the dialog.
+  browser_view->CloseFeaturePromo(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature);
+
+  // Open the dialog bubble.
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
       PageActionIconType::kHighEfficiency);
   bubble_ = HighEfficiencyBubbleView::ShowBubble(browser_, anchor_view, this);

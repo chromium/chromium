@@ -25,6 +25,8 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -90,18 +92,10 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   }
 
   void WaitForIPHToShow() {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    base::RepeatingTimer timer;
-    timer.Start(
-        FROM_HERE, base::Milliseconds(200), base::BindLambdaForTesting([&]() {
-          if (GetFeaturePromoController()->IsPromoActive(
-                  feature_engagement::kIPHHighEfficiencyInfoModeFeature)) {
-            timer.Stop();
-            run_loop.Quit();
-          }
-        }));
-    // This will time out if the promo is never active.
-    run_loop.Run();
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        user_education::HelpBubbleView::kViewClassName);
+    waiter.WaitIfNeededAndGet();
   }
 
  private:
@@ -136,4 +130,23 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
 
   GURL expected(chrome::kChromeUIPerformanceSettingsURL);
   EXPECT_EQ(expected.host(), navigation_observer.last_navigation_url().host());
+}
+
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
+                       PromoDismissesOnChipClick) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+
+  SetTabDiscardState(true);
+  PageActionIconView* icon = GetPageActionIconView();
+  WaitForIPHToShow();
+
+  EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+
+  PressButton(icon);
+
+  // Expect the bubble to be open and the promo to be closed.
+  EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+  EXPECT_NE(icon->GetBubble(), nullptr);
 }
