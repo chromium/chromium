@@ -100,9 +100,10 @@ chrome_management_service_setup() {
   SIGNING_KEY_FILE="@@ENROLLMENTDIR@@/DeviceTrustSigningKey"
   if [ ! -e "$SIGNING_KEY_FILE" ]; then
     touch "$SIGNING_KEY_FILE"
-    chgrp chromemgmt "$SIGNING_KEY_FILE"
-    chmod 664 "$SIGNING_KEY_FILE"
   fi
+
+  chgrp chromemgmt "$SIGNING_KEY_FILE"
+  chmod 664 "$SIGNING_KEY_FILE"
 }
 
 chrome_management_service_setup
