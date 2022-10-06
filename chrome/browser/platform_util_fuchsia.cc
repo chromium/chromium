@@ -21,7 +21,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 
 }  // namespace internal
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
 }

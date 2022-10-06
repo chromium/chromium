@@ -73,7 +73,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 
 }  // namespace internal
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   DCHECK([NSThread isMainThread]);
   NSURL* ns_url = net::NSURLWithGURL(url);
   if (!ns_url || ![[NSWorkspace sharedWorkspace] openURL:ns_url])

@@ -1194,8 +1194,7 @@ void PrintPreviewHandler::HandleManagePrinters(const base::Value::List& args) {
   }
   local_printer_->ShowSystemPrintSettings(base::DoNothing());
 #else
-  printing::PrinterManagerDialog::ShowPrinterManagerDialog(
-      Profile::FromWebUI(web_ui()));
+  printing::PrinterManagerDialog::ShowPrinterManagerDialog();
 #endif
 }
 

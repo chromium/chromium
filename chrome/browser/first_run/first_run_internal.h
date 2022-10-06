@@ -8,8 +8,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-class Profile;
-
 namespace base {
 class FilePath;
 }
@@ -37,7 +35,7 @@ void SetupInitialPrefsFromInstallPrefs(
 
 // -- Platform-specific functions --
 
-void DoPostImportPlatformSpecificTasks(Profile* profile);
+void DoPostImportPlatformSpecificTasks();
 
 // This function has a common implementationin for all non-linux platforms, and
 // a linux specific implementation.

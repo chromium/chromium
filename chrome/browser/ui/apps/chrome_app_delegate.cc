@@ -110,7 +110,11 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::NOT_DEFAULT:
     case shell_integration::UNKNOWN_DEFAULT:
     case shell_integration::OTHER_MODE_IS_DEFAULT:
-      platform_util::OpenExternal(profile, params.url);
+      platform_util::OpenExternal(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+          profile,
+#endif
+          params.url);
       return;
     case shell_integration::NUM_DEFAULT_STATES:
       break;

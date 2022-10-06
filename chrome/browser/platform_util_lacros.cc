@@ -71,7 +71,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
       full_path, base::BindOnce(&OnOpenResult, full_path));
 }
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   // TODO(https://crbug.com/1140585): Add crosapi for opening links with
   // external protocol handlers.
   NOTIMPLEMENTED();

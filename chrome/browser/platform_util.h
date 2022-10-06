@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -70,7 +71,11 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path);
 // Open the given external protocol URL in the desktop's default manner.
 // (For example, mailto: URLs in the default mail user agent.)
 // Must be called from the UI thread.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OpenExternal(Profile* profile, const GURL& url);
+#else
+void OpenExternal(const GURL& url);
+#endif
 
 // Get the top level window for the native view. This can return NULL.
 gfx::NativeWindow GetTopLevel(gfx::NativeView view);

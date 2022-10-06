@@ -19,7 +19,7 @@ base::FilePath InitialPrefsPath() {
   return base::FilePath();
 }
 
-void DoPostImportPlatformSpecificTasks(Profile* profile) {}
+void DoPostImportPlatformSpecificTasks() {}
 
 bool ShowPostInstallEULAIfNeeded(installer::InitialPreferences* install_prefs) {
   // The EULA is only handled on Windows.

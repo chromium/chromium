@@ -14,20 +14,18 @@
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 
-class Profile;
-
 namespace first_run {
 
 // Shows the first run dialog. Only called for organic first runs on Mac and
 // desktop Linux official builds when metrics reporting is not already enabled.
 // Invokes ChangeMetricsReportingState() if consent is given to enable crash
 // reporting, and may initiate the flow to set the default browser.
-void ShowFirstRunDialog(Profile* profile);
-void ShowFirstRunDialogViews(Profile* profile);
+void ShowFirstRunDialog();
+void ShowFirstRunDialogViews();
 // Maintain Cocoa-based first run dialog until we are confident that views'
 // implementation works well on macOS.
 #if BUILDFLAG(IS_MAC)
-void ShowFirstRunDialogCocoa(Profile* profile);
+void ShowFirstRunDialogCocoa();
 #endif
 
 // Returns a Closure invoked before calling ShowFirstRunDialog(). For testing.

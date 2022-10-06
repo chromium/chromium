@@ -103,13 +103,11 @@ void OpenConnectionDialogCallback() {
                SW_SHOWNORMAL);
 }
 
-void ShowNetworkProxySettings(content::WebContents* web_contents) {
+void ShowNetworkProxySettings(content::WebContents* /*web_contents*/) {
   if (base::win::GetVersion() >= base::win::Version::WIN10) {
     // See
     // https://docs.microsoft.com/en-us/windows/uwp/launch-resume/launch-settings-app#network--internet
-    platform_util::OpenExternal(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        GURL("ms-settings:network-proxy"));
+    platform_util::OpenExternal(GURL("ms-settings:network-proxy"));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

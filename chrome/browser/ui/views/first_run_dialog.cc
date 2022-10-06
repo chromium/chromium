@@ -34,7 +34,7 @@
 
 namespace first_run {
 
-void ShowFirstRunDialog(Profile* profile) {
+void ShowFirstRunDialog() {
   // Don't show first run dialog when running in headless mode since this
   // would effectively block the UI because there is no one to interact with
   // the dialog.
@@ -43,19 +43,18 @@ void ShowFirstRunDialog(Profile* profile) {
 
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kViewsFirstRunDialog))
-    ShowFirstRunDialogViews(profile);
+    ShowFirstRunDialogViews();
   else
-    ShowFirstRunDialogCocoa(profile);
+    ShowFirstRunDialogCocoa();
 #else
-  ShowFirstRunDialogViews(profile);
+  ShowFirstRunDialogViews();
 #endif
 }
 
-void ShowFirstRunDialogViews(Profile* profile) {
+void ShowFirstRunDialogViews() {
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   FirstRunDialog::Show(
       base::BindRepeating(&platform_util::OpenExternal,
-                          base::Unretained(profile),
                           GURL(chrome::kLearnMoreReportingURL)),
       run_loop.QuitClosure());
   run_loop.Run();

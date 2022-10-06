@@ -10,7 +10,7 @@
 
 namespace printing {
 
-void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
+void PrinterManagerDialog::ShowPrinterManagerDialog() {
   NOTIMPLEMENTED() << "See https://crbug.com/1272829";
 }
 

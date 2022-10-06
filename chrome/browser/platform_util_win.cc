@@ -153,7 +153,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 
 }  // namespace internal
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::ThreadPool::CreateCOMSTATaskRunner(

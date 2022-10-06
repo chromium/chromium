@@ -501,14 +501,14 @@ void AutoImport(
     ImportFromFile(profile, import_bookmarks_path);
 }
 
-void DoPostImportTasks(Profile* profile, bool make_chrome_default_for_user) {
+void DoPostImportTasks(bool make_chrome_default_for_user) {
   // Only set default browser after import as auto import relies on the current
   // default browser to know what to import from.
   ProcessDefaultBrowserPolicy(make_chrome_default_for_user);
 
   SetShouldShowWelcomePage();
 
-  internal::DoPostImportPlatformSpecificTasks(profile);
+  internal::DoPostImportPlatformSpecificTasks();
 }
 
 uint16_t auto_import_state() {

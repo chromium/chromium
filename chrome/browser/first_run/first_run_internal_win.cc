@@ -109,7 +109,7 @@ bool CreateEULASentinel() {
 namespace first_run {
 namespace internal {
 
-void DoPostImportPlatformSpecificTasks(Profile* /* profile */) {
+void DoPostImportPlatformSpecificTasks() {
   // Trigger the Active Setup command for system-level Chromes to finish
   // configuring this user's install (e.g. per-user shortcuts).
   if (!InstallUtil::IsPerUserInstall()) {

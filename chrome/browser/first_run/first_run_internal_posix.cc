@@ -81,14 +81,14 @@ void ForceFirstRunDialogShownForTesting(bool shown) {
     g_forced_show_dialog_state = ForcedShowDialogState::kForceSuppressed;
 }
 
-void DoPostImportPlatformSpecificTasks(Profile* profile) {
+void DoPostImportPlatformSpecificTasks() {
   if (!ShouldShowFirstRunDialog())
     return;
 
   if (GetBeforeShowFirstRunDialogHookForTesting())
     std::move(GetBeforeShowFirstRunDialogHookForTesting()).Run();
 
-  ShowFirstRunDialog(profile);
+  ShowFirstRunDialog();
   startup_metric_utils::SetNonBrowserUIDisplayed();
 }
 

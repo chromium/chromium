@@ -1650,8 +1650,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     first_run::AutoImport(profile, master_prefs_->import_bookmarks_path);
 
     // Note: This can pop-up the first run consent dialog on Linux & Mac.
-    first_run::DoPostImportTasks(profile,
-                                 master_prefs_->make_chrome_default_for_user);
+    first_run::DoPostImportTasks(master_prefs_->make_chrome_default_for_user);
 
     // The first run dialog is modal, and spins a RunLoop, which could receive
     // a SIGTERM, and call chrome::AttemptExit(). Exit cleanly in that case.

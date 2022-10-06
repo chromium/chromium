@@ -355,7 +355,7 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   ShowItemHelper::GetInstance().ShowItemInFolder(profile, full_path);
 }
 
-void OpenExternal(Profile* profile, const GURL& url) {
+void OpenExternal(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (url.SchemeIs("mailto"))
     XDGEmail(url.spec());

@@ -173,7 +173,10 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
       "Launched external handler for '" + url.possibly_invalid_spec() + "'.");
 
   platform_util::OpenExternal(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+#endif
+      url);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // If the protocol navigation occurs in a new tab, close it.

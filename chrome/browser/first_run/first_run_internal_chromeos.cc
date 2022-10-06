@@ -7,7 +7,7 @@
 namespace first_run {
 namespace internal {
 
-void DoPostImportPlatformSpecificTasks(Profile* profile) {
+void DoPostImportPlatformSpecificTasks() {
   // Nothing to do.
 }
 
