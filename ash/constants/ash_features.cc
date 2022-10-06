@@ -223,7 +223,7 @@ BASE_FEATURE(kAssistantNativeIcons,
 // Enables Peripheral volume change by hardware reported steps
 BASE_FEATURE(kAudioPeripheralVolumeGranularity,
              "AudioPeripheralVolumeGranularity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the AudioSourceFetcher resamples the audio for speech
 // recongnition.
