@@ -198,6 +198,20 @@ struct StructTraits<blink::mojom::V8ContextTokenDataView, blink::V8ContextToken>
     : public blink::TokenMojomTraitsHelper<blink::mojom::V8ContextTokenDataView,
                                            blink::V8ContextToken> {};
 
+template <>
+struct BLINK_COMMON_EXPORT
+    UnionTraits<blink::mojom::WebGPUExecutionContextTokenDataView,
+                blink::WebGPUExecutionContextToken> {
+  static bool Read(blink::mojom::WebGPUExecutionContextTokenDataView input,
+                   blink::WebGPUExecutionContextToken* output);
+  static blink::mojom::WebGPUExecutionContextTokenDataView::Tag GetTag(
+      const blink::WebGPUExecutionContextToken& token);
+  static blink::DocumentToken document_token(
+      const blink::WebGPUExecutionContextToken& token);
+  static blink::DedicatedWorkerToken dedicated_worker_token(
+      const blink::WebGPUExecutionContextToken& token);
+};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_MOJOM_TRAITS_H_

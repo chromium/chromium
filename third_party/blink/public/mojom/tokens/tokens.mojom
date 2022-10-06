@@ -120,3 +120,8 @@ struct PortalToken {
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
 };
+
+union WebGPUExecutionContextToken {
+  DocumentToken document_token;
+  DedicatedWorkerToken dedicated_worker_token;
+};
