@@ -1018,7 +1018,7 @@ bool LoginShelfView::ShouldShowShutdownButton() const {
             is_first_signin_step_);
   }
   return !(dialog_state_ == OobeDialogState::MIGRATION ||
-           dialog_state_ == OobeDialogState::ENROLLMENT ||
+           dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_DISABLED ||
            dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_ENABLED ||
            dialog_state_ == OobeDialogState::ONBOARDING ||
            dialog_state_ == OobeDialogState::KIOSK_LAUNCH ||

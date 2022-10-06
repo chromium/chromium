@@ -513,7 +513,8 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
   // Hide shutdown button during enrollment.
-  login_shelf_view_->SetLoginDialogState(OobeDialogState::ENROLLMENT);
+  login_shelf_view_->SetLoginDialogState(
+      OobeDialogState::ENROLLMENT_CANCEL_DISABLED);
   EXPECT_TRUE(ShowsShelfButtons({}));
 
   // Shutdown button is hidden during user onboarding, as well as during

@@ -43,7 +43,7 @@ enum class OobeDialogState {
   PASSWORD_CHANGED = 6,
 
   // Showing device enrollment screen.
-  ENROLLMENT = 7,
+  ENROLLMENT_CANCEL_DISABLED = 7,
 
   // Showing error screen.
   ERROR = 8,
@@ -80,6 +80,7 @@ enum class OobeDialogState {
 
   // Showing marketing opt-in screen.
   MARKETING_OPT_IN = 19,
+
 };
 
 // Modes of the managed device, which is used to update the visibility of

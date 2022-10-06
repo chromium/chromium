@@ -322,7 +322,7 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
    * Initial UI State for screen
    */
   getOobeUIInitialState() {
-    return OOBE_UI_STATE.ENROLLMENT;
+    return OOBE_UI_STATE.ENROLLMENT_CANCEL_DISABLED;
   }
 
   /**
@@ -394,8 +394,10 @@ class EnterpriseEnrollmentElement extends EnterpriseEnrollmentElementBase {
     // TODO(b/238175743) Do not set `ENROLLMENT_CANCEL_ENABLED` if enrollment is
     // forced. Keep setting `isCancelDisabled` to false if enrollment is forced,
     // otherwise the manual fallback button does nothing.
-    if (this.isCancelDisabled) {
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
+    if (this.isCancelDisabled ||
+        step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
+      Oobe.getInstance().setOobeUIState(
+          OOBE_UI_STATE.ENROLLMENT_CANCEL_DISABLED);
     } else {
       Oobe.getInstance().setOobeUIState(
           step === OobeTypes.EnrollmentStep.SUCCESS ?
