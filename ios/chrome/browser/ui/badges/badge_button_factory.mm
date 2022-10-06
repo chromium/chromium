@@ -79,11 +79,14 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 }
 
 - (BadgeButton*)passwordsSaveBadgeButton {
-  BadgeButton* button = [self
-      createButtonForType:kBadgeTypePasswordSave
-                    image:[[UIImage imageNamed:[self passwordKeyAssetName]]
-                              imageWithRenderingMode:
-                                  UIImageRenderingModeAlwaysTemplate]];
+  UIImage* image =
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
+          : [UIImage imageNamed:[self passwordKeyAssetName]];
+  BadgeButton* button =
+      [self createButtonForType:kBadgeTypePasswordSave
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -95,11 +98,14 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 }
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
-  BadgeButton* button = [self
-      createButtonForType:kBadgeTypePasswordUpdate
-                    image:[[UIImage imageNamed:[self passwordKeyAssetName]]
-                              imageWithRenderingMode:
-                                  UIImageRenderingModeAlwaysTemplate]];
+  UIImage* image =
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
+          : [UIImage imageNamed:[self passwordKeyAssetName]];
+  BadgeButton* button =
+      [self createButtonForType:kBadgeTypePasswordUpdate
+                          image:[image imageWithRenderingMode:
+                                           UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
