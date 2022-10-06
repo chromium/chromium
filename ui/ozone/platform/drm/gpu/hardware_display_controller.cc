@@ -38,12 +38,6 @@
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 
-// Vendor ID for downstream, interim ChromeOS specific modifiers.
-#define DRM_FORMAT_MOD_VENDOR_CHROMEOS 0xf0
-// TODO(b/231167263) Remove once DRM_FORMAT_MOD_ARM_AFBC is used by all kernels
-// and allocators.
-#define DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC fourcc_mod_code(CHROMEOS, 1)
-
 namespace ui {
 
 namespace {
@@ -82,12 +76,6 @@ std::string NumberToHexString(const T value) {
 }
 
 bool IsRockchipAfbc(uint64_t modifier) {
-  // TODO(b/231167263): Drop when kernel 4.4 is gone for RK3399.
-  if (modifier == DRM_FORMAT_MOD_CHROMEOS_ROCKCHIP_AFBC) {
-    return true;
-  }
-
-  // Newer (and upstream) kernels use DRM_FORMAT_MOD_ARM_AFBC.
   return modifier ==
          DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
                                  AFBC_FORMAT_MOD_SPARSE | AFBC_FORMAT_MOD_YTR);
