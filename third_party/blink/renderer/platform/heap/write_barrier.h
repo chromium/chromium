@@ -72,6 +72,20 @@ class WriteBarrier final {
     return HeapConsistency::GetWriteBarrierType(*element, params) !=
            HeapConsistency::WriteBarrierType::kNone;
   }
+
+  static void DispatchForUncompressedSlot(void* slot, void* value) {
+    HeapConsistency::WriteBarrierParams params;
+    switch (HeapConsistency::GetWriteBarrierType(slot, value, params)) {
+      case HeapConsistency::WriteBarrierType::kMarking:
+        HeapConsistency::DijkstraWriteBarrier(params, value);
+        break;
+      case HeapConsistency::WriteBarrierType::kGenerational:
+        HeapConsistency::GenerationalBarrierForUncompressedSlot(params, slot);
+        break;
+      case HeapConsistency::WriteBarrierType::kNone:
+        break;
+    }
+  }
 };
 
 }  // namespace blink

@@ -159,8 +159,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T>
-  static void BackingWriteBarrier(T** slot) {
-    WriteBarrier::DispatchForObject(slot);
+  static void BackingWriteBarrier(T** backing_pointer_slot) {
+    WriteBarrier::DispatchForUncompressedSlot(backing_pointer_slot,
+                                              *backing_pointer_slot);
   }
 
   template <typename T>
