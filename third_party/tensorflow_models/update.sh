@@ -8,6 +8,7 @@ if [ $(basename ${PWD}) != "src" ]; then
 fi
 
 files=(
+  "LICENSE"
   "research/seq_flow_lite/tf_ops/projection_normalizer_util.cc"
   "research/seq_flow_lite/tf_ops/projection_normalizer_util.h"
   "research/seq_flow_lite/tf_ops/projection_util.cc"
@@ -30,10 +31,10 @@ rm -rf third_party/tensorflow_models/src/*
 pushd third_party/tensorflow_models/src/
 
 for file in ${files[@]} ; do
-  if [ ! -d $(dirname ${file}) ] ; then
-    mkdir -p $(dirname ${file})
+  if [ ! -d "$(dirname ${file})" ] ; then
+    mkdir -p "$(dirname ${file})"
   fi
-  cp /tmp/models/${file} ${file}
+  cp "/tmp/models/${file}" "${file}"
 done
 
 popd
