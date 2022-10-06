@@ -47,6 +47,11 @@ constexpr base::FilePath::CharType kManualQueuePrefix[] =
     FILE_PATH_LITERAL("P_Manual");
 constexpr base::TimeDelta kManualUploadPeriod = base::TimeDelta::Max();
 
+constexpr base::FilePath::CharType kManualLacrosQueueSubdir[] =
+    FILE_PATH_LITERAL("ManualLacros");
+constexpr base::FilePath::CharType kManualLacrosQueuePrefix[] =
+    FILE_PATH_LITERAL("P_ManualLacros");
+
 // Failed upload retry delay: if an upload fails and there are no more incoming
 // events, collected events will not get uploaded for an indefinite time (see
 // b/192666219).
@@ -67,6 +72,12 @@ StorageOptions::~StorageOptions() = default;
 // Storage. Queues are all located under the given root directory.
 StorageOptions::QueuesOptionsList StorageOptions::ProduceQueuesOptions() const {
   return {
+      std::make_pair(MANUAL_BATCH_LACROS,
+                     QueueOptions(*this)
+                         .set_subdirectory(kManualLacrosQueueSubdir)
+                         .set_file_prefix(kManualLacrosQueuePrefix)
+                         .set_upload_period(kManualUploadPeriod)
+                         .set_upload_retry_delay(kFailedUploadRetryDelay)),
       std::make_pair(MANUAL_BATCH,
                      QueueOptions(*this)
                          .set_subdirectory(kManualQueueSubdir)
