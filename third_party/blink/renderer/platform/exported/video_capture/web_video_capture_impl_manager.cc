@@ -305,7 +305,7 @@ VideoCaptureFeedbackCB WebVideoCaptureImplManager::GetFeedbackCallback(
       &WebVideoCaptureImplManager::ProcessFeedback,
       media::BindToCurrentLoop(base::BindRepeating(
           &WebVideoCaptureImplManager::ProcessFeedbackInternal,
-          weak_factory_.GetWeakPtr(), id)));
+          weak_factory_.GetMutableWeakPtr(), id)));
 }
 
 // static
