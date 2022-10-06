@@ -80,7 +80,6 @@ class PasswordChangeRunView : public views::View,
   void ClearPrompt() override;
   void ShowStartingScreen(const GURL& url) override;
   void ShowCompletionScreen(
-      autofill_assistant::password_change::FlowType flow_type,
       base::RepeatingClosure done_button_callback) override;
   void ShowErrorScreen() override;
   void PauseProgressBarAnimation() override;
@@ -111,17 +110,11 @@ class PasswordChangeRunView : public views::View,
   // Sets focus on the currently highlighted button (if any).
   void FocusPromptButton(views::MdTextButton* button);
 
-  // Updates the UI to show the completion screen for a successful password
-  // change. This method should not be called directly, but instead be triggered
-  // when `password_change_run_progress_` is complete.
-  // Runs `done_button_callback` if the user interacts with the "Done" button.
-  void OnShowCompletionScreenForPasswordChange(
-      base::RepeatingClosure done_button_callback);
-
-  // Updates the UI to show the completion screen for a successful password
-  // reset. It behaves similarly to `OnShowCompletionScreenForPasswordChange`.
-  void OnShowCompletionScreenForPasswordReset(
-      base::RepeatingClosure done_button_callback);
+  // Method that updates the UI to render the completion screen. This is called
+  // only AFTER `password_change_run_progress_` is completed, both in terms of
+  // steps and animation. Runs `show_completion_screen_done_button_callback_`
+  // when user clicks on Done.
+  void OnShowCompletionScreen();
 
   // The controller belonging to this view.
   base::WeakPtr<PasswordChangeRunController> controller_;
@@ -142,6 +135,8 @@ class PasswordChangeRunView : public views::View,
   // focus.
   std::unique_ptr<base::OneShotTimer> focus_on_button_timer_;
 
+  // Callback run when a user clicks Done after a successful run.
+  base::RepeatingClosure show_completion_screen_done_button_callback_;
   // Factory for weak pointers to this view.
   base::WeakPtrFactory<PasswordChangeRunView> weak_ptr_factory_{this};
 };

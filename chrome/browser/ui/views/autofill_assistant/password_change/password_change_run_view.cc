@@ -40,7 +40,6 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
-using autofill_assistant::password_change::FlowType;
 using autofill_assistant::password_change::TopIcon;
 
 namespace {
@@ -378,35 +377,21 @@ void PasswordChangeRunView::ShowErrorScreen() {
 }
 
 void PasswordChangeRunView::ShowCompletionScreen(
-    FlowType flow_type,
     base::RepeatingClosure done_button_callback) {
-  base::OnceClosure show_screen;
-  switch (flow_type) {
-    case FlowType::FLOW_TYPE_UNSPECIFIED:
-    case FlowType::FLOW_TYPE_PASSWORD_CHANGE:
-      show_screen = base::BindOnce(
-          &PasswordChangeRunView::OnShowCompletionScreenForPasswordChange,
-          base::Unretained(this), std::move(done_button_callback));
-      break;
-    case FlowType::FLOW_TYPE_PASSWORD_RESET:
-      show_screen = base::BindOnce(
-          &PasswordChangeRunView::OnShowCompletionScreenForPasswordReset,
-          base::Unretained(this), std::move(done_button_callback));
-      break;
-  }
-  CHECK(show_screen);
+  show_completion_screen_done_button_callback_ =
+      std::move(done_button_callback);
 
   // If the progress bar has finished its animation, run immediately.
   if (password_change_run_progress_->IsCompleted()) {
-    std::move(show_screen).Run();
+    OnShowCompletionScreen();
   } else {
     password_change_run_progress_->SetAnimationEndedCallback(
-        std::move(show_screen));
+        base::BindOnce(&PasswordChangeRunView::OnShowCompletionScreen,
+                       base::Unretained(this)));
   }
 }
 
-void PasswordChangeRunView::OnShowCompletionScreenForPasswordChange(
-    base::RepeatingClosure done_button_callback) {
+void PasswordChangeRunView::OnShowCompletionScreen() {
   SetTopIcon(TopIcon::TOP_ICON_CHANGED_PASSWORD);
   password_change_run_progress_->SetVisible(false);
   SetTitle(l10n_util::GetStringUTF16(
@@ -438,30 +423,7 @@ void PasswordChangeRunView::OnShowCompletionScreenForPasswordChange(
   auto* button_to_be_focused = button_container->AddChildView(CreateButton(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_CLOSE_SIDE_PANEL),
-      true, std::move(done_button_callback)));
-
-  focus_on_button_timer_->Stop();
-  focus_on_button_timer_->Start(
-      FROM_HERE, kFocusOnHighlightedButtonDelaySeconds,
-      base::BindOnce(&PasswordChangeRunView::FocusPromptButton,
-                     base::Unretained(this), button_to_be_focused));
-}
-
-void PasswordChangeRunView::OnShowCompletionScreenForPasswordReset(
-    base::RepeatingClosure done_button_callback) {
-  SetTopIcon(TopIcon::TOP_ICON_PASSWORD_RESET_REQUESTED);
-  password_change_run_progress_->SetVisible(false);
-  SetTitle(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_RESET_PASSWORD_TITLE));
-
-  body_->RemoveAllChildViews();
-  body_->AddChildView(std::make_unique<views::Separator>());
-
-  views::View* button_container = body_->AddChildView(CreateButtonContainer());
-  auto* button_to_be_focused = button_container->AddChildView(CreateButton(
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_RESET_PASSWORD_CLOSE_SIDE_PANEL),
-      true, std::move(done_button_callback)));
+      true, show_completion_screen_done_button_callback_));
 
   focus_on_button_timer_->Stop();
   focus_on_button_timer_->Start(

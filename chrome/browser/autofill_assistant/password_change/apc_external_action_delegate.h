@@ -87,7 +87,7 @@ class ApcExternalActionDelegate
   void OnGeneratedPasswordSelected(bool selected) override;
   void ShowStartingScreen(const GURL& url) override;
   void ShowCompletionScreen(
-      base::RepeatingClosure done_button_callback) override;
+      base::RepeatingClosure onShowCompletionScreenDoneButtonClicked) override;
   void OpenPasswordManager() override;
   void ShowErrorScreen() override;
   bool PasswordWasSuccessfullyChanged() override;
@@ -119,9 +119,6 @@ class ApcExternalActionDelegate
           UseGeneratedPasswordPromptSpecification& specification);
   void HandleUpdateSidePanel(
       const autofill_assistant::password_change::UpdateSidePanelSpecification&
-          specification);
-  void HandleSetFlowType(
-      const autofill_assistant::password_change::SetFlowTypeSpecification&
           specification);
 
   void OnBasePromptDomUpdateReceived(

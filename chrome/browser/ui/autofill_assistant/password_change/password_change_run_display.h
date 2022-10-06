@@ -77,7 +77,6 @@ class PasswordChangeRunDisplay {
   // Methods used to render the UI state before and after a script run.
   virtual void ShowStartingScreen(const GURL& url) = 0;
   virtual void ShowCompletionScreen(
-      autofill_assistant::password_change::FlowType flow_type,
       base::RepeatingClosure done_button_callback) = 0;
   virtual void ShowErrorScreen() = 0;
 

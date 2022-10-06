@@ -34,13 +34,6 @@ enum ProgressStep {
   PROGRESS_STEP_END = 4;
 }
 
-enum FlowType {
-  FLOW_TYPE_UNSPECIFIED = 0;
-
-  FLOW_TYPE_PASSWORD_CHANGE = 1;
-  FLOW_TYPE_PASSWORD_RESET = 2;
-}
-
 // Represents a choice in a prompt-type action.
 message Choice {
   // The text shown on the chip/button.
@@ -123,20 +116,12 @@ message UpdateSidePanelSpecification {
   optional ProgressStep progress_step = 4;
 }
 
-// Sets the flow type. The flow type is used to determine the correct completion
-// screen.
-message SetFlowTypeSpecification {
-  // The type of the current flow.
-  optional FlowType flow_type = 1;
-}
-
 // A wrapper around all available `password_change` specifications.
 message GenericPasswordChangeSpecification {
   oneof specification {
     BasePromptSpecification base_prompt = 1;
     UseGeneratedPasswordPromptSpecification use_generated_password_prompt = 2;
     UpdateSidePanelSpecification update_side_panel = 3;
-    SetFlowTypeSpecification set_flow_type = 4;
   }
 }
 
