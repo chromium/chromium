@@ -535,6 +535,7 @@ source_set("test_support") {
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
     "//testing/gmock",
+    "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
     "//third_party/wayland-protocols:gtk_primary_selection_protocol",
@@ -665,7 +666,7 @@ source_set("ui_test_support") {
   deps = [
     ":wayland_proxy",
     "//base",
-    "//third_party/wayland:wayland_util",
+    "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:weston_test",
     "//ui/base:test_support",
     "//ui/events",

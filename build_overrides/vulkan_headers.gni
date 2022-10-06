@@ -14,7 +14,6 @@ if (ozone_platform_wayland) {
     vulkan_wayland_include_dirs = [
       "$wayland_gn_dir/src/src",
       "$wayland_gn_dir/include/src",
-      "$wayland_gn_dir/include/protocol",
     ]
   }
 }

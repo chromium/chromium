@@ -18,6 +18,7 @@ Modifications:
 - Added wayland_scanner_wrapper.py to generate protocol code automatically.
 - Added "include/" include_dirs for the wayland_server target
 - Added automatic generation of protocol marshalling code.
+- Made server/client generated with wayland_protocol template.
 
 To import a new snapshot of wayland:
 - Checkout the latest release tag.
@@ -31,6 +32,5 @@ To import a new snapshot of wayland:
 ```
   rm -rf build && meson build/ -Ddocumentation=false -Dtests=false && ninja -C build
   mv build/config.h ../include && mv build/src/wayland-version.h ../include/src
-  mv build/src/wayland-*-protocol*.h ../include/protocol/
 ```
 - Update this README to reflect the new version number.

@@ -23,15 +23,28 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
     include_dirs = [
       "include",
       "include/src",
-      "include/protocol",
       "src/cursor",
       "src/egl",
       "src/src",
     ]
 
+    # Client/Server headers are automatically generated. Though, we still need
+    # to pass the path where these headers are located.
+    include_dirs += [ "$root_gen_dir/third_party/wayland/src/protocol" ]
+
     # TODO(thomasanderson): Remove this once
     # https://patchwork.freedesktop.org/patch/242086/ lands.
     cflags = [ "-Wno-macro-redefined" ]
+  }
+
+  wayland_protocol("wayland_server_protocol") {
+    sources = [ "src/protocol/wayland.xml" ]
+    wayland_protocol_server = true
+  }
+
+  wayland_protocol("wayland_client_protocol") {
+    sources = [ "src/protocol/wayland.xml" ]
+    wayland_protocol_client = true
   }
 
   source_set("wayland_util") {
@@ -82,7 +95,6 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
 if (!use_system_libwayland_server) {
   static_library("wayland_server") {
     sources = [
-      "include/protocol/wayland-server-protocol.h",
       "src/src/event-loop.c",
       "src/src/wayland-server.c",
       "src/src/wayland-shm.c",
@@ -95,6 +107,8 @@ if (!use_system_libwayland_server) {
       ":wayland_protocol_c",
       ":wayland_util",
     ]
+
+    public_deps = [ ":wayland_server_protocol" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
@@ -120,12 +134,10 @@ if (!use_system_libwayland_server) {
 
 if (!use_system_libwayland_client) {
   static_library("wayland_client") {
-    sources = [
-      "include/protocol/wayland-client-protocol.h",
-      "src/src/wayland-client.c",
-    ]
+    sources = [ "src/src/wayland-client.c" ]
 
     deps = [
+      ":wayland_client_protocol",
       ":wayland_private",
       ":wayland_protocol_c",
       ":wayland_util",
@@ -148,7 +160,10 @@ if (!use_system_libwayland_client) {
       "src/egl/wayland-egl.h",
     ]
 
-    deps = [ ":wayland_util" ]
+    deps = [
+      ":wayland_client_protocol",
+      ":wayland_util",
+    ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -166,6 +181,8 @@ if (!use_system_libwayland_client) {
       "src/cursor/xcursor.c",
       "src/cursor/xcursor.h",
     ]
+
+    deps = [ ":wayland_client_protocol" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
