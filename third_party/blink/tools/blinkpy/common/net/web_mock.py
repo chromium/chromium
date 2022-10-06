@@ -27,7 +27,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+from requests import Response
 
 from blinkpy.common.net.rpc import RESPONSE_PREFIX
 
@@ -81,12 +82,12 @@ class MockResponse(object):
         self._info = MockInfo(self.headers)
 
         if int(self.status_code) >= 400:
-            raise HTTPError(url=self.url,
-                            code=self.status_code,
-                            msg='Received error status code: {}'.format(
-                                self.status_code),
-                            hdrs={},
-                            fp=None)
+            response = Response()
+            response.status_code = self.status_code
+            response.reason = 'Received error status code: {}'.format(
+                self.status_code)
+            response.url = self.url
+            raise HTTPError(response=response)
 
     def getcode(self):
         return self.status_code
