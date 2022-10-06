@@ -867,24 +867,7 @@ bool TestAXNodeWrapper::ShouldIgnoreHoveredStateForTesting() {
 }
 
 bool TestAXNodeWrapper::HasVisibleCaretOrSelection() const {
-  AXSelection unignored_selection = GetUnignoredSelection();
-  int32_t focus_id = unignored_selection.focus_object_id;
-  AXNode* focus_object = tree_->GetFromId(focus_id);
-  if (!focus_object)
-    return false;
-
-  // Selection or caret will be visible in a focused editable area.
-  if (HasState(ax::mojom::State::kEditable)) {
-    return GetData().IsAtomicTextField() ? focus_object == node_
-                                         : focus_object->IsDescendantOf(node_);
-  }
-
-  // The selection will be visible in non-editable content only if it is not
-  // collapsed into a caret.
-  return (focus_id != unignored_selection.anchor_object_id ||
-          unignored_selection.focus_offset !=
-              unignored_selection.anchor_offset) &&
-         focus_object->IsDescendantOf(node_);
+  return node_->HasVisibleCaretOrSelection();
 }
 
 std::set<AXPlatformNode*> TestAXNodeWrapper::GetReverseRelations(
