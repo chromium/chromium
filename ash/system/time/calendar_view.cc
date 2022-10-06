@@ -702,10 +702,10 @@ void CalendarView::UpdateOnScreenMonthMap() {
 
 void CalendarView::MaybeUpdateLoadingBarVisibility() {
   for (auto& it : on_screen_month_) {
-    // If there's an on-screen month that hasn't finished fetching and it's not
-    // on the lock screen, the loading bar should be visible.
-    if (it.second != CalendarModel::kSuccess &&
-        it.second != CalendarModel::kNa) {
+    // If there's an on-screen month that hasn't finished fetching or
+    // re-fetching, the loading bar should be visible.
+    if (it.second == CalendarModel::kFetching ||
+        it.second == CalendarModel::kRefetching) {
       ShowProgress(-1, true);
       return;
     }

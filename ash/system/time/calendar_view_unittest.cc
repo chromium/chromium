@@ -1701,9 +1701,6 @@ TEST_F(CalendarViewAnimationTest, DISABLED_ResetToTodayWithAnimation) {
 // has not finished fetching and becomes invisible once all months on screen
 // have finished fetching events.
 TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
-
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
@@ -1711,23 +1708,13 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
   // screen.
   UpdateDisplay("800x200");
   CreateCalendarView();
+
   // Advances the time to allow `on_screen_month_` to initialize.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
 
   EXPECT_EQ(1U, on_screen_month().size());
 
-  // Sets the fetching status of current month to be kFetching, and tests the
-  // loading bar is visible.
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(date);
-  base::Time current_date =
-      calendar_view()->calendar_view_controller()->currently_shown_date();
-  base::Time start_of_current_month = calendar_utils::GetStartOfMonthUTC(
-      current_date + calendar_utils::GetTimeDifference(current_date));
-  EXPECT_EQ(start_of_month, start_of_current_month);
-
-  calendar_model()->FetchEvents(start_of_current_month);
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -1736,35 +1723,19 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
 }
 
 TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
-
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   // Tests when the `CalendarView` has two months on screen.
   UpdateDisplay("800x600");
   CreateCalendarView();
+
   // Advances the time to allow `on_screen_month_` to initialize.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
 
   EXPECT_EQ(2U, on_screen_month().size());
 
-  // Sets the fetching status of both months to be kFetching, and tests the
-  // loading bar is visible.
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(date);
-  base::Time current_date =
-      calendar_view()->calendar_view_controller()->currently_shown_date();
-  base::Time start_of_current_month = calendar_utils::GetStartOfMonthUTC(
-      current_date + calendar_utils::GetTimeDifference(current_date));
-  base::Time start_of_next_month =
-      calendar_utils::GetStartOfNextMonthUTC(start_of_current_month);
-  EXPECT_EQ(start_of_month, start_of_current_month);
-
-  calendar_model()->FetchEvents(start_of_current_month);
-  calendar_model()->FetchEvents(start_of_next_month);
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -1776,45 +1747,27 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
   // bar is visible.
   SetTodayFromTime(base::Time::Now());
   ResetToTodayWithAnimation();
-  // Advances the time to allow `on_screen_month_` to update, but don't advance
-  // too much since we don't want the events to be fetched.
-  task_environment()->FastForwardBy(base::Milliseconds(800));
+
+  // Advances the time to allow `on_screen_month_` to update.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 }
 
 TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
-  base::Time date;
-  ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
-
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   // Tests when the `CalendarView` has three months on screen.
   UpdateDisplay("800x1000");
   CreateCalendarView();
+
   // Advances the time to allow `on_screen_month_` to initialize.
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
 
   EXPECT_EQ(3U, on_screen_month().size());
 
-  // Sets the fetching status of all months to be kFetching, and tests the
-  // loading bar is visible.
-  base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(date);
-  base::Time current_date =
-      calendar_view()->calendar_view_controller()->currently_shown_date();
-  base::Time start_of_current_month = calendar_utils::GetStartOfMonthUTC(
-      current_date + calendar_utils::GetTimeDifference(current_date));
-  base::Time start_of_next_month =
-      calendar_utils::GetStartOfNextMonthUTC(start_of_current_month);
-  base::Time start_of_next_next_month =
-      calendar_utils::GetStartOfNextMonthUTC(start_of_next_month);
-  EXPECT_EQ(start_of_month, start_of_current_month);
-
-  calendar_model()->FetchEvents(start_of_current_month);
-  calendar_model()->FetchEvents(start_of_next_month);
-  calendar_model()->FetchEvents(start_of_next_next_month);
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 
   // Waits until the events are fetched, and tests the loading bar is invisible.
@@ -1826,49 +1779,50 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
   // bar is visible.
   SetTodayFromTime(base::Time::Now());
   ResetToTodayWithAnimation();
-  // Advances the time to allow `on_screen_month_` to update, but don't advance
-  // too much since we don't want the events to be fetched.
-  task_environment()->FastForwardBy(base::Milliseconds(800));
+
+  // Advances the time to allow `on_screen_month_` to update.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 }
 
 // Tests the loading bar visibility for different user sessions.
 TEST_F(CalendarViewAnimationTest,
        LoadingBarVisibilityForDifferentUserSessions) {
-  base::Time date;
-  // Create a monthview based on May, 9th 2022.
-  ASSERT_TRUE(base::Time::FromString("9 May 2022 10:00 GMT", &date));
-
-  // Tests when the screen is locked, the loading bar is invisible.
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOCKED);
-
-  CreateCalendarView();
-  // Advances the time to allow `on_screen_month_` to initialize.
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
-
-  // Tests when the user starts the login process, the loading bar is invisible.
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
-
-  CreateCalendarView();
-  task_environment()->FastForwardBy(
-      calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
-  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+  // Make sure that the `CalendarView` can have enough space to hold at least 1
+  // month.
+  UpdateDisplay("800x1000");
 
   // Tests when the user is logged in, the loading bar is visible.
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
-
   CreateCalendarView();
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
-  UpdateMonth(date);
+
   EXPECT_TRUE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+
+  // Tests when the screen is locked, the loading bar is invisible.
+  calendar_model()->ClearAllCachedEvents();
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  CreateCalendarView();
+
+  // Advances the time to allow `on_screen_month_` to initialize.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
+
+  // Tests when the user starts the login process, the loading bar is invisible.
+  calendar_model()->ClearAllCachedEvents();
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  CreateCalendarView();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  EXPECT_FALSE(calendar_view()->children()[kLoadingBarIndex]->GetVisible());
 }
 
 // Tests that the EventListView does not crash if shown during the initial open.

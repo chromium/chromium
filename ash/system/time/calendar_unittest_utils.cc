@@ -83,11 +83,14 @@ base::OnceClosure CalendarClientTestImpl::GetEventList(
     google_apis::calendar::CalendarEventListCallback callback,
     const base::Time& start_time,
     const base::Time& end_time) {
-  // Give it a little bit of time to mock the api calling.
+  // Give it a little bit of time to mock the api calling. This duration is a
+  // little longer than the settle down duration, so in the test after the
+  // animation settled down it can still be with `kFetching` status until
+  // somemethod like `WaitUntilFetched` is called.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), error_, std::move(events_)),
-      base::Seconds(1));
+      kAnimationSettleDownDuration + base::Seconds(2));
 
   return base::DoNothing();
 }
