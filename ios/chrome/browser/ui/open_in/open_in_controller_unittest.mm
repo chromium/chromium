@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
+#import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -24,8 +25,6 @@
 #endif
 
 namespace {
-
-const char kOpenInDownloadResultHistogram[] = "IOS.OpenIn.DownloadResult";
 
 class OpenInControllerTest : public PlatformTest {
  public:
@@ -84,7 +83,7 @@ class OpenInControllerTest : public PlatformTest {
 };
 
 TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 0);
 
   id vc_partial_mock = OCMPartialMock(base_view_controller);
   [[vc_partial_mock expect]
@@ -106,17 +105,17 @@ TEST_F(OpenInControllerTest, TestDisplayOpenInMenu) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), pdf_str);
   task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectBucketCount(kOpenInDownloadResultHistogram,
+  histogram_tester_.ExpectBucketCount(kOpenInDownloadHistogram,
                                       static_cast<base::HistogramBase::Sample>(
                                           OpenInDownloadResult::kSucceeded),
                                       1);
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 1);
 
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
 }
 
 TEST_F(OpenInControllerTest, TestCorruptedPDFDownload) {
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 0);
 
   id vc_partial_mock = OCMPartialMock(base_view_controller);
   [[vc_partial_mock reject] presentViewController:[OCMArg any]
@@ -133,10 +132,10 @@ TEST_F(OpenInControllerTest, TestCorruptedPDFDownload) {
       pending_request->request.url.spec(), pdf_str.substr(pdf_str.size() / 2));
   task_environment_.RunUntilIdle();
   histogram_tester_.ExpectBucketCount(
-      kOpenInDownloadResultHistogram,
+      kOpenInDownloadHistogram,
       static_cast<base::HistogramBase::Sample>(OpenInDownloadResult::kFailed),
       1);
-  histogram_tester_.ExpectTotalCount(kOpenInDownloadResultHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kOpenInDownloadHistogram, 1);
   EXPECT_OCMOCK_VERIFY(vc_partial_mock);
 }
 

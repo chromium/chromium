@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/open_in/open_in_activity_delegate.h"
 #import "ios/chrome/browser/ui/open_in/open_in_activity_view_controller.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller_testing.h"
+#import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -71,7 +72,7 @@ const CGFloat kOverlayedViewLabelBottomMargin = 60;
 
 // Logs the result of the download process after the user taps "open in" button.
 void LogOpenInDownloadResult(const OpenInDownloadResult result) {
-  UMA_HISTOGRAM_ENUMERATION("IOS.OpenIn.DownloadResult", result);
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram, result);
 }
 
 // Returns true if the file located at `url` can be previewed.

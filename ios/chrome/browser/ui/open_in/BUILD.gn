@@ -16,6 +16,7 @@ source_set("open_in_ui") {
   ]
   deps = [
     ":features",
+    ":open_in_histograms",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -56,6 +57,14 @@ source_set("open_in") {
   ]
 }
 
+source_set("open_in_histograms") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "open_in_histograms.h",
+    "open_in_histograms.mm",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -66,6 +75,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":open_in",
+    ":open_in_histograms",
     ":open_in_ui",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",

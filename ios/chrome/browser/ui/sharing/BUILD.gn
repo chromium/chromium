@@ -25,6 +25,7 @@ source_set("sharing") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/open_in:features",
+    "//ios/chrome/browser/ui/open_in:open_in_histograms",
     "//ios/chrome/browser/ui/qr_generator",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",

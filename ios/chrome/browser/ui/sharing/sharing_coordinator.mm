@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/ios/block_types.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/ui/commands/share_download_overlay_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
+#import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_coordinator.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -328,6 +330,8 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
   [self stopDisplayDownloadOverlay];
   self.params.filePath = self.fileNSURL;
   [self startActivityService];
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
+                            OpenInDownloadResult::kSucceeded);
 }
 
 - (void)downloadDidFailWithError:(NSError*)error {
@@ -336,6 +340,8 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
   }
   [self stopDisplayDownloadOverlay];
   [self startActivityService];
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
+                            OpenInDownloadResult::kFailed);
 }
 
 #pragma mark - ShareDownloadOverlayCommands
@@ -346,6 +352,8 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
   if (@available(iOS 14.5, *)) {
     [self.download cancelDownload];
   }
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
+                            OpenInDownloadResult::kCanceled);
 }
 
 @end
