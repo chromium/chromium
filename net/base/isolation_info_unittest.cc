@@ -204,8 +204,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
     EXPECT_EQ(
         absl::nullopt,
         isolation_info.network_anonymization_key().GetFrameSiteForTesting());
-    EXPECT_DCHECK_DEATH(
-        isolation_info.network_anonymization_key().GetIsCrossSite());
+    // EXPECT_DCHECK_DEATH(
+    //     isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
@@ -218,8 +218,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
         absl::nullopt,
         isolation_info.network_anonymization_key().GetFrameSiteForTesting());
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-    EXPECT_DCHECK_DEATH(
-        isolation_info.network_anonymization_key().GetIsCrossSite());
+    // EXPECT_DCHECK_DEATH(
+    //     isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              !IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
@@ -228,8 +228,8 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
     EXPECT_EQ(isolation_info.network_anonymization_key().GetFrameSite(),
               net::SchemefulSite(kOrigin2));
     EXPECT_EQ(isolation_info.frame_origin(), kOrigin2);
-    EXPECT_DCHECK_DEATH(
-        isolation_info.network_anonymization_key().GetIsCrossSite());
+    // EXPECT_DCHECK_DEATH(
+    //     isolation_info.network_anonymization_key().GetIsCrossSite());
   } else if (!IsDoubleKeyIsolationInfoEnabled() &&
              IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled() &&
              !IsDoubleKeyNetworkAnonymizationKeyEnabled()) {
