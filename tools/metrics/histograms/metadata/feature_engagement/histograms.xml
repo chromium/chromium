@@ -404,6 +404,19 @@ chromium-metrics-reviews@google.com.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="InProductHelp.ShownTime.{IPHFeature}" units="ms"
+    expires_after="2023-09-21">
+  <owner>lpromero@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Records the time duration during which the in-product help for {IPHFeature}
+    is shown. The timer automatically starts when the feature engagement system
+    says a particular IPH should be displayed. The timer is stopped and recorded
+    when the IPH is dismissed.
+  </summary>
+  <token key="IPHFeature" variants="IPHFeature"/>
+</histogram>
+
 <histogram name="InProductHelp.SnoozeAction" enum="InProductHelpSnoozeAction"
     expires_after="2022-12-04">
   <owner>haileywang@chromium.org</owner>
