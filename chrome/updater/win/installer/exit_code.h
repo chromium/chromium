@@ -24,6 +24,7 @@ enum ExitCode {
   RUN_SETUP_FAILED_PATH_NOT_FOUND = 123,            // ERROR_PATH_NOT_FOUND.
   RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS = 124,  // All other errors.
   UNSUPPORTED_WINDOWS_VERSION = 125,
+  UNABLE_TO_GET_EXE_PATH = 126,
 };
 
 }  // namespace updater

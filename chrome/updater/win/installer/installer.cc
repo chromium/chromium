@@ -324,8 +324,16 @@ ProcessExitResult WMain(HMODULE module) {
   if (args_result.exit_code != SUCCESS_EXIT_CODE)
     return args_result;
 
-  const base::CommandLine command_line =
+  // Both `RunElevated` and `RunDeElevated` use shell APIs to run the process,
+  // which can have issues with relative paths. So we get the full exe path and
+  // substitute it for the program in the command line.
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+    return ProcessExitResult(UNABLE_TO_GET_EXE_PATH);
+  base::CommandLine command_line =
       base::CommandLine::FromString(::GetCommandLineW());
+  command_line.SetProgram(exe_path);
+
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
 
   if (!::IsUserAnAdmin() && scope == UpdaterScope::kSystem) {
