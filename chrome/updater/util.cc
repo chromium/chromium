@@ -37,8 +37,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/updater/linux/linux_util.h"
+#elif BUILDFLAG(IS_MAC)
 #import "chrome/updater/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include <pwd.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #endif
 
 namespace updater {
@@ -118,6 +126,12 @@ absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope) {
   app_data_dir = path;
 #elif BUILDFLAG(IS_MAC)
   app_data_dir = GetApplicationSupportDirectory(scope);
+  if (!app_data_dir) {
+    LOG(ERROR) << "Can't retrieve app data directory.";
+    return absl::nullopt;
+  }
+#elif BUILDFLAG(IS_LINUX)
+  app_data_dir = GetApplicationDataDirectory(scope);
   if (!app_data_dir) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return absl::nullopt;
@@ -298,22 +312,44 @@ GURL AppendQueryParameter(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
-#if BUILDFLAG(IS_LINUX)
-
-// TODO(crbug.com/1276188) - implement the functions below.
-absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
-  NOTIMPLEMENTED();
-  return absl::nullopt;
-}
-
-base::FilePath GetExecutableRelativePath() {
-  NOTIMPLEMENTED();
-  return base::FilePath();
-}
+#if BUILDFLAG(IS_POSIX)
 
 bool PathOwnedByUser(const base::FilePath& path) {
-  NOTIMPLEMENTED();
-  return false;
+  struct passwd* result = nullptr;
+  struct passwd user_info = {};
+  char pwbuf[2048] = {};
+  const uid_t user_uid = geteuid();
+
+  const int error =
+      getpwuid_r(user_uid, &user_info, pwbuf, sizeof(pwbuf), &result);
+
+  if (error) {
+    VLOG(1) << "Failed to get user info.";
+    return true;
+  }
+
+  if (result == nullptr) {
+    VLOG(1) << "No entry for user.";
+    return true;
+  }
+
+  base::stat_wrapper_t stat_info = {};
+  if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
+    DPLOG(ERROR) << "Failed to get information on path " << path.value();
+    return false;
+  }
+
+  if (S_ISLNK(stat_info.st_mode)) {
+    DLOG(ERROR) << "Path " << path.value() << " is a symbolic link.";
+    return false;
+  }
+
+  if (stat_info.st_uid != user_uid) {
+    DLOG(ERROR) << "Path " << path.value() << " is owned by the wrong user.";
+    return false;
+  }
+
+  return true;
 }
 
 #endif  // BUILDFLAG(IS_LINUX)
