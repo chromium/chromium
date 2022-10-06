@@ -98,8 +98,9 @@ SoftBindAttestationFlow::Session::Session(Callback callback,
     : callback_(std::move(callback)),
       account_id_(account_id),
       user_key_(user_key) {
-  base::RepeatingClosure timeout_callback = base::BindRepeating(
-      &SoftBindAttestationFlow::Session::OnTimeout, base::Unretained(this));
+  base::RepeatingClosure timeout_callback =
+      base::BindRepeating(&SoftBindAttestationFlow::Session::OnTimeout,
+                          weak_ptr_factory_.GetWeakPtr());
   timer_.Start(FROM_HERE, kTimeout, std::move(timeout_callback));
 }
 
@@ -186,7 +187,7 @@ void SoftBindAttestationFlow::GetCertificateInternal(
   std::string key_name(kSoftBindKey);
   AttestationFlow::CertificateCallback certificate_callback =
       base::BindOnce(&SoftBindAttestationFlow::OnCertificateReady,
-                     base::Unretained(this), std::move(session));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(session));
   attestation_flow_->GetCertificate(PROFILE_SOFT_BIND_CERTIFICATE, account_id,
                                     /*request_origin=*/std::string(),
                                     force_new_key, ::attestation::KEY_TYPE_RSA,
@@ -276,8 +277,8 @@ void SoftBindAttestationFlow::OnCertificateReady(
   AttestationClient::Get()->Sign(
       request,
       base::BindOnce(&SoftBindAttestationFlow::OnCertificateSigned,
-                     base::Unretained(this), std::move(session), tbs_cert,
-                     certificate_chain,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(session),
+                     tbs_cert, certificate_chain,
                      expiry_status == CertificateExpiryStatus::kExpiringSoon));
 }
 
