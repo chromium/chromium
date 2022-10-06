@@ -2988,6 +2988,20 @@ Connect your device to power.
         Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.
       </message>
 
+      <!-- Accelerator Actions-->
+      <message name="IDS_ASH_ACCELERATOR_ACTION_BRIGHTNESS_DOWN" translateable="false" desc="Label for accelerator action - Turn brightness down.">
+        Turn brightness down
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_ACTION_BRIGHTNESS_UP" translateable="false" desc="Label for accelerator action - Turn brightness up.">
+        Turn brightness up
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_ACTION_DESKS_ACTIVATE_DESK_LEFT" translateable="false" desc="Label for accelerator action - Activate desk on left.">
+        Activate desk on left
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_ACTION_DESKS_ACTIVATE_DESK_RIGHT" translateable="false" desc="Label for accelerator action - Activate desk on right.">
+        Activate desk on right
+      </message>
+
       <!-- Tray scale strings -->
       <message name="IDS_ASH_STATUS_TRAY_SCALE" desc="The label used in scale setting detailed page of ash tray popup.">
         Display scale settings

@@ -9,6 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/containers/fixed_flat_map.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -170,6 +172,18 @@ ASH_EXPORT extern const size_t kActionsDuplicatedWithBrowserLength;
 // once in order to make it interceptable by webpage/apps.
 ASH_EXPORT extern const AcceleratorAction kActionsInterceptableByBrowser[];
 ASH_EXPORT extern const size_t kActionsInterceptableByBrowserLength;
+
+// A map between accelerator action id and accelerator description ID.
+// Adding a new accelerator must add a new entry to this map.
+ASH_EXPORT constexpr auto kAccelerateActionToStringIdMap =
+    base::MakeFixedFlatMap<AcceleratorAction, int>({
+        {BRIGHTNESS_DOWN, IDS_ASH_ACCELERATOR_ACTION_BRIGHTNESS_DOWN},
+        {BRIGHTNESS_UP, IDS_ASH_ACCELERATOR_ACTION_BRIGHTNESS_UP},
+        {DESKS_ACTIVATE_DESK_LEFT,
+         IDS_ASH_ACCELERATOR_ACTION_DESKS_ACTIVATE_DESK_LEFT},
+        {DESKS_ACTIVATE_DESK_RIGHT,
+         IDS_ASH_ACCELERATOR_ACTION_DESKS_ACTIVATE_DESK_RIGHT},
+    });
 
 }  // namespace ash
 
