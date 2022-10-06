@@ -52,7 +52,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   void StartLoading() override;
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
  protected:
   ~DemoExtensionsExternalLoader() override;

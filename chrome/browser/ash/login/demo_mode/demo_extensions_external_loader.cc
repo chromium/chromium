@@ -112,11 +112,12 @@ void DemoExtensionsExternalLoader::StartLoading() {
 }
 
 void DemoExtensionsExternalLoader::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
+    const base::Value::Dict& prefs) {
   DCHECK(external_cache_);
   // Notifies the provider that the extensions have either been downloaded or
   // found in cache, and are ready to be installed.
-  LoadFinished(prefs->CreateDeepCopy());
+  LoadFinished(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(prefs.Clone()))));
 }
 
 void DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources() {

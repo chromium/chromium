@@ -27,7 +27,8 @@ namespace chromeos {
 
 namespace {
 
-base::Value GetForceInstalledExtensionsFromPrefs(const PrefService* prefs) {
+base::Value::Dict GetForceInstalledExtensionsFromPrefs(
+    const PrefService* prefs) {
   const PrefService::Preference* const login_screen_extensions_pref =
       prefs->FindPreference(extensions::pref_names::kInstallForceList);
   CHECK(login_screen_extensions_pref);
@@ -38,12 +39,12 @@ base::Value GetForceInstalledExtensionsFromPrefs(const PrefService* prefs) {
     // Local State file trying to inject some extensions into the Login Screen.)
     LOG(WARNING) << "Ignoring untrusted value of the "
                  << extensions::pref_names::kInstallForceList << " pref";
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value::Dict();
   }
   const base::Value* login_screen_extensions_pref_value =
       login_screen_extensions_pref->GetValue();
   DCHECK(login_screen_extensions_pref_value->is_dict());
-  return login_screen_extensions_pref_value->Clone();
+  return login_screen_extensions_pref_value->GetDict().Clone();
 }
 
 }  // namespace
@@ -77,13 +78,13 @@ void SigninScreenExtensionsExternalLoader::StartLoading() {
 }
 
 void SigninScreenExtensionsExternalLoader::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
+    const base::Value::Dict& prefs) {
   if (initial_load_finished_) {
-    OnUpdated(prefs->CreateDeepCopy());
+    OnUpdatedWithDict(prefs.Clone());
     return;
   }
   initial_load_finished_ = true;
-  LoadFinished(prefs->CreateDeepCopy());
+  LoadFinishedWithDict(prefs.Clone());
 }
 
 SigninScreenExtensionsExternalLoader::~SigninScreenExtensionsExternalLoader() =
@@ -106,14 +107,10 @@ void SigninScreenExtensionsExternalLoader::SubscribeAndInitializeFromPrefs() {
 }
 
 void SigninScreenExtensionsExternalLoader::UpdateStateFromPrefs() {
-  base::Value force_installed_extensions =
+  auto force_installed_extensions =
       GetForceInstalledExtensionsFromPrefs(profile_->GetPrefs());
-  std::unique_ptr<base::DictionaryValue> force_installed_extensions_dict =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(force_installed_extensions)));
-  DCHECK(force_installed_extensions_dict);
-  external_cache_.UpdateExtensionsList(
-      std::move(force_installed_extensions_dict));
+  external_cache_.UpdateExtensionsListWithDict(
+      std::move(force_installed_extensions));
 }
 
 }  // namespace chromeos

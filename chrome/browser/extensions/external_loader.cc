@@ -54,4 +54,9 @@ void ExternalLoader::OnUpdated(
     owner_->UpdatePrefs(std::move(updated_prefs));
 }
 
+void ExternalLoader::OnUpdatedWithDict(base::Value::Dict updated_prefs) {
+  OnUpdated(base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(std::move(updated_prefs)))));
+}
+
 }  // namespace extensions

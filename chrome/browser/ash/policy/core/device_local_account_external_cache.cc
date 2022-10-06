@@ -86,7 +86,7 @@ DeviceLocalAccountExternalCache::GetExtensionLoader() {
 }
 
 base::Value::Dict DeviceLocalAccountExternalCache::GetCachedExtensions() const {
-  return external_cache_->GetCachedExtensions()->GetDict().Clone();
+  return external_cache_->GetCachedExtensions().Clone();
 }
 
 }  // namespace chromeos

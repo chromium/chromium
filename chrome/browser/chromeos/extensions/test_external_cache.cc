@@ -20,23 +20,20 @@ TestExternalCache::TestExternalCache(ExternalCacheDelegate* delegate,
 
 TestExternalCache::~TestExternalCache() = default;
 
-const base::DictionaryValue* TestExternalCache::GetCachedExtensions() {
-  return &cached_extensions_;
+const base::Value::Dict& TestExternalCache::GetCachedExtensions() {
+  return cached_extensions_;
 }
 
 void TestExternalCache::Shutdown(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void TestExternalCache::UpdateExtensionsList(
-    std::unique_ptr<base::DictionaryValue> prefs) {
-  DCHECK(prefs);
-
+void TestExternalCache::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
   configured_extensions_ = std::move(prefs);
-  cached_extensions_.DictClear();
+  cached_extensions_.clear();
 
-  if (configured_extensions_->DictEmpty()) {
-    delegate_->OnExtensionListsUpdated(&cached_extensions_);
+  if (configured_extensions_.empty()) {
+    delegate_->OnExtensionListsUpdated(cached_extensions_);
     return;
   }
 
@@ -44,12 +41,11 @@ void TestExternalCache::UpdateExtensionsList(
 }
 
 void TestExternalCache::OnDamagedFileDetected(const base::FilePath& path) {
-  for (const auto entry : cached_extensions_.DictItems()) {
-    const base::Value* entry_path = entry.second.FindKeyOfType(
-        extensions::ExternalProviderImpl::kExternalCrx,
-        base::Value::Type::STRING);
-    if (entry_path && entry_path->GetString() == path.value()) {
-      RemoveExtensions({entry.first});
+  for (const auto [id, value] : cached_extensions_) {
+    const std::string* entry_path =
+        value.FindStringKey(extensions::ExternalProviderImpl::kExternalCrx);
+    if (entry_path && *entry_path == path.value()) {
+      RemoveExtensions({id});
       return;
     }
   }
@@ -60,12 +56,12 @@ void TestExternalCache::RemoveExtensions(const std::vector<std::string>& ids) {
     return;
 
   for (const auto& id : ids) {
-    cached_extensions_.RemoveKey(id);
-    configured_extensions_->RemoveKey(id);
+    cached_extensions_.Remove(id);
+    configured_extensions_.Remove(id);
     crx_cache_.erase(id);
   }
 
-  delegate_->OnExtensionListsUpdated(&cached_extensions_);
+  delegate_->OnExtensionListsUpdated(cached_extensions_);
 }
 
 bool TestExternalCache::GetExtension(const std::string& id,
@@ -79,7 +75,7 @@ bool TestExternalCache::GetExtension(const std::string& id,
 }
 
 bool TestExternalCache::ExtensionFetchPending(const std::string& id) {
-  return configured_extensions_->FindKey(id) && !cached_extensions_.FindKey(id);
+  return configured_extensions_.Find(id) && !cached_extensions_.Find(id);
 }
 
 void TestExternalCache::PutExternalExtension(
@@ -112,24 +108,23 @@ bool TestExternalCache::SimulateExtensionDownloadFailed(const std::string& id) {
 }
 
 void TestExternalCache::UpdateCachedExtensions() {
-  for (const auto entry : configured_extensions_->DictItems()) {
-    DCHECK(entry.second.is_dict());
-    if (GetExtensionUpdateUrl(entry.second, always_check_for_updates_)
+  for (const auto [id, value] : configured_extensions_) {
+    DCHECK(value.is_dict());
+    if (GetExtensionUpdateUrl(value.GetDict(), always_check_for_updates_)
             .is_valid()) {
-      pending_downloads_.insert(entry.first);
+      pending_downloads_.insert(id);
     }
 
-    if (crx_cache_.count(entry.first)) {
-      cached_extensions_.SetKey(
-          entry.first, GetExtensionValueToCache(
-                           entry.second.GetDict(), crx_cache_[entry.first].path,
-                           crx_cache_[entry.first].version));
-    } else if (ShouldCacheImmediately(entry.second)) {
-      cached_extensions_.SetKey(entry.first, entry.second.Clone());
+    if (crx_cache_.count(id)) {
+      cached_extensions_.Set(
+          id, GetExtensionValueToCache(value.GetDict(), crx_cache_[id].path,
+                                       crx_cache_[id].version));
+    } else if (ShouldCacheImmediately(value.GetDict())) {
+      cached_extensions_.Set(id, value.Clone());
     }
   }
 
-  delegate_->OnExtensionListsUpdated(&cached_extensions_);
+  delegate_->OnExtensionListsUpdated(cached_extensions_);
 }
 
 void TestExternalCache::AddEntryToCrxCache(const std::string& id,
@@ -137,12 +132,11 @@ void TestExternalCache::AddEntryToCrxCache(const std::string& id,
                                            const std::string& version) {
   crx_cache_[id] = {crx_path, version};
 
-  const base::Value* extension =
-      configured_extensions_->FindKeyOfType(id, base::Value::Type::DICTIONARY);
-  if (extension) {
-    cached_extensions_.SetKey(
-        id, GetExtensionValueToCache(extension->GetDict(), crx_path, version));
-    delegate_->OnExtensionListsUpdated(&cached_extensions_);
+  if (const base::Value::Dict* extension =
+          configured_extensions_.FindDict(id)) {
+    cached_extensions_.Set(
+        id, GetExtensionValueToCache(*extension, crx_path, version));
+    delegate_->OnExtensionListsUpdated(cached_extensions_);
   }
 }
 

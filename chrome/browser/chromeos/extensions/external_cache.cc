@@ -11,26 +11,22 @@
 namespace chromeos {
 
 // static
-GURL ExternalCache::GetExtensionUpdateUrl(const base::Value& extension_value,
-                                          bool always_checking_for_updates) {
-  DCHECK(extension_value.is_dict());
-
-  const base::Value* keep_if_present_value = extension_value.FindKeyOfType(
-      extensions::ExternalProviderImpl::kKeepIfPresent,
-      base::Value::Type::BOOLEAN);
+GURL ExternalCache::GetExtensionUpdateUrl(
+    const base::Value::Dict& extension_value,
+    bool always_checking_for_updates) {
+  const auto keep_if_present_opt = extension_value.FindBool(
+      extensions::ExternalProviderImpl::kKeepIfPresent);
 
   // "keep if present" means that the extension should be kept if it's already
-  // present, but it should not be added to extesions system.
-  if (keep_if_present_value && keep_if_present_value->GetBool())
+  // present, but it should not be added to extensions system.
+  if (keep_if_present_opt.value_or(false))
     return GURL();
 
-  const base::Value* external_update_url_value = extension_value.FindKeyOfType(
-      extensions::ExternalProviderImpl::kExternalUpdateUrl,
-      base::Value::Type::STRING);
+  const std::string* external_update_url = extension_value.FindString(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl);
 
-  if (external_update_url_value &&
-      !external_update_url_value->GetString().empty()) {
-    return GURL(external_update_url_value->GetString());
+  if (external_update_url && !external_update_url->empty()) {
+    return GURL(*external_update_url);
   }
 
   if (always_checking_for_updates)
@@ -39,13 +35,13 @@ GURL ExternalCache::GetExtensionUpdateUrl(const base::Value& extension_value,
   return GURL();
 }
 
-void ExternalCache::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
-  UpdateExtensionsList(base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(base::Value(std::move(prefs)))));
+void ExternalCache::UpdateExtensionsList(
+    std::unique_ptr<base::DictionaryValue> prefs) {
+  UpdateExtensionsListWithDict(std::move(*prefs).TakeDict());
 }
 
 // static
-base::Value ExternalCache::GetExtensionValueToCache(
+base::Value::Dict ExternalCache::GetExtensionValueToCache(
     const base::Value::Dict& extension,
     const std::string& path,
     const std::string& version) {
@@ -61,19 +57,16 @@ base::Value ExternalCache::GetExtensionValueToCache(
 
   result.Set(extensions::ExternalProviderImpl::kExternalVersion, version);
   result.Set(extensions::ExternalProviderImpl::kExternalCrx, path);
-  return base::Value(std::move(result));
+  return result;
 }
 
 // static
-bool ExternalCache::ShouldCacheImmediately(const base::Value& extension) {
-  DCHECK(extension.is_dict());
+bool ExternalCache::ShouldCacheImmediately(const base::Value::Dict& extension) {
+  const auto keep_if_present_opt =
+      extension.FindBool(extensions::ExternalProviderImpl::kKeepIfPresent);
 
-  const base::Value* keep_if_present_value =
-      extension.FindKeyOfType(extensions::ExternalProviderImpl::kKeepIfPresent,
-                              base::Value::Type::BOOLEAN);
-
-  return (keep_if_present_value && keep_if_present_value->GetBool()) ||
-         extension.FindKey(extensions::ExternalProviderImpl::kExternalCrx);
+  return (keep_if_present_opt.value_or(false)) ||
+         extension.Find(extensions::ExternalProviderImpl::kExternalCrx);
 }
 
 }  // namespace chromeos

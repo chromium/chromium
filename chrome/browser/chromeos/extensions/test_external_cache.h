@@ -32,10 +32,9 @@ class TestExternalCache : public ExternalCache {
   ~TestExternalCache() override;
 
   // ExternalCache:
-  const base::DictionaryValue* GetCachedExtensions() override;
+  const base::Value::Dict& GetCachedExtensions() override;
   void Shutdown(base::OnceClosure callback) override;
-  void UpdateExtensionsList(
-      std::unique_ptr<base::DictionaryValue> prefs) override;
+  void UpdateExtensionsListWithDict(base::Value::Dict prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
   void RemoveExtensions(const std::vector<std::string>& ids) override;
   bool GetExtension(const std::string& id,
@@ -98,8 +97,8 @@ class TestExternalCache : public ExternalCache {
   ExternalCacheDelegate* const delegate_;
   const bool always_check_for_updates_;
 
-  std::unique_ptr<base::DictionaryValue> configured_extensions_;
-  base::DictionaryValue cached_extensions_;
+  base::Value::Dict configured_extensions_;
+  base::Value::Dict cached_extensions_;
 
   std::set<std::string> pending_downloads_;
   std::map<std::string, CrxCacheEntry> crx_cache_;

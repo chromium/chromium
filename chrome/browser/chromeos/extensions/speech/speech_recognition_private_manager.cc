@@ -141,9 +141,9 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionStopped(
   absl::optional<int> client_id = GetClientIdFromKey(key);
   EventRouter* event_router = EventRouter::Get(context_);
 
-  base::Value return_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict return_dict;
   if (client_id.has_value())
-    return_dict.SetIntKey("clientId", client_id.value());
+    return_dict.Set("clientId", client_id.value());
 
   base::Value::List event_args;
   event_args.Append(std::move(return_dict));

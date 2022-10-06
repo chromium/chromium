@@ -62,7 +62,9 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
   void LoadFinishedWithDict(base::Value::Dict prefs);
 
   // Notifies the provider that the list of extensions has been updated.
-  virtual void OnUpdated(std::unique_ptr<base::DictionaryValue> updated_prefs);
+  void OnUpdated(std::unique_ptr<base::DictionaryValue> updated_prefs);
+  // Helper function until the migration (https://crbug.com/1366865) is done.
+  void OnUpdatedWithDict(base::Value::Dict updated_prefs);
 
   // Returns true if this loader has an owner.
   // This is useful to know if calling LoadFinished/OnUpdated will propagate

@@ -3,13 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
+#include "base/values.h"
 
 namespace chromeos {
 
-void ExternalCacheDelegate::OnExtensionListsUpdated(
-    const base::DictionaryValue* prefs) {
-  OnExtensionListsUpdated(prefs->GetDict());
-}
 void ExternalCacheDelegate::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {}
 

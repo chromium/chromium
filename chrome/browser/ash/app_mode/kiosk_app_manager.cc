@@ -599,7 +599,7 @@ bool KioskAppManager::GetCachedCrx(const std::string& app_id,
 crosapi::mojom::AppInstallParams KioskAppManager::CreatePrimaryAppInstallData(
     const std::string& id) const {
   const base::Value::Dict* extension =
-      external_cache_->GetCachedExtensions()->GetDict().FindDict(id);
+      external_cache_->GetCachedExtensions().FindDict(id);
   if (!extension) {
     return crosapi::mojom::AppInstallParams(id, std::string(), std::string(),
                                             false);

@@ -23,10 +23,6 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 class ExtensionDownloader;
 }
@@ -73,10 +69,9 @@ class ExternalCacheImpl : public ExternalCache,
   ~ExternalCacheImpl() override;
 
   // Implementation of ExternalCache:
-  const base::DictionaryValue* GetCachedExtensions() override;
+  const base::Value::Dict& GetCachedExtensions() override;
   void Shutdown(base::OnceClosure callback) override;
-  void UpdateExtensionsList(
-      std::unique_ptr<base::DictionaryValue> prefs) override;
+  void UpdateExtensionsListWithDict(base::Value::Dict prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
   void RemoveExtensions(
       const std::vector<extensions::ExtensionId>& ids) override;
@@ -166,11 +161,11 @@ class ExternalCacheImpl : public ExternalCache,
   bool flush_on_put_ = false;
 
   // This is the list of extensions currently configured.
-  std::unique_ptr<base::DictionaryValue> extensions_;
+  base::Value::Dict extensions_;
 
   // This contains extensions that are both currently configured
   // and that have a valid crx in the cache.
-  std::unique_ptr<base::DictionaryValue> cached_extensions_;
+  base::Value::Dict cached_extensions_;
 
   // Used to download the extensions and to check for updates.
   std::unique_ptr<extensions::ExtensionDownloader> downloader_;

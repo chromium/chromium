@@ -8,21 +8,12 @@
 #include "base/values.h"
 #include "extensions/common/extension_id.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace chromeos {
 
 class ExternalCacheDelegate {
  public:
   virtual ~ExternalCacheDelegate() = default;
 
-  // Legacy function until the migration (https://crbug.com/1366865) is done.
-  // At most one of the two functions could be overridden in the child classes.
-  // Prefer the one with the base::Value::Dict
-  // Caller owns |prefs|.
-  virtual void OnExtensionListsUpdated(const base::DictionaryValue* prefs);
   // Caller owns |prefs|.
   virtual void OnExtensionListsUpdated(const base::Value::Dict& prefs);
 

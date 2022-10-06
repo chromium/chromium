@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
@@ -39,7 +40,7 @@ class SigninScreenExtensionsExternalLoader : public extensions::ExternalLoader,
   void StartLoading() override;
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
  private:
   friend class base::RefCounted<SigninScreenExtensionsExternalLoader>;

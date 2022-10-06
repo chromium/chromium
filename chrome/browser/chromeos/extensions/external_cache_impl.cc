@@ -63,8 +63,7 @@ ExternalCacheImpl::ExternalCacheImpl(
       delegate_(delegate),
       always_check_updates_(always_check_updates),
       wait_for_cache_initialization_(wait_for_cache_initialization),
-      allow_scheduled_updates_(allow_scheduled_updates),
-      cached_extensions_(new base::DictionaryValue()) {
+      allow_scheduled_updates_(allow_scheduled_updates) {
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_INSTALL_ERROR,
       content::NotificationService::AllBrowserContextsAndSources());
@@ -77,23 +76,22 @@ ExternalCacheImpl::ExternalCacheImpl(
 
 ExternalCacheImpl::~ExternalCacheImpl() = default;
 
-const base::DictionaryValue* ExternalCacheImpl::GetCachedExtensions() {
-  return cached_extensions_.get();
+const base::Value::Dict& ExternalCacheImpl::GetCachedExtensions() {
+  return cached_extensions_;
 }
 
 void ExternalCacheImpl::Shutdown(base::OnceClosure callback) {
   local_cache_.Shutdown(std::move(callback));
 }
 
-void ExternalCacheImpl::UpdateExtensionsList(
-    std::unique_ptr<base::DictionaryValue> prefs) {
+void ExternalCacheImpl::UpdateExtensionsListWithDict(base::Value::Dict prefs) {
   extensions_ = std::move(prefs);
 
-  if (extensions_->DictEmpty()) {
+  if (extensions_.empty()) {
     // If list of know extensions is empty, don't init cache on disk. It is
     // important shortcut for test to don't wait forever for cache dir
     // initialization that should happen outside of Chrome on real device.
-    cached_extensions_->DictClear();
+    cached_extensions_.clear();
     UpdateExtensionLoader();
     return;
   }
@@ -102,18 +100,17 @@ void ExternalCacheImpl::UpdateExtensionsList(
 }
 
 void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
-  for (const auto item : cached_extensions_->GetDict()) {
-    const base::DictionaryValue* entry = nullptr;
-    if (!item.second.GetAsDictionary(&entry)) {
+  for (const auto [key, value] : cached_extensions_) {
+    if (!value.is_dict()) {
       NOTREACHED() << "ExternalCacheImpl found bad entry with type "
-                   << item.second.type();
+                   << value.type();
       continue;
     }
 
-    const std::string* external_crx = entry->GetDict().FindString(
+    const std::string* external_crx = value.GetDict().FindString(
         extensions::ExternalProviderImpl::kExternalCrx);
     if (external_crx && *external_crx == path.value()) {
-      extensions::ExtensionId id = item.first;
+      extensions::ExtensionId id = key;
       LOG(ERROR) << "ExternalCacheImpl extension at " << path.value()
                  << " failed to install, deleting it.";
       RemoveCachedExtension(id);
@@ -134,16 +131,16 @@ void ExternalCacheImpl::RemoveExtensions(
   if (ids.empty())
     return;
 
-  for (size_t i = 0; i < ids.size(); ++i) {
-    extensions_->RemovePath(ids[i]);
-    RemoveCachedExtension(ids[i]);
+  for (const auto& id : ids) {
+    extensions_.RemoveByDottedPath(id);
+    RemoveCachedExtension(id);
   }
   UpdateExtensionLoader();
 }
 
 void ExternalCacheImpl::RemoveCachedExtension(
     const extensions::ExtensionId& id) {
-  cached_extensions_->RemovePath(id);
+  cached_extensions_.RemoveByDottedPath(id);
   local_cache_.RemoveExtension(id, std::string());
 
   if (delegate_)
@@ -158,7 +155,7 @@ bool ExternalCacheImpl::GetExtension(const extensions::ExtensionId& id,
 
 bool ExternalCacheImpl::ExtensionFetchPending(
     const extensions::ExtensionId& id) {
-  return extensions_->FindKey(id) && !cached_extensions_->FindKey(id);
+  return extensions_.Find(id) && !cached_extensions_.Find(id);
 }
 
 void ExternalCacheImpl::PutExternalExtension(
@@ -189,7 +186,7 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     const std::set<int>& request_ids,
     const FailureData& data) {
   if (error == Error::NO_UPDATE_AVAILABLE) {
-    if (!cached_extensions_->FindKey(id)) {
+    if (!cached_extensions_.Find(id)) {
       LOG(ERROR) << "ExternalCacheImpl extension " << id
                  << " not found on update server";
       delegate_->OnExtensionDownloadFailed(id);
@@ -229,11 +226,12 @@ bool ExternalCacheImpl::IsExtensionPending(const extensions::ExtensionId& id) {
 bool ExternalCacheImpl::GetExtensionExistingVersion(
     const extensions::ExtensionId& id,
     std::string* version) {
-  base::DictionaryValue* extension_dictionary = nullptr;
-  if (!cached_extensions_->GetDictionary(id, &extension_dictionary)) {
+  const base::Value::Dict* extension_dictionary =
+      cached_extensions_.FindDictByDottedPath(id);
+  if (!extension_dictionary) {
     return false;
   }
-  const std::string* val = extension_dictionary->GetDict().FindString(
+  const std::string* val = extension_dictionary->FindString(
       extensions::ExternalProviderImpl::kExternalVersion);
   if (!val)
     return false;
@@ -244,7 +242,7 @@ bool ExternalCacheImpl::GetExtensionExistingVersion(
 void ExternalCacheImpl::UpdateExtensionLoader() {
   VLOG(1) << "Notify ExternalCacheImpl delegate about cache update";
   if (delegate_)
-    delegate_->OnExtensionListsUpdated(cached_extensions_.get());
+    delegate_->OnExtensionListsUpdated(cached_extensions_);
 }
 
 void ExternalCacheImpl::CheckCache() {
@@ -264,28 +262,27 @@ void ExternalCacheImpl::CheckCache() {
         url_loader_factory_, this, extensions::GetExternalVerifierFormat());
   }
 
-  cached_extensions_->DictClear();
-  for (const auto entry : extensions_->DictItems()) {
-    if (!entry.second.is_dict()) {
+  cached_extensions_.clear();
+  for (const auto [id, value] : extensions_) {
+    if (!value.is_dict()) {
       LOG(ERROR) << "ExternalCacheImpl found bad entry with type "
-                 << entry.second.type();
+                 << value.type();
       continue;
     }
 
     base::FilePath file_path;
     std::string version;
     std::string hash;
-    bool is_cached =
-        local_cache_.GetExtension(entry.first, hash, &file_path, &version);
+    bool is_cached = local_cache_.GetExtension(id, hash, &file_path, &version);
     if (!is_cached)
       version = "0.0.0.0";
     if (downloader_) {
       GURL update_url =
-          GetExtensionUpdateUrl(entry.second, always_check_updates_);
+          GetExtensionUpdateUrl(value.GetDict(), always_check_updates_);
 
       if (update_url.is_valid()) {
         downloader_->AddPendingExtension(extensions::ExtensionDownloaderTask(
-            entry.first, update_url,
+            id, update_url,
             extensions::mojom::ManifestLocation::kExternalPolicy, false, 0,
             extensions::DownloadFetchPriority::kBackground,
             base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
@@ -293,11 +290,11 @@ void ExternalCacheImpl::CheckCache() {
       }
     }
     if (is_cached) {
-      cached_extensions_->SetKey(
-          entry.first, GetExtensionValueToCache(entry.second.GetDict(),
-                                                file_path.value(), version));
-    } else if (ShouldCacheImmediately(entry.second)) {
-      cached_extensions_->SetKey(entry.first, entry.second.Clone());
+      cached_extensions_.Set(
+          id, GetExtensionValueToCache(value.GetDict(), file_path.value(),
+                                       version));
+    } else if (ShouldCacheImmediately(value.GetDict())) {
+      cached_extensions_.Set(id, value.Clone());
     }
   }
 
@@ -305,7 +302,7 @@ void ExternalCacheImpl::CheckCache() {
     downloader_->StartAllPending(nullptr);
 
   VLOG(1) << "Updated ExternalCacheImpl, there are "
-          << cached_extensions_->DictSize() << " extensions cached";
+          << cached_extensions_.size() << " extensions cached";
 
   UpdateExtensionLoader();
 
@@ -355,8 +352,7 @@ void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,
 
   VLOG(1) << "ExternalCacheImpl installed a new extension in the cache " << id;
 
-  const base::Value* original_entry =
-      extensions_->FindKeyOfType(id, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* original_entry = extensions_.FindDict(id);
   if (!original_entry) {
     LOG(ERROR) << "ExternalCacheImpl cannot find entry for extension " << id;
     return;
@@ -375,9 +371,8 @@ void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,
                                    base::BindOnce(&FlushFile, file_path));
   }
 
-  cached_extensions_->SetKey(
-      id, GetExtensionValueToCache(original_entry->GetDict(), file_path.value(),
-                                   version));
+  cached_extensions_.Set(id, GetExtensionValueToCache(
+                                 *original_entry, file_path.value(), version));
 
   if (delegate_)
     delegate_->OnExtensionLoadedInCache(id);
