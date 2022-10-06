@@ -12,7 +12,6 @@ namespace device_signals {
 namespace names {
 
 extern const char kAllowScreenLock[];
-extern const char kAntiVirusInfo[];
 extern const char kBrowserVersion[];
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kChromeCleanupEnabled[];
@@ -23,13 +22,10 @@ extern const char kDeviceManufacturer[];
 extern const char kDeviceModel[];
 extern const char kDiskEncrypted[];
 extern const char kDisplayName[];
-extern const char kEnrollmentDomain[];
-extern const char kFileSystemInfo[];
+extern const char kDeviceEnrollmentDomain[];
 extern const char kOsFirewall[];
 extern const char kImei[];
-extern const char kInstalledHotfixes[];
 extern const char kIpAddress[];
-extern const char kIsJailbroken[];
 extern const char kMacAddresses[];
 extern const char kMeid[];
 extern const char kOs[];
@@ -41,12 +37,9 @@ extern const char kSafeBrowsingProtectionLevel[];
 extern const char kScreenLockSecured[];
 extern const char kSecureBootEnabled[];
 extern const char kSerialNumber[];
-extern const char kSettings[];
-extern const char kSignedInProfileName[];
 extern const char kSiteIsolationEnabled[];
 extern const char kSystemDnsServers[];
 extern const char kThirdPartyBlockingEnabled[];
-extern const char kTpmHash[];
 extern const char kWindowsMachineDomain[];
 extern const char kWindowsUserDomain[];
 

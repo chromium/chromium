@@ -40,7 +40,7 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
 
   if (cloud_policy_store_->has_policy()) {
     const auto* policy = cloud_policy_store_->policy();
-    signals.Set(device_signals::names::kEnrollmentDomain,
+    signals.Set(device_signals::names::kDeviceEnrollmentDomain,
                 policy->has_managed_by() ? policy->managed_by()
                                          : policy->display_domain());
   }

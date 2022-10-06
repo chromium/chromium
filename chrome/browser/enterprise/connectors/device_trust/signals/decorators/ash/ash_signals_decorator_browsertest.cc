@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
 
   run_loop.Run();
 
-  EXPECT_EQ(*signals.FindString(device_signals::names::kEnrollmentDomain),
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
             kFakeEnrollmentDomain);
 }
 

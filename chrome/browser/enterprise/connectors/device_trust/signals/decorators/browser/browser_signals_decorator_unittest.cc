@@ -116,8 +116,9 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
 
   ValidateStaticSignals(signals);
 
-  EXPECT_EQ(kFakeEnrollmentDomain,
-            *signals.FindString(device_signals::names::kEnrollmentDomain));
+  EXPECT_EQ(
+      kFakeEnrollmentDomain,
+      *signals.FindString(device_signals::names::kDeviceEnrollmentDomain));
 
   histogram_tester_.ExpectTotalCount(kLatencyHistogram, 1);
 }
@@ -131,7 +132,8 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
   run_loop.Run();
 
   ValidateStaticSignals(signals);
-  EXPECT_FALSE(signals.contains(device_signals::names::kEnrollmentDomain));
+  EXPECT_FALSE(
+      signals.contains(device_signals::names::kDeviceEnrollmentDomain));
 }
 
 }  // namespace enterprise_connectors

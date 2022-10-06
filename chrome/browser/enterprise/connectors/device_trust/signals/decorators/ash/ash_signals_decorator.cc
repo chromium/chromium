@@ -63,7 +63,7 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
                                    base::OnceClosure done_closure) {
   auto start_time = base::TimeTicks::Now();
 
-  signals.Set(device_signals::names::kEnrollmentDomain,
+  signals.Set(device_signals::names::kDeviceEnrollmentDomain,
               browser_policy_connector_->GetEnterpriseDomainManager());
   signals.Set(device_signals::names::kAllowScreenLock,
               profile_->GetPrefs()->GetBoolean(ash::prefs::kAllowScreenLock));
