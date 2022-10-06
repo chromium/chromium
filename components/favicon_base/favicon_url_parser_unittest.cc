@@ -230,3 +230,20 @@ TEST_F(FaviconUrlParserTest, Favicon2ParsingShowFallbackMonogram) {
                                chrome::FaviconUrlFormat::kFavicon2, &parsed));
   EXPECT_TRUE(parsed.show_fallback_monogram);
 }
+
+TEST_F(FaviconUrlParserTest, Favicon2ParsingForceLightMode) {
+  chrome::ParsedFaviconPath parsed;
+
+  parsed.force_light_mode = true;
+  EXPECT_TRUE(chrome::ParseFaviconPath("?pageUrl=https%3A%2F%2Fg.com",
+                                       chrome::FaviconUrlFormat::kFavicon2,
+                                       &parsed));
+  EXPECT_FALSE(parsed.force_light_mode);
+
+  parsed.force_light_mode = false;
+  EXPECT_TRUE(
+      chrome::ParseFaviconPath("?forceLightMode&pageUrl=https%3A%"
+                               "2F%2Fg.com",
+                               chrome::FaviconUrlFormat::kFavicon2, &parsed));
+  EXPECT_TRUE(parsed.force_light_mode);
+}

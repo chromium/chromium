@@ -70,8 +70,7 @@ FaviconSource::FaviconSource(Profile* profile,
                              chrome::FaviconUrlFormat url_format)
     : profile_(profile->GetOriginalProfile()), url_format_(url_format) {}
 
-FaviconSource::~FaviconSource() {
-}
+FaviconSource::~FaviconSource() {}
 
 std::string FaviconSource::GetSource() {
   switch (url_format_) {
@@ -108,7 +107,8 @@ void FaviconSource::StartDataRequest(
   GURL page_url(parsed.page_url);
   GURL icon_url(parsed.icon_url);
   if (!page_url.is_valid() && !icon_url.is_valid()) {
-    SendDefaultResponse(std::move(callback), wc_getter);
+    SendDefaultResponse(std::move(callback), wc_getter,
+                        parsed.force_light_mode);
     return;
   }
 
@@ -117,7 +117,8 @@ void FaviconSource::StartDataRequest(
 
   // Guard against out-of-memory issues.
   if (desired_size_in_pixel > kMaxDesiredSizeInPixel) {
-    SendDefaultResponse(std::move(callback), wc_getter);
+    SendDefaultResponse(std::move(callback), wc_getter,
+                        parsed.force_light_mode);
     return;
   }
 
@@ -252,7 +253,9 @@ void FaviconSource::SendDefaultResponse(
   if (!parsed.show_fallback_monogram) {
     SendDefaultResponse(std::move(callback), parsed.size_in_dip,
                         parsed.device_scale_factor,
-                        GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+                        parsed.force_light_mode
+                            ? false
+                            : GetNativeTheme(wc_getter)->ShouldUseDarkColors());
     return;
   }
   int icon_size = std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
@@ -266,9 +269,12 @@ void FaviconSource::SendDefaultResponse(
 
 void FaviconSource::SendDefaultResponse(
     content::URLDataSource::GotDataCallback callback,
-    const content::WebContents::Getter& wc_getter) {
+    const content::WebContents::Getter& wc_getter,
+    bool force_light_mode) {
   SendDefaultResponse(std::move(callback), 16, 1.0f,
-                      GetNativeTheme(wc_getter)->ShouldUseDarkColors());
+                      force_light_mode
+                          ? false
+                          : GetNativeTheme(wc_getter)->ShouldUseDarkColors());
 }
 
 void FaviconSource::SendDefaultResponse(

@@ -118,6 +118,8 @@ bool ParseFaviconPathWithFavicon2Format(const std::string& path,
       parsed->allow_favicon_server_fallback = val == "1";
     } else if (key == "showFallbackMonogram") {
       parsed->show_fallback_monogram = true;
+    } else if (key == "forceLightMode") {
+      parsed->force_light_mode = true;
     } else if (key == "iconUrl") {
       parsed->icon_url = it.GetUnescapedValue();
     } else if (key == "pageUrl") {

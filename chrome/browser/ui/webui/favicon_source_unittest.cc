@@ -279,6 +279,16 @@ TEST_F(FaviconSourceTestWithFavicon2Format, LightDefault) {
                              base::DoNothing());
 }
 
+TEST_F(FaviconSourceTestWithFavicon2Format, LightOverride) {
+  SetDarkMode(true);
+  EXPECT_CALL(*source(), LoadIconBytes(_, IDR_DEFAULT_FAVICON));
+  source()->StartDataRequest(
+      GURL(base::StrCat({kDummyPrefix,
+                         "?pageUrl=https%3A%2F%2Fwww.google.com"
+                         "&forceLightMode"})),
+      test_web_contents_getter_, base::DoNothing());
+}
+
 TEST_F(FaviconSourceTestWithFavicon2Format,
        ShouldNotQueryHistoryUiFaviconRequestHandlerIfNotAllowed) {
   content::WebContentsTester::For(test_web_contents_.get())
