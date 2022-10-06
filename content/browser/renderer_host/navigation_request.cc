@@ -6580,6 +6580,31 @@ url::Origin NavigationRequest::GetOriginToCommit() {
 
 std::pair<url::Origin, std::string>
 NavigationRequest::GetOriginToCommitWithDebugInfo() {
+  if (!IsSameDocument() && !IsPageActivation() &&
+      commit_params_->origin_to_commit) {
+    // `origin_to_commit` is set when there is an origin saved in the
+    // FrameNavigationEntry and it hasn't been reset yet due to redirects etc.
+    // Always try to use it, because this is what the renderer does in
+    // `DocumentLoader::CalculateOrigin()`. However this might not be the
+    // final origin, as the callers of this function might also consider sandbox
+    // flags too, which may require an opaque origin.
+    /// Note that this is handled here instead of in
+    // GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo() as that
+    // function is used for more than just browser-vs-renderer origin
+    // verification, to avoid changing the behavior of existing browser-side
+    // code that don't expect `origin_to_commit` to be used before commit.
+    // TODO(https://crbug.com/1359351): Stop using `origin_to_commit` in the
+    // renderer and remove this special handling.
+    std::pair<url::Origin, std::string> origin_and_debug_info =
+        std::make_pair(*commit_params_->origin_to_commit, "origin_to_commit");
+    if ((SandboxFlagsToCommit() & network::mojom::WebSandboxFlags::kOrigin) ==
+        network::mojom::WebSandboxFlags::kOrigin) {
+      origin_and_debug_info =
+          std::make_pair(origin_and_debug_info.first.DeriveNewOpaqueOrigin(),
+                         origin_and_debug_info.second + ", sandbox_flags");
+    }
+    return origin_and_debug_info;
+  }
   return GetOriginForURLLoaderFactoryWithFinalFrameHostWithDebugInfo();
 }
 

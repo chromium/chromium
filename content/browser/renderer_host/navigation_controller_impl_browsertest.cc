@@ -21744,6 +21744,307 @@ IN_PROC_BROWSER_TEST_P(
       base::TimeDelta());
 }
 
+// Tests that navigating to a document that was previously sandboxed but later
+// on is loaded again without being marked as sandboxed would reuse the opaque
+// origin that was used when the document was first loaded. Note that this
+// behavior is not currently following the spec, which always calculates the
+// origin based on the latest sandbox flags, but that might change soon.
+// See also the linked bug and https://github.com/whatwg/html/issues/6809.
+// TODO(https://crbug.com/1359351): Update this test to expect the origin to
+// be recalculated once `origin_to_commit` is no longer used.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       HistoryNavigationToPreviouslySandboxedDocument) {
+  net::test_server::ControllableHttpResponse response1(
+      embedded_test_server(), "/sandboxed_on_first_load_only");
+  net::test_server::ControllableHttpResponse response2(
+      embedded_test_server(), "/sandboxed_on_first_load_only");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetPrimaryFrameTree().root();
+
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/sandboxed_on_first_load_only"));
+  {
+    // Navigate to a page that is sandboxed when it's first loaded.
+    TestNavigationObserver nav_observer(contents());
+    shell()->LoadURL(main_url);
+    response1.WaitForRequest();
+    // Note: we use Cache-Control: no-store to prevent the HTTP cache, so that
+    // we can change the response on the next navigation to this page.
+    response1.Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Content-Security-Policy: sandbox\r\n"
+        "Cache-Control: no-store\r\n"
+        "\r\n"
+        "sandboxed document");
+    response1.Done();
+    nav_observer.Wait();
+    EXPECT_EQ(main_url, controller.GetLastCommittedEntry()->GetURL());
+    // The document is sandboxed, and has an opaque origin derived from
+    // `main_url`.
+    EXPECT_TRUE(root->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        root->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+
+  {
+    // Navigate to another document.
+    TestNavigationObserver back_load_observer(contents());
+    GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+    shell()->LoadURL(url_2);
+    back_load_observer.Wait();
+    EXPECT_EQ(url_2, controller.GetLastCommittedEntry()->GetURL());
+  }
+
+  {
+    // Navigate back to a page that was sandboxed before, but is no longer
+    // sandboxed now (as the HTTP response had changed).
+    TestNavigationObserver nav_observer(contents());
+    controller.GoBack();
+    response2.WaitForRequest();
+    response2.Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "\r\n"
+        "non-sandboxed document");
+    response2.Done();
+    nav_observer.Wait();
+    EXPECT_EQ(main_url, controller.GetLastCommittedEntry()->GetURL());
+    // The document is not sandboxed, but has an opaque origin derived from
+    // `main_url`.
+    // TODO(https://crbug.com/1359351): The origin should be recalculated and
+    // result in a non-opaque origin instead.
+    EXPECT_FALSE(root->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        root->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+}
+
+// Same with above, but with an iframe and the sandbox attribute instead.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       HistoryNavigationToPreviouslySandboxedDocumentOnIframe) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetPrimaryFrameTree().root();
+
+  {
+    // Create an iframe and navigate it somewhere, to avoid initial empty
+    // document replacement on subsequent navigations.
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, R"(
+        let iframe = document.createElement('iframe');
+        iframe.id = 'child';
+        iframe.src = location.href;
+        document.body.appendChild(iframe);)"));
+    capturer.Wait();
+  }
+  FrameTreeNode* child = root->child_at(0);
+
+  {
+    // Set the sandbox attribute on the iframe and navigate it to about:blank.
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(ExecJs(root, R"(
+        document.getElementById('child').setAttribute('sandbox', '');
+        document.getElementById('child').src = 'about:blank';)"));
+    capturer.Wait();
+
+    // The document is sandboxed, and has an opaque origin derived from
+    // `main_url` (the initiator origin).
+    EXPECT_TRUE(child->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        child->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+
+  {
+    GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+    // Navigate the iframe to somewhere else.
+    FrameNavigateParamsCapturer capturer(child);
+    NavigateFrameToURL(child, url_2);
+    capturer.Wait();
+  }
+
+  {
+    // Remove the sandbox attribute and navigate the iframe back.
+    EXPECT_TRUE(ExecJs(
+        root, "document.getElementById('child').removeAttribute('sandbox');"));
+    FrameNavigateParamsCapturer capturer(child);
+    controller.GoBack();
+    capturer.Wait();
+    // The document is not sandboxed, but has an opaque origin derived from
+    // `main_url` (the initiator origin).
+    EXPECT_FALSE(child->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        child->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+}
+
+// Tests that navigating to a document that was previously not sandboxed but
+// later on is loaded again while being marked as sandboxed would use an opaque
+// origin, and the document is marked as sandboxed.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       HistoryNavigationToPreviouslyNonSandboxedDocument) {
+  net::test_server::ControllableHttpResponse response1(
+      embedded_test_server(), "/sandboxed_on_second_load_only");
+  net::test_server::ControllableHttpResponse response2(
+      embedded_test_server(), "/sandboxed_on_second_load_only");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetPrimaryFrameTree().root();
+
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/sandboxed_on_second_load_only"));
+  {
+    // Navigate to a page that is not sandboxed when it's first loaded.
+    TestNavigationObserver nav_observer(contents());
+    shell()->LoadURL(main_url);
+    response1.WaitForRequest();
+    // Note: we use Cache-Control: no-store to prevent the HTTP cache, so that
+    // we can change the response on the next navigation to this page.
+    response1.Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Cache-Control: no-store\r\n"
+        "\r\n"
+        "non-sandboxed document");
+    response1.Done();
+    nav_observer.Wait();
+    EXPECT_EQ(main_url, controller.GetLastCommittedEntry()->GetURL());
+    // The document is not sandboxed, and should have an origin based on
+    // `main_url`.
+    EXPECT_FALSE(root->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_FALSE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(url::Origin::Create(main_url),
+              root->current_frame_host()->GetLastCommittedOrigin());
+  }
+
+  {
+    // Navigate to another document.
+    TestNavigationObserver back_load_observer(contents());
+    GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+    shell()->LoadURL(url_2);
+    back_load_observer.Wait();
+    EXPECT_EQ(url_2, controller.GetLastCommittedEntry()->GetURL());
+  }
+
+  {
+    // Navigate back to a page that was not sandboxed before, but is now
+    // sandboxed (as the HTTP response had changed).
+    TestNavigationObserver nav_observer(contents());
+    controller.GoBack();
+    response2.WaitForRequest();
+    response2.Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Content-Security-Policy: sandbox\r\n"
+        "\r\n"
+        "sandboxed document");
+    response2.Done();
+    nav_observer.Wait();
+    EXPECT_EQ(main_url, controller.GetLastCommittedEntry()->GetURL());
+    // The document is sandboxed, and has an opaque origin derived from
+    // `main_url`.
+    // TODO(https://crbug.com/1359351): The origin should be recalculated and
+    // result in a non-opaque origin instead.
+    EXPECT_TRUE(root->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        root->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+}
+
+// Same with above, but with an iframe and the sandbox attribute instead.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    HistoryNavigationToPreviouslyNonSandboxedDocumentOnIframe) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root =
+      static_cast<WebContentsImpl*>(contents())->GetPrimaryFrameTree().root();
+
+  {
+    // Create an iframe and navigate it somewhere, to avoid initial empty
+    // document replacement on subsequent navigations.
+    LoadCommittedCapturer capturer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(root, R"(
+        let iframe = document.createElement('iframe');
+        iframe.id = 'child';
+        iframe.src = location.href;
+        document.body.appendChild(iframe);)"));
+    capturer.Wait();
+  }
+  FrameTreeNode* child = root->child_at(0);
+
+  {
+    // Navigate the iframe to about:blank.
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(ExecJs(root, R"(
+        document.getElementById('child').src = 'about:blank';)"));
+    capturer.Wait();
+
+    // The document is not sandboxed, and it's origin is the same as the main
+    // frame's origin (the initiator origin).
+    EXPECT_FALSE(child->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_FALSE(
+        child->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_EQ(child->current_frame_host()->GetLastCommittedOrigin(),
+              root->current_frame_host()->GetLastCommittedOrigin());
+  }
+
+  {
+    GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+    // Navigate the iframe to somewhere else.
+    FrameNavigateParamsCapturer capturer(child);
+    NavigateFrameToURL(child, url_2);
+    capturer.Wait();
+  }
+
+  {
+    // Add the sandbox attribute and navigate the iframe back.
+    EXPECT_TRUE(ExecJs(
+        root, "document.getElementById('child').setAttribute('sandbox', '');"));
+    FrameNavigateParamsCapturer capturer(child);
+    controller.GoBack();
+    capturer.Wait();
+    // The document is sandboxed, and has an opaque origin derived from
+    // `main_url` (the initiator origin).
+    EXPECT_TRUE(child->current_frame_host()->IsSandboxed(
+        network::mojom::WebSandboxFlags::kAll));
+    EXPECT_TRUE(child->current_frame_host()->GetLastCommittedOrigin().opaque());
+    EXPECT_TRUE(
+        child->current_frame_host()->GetLastCommittedOrigin().CanBeDerivedFrom(
+            main_url));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,
