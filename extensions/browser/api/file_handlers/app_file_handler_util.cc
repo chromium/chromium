@@ -298,9 +298,9 @@ const apps::FileHandlerInfo* FileHandlerForId(const Extension& app,
   if (!file_handlers)
     return nullptr;
 
-  for (auto i = file_handlers->cbegin(); i != file_handlers->cend(); i++) {
-    if (i->id == handler_id)
-      return &*i;
+  for (const auto& file_handler : *file_handlers) {
+    if (file_handler.id == handler_id)
+      return &file_handler;
   }
   return nullptr;
 }

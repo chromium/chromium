@@ -25,11 +25,9 @@ static ManifestHandlerRegistry* g_registry_override = nullptr;
 
 }  // namespace
 
-ManifestHandler::ManifestHandler() {
-}
+ManifestHandler::ManifestHandler() = default;
 
-ManifestHandler::~ManifestHandler() {
-}
+ManifestHandler::~ManifestHandler() = default;
 
 bool ManifestHandler::Validate(const Extension* extension,
                                std::string* error,
@@ -132,17 +130,15 @@ void ManifestHandlerRegistry::RegisterHandler(
 bool ManifestHandlerRegistry::ParseExtension(Extension* extension,
                                              std::u16string* error) {
   std::map<int, ManifestHandler*> handlers_by_priority;
-  for (ManifestHandlerMap::iterator iter = handlers_.begin();
-       iter != handlers_.end(); ++iter) {
-    ManifestHandler* handler = iter->second;
-    if (extension->manifest()->FindPath(iter->first) ||
+  for (const auto& iter : handlers_) {
+    ManifestHandler* handler = iter.second;
+    if (extension->manifest()->FindPath(iter.first) ||
         handler->AlwaysParseForType(extension->GetType())) {
       handlers_by_priority[priority_map_[handler]] = handler;
     }
   }
-  for (auto iter = handlers_by_priority.begin();
-       iter != handlers_by_priority.end(); ++iter) {
-    if (!(iter->second)->Parse(extension, error))
+  for (const auto& iter : handlers_by_priority) {
+    if (!(iter.second)->Parse(extension, error))
       return false;
   }
   return true;
@@ -153,16 +149,15 @@ bool ManifestHandlerRegistry::ValidateExtension(
     std::string* error,
     std::vector<InstallWarning>* warnings) {
   std::set<ManifestHandler*> handlers;
-  for (ManifestHandlerMap::iterator iter = handlers_.begin();
-       iter != handlers_.end(); ++iter) {
-    ManifestHandler* handler = iter->second;
-    if (extension->manifest()->FindPath(iter->first) ||
+  for (const auto& iter : handlers_) {
+    ManifestHandler* handler = iter.second;
+    if (extension->manifest()->FindPath(iter.first) ||
         handler->AlwaysValidateForType(extension->GetType())) {
       handlers.insert(handler);
     }
   }
-  for (auto iter = handlers.begin(); iter != handlers.end(); ++iter) {
-    if (!(*iter)->Validate(extension, error, warnings))
+  for (auto* handler : handlers) {
+    if (!handler->Validate(extension, error, warnings))
       return false;
   }
   return true;

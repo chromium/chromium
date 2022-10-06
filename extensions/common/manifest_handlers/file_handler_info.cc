@@ -38,8 +38,8 @@ bool IsSupportedVerb(const std::string& verb) {
 FileHandlerMatch::FileHandlerMatch() = default;
 FileHandlerMatch::~FileHandlerMatch() = default;
 
-FileHandlers::FileHandlers() {}
-FileHandlers::~FileHandlers() {}
+FileHandlers::FileHandlers() = default;
+FileHandlers::~FileHandlers() = default;
 
 // static
 const FileHandlersInfo* FileHandlers::GetFileHandlers(
@@ -49,11 +49,9 @@ const FileHandlersInfo* FileHandlers::GetFileHandlers(
   return info ? &info->file_handlers : nullptr;
 }
 
-FileHandlersParser::FileHandlersParser() {
-}
+FileHandlersParser::FileHandlersParser() = default;
 
-FileHandlersParser::~FileHandlersParser() {
-}
+FileHandlersParser::~FileHandlersParser() = default;
 
 bool LoadFileHandler(const std::string& handler_id,
                      const base::Value& handler_info,
@@ -180,12 +178,8 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   }
 
   int filter_count = 0;
-  for (FileHandlersInfo::const_iterator iter = info->file_handlers.begin();
-       iter != info->file_handlers.end();
-       iter++) {
-    filter_count += iter->types.size();
-    filter_count += iter->extensions.size();
-  }
+  for (const auto& iter : info->file_handlers)
+    filter_count += iter.types.size() + iter.extensions.size();
 
   if (filter_count > kMaxTypeAndExtensionHandlers) {
     *error = errors::kInvalidFileHandlersTooManyTypesAndExtensions;

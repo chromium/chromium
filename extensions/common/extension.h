@@ -70,7 +70,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // the extension. Related to base::SupportsUserData, but with an immutable
   // thread-safe interface to match Extension.
   struct ManifestData {
-    virtual ~ManifestData() {}
+    virtual ~ManifestData() = default;
   };
 
   // Do not change the order of entries or remove entries in this list

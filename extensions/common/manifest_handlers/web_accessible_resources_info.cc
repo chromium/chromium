@@ -249,17 +249,15 @@ WebAccessibleResourcesInfo::Entry::Entry(URLPatternSet resources,
 
 WebAccessibleResourcesHandler::WebAccessibleResourcesHandler() = default;
 
-WebAccessibleResourcesHandler::~WebAccessibleResourcesHandler() {
-}
+WebAccessibleResourcesHandler::~WebAccessibleResourcesHandler() = default;
 
 bool WebAccessibleResourcesHandler::Parse(Extension* extension,
                                           std::u16string* error) {
   auto info = extension->manifest_version() < 3
                   ? ParseResourceStringList(*extension, error)
                   : ParseEntryList(*extension, error);
-  if (!info) {
+  if (!info)
     return false;
-  }
   extension->SetManifestData(
       WebAccessibleResourcesManifestKeys::kWebAccessibleResources,
       std::move(info));
