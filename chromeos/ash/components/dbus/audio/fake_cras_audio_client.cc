@@ -23,6 +23,9 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
 
+const int32_t kInputNumberOfVolumeSteps = 0;
+const int32_t kOutputNumberOfVolumeSteps = 25;
+
 FakeCrasAudioClient::FakeCrasAudioClient() {
   CHECK(!g_instance);
   g_instance = this;
@@ -39,6 +42,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_1.device_name = "Fake Speaker";
   output_1.type = "INTERNAL_SPEAKER";
   output_1.name = "Speaker";
+  output_1.number_of_volume_steps = kOutputNumberOfVolumeSteps;
   node_list_.push_back(output_1);
 
   AudioNode output_2;
@@ -50,6 +54,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_2.device_name = "Fake Headphone";
   output_2.type = "HEADPHONE";
   output_2.name = "Headphone";
+  output_2.number_of_volume_steps = kOutputNumberOfVolumeSteps;
   node_list_.push_back(output_2);
 
   AudioNode output_3;
@@ -61,6 +66,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_3.device_name = "Fake Bluetooth Headphone";
   output_3.type = "BLUETOOTH";
   output_3.name = "Headphone";
+  output_3.number_of_volume_steps = kOutputNumberOfVolumeSteps;
   node_list_.push_back(output_3);
 
   AudioNode output_4;
@@ -72,6 +78,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   output_4.device_name = "Fake HDMI Speaker";
   output_4.type = "HDMI";
   output_4.name = "HDMI Speaker";
+  output_4.number_of_volume_steps = kOutputNumberOfVolumeSteps;
   node_list_.push_back(output_4);
 
   // Fake audio input nodes
@@ -84,6 +91,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_1.device_name = "Fake Internal Mic";
   input_1.type = "INTERNAL_MIC";
   input_1.name = "Internal Mic";
+  input_1.number_of_volume_steps = kInputNumberOfVolumeSteps;
   node_list_.push_back(input_1);
 
   AudioNode input_2;
@@ -95,6 +103,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_2.device_name = "Fake USB Mic";
   input_2.type = "USB";
   input_2.name = "Mic";
+  input_2.number_of_volume_steps = kInputNumberOfVolumeSteps;
   node_list_.push_back(input_2);
 
   AudioNode input_3;
@@ -106,6 +115,7 @@ FakeCrasAudioClient::FakeCrasAudioClient() {
   input_3.device_name = "Fake Mic Jack";
   input_3.type = "MIC";
   input_3.name = "Some type of Mic";
+  input_3.number_of_volume_steps = kInputNumberOfVolumeSteps;
   node_list_.push_back(input_3);
 }
 

@@ -92,15 +92,28 @@ IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeUpAndDown) {
   // Set initial value as 50%
   const int kInitVolume = 50;
   audio_handler_->SetOutputVolumePercent(kInitVolume);
+  int current_volume = audio_handler_->GetOutputVolumePercent();
+  EXPECT_EQ(current_volume, kInitVolume);
 
-  EXPECT_EQ(audio_handler_->GetOutputVolumePercent(), kInitVolume);
-
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeUp();
-  EXPECT_LT(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  // number_of_volume_step = 25 mean we split volume into 25 level,
+  // and The volume goes up one level each for VolumeUp/VolumeDown event.
+  // For initial value is 48 - 51 volume will increase to 52,
+  // because 48 - 51 share same level,
+  // VolumeUp will increase to the min volume of next level, which is 52
+  // Original behavior will set volume to 54
+  EXPECT_LT(current_volume, audio_handler_->GetOutputVolumePercent());
+
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeDown();
-  EXPECT_EQ(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  // VolumeUp will decrease to the min volume of previous level, which is 48
+  // Original behavior will set volume to 50
+  EXPECT_GT(current_volume, audio_handler_->GetOutputVolumePercent());
+
+  current_volume = audio_handler_->GetOutputVolumePercent();
   VolumeDown();
-  EXPECT_GT(kInitVolume, audio_handler_->GetOutputVolumePercent());
+  EXPECT_GT(current_volume, audio_handler_->GetOutputVolumePercent());
 }
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerTest, VolumeDownToZero) {
