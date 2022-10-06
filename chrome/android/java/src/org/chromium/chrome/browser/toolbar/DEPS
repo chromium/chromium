@@ -35,9 +35,4 @@ specific_include_rules = {
   'ToolbarColors.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
   ],
-  'LogoLoadHelper': [
-    "+chrome/android/features/start_surface/public",
-    "+chrome/android/java/src/org/chromium/chrome/browser",
-    "+content/public/android/java/src/org/chromium/content_public/browser/LoadUrlParams.java",
-  ],
 }
