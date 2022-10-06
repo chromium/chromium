@@ -368,41 +368,58 @@ String SVGUseElement::title() const {
   return String();
 }
 
-static void AssociateCorrespondingElements(SVGElement& target_root,
-                                           SVGElement& instance_root) {
-  auto target_range =
-      Traversal<SVGElement>::InclusiveDescendantsOf(target_root);
-  auto target_iterator = target_range.begin();
-  for (SVGElement& instance :
-       Traversal<SVGElement>::InclusiveDescendantsOf(instance_root)) {
-    DCHECK(!instance.CorrespondingElement());
-    instance.SetCorrespondingElement(&*target_iterator);
-    ++target_iterator;
-  }
-  DCHECK(!(target_iterator != target_range.end()));
-}
+static void PostProcessInstanceTree(SVGElement& target_root,
+                                    SVGElement& instance_root) {
+  DCHECK(!instance_root.isConnected());
+  // We checked this before creating the cloned subtree.
+  DCHECK(!IsDisallowedElement(instance_root));
+  // Associate the roots.
+  instance_root.SetCorrespondingElement(&target_root);
 
-// We don't walk the target tree element-by-element, and clone each element,
-// but instead use cloneNode(deep=true). This is an optimization for the common
-// case where <use> doesn't contain disallowed elements (ie. <foreignObject>).
-// Though if there are disallowed elements in the subtree, we have to remove
-// them.  For instance: <use> on <g> containing <foreignObject> (indirect
-// case).
-static inline void RemoveDisallowedElementsFromSubtree(SVGElement& subtree) {
-  DCHECK(!subtree.isConnected());
-  Element* element = ElementTraversal::FirstWithin(subtree);
-  while (element) {
-    if (IsDisallowedElement(*element)) {
-      Element* next =
-          ElementTraversal::NextSkippingChildren(*element, &subtree);
-      // The subtree is not in document so this won't generate events that could
-      // mutate the tree.
-      element->parentNode()->RemoveChild(element);
-      element = next;
+  // The subtrees defined by |target_root| and |instance_root| should be
+  // isomorphic at this point, so we can walk both trees simultaneously to be
+  // able to create the corresponding element mapping.
+  //
+  // We don't walk the target tree element-by-element, and clone each element,
+  // but instead use cloneNode(deep=true). This is an optimization for the
+  // common case where <use> doesn't contain disallowed elements
+  // (ie. <foreignObject>).  Though if there are disallowed elements in the
+  // subtree, we have to remove them. For instance: <use> on <g> containing
+  // <foreignObject> (indirect case).
+  // We do that at the same time as the association back to the corresponding
+  // element is performed to avoid having instance elements in a half-way
+  // inconsistent state.
+  Element* target_element = ElementTraversal::FirstWithin(target_root);
+  Element* instance_element = ElementTraversal::FirstWithin(instance_root);
+  while (target_element) {
+    DCHECK(instance_element);
+    DCHECK(!IsA<SVGElement>(*instance_element) ||
+           !To<SVGElement>(*instance_element).CorrespondingElement());
+    if (IsDisallowedElement(*target_element)) {
+      Element* instance_next = ElementTraversal::NextSkippingChildren(
+          *instance_element, &instance_root);
+      // The subtree is not in the document so this won't generate events that
+      // could mutate the tree.
+      instance_element->parentNode()->RemoveChild(instance_element);
+
+      // Since the target subtree isn't mutated, it can just be traversed in
+      // the normal way (without saving next traversal target).
+      target_element =
+          ElementTraversal::NextSkippingChildren(*target_element, &target_root);
+      instance_element = instance_next;
     } else {
-      element = ElementTraversal::Next(*element, &subtree);
+      // Set up the corresponding element association.
+      if (auto* svg_instance_element =
+              DynamicTo<SVGElement>(instance_element)) {
+        svg_instance_element->SetCorrespondingElement(
+            To<SVGElement>(target_element));
+      }
+      target_element = ElementTraversal::Next(*target_element, &target_root);
+      instance_element =
+          ElementTraversal::Next(*instance_element, &instance_root);
     }
   }
+  DCHECK(!instance_element);
 }
 
 static void MoveChildrenToReplacementElement(ContainerNode& source_root,
@@ -436,8 +453,7 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
     instance_root = svg_element;
   }
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
-  AssociateCorrespondingElements(target_root, *instance_root);
-  RemoveDisallowedElementsFromSubtree(*instance_root);
+  PostProcessInstanceTree(target_root, *instance_root);
   return instance_root;
 }
 
