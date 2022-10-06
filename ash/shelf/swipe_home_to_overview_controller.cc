@@ -106,8 +106,6 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
         display.bounds().y() +
         display.bounds().height() * kHomeScalingThresholdDisplayHeightRatio;
     state_ = State::kTrackingDrag;
-    home_screen_blur_disabler_ =
-        Shell::Get()->app_list_controller()->DisableHomeScreenBackgroundBlur();
   } else {
     if (location_in_screen.y() <= overview_transition_threshold_y_ &&
         std::abs(scroll_x) + std::abs(scroll_y) <= kMovementVelocityThreshold) {
@@ -196,11 +194,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
   // that the overview is starting.
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kExitHomeLauncher);
-
-  // No need to keep blur disabled for the drag - note that blur might remain
-  // disabled at this point due to the started overview transition (which
-  // triggers home screen scale animation).
-  home_screen_blur_disabler_.reset();
 }
 
 void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
@@ -224,10 +217,6 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
       1.0f /*scale*/, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
       base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
-
-  // No need to keep blur disabled for the drag - note that blur might remain
-  // disabled at this point due to the started home screen scale animation.
-  home_screen_blur_disabler_.reset();
 }
 
 }  // namespace ash

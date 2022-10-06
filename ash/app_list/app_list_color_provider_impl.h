@@ -25,10 +25,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchBoxTextColor(
       SkColor default_color,
       const views::Widget* app_list_widget) const override;
-  SkColor GetSuggestionChipBackgroundColor(
-      const views::Widget* app_list_widget) const override;
-  SkColor GetSuggestionChipTextColor(
-      const views::Widget* app_list_widget) const override;
   SkColor GetAppListItemTextColor(
       bool is_in_folder,
       const views::Widget* app_list_widget) const override;

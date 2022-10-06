@@ -127,10 +127,6 @@ void ContentsView::Init() {
 
   pagination_model_.SelectPage(initial_page_index, false);
 
-  // Update suggestion chips after valid page is selected to prevent the update
-  // from being ignored.
-  apps_container_view_->UpdateSuggestionChips();
-
   ActivePageChanged();
 
   // Hide the search results initially.

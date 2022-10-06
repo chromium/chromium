@@ -71,7 +71,6 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
 
   dispatching_query_ = false;
   last_query_ = query;
-  query_for_recommendation_ = query.empty();
 
   OnResultsChanged();
 }
@@ -157,9 +156,7 @@ void SearchControllerImpl::OnResultsChanged() {
     return;
 
   size_t num_max_results =
-      query_for_recommendation_
-          ? ash::SharedAppListConfig::instance().num_start_page_tiles()
-          : ash::SharedAppListConfig::instance().max_search_results();
+      ash::SharedAppListConfig::instance().max_search_results();
   mixer_->MixAndPublish(num_max_results, last_query_);
 }
 

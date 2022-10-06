@@ -20,7 +20,6 @@
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
@@ -38,7 +37,6 @@ class FolderBackgroundView;
 class GradientLayerDelegate;
 class PageSwitcher;
 class SearchResultPageAnchoredDialog;
-class SuggestionChipContainerView;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the active
@@ -214,10 +212,6 @@ class ASH_EXPORT AppsContainerView
 
   views::View* scrollable_container_for_test() { return scrollable_container_; }
 
-  SuggestionChipContainerView* suggestion_chip_container_view_for_test() {
-    return suggestion_chip_container_view_;
-  }
-
   AppListToastContainerView* toast_container() { return toast_container_; }
 
   AppListNudgeController* app_list_nudge_controller() {
@@ -227,13 +221,6 @@ class ASH_EXPORT AppsContainerView
   // Updates recent apps from app list model. `needs_layout` indicates whether
   // the apps container relaid out when the recent apps results are updated.
   void UpdateRecentApps(bool needs_layout);
-
-  // Updates suggestion chips from app list model.
-  void UpdateSuggestionChips();
-
-  // Temporarily disables blur on suggestion chips view background. The blur
-  // will remained disabled until the returned closure runner goes out of scope.
-  base::ScopedClosureRunner DisableSuggestionChipsBlur();
 
   // Gets the height of the `separator_` including its vertical margin.
   int GetSeparatorHeight();
@@ -266,9 +253,9 @@ class ASH_EXPORT AppsContainerView
   // true. This is used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
-  // Returns expected suggestion chip container's y position based on the app
-  // list view_state.
-  int GetExpectedSuggestionChipY(AppListViewState view_state);
+  // Returns expected apps container's y position based on the app list
+  // 'view_state'.
+  int GetAppListY(AppListViewState view_state);
 
   struct GridLayout {
     int columns;
@@ -296,9 +283,6 @@ class ASH_EXPORT AppsContainerView
   // model. Should be called to initialize the apps container contents, and
   // whenever the active app list model changes.
   void UpdateForActiveAppListModel();
-
-  // Callback returned by DisableBlur().
-  void OnSuggestionChipsBlurDisablerReleased();
 
   // Updates the bounds of the gradient mask to fit the current bounds of the
   // `scrollable_container_`.
@@ -347,15 +331,11 @@ class ASH_EXPORT AppsContainerView
   // Controller for showing a modal dialog in the continue section.
   std::unique_ptr<SearchResultPageDialogController> dialog_controller_;
 
-  // The number of active requests to disable blur.
-  size_t suggestion_chips_blur_disabler_count_ = 0;
-
   // Contains the |continue_section_| and the |apps_grid_view_|, which are views
   // that are affected by paging. Owned by views hierarchy.
   views::View* scrollable_container_ = nullptr;
 
   // The views below are owned by views hierarchy.
-  SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   ContinueContainer* continue_container_ = nullptr;
   views::Separator* separator_ = nullptr;
   AppListToastContainerView* toast_container_ = nullptr;
@@ -369,10 +349,10 @@ class ASH_EXPORT AppsContainerView
   // Whether the apps container is the current active app list page.
   bool is_active_page_ = false;
 
-  // The distance between y position of suggestion chip container and apps grid
-  // view. This is used in dragging to avoid duplicate calculation of apps grid
-  // view's y position.
-  int chip_grid_y_distance_ = 0;
+  // The distance between y position of the scrollable_container_ and the
+  // bottom of the search box view. This is used in dragging to avoid duplicate
+  // calculation of apps grid view's y position.
+  int scrollable_container_y_distance_ = 0;
 
   struct CachedContainerMargins {
     gfx::Size bounds_size;

@@ -97,9 +97,6 @@ class SearchControllerImpl : public SearchController,
 
   bool dispatching_query_ = false;
 
-  // If true, the search results are shown on the launcher start page.
-  bool query_for_recommendation_ = false;
-
   // The query associated with the most recent search.
   std::u16string last_query_;
 

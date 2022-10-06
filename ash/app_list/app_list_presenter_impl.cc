@@ -437,16 +437,6 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
   if (!callback.is_null()) {
     settings.emplace(layer->GetAnimator());
     callback.Run(&settings.value());
-
-    // Disable suggestion chips blur during animations to improve performance.
-    base::ScopedClosureRunner blur_disabler =
-        view_->app_list_main_view()
-            ->contents_view()
-            ->apps_container_view()
-            ->DisableSuggestionChipsBlur();
-    // The observer will delete itself when the animations are completed.
-    settings->AddObserver(
-        new CallbackRunnerLayerAnimationObserver(std::move(blur_disabler)));
   }
 
   // The animation metrics reporter will run for opacity and transform

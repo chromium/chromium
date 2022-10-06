@@ -27,7 +27,6 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
-#include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -156,40 +155,6 @@ class AppListMetricsTest : public AshTestBase {
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }
 
-  void PopulateAndLaunchSuggestionChip() {
-    // Populate 4 suggestion chips.
-    for (size_t i = 0; i < 4; i++) {
-      auto search_result_chip = std::make_unique<SearchResult>();
-      search_result_chip->set_display_type(SearchResultDisplayType::kChip);
-      search_result_chip->set_is_recommendation(true);
-
-      // Give each item a name so that the accessibility paint checks pass.
-      // (Focusable items should have accessible names.)
-      search_result_chip->SetAccessibleName(
-          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
-
-      search_model_->results()->Add(std::move(search_result_chip));
-    }
-    GetAppListTestHelper()->WaitUntilIdle();
-
-    SearchResultContainerView* suggestions_container_ =
-        Shell::Get()
-            ->app_list_controller()
-            ->fullscreen_presenter()
-            ->GetView()
-            ->app_list_main_view()
-            ->contents_view()
-            ->apps_container_view()
-            ->suggestion_chip_container_view_for_test();
-
-    // Get focus on the first chip.
-    suggestions_container_->children().front()->RequestFocus();
-    GetAppListTestHelper()->WaitUntilIdle();
-
-    // Press return to simulate an app launch from the suggestion chip.
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-  }
-
   void PopulateAndLaunchAppInGrid(int num = 4) {
     // Populate apps in the root app grid.
     AppListModel* model = AppListModelProvider::Get()->model();
@@ -264,28 +229,6 @@ TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
       "Apps.AppListAppLaunchedV2.HomecherAllApps",
       AppListLaunchedFrom::kLaunchedFromGrid,
       1 /* Number of times launched from grid */);
-}
-
-// Test that the histogram records an app launch from a suggestion chip while
-// the homecher all apps state is showing.
-TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromChip) {
-  // ProductivityLauncher does not use suggestion chips.
-  if (features::IsProductivityLauncherEnabled())
-    return;
-
-  base::HistogramTester histogram_tester;
-
-  GetAppListTestHelper()->WaitUntilIdle();
-  // Enable tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-  PopulateAndLaunchSuggestionChip();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.HomecherAllApps",
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      1 /* Number of times launched from chip */);
 }
 
 // Test that the histogram records an app launch from the shelf while the

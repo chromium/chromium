@@ -4964,9 +4964,6 @@ New install
       <message name="IDS_APP_LIST_PAGE_SWITCHER" desc="Tooltip for page switcher for each page in fullscreen view which shows all apps.">
         Page <ph name="selected_page">$1<ex>1</ex></ph> of <ph name="total_page_num">$2<ex>3</ex></ph>
       </message>
-      <message name="IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME" desc="The spoken feedback text for the suggestion chip of continue reading.">
-        Continue reading from your mobile device <ph name="title">$1<ex>Title</ex></ph>
-      </message>
       <message name="IDS_APP_LIST_LEARN_MORE" desc="Text of Learn more links.">
         Learn more
       </message>

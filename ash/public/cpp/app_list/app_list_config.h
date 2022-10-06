@@ -43,8 +43,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
     return max_assistant_search_result_list_items_;
   }
 
-  size_t num_start_page_tiles() const { return num_start_page_tiles_; }
-
   int search_tile_icon_dimension() const { return search_tile_icon_dimension_; }
 
   gfx::Size search_tile_icon_size() const {
@@ -122,9 +120,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   // Max number of Assistant search result list items in the launcher suggestion
   // window. Appears in the list after normal search results.
   const size_t max_assistant_search_result_list_items_ = 1;
-
-  // The number of apps shown in the start page app grid.
-  const size_t num_start_page_tiles_ = 5;
 
   // The icon dimension of tile views in search result page view.
   const int search_tile_icon_dimension_ = 48;

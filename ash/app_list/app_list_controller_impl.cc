@@ -1088,24 +1088,9 @@ void AppListControllerImpl::OnUiVisibilityChanged(
   }
 }
 
-base::ScopedClosureRunner
-AppListControllerImpl::DisableHomeScreenBackgroundBlur() {
-  AppListView* const app_list_view = fullscreen_presenter_->GetView();
-  if (!app_list_view)
-    return base::ScopedClosureRunner(base::DoNothing());
-  return app_list_view->app_list_main_view()
-      ->contents_view()
-      ->apps_container_view()
-      ->DisableSuggestionChipsBlur();
-}
-
 void AppListControllerImpl::OnHomeLauncherAnimationComplete(
     bool shown,
     int64_t display_id) {
-  // Stop disabling background blur in home screen when the home screen
-  // transition ends.
-  home_screen_blur_disabler_.reset();
-
   home_launcher_transition_state_ = HomeLauncherTransitionState::kFinished;
 
   AssistantUiController::Get()->CloseUi(
@@ -1119,12 +1104,6 @@ void AppListControllerImpl::OnHomeLauncherAnimationComplete(
 
 void AppListControllerImpl::OnHomeLauncherPositionChanged(int percent_shown,
                                                           int64_t display_id) {
-  // Disable home screen background blur if the home launcher transition is
-  // staring - the blur disabler will be reset when the transition ends (in
-  // OnHomeLauncherAnimationComplete()).
-  if (home_launcher_transition_state_ == HomeLauncherTransitionState::kFinished)
-    home_screen_blur_disabler_ = DisableHomeScreenBackgroundBlur();
-
   const bool mostly_shown = percent_shown >= 50;
   home_launcher_transition_state_ =
       mostly_shown ? HomeLauncherTransitionState::kMostlyShown

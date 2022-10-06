@@ -37,16 +37,6 @@ SkColor TestAppListColorProvider::GetSearchBoxSuggestionTextColor(
   return gfx::kGoogleGrey600;
 }
 
-SkColor TestAppListColorProvider::GetSuggestionChipBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  return SkColorSetA(SK_ColorWHITE, 0x1A);
-}
-
-SkColor TestAppListColorProvider::GetSuggestionChipTextColor(
-    const views::Widget* app_list_widget) const {
-  return gfx::kGoogleGrey200;
-}
-
 SkColor TestAppListColorProvider::GetAppListItemTextColor(
     bool is_in_folder,
     const views::Widget* app_list_widget) const {

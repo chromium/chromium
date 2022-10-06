@@ -108,33 +108,6 @@ SkColor AppListColorProviderImpl::GetSearchBoxSuggestionTextColor(
   return default_color;
 }
 
-SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  const ui::ColorProvider* color_provider = app_list_widget->GetColorProvider();
-
-  if (ShouldUseDarkLightColors()) {
-    if (IsTabletModeEnabled()) {
-      return color_provider->GetColor(kColorAshShieldAndBase80);
-    } else {
-      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-    }
-  }
-  return SkColorSetA(gfx::kGoogleGrey100, 0x14);  // default_color
-}
-
-SkColor AppListColorProviderImpl::GetSuggestionChipTextColor(
-    const views::Widget* app_list_widget) const {
-  DCHECK(app_list_widget);
-
-  if (ShouldUseDarkLightColors()) {
-    return app_list_widget->GetColorProvider()->GetColor(
-        cros_tokens::kTextColorPrimary);
-  }
-  return gfx::kGoogleGrey100;  // default_color
-}
-
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder,
     const views::Widget* app_list_widget) const {

@@ -38,7 +38,6 @@
 #include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/app_list/views/suggestion_chip_container_view.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -320,8 +319,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       paged_apps_grid_view_ =
           contents_view->apps_container_view()->apps_grid_view();
       apps_grid_view_ = paged_apps_grid_view_;
-      suggestions_container_ = contents_view->apps_container_view()
-                                   ->suggestion_chip_container_view_for_test();
 
       // In production, page flip duration > page transition > overscroll.
       SetPageFlipDurationForTest(paged_apps_grid_view_);
@@ -357,7 +354,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     paged_apps_grid_view_ = nullptr;
     app_list_folder_view_ = nullptr;
     search_box_view_ = nullptr;
-    suggestions_container_ = nullptr;
     test_api_.reset();
     page_flip_waiter_.reset();
   }
@@ -671,8 +667,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   // These views exist in tablet mode.
   PagedAppsGridView* paged_apps_grid_view_ = nullptr;
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
-  SearchResultContainerView* suggestions_container_ =
-      nullptr;  // Owned by |apps_grid_view_|.
 
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
