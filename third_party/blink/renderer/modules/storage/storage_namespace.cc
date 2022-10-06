@@ -51,7 +51,7 @@ StorageNamespace::StorageNamespace(StorageController* controller)
 StorageNamespace::StorageNamespace(Page& page,
                                    StorageController* controller,
                                    const String& namespace_id)
-    : Supplement(page),
+    : Supplement(nullptr),
       controller_(controller),
       namespace_id_(namespace_id),
       task_runner_(page.GetAgentGroupScheduler().DefaultTaskRunner()) {}

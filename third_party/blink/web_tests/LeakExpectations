@@ -59,11 +59,6 @@ crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigati
 # Sheriff 2022-08-04
 crbug.com/1350279 [ Linux ] external/wpt/accessibility/crashtests/svg-mouse-listener.html [ Failure Pass ]
 
-# Sheriff 2022-09-09
-crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-keypress.html [ Failure Pass ]
-crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-click.html [ Failure Pass ]
-crbug.com/1361848 [ Linux ] http/tests/media/autoplay/document-user-activation-navigation-tap.html [ Failure Pass ]
-
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
