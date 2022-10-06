@@ -59,6 +59,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
                    perfetto::Producer* producer,
                    perfetto::base::TaskRunner* producer_task_runner,
                    size_t shmem_page_size_bytes,
+                   size_t shmem_size_bytes,
                    std::unique_ptr<ChromeBaseSharedMemory> shm,
                    std::unique_ptr<perfetto::SharedMemoryArbiter> shm_arbiter)
       : producer_(producer),
@@ -71,17 +72,9 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     // outlive this endpoint.
     DCHECK(producer_task_runner->RunsTasksOnCurrentThread());
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    DCHECK(shared_memory_);
-    DCHECK(shared_memory_arbiter_);
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-    if (shared_memory_ && shared_memory_->region().IsValid()) {
-      delegate.CreateProducerConnection(
-          base::BindOnce(&ProducerEndpoint::OnConnected,
-                         weak_factory_.GetWeakPtr(), producer_task_runner,
-                         shmem_page_size_bytes, shared_memory_->CloneRegion()));
-    }
+    delegate.CreateProducerConnection(base::BindOnce(
+        &ProducerEndpoint::OnConnected, weak_factory_.GetWeakPtr(),
+        producer_task_runner, shmem_page_size_bytes, shmem_size_bytes));
   }
 
   ~ProducerEndpoint() override {
@@ -91,8 +84,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   // perfetto::ProducerEndpoint implementation:
   void Disconnect() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Tracing muxer shouldn't reconnect because the SMB is already allocated.
-    NOTREACHED();
+    producer_->OnDisconnect();  // Will delete |this|.
   }
 
   void RegisterDataSource(
@@ -263,49 +255,68 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
 
  private:
   struct EndpointBindings {
-    mojo::PendingReceiver<mojom::ProducerClient> client_receiver;
+    mojo::PendingRemote<mojom::ProducerClient> client_remote;
     mojo::PendingRemote<mojom::ProducerHost> host_remote;
+    mojo::PendingRemote<mojom::PerfettoService> perfetto_service;
   };
 
   static void OnConnected(
       base::WeakPtr<ProducerEndpoint> weak_endpoint,
       perfetto::base::TaskRunner* producer_task_runner,
       size_t shmem_page_size_bytes,
-      base::UnsafeSharedMemoryRegion shared_memory_region,
+      size_t shmem_size_bytes,
       mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
     // Called on the connection's sequence -- |this| may have been deleted.
     auto bindings = std::make_unique<EndpointBindings>();
-
-    mojo::PendingRemote<mojom::ProducerClient> client;
-    bindings->client_receiver = client.InitWithNewPipeAndPassReceiver();
-    mojo::Remote<mojom::PerfettoService>(std::move(perfetto_service))
-        ->ConnectToProducerHost(
-            std::move(client),
-            bindings->host_remote.InitWithNewPipeAndPassReceiver(),
-            std::move(shared_memory_region), shmem_page_size_bytes);
+    bindings->perfetto_service = std::move(perfetto_service);
 
     // Bind the interfaces on Perfetto's sequence so we can avoid extra thread
     // hops.
     producer_task_runner->PostTask([weak_endpoint, producer_task_runner,
-                                    raw_bindings = bindings.release()]() {
+                                    raw_bindings = bindings.release(),
+                                    shmem_page_size_bytes, shmem_size_bytes]() {
       auto bindings = base::WrapUnique(raw_bindings);
       // Called on the endpoint's sequence -- |endpoint| may be deleted.
       if (!weak_endpoint)
         return;
-      weak_endpoint->BindConnectionOnSequence(producer_task_runner,
-                                              std::move(bindings));
+
+      weak_endpoint->BindConnectionOnSequence(
+          producer_task_runner, std::move(bindings), shmem_page_size_bytes,
+          shmem_size_bytes);
     });
   }
 
   void BindConnectionOnSequence(
       perfetto::base::TaskRunner* producer_task_runner,
-      std::unique_ptr<EndpointBindings> bindings) {
+      std::unique_ptr<EndpointBindings> bindings,
+      size_t shmem_page_size_bytes,
+      size_t shmem_size_bytes) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto client_receiver =
+        bindings->client_remote.InitWithNewPipeAndPassReceiver();
+
+    if (!shared_memory_) {
+      shared_memory_ =
+          std::make_unique<ChromeBaseSharedMemory>(shmem_size_bytes);
+    }
+    mojo::Remote<mojom::PerfettoService>(std::move(bindings->perfetto_service))
+        ->ConnectToProducerHost(
+            std::move(bindings->client_remote),
+            bindings->host_remote.InitWithNewPipeAndPassReceiver(),
+            shared_memory_->CloneRegion(), shmem_page_size_bytes);
+
     producer_host_.Bind(std::move(bindings->host_remote));
-    shared_memory_arbiter_->BindToProducerEndpoint(this, producer_task_runner);
+    if (shared_memory_arbiter_) {
+      shared_memory_arbiter_->BindToProducerEndpoint(this,
+                                                     producer_task_runner);
+    } else {
+      shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
+          shared_memory_.get(), shmem_page_size_bytes, this,
+          producer_task_runner);
+    }
 
     receiver_ = std::make_unique<mojo::Receiver<mojom::ProducerClient>>(
-        this, std::move(bindings->client_receiver));
+        this, std::move(client_receiver));
     receiver_->set_disconnect_handler(base::BindOnce(
         [](ProducerEndpoint* endpoint) { endpoint->receiver_->reset(); },
         base::Unretained(this)));
@@ -675,15 +686,17 @@ PerfettoTracingBackend::ConnectProducer(const ConnectProducerArgs& args) {
     shmem_page_size_hint = kDefaultSMBPageSizeBytes;
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // We ignore args.use_producer_provided_smb and always provide our own SMB.
-  shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
-  arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
-      shm.get(), shmem_page_size_hint);
+  if (args.use_producer_provided_smb) {
+    shm = std::make_unique<ChromeBaseSharedMemory>(shmem_size_hint);
+    arbiter = perfetto::SharedMemoryArbiter::CreateUnboundInstance(
+        shm.get(), shmem_page_size_hint);
+  }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   return std::make_unique<ProducerEndpoint>(
       delegate_, args.producer_name, args.producer, args.task_runner,
-      shmem_page_size_hint, std::move(shm), std::move(arbiter));
+      shmem_page_size_hint, shmem_size_hint, std::move(shm),
+      std::move(arbiter));
 }
 
 }  // namespace tracing
