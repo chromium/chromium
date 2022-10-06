@@ -639,6 +639,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnPersistentError) {
   ASSERT_TRUE(oauth_error.IsPersistentError());
   // Verify it's not a locally-initiated web signout, which would otherwise mean
   // this test is redundant with test ClearOnSyncPaused.
+  // TODO(crbug.com/1156584): Merge the two tests into one when feature toggle
+  // kSyncPauseUponAnyPersistentAuthError is cleaned up.
   ASSERT_NE(oauth_error,
             GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
                 GoogleServiceAuthError::InvalidGaiaCredentialsReason::

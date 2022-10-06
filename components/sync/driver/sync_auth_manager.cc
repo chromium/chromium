@@ -7,15 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -51,6 +54,24 @@ constexpr net::BackoffEntry::Policy
         // Don't use initial delay unless the last request was an error.
         false,
 };
+
+bool ErrorImpliesSyncPaused(const GoogleServiceAuthError& auth_error) {
+  // Web signout returns true regardless of feature toggle. In this case the
+  // identity code sets an account's refresh token to be invalid (error
+  // CREDENTIALS_REJECTED_BY_CLIENT).
+  if (auth_error == GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                            CREDENTIALS_REJECTED_BY_CLIENT)) {
+    DCHECK(auth_error.IsPersistentError());
+    return true;
+  }
+  if (!auth_error.IsPersistentError()) {
+    return false;
+  }
+  // For persistent auth errors other than web signout, return true only if the
+  // feature is enabled.
+  return base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError);
+}
 
 }  // namespace
 
@@ -130,7 +151,7 @@ base::Time SyncAuthManager::GetLastAuthErrorTime() const {
 }
 
 bool SyncAuthManager::IsSyncPaused() const {
-  return IsWebSignout(GetLastAuthError());
+  return ErrorImpliesSyncPaused(GetLastAuthError());
 }
 
 SyncTokenStatus SyncAuthManager::GetSyncTokenStatus() const {
@@ -306,11 +327,10 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
   // Compute the validity of the new refresh token: The identity code sets an
   // account's refresh token to be invalid if the user signs out of that account
   // on the web.
-  // TODO(blundell): Hide this logic inside IdentityManager.
   GoogleServiceAuthError token_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           account_info.account_id);
-  if (IsWebSignout(token_error)) {
+  if (ErrorImpliesSyncPaused(token_error)) {
     // When the refresh token is replaced by an invalid token, Sync must be
     // stopped immediately, even if the current access token is still valid.
     // This happens e.g. when the user signs out of the web with Dice enabled.
@@ -319,15 +339,13 @@ void SyncAuthManager::OnRefreshTokenUpdatedForAccount(
     // Set the last auth error. Usually this happens in AccessTokenFetched(...)
     // if the fetch failed, but since we just canceled any access token request,
     // that's not going to happen in this case.
-    // TODO(blundell): Long-term, it would be nicer if Sync didn't have to
-    // cache signin-level authentication errors.
     SetLastAuthError(token_error);
 
     credentials_changed_callback_.Run();
-  } else if (IsWebSignout(last_auth_error_)) {
-    // Conversely, if we just exited the web-signout state, we need to reset the
-    // last auth error and tell our client (i.e. the SyncService) so that it'll
-    // know to resume syncing (if appropriate).
+  } else if (ErrorImpliesSyncPaused(last_auth_error_)) {
+    // Conversely, if we just exited the paused state, we need to reset the last
+    // auth error and tell our client (i.e. the SyncService) so that it'll know
+    // to resume syncing (if appropriate).
     // TODO(blundell): Long-term, it would be nicer if Sync didn't have to
     // cache signin-level authentication errors.
     SetLastAuthError(token_error);
@@ -371,19 +389,26 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
 
   // If we're still here, then that means Chrome is still signed in to this
   // account. Keep Sync alive but set an auth error.
-  // TODO(crbug.com/1156584): Should we stop Sync in this case?
   DCHECK_EQ(
       sync_account_.account_info.account_id,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  if (base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError)) {
+    // TODO(crbug.com/1371572): Reconsider setting auth errors created
+    // artificially here that were never received from IdentityManager.
+    SetLastAuthError(GoogleServiceAuthError(
+        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+    DCHECK(IsSyncPaused());
+  } else {
+    // Legacy codepath, subject to cleanup.
+    SetLastAuthError(
+        GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+    DCHECK(!IsSyncPaused());
+  }
 
   // Note: It's possible that we're in the middle of a signout, and the "refresh
   // token removed" event just arrived before the "signout" event. In that case,
   // OnPrimaryAccountChanged() will get called momentarily and stop sync.
 
-  // TODO(crbug.com/839834): REQUEST_CANCELED doesn't seem like the right auth
-  // error to use here. Maybe INVALID_GAIA_CREDENTIALS?
-  SetLastAuthError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
   ClearAccessTokenAndRequest();
 
   credentials_changed_callback_.Run();

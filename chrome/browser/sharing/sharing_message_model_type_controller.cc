@@ -29,6 +29,9 @@ SharingMessageModelTypeController::~SharingMessageModelTypeController() {
 syncer::DataTypeController::PreconditionState
 SharingMessageModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
+  // TODO(crbug.com/1156584): No need to handle IsPersistentError() once the
+  // feature toggle is cleaned up and sync gets paused for all persistent auth
+  // errors. Instead, consider forcing DISABLE_SYNC_AND_CLEAR_DATA in Stop().
   return sync_service_->GetAuthError().IsPersistentError()
              ? PreconditionState::kMustStopAndClearData
              : PreconditionState::kPreconditionsMet;

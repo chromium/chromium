@@ -160,6 +160,8 @@ BASE_DECLARE_FEATURE(kSyncEnableHistoryDataType);
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataType);
 
+BASE_DECLARE_FEATURE(kSyncPauseUponAnyPersistentAuthError);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

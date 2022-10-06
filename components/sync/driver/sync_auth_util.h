@@ -7,8 +7,6 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 
-class GoogleServiceAuthError;
-
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -28,10 +26,6 @@ struct SyncAccountInfo {
 // code can use it.
 SyncAccountInfo DetermineAccountToUse(
     signin::IdentityManager* identity_manager);
-
-// Returns whether |auth_error| indicates the user has locally signed out of
-// content area, rejecting credentials.
-bool IsWebSignout(const GoogleServiceAuthError& auth_error);
 
 }  // namespace syncer
 

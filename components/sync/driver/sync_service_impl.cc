@@ -1128,8 +1128,18 @@ ModelTypeSet SyncServiceImpl::GetPreferredDataTypes() const {
 
 ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!data_type_manager_ || GetAuthError().IsPersistentError())
+
+  if (!data_type_manager_) {
     return ModelTypeSet();
+  }
+
+  if (GetAuthError().IsPersistentError()) {
+    // If kSyncPauseUponAnyPersistentAuthError is enabled, a persistent auth
+    // error leads to PAUSED, which implies data_type_manager_==null above.
+    DCHECK(!base::FeatureList::IsEnabled(kSyncPauseUponAnyPersistentAuthError));
+    return ModelTypeSet();
+  }
+
   return data_type_manager_->GetActiveDataTypes();
 }
 
