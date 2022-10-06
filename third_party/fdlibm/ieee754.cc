@@ -13,7 +13,7 @@
 // The original source code covered by the above license above has been
 // modified significantly by Google Inc.
 // Copyright 2016 the V8 project authors. All rights reserved.
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 
 #include "third_party/fdlibm/ieee754.h"
 

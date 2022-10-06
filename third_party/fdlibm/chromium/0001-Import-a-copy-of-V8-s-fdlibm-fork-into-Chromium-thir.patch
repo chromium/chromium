@@ -4,7 +4,7 @@ index 0000000000000..9c70cbdb062c4
 --- /dev/null
 +++ b/third_party/fdlibm/BUILD.gn
 @@ -0,0 +1,12 @@
-+# Copyright 2020 The Chromium Authors. All rights reserved.
++# Copyright 2020 The Chromium Authors
 +# Use of this source code is governed by a BSD-style license that can be
 +# found in the LICENSE file.
 +
@@ -60,7 +60,7 @@ index 1706b56dfd900..3b2e00474902f 100644
  // The original source code covered by the above license above has been
  // modified significantly by Google Inc.
  // Copyright 2016 the V8 project authors. All rights reserved.
-+// Copyright 2020 The Chromium Authors. All rights reserved.
++// Copyright 2020 The Chromium Authors
  
 -#include "src/base/ieee754.h"
 +#include "third_party/fdlibm/ieee754.h"
@@ -298,7 +298,7 @@ index f2b3a3eb5808c..27b5013818a2c 100644
 +++ b/third_party/fdlibm/ieee754.h
 @@ -1,64 +1,61 @@
  // Copyright 2016 the V8 project authors. All rights reserved.
-+// Copyright 2020 The Chromium Authors. All rights reserved.
++// Copyright 2020 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
@@ -434,7 +434,7 @@ index 14dcfb10de1a6..4bd41cc3a6930 100644
 +++ b/third_party/fdlibm/overflowing-math.h
 @@ -1,19 +1,17 @@
  // Copyright 2019 the V8 project authors. All rights reserved.
-+// Copyright 2020 The Chromium Authors. All rights reserved.
++// Copyright 2020 The Chromium Authors
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
