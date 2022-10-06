@@ -593,10 +593,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
       bool rule_has_components = destinations_components &&
                                  !destinations_components->GetList().empty();
 
-      // TODO(crbug.com/1172959): Implement Warn level for Files.
       if (rule_restriction == Restriction::kFiles &&
-          (rule_has_destinations || rule_has_components) &&
-          rule_level != Level::kWarn) {
+          (rule_has_destinations || rule_has_components)) {
         ::dlp::DlpFilesRule files_rule;
         for (const auto& url : sources_urls->GetList()) {
           DCHECK(url.is_string());
