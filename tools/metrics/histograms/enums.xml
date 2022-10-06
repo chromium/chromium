@@ -61531,6 +61531,7 @@ from previous Chrome versions.
   <int value="889837286" label="EnableHostnameSetting:enabled"/>
   <int value="890560037" label="always-enable-hdcp"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
+  <int value="894183200" label="BookmarkIndexPaths:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
   <int value="895337957"
       label="ThreadedScrollPreventRenderingStarvation:enabled"/>
@@ -62468,6 +62469,7 @@ from previous Chrome versions.
   <int value="1465624446" label="disable-zero-copy"/>
   <int value="1466380480" label="enable-device-discovery-notifications"/>
   <int value="1466502102" label="DelayNavigation:disabled"/>
+  <int value="1466687702" label="BookmarkIndexPaths:enabled"/>
   <int value="1467322206" label="AssistAutoCorrect:enabled"/>
   <int value="1467494310" label="JavaScriptExperimentalSharedMemory:enabled"/>
   <int value="1467583815" label="AVIF:disabled"/>

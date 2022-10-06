@@ -47,4 +47,16 @@ const base::FeatureParam<int> kLimitNumNodesForBookmarkSearchCount(
     "BookmarkLimitNumNodesForBookmarkSearchCount",
     3000);
 
+// If enabled, creates and uses a lightweight (compared to the existing
+// `TitledUrlIndex`). The index maps the terms in paths and the number of paths
+// containing those terms. It's updated on folder rename, creation, and
+// deletion. It's not updated when bookmarks or folders are moved. It's used to
+// short circuit unioning per-term matches when matching paths, as intersecting
+// results in much fewer nodes and processing. Should be disabled if
+// `omnibox::kBookmarkPaths` is disabled; otherwise, it'll create the index
+// unnecessarily.
+BASE_FEATURE(kIndexPaths,
+             "BookmarkIndexPaths",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace bookmarks

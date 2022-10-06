@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.{SubmetricMatchCounts}"
-    units="match counts" expires_after="2022-12-11">
+    units="match counts" expires_after="2023-02-12">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.{SubmetricMs}" units="ms"
-    expires_after="2022-12-11">
+    expires_after="2023-02-12">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.{SubmetricNodeCounts}"
-    units="node counts" expires_after="2022-12-11">
+    units="node counts" expires_after="2023-02-12">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.GetResultsMatching.{SubmetricTermCounts}"
-    units="term counts" expires_after="2022-12-11">
+    units="term counts" expires_after="2023-02-12">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
@@ -724,6 +724,33 @@ chromium-metrics-reviews@google.com.
   <owner>ianwen@chromium.org</owner>
   <component>UI&gt;Browser&gt;Bookmarks</component>
   <summary>Logs a UI location from which a bookmark is launched.</summary>
+</histogram>
+
+<histogram name="Bookmarks.Memory.TitledUrlIndex{IndexSlice}" units="bytes"
+    expires_after="2023-02-12">
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    The size of TitledUrlIndex at startup. Its indexes can grow or shrink after
+    startup as users edit bookmarks. But this is recorded only once at startup
+    and estimates index size across users, unbiased by users who make more
+    edits.
+
+    TitledUrlIndex has 2 index, 1 mapping each term in bookmark titles and URLs
+    to a set of the containing bookmarks. The other mapping the set of path
+    terms to the count of occurrences in bookmark paths.
+
+    {IndexSlice}
+  </summary>
+  <token key="IndexSlice">
+    <variant name=""
+        summary="This slice records the sum of both indexes' sizes."/>
+    <variant name=".PathIndex"
+        summary="This histogram records the size of the path index."/>
+    <variant name=".TitleAndUrlIndex"
+        summary="This histogram records the size of the title and URL index."/>
+  </token>
 </histogram>
 
 <histogram name="Bookmarks.OnFaviconsChangedIconURL" enum="BooleanHit"

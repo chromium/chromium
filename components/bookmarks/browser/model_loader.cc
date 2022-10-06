@@ -31,6 +31,7 @@ void AddBookmarksToIndex(BookmarkLoadDetails* details, BookmarkNode* node) {
     if (node->url().is_valid())
       details->index()->Add(node);
   } else {
+    details->index()->AddPath(node);
     for (const auto& child : node->children())
       AddBookmarksToIndex(details, child.get());
   }

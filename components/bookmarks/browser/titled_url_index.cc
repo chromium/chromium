@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/bookmarks/browser/titled_url_index.h"
+#include "base/strings/utf_string_conversions.h"
 
 #include <stdint.h>
 
@@ -20,6 +21,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -42,8 +44,8 @@ std::u16string Normalize(const std::u16string& text) {
     // Log and crash right away to capture the error code in the crash report.
     LOG(FATAL) << "failed to create a normalizer: " << u_errorName(status);
   }
-  icu::UnicodeString unicode_text(
-      text.data(), static_cast<int32_t>(text.length()));
+  icu::UnicodeString unicode_text(text.data(),
+                                  static_cast<int32_t>(text.length()));
   icu::UnicodeString unicode_normalized_text;
   normalizer2->normalize(unicode_text, unicode_normalized_text, status);
   if (U_FAILURE(status)) {
@@ -54,13 +56,31 @@ std::u16string Normalize(const std::u16string& text) {
   return base::i18n::UnicodeStringToString16(unicode_normalized_text);
 }
 
+// Return true if `prefix` is a prefix of `string`.
+bool IsPrefix(const std::u16string& prefix, const std::u16string& string) {
+  return prefix.size() <= string.size() &&
+         prefix.compare(0, prefix.size(), string, 0, prefix.size()) == 0;
+}
+
 }  // namespace
 
 TitledUrlIndex::TitledUrlIndex(std::unique_ptr<TitledUrlNodeSorter> sorter)
-    : sorter_(std::move(sorter)) {
-}
+    : sorter_(std::move(sorter)) {}
 
 TitledUrlIndex::~TitledUrlIndex() = default;
+
+void TitledUrlIndex::RecordMemoryUsage() const {
+  const auto index_size = base::trace_event::EstimateMemoryUsage(index_);
+  const auto path_index_size =
+      base::trace_event::EstimateMemoryUsage(path_index_);
+
+  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex",
+                             index_size + path_index_size);
+  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex.TitleAndUrlIndex",
+                             index_size);
+  base::UmaHistogramMemoryKB("Bookmarks.Memory.TitledUrlIndex.PathIndex",
+                             path_index_size);
+}
 
 void TitledUrlIndex::SetNodeSorter(
     std::unique_ptr<TitledUrlNodeSorter> sorter) {
@@ -68,13 +88,40 @@ void TitledUrlIndex::SetNodeSorter(
 }
 
 void TitledUrlIndex::Add(const TitledUrlNode* node) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.Add");
   for (const std::u16string& term : ExtractIndexTerms(node))
     RegisterNode(term, node);
 }
 
 void TitledUrlIndex::Remove(const TitledUrlNode* node) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.Remove");
   for (const std::u16string& term : ExtractIndexTerms(node))
     UnregisterNode(term, node);
+}
+
+void TitledUrlIndex::AddPath(const TitledUrlNode* node) {
+  if (!index_paths_)
+    return;
+
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Bookmarks.UpdateTitledUrlIndex.AddPath");
+  for (const std::u16string& term :
+       ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
+    path_index_[term]++;
+  }
+}
+
+void TitledUrlIndex::RemovePath(const TitledUrlNode* node) {
+  if (!index_paths_)
+    return;
+
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Bookmarks.UpdateTitledUrlIndex.RemovePath");
+  for (const std::u16string& term :
+       ExtractQueryWords(Normalize(node->GetTitledUrlNodeTitle()))) {
+    DCHECK_GT(path_index_[term], 0u);
+    if (!--path_index_[term])
+      path_index_.erase(term);
+  }
 }
 
 std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
@@ -314,6 +361,24 @@ TitledUrlIndex::TitledUrlNodeSet TitledUrlIndex::RetrieveNodesMatchingAnyTerms(
     size_t max_nodes) const {
   DCHECK(!terms.empty());
 
+  if (terms.size() == 1)
+    return RetrieveNodesMatchingAllTerms(terms, matching_algorithm);
+
+  if (index_paths_) {
+    // If any term does not match a path, short circuit the expensive union
+    // and simply resort to the `RetrieveNodesMatchingAllTerms()` intersection
+    // of the terms not matching any path. The results are guaranteed to be the
+    // same, since all terms must either title, URL, or path match; but there'll
+    // be much fewer nodes returned.
+    std::vector<std::u16string> terms_not_path;
+    base::ranges::copy_if(terms, std::back_inserter(terms_not_path),
+                          [&](const std::u16string& term) {
+                            return !DoesTermMatchPath(term, matching_algorithm);
+                          });
+    if (!terms_not_path.empty())
+      return RetrieveNodesMatchingAllTerms(terms_not_path, matching_algorithm);
+  }
+
   std::vector<TitledUrlNodes> matches_per_term;
   bool some_term_had_empty_matches = false;
   for (const std::u16string& term : terms) {
@@ -406,13 +471,25 @@ TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(
   // Loop through index adding all entries that start with term to
   // |prefix_matches|.
   TitledUrlNodes prefix_matches;
-  while (i != index_.end() && i->first.size() >= term.size() &&
-         term.compare(0, term.size(), i->first, 0, term.size()) == 0) {
+  while (i != index_.end() && IsPrefix(term, i->first)) {
     prefix_matches.insert(prefix_matches.end(), i->second.begin(),
                           i->second.end());
     ++i;
   }
   return prefix_matches;
+}
+
+bool TitledUrlIndex::DoesTermMatchPath(
+    const std::u16string& term,
+    query_parser::MatchingAlgorithm matching_algorithm) const {
+  // Term is too short for prefix match, compare using exact match.
+  if (!query_parser::QueryParser::IsWordLongEnoughForPrefixSearch(
+          term, matching_algorithm)) {
+    return path_index_.count(term) > 0;
+  }
+  // Otherwise, see if any path is prefixed by `term`.
+  const auto i = path_index_.lower_bound(term);
+  return i != path_index_.end() && IsPrefix(term, i->first);
 }
 
 // static

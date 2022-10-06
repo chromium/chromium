@@ -432,9 +432,13 @@ void BookmarkModel::SetTitle(const BookmarkNode* node,
   // title changed but should be excluded from the index.
   if (node->is_url())
     titled_url_index_->Remove(node);
+  else
+    titled_url_index_->RemovePath(node);
   url_index_->SetTitle(AsMutable(node), title);
   if (node->is_url())
     titled_url_index_->Add(node);
+  else
+    titled_url_index_->AddPath(node);
 
   if (store_)
     store_->ScheduleSave();
@@ -885,6 +889,8 @@ void BookmarkModel::RemoveNodeFromIndexRecursive(BookmarkNode* node) {
 
   if (node->is_url())
     titled_url_index_->Remove(node);
+  else
+    titled_url_index_->RemovePath(node);
 
   // Reset favicon state for the case when the |node| is restored.
   CancelPendingFaviconLoadRequests(node);
@@ -939,6 +945,7 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   const base::TimeDelta load_duration =
       base::TimeTicks::Now() - details->load_start();
   metrics::RecordTimeToLoadAtStartup(load_duration);
+  titled_url_index_->RecordMemoryUsage();
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_)
@@ -973,6 +980,8 @@ void BookmarkModel::AddNodeToIndexRecursive(const BookmarkNode* node) {
 
   if (node->is_url())
     titled_url_index_->Add(node);
+  else
+    titled_url_index_->AddPath(node);
 
   for (const auto& child : node->children())
     AddNodeToIndexRecursive(child.get());

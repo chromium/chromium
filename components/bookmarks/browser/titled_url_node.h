@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_TITLED_URL_NODE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/strings/string_piece.h"
@@ -29,7 +30,7 @@ class TitledUrlNode {
       const = 0;
 
  protected:
-  virtual ~TitledUrlNode() {}
+  virtual ~TitledUrlNode() = default;
 };
 
 }  // namespace bookmarks
