@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 
 /**
@@ -28,6 +29,7 @@ public class ContentShellUrlTest {
     @Test
     @SmallTest
     @Feature({"Main"})
+    @DisabledTest(message = "https://crbug.com/1371971")
     public void testBaseStartup() {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(URL);
 
