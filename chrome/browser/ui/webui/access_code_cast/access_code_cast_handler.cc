@@ -391,8 +391,7 @@ bool AccessCodeCastHandler::IsAccountSyncEnabled() {
   if (!identity_manager_ || !sync_service_)
     return false;
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-         sync_service_->IsSyncFeatureActive() &&
-         sync_service_->HasCompletedSyncCycle();
+         sync_service_->IsSyncFeatureActive();
 }
 
 }  // namespace media_router
