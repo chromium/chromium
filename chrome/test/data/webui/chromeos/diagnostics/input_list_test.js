@@ -12,6 +12,7 @@ import {InputCardElement} from 'chrome://diagnostics/input_card.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from 'chrome://diagnostics/input_data_provider.mojom-webui.js';
 import {InputListElement} from 'chrome://diagnostics/input_list.js';
 import {setInputDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -180,15 +181,28 @@ export function inputListTestSuite() {
 
   test('TouchscreenTesterShow', async () => {
     await initializeInputList([], [fakeTouchDevices[1]]);
+
+    const resolver = new PromiseResolver();
+    let requestFullscreenCalled = 0;
+
+    const touchscreenTester =
+        inputListElement.shadowRoot.querySelector('touchscreen-tester');
+    const introDialog = touchscreenTester.getDialog('intro-dialog');
+
+    // Mock requestFullscreen function since this API can only be initiated by a
+    // user gesture.
+    introDialog.requestFullscreen = () => {
+      requestFullscreenCalled++;
+      resolver.resolve();
+    };
+
     const testButton = getCardByDeviceType('touchscreen')
                            .shadowRoot.querySelector('cr-button');
     assertTrue(!!testButton);
     testButton.click();
     await flushTasks();
-
-    const touchscreenTester =
-        inputListElement.shadowRoot.querySelector('touchscreen-tester');
-    assertTrue(touchscreenTester.getDialog('intro-dialog').open);
+    assertEquals(1, requestFullscreenCalled);
+    assertTrue(introDialog.open);
   });
 
   test('EmptySectionsHidden', async () => {

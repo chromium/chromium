@@ -31,8 +31,10 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   /**
    * Shows the tester's dialog.
    */
-  showTester(): void {
-    this.getDialog('intro-dialog').showModal();
+  async showTester(): Promise<void> {
+    const introDialog = this.getDialog('intro-dialog');
+    await introDialog.requestFullscreen();
+    introDialog.showModal();
   }
 
   /**
