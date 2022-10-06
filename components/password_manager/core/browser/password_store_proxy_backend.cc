@@ -377,6 +377,11 @@ class ShadowTrafficMetricsRecorder
   const MethodName method_name_;
 };
 
+std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
+  return base::StrCat({"PasswordManager.PasswordStoreProxyBackend.",
+                       method_name.value(), ".Fallback"});
+}
+
 }  // namespace
 
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
@@ -445,7 +450,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("GetAllLoginsAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -480,7 +485,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("GetAutofillableLoginsAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -531,7 +536,7 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("FillMatchingLoginsAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -569,7 +574,7 @@ void PasswordStoreProxyBackend::AddLoginAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("AddLoginAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -605,7 +610,7 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("UpdateLoginAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -640,7 +645,7 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("RemoveLoginAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -683,7 +688,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
   } else {
     sync_completion_callback = std::move(sync_completion);
     result_callback = std::move(callback);
@@ -722,7 +727,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
-        std::move(callback));
+        MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
   } else {
     result_callback = std::move(callback);
   }
@@ -801,11 +806,14 @@ template <typename ResultT>
 void PasswordStoreProxyBackend::MaybeRetryOperation(
     base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
         retry_callback,
+    const MethodName& method_name,
     base::OnceCallback<void(ResultT)> result_callback,
     ResultT result) {
   if (absl::holds_alternative<PasswordStoreBackendError>(result) &&
       ShouldErrorResultInFallback(
           absl::get<PasswordStoreBackendError>(result))) {
+    base::UmaHistogramBoolean(GetFallbackMetricNameForMethod(method_name),
+                              true);
     std::move(retry_callback).Run(std::move(result_callback));
   } else {
     std::move(result_callback).Run(std::move(result));

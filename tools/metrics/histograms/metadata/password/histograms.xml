@@ -2326,6 +2326,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStoreProxyBackend.{Function}.Fallback"
+    enum="Boolean" expires_after="M110">
+  <owner>maxan@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records true if the fallback to the build-in backend occurred during
+    {Function} execution due to error returned by the GMS Core backend. True is
+    recorded when the Android backend function returned with error and fallback
+    is about to be called. False is never recorded.
+  </summary>
+  <token key="Function">
+    <variant name="AddLoginAsync" summary="AddLoginAsync()"/>
+    <variant name="FillMatchingLoginsAsync"
+        summary="FillMatchingLoginsAsync()"/>
+    <variant name="GetAllLoginsAsync" summary="GetAllLoginsAsync()"/>
+    <variant name="GetAutofillableLoginsAsync"
+        summary="GetAutofillableLoginsAsync()"/>
+    <variant name="RemoveLoginAsync" summary="RemoveLoginAsync()"/>
+    <variant name="RemoveLoginsByURLAndTimeAsync"
+        summary="RemoveLoginsByURLAndTimeAsync()"/>
+    <variant name="RemoveLoginsCreatedBetweenAsync"
+        summary="RemoveLoginsCreatedBetweenAsync()"/>
+    <variant name="UpdateLoginAsync" summary="UpdateLoginAsync()"/>
+  </token>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordStoreProxyBackend.{Function}.{Metric}.{Measurement}"
     units="count" expires_after="M110">

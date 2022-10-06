@@ -108,6 +108,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   void MaybeRetryOperation(
       base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
           retry_callback,
+      const base::StrongAlias<struct MethodNameTag, std::string>& method_name,
       base::OnceCallback<void(ResultT)> result_callback,
       ResultT result);
 
