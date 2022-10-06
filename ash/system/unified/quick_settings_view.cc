@@ -14,7 +14,7 @@
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_pods_container_view.h"
 #include "ash/system/unified/page_indicator_view.h"
-#include "ash/system/unified/top_shortcuts_view.h"
+#include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "media/base/media_switches.h"
@@ -137,10 +137,8 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
 
   system_tray_container_ =
       AddChildView(std::make_unique<SystemTrayContainer>());
-  top_shortcuts_view_ = system_tray_container_->AddChildView(
-      std::make_unique<TopShortcutsView>(controller_));
-  top_shortcuts_view_->SetExpandedAmount(1.0f);
-
+  system_info_view_ = system_tray_container_->AddChildView(
+      std::make_unique<UnifiedSystemInfoView>(controller_));
   feature_pods_container_ = system_tray_container_->AddChildView(
       std::make_unique<FeaturePodsContainerView>(controller_, true));
   page_indicator_view_ = system_tray_container_->AddChildView(
@@ -154,8 +152,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
 
   sliders_container_ = system_tray_container_->AddChildView(
       std::make_unique<SlidersContainerView>());
-  system_info_view_ = system_tray_container_->AddChildView(
-      std::make_unique<UnifiedSystemInfoView>(controller_));
+
+  footer_ = system_tray_container_->AddChildView(
+      std::make_unique<QuickSettingsFooter>(controller_));
 
   system_tray_container_->SetFlexForView(page_indicator_view_);
 
@@ -252,7 +251,7 @@ gfx::Size QuickSettingsView::CalculatePreferredSize() const {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
   return gfx::Size(kTrayMenuWidth,
-                   top_shortcuts_view_->GetPreferredSize().height() +
+                   footer_->GetPreferredSize().height() +
                        feature_pods_container_->GetExpandedHeight() +
                        page_indicator_view_->GetExpandedHeight() +
                        sliders_container_->GetHeight() +

@@ -32,6 +32,7 @@ class ASH_EXPORT PowerButton : public IconButton {
 
  private:
   friend class PowerButtonTest;
+  friend class QuickSettingsFooterTest;
 
   // This class is the context menu controller used by `PowerButton` in the
   // `QuickSettingsFooter`, responsible for building, running the menu and

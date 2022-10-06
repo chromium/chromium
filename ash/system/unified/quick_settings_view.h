@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/system/unified/quick_settings_footer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -13,7 +14,6 @@ namespace ash {
 
 class FeaturePodButton;
 class FeaturePodsContainerView;
-class TopShortcutsView;
 class UnifiedMediaControlsContainer;
 class PageIndicatorView;
 class UnifiedSystemInfoView;
@@ -115,7 +115,7 @@ class ASH_EXPORT QuickSettingsView : public views::View {
   UnifiedSystemTrayController* const controller_;
 
   // Owned by views hierarchy.
-  TopShortcutsView* top_shortcuts_view_ = nullptr;
+  QuickSettingsFooter* footer_ = nullptr;
   FeaturePodsContainerView* feature_pods_container_ = nullptr;
   PageIndicatorView* page_indicator_view_ = nullptr;
   SlidersContainerView* sliders_container_ = nullptr;
