@@ -36,8 +36,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -3000,12 +2998,7 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidationOnIconVersionUpdate) {
 }
 
 // TODO(crbug.com/1005069) Disabled on Chrome OS due to flake
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_IconLoadNonSupportedScales DISABLED_IconLoadNonSupportedScales
-#else
-#define MAYBE_IconLoadNonSupportedScales IconLoadNonSupportedScales
-#endif
-TEST_P(ArcAppModelIconTest, MAYBE_IconLoadNonSupportedScales) {
+TEST_P(ArcAppModelIconTest, DISABLED_IconLoadNonSupportedScales) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
 
