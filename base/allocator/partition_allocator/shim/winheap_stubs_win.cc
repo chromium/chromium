@@ -16,8 +16,8 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/numerics/safe_conversions.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/numerics/safe_conversions.h"
 
 namespace allocator_shim {
 
@@ -122,8 +122,9 @@ void* AlignAllocation(void* ptr, size_t alignment) {
 
   // Write the prefix.
   AlignedPrefix* prefix = reinterpret_cast<AlignedPrefix*>(address) - 1;
-  prefix->original_allocation_offset = base::checked_cast<unsigned int>(
-      address - reinterpret_cast<uintptr_t>(ptr));
+  prefix->original_allocation_offset =
+      partition_alloc::internal::base::checked_cast<unsigned int>(
+          address - reinterpret_cast<uintptr_t>(ptr));
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   prefix->magic = AlignedPrefix::kMagic;
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)

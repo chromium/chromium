@@ -17,8 +17,6 @@ include_rules = [
     "+base/mac/mach_logging.h",
     "+base/memory/nonscannable_memory.h",
     "+base/memory/page_size.h",
-    "+base/numerics/checked_math.h",
-    "+base/numerics/safe_conversions.h",
     "+base/process/memory.h",
     "+base/synchronization/lock.h",
     "+base/threading/platform_thread.h",

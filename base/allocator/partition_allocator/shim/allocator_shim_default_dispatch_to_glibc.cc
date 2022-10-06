@@ -5,8 +5,8 @@
 #include <limits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
-#include "base/numerics/checked_math.h"
 #include "base/process/memory.h"
 
 #include <dlfcn.h>
@@ -55,7 +55,7 @@ void* GlibcCalloc(const AllocatorDispatch*,
                   size_t n,
                   size_t size,
                   void* context) {
-  const auto total = base::CheckMul(n, size);
+  const auto total = partition_alloc::internal::base::CheckMul(n, size);
   if (PA_UNLIKELY(!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize))
     base::TerminateBecauseOutOfMemory(size * n);
 
