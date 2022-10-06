@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/app_mode/app_session_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -53,8 +54,10 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
                                   KioskBrowserWindowType::kOther);
 
     if (IsNewBrowserWindowAllowed(browser)) {
-      LOG(WARNING) << "Open additional browser window in kiosk session"
-                   << ", url=" << url_string;
+      LOG(WARNING)
+          << "Open additional fullscreen browser window in kiosk session"
+          << ", url=" << url_string;
+      chrome::ToggleFullscreenMode(browser);
       on_browser_window_added_callback_.Run(false);
     } else {
       LOG(WARNING) << "Force close browser opened in kiosk session"

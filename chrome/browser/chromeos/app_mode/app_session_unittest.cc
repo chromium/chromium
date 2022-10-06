@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -54,6 +57,74 @@ constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
 constexpr char kUnregisteredPluginFilePath[] = "/path/to/unregistered_plugin";
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+// A test browser window that can toggle fullscreen state.
+class FullscreenTestBrowserWindow : public TestBrowserWindow,
+                                    ExclusiveAccessContext {
+ public:
+  explicit FullscreenTestBrowserWindow(TestingProfile* profile,
+                                       bool fullscreen = false)
+      : fullscreen_(fullscreen), profile_(profile) {}
+
+  FullscreenTestBrowserWindow(const FullscreenTestBrowserWindow&) = delete;
+  FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
+      delete;
+
+  ~FullscreenTestBrowserWindow() override = default;
+
+  // TestBrowserWindow:
+  bool ShouldHideUIForFullscreen() const override { return fullscreen_; }
+  bool IsFullscreen() const override { return fullscreen_; }
+  void EnterFullscreen(const GURL& url,
+                       ExclusiveAccessBubbleType type,
+                       int64_t display_id) override {
+    fullscreen_ = true;
+  }
+  void ExitFullscreen() override { fullscreen_ = false; }
+  bool IsToolbarShowing() const override { return false; }
+  bool IsLocationBarVisible() const override { return true; }
+
+  ExclusiveAccessContext* GetExclusiveAccessContext() override { return this; }
+
+  // ExclusiveAccessContext:
+  Profile* GetProfile() override { return profile_; }
+  content::WebContents* GetActiveWebContents() override {
+    NOTIMPLEMENTED();
+    return nullptr;
+  }
+  void UpdateExclusiveAccessExitBubbleContent(
+      const GURL& url,
+      ExclusiveAccessBubbleType bubble_type,
+      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+      bool notify_download,
+      bool force_update) override {}
+  bool IsExclusiveAccessBubbleDisplayed() const override { return false; }
+  void OnExclusiveAccessUserInput() override {}
+  bool CanUserExitFullscreen() const override { return true; }
+
+ private:
+  bool fullscreen_ = false;
+  raw_ptr<TestingProfile> profile_;
+};
+
+bool IsBrowserFullscreen(Browser& browser) {
+  return browser.exclusive_access_manager()
+      ->fullscreen_controller()
+      ->IsFullscreenForBrowser();
+}
+
+std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
+    Browser::CreateParams params,
+    TestingProfile* profile,
+    bool is_main_browser = false) {
+  // The main browser window for the kiosk is always fullscreen in the
+  // prodaction.
+  FullscreenTestBrowserWindow* window =
+      new FullscreenTestBrowserWindow(profile, /*fullscreen=*/is_main_browser);
+  new TestBrowserWindowOwner(window);
+  params.window = window;
+  return base::WrapUnique<Browser>(Browser::Create(params));
+}
+
 }  // namespace
 
 class AppSessionTest : public testing::Test {
@@ -77,40 +148,22 @@ class AppSessionTest : public testing::Test {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  std::unique_ptr<Browser> CreateWebAppBrowser(
-      const std::string& web_app_name) {
-    return CreateBrowserWithTestWindowForParams(
-        Browser::CreateParams::CreateForApp(
-            /*app_name=*/kTestWebAppName1, /*trusted_source=*/true,
-            /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
-            /*user_gesture=*/true));
-  }
-
   std::unique_ptr<Browser> CreateBrowserWithTestWindow() {
-    return CreateBrowserWithTestWindowForParams(
-        Browser::CreateParams(&profile_, true));
+    return CreateBrowserWithFullscreenTestWindowForParams(
+        Browser::CreateParams(profile(), true), profile());
   }
 
-  Browser::CreateParams CreateBrowserParamsForApp(
-      const std::string& web_app_name) {
-    return Browser::CreateParams::CreateForAppPopup(
-        /*app_name=*/web_app_name, /*trusted_source=*/true,
-        /*window_bounds=*/gfx::Rect(), /*profile=*/&profile_,
-        /*user_gesture=*/true);
-  }
-
-  std::unique_ptr<Browser> CreateBrowserWithNameAndType(
+  std::unique_ptr<Browser> CreateBrowserForWebApp(
       const std::string& web_app_name,
-      Browser::Type browser_type) {
-    Browser::CreateParams params = CreateBrowserParamsForApp(web_app_name);
-    params.type = browser_type;
-    return CreateBrowserWithTestWindowForParams(params);
-  }
-
-  std::unique_ptr<Browser> CreateBrowserForApp(
-      const std::string& web_app_name) {
-    return CreateBrowserWithTestWindowForParams(
-        CreateBrowserParamsForApp(web_app_name));
+      absl::optional<Browser::Type> browser_type = absl::nullopt) {
+    Browser::CreateParams params = Browser::CreateParams::CreateForAppPopup(
+        /*app_name=*/web_app_name, /*trusted_source=*/true,
+        /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
+        /*user_gesture=*/true);
+    if (browser_type.has_value()) {
+      params.type = browser_type.value();
+    }
+    return CreateBrowserWithFullscreenTestWindowForParams(params, profile());
   }
 
   // Simulate starting a web kiosk session.
@@ -118,7 +171,12 @@ class AppSessionTest : public testing::Test {
       const std::string& web_app_name = kTestWebAppName1) {
     // Create the main kiosk browser window, which is normally auto-created when
     // a web kiosk session starts.
-    web_kiosk_main_browser_ = CreateWebAppBrowser(web_app_name);
+    web_kiosk_main_browser_ = CreateBrowserWithFullscreenTestWindowForParams(
+        Browser::CreateParams::CreateForApp(
+            /*app_name=*/web_app_name, /*trusted_source=*/true,
+            /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
+            /*user_gesture=*/true),
+        profile(), /*is_main_browser=*/true);
 
     app_session_ = AppSession::CreateForTesting(
         base::DoNothing(), local_state(), {crash_path().value()});
@@ -131,7 +189,7 @@ class AppSessionTest : public testing::Test {
   void StartChromeAppKioskSession() {
     app_session_ =
         std::make_unique<AppSession>(base::DoNothing(), local_state());
-    app_session_->Init(&profile_, kTestAppId);
+    app_session_->Init(profile(), kTestAppId);
   }
 
   // Waits until |app_session_| handles creation of |new_browser_window| and
@@ -166,13 +224,17 @@ class AppSessionTest : public testing::Test {
     web_kiosk_main_browser_.reset();
   }
 
+  bool IsMainBrowserFullscreen() {
+    return IsBrowserFullscreen(*web_kiosk_main_browser_);
+  }
+
   bool IsSessionShuttingDown() const {
     return app_session_->is_shutting_down();
   }
 
   void ResetAppSession() { app_session_.reset(); }
 
-  PrefService* GetPrefs() { return profile_.GetPrefs(); }
+  PrefService* GetPrefs() { return profile()->GetPrefs(); }
 
   base::FilePath crash_path() const { return temp_dir_.GetPath(); }
 
@@ -358,7 +420,7 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
   StartWebKioskSession(kTestWebAppName1);
 
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForApp(kTestWebAppName1)->window()));
+      CreateBrowserForWebApp(kTestWebAppName1)->window()));
 }
 
 TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
@@ -366,7 +428,18 @@ TEST_F(AppSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
   StartWebKioskSession(kTestWebAppName1);
 
   EXPECT_FALSE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForApp(kTestWebAppName1)->window()));
+      CreateBrowserForWebApp(kTestWebAppName1)->window()));
+}
+
+TEST_F(AppSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession(kTestWebAppName1);
+  EXPECT_TRUE(IsMainBrowserFullscreen());
+
+  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
+  ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window());
+
+  EXPECT_TRUE(IsBrowserFullscreen(*second_browser));
 }
 
 TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
@@ -386,8 +459,7 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKioskIfTypeIsNotAppPopup) {
 
   for (auto browser_type : not_app_popup_browser_types) {
     EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-        CreateBrowserWithNameAndType(kTestWebAppName1, browser_type)
-            ->window()));
+        CreateBrowserForWebApp(kTestWebAppName1, browser_type)->window()));
   }
 }
 
@@ -405,7 +477,7 @@ TEST_F(AppSessionTest,
   StartWebKioskSession(kTestWebAppName1);
 
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForApp(kTestWebAppName2)->window()));
+      CreateBrowserForWebApp(kTestWebAppName2)->window()));
 }
 
 TEST_F(AppSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
@@ -415,14 +487,14 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
   StartChromeAppKioskSession();
 
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
-      CreateBrowserForApp(kTestWebAppName2)->window()));
+      CreateBrowserForWebApp(kTestWebAppName2)->window()));
 }
 
 TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  auto second_browser = CreateBrowserForApp(kTestWebAppName1);
+  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
   EXPECT_FALSE(
       ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
 
@@ -438,7 +510,7 @@ TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  auto second_browser = CreateBrowserForApp(kTestWebAppName1);
+  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
   EXPECT_FALSE(
       ShouldBrowserBeClosedByAppSessionBrowserHander(second_browser->window()));
 
