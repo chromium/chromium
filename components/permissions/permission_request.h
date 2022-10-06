@@ -81,6 +81,10 @@ class PermissionRequest {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Returns whether displaying a confirmation chip for the request is
+  // supported.
+  bool IsConfirmationChipSupported();
+
   // Returns prompt icon appropriate for displaying on the chip button in the
   // location bar.
   IconId GetIconForChip();
