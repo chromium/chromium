@@ -21,7 +21,8 @@ enum class FeedEngagementType {
   kFeedInteracted = 2,
   kDeprecatedFeedScrolled = 3,
   kFeedScrolled = 4,
-  kMaxValue = kFeedScrolled,
+  kGoodVisit = 5,
+  kMaxValue = kGoodVisit,
 };
 
 // Values for the UMA ContentSuggestions.Feed.UserActions

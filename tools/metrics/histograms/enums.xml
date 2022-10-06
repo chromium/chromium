@@ -41815,6 +41815,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Interacted - opened page or used menu"/>
   <int value="3" label="DEPRECATED: Scrolled - scrolled any amount"/>
   <int value="4" label="Scrolled - scrolled any amount"/>
+  <int value="5"
+      label="User (a) had a good explicit interaction, (b) spent a long time
+             in the feed and scrolled, or (c) spent a long time viewing or
+             opening a piece of content."/>
 </enum>
 
 <enum name="FeedHostMismatch">

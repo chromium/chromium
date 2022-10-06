@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/feed/feed_feature_list.h"
+#include "base/time/time.h"
 #include "components/feed/buildflags.h"
 
 #include "base/feature_list.h"
@@ -164,5 +165,26 @@ BASE_FEATURE(kFeedReplaceAll,
 BASE_FEATURE(kFeedVideoInlinePlayback,
              "FeedVideoInlinePlayback",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClientGoodVisits,
+             "FeedClientGoodVisits",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kVisitTimeout{
+    &kClientGoodVisits, "visit_timeout", base::Minutes(5)};
+
+const base::FeatureParam<base::TimeDelta> kGoodTimeInFeed{
+    &kClientGoodVisits, "good_time_in_feed", base::Minutes(1)};
+
+const base::FeatureParam<base::TimeDelta> kLongOpenTime{
+    &kClientGoodVisits, "long_open_time", base::Seconds(10)};
+
+const base::FeatureParam<base::TimeDelta> kMinStableContentSliceVisibilityTime{
+    &kClientGoodVisits, "min_stable_content_slice_visibility_time",
+    base::Milliseconds(500)};
+
+const base::FeatureParam<base::TimeDelta> kMaxStableContentSliceVisibilityTime{
+    &kClientGoodVisits, "max_stable_content_slice_visibility_time",
+    base::Seconds(30)};
 
 }  // namespace feed

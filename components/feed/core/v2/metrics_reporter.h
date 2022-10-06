@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/feed/core/v2/enums.h"
+#include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
@@ -73,6 +74,10 @@ class MetricsReporter {
   void PageLoaded();
   void OtherUserAction(const StreamType& stream_type,
                        FeedUserActionType action_type);
+  // Report a period of time during which at least one content slice was >50%
+  // visible and covered >25% of the viewport.
+  // TODO(iwells): Call this.
+  void ReportStableContentSliceVisibilityTime(base::TimeDelta delta);
 
   // Indicates the user scrolled the feed by |distance_dp| and then stopped
   // scrolling.
@@ -224,6 +229,24 @@ class MetricsReporter {
   // Non-null only directly after a stream load.
   std::unique_ptr<LoadLatencyTimes> load_latencies_;
   bool load_latencies_recorded_ = false;
+
+  class GoodVisitState {
+   public:
+    void OnScroll();
+    void OnGoodExplicitInteraction();
+    void OnOpenComplete(base::TimeDelta open_duration);
+    void AddTimeInFeed(base::TimeDelta time);
+    void ExtendOrStartNewVisit();
+
+   private:
+    void MaybeReportGoodVisit();
+
+    base::Time visit_start_{}, visit_end_{};
+    bool did_report_good_visit_ = false;
+    base::TimeDelta time_in_feed_{};
+    bool did_scroll_ = false;
+  };
+  absl::optional<GoodVisitState> good_visit_state_;
 
   base::WeakPtrFactory<MetricsReporter> weak_ptr_factory_{this};
 };

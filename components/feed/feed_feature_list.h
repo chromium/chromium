@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
 
@@ -140,6 +141,26 @@ BASE_DECLARE_FEATURE(kFeedReplaceAll);
 
 // When enabled, play the feed video via inline playback.
 BASE_DECLARE_FEATURE(kFeedVideoInlinePlayback);
+
+// When enabled, compute Good Visits locally and log them to a histogram.
+BASE_DECLARE_FEATURE(kClientGoodVisits);
+// The maximum time between sequential interactions with the feed that are
+// considered as a single visit.
+extern const base::FeatureParam<base::TimeDelta> kVisitTimeout;
+// A feed visit is "good" if the user spends at least this much time in the feed
+// and scrolls at least once.
+extern const base::FeatureParam<base::TimeDelta> kGoodTimeInFeed;
+// A feed visit is "good" if the user spends at least this much time in an
+// article.
+extern const base::FeatureParam<base::TimeDelta> kLongOpenTime;
+// When calculating time spent in feed for good visits, drop periods of
+// viewport-stable feed viewing shorter than this.
+extern const base::FeatureParam<base::TimeDelta>
+    kMinStableContentSliceVisibilityTime;
+// When calculating time spent in feed for good visits, cap long periods of
+// viewport-stable feed viewing to this time.
+extern const base::FeatureParam<base::TimeDelta>
+    kMaxStableContentSliceVisibilityTime;
 
 }  // namespace feed
 
