@@ -85,6 +85,16 @@ Study* CreateStudyWithFlagGroups(int default_group_probability,
   return study;
 }
 
+BASE_FEATURE(kDisabled, "Disabled", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnabled, "Enabled", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRepeated, "Repeated", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Gets the group name of the study associated with a feature or empty string.
+std::string AssociatedStudyGroup(const base::Feature& feature) {
+  auto* trial = base::FeatureList::GetFieldTrial(feature);
+  return trial ? trial->group_name() : "";
+}
+
 class TestOverrideStringCallback {
  public:
   typedef std::map<uint32_t, std::u16string> OverrideMap;
@@ -693,6 +703,106 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
     EXPECT_EQ(test_case.expected_trial_activated,
               base::FieldTrialList::IsTrialActive(study->name()));
   }
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, DefaultAssociatedFeatures) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  {
+    auto* feature_association =
+        AddExperiment("NotSelected1", 0, study)->mutable_feature_association();
+    feature_association->add_disable_feature(kEnabled.name);
+    feature_association->add_enable_feature(kDisabled.name);
+    feature_association->add_disable_feature(kRepeated.name);
+  }
+  {
+    auto* feature_association =
+        AddExperiment("NotSelected2", 0, study)->mutable_feature_association();
+    feature_association->add_enable_feature(kRepeated.name);
+  }
+  AddExperiment("Expected", 100, study);
+
+  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  this->CreateTrialsFromSeed(seed, feature_list.get());
+  base::test::ScopedFeatureList base_scoped_feature_list;
+  base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // All features should be associated with the group with no features, but
+  // none should have their state changed.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kDisabled));
+  EXPECT_EQ(AssociatedStudyGroup(kDisabled), "Expected");
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kEnabled));
+  EXPECT_EQ(AssociatedStudyGroup(kEnabled), "Expected");
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kRepeated));
+  EXPECT_EQ(AssociatedStudyGroup(kRepeated), "Expected");
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, NonDefaultAssociatedFeatures) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  {
+    auto* feature_association =
+        AddExperiment("NotSelected1", 0, study)->mutable_feature_association();
+    feature_association->add_disable_feature(kEnabled.name);
+    feature_association->add_enable_feature(kDisabled.name);
+    feature_association->add_disable_feature(kRepeated.name);
+  }
+  {
+    auto* feature_association =
+        AddExperiment("Expected", 100, study)->mutable_feature_association();
+    feature_association->add_enable_feature(kRepeated.name);
+  }
+  AddExperiment("Default", 0, study);
+
+  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  this->CreateTrialsFromSeed(seed, feature_list.get());
+  base::test::ScopedFeatureList base_scoped_feature_list;
+  base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Only the feature explicitly associated with the group should be enabled
+  // or have it's state changed.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kDisabled));
+  EXPECT_EQ(AssociatedStudyGroup(kDisabled), "");
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kEnabled));
+  EXPECT_EQ(AssociatedStudyGroup(kEnabled), "");
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kRepeated));
+  EXPECT_EQ(AssociatedStudyGroup(kRepeated), "Expected");
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, DefaultAssociatedFeaturesOnStartup) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  {
+    auto* feature_association =
+        AddExperiment("NotSelected1", 0, study)->mutable_feature_association();
+    feature_association->add_disable_feature(kEnabled.name);
+    feature_association->add_enable_feature(kDisabled.name);
+    feature_association->add_disable_feature(kRepeated.name);
+  }
+  {
+    auto* feature_association =
+        AddExperiment("NotSelected2", 0, study)->mutable_feature_association();
+    feature_association->add_enable_feature(kRepeated.name);
+  }
+  AddExperiment("Expected", 100, study);
+
+  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  this->CreateTrialsFromSeed(seed, feature_list.get());
+  base::test::ScopedFeatureList base_scoped_feature_list;
+  base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Nothing should be associated with the default group for an
+  // ACTIVATE_ON_STARTUP trial.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kDisabled));
+  EXPECT_EQ(AssociatedStudyGroup(kDisabled), "");
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kEnabled));
+  EXPECT_EQ(AssociatedStudyGroup(kEnabled), "");
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kRepeated));
+  EXPECT_EQ(AssociatedStudyGroup(kRepeated), "");
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {

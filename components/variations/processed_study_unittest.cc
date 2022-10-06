@@ -286,60 +286,6 @@ TEST(ProcessedStudyTest, ValidateStudy) {
   EXPECT_FALSE(processed_study.Init(&study));
 }
 
-TEST(ProcessedStudyTest, ValidateStudyWithAssociatedFeatures) {
-  Study study;
-  study.set_name("study");
-  study.set_default_experiment_name("def");
-  Study::Experiment* exp1 = AddExperiment("exp1", 100, &study);
-  Study::Experiment* exp2 = AddExperiment("exp2", 100, &study);
-  Study::Experiment* exp3 = AddExperiment("exp3", 100, &study);
-  AddExperiment("def", 100, &study);
-
-  ProcessedStudy processed_study;
-  EXPECT_TRUE(processed_study.Init(&study));
-  EXPECT_EQ(400, processed_study.total_probability());
-
-  EXPECT_THAT(processed_study.associated_features(), ::testing::IsEmpty());
-
-  const char kFeature1Name[] = "Feature1";
-  const char kFeature2Name[] = "Feature2";
-
-  exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
-  EXPECT_TRUE(processed_study.Init(&study));
-  EXPECT_THAT(processed_study.associated_features(),
-              ::testing::ElementsAre(kFeature1Name));
-
-  exp1->clear_feature_association();
-  exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
-  exp1->mutable_feature_association()->add_enable_feature(kFeature2Name);
-  EXPECT_TRUE(processed_study.Init(&study));
-  // Since there's multiple different features, |associated_features| should now
-  // contain them all.
-  EXPECT_THAT(processed_study.associated_features(),
-              ::testing::ElementsAre(kFeature1Name, kFeature2Name));
-
-  exp1->clear_feature_association();
-  exp1->mutable_feature_association()->add_enable_feature(kFeature1Name);
-  exp2->mutable_feature_association()->add_enable_feature(kFeature1Name);
-  exp3->mutable_feature_association()->add_disable_feature(kFeature1Name);
-  EXPECT_TRUE(processed_study.Init(&study));
-  EXPECT_THAT(processed_study.associated_features(),
-              ::testing::ElementsAre(kFeature1Name));
-
-  // Setting a different feature name on exp2 should cause |associated_features|
-  // to contain both feature names.
-  exp2->mutable_feature_association()->set_enable_feature(0, kFeature2Name);
-  EXPECT_TRUE(processed_study.Init(&study));
-  EXPECT_THAT(processed_study.associated_features(),
-              ::testing::ElementsAre(kFeature1Name, kFeature2Name));
-
-  // Setting a different activation type should result in empty
-  // |associated_features|.
-  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
-  EXPECT_TRUE(processed_study.Init(&study));
-  EXPECT_THAT(processed_study.associated_features(), ::testing::IsEmpty());
-}
-
 TEST(ProcessedStudyTest, ProcessedStudyAllAssignmentsToOneGroup) {
   Study study;
   study.set_name("study1");
