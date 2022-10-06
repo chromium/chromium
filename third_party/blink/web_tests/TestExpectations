@@ -1497,6 +1497,9 @@ crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-006.html [
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-007.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-008.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-009.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-013.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-014.html [ Failure ]
+crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/col-wrap-019.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/intrinsic-size/row-wrap-001.html [ Failure ]
 
 # These require css-align-3 positional keywords that Blink doesn't yet support for flexbox.

@@ -227,8 +227,11 @@ class FlexItem {
   // margins). FlexLayoutAlgorithm uses this flag to report back to legacy.
   bool needs_relayout_for_stretch_;
 
+  // The above fields are used by the flex algorithm. The following fields, by
+  // contrast, are just convenient storage.
   NGBlockNode ng_input_node_;
   Member<const NGLayoutResult> layout_result_;
+  absl::optional<LayoutUnit> max_content_contribution_;
 };
 
 class FlexItemVectorView {

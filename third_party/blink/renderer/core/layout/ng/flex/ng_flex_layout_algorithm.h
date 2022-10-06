@@ -35,8 +35,11 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
   const NGLayoutResult* LayoutInternal();
 
-  void PlaceFlexItems(HeapVector<NGFlexLine>* flex_line_outputs,
-                      HeapVector<Member<LayoutBox>>* oof_children);
+  void PlaceFlexItems(
+      HeapVector<NGFlexLine>* flex_line_outputs,
+      HeapVector<Member<LayoutBox>>* oof_children,
+      bool is_computing_multiline_column_intrinsic_size = false);
+
   void CalculateTotalIntrinsicBlockSize(bool use_empty_line_block_size);
 
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
@@ -66,7 +69,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
-      const NGBlockNode& flex_item) const;
+      const NGBlockNode& flex_item,
+      absl::optional<LayoutUnit> override_inline_size = absl::nullopt) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
@@ -74,11 +78,14 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGConstraintSpace BuildSpaceForLayout(
       const NGBlockNode& flex_item_node,
       LayoutUnit item_main_axis_final_size,
+      absl::optional<LayoutUnit> override_inline_size = absl::nullopt,
       absl::optional<LayoutUnit> line_cross_size_for_stretch = absl::nullopt,
       absl::optional<LayoutUnit> block_offset_for_fragmentation = absl::nullopt,
       bool min_block_size_should_encompass_intrinsic_size = false) const;
+
+  enum class Phase { kLayout, kRowIntrinsicSize, kColumnWrapIntrinsicSize };
   void ConstructAndAppendFlexItems(
-      bool is_computing_intrinsic_size = false,
+      Phase phase,
       HeapVector<Member<LayoutBox>>* oof_children = nullptr);
   void ApplyFinalAlignmentAndReversals(
       HeapVector<NGFlexLine>* flex_line_outputs);
@@ -173,12 +180,9 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void CheckFlexLines(HeapVector<NGFlexLine>& flex_line_outputs) const;
 #endif
 
-  // These are used when determining the max-content width of a column-wrap flex
-  // container. Note: |item_inline_available_size_override_| has to be
-  // initialized before is_cross_size_definite_, and probably before some other
-  // data members too.
-  LogicalSize ChildAvailableSize() const;
-  absl::optional<LayoutUnit> item_inline_available_size_override_;
+  // Used when determining the max-content width of a column-wrap flex
+  // container.
+  LayoutUnit largest_min_content_contribution_;
 
   const bool is_column_;
   const bool is_horizontal_flow_;
