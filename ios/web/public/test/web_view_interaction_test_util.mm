@@ -46,7 +46,8 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
   web_state->ExecuteJavaScript(base::UTF8ToUTF16(script),
                                base::BindOnce(^(const base::Value* value) {
                                  if (value)
-                                   result = value->CreateDeepCopy();
+                                   result = std::make_unique<base::Value>(
+                                       value->Clone());
                                  did_finish = true;
                                }));
 
