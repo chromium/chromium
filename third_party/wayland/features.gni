@@ -42,3 +42,8 @@ declare_args() {
     }
   }
 }
+
+if (use_system_libwayland_client) {
+  # ChromeOS should always be built with the bundled libwayland.
+  assert(!is_chromeos)
+}
