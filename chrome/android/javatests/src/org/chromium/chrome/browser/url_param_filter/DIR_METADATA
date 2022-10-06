@@ -1,1 +1,1 @@
-mixins: "//chrome/browser/url_param_filter/COMMON_METADATA"
+mixins: "//components/url_param_filter/COMMON_METADATA"
