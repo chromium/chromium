@@ -784,7 +784,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1734212868489994726">Urdin argia</translation>
 <translation id="1734230530703461088">Ezin izan dira kargatu luzapenak denbora-mugaren barruan. Jarri administratzailearekin harremanetan.</translation>
 <translation id="1734824808160898225">Baliteke <ph name="PRODUCT_NAME" /> bere kasa eguneratzeko gai ez izatea</translation>
-<translation id="173522743738009831">Privacy Sandbox-i buruz</translation>
+<translation id="173522743738009831">Privacy Sandbox-ari buruz</translation>
 <translation id="173628468822554835">Ados. Modu lehenetsian, bisitatzen dituzun webgune berriek ez dizute bidaliko jakinarazpenik.</translation>
 <translation id="1737968601308870607">Bidali akatsaren txostena</translation>
 <translation id="1739684185846730053">Privacy Sandbox-eko probaldiak garapen-prozesuan daude oraindik eta lurralde jakin batzuetan baino ezin dira egin. Oraingoz, une honetako web-teknologiak (hirugarrenen cookieak, kasu) erabiltzen jarraitzen duten bitartean probatu ahal izango dute webguneek Privacy Sandbox-a.</translation>
@@ -2540,7 +2540,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3388094447051599208">Irteerako erretilua ia beteta dago</translation>
 <translation id="3388788256054548012">Fitxategia enkriptatuta dago. Eskatu jabeari hura desenkriptatzeko.</translation>
 <translation id="3390013585654699824">Aplikazioaren xehetasunak</translation>
-<translation id="3391512812407811893">Privacy Sandbox-en probaldiak</translation>
+<translation id="3391512812407811893">Privacy Sandbox-aren probaldiak</translation>
 <translation id="3393554941209044235">Chrome-ko dokumentuen analisia</translation>
 <translation id="3393582007140394275">Ezin da igorri pantaila.</translation>
 <translation id="3394850431319394743">Identifikatzaileak erabiltzeko baimena eman zaie eduki babestua erreproduzi dezaten</translation>
@@ -6093,7 +6093,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> taldetik kendu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="683373380308365518">Aldatu arakatzaile adimendun eta seguru batera</translation>
-<translation id="6833996806551876956">Pribatutasunaren proben eremuaren probaldia</translation>
+<translation id="6833996806551876956">Privacy Sandbox-aren probaldia</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
 <translation id="6839225236531462745">Errore bat gertatu da ziurtagiria ezabatzean</translation>
 <translation id="6839916869147598086">Aldatu egin da saioa hasteko modua</translation>
