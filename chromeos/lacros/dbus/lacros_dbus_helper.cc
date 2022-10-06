@@ -5,6 +5,7 @@
 #include "chromeos/lacros/dbus/lacros_dbus_helper.h"
 
 #include "base/feature_list.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
@@ -37,6 +38,8 @@ void LacrosInitializeDBus() {
   InitializeDBusClient<TpmManagerClient>(bus);
 
   InitializeDBusClient<U2FClient>(bus);
+
+  InitializeDBusClient<DlpClient>(bus);
 }
 
 void LacrosInitializeFeatureListDependentDBus() {
@@ -55,6 +58,8 @@ void LacrosShutdownDBus() {
   } else {
     bluez::BluezDBusManager::Shutdown();
   }
+
+  DlpClient::Shutdown();
 
   MissiveClient::Shutdown();
 

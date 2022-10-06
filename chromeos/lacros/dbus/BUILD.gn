@@ -10,6 +10,7 @@ source_set("dbus") {
   deps = [
     "//base",
     "//chromeos/dbus/constants",
+    "//chromeos/dbus/dlp",
     "//chromeos/dbus/init",
     "//chromeos/dbus/missive",
     "//chromeos/dbus/permission_broker",
