@@ -94,12 +94,13 @@ void NativeThemeFluent::PaintScrollbarCorner(cc::PaintCanvas* canvas,
 gfx::Size NativeThemeFluent::GetPartSize(Part part,
                                          State state,
                                          const ExtraParams& extra) const {
-  const int minimum_thumb_length = scrollbar_width_ * 2;
   switch (part) {
     case kScrollbarHorizontalThumb:
-      return gfx::Size(minimum_thumb_length, kFluentScrollbarThumbThickness);
+      return gfx::Size(kFluentScrollbarMinimalThumbLength,
+                       kFluentScrollbarThumbThickness);
     case kScrollbarVerticalThumb:
-      return gfx::Size(kFluentScrollbarThumbThickness, minimum_thumb_length);
+      return gfx::Size(kFluentScrollbarThumbThickness,
+                       kFluentScrollbarMinimalThumbLength);
     case kScrollbarHorizontalTrack:
       return gfx::Size(0, scrollbar_width_);
     case kScrollbarVerticalTrack:

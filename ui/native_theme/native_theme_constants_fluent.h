@@ -14,6 +14,18 @@ constexpr int kFluentScrollbarThumbThickness = 6;
 // the scrollbar thumb.
 constexpr int kFluentScrollbarThumbRadius = 999;
 
+// The value specifies the minimum length the scrollbar thumb can have*.
+// We choose 17px for compatibility reasons with the default scrollbar on the
+// Windows platform.
+//
+// *Please note that when the scrollbar height for the vertical scrollbar
+// (or width for horizontal) is less than [1], the thumb does get smaller
+// until it disappears when the scrollbar size is less than [2].
+//
+// [1] 2 * kFluentScrollbarButtonSideLength + kFluentScrollbarMinimalThumbLength
+// [2] 2 * kFluentScrollbarButtonSideLength + 1
+constexpr int kFluentScrollbarMinimalThumbLength = 17;
+
 // The value represents button height for the vertical scrollbar and width for
 // the horizontal. Another side for the corresponding orientation is the same as
 // the track thickness.

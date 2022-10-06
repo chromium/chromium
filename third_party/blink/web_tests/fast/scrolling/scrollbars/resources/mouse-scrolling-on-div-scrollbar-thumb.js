@@ -33,8 +33,10 @@ async function testThumbScrolls(params) {
   // Direction: rtl changes the x-wise position of the vertical scrollbar
   const rtl = params.scroller.style.direction === "rtl";
 
-  // Testing the vertical scrollbar thumb.
-  let x = rtl ? scrollRect.left + params.TRACK_WIDTH / 2 : scrollRect.right - params.TRACK_WIDTH / 2;
+  // Testing the vertical scrollbar thumb. Move the pointer to the edge of
+  // the scrollbar border to verify that capturing and dragging work across
+  // the whole width of the scrollbar track.
+  let x = rtl ? scrollRect.left + 2 : scrollRect.right - 2;
   let y = scrollRect.top + params.BUTTON_WIDTH + 2;
   let asc_increments = [15, 10, 7, 6, 2];
   let asc_offsets = { linux: [549, 915, 915, 915, 915], win: [361, 601, 770, 915, 915], mac: [211, 351, 450, 534, 563] }[params.platform];

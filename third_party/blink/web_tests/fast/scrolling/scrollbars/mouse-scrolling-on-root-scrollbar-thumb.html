@@ -18,16 +18,22 @@ window.onload = () => {
     await waitForCompositorCommit();
     resetScrollOffset(document.scrollingElement);
 
-    // Testing the vertical scrollbar thumb.
-    let x = window.innerWidth - TRACK_WIDTH / 2;
+    // Testing the vertical scrollbar thumb. Move the pointer to the edge of
+    // the scrollbar border to verify that capturing and dragging work across
+    // the whole width of the scrollbar track.
+    let x = window.innerWidth - 2;
     let y = BUTTON_WIDTH + 10;
-    let asc_increments = [25, 10, 35, 7, 23];
-    let asc_offsets = [46, 64, 128, 142, 183];
-    let asc_offsets_mac = [43, 61, 122, 134, 174];
+    const asc_increments = [25, 10, 35, 7, 23];
+    const asc_offsets = [46, 64, 128, 142, 183];
+    // The Fluent scrollbar has one out of five offsets different from
+    // asc_offsets by 1px. All other ascending and descending offsets
+    // are the same.
+    const asc_offsets_fluent = [46, 64, 128, 141, 183];
+    const asc_offsets_mac = [43, 61, 122, 134, 174];
 
-    let desc_increments = [33, 11, 21, 5, 30];
-    let desc_offsets = [123, 103, 64, 55, 0];
-    let desc_offsets_mac = [116, 97, 61, 52, 0];
+    const desc_increments = [33, 11, 21, 5, 30];
+    const desc_offsets = [123, 103, 64, 55, 0];
+    const desc_offsets_mac = [116, 97, 61, 52, 0];
 
     await mouseMoveTo(x, y);
     await mouseDownAt(x, y);
@@ -36,7 +42,9 @@ window.onload = () => {
     for (var i = 0; i < 5; i++){
       y += asc_increments[i];
       await mouseMoveTo(x, y, Buttons.LEFT);
-      const offset = onMacPlatform ? asc_offsets_mac[i] : asc_offsets[i];
+      const offset = onMacPlatform ? asc_offsets_mac[i] :
+        internals.runtimeFlags.fluentScrollbarsEnabled ?
+          asc_offsets_fluent[i] : asc_offsets[i];
       if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
         assert_approx_equals(window.scrollY, offset, 1,
           "Vertical thumb drag downwards did not scroll as expected at "+asc_increments[i]+" - ");

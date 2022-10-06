@@ -615,9 +615,10 @@
   {
     "prefix": "fluent-non-overlay-scrollbar",
     "platforms": ["Win"],
-    "bases": [],
+    "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=FluentScrollbar",
-             "--enable-threaded-compositing"]
+             "--enable-threaded-compositing",
+             "--disable-smooth-scrolling"]
   },
   {
     "prefix": "fluent-non-overlay-scrollbar-dsf-150",
