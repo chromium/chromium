@@ -571,8 +571,8 @@ WebBundleURLLoaderFactory::~WebBundleURLLoaderFactory() {
   }
 }
 
-base::WeakPtr<WebBundleURLLoaderFactory> WebBundleURLLoaderFactory::GetWeakPtr()
-    const {
+base::WeakPtr<WebBundleURLLoaderFactory>
+WebBundleURLLoaderFactory::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

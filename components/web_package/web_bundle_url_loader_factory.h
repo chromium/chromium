@@ -54,7 +54,7 @@ class WebBundleURLLoaderFactory {
   WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
       delete;
 
-  base::WeakPtr<WebBundleURLLoaderFactory> GetWeakPtr() const;
+  base::WeakPtr<WebBundleURLLoaderFactory> GetWeakPtr();
 
   void SetBundleStream(mojo::ScopedDataPipeConsumerHandle body);
   void ReportErrorAndCancelPendingLoaders(
