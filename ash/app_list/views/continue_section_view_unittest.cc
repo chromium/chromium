@@ -2179,5 +2179,24 @@ TEST_F(ContinueSectionViewClamshellModeTest,
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
 }
 
+// Regression test for https://crbug.com/1357434.
+TEST_F(ContinueSectionViewClamshellModeTest,
+       CloseLauncherWhileAnimatingPrivacyToastDoesNotCrash) {
+  ResetPrivacyNoticePref();
+  InitializeForAnimationTest(/*result_count=*/3);
+  ASSERT_TRUE(IsPrivacyNoticeVisible());
+
+  AppListToastView* privacy_toast =
+      GetContinueSectionView()->GetPrivacyNoticeForTest();
+  ASSERT_TRUE(privacy_toast);
+
+  // Tap on the "OK" button to start the toast dismiss animation.
+  GestureTapOn(privacy_toast->toast_button());
+  EXPECT_TRUE(privacy_toast->layer()->GetAnimator()->is_animating());
+
+  HideLauncher();
+  // No crash.
+}
+
 }  // namespace
 }  // namespace ash
