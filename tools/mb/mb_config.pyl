@@ -1010,8 +1010,8 @@
       'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_fastbuild_java_coverage',
       'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google_coverage',
       'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_webview_google',
-      'android-marshmallow-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
+      'android-nougat-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_monochrome_reclient',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
       'android-perfetto-rel': 'perfetto_release_trybot_android',
@@ -1834,12 +1834,6 @@
       'partial_code_coverage_instrumentation',
     ],
 
-    'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'x86', 'android_fastbuild',
-      'strip_debug_info', 'webview_google', 'use_java_coverage',
-      'partial_code_coverage_instrumentation',
-    ],
-
     'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials': [
       'android', 'release_trybot', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_google', 'invert_fieldtrials'
@@ -1847,6 +1841,11 @@
 
     'android_release_trybot_x86_fastbuild_webview_monochrome': [
       'android', 'release_trybot', 'strip_debug_info', 'x86',
+      'android_fastbuild', 'webview_monochrome',
+    ],
+
+    'android_release_trybot_x86_fastbuild_webview_monochrome_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info', 'x86',
       'android_fastbuild', 'webview_monochrome',
     ],
 
