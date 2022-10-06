@@ -86,9 +86,10 @@ enum class TargetLanguageOrigin {
   kDefaultEnglish,
   kChangedByUser,
   kUninitialized,
+  kAutoTranslate,
   // Insert new items here. Keep in sync with TranslateTargetLanguageOrigin in
   // enums.xml when adding values.
-  kMaxValue = kUninitialized
+  kMaxValue = kAutoTranslate
 };
 
 enum class MenuTranslationUnavailableReason {

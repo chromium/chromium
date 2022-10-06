@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
 
 namespace language {
@@ -76,44 +77,38 @@ class TranslateManager {
     return translate_event_.get();
   }
 
+  // Returns the target language to show in the UI representing the current
+  // page state.
+  //
+  // On a translated page it will be the language that a page is translated to.
+  // On a non translated page it will be the result of |GetTargetlanguage|.
+  std::string GetTargetLanguageForDisplay(
+      TranslatePrefs* prefs,
+      language::LanguageModel* language_model);
+
   // Returns the language to translate to.
   //
+  // If provided a non-undefined |source_language|, returns the language from
+  // the auto translate list (if not empty).
+  //
   // If provided a non-null |language_model|, returns the first language from
-  // the model that is supported by the translation service.
+  // the model that is supported by the translation service and that is not to
+  // be skipped due to any ongoing experiment (see
+  // |GetSkippedLanguagesForExperiments|).
   //
-  // Otherwise, returns the first language found in the following list that is
-  // supported by the translation service:
-  //     High confidence and high probability reading language in ULP
-  //     the UI language
-  //     the accept-language list
+  // Otherwise, return the first language on the accept-language list that is
+  // supported by the translation service
   //
-  // If no language is found then an empty string is returned.
-  static std::string GetTargetLanguage(const TranslatePrefs* prefs,
-                                       language::LanguageModel* language_model);
-
-  // Returns the language to translate to using the same logic as
-  // GetTargetLanguage but doesn't return languages contained in
-  // |skipped_languages| if |language_model| is not null and there is at least
-  // one other suitable language.
+  // If no language is found then "en" is returned.
   static std::string GetTargetLanguage(
-      const TranslatePrefs* prefs,
+      TranslatePrefs* prefs,
       language::LanguageModel* language_model,
-      const std::set<std::string>& skipped_languages,
-      TranslateBrowserMetrics::TargetLanguageOrigin& target_language_origin);
+      const std::string source_lang_code = translate::kUnknownLanguageCode);
 
   // Returns the language to automatically translate to. |source_language| is
   // the webpage's source language.
   static std::string GetAutoTargetLanguage(const std::string& source_language,
                                            TranslatePrefs* translate_prefs);
-
-  // Returns the target language for a manually triggered translation: the
-  // output of GetTargetLanguage if the page hasn't been translated yet,
-  // otherwise the page's current language.
-  static std::string GetManualTargetLanguage(
-      const std::string& source_code,
-      const LanguageState& language_state,
-      translate::TranslatePrefs* prefs,
-      language::LanguageModel* language_model);
 
   // Translates the page contents from |source_lang| to |target_lang|.
   // The actual translation might be performed asynchronously if the translate
@@ -321,6 +316,15 @@ class TranslateManager {
   void FilterForPredefinedTarget(TranslateTriggerDecision* decision,
                                  TranslatePrefs* translate_prefs,
                                  const std::string& page_language_code);
+
+  // See description of the public |GetTargetLanguage|. This is the actual
+  // implementation that also takes a reference to |target_language_origin| for
+  // logging.
+  static std::string GetTargetLanguage(
+      TranslatePrefs* prefs,
+      language::LanguageModel* language_model,
+      const std::string source_lang_code,
+      TranslateBrowserMetrics::TargetLanguageOrigin& target_language_origin);
 
   // Enables or disables the translate omnibox icon depending on |decision|. The
   // icon is always shown if translate UI is shown, auto-translation happens, or

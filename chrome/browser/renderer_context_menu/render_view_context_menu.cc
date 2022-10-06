@@ -3795,7 +3795,7 @@ void RenderViewContextMenu::ExecPartialTranslate() {
   std::string target_language;
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(embedder_web_contents_);
-  chrome_translate_client->GetTranslateLanguages(
+  chrome_translate_client->GetTranslateLanguagesForDisplay(
       embedder_web_contents_, &source_language, &target_language);
   GetBrowser()->window()->StartPartialTranslate(
       source_language, target_language, params_.selection_text);
