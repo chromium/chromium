@@ -4220,7 +4220,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 }
 
 // Tests that if the running prerender is cancelled by
-// PrerenderHostRegistry::OnTriggerDestroyed(), the next pending prerender
+// PrerenderHostRegistry::CancelHosts(), the next pending prerender
 // starts its navigation.
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        SpeculationRulesUpdateStartPendingPrerender) {
@@ -4263,7 +4263,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   response.WaitForRequest();
 
   // Delete the first speculation rule. This speculation rules removal invokes
-  // the PrerenderHostRegistry::OnTriggerDestroyed(), and the next pending
+  // the PrerenderHostRegistry::CancelHosts(), and the next pending
   // prerender should start upon the cancellation.
   ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
                      "document.querySelector('#prerender1').remove()"));

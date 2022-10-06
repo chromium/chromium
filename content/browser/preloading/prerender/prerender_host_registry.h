@@ -36,7 +36,7 @@ class RenderFrameHostImpl;
 //
 // - Triggers (e.g., SpeculationHostImpl) start prerendering by
 //   CreateAndStartHost() and notify the registry of destruction of the trigger
-//   by OnTriggerDestroyed().
+//   by CancelHosts().
 // - Activators (i.e., NavigationRequest) can reserve the prerender host on
 //   activation start by ReserveHostToActivate(), activate it by
 //   ActivateReservedHost(), and notify the registry of completion of the
