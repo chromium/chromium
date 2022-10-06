@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_ui_model.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
@@ -488,7 +490,7 @@ const DownloadItem* DownloadUIModel::GetDownloadItem() const {
 }
 
 DownloadItem* DownloadUIModel::GetDownloadItem() {
-  return const_cast<DownloadItem*>(base::as_const(*this).GetDownloadItem());
+  return const_cast<DownloadItem*>(std::as_const(*this).GetDownloadItem());
 }
 
 std::u16string DownloadUIModel::GetWebDriveName() const {

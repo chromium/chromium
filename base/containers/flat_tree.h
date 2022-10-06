@@ -12,7 +12,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/as_const.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/not_fn.h"
@@ -951,7 +950,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::find(const K& key)
     -> iterator {
-  return const_cast_it(base::as_const(*this).find(key));
+  return const_cast_it(std::as_const(*this).find(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -974,7 +973,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::equal_range(
     const K& key) -> std::pair<iterator, iterator> {
-  auto res = base::as_const(*this).equal_range(key);
+  auto res = std::as_const(*this).equal_range(key);
   return {const_cast_it(res.first), const_cast_it(res.second)};
 }
 
@@ -995,7 +994,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const K& key) -> iterator {
-  return const_cast_it(base::as_const(*this).lower_bound(key));
+  return const_cast_it(std::as_const(*this).lower_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1016,7 +1015,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const K& key) -> iterator {
-  return const_cast_it(base::as_const(*this).upper_bound(key));
+  return const_cast_it(std::as_const(*this).upper_bound(key));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

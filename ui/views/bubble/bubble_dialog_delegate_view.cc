@@ -118,7 +118,7 @@ class BubbleWidget : public Widget {
     return bubble_delegate ? bubble_delegate->anchor_widget() : nullptr;
   }
   Widget* GetAnchorWidget() {
-    return const_cast<Widget*>(base::as_const(*this).GetAnchorWidget());
+    return const_cast<Widget*>(std::as_const(*this).GetAnchorWidget());
   }
 };
 

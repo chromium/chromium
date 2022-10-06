@@ -700,6 +700,22 @@ static_assert(std::apply(std::plus<>(), std::make_tuple(1, 2)) == 3);
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cNZm_g39fyM)
 ***
 
+### std::as_const <sup>[allowed]</sup>
+
+```c++
+auto&& const_ref = std::as_const(mutable_obj);
+```
+
+**Description:** Forms reference to const T.
+
+**Documentation:**
+[std::as_const](https://en.cppreference.com/w/cpp/utility/as_const)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/5Uo4iJK6Mf4)
+***
+
 ### Non-member std::size/std::empty/std::data <sup>[allowed]</sup>
 
 ```c++
@@ -1228,22 +1244,6 @@ auto it = std::search(haystack.begin(), haystack.end(),
 **Notes:**
 *** promo
 None
-***
-
-### std::as_const <sup>[tbd]</sup>
-
-```c++
-auto&& const_ref = std::as_const(mutable_obj);
-```
-
-**Description:** Forms reference to const T.
-
-**Documentation:**
-[std::as_const](https://en.cppreference.com/w/cpp/utility/as_const)
-
-**Notes:**
-*** promo
-See also `base::as_const`.
 ***
 
 ### std::not_fn <sup>[tbd]</sup>

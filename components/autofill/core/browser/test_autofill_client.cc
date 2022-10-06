@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/test_autofill_client.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -69,7 +71,7 @@ CreditCardOtpAuthenticator* TestAutofillClient::GetOtpAuthenticator() {
 }
 
 PrefService* TestAutofillClient::GetPrefs() {
-  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
 }
 
 const PrefService* TestAutofillClient::GetPrefs() const {

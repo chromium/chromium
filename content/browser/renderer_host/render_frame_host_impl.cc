@@ -10109,7 +10109,7 @@ FrameTreeNode* RenderFrameHostImpl::GetSibling(int relative_offset) const {
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() {
-  return const_cast<RenderFrameHostImpl*>(base::as_const(*this).GetMainFrame());
+  return const_cast<RenderFrameHostImpl*>(std::as_const(*this).GetMainFrame());
 }
 
 const RenderFrameHostImpl* RenderFrameHostImpl::GetMainFrame() const {

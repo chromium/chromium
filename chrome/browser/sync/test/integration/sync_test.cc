@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/as_const.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -521,7 +520,7 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
 
 SyncServiceImplHarness* SyncTest::GetClient(int index) {
   return const_cast<SyncServiceImplHarness*>(
-      base::as_const(*this).GetClient(index));
+      std::as_const(*this).GetClient(index));
 }
 
 const SyncServiceImplHarness* SyncTest::GetClient(int index) const {

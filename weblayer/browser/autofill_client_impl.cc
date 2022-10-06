@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/autofill_client_impl.h"
 
+#include <utility>
+
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -29,7 +31,7 @@ AutofillClientImpl::GetAutocompleteHistoryManager() {
 }
 
 PrefService* AutofillClientImpl::GetPrefs() {
-  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
 }
 
 const PrefService* AutofillClientImpl::GetPrefs() const {

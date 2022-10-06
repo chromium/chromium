@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
@@ -48,7 +50,7 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
   }
   const PrefService* GetPrefs() const override { return &prefs_; }
 

@@ -8,7 +8,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/as_const.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -168,7 +167,7 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
 bool DictionaryValueUpdate::GetDictionary(
     base::StringPiece path,
     const base::DictionaryValue** out_value) const {
-  return base::as_const(value_)->GetDictionary(path, out_value);
+  return std::as_const(value_)->GetDictionary(path, out_value);
 }
 
 bool DictionaryValueUpdate::GetDictionary(
@@ -253,7 +252,7 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     base::StringPiece key,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
   base::DictionaryValue* dictionary_value = nullptr;
-  if (!base::as_const(*this).GetDictionaryWithoutPathExpansion(
+  if (!std::as_const(*this).GetDictionaryWithoutPathExpansion(
           key, const_cast<const base::DictionaryValue**>(&dictionary_value))) {
     return false;
   }
@@ -280,7 +279,7 @@ bool DictionaryValueUpdate::GetListWithoutPathExpansion(
     base::StringPiece key,
     base::Value::List** out_value) {
   RecordKey(key);
-  return base::as_const(*this).GetListWithoutPathExpansion(
+  return std::as_const(*this).GetListWithoutPathExpansion(
       key, const_cast<const base::Value::List**>(out_value));
 }
 

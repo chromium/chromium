@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/as_const.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
@@ -935,7 +934,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Returns the ColorProvider from the ColorProviderManager.
   ui::ColorProvider* GetColorProvider() {
     return const_cast<ui::ColorProvider*>(
-        base::as_const(*this).GetColorProvider());
+        std::as_const(*this).GetColorProvider());
   }
   const ui::ColorProvider* GetColorProvider() const;
 
@@ -945,7 +944,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // set. Warning: the default theme might not be correct; you should probably
   // override OnThemeChanged().
   ui::NativeTheme* GetNativeTheme() {
-    return const_cast<ui::NativeTheme*>(base::as_const(*this).GetNativeTheme());
+    return const_cast<ui::NativeTheme*>(std::as_const(*this).GetNativeTheme());
   }
   const ui::NativeTheme* GetNativeTheme() const;
 
@@ -1135,7 +1134,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Convenience method to retrieve the InputMethod associated with the
   // Widget that contains this view.
   ui::InputMethod* GetInputMethod() {
-    return const_cast<ui::InputMethod*>(base::as_const(*this).GetInputMethod());
+    return const_cast<ui::InputMethod*>(std::as_const(*this).GetInputMethod());
   }
   const ui::InputMethod* GetInputMethod() const;
 

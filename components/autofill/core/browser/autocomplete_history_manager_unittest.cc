@@ -53,7 +53,7 @@ class MockAutofillClient : public TestAutofillClient {
 
   ~MockAutofillClient() override = default;
   PrefService* GetPrefs() override {
-    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+    return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
   }
   const PrefService* GetPrefs() const override { return prefs_.get(); }
 

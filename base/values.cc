@@ -10,7 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/as_const.h"
 #include "base/bit_cast.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -614,7 +613,7 @@ const Value* Value::Dict::FindByDottedPath(StringPiece path) const {
 }
 
 Value* Value::Dict::FindByDottedPath(StringPiece path) {
-  return const_cast<Value*>(as_const(*this).FindByDottedPath(path));
+  return const_cast<Value*>(std::as_const(*this).FindByDottedPath(path));
 }
 
 absl::optional<bool> Value::Dict::FindBoolByDottedPath(StringPiece path) const {
@@ -1096,7 +1095,7 @@ const Value* Value::FindKey(StringPiece key) const {
 }
 
 Value* Value::FindKeyOfType(StringPiece key, Type type) {
-  return const_cast<Value*>(as_const(*this).FindKeyOfType(key, type));
+  return const_cast<Value*>(std::as_const(*this).FindKeyOfType(key, type));
 }
 
 const Value* Value::FindKeyOfType(StringPiece key, Type type) const {
@@ -1195,7 +1194,7 @@ const Value* Value::FindPath(StringPiece path) const {
 }
 
 Value* Value::FindPathOfType(StringPiece path, Type type) {
-  return const_cast<Value*>(as_const(*this).FindPathOfType(path, type));
+  return const_cast<Value*>(std::as_const(*this).FindPathOfType(path, type));
 }
 
 const Value* Value::FindPathOfType(StringPiece path, Type type) const {
@@ -1283,11 +1282,11 @@ absl::optional<Value> Value::ExtractPath(StringPiece path) {
 
 // DEPRECATED METHODS
 Value* Value::FindPath(std::initializer_list<StringPiece> path) {
-  return const_cast<Value*>(as_const(*this).FindPath(path));
+  return const_cast<Value*>(std::as_const(*this).FindPath(path));
 }
 
 Value* Value::FindPath(span<const StringPiece> path) {
-  return const_cast<Value*>(as_const(*this).FindPath(path));
+  return const_cast<Value*>(std::as_const(*this).FindPath(path));
 }
 
 const Value* Value::FindPath(std::initializer_list<StringPiece> path) const {
@@ -1306,11 +1305,11 @@ const Value* Value::FindPath(span<const StringPiece> path) const {
 
 Value* Value::FindPathOfType(std::initializer_list<StringPiece> path,
                              Type type) {
-  return const_cast<Value*>(as_const(*this).FindPathOfType(path, type));
+  return const_cast<Value*>(std::as_const(*this).FindPathOfType(path, type));
 }
 
 Value* Value::FindPathOfType(span<const StringPiece> path, Type type) {
-  return const_cast<Value*>(as_const(*this).FindPathOfType(path, type));
+  return const_cast<Value*>(std::as_const(*this).FindPathOfType(path, type));
 }
 
 const Value* Value::FindPathOfType(std::initializer_list<StringPiece> path,
@@ -1722,7 +1721,7 @@ bool DictionaryValue::Get(StringPiece path, const Value** out_value) const {
 }
 
 bool DictionaryValue::Get(StringPiece path, Value** out_value) {
-  return as_const(*this).Get(path, const_cast<const Value**>(out_value));
+  return std::as_const(*this).Get(path, const_cast<const Value**>(out_value));
 }
 
 bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
@@ -1763,7 +1762,7 @@ bool DictionaryValue::GetDictionary(StringPiece path,
 
 bool DictionaryValue::GetDictionary(StringPiece path,
                                     DictionaryValue** out_value) {
-  return as_const(*this).GetDictionary(
+  return std::as_const(*this).GetDictionary(
       path, const_cast<const DictionaryValue**>(out_value));
 }
 
@@ -1781,8 +1780,8 @@ bool DictionaryValue::GetList(StringPiece path,
 }
 
 bool DictionaryValue::GetList(StringPiece path, ListValue** out_value) {
-  return as_const(*this).GetList(path,
-                                 const_cast<const ListValue**>(out_value));
+  return std::as_const(*this).GetList(path,
+                                      const_cast<const ListValue**>(out_value));
 }
 
 void DictionaryValue::Swap(DictionaryValue* other) {

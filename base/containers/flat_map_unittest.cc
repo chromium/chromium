@@ -5,6 +5,7 @@
 #include "base/containers/flat_map.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/ranges/algorithm.h"
@@ -215,7 +216,7 @@ TEST(FlatMap, AtFunction) {
   EXPECT_EQ("b", m.at(2));
 
   // Const reference works.
-  const std::string& const_ref = base::as_const(m).at(1);
+  const std::string& const_ref = std::as_const(m).at(1);
   EXPECT_EQ("a", const_ref);
 
   // Reference works, can operate on the string.
@@ -229,7 +230,7 @@ TEST(FlatMap, AtFunction) {
   // Heterogeneous look-up works.
   base::flat_map<std::string, int> m2 = {{"a", 1}, {"b", 2}};
   EXPECT_EQ(1, m2.at(base::StringPiece("a")));
-  EXPECT_EQ(2, base::as_const(m2).at(base::StringPiece("b")));
+  EXPECT_EQ(2, std::as_const(m2).at(base::StringPiece("b")));
 }
 
 // insert_or_assign(K&&, M&&)

@@ -141,7 +141,7 @@ If the implementation of GetT() is complex, there's a
 courtesy of _Effective C++_:
 
 ```cpp
-T* Foo::GetT() { return const_cast<T*>(base::as_const(*this).GetT()); }
+T* Foo::GetT() { return const_cast<T*>(std::as_const(*this).GetT()); }
 ```
 
 While this is a mouthful, it does guarantee the implementations won't get out of

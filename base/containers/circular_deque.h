@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/as_const.h"
 #include "base/check.h"
 #include "base/containers/vector_buffer.h"
 #include "base/dcheck_is_on.h"
@@ -529,11 +528,11 @@ class circular_deque {
     return buffer_[i - right_size];
   }
   value_type& at(size_type i) {
-    return const_cast<value_type&>(base::as_const(*this).at(i));
+    return const_cast<value_type&>(std::as_const(*this).at(i));
   }
 
   value_type& operator[](size_type i) {
-    return const_cast<value_type&>(base::as_const(*this)[i]);
+    return const_cast<value_type&>(std::as_const(*this)[i]);
   }
 
   const value_type& operator[](size_type i) const { return at(i); }

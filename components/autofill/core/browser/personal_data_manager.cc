@@ -1685,7 +1685,7 @@ void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
 AutofillProfileSaveStrikeDatabase*
 PersonalDataManager::GetProfileSaveStrikeDatabase() {
   return const_cast<AutofillProfileSaveStrikeDatabase*>(
-      base::as_const(*this).GetProfileSaveStrikeDatabase());
+      std::as_const(*this).GetProfileSaveStrikeDatabase());
 }
 
 const AutofillProfileSaveStrikeDatabase*
@@ -1696,7 +1696,7 @@ PersonalDataManager::GetProfileSaveStrikeDatabase() const {
 AutofillProfileUpdateStrikeDatabase*
 PersonalDataManager::GetProfileUpdateStrikeDatabase() {
   return const_cast<AutofillProfileUpdateStrikeDatabase*>(
-      base::as_const(*this).GetProfileUpdateStrikeDatabase());
+      std::as_const(*this).GetProfileUpdateStrikeDatabase());
 }
 
 const AutofillProfileUpdateStrikeDatabase*
