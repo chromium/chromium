@@ -29,8 +29,6 @@
 
 namespace updater {
 
-// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
-#if !BUILDFLAG(IS_LINUX)
 // Tests the updater process returns 0 when run with --test argument.
 TEST(UpdaterTest, UpdaterExitCode) {
   base::FilePath this_executable_path;
@@ -53,7 +51,6 @@ TEST(UpdaterTest, UpdaterExitCode) {
                                              &exit_code));
   EXPECT_EQ(0, exit_code);
 }
-#endif  // !BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
 // Tests that the updater test target version resource contains specific

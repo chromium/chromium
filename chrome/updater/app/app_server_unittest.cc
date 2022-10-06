@@ -79,8 +79,6 @@ class AppServerTestCase : public testing::Test {
 
 }  // namespace
 
-// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
-#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, SelfUninstall) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
@@ -102,6 +100,8 @@ TEST_F(AppServerTestCase, SelfUninstall) {
   EXPECT_TRUE(CreateLocalPrefs(GetUpdaterScope())->GetQualified());
 }
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, SelfPromote) {
   {
     scoped_refptr<LocalPrefs> local_prefs = CreateLocalPrefs(GetUpdaterScope());
@@ -143,6 +143,7 @@ TEST_F(AppServerTestCase, InstallAutoPromotes) {
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(AppServerTestCase, SelfPromoteFails) {
   {
@@ -166,6 +167,8 @@ TEST_F(AppServerTestCase, SelfPromoteFails) {
   EXPECT_EQ(global_prefs->GetActiveVersion(), "0");
 }
 
+// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(AppServerTestCase, ActiveDutyAlready) {
   {
     scoped_refptr<GlobalPrefs> global_prefs =
@@ -219,6 +222,7 @@ TEST_F(AppServerTestCase, StateDirty) {
   EXPECT_FALSE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(AppServerTestCase, StateDirtySwapFails) {
   {
@@ -246,6 +250,5 @@ TEST_F(AppServerTestCase, StateDirtySwapFails) {
   EXPECT_TRUE(global_prefs->GetSwapping());
   EXPECT_EQ(global_prefs->GetActiveVersion(), kUpdaterVersion);
 }
-#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace updater
