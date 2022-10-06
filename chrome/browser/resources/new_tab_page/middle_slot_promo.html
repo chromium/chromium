@@ -17,7 +17,7 @@
     height: 30px;
     justify-content: center;
     padding-inline-end: 8px;
-    padding-inline-start: 8px;
+    padding-inline-start: 4px;
   }
 
   :host([shown-middle-slot-promo-id_]) #promoAndDismissContainer {
@@ -42,19 +42,15 @@
     outline: none;
   }
 
-  * + .image {
-    margin-inline-start: 8px;
-  }
-
   .image + * {
-    margin-inline-start: 8px;
+    margin-inline-start: 4px;
   }
 
   img {
     border-radius: 50%;
-    height: 24px;
+    height: 20px;
     pointer-events: none;
-    width: 24px;
+    width: 20px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -66,7 +62,7 @@
   #dismissPromoButton {
     --cr-icon-button-icon-size: 14px;
     --cr-icon-button-size: 20px;
-    margin-inline-start: 4px;
+    margin-inline-start: 10px;
   }
 
   #promoContainer > :last-child {
