@@ -63,6 +63,7 @@ class MockObserver : public performance_manager::user_tuning::
                          UserPerformanceTuningManager::Observer {
  public:
   MOCK_METHOD0(OnBatteryThresholdReached, void());
+  MOCK_METHOD1(OnDeviceHasBatteryChanged, void(bool));
 };
 
 base::BatteryLevelProvider::BatteryState CreateBatteryState(
@@ -434,6 +435,46 @@ TEST_F(UserPerformanceTuningManagerTest, BSMEnabledUnderThreshold) {
 
   EXPECT_TRUE(manager()->IsBatterySaverActive());
   EXPECT_TRUE(throttling_enabled());
+}
+
+TEST_F(UserPerformanceTuningManagerTest, HasBatteryChanged) {
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabledBelowThreshold));
+  StartManager();
+  EXPECT_FALSE(manager()->DeviceHasBattery());
+
+  MockObserver obs;
+  manager()->AddObserver(&obs);
+
+  // Expect OnDeviceHasBatteryChanged to be called only once if a battery state
+  // without a battery is received, followed by a state with a battery.
+  EXPECT_CALL(obs, OnDeviceHasBatteryChanged(true));
+  battery_level_provider_->SetBatteryState(
+      base::BatteryLevelProvider::BatteryState({
+          .battery_count = 0,
+      }));
+  sampling_source_->SimulateEvent();
+  EXPECT_FALSE(manager()->DeviceHasBattery());
+  battery_level_provider_->SetBatteryState(
+      base::BatteryLevelProvider::BatteryState({
+          .battery_count = 1,
+          .current_capacity = 100,
+          .full_charged_capacity = 100,
+      }));
+  sampling_source_->SimulateEvent();
+  EXPECT_TRUE(manager()->DeviceHasBattery());
+
+  // Simulate the battery being disconnected, OnDeviceHasBatteryChanged should
+  // be called once.
+  EXPECT_CALL(obs, OnDeviceHasBatteryChanged(false));
+  battery_level_provider_->SetBatteryState(
+      base::BatteryLevelProvider::BatteryState({
+          .battery_count = 0,
+      }));
+  sampling_source_->SimulateEvent();
+  EXPECT_FALSE(manager()->DeviceHasBattery());
 }
 
 }  // namespace performance_manager::user_tuning

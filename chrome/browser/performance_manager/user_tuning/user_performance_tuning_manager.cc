@@ -306,7 +306,14 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
   if (!battery_state)
     return;
 
+  bool had_battery = has_battery_;
   has_battery_ = battery_state->battery_count > 0;
+  // If the "has battery" state changed, notify observers.
+  if (had_battery != has_battery_) {
+    for (auto& obs : observers_) {
+      obs.OnDeviceHasBatteryChanged(has_battery_);
+    }
+  }
 
   if (!battery_state->current_capacity ||
       !battery_state->full_charged_capacity) {

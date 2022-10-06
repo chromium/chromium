@@ -68,6 +68,14 @@ class UserPerformanceTuningManager
     // state is updated.
     virtual void OnExternalPowerConnectedChanged(bool on_battery_power) {}
 
+    // Raised when it becomes known that the device has a battery installed, or
+    // when a device that previously had a battery is now reported as not having
+    // one anymore. Overloading this function is particularly useful for code
+    // that wants to know if the device has a battery during startup, because
+    // `DeviceHasBattery` can wrongly return `false` for an unbounded period
+    // of time until the OS provides battery data.
+    virtual void OnDeviceHasBatteryChanged(bool device_has_battery) {}
+
     // Raised when the battery has reached the 20% threshold
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power under a certain threshold.
