@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "ash/app_list/views/apps_grid_view_test_api.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/root_window_controller.h"
@@ -16,16 +15,12 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/test/event_generator.h"
 
-class BubbleAppsGridDragBrowserTest : public InProcessBrowserTest {
+class AppsGridDragBrowserTest : public InProcessBrowserTest {
  public:
-  BubbleAppsGridDragBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kProductivityLauncher);
-  }
-  BubbleAppsGridDragBrowserTest(const BubbleAppsGridDragBrowserTest&) = delete;
-  BubbleAppsGridDragBrowserTest& operator=(
-      const BubbleAppsGridDragBrowserTest&) = delete;
-  ~BubbleAppsGridDragBrowserTest() override = default;
+  AppsGridDragBrowserTest() = default;
+  AppsGridDragBrowserTest(const AppsGridDragBrowserTest&) = delete;
+  AppsGridDragBrowserTest& operator=(const AppsGridDragBrowserTest&) = delete;
+  ~AppsGridDragBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -90,12 +85,11 @@ class BubbleAppsGridDragBrowserTest : public InProcessBrowserTest {
 
  private:
   ash::AppListTestApi app_list_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies that reordering app list items by mouse drag works as expected on
 // the bubble apps grid.
-IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemReorderByMouseDrag) {
+IN_PROC_BROWSER_TEST_F(AppsGridDragBrowserTest, ItemReorderByMouseDrag) {
   // Get the top level item ids before any operations.
   const std::vector<std::string> default_top_level_ids =
       app_list_test_api()->GetTopLevelViewIdList();
@@ -122,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemReorderByMouseDrag) {
 
 // Verifies that merging two items into a folder and moving an item out of a
 // folder work as expected on the bubble apps grid.
-IN_PROC_BROWSER_TEST_F(BubbleAppsGridDragBrowserTest, ItemMerge) {
+IN_PROC_BROWSER_TEST_F(AppsGridDragBrowserTest, ItemMerge) {
   // Record the item count before any operations.
   const size_t default_top_level_item_count =
       app_list_test_api()->GetTopLevelViewIdList().size();
