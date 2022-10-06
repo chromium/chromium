@@ -43,9 +43,9 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
  protected:
   PinStorageCryptohomeUnitTest() {
     if (GetParam().use_auth_factors_feature) {
-      feature_list_.InitAndEnableFeature(features::kUseAuthsessionQuickUnlock);
+      feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
     } else {
-      feature_list_.InitAndDisableFeature(features::kUseAuthsessionQuickUnlock);
+      feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     }
   }
   ~PinStorageCryptohomeUnitTest() override = default;
@@ -67,7 +67,7 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
     const auto cryptohome_user_id =
         cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
     FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(cryptohome_user_id);
-    if (features::IsUseAuthsessionQuickUnlockEnabled()) {
+    if (features::IsUseAuthFactorsEnabled()) {
       std::string session = FakeUserDataAuthClient::TestApi::Get()->AddSession(
           cryptohome_user_id, true /*authenticated*/);
       user_context_->SetAuthSessionId(std::move(session));

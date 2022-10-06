@@ -36,7 +36,7 @@ void AuthenticationAsh::CreateQuickUnlockPrivateTokenInfo(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!ash::features::IsUseAuthsessionQuickUnlockEnabled()) {
+  if (!ash::features::IsUseAuthFactorsEnabled()) {
     // Legacy flow.
     auto helper = base::MakeRefCounted<
         extensions::LegacyQuickUnlockPrivateGetAuthTokenHelper>(

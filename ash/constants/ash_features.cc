@@ -1917,14 +1917,11 @@ BASE_FEATURE(kUseAuthsessionAuthentication,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses new AuthFactor-based API when communicating with cryptohome.
+// This feature flag also affects usage of AuthSessions in QuickUnlock, but
+// only in case when cryptohome is used as backend.
+// This feature flag also affects usage of AuthSession on lock screen.
 BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, uses the new AuthSession-based API as backend of the
-// quickUnlockPrivate extension API.
-BASE_FEATURE(kUseAuthsessionQuickUnlock,
-             "UseAuthsessionQuickUnlock",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
@@ -2940,11 +2937,6 @@ bool IsUploadOfficeToCloudEnabled() {
 
 bool IsUseAuthFactorsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthFactors);
-}
-
-bool IsUseAuthsessionQuickUnlockEnabled() {
-  return IsUseAuthFactorsEnabled() &&
-         base::FeatureList::IsEnabled(kUseAuthsessionQuickUnlock);
 }
 
 bool IsUseLoginShelfWidgetEnabled() {

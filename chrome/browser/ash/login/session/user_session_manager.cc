@@ -1676,7 +1676,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     }
 
     UpdateEasyUnlockKeys(user_context_);
-    if (!features::IsUseAuthsessionQuickUnlockEnabled()) {
+    if (!features::IsUseAuthFactorsEnabled()) {
       // Migration to cryptohome uses legacy AddKey-based cryptohome methods.
       quick_unlock::PinBackend::GetInstance()->MigrateToCryptohome(
           profile, std::make_unique<UserContext>(user_context_));

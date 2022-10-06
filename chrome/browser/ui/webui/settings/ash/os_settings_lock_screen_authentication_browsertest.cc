@@ -35,16 +35,11 @@ class OSSettingsLockScreenAuthenticationTest
  public:
   OSSettingsLockScreenAuthenticationTest() {
     if (GetParam().use_auth_session) {
-      feature_list_.InitWithFeatures(
-          {ash::features::kUseAuthFactors,
-           ash::features::kUseAuthsessionQuickUnlock},
-          {});
-      CHECK(ash::features::IsUseAuthsessionQuickUnlockEnabled());
+      feature_list_.InitWithFeatures({ash::features::kUseAuthFactors}, {});
+      CHECK(ash::features::IsUseAuthFactorsEnabled());
     } else {
-      feature_list_.InitWithFeatures(
-          {}, {ash::features::kUseAuthFactors,
-               ash::features::kUseAuthsessionQuickUnlock});
-      CHECK(!ash::features::IsUseAuthsessionQuickUnlockEnabled());
+      feature_list_.InitWithFeatures({}, {ash::features::kUseAuthFactors});
+      CHECK(!ash::features::IsUseAuthFactorsEnabled());
     }
   }
 

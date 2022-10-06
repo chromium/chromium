@@ -175,9 +175,9 @@ class QuickUnlockPrivateUnitTest
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
 
-    // TODO(b/239681292): Add (integration) tests with AuthsessionQuickUnlock
+    // TODO(b/239681292): Add (integration) tests with UseAuthFactors
     // enabled.
-    disabled_features.push_back(ash::features::kUseAuthsessionQuickUnlock);
+    disabled_features.push_back(ash::features::kUseAuthFactors);
 
     // Enable/disable PIN auto submit
     if (std::get<1>(param)) {

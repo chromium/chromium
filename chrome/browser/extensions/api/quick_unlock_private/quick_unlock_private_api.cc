@@ -234,7 +234,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
 
-  if (!ash::features::IsUseAuthsessionQuickUnlockEnabled()) {
+  if (!ash::features::IsUseAuthFactorsEnabled()) {
     // Legacy flow, uses old cryptohome API methods.
     scoped_refptr<LegacyQuickUnlockPrivateGetAuthTokenHelper> helper =
         base::MakeRefCounted<LegacyQuickUnlockPrivateGetAuthTokenHelper>(
