@@ -3507,7 +3507,11 @@ const char kCCTResizableWindowAboveNavbarDescription[] =
     "Avoid various UI glitches/misbehavior by always keeping bottom sheet "
     "custom tab above the navigation bar. The navigation bar color is not "
     "customizable - it is up to the host app to ensure the bar looks okay.";
-
+const char kCCTResizableAlwaysShowNavBarButtonsName[] =
+    "Always show the navigation bar buttons";
+const char kCCTResizableAlwaysShowNavBarButtonsDescription[] =
+    "The navigation bar buttons will remain visible while a Partial Chrome "
+    "Custom Tab is being resized.";
 const char kCCTRealTimeEngagementSignalsName[] =
     "Enable CCT real-time engagement signals.";
 const char kCCTRealTimeEngagementSignalsDescription[] =

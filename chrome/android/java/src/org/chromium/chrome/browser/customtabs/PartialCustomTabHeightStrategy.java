@@ -11,6 +11,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -19,6 +20,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -45,12 +48,14 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
 import org.chromium.base.Consumer;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -87,6 +92,17 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_RESTORE_DELAY_MS = 400;
+    private static final String PARAM_LOG_IMMERSIVE_MODE_CONFIRMATIONS =
+            "log_immersive_mode_confirmations";
+    @VisibleForTesting
+    static final String IMMERSIVE_MODE_CONFIRMATIONS_SETTING = "immersive_mode_confirmations";
+    @VisibleForTesting
+    static final String IMMERSIVE_MODE_CONFIRMATIONS_SETTING_VALUE = "confirmed";
+
+    public static final BooleanCachedFieldTrialParameter LOG_IMMERSIVE_MODE_CONFIRMATIONS =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_RESIZABLE_ALWAYS_SHOW_NAVBAR_BUTTONS,
+                    PARAM_LOG_IMMERSIVE_MODE_CONFIRMATIONS, true);
 
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
@@ -105,6 +121,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final boolean mIsFixedHeight;
     private final @Px int mUnclampedInitialHeight;
     private final FullscreenManager mFullscreenManager;
+
+    private static boolean sHasLoggedImmersiveModeConfirmationSetting;
 
     private @Px int mDisplayHeight;
     private @Px int mFullyExpandedAdjustmentHeight;
@@ -260,6 +278,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         };
         fullscreenManager.addObserver(this);
         mIsTablet = isTablet;
+
+        logImmersiveModeConfirmationSettingValue(ContextUtils.getApplicationContext());
     }
 
     @Override
@@ -879,6 +899,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private void showNavbarButtons(boolean show) {
+        // If the feature flag is set to true then we don't want to hide the nav buttons.
+        if (mWindowAboveNavbar
+                && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled()) {
+            return;
+        }
+
         View decorView = mActivity.getWindow().getDecorView();
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(mActivity.getWindow(), decorView);
@@ -1125,5 +1151,31 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         @Override
         public void onCancelled(WindowInsetsAnimationControllerCompat controller) {}
+    }
+
+    @VisibleForTesting
+    static void setHasLoggedImmersiveModeConfirmationSettingForTesting(boolean value) {
+        sHasLoggedImmersiveModeConfirmationSetting = value;
+    }
+
+    private void logImmersiveModeConfirmationSettingValue(Context context) {
+        if (!ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled()
+                || !LOG_IMMERSIVE_MODE_CONFIRMATIONS.getValue() || context == null
+                || context.getContentResolver() == null) {
+            return;
+        }
+
+        if (!sHasLoggedImmersiveModeConfirmationSetting) {
+            String immersiveModeConfirmations = Settings.Secure.getString(
+                    context.getContentResolver(), IMMERSIVE_MODE_CONFIRMATIONS_SETTING);
+            boolean isConfirmed = TextUtils.equals(
+                    immersiveModeConfirmations, IMMERSIVE_MODE_CONFIRMATIONS_SETTING_VALUE);
+            RecordHistogram.recordBooleanHistogram(
+                    "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed", isConfirmed);
+            // Logging just one per app session to reduce the number of entries being logged.
+            // Once the immersive_mode_confirmation value is set, in most cases, it should remain
+            // set until the Android settings are reset to default.
+            sHasLoggedImmersiveModeConfirmationSetting = true;
+        }
     }
 }

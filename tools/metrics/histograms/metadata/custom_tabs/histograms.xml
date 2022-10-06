@@ -241,6 +241,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.ImmersiveModeConfirmationsSettingConfirmed"
+    enum="Boolean" expires_after="2023-03-15">
+  <owner>kgrosu@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Recorded during Partial Custom Tab creation, if it has not
+    already been logged during the existing Chrome session. Returns true if the
+    value for &quot;immersive_mode_confirmations&quot; from Settings.Secure is
+    set to &quot;confirmed&quot;, false otherwise.
+
+    This is trying to approximate what percentage of Chrome sessions that run
+    PCCTs have already confirmed the dialog that shows up when an app enters
+    immersive mode (e.g. when hiding the navigation bar buttons or status bar).
+    Once the user has tapped on the dialog, it should never be displayed again.
+    This metric will be used to measure the impact that hiding the navigation
+    bar buttons would have. In the scenario where we hide the nav bar buttons
+    only when a PCCT is being resized, this confirmation dialog shows only while
+    the user is dragging the PCCT window, but disappears as soon as the finger
+    is lifted from the screen, giving no time for the user to confirm that they
+    are aware that they entered immersive mode.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.IncognitoCCTCallerId" enum="IncognitoCCTCallerId"
     expires_after="2023-03-12">
   <owner>roagarwal@chromium.org</owner>
@@ -412,7 +435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.SessionDisconnectStatus"
-    enum="CustomTabsSessionDisconnectStatus" expires_after="2022-12-15">
+    enum="CustomTabsSessionDisconnectStatus" expires_after="2023-03-15">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

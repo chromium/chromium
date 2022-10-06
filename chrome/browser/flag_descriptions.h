@@ -1969,6 +1969,8 @@ extern const char kCCTResizable90MaximumHeightName[];
 extern const char kCCTResizable90MaximumHeightDescription[];
 extern const char kCCTResizableAllowResizeByUserGestureName[];
 extern const char kCCTResizableAllowResizeByUserGestureDescription[];
+extern const char kCCTResizableAlwaysShowNavBarButtonsName[];
+extern const char kCCTResizableAlwaysShowNavBarButtonsDescription[];
 extern const char kCCTResizableForFirstPartiesName[];
 extern const char kCCTResizableForFirstPartiesDescription[];
 extern const char kCCTResizableForThirdPartiesName[];

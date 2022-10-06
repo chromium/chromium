@@ -23,6 +23,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -32,6 +33,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -66,10 +68,13 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSettings;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -90,9 +95,11 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link PartialCustomTabHandleStrategy}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        shadows = {PartialCustomTabHeightStrategyTest.ShadowSecureSettings.class})
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE})
+        ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE,
+        ChromeFeatureList.CCT_RESIZABLE_ALWAYS_SHOW_NAVBAR_BUTTONS})
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabHeightStrategyTest {
     @Rule
@@ -1003,6 +1010,73 @@ public class PartialCustomTabHeightStrategyTest {
 
         strategy.onFindToolbarHidden();
         verify(mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
+    }
+
+    @Implements(Settings.Secure.class)
+    static class ShadowSecureSettings extends ShadowSettings.ShadowSecure {
+        public static String sImmersiveModeConfirmationsValue;
+
+        @Implementation
+        protected static String getString(ContentResolver resolver, String name) {
+            if (name.equals(PartialCustomTabHeightStrategy.IMMERSIVE_MODE_CONFIRMATIONS_SETTING)) {
+                return sImmersiveModeConfirmationsValue;
+            }
+            return null;
+        }
+    }
+
+    @Test
+    public void logImmersiveModeConfirmationsSettingConfirmed() {
+        PartialCustomTabHeightStrategy.setHasLoggedImmersiveModeConfirmationSettingForTesting(
+                false);
+        ShadowSecureSettings.sImmersiveModeConfirmationsValue =
+                PartialCustomTabHeightStrategy.IMMERSIVE_MODE_CONFIRMATIONS_SETTING_VALUE;
+
+        int expectedLoggedValue = 1;
+        HistogramDelta histogramDelta = new HistogramDelta(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed", expectedLoggedValue);
+
+        createPcctAtHeight(500);
+
+        assertEquals(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed should be recorded once.", 1,
+                histogramDelta.getDelta());
+    }
+
+    @Test
+    public void logImmersiveModeConfirmationsSettingEmpty() {
+        PartialCustomTabHeightStrategy.setHasLoggedImmersiveModeConfirmationSettingForTesting(
+                false);
+        ShadowSecureSettings.sImmersiveModeConfirmationsValue = "";
+
+        int expectedLoggedValue = 0;
+        HistogramDelta histogramDelta = new HistogramDelta(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed", expectedLoggedValue);
+
+        createPcctAtHeight(500);
+
+        assertEquals(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed should be recorded once.", 1,
+                histogramDelta.getDelta());
+    }
+
+    @Test
+    public void logImmersiveModeConfirmationsSettingConfirmedLogOnlyOnce() {
+        PartialCustomTabHeightStrategy.setHasLoggedImmersiveModeConfirmationSettingForTesting(
+                false);
+        ShadowSecureSettings.sImmersiveModeConfirmationsValue =
+                PartialCustomTabHeightStrategy.IMMERSIVE_MODE_CONFIRMATIONS_SETTING_VALUE;
+
+        int expectedLoggedValue = 1;
+        HistogramDelta histogramDelta = new HistogramDelta(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed", expectedLoggedValue);
+
+        createPcctAtHeight(500);
+        createPcctAtHeight(500);
+
+        assertEquals(
+                "CustomTabs.ImmersiveModeConfirmationsSettingConfirmed should be recorded once.", 1,
+                histogramDelta.getDelta());
     }
 
     private boolean isFullscreen() {

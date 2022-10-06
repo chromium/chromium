@@ -899,6 +899,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cct-resizable-always-show-navbar-buttons",
+    "owners": ["kgrosu", "twellington"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "cct-resizable-for-first-parties",
     "owners": ["jinsukkim", "twellington"],
     "expiry_milestone": 110

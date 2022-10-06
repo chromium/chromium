@@ -49,6 +49,7 @@ BASE_DECLARE_FEATURE(kCCTRemoveRemoteViewIds);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTResizable90MaximumHeight);
 BASE_DECLARE_FEATURE(kCCTResizableAllowResizeByUserGesture);
+BASE_DECLARE_FEATURE(kCCTResizableAlwaysShowNavBarButtons);
 BASE_DECLARE_FEATURE(kCCTResizableForFirstParties);
 BASE_DECLARE_FEATURE(kCCTResizableForThirdParties);
 BASE_DECLARE_FEATURE(kCCTResizableWindowAboveNavbar);

@@ -6424,6 +6424,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kCCTResizableAllowResizeByUserGesture)},
+    {"cct-resizable-always-show-navbar-buttons",
+     flag_descriptions::kCCTResizableAlwaysShowNavBarButtonsName,
+     flag_descriptions::kCCTResizableAlwaysShowNavBarButtonsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableAlwaysShowNavBarButtons)},
     {"cct-resizable-for-first-parties",
      flag_descriptions::kCCTResizableForFirstPartiesName,
      flag_descriptions::kCCTResizableForFirstPartiesDescription, kOsAndroid,

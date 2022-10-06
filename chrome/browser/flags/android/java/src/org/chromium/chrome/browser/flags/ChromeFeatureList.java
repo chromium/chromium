@@ -259,6 +259,8 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_90_MAXIMUM_HEIGHT = "CCTResizable90MaximumHeight";
     public static final String CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE =
             "CCTResizableAllowResizeByUserGesture";
+    public static final String CCT_RESIZABLE_ALWAYS_SHOW_NAVBAR_BUTTONS =
+            "CCTResizableAlwaysShowNavBarButtons";
     public static final String CCT_RESIZABLE_FOR_FIRST_PARTIES = "CCTResizableForFirstParties";
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_RESIZABLE_WINDOW_ABOVE_NAVBAR = "CCTResizableWindowAboveNavbar";
@@ -652,6 +654,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false);
     public static final CachedFlag sCctResizableAllowResizeByUserGesture =
             new CachedFlag(CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false);
+    public static final CachedFlag sCctResizableAlwaysShowNavBarButtons =
+            new CachedFlag(CCT_RESIZABLE_ALWAYS_SHOW_NAVBAR_BUTTONS, true);
     public static final CachedFlag sCctResizableForFirstParties =
             new CachedFlag(CCT_RESIZABLE_FOR_FIRST_PARTIES, true);
     public static final CachedFlag sCctResizableForThirdParties =
