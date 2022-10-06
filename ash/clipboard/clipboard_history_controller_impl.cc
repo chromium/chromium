@@ -442,7 +442,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
           base::SequencedTaskRunnerHandle::Get(),
           base::BindOnce(
               &ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs,
-              weak_ptr_factory_.GetWeakPtr(), item_id_filter,
+              weak_ptr_factory_.GetMutableWeakPtr(), item_id_filter,
               std::move(callback), std::move(encoded_pngs))));
 
   // Encode images on background threads.
