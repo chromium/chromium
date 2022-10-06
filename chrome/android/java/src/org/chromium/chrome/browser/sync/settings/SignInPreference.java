@@ -157,7 +157,7 @@ public class SignInPreference
         setSummary(R.string.signin_pref_summary);
 
         setFragment(null);
-        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
+        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.anonymous_account_image));
         setViewEnabled(true);
         setOnPreferenceClickListener(pref -> {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
