@@ -180,7 +180,7 @@ class ChromotingEvent {
   const base::Value* GetValue(const std::string& key) const;
 
   // Returns a copy of the internal dictionary value.
-  std::unique_ptr<base::DictionaryValue> CopyDictionaryValue() const;
+  std::unique_ptr<base::Value::Dict> CopyDictionaryValue() const;
 
   // Converts into a ChromotingEvent protobuf.
   apis::v1::ChromotingEvent CreateProto() const;
@@ -197,7 +197,7 @@ class ChromotingEvent {
   static const char* EnumToString(EnumType value);
 
  private:
-  std::unique_ptr<base::DictionaryValue> values_map_;
+  std::unique_ptr<base::Value::Dict> values_map_;
 
   int send_attempts_ = 0;
 };
