@@ -2344,6 +2344,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_AUTO_COLOR_MODE" desc="Aria label for the button to enable auto color mode.">
         Enable auto color mode
       </message>
+      <message name="IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
+        Automatically switch to dark theme at sunset
+      </message>
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
         Go to account settings
       </message>

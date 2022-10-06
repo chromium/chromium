@@ -68,7 +68,8 @@
         on-click="onClickAutoModeButton_"
         on-keypress="onClickAutoModeButton_" tabindex="-1"
         aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]"
-        aria-description="$i18n{ariaLabelEnableAutoColorMode}">
+        aria-description="$i18n{ariaLabelEnableAutoColorMode}"
+        title="$i18n{tooltipAutoColorMode}">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{autoColorMode}</div>
     </cr-button>
