@@ -343,6 +343,9 @@ size_t WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
 
 absl::optional<AppId> WebAppRegistrar::FindAppWithUrlInScope(
     const GURL& url) const {
+  if (!url.is_valid())
+    return absl::nullopt;
+
   const std::string url_spec = url.spec();
 
   absl::optional<AppId> best_app_id;
