@@ -22,13 +22,16 @@
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -58,6 +61,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -70,7 +74,7 @@
 namespace ash {
 
 using holding_space::ScopedTestMountPoint;
-
+using ::testing::Field;
 namespace {
 
 // Returns whether the bitmaps backing the specified `gfx::ImageSkia` are equal.
@@ -140,6 +144,12 @@ HoldingSpaceItem* AddUninitializedItem(HoldingSpaceModel* model,
   auto* deserialized_item_ptr = deserialized_item.get();
   model->AddItem(std::move(deserialized_item));
   return deserialized_item_ptr;
+}
+
+base::FilePath MakeRelativePath(const base::FilePath& absolute_path,
+                                const base::FilePath& parent) {
+  return base::FilePath(absolute_path.value().substr(
+      parent.AsEndingWithSeparator().value().size()));
 }
 
 // Utility class which can wait until a `HoldingSpaceModel` for a given profile
@@ -227,6 +237,53 @@ class ItemUpdatedWaiter : public HoldingSpaceModelObserver {
   const HoldingSpaceItem* wait_item_ = nullptr;
   std::unique_ptr<base::RunLoop> wait_loop_;
   bool wait_item_updated_ = false;
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
+};
+
+class ItemRemovedWaiter : public HoldingSpaceModelObserver {
+ public:
+  ItemRemovedWaiter(HoldingSpaceModel* model, const HoldingSpaceItem* item)
+      : wait_item_(item) {
+    model_observer_.Observe(model);
+  }
+
+  ItemRemovedWaiter(const ItemRemovedWaiter&) = delete;
+  ItemRemovedWaiter& operator=(const ItemRemovedWaiter&) = delete;
+  ~ItemRemovedWaiter() override = default;
+
+  void Wait() {
+    ASSERT_TRUE(wait_item_);
+    ASSERT_FALSE(wait_loop_);
+    if (wait_item_removed_) {
+      // The item has already been removed, no waiting necessary.
+      wait_item_removed_ = false;
+      return;
+    }
+
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+  }
+
+ private:
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override {
+    if (items.size() != 1 || items[0] != wait_item_)
+      return;
+
+    if (wait_loop_) {
+      wait_loop_->Quit();
+    } else {
+      wait_item_removed_ = true;
+    }
+  }
+
+  const HoldingSpaceItem* wait_item_ = nullptr;
+  std::unique_ptr<base::RunLoop> wait_loop_;
+  bool wait_item_removed_ = false;
 
   base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
       model_observer_{this};
@@ -1022,6 +1079,84 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
   }
+}
+
+// Verifies that files that are trashed via the `TrashIOTask` are removed from
+// the holding space model.
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+       TrashedFilesAreRemovedFromTheModel) {
+  // Create a file system mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Cache the holding space model for the primary profile.
+  HoldingSpaceKeyedService* const primary_holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
+  HoldingSpaceModel* const primary_holding_space_model =
+      HoldingSpaceController::Get()->model();
+  ASSERT_EQ(primary_holding_space_model,
+            primary_holding_space_service->model_for_testing());
+
+  // Add each item to the holding space model.
+  for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
+    const base::FilePath file_path = downloads_mount->CreateFile(
+        base::FilePath(base::NumberToString(static_cast<int>(type)))
+            .Append("foo.txt"),
+        /*content=*/std::string());
+    const GURL file_system_url = GetFileSystemUrl(GetProfile(), file_path);
+
+    // Create the holding space item.
+    auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
+        type, file_path, file_system_url,
+        base::BindOnce(
+            &holding_space_util::ResolveImage,
+            primary_holding_space_service->thumbnail_loader_for_testing()));
+
+    // Add the holding space item to the model.
+    primary_holding_space_model->AddItem(std::move(holding_space_item));
+  }
+
+  // Create a context for testing.
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      storage::CreateFileSystemContextForTesting(
+          nullptr, downloads_mount->GetRootPath());
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
+
+  // Keep sending the items in the model to the trash as each "trash" operation
+  // should remove the item from the model.
+  while (!primary_holding_space_model->items().empty()) {
+    const auto* holding_space_item =
+        primary_holding_space_model->items()[0].get();
+    base::FilePath file_path = holding_space_item->file_path();
+
+    ItemRemovedWaiter waiter(primary_holding_space_model, holding_space_item);
+    base::MockOnceCallback<void(file_manager::io_task::ProgressStatus)>
+        complete_callback;
+
+    EXPECT_CALL(complete_callback,
+                Run(Field(&file_manager::io_task::ProgressStatus::state,
+                          file_manager::io_task::State::kSuccess)));
+
+    // Paths sent to the test `FileSystemContext` must be relative to the base
+    // path supplied when the context was setup.
+    base::FilePath relative_path =
+        MakeRelativePath(file_path, downloads_mount->GetRootPath());
+    std::vector<storage::FileSystemURL> source_urls = {
+        file_system_context->CreateCrackedFileSystemURL(
+            kTestStorageKey, storage::kFileSystemTypeTest, relative_path),
+    };
+    file_manager::io_task::TrashIOTask task(source_urls, GetProfile(),
+                                            file_system_context,
+                                            downloads_mount->GetRootPath());
+    task.Execute(base::DoNothing(), complete_callback.Get());
+    waiter.Wait();
+  }
+
+  // After trashing all the items (they now reside in .Trash/files/foo.txt) they
+  // should not be visible in the holding space model.
+  ASSERT_EQ(primary_holding_space_model->items().size(), 0u);
 }
 
 // Tests that holding space item's image representation gets updated when the

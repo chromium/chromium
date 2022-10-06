@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -492,10 +493,32 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     return;
   }
 
+  // Get a list of the enabled Trash locations. Trash can be enabled and
+  // disabled via policy, so ensure the latest list is retrieved.
+  file_manager::trash::TrashPathsMap enabled_trash_locations;
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+    enabled_trash_locations =
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
+            profile(), /*base_path=*/base::FilePath());
+  }
+
   // Resolve conflicts with existing items that arise from the move.
   std::set<std::string> item_ids_to_remove;
   for (auto& item : model()->items()) {
     if (dst == item->file_path() || dst.IsParent(item->file_path())) {
+      item_ids_to_remove.insert(item->id());
+      continue;
+    }
+
+    // Files that are sent to the Trash are actually moved to a folder, e.g.
+    // My files/.Trash/files. This means the files still appear in holding space
+    // despite the user intending to delete them. These should be removed from
+    // the model.
+    if (base::ranges::any_of(enabled_trash_locations, [&dst](const auto& it) {
+          const base::FilePath trash_location =
+              it.first.Append(it.second.relative_folder_path);
+          return trash_location.IsParent(dst);
+        })) {
       item_ids_to_remove.insert(item->id());
     }
   }
