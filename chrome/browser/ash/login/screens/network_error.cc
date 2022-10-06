@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/network_error.h"
 
+#include <sstream>
+
 #include "base/notreached.h"
 
 namespace ash {
@@ -46,6 +48,56 @@ const char* NetworkError::ErrorReasonString(ErrorReason reason) {
       NOTREACHED();
       return nullptr;
   }
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::UIState& ui_state) {
+  switch (ui_state) {
+    case NetworkError::UI_STATE_UNKNOWN:
+      stream << "Unknown";
+      break;
+    case NetworkError::UI_STATE_UPDATE:
+      stream << "Update";
+      break;
+    case NetworkError::UI_STATE_SIGNIN:
+      stream << "Signin";
+      break;
+    case NetworkError::UI_STATE_KIOSK_MODE:
+      stream << "Kiosk";
+      break;
+    case NetworkError::UI_STATE_AUTO_ENROLLMENT_ERROR:
+      stream << "Enrollment";
+      break;
+  }
+  return stream;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::ErrorState& error_state) {
+  switch (error_state) {
+    case NetworkError::ERROR_STATE_UNKNOWN:
+      stream << "Unknown";
+      break;
+    case NetworkError::ERROR_STATE_PORTAL:
+      stream << "Portal";
+      break;
+    case NetworkError::ERROR_STATE_OFFLINE:
+      stream << "Offline";
+      break;
+    case NetworkError::ERROR_STATE_PROXY:
+      stream << "Proxy";
+      break;
+    case NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT:
+      stream << "Timeout";
+      break;
+    case NetworkError::ERROR_STATE_NONE:
+      stream << "None";
+      break;
+    case NetworkError::ERROR_STATE_KIOSK_ONLINE:
+      stream << "Kiosk online";
+      break;
+  }
+  return stream;
 }
 
 }  // namespace ash

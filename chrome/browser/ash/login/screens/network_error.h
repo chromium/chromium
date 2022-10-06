@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_NETWORK_ERROR_H_
 
+#include <sstream>
+
 namespace ash {
 
 // TODO(jdufault): Remove Network prefix from NetworkError associated classes.
@@ -55,7 +57,17 @@ class NetworkError {
   };
 
   static const char* ErrorReasonString(ErrorReason reason);
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const UIState& ui_state);
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const ErrorState& error_state);
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::UIState& ui_state);
+std::ostream& operator<<(std::ostream& stream,
+                         const NetworkError::ErrorState& error_state);
 
 }  // namespace ash
 

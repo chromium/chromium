@@ -71,6 +71,8 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   // Overridden from views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
+  bool IsDisplayedForTesting() const { return GetState() == STATE_DISPLAYED; }
+
  private:
   friend class CaptivePortalWindowTest;
   friend class SimpleWebViewDialogTest;

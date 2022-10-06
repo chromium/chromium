@@ -20,9 +20,17 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
+namespace {
+
+constexpr char kWifiServicePath[] = "/service/wifi1";
+const test::UIPath kCaptivePortalLink = {"error-message",
+                                         "captive-portal-fix-link"};
+
+}  // namespace
 
 class CaptivePortalWindowTest : public InProcessBrowserTest {
  protected:
@@ -163,26 +171,23 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
 
   ~CaptivePortalWindowCtorDtorTest() override {}
 
-  void SetUpInProcessBrowserTestFixture() override {
-    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+  void SetUpOnMainThread() override {
+    // Set up fake networks.
+    network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
+        /*use_default_devices_and_services=*/true);
+    network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
 
-    network_portal_detector_ = new NetworkPortalDetectorTestImpl();
-    network_portal_detector::InitializeForTesting(network_portal_detector_);
-    network_portal_detector_->SetDefaultNetworkForTesting(
-        FakeShillManagerClient::kFakeEthernetNetworkGuid);
-    network_portal_detector_->SetDetectionResultsForTesting(
-        FakeShillManagerClient::kFakeEthernetNetworkGuid,
-        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL, 200);
+    LoginManagerTest::SetUpOnMainThread();
+  }
+  void TearDownOnMainThread() override {
+    network_state_test_helper_.reset();
+    LoginManagerTest::TearDownOnMainThread();
   }
 
  protected:
-  NetworkPortalDetectorTestImpl* network_portal_detector() {
-    return network_portal_detector_;
-  }
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
  private:
-  NetworkPortalDetectorTestImpl* network_portal_detector_;
-
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
   // Use fake GAIA to avoid potential flakiness when real GAIA would not
@@ -191,8 +196,7 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
 };
 
 // Flaky on multiple builders, see crbug.com/1244162
-IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
-                       DISABLED_OpenPortalDialog) {
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   ASSERT_TRUE(host);
   OobeUI* oobe = host->GetOobeUI();
@@ -202,11 +206,39 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest,
   host->GetWizardController()->SkipToLoginForTesting();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
-  // Ensure that error_screen->ShowCaptivePortal() succeeds.
+  // Disconnect from all networks in order to trigger the network screen.
+  network_state_test_helper_->service_test()->ClearServices();
+  base::RunLoop().RunUntilIdle();
+
+  // Add an offline WiFi network.
+  network_state_test_helper_->service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOffline, /*visible=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Wait for ErrorScreen to appear.
   ErrorScreen* error_screen = oobe->GetErrorScreen();
   ASSERT_TRUE(error_screen);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  error_screen->ShowCaptivePortal();
+
+  // Change network to be behind a captive portal.
+  network_state_test_helper_->service_test()->SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateRedirectFound));
+  base::RunLoop().RunUntilIdle();
+
+  // As we haven't specified the actual captive portal page, redirect won't
+  // happen automatically, but the meesage to open the captive portal login page
+  // must be available.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kCaptivePortalLink)
+      ->Wait();
+
+  // Click on the link to open captive portal page.
+  test::OobeJS().ClickOnPath(kCaptivePortalLink);
+  EXPECT_TRUE(
+      error_screen->captive_portal_window_proxy()->IsDisplayedForTesting());
 }
 
 }  // namespace ash

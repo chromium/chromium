@@ -342,9 +342,9 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
       error_screen_->SetParentScreen(GaiaView::kScreenId);
       error_screen_->SetHideCallback(base::BindOnce(
           &SigninScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
-      error_screen_->ShowNetworkErrorMessage(state, reason);
       histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
     }
+    error_screen_->ShowNetworkErrorMessage(state, reason);
   } else {
     HideOfflineMessage(state, reason);
 

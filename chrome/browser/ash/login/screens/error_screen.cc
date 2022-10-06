@@ -146,6 +146,7 @@ void ErrorScreen::HideCaptivePortal() {
 }
 
 void ErrorScreen::SetUIState(NetworkError::UIState ui_state) {
+  LOG(WARNING) << __func__ << " to " << ui_state;
   ui_state_ = ui_state;
   if (view_)
     view_->SetUIState(ui_state);
@@ -153,6 +154,7 @@ void ErrorScreen::SetUIState(NetworkError::UIState ui_state) {
 
 void ErrorScreen::SetErrorState(NetworkError::ErrorState error_state,
                                 const std::string& network) {
+  LOG(WARNING) << __func__ << " to " << error_state;
   error_state_ = error_state;
   if (view_) {
     view_->SetErrorStateCode(error_state);
@@ -201,6 +203,7 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
 
 void ErrorScreen::ShowNetworkErrorMessage(NetworkStateInformer::State state,
                                           NetworkError::ErrorReason reason) {
+  LOG(WARNING) << __func__ << " state = " << state << " reason = " << reason;
   const std::string network_path = network_state_informer_->network_path();
   const std::string network_name =
       NetworkStateInformer::GetNetworkName(network_path);
