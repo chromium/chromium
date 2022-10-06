@@ -169,7 +169,7 @@ void DevToolsHost::sendMessageToEmbedder(const String& message) {
                 : "Message to embedder couldn't be JSON-deserialized");
       return;
     }
-    client_->SendMessageToEmbedder(std::move(value->GetDict()));
+    client_->SendMessageToEmbedder(std::move(*value).TakeDict());
   }
 }
 
