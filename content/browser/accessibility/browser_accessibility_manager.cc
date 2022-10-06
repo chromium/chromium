@@ -366,6 +366,14 @@ BrowserAccessibility* BrowserAccessibilityManager::GetParentNodeFromParentTree()
   AXTreeManager* parent_manager = GetParentManager();
   DCHECK(parent_manager) << "Impossible to have null parent_manager if we "
                             "already have a parent AXNode.";
+
+  // There is a chance that the parent manager is not a
+  // `BrowserAccessibilityManager` since the parent of the
+  // manager that is on the root frame will be a
+  // `ViewsAXTreeManager`. In that case, we should return nullptr since doing
+  // the cast will fail and result in undefined behavior.
+  if (this->IsRootFrameManager())
+    return nullptr;
   BrowserAccessibilityManager* parent_manager_wrapper =
       static_cast<BrowserAccessibilityManager*>(parent_manager);
   BrowserAccessibility* parent_node =
@@ -1745,6 +1753,13 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
   DCHECK(!IsRootFrameManager());
 
 #if DCHECK_IS_ON()
+  // There is a chance that the parent manager is not a
+  // `BrowserAccessibilityManager` since the parent of the
+  // manager that is on the root frame will be a
+  // `ViewsAXTreeManager`. In that case, we should return nullptr since doing
+  // the cast will fail and result in undefined behavior.
+  if (this->IsRootFrameManager())
+    return parent;
   BrowserAccessibilityManager* browser_accessibility_manager_parent =
       static_cast<BrowserAccessibilityManager*>(parent);
   DCHECK(browser_accessibility_manager_parent ||
@@ -1755,7 +1770,8 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
                ->GetParentOrOuterDocumentOrEmbedder() ==
            browser_accessibility_manager_parent->delegate()
                ->AccessibilityRenderFrameHost())
-        << "RenderFrameHost parent should match BrowserAccessibilityManager's "
+        << "RenderFrameHost parent should match "
+           "BrowserAccessibilityManager's "
            "parent's RenderFrameHost.";
   }
 #endif
