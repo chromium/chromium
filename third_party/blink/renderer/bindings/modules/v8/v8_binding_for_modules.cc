@@ -287,7 +287,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch try_block(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // Process stack - will return when complete.
   while (true) {
@@ -393,7 +394,8 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::TryCatch block(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   for (wtf_size_t i = 0; i < key_path_elements.size(); ++i) {
     const String& element = key_path_elements[i];
 

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -60,7 +61,8 @@ void StreamPromiseResolver::Resolve(ScriptState* script_state,
   is_settled_ = true;
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result =
       resolver_.Get(isolate)->Resolve(script_state->GetContext(), value);
   if (result.IsNothing()) {
@@ -83,7 +85,8 @@ void StreamPromiseResolver::Reject(ScriptState* script_state,
   is_settled_ = true;
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result =
       resolver_.Get(isolate)->Reject(script_state->GetContext(), reason);
   if (result.IsNothing()) {

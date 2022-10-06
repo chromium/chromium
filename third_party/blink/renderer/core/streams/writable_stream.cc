@@ -215,7 +215,8 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "WritableStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto* stream = MakeGarbageCollected<WritableStream>();
   stream->InitWithCountQueueingStrategy(script_state, underlying_sink,
                                         high_water_mark, std::move(optimizer),

@@ -53,6 +53,7 @@ class BodyStreamBufferTest : public testing::Test {
     v8::Local<v8::String> source;
     v8::Local<v8::Script> script;
     v8::MicrotasksScope microtasks(script_state->GetIsolate(),
+                                   ToMicrotaskQueue(script_state),
                                    v8::MicrotasksScope::kDoNotRunMicrotasks);
     if (!v8::String::NewFromUtf8(script_state->GetIsolate(), s,
                                  v8::NewStringType::kNormal)

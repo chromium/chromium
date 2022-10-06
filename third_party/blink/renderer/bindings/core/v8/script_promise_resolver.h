@@ -179,7 +179,8 @@ class CORE_EXPORT ScriptPromiseResolver
       ScriptForbiddenScope::AllowUserAgentScript allow_script;
       v8::Isolate* isolate = script_state_->GetIsolate();
       v8::MicrotasksScope microtasks_scope(
-          isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+          isolate, ToMicrotaskQueue(script_state_),
+          v8::MicrotasksScope::kDoNotRunMicrotasks);
       value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
                                  script_state_->GetIsolate()));
     }

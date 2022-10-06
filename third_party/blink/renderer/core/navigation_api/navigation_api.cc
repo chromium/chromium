@@ -337,6 +337,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // inverts when committing a browser-initiated same-document navigation and
   // an event listener is present for either currententrychange or dispose.
   v8::MicrotasksScope scope(GetSupplementable()->GetIsolate(),
+                            ToMicrotaskQueue(GetSupplementable()),
                             v8::MicrotasksScope::kRunMicrotasks);
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();

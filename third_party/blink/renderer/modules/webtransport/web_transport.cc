@@ -579,7 +579,8 @@ class WebTransport::ReceiveStreamVendor final
     ExceptionState exception_state(
         isolate, ExceptionState::kConstructionContext, "ReceiveStream");
     v8::MicrotasksScope microtasks_scope(
-        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+        isolate, ToMicrotaskQueue(script_state_),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     receive_stream->Init(exception_state);
 
     if (exception_state.HadException()) {
@@ -646,7 +647,8 @@ class WebTransport::BidirectionalStreamVendor final
     ExceptionState exception_state(
         isolate, ExceptionState::kConstructionContext, "BidirectionalStream");
     v8::MicrotasksScope microtasks_scope(
-        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+        isolate, ToMicrotaskQueue(script_state_),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     bidirectional_stream->Init(exception_state);
     if (exception_state.HadException()) {
       // Just throw away the stream.
@@ -1358,7 +1360,8 @@ void WebTransport::OnCreateSendStreamResponse(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "SendStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   send_stream->Init(exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(exception_state.GetException());
@@ -1406,7 +1409,8 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "BidirectionalStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   bidirectional_stream->Init(exception_state);
   if (exception_state.HadException()) {
     resolver->Reject(exception_state.GetException());

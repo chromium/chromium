@@ -1246,7 +1246,8 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "ReadableStream");
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   auto* stream = MakeGarbageCollected<ReadableStream>();
   stream->InitWithCountQueueingStrategy(

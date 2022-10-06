@@ -504,7 +504,8 @@ void V8Initializer::WasmAsyncResolvePromiseCallback(
     return;
   }
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   if (success == v8::WasmAsyncSuccess::kSuccess) {
     CHECK(resolver->Resolve(context, compilation_result).FromJust());
   } else {

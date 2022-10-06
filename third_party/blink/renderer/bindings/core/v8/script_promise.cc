@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
@@ -181,7 +182,8 @@ void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
   v8::MicrotasksScope microtasks_scope(
-      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   // |result| can be empty when the thread is being terminated. We ignore such
   // errors, thus [[maybe_unused]].
   [[maybe_unused]] v8::Maybe<bool> result =
@@ -195,7 +197,8 @@ void ScriptPromise::InternalResolver::Reject(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
   v8::MicrotasksScope microtasks_scope(
-      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   // |result| can be empty when the thread is being terminated. We ignore such
   // errors, thus [[maybe_unused]].
   [[maybe_unused]] v8::Maybe<bool> result =

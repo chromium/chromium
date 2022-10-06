@@ -393,7 +393,8 @@ void MeasureMemoryController::MeasurementComplete(
   ScriptState* script_state = ScriptState::From(context);
   v8::Context::Scope context_scope(context);
   v8::MicrotasksScope microtasks_scope(
-      isolate_, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate_, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   MemoryMeasurement* result = ConvertResult(measurement);
   v8::Local<v8::Promise::Resolver> promise_resolver =
       promise_resolver_.Get(isolate_);

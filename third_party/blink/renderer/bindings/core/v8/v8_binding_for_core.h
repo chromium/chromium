@@ -515,8 +515,8 @@ CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,
                                                ExceptionState&);
 
-v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
-v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
+CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
+CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
 
 // Helper finction used in the callback functions to validate context.
 // Returns true if the given execution context and V8 context are capable to run

@@ -549,7 +549,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   {
     ScriptState::Scope scope(MainScriptState());
     v8::MicrotasksScope microtasks_scope(
-        GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+        GetIsolate(), ToMicrotaskQueue(MainScriptState()),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     main_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                              MainScriptState(), resolution)
                              .ToLocalChecked()
@@ -569,7 +570,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest, SyncResolve) {
   {
     ScriptState::Scope scope(OtherScriptState());
     v8::MicrotasksScope microtasks_scope(
-        GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+        GetIsolate(), ToMicrotaskQueue(OtherScriptState()),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     other_v8_resolution = ToV8Traits<GarbageCollectedScriptWrappable>::ToV8(
                               OtherScriptState(), resolution)
                               .ToLocalChecked()
