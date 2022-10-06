@@ -125,8 +125,8 @@ class CertBuilder {
   void SetCaIssuersUrl(const GURL& url);
 
   // Sets an AIA extension with the specified caIssuers and OCSP urls. Either
-  // list can have 0 or more URLs, but it is an error for both lists to be
-  // empty.
+  // list can have 0 or more URLs. If both are empty, the AIA extension is
+  // removed.
   void SetCaIssuersAndOCSPUrls(const std::vector<GURL>& ca_issuers_urls,
                                const std::vector<GURL>& ocsp_urls);
 
@@ -146,7 +146,7 @@ class CertBuilder {
   void SetSubject(base::span<const uint8_t> subject_tlv);
 
   // Sets the SAN for the certificate to a single dNSName.
-  void SetSubjectAltName(const std::string& dns_name);
+  void SetSubjectAltName(base::StringPiece dns_name);
 
   // Sets the SAN for the certificate to the given dns names and ip addresses.
   void SetSubjectAltNames(const std::vector<std::string>& dns_names,

@@ -391,7 +391,11 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     entries.emplace_back(der::Input(kAdCaIssuersOid), url);
   for (const auto& url : ocsp_urls)
     entries.emplace_back(der::Input(kAdOcspOid), url);
-  ASSERT_GT(entries.size(), 0U);
+
+  if (entries.empty()) {
+    EraseExtension(der::Input(kAuthorityInfoAccessOid));
+    return;
+  }
 
   // From RFC 5280:
   //
@@ -487,8 +491,8 @@ void CertBuilder::SetSubject(base::span<const uint8_t> subject_tlv) {
   Invalidate();
 }
 
-void CertBuilder::SetSubjectAltName(const std::string& dns_name) {
-  SetSubjectAltNames({dns_name}, {});
+void CertBuilder::SetSubjectAltName(base::StringPiece dns_name) {
+  SetSubjectAltNames({std::string(dns_name)}, {});
 }
 
 void CertBuilder::SetSubjectAltNames(
