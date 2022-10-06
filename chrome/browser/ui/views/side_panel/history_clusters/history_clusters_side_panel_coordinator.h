@@ -35,6 +35,10 @@ class HistoryClustersSidePanelCoordinator
   // this was successful.
   bool Show(const std::string& query);
 
+  // Gets the URL needed to open the current Journeys side panel contents into
+  // a new tab.
+  GURL GetOpenInNewTabURL() const;
+
  private:
   friend class BrowserUserData<HistoryClustersSidePanelCoordinator>;
 

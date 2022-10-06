@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "extensions/common/extension_id.h"
@@ -71,8 +72,11 @@ class SidePanelEntry final {
                  std::u16string name,
                  ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
-                     create_content_callback);
-  // Constructor used for extensions.
+                     create_content_callback,
+                 base::RepeatingCallback<GURL()> open_in_new_tab_url_callback =
+                     base::BindRepeating([] { return GURL(); }));
+  // Constructor used for extensions. Extensions don't have 'Open in New Tab'
+  // functionality.
   SidePanelEntry(Key key,
                  std::u16string name,
                  ui::ImageModel icon,
@@ -104,6 +108,10 @@ class SidePanelEntry final {
   void AddObserver(SidePanelEntryObserver* observer);
   void RemoveObserver(SidePanelEntryObserver* observer);
 
+  // Gets the 'Open in New Tab' URL. Returns an empty GURL if this function is
+  // unavailable for the current side panel entry.
+  GURL GetOpenInNewTabURL() const;
+
   base::WeakPtr<SidePanelEntry> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -116,6 +124,9 @@ class SidePanelEntry final {
 
   base::RepeatingCallback<std::unique_ptr<views::View>()>
       create_content_callback_;
+
+  // If this returns an empty GURL, the 'Open in New Tab' button is hidden.
+  base::RepeatingCallback<GURL()> open_in_new_tab_url_callback_;
 
   base::TimeTicks entry_shown_timestamp_;
 

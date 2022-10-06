@@ -38,6 +38,9 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
                                      /*icon_size=*/16),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
+          base::Unretained(this)),
+      base::BindRepeating(
+          &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
           base::Unretained(this))));
 }
 
@@ -102,6 +105,11 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
   }
 
   return true;
+}
+
+GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
+  // TODO(tommycli): Pass through the most recent query state too.
+  return GURL(chrome::kChromeUIHistoryClustersURL);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersSidePanelCoordinator);

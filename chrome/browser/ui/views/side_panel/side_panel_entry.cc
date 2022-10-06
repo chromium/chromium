@@ -49,11 +49,13 @@ SidePanelEntry::SidePanelEntry(
     std::u16string name,
     ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
-        create_content_callback)
-    : SidePanelEntry(Key(id),
-                     std::move(name),
-                     std::move(icon),
-                     std::move(create_content_callback)) {}
+        create_content_callback,
+    base::RepeatingCallback<GURL()> open_in_new_tab_url_callback)
+    : key_(id),
+      name_(std::move(name)),
+      icon_(std::move(icon)),
+      create_content_callback_(std::move(create_content_callback)),
+      open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)) {}
 
 SidePanelEntry::SidePanelEntry(
     Key key,
@@ -109,4 +111,11 @@ void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {
 
 void SidePanelEntry::RemoveObserver(SidePanelEntryObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+GURL SidePanelEntry::GetOpenInNewTabURL() const {
+  if (open_in_new_tab_url_callback_.is_null())
+    return GURL();
+
+  return open_in_new_tab_url_callback_.Run();
 }
