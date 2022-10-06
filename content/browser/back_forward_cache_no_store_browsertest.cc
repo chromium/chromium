@@ -780,20 +780,9 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
 
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets restored if cookies do not change.
-//
-// TODO(crbug.com/1336055): It may be possible to re-enable this test now that
-// crbug.com/1229182 has been resolved. This was originally disabled due to
-// flakiness on Cast Linux.
-#if BUILDFLAG(IS_CASTOS)
-#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
-  DISABLED_PagesWithCacheControlNoStoreRestoreFromBackForwardCache
-#else
-#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
-  PagesWithCacheControlNoStoreRestoreFromBackForwardCache
-#endif  // BUILDFLAG(IS_CASTOS)
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
+    PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
