@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS browser_context_sets_version (
 CREATE TABLE IF NOT EXISTS policy_modifications (
    browser_context_id TEXT NOT NULL,
    site TEXT NOT NULL,
-   primary_site TEXT, -- May be NULL if this row represents a deletion.
+   site_owner TEXT, -- May be NULL if this row represents a deletion.
    PRIMARY KEY (browser_context_id, site)
 ) WITHOUT ROWID;
 

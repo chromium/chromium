@@ -334,7 +334,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
 
   // ============ Verify persisting context config
   const char kSelectConfigSql[] =
-      "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+      "SELECT browser_context_id,site,site_owner FROM policy_modifications";
   sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
   EXPECT_TRUE(s_config.Step());
   EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
@@ -380,7 +380,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
 
     // Verify data in the policy_modifications table.
     const char kSelectConfigSql[] =
-        "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+        "SELECT browser_context_id,site,site_owner FROM policy_modifications";
     sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
     EXPECT_TRUE(s_config.Step());
     EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
@@ -462,7 +462,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   // ============ Verify the new context config overwrote the pre-existing
   // data.
   const char kSelectConfigSql[] =
-      "SELECT browser_context_id,site,primary_site FROM policy_modifications "
+      "SELECT browser_context_id,site,site_owner FROM policy_modifications "
       "WHERE browser_context_id=?";
   sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
   s_config.BindString(0, browser_context_id);

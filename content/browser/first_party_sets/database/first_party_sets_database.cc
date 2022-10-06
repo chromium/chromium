@@ -96,7 +96,7 @@ const char kRunCountKey[] = "run_count";
       "CREATE TABLE IF NOT EXISTS policy_modifications("
       "browser_context_id TEXT NOT NULL,"
       "site TEXT NOT NULL,"
-      "primary_site TEXT,"  // May be NULL if this row represents a deletion.
+      "site_owner TEXT,"  // May be NULL if this row represents a deletion.
       "PRIMARY KEY(browser_context_id,site)"
       ")WITHOUT ROWID";
   if (!db.Execute(kPolicyModificationsSql))
@@ -303,7 +303,7 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
         DCHECK(!site.opaque());
         static constexpr char kInsertSql[] =
             "INSERT INTO "
-            "policy_modifications(browser_context_id,site,primary_site)"
+            "policy_modifications(browser_context_id,site,site_owner)"
             "VALUES(?,?,?)";
         sql::Statement insert_statement(
             db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
@@ -501,7 +501,7 @@ FirstPartySetsDatabase::FetchPolicyModifications(
       results;
   static constexpr char kSelectSql[] =
       // clang-format off
-      "SELECT site,primary_site FROM policy_modifications "
+      "SELECT site,site_owner FROM policy_modifications "
       "WHERE browser_context_id=?";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
