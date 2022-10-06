@@ -59,6 +59,8 @@ class PairerBrokerImpl final : public PairerBroker {
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  void EraseHandshakeAndFromPairers(scoped_refptr<Device> device);
+
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
   base::flat_map<std::string, int> pair_failure_counts_;

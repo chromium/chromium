@@ -214,8 +214,10 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
 void Mediator::CancelPairing() {
   QP_LOG(INFO) << __func__ << ": Clearing handshakes and pairiers.";
-  FastPairHandshakeLookup::GetInstance()->Clear();
+  // |pairer_broker_| and its children objects depend on the handshake
+  // instance. Shut them down before destroying the handshakes.
   pairer_broker_->StopPairing();
+  FastPairHandshakeLookup::GetInstance()->Clear();
 }
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {

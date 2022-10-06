@@ -63,6 +63,15 @@ void PairerBrokerImpl::PairDevice(scoped_refptr<Device> device) {
   }
 }
 
+void PairerBrokerImpl::EraseHandshakeAndFromPairers(
+    scoped_refptr<Device> device) {
+  // |fast_pair_pairers_| and its children objects depend on the handshake
+  // instance. Shut them down before destroying the handshake.
+  pair_failure_counts_.erase(device->ble_address);
+  fast_pair_pairers_.erase(device->ble_address);
+  FastPairHandshakeLookup::GetInstance()->Erase(device);
+}
+
 bool PairerBrokerImpl::IsPairing() {
   // We are guaranteed to not be pairing when the following two maps are
   // empty.
@@ -124,9 +133,7 @@ void PairerBrokerImpl::OnFastPairPairingFailure(scoped_refptr<Device> device,
       observer.OnPairFailure(device, failure);
     }
 
-    FastPairHandshakeLookup::GetInstance()->Erase(device);
-    pair_failure_counts_.erase(device->ble_address);
-    fast_pair_pairers_.erase(device->ble_address);
+    EraseHandshakeAndFromPairers(device);
     return;
   }
 
@@ -142,9 +149,7 @@ void PairerBrokerImpl::OnAccountKeyFailure(scoped_refptr<Device> device,
     observer.OnAccountKeyWrite(device, failure);
   }
 
-  FastPairHandshakeLookup::GetInstance()->Erase(device);
-  pair_failure_counts_.erase(device->ble_address);
-  fast_pair_pairers_.erase(device->ble_address);
+  EraseHandshakeAndFromPairers(device);
 }
 
 void PairerBrokerImpl::OnFastPairProcedureComplete(
@@ -161,9 +166,7 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
     }
   }
 
-  FastPairHandshakeLookup::GetInstance()->Erase(device);
-  fast_pair_pairers_.erase(device->ble_address);
-  pair_failure_counts_.erase(device->ble_address);
+  EraseHandshakeAndFromPairers(device);
 }
 
 }  // namespace quick_pair
