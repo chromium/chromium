@@ -27,7 +27,8 @@ class GL_EXPORT GLSurfaceStub : public GLSurface {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override;
   gfx::Size GetSize() override;
   void* GetHandle() override;
   bool BuffersFlipped() const override;

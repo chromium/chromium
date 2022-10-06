@@ -298,7 +298,8 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   Sync();
@@ -378,7 +379,8 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   // Expect no buffer committed on primary subsurface.
@@ -448,7 +450,8 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   // Expect 1 buffer committed on primary subsurface, with frame callback.
@@ -599,7 +602,8 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   // Let's sync so that 1) GbmSurfacelessWayland submits the buffer according to
@@ -689,7 +693,8 @@ TEST_P(WaylandSurfaceFactoryTest,
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   // Expect primary buffer to be committed, but since it is not the top-most
@@ -971,7 +976,8 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
                        base::Unretained(&cbs_helper), swap_id, gl_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
-                       base::Unretained(&cbs_helper), swap_id));
+                       base::Unretained(&cbs_helper), swap_id),
+        gl::FrameData());
   }
 
   // Wait until the mojo calls are done.

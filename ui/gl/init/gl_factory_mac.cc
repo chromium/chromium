@@ -42,7 +42,8 @@ class NoOpGLSurface : public GLSurface {
   bool Initialize(GLSurfaceFormat format) override { return true; }
   void Destroy() override {}
   bool IsOffscreen() override { return true; }
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override {
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override {
     NOTREACHED() << "Cannot call SwapBuffers on a NoOpGLSurface.";
     return gfx::SwapResult::SWAP_FAILED;
   }

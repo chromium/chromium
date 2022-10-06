@@ -133,7 +133,8 @@ bool DirectCompositionSurfaceWin::Resize(const gfx::Size& size,
 }
 
 gfx::SwapResult DirectCompositionSurfaceWin::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   TRACE_EVENT0("gpu", "DirectCompositionSurfaceWin::SwapBuffers");
 
   gfx::Rect swap_rect;
@@ -156,10 +157,11 @@ gfx::SwapResult DirectCompositionSurfaceWin::PostSubBuffer(
     int y,
     int width,
     int height,
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    FrameData data) {
   // The arguments are ignored because SetDrawRectangle specified the area to
   // be swapped.
-  return SwapBuffers(std::move(callback));
+  return SwapBuffers(std::move(callback), std::move(data));
 }
 
 gfx::VSyncProvider* DirectCompositionSurfaceWin::GetVSyncProvider() {

@@ -51,8 +51,8 @@ bool GLSurfaceEglReadback::IsOffscreen() {
   return false;
 }
 
-gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(
-    PresentationCallback callback) {
+gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(PresentationCallback callback,
+                                                  gl::FrameData data) {
   gfx::SwapResult swap_result = gfx::SwapResult::SWAP_FAILED;
   gfx::PresentationFeedback feedback;
 

@@ -56,7 +56,8 @@ unsigned int AwGLSurface::GetBackingFramebufferObject() {
   return ScopedAppGLStateRestore::Current()->framebuffer_binding_ext();
 }
 
-gfx::SwapResult AwGLSurface::SwapBuffers(PresentationCallback callback) {
+gfx::SwapResult AwGLSurface::SwapBuffers(PresentationCallback callback,
+                                         gl::FrameData data) {
   DCHECK(!pending_presentation_callback_);
   pending_presentation_callback_ = std::move(callback);
   return gfx::SwapResult::SWAP_ACK;

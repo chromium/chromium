@@ -77,9 +77,10 @@ void SkiaOutputDeviceWebView::SwapBuffers(BufferPresentedCallback feedback,
   gfx::Size surface_size =
       gfx::Size(sk_surface_->width(), sk_surface_->height());
 
-  FinishSwapBuffers(
-      gfx::SwapCompletionResult(gl_surface_->SwapBuffers(std::move(feedback))),
-      surface_size, std::move(frame));
+  auto data = std::move(frame.data);
+  FinishSwapBuffers(gfx::SwapCompletionResult(gl_surface_->SwapBuffers(
+                        std::move(feedback), std::move(data))),
+                    surface_size, std::move(frame));
 }
 
 SkSurface* SkiaOutputDeviceWebView::BeginPaint(

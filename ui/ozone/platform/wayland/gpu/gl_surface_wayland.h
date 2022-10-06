@@ -43,12 +43,14 @@ class GLSurfaceWayland : public gl::NativeViewGLSurfaceEGL {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   EGLConfig GetConfig() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              gl::FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                gl::FrameData data) override;
 
  private:
   ~GLSurfaceWayland() override;

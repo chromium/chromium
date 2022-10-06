@@ -181,13 +181,15 @@ gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffersInternal(
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMac::SwapBuffers(
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMac::SwapBuffersAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
@@ -197,7 +199,8 @@ gfx::SwapResult ImageTransportSurfaceOverlayMac::PostSubBuffer(
     int y,
     int width,
     int height,
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
@@ -207,19 +210,22 @@ void ImageTransportSurfaceOverlayMac::PostSubBufferAsync(
     int width,
     int height,
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMac::CommitOverlayPlanes(
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMac::CommitOverlayPlanesAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
@@ -493,13 +499,15 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffers(
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMacEGL::SwapBuffersAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
@@ -509,7 +517,8 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::PostSubBuffer(
     int y,
     int width,
     int height,
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
@@ -519,19 +528,22 @@ void ImageTransportSurfaceOverlayMacEGL::PostSubBufferAsync(
     int width,
     int height,
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }
 
 gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::CommitOverlayPlanes(
-    gl::GLSurface::PresentationCallback callback) {
+    gl::GLSurface::PresentationCallback callback,
+    gl::FrameData data) {
   return SwapBuffersInternal(base::DoNothing(), std::move(callback));
 }
 
 void ImageTransportSurfaceOverlayMacEGL::CommitOverlayPlanesAsync(
     gl::GLSurface::SwapCompletionCallback completion_callback,
-    gl::GLSurface::PresentationCallback presentation_callback) {
+    gl::GLSurface::PresentationCallback presentation_callback,
+    gl::FrameData data) {
   SwapBuffersInternal(std::move(completion_callback),
                       std::move(presentation_callback));
 }

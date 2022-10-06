@@ -58,25 +58,30 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   void PreserveChildSurfaceControls() override;
 
   // Sync versions of frame update, should never be used.
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override;
+  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
+                                      FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                FrameData data) override;
 
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback) override;
-  void CommitOverlayPlanesAsync(
-      SwapCompletionCallback completion_callback,
-      PresentationCallback presentation_callback) override;
+                        PresentationCallback presentation_callback,
+                        FrameData data) override;
+  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
+                                PresentationCallback presentation_callback,
+                                FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback) override;
+                          PresentationCallback presentation_callback,
+                          FrameData data) override;
 
   bool SupportsAsyncSwap() override;
   bool SupportsPlaneGpuFences() const override;

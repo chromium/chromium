@@ -3843,11 +3843,12 @@ error::Error GLES2DecoderPassthroughImpl::DoSwapBuffers(uint64_t swap_id,
         base::BindOnce(
             &GLES2DecoderPassthroughImpl::CheckSwapBuffersAsyncResult,
             weak_ptr_factory_.GetWeakPtr(), "SwapBuffers", swap_id),
-        base::DoNothing());
+        base::DoNothing(), gl::FrameData());
     return error::kNoError;
   } else {
-    return CheckSwapBuffersResult(surface_->SwapBuffers(base::DoNothing()),
-                                  "SwapBuffers");
+    return CheckSwapBuffersResult(
+        surface_->SwapBuffers(base::DoNothing(), gl::FrameData()),
+        "SwapBuffers");
   }
 }
 

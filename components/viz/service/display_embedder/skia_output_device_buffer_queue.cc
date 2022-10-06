@@ -456,6 +456,7 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(BufferPresentedCallback feedback,
   // Thus it is safe to use |base::Unretained(this)|.
   // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
   // be released due to reshape() or destruction.
+  auto data = std::move(frame.data);
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
@@ -465,7 +466,7 @@ void SkiaOutputDeviceBufferQueue::SwapBuffers(BufferPresentedCallback feedback,
   committed_overlay_mailboxes_.clear();
 
   presenter_->SwapBuffers(swap_completion_callbacks_.back()->callback(),
-                          std::move(feedback));
+                          std::move(feedback), std::move(data));
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 
@@ -495,6 +496,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
   // Thus it is safe to use |base::Unretained(this)|.
   // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
   // be released due to reshape() or destruction.
+  auto data = std::move(frame.data);
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
@@ -504,7 +506,7 @@ void SkiaOutputDeviceBufferQueue::PostSubBuffer(
   committed_overlay_mailboxes_.clear();
 
   presenter_->PostSubBuffer(rect, swap_completion_callbacks_.back()->callback(),
-                            std::move(feedback));
+                            std::move(feedback), std::move(data));
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 
@@ -526,6 +528,7 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
   // Thus it is safe to use |base::Unretained(this)|.
   // Bind submitted_image_->GetWeakPtr(), since the |submitted_image_| could
   // be released due to reshape() or destruction.
+  auto data = std::move(frame.data);
   swap_completion_callbacks_.emplace_back(
       std::make_unique<CancelableSwapCompletionCallback>(base::BindOnce(
           &SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers,
@@ -535,7 +538,7 @@ void SkiaOutputDeviceBufferQueue::CommitOverlayPlanes(
   committed_overlay_mailboxes_.clear();
 
   presenter_->CommitOverlayPlanes(swap_completion_callbacks_.back()->callback(),
-                                  std::move(feedback));
+                                  std::move(feedback), std::move(data));
   std::swap(committed_overlay_mailboxes_, pending_overlay_mailboxes_);
 }
 

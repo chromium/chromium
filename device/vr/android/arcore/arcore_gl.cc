@@ -1054,7 +1054,7 @@ void ArCoreGl::FinishFrame(int16_t frame_index) {
 
   TRACE_EVENT1("gpu", __func__, "frame", frame_index);
   DVLOG(3) << __func__;
-  surface_->SwapBuffers(base::DoNothing());
+  surface_->SwapBuffers(base::DoNothing(), gl::FrameData());
 
   // If we have a rendering frame (we don't if the app didn't submit one),
   // update statistics.

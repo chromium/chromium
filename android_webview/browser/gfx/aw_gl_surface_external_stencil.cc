@@ -176,7 +176,8 @@ unsigned int AwGLSurfaceExternalStencil::GetBackingFramebufferObject() {
 }
 
 gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
-    PresentationCallback callback) {
+    PresentationCallback callback,
+    gl::FrameData frame_data) {
   const auto& stencil_state =
       android_webview::ScopedAppGLStateRestore::Current()->stencil_state();
 
@@ -259,7 +260,7 @@ gfx::SwapResult AwGLSurfaceExternalStencil::SwapBuffers(
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
-  return AwGLSurface::SwapBuffers(std::move(callback));
+  return AwGLSurface::SwapBuffers(std::move(callback), std::move(frame_data));
 }
 
 void AwGLSurfaceExternalStencil::RecalculateClipAndTransform(

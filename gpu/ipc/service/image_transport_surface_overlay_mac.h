@@ -56,29 +56,33 @@ class ImageTransportSurfaceOverlayMac : public gl::GLSurface,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(
-      gl::GLSurface::PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(gl::GLSurface::PresentationCallback callback,
+                              gl::FrameData data) override;
   void SwapBuffersAsync(
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
-  gfx::SwapResult PostSubBuffer(
-      int x,
-      int y,
-      int width,
-      int height,
-      gl::GLSurface::PresentationCallback callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
+  gfx::SwapResult PostSubBuffer(int x,
+                                int y,
+                                int width,
+                                int height,
+                                gl::GLSurface::PresentationCallback callback,
+                                gl::FrameData data) override;
   void PostSubBufferAsync(
       int x,
       int y,
       int width,
       int height,
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
   gfx::SwapResult CommitOverlayPlanes(
-      gl::GLSurface::PresentationCallback callback) override;
+      gl::GLSurface::PresentationCallback callback,
+      gl::FrameData data) override;
   void CommitOverlayPlanesAsync(
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
 
   bool SupportsPostSubBuffer() override;
   bool SupportsCommitOverlayPlanes() override;
@@ -147,29 +151,33 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::GLSurfaceEGL,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(
-      gl::GLSurface::PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(gl::GLSurface::PresentationCallback callback,
+                              gl::FrameData data) override;
   void SwapBuffersAsync(
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
-  gfx::SwapResult PostSubBuffer(
-      int x,
-      int y,
-      int width,
-      int height,
-      gl::GLSurface::PresentationCallback callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
+  gfx::SwapResult PostSubBuffer(int x,
+                                int y,
+                                int width,
+                                int height,
+                                gl::GLSurface::PresentationCallback callback,
+                                gl::FrameData data) override;
   void PostSubBufferAsync(
       int x,
       int y,
       int width,
       int height,
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
   gfx::SwapResult CommitOverlayPlanes(
-      gl::GLSurface::PresentationCallback callback) override;
+      gl::GLSurface::PresentationCallback callback,
+      gl::FrameData data) override;
   void CommitOverlayPlanesAsync(
       gl::GLSurface::SwapCompletionCallback completion_callback,
-      gl::GLSurface::PresentationCallback presentation_callback) override;
+      gl::GLSurface::PresentationCallback presentation_callback,
+      gl::FrameData data) override;
 
   bool SupportsPostSubBuffer() override;
   bool SupportsCommitOverlayPlanes() override;

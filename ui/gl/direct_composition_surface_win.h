@@ -74,12 +74,14 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                FrameData data) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
   bool SetEnableDCLayers(bool enable) override;

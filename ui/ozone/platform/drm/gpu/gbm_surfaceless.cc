@@ -64,7 +64,8 @@ bool GbmSurfaceless::Initialize(gl::GLSurfaceFormat format) {
   return true;
 }
 
-gfx::SwapResult GbmSurfaceless::SwapBuffers(PresentationCallback callback) {
+gfx::SwapResult GbmSurfaceless::SwapBuffers(PresentationCallback callback,
+                                            gl::FrameData data) {
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
 }
@@ -108,7 +109,8 @@ gfx::SwapResult GbmSurfaceless::PostSubBuffer(int x,
                                               int y,
                                               int width,
                                               int height,
-                                              PresentationCallback callback) {
+                                              PresentationCallback callback,
+                                              gl::FrameData data) {
   // The actual sub buffer handling is handled at higher layers.
   NOTREACHED();
   return gfx::SwapResult::SWAP_FAILED;
@@ -116,7 +118,8 @@ gfx::SwapResult GbmSurfaceless::PostSubBuffer(int x,
 
 void GbmSurfaceless::SwapBuffersAsync(
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    gl::FrameData data) {
   TRACE_EVENT0("drm", "GbmSurfaceless::SwapBuffersAsync");
   // If last swap failed, don't try to schedule new ones.
   if (!last_swap_buffers_result_) {
@@ -182,10 +185,11 @@ void GbmSurfaceless::PostSubBufferAsync(
     int width,
     int height,
     SwapCompletionCallback completion_callback,
-    PresentationCallback presentation_callback) {
+    PresentationCallback presentation_callback,
+    gl::FrameData data) {
   // The actual sub buffer handling is handled at higher layers.
   SwapBuffersAsync(std::move(completion_callback),
-                   std::move(presentation_callback));
+                   std::move(presentation_callback), std::move(data));
 }
 
 EGLConfig GbmSurfaceless::GetConfig() {

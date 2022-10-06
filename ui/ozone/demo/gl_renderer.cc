@@ -67,11 +67,13 @@ void GlRenderer::RenderFrame() {
         base::BindOnce(&GlRenderer::PostRenderFrameTask,
                        weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&GlRenderer::OnPresentation,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        gl::FrameData());
   } else {
-    PostRenderFrameTask(
-        gfx::SwapCompletionResult(gl_surface_->SwapBuffers(base::BindOnce(
-            &GlRenderer::OnPresentation, weak_ptr_factory_.GetWeakPtr()))));
+    PostRenderFrameTask(gfx::SwapCompletionResult(
+        gl_surface_->SwapBuffers(base::BindOnce(&GlRenderer::OnPresentation,
+                                                weak_ptr_factory_.GetWeakPtr()),
+                                 gl::FrameData())));
   }
 }
 

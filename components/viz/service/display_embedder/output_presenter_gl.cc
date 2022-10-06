@@ -318,12 +318,15 @@ std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
 
 void OutputPresenterGL::SwapBuffers(
     SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback) {
+    BufferPresentedCallback presentation_callback,
+    gl::FrameData data) {
   if (supports_async_swap_) {
     gl_surface_->SwapBuffersAsync(std::move(completion_callback),
-                                  std::move(presentation_callback));
+                                  std::move(presentation_callback),
+                                  std::move(data));
   } else {
-    auto result = gl_surface_->SwapBuffers(std::move(presentation_callback));
+    auto result = gl_surface_->SwapBuffers(std::move(presentation_callback),
+                                           std::move(data));
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }
@@ -331,7 +334,8 @@ void OutputPresenterGL::SwapBuffers(
 void OutputPresenterGL::PostSubBuffer(
     const gfx::Rect& rect,
     SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback) {
+    BufferPresentedCallback presentation_callback,
+    gl::FrameData data) {
 #if BUILDFLAG(IS_MAC)
   gl_surface_->SetCALayerErrorCode(ca_layer_error_code_);
 #endif
@@ -339,11 +343,12 @@ void OutputPresenterGL::PostSubBuffer(
   if (supports_async_swap_) {
     gl_surface_->PostSubBufferAsync(
         rect.x(), rect.y(), rect.width(), rect.height(),
-        std::move(completion_callback), std::move(presentation_callback));
+        std::move(completion_callback), std::move(presentation_callback),
+        std::move(data));
   } else {
-    auto result = gl_surface_->PostSubBuffer(rect.x(), rect.y(), rect.width(),
-                                             rect.height(),
-                                             std::move(presentation_callback));
+    auto result = gl_surface_->PostSubBuffer(
+        rect.x(), rect.y(), rect.width(), rect.height(),
+        std::move(presentation_callback), std::move(data));
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }
@@ -378,13 +383,15 @@ void OutputPresenterGL::SchedulePrimaryPlane(
 
 void OutputPresenterGL::CommitOverlayPlanes(
     SwapCompletionCallback completion_callback,
-    BufferPresentedCallback presentation_callback) {
+    BufferPresentedCallback presentation_callback,
+    gl::FrameData data) {
   if (supports_async_swap_) {
     gl_surface_->CommitOverlayPlanesAsync(std::move(completion_callback),
-                                          std::move(presentation_callback));
+                                          std::move(presentation_callback),
+                                          std::move(data));
   } else {
-    auto result =
-        gl_surface_->CommitOverlayPlanes(std::move(presentation_callback));
+    auto result = gl_surface_->CommitOverlayPlanes(
+        std::move(presentation_callback), std::move(data));
     std::move(completion_callback).Run(gfx::SwapCompletionResult(result));
   }
 }

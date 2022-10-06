@@ -31,7 +31,8 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   gfx::Size GetSize() override;
   bool IsOffscreen() override;
   void* GetHandle() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              FrameData data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   bool SupportsPostSubBuffer() override;
   bool OnMakeCurrent(GLContext* context) override;

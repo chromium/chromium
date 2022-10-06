@@ -39,6 +39,7 @@ include_rules = [
   "+ui/gl/direct_composition_support.h",
   "+ui/gl/gl_fence.h",
   "+ui/gl/gl_utils.h",
+  "+ui/gl/gl_surface.h",
   "+ui/gl/gpu_switching_manager.h",
   "+ui/gl/gpu_switching_observer.h",
   "+ui/gl/trace_util.h",

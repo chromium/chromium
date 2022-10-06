@@ -34,26 +34,32 @@ class PassThroughImageTransportSurface : public gl::GLSurfaceAdapter {
 
   // GLSurface implementation.
   bool Initialize(gl::GLSurfaceFormat format) override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              gl::FrameData data) override;
   void SwapBuffersAsync(SwapCompletionCallback completion_callback,
-                        PresentationCallback presentation_callback) override;
+                        PresentationCallback presentation_callback,
+                        gl::FrameData data) override;
   gfx::SwapResult SwapBuffersWithBounds(const std::vector<gfx::Rect>& rects,
-                                        PresentationCallback callback) override;
+                                        PresentationCallback callback,
+                                        gl::FrameData data) override;
   gfx::SwapResult PostSubBuffer(int x,
                                 int y,
                                 int width,
                                 int height,
-                                PresentationCallback callback) override;
+                                PresentationCallback callback,
+                                gl::FrameData data) override;
   void PostSubBufferAsync(int x,
                           int y,
                           int width,
                           int height,
                           SwapCompletionCallback completion_callback,
-                          PresentationCallback presentation_callback) override;
-  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback) override;
-  void CommitOverlayPlanesAsync(
-      SwapCompletionCallback completion_callback,
-      PresentationCallback presentation_callback) override;
+                          PresentationCallback presentation_callback,
+                          gl::FrameData data) override;
+  gfx::SwapResult CommitOverlayPlanes(PresentationCallback callback,
+                                      gl::FrameData data) override;
+  void CommitOverlayPlanesAsync(SwapCompletionCallback completion_callback,
+                                PresentationCallback presentation_callback,
+                                gl::FrameData data) override;
   void SetVSyncEnabled(bool enabled) override;
 
  private:
