@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
+#include "base/threading/hang_watcher.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
@@ -152,6 +153,11 @@ bool RunSaveFileDialog(HWND owner,
 
   file_save_dialog->SetDefaultExtension(def_ext.c_str());
 
+  // Never consider the current scope as hung. The hang watching deadline (if
+  // any) is not valid since the user can take unbounded time to choose the
+  // file.
+  base::HangWatcher::InvalidateActiveExpectations();
+
   HRESULT hr = file_save_dialog->Show(owner);
   BaseShellDialogImpl::DisableOwner(owner);
   if (FAILED(hr))
@@ -204,6 +210,11 @@ bool RunOpenFileDialog(HWND owner,
                        default_path, filter, *filter_index, dialog_options)) {
     return false;
   }
+
+  // Never consider the current scope as hung. The hang watching deadline (if
+  // any) is not valid since the user can take unbounded time to choose the
+  // file.
+  base::HangWatcher::InvalidateActiveExpectations();
 
   HRESULT hr = file_open_dialog->Show(owner);
   BaseShellDialogImpl::DisableOwner(owner);
