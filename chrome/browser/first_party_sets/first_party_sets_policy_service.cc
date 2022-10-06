@@ -27,11 +27,10 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     content::BrowserContext* browser_context,
-    const base::Value::Dict& policy)
+    const base::Value::Dict* policy)
     : browser_context_(browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browser_context);
-  policy_ = policy.Clone();
   // Immediately send `policy` to the FirstPartySetsHandler to retrieve its
   // associated FirstPartySetsContextConfig. We can do this since the value of
   // the FirstPartySets Overrides policy doesn't dynamically refresh, and all
@@ -39,15 +38,15 @@ FirstPartySetsPolicyService::FirstPartySetsPolicyService(
   // config.
   PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
   content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
-      policy_, base::BindOnce(
-                   &FirstPartySetsPolicyService::OnProfileConfigReady,
-                   weak_factory_.GetWeakPtr(),
-                   // We should only clear site data if First-Party Sets is
-                   // enabled when the service is created, to allow users to
-                   // play with the FPS enabled setting without affecting
-                   // user experience during the browser session.
-                   prefs && prefs->GetBoolean(
-                                prefs::kPrivacySandboxFirstPartySetsEnabled)));
+      policy, base::BindOnce(
+                  &FirstPartySetsPolicyService::OnProfileConfigReady,
+                  weak_factory_.GetWeakPtr(),
+                  // We should only clear site data if First-Party Sets is
+                  // enabled when the service is created, to allow users to
+                  // play with the FPS enabled setting without affecting
+                  // user experience during the browser session.
+                  prefs && prefs->GetBoolean(
+                               prefs::kPrivacySandboxFirstPartySetsEnabled)));
 }
 
 FirstPartySetsPolicyService::~FirstPartySetsPolicyService() = default;
@@ -126,7 +125,6 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
 void FirstPartySetsPolicyService::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
-  policy_.clear();
   config_.reset();
 }
 

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -22,17 +23,17 @@ class BrowserContext;
 
 namespace first_party_sets {
 
-// A profile keyed service for storing Remote FirstPartySetsAccessDelegates
-// which must await the initialization of the browsers list of First-Party Sets.
+// A profile keyed service for per-BrowserContext First-Party Sets state.
 //
-// This service only exists for a BrowserContext if First-Party Sets is enabled
-// globally by the base::Feature.
+// This service always exists for a BrowserContext, regardless of whether the
+// First-Party Sets feature is enabled globally or for this particular
+// BrowserContext.
 class FirstPartySetsPolicyService
     : public KeyedService,
       public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   FirstPartySetsPolicyService(content::BrowserContext* context,
-                              const base::Value::Dict& policy);
+                              const base::Value::Dict* policy);
   FirstPartySetsPolicyService(const FirstPartySetsPolicyService&) = delete;
   FirstPartySetsPolicyService& operator=(const FirstPartySetsPolicyService&) =
       delete;
@@ -94,10 +95,6 @@ class FirstPartySetsPolicyService
   // `Shutdown()`.
   raw_ptr<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The FirstPartySetsOverrides enterprise policy value for the profile
-  // that created this service.
-  base::Value::Dict policy_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The customizations to the browser's list of First-Party Sets to respect
   // the changes specified by this FirstPartySetsOverrides policy for the

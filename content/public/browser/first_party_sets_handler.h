@@ -141,13 +141,14 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
   // Computes a representation of the changes that need to be made to the
   // browser's list of First-Party Sets to respect the `policy` value of the
-  // First-Party Sets Overrides enterprise policy.
+  // First-Party Sets Overrides enterprise policy. If `policy` is nullptr,
+  // `callback` is immediately invoked with an empty config.
   //
-  // The context config will be returned via `callback` since the context config
-  // must be computed after the list of First-Party Sets is initialized which
-  // occurs asynchronously.
+  // Otherwise, the context config will be returned via `callback` since the
+  // context config must be computed after the list of First-Party Sets is
+  // initialized which occurs asynchronously.
   virtual void GetContextConfigForPolicy(
-      const base::Value::Dict& policy,
+      const base::Value::Dict* policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
 
   // Clear site state of sites that have a FPS membership change for the browser
@@ -161,6 +162,8 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // clearing is done.
   //
   // Embedder must call this before First-Party Sets queries can be answered.
+  //
+  // If the First-Party Sets feature is disabled, this is a no-op.
   virtual void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,

@@ -38,10 +38,9 @@ class FirstPartySetsPolicyServiceFactory
 
   static FirstPartySetsPolicyServiceFactory* GetInstance();
 
-  // Checks that `profile` isn't a system profile or a guest profile and that
-  // the First-Party Sets base::Feature is enabled before returning a pointer to
-  // the value of the First-Party Sets Overrides policy. If one of the above
-  // criteria isn't met this method returns a nullptr.
+  // Checks that `profile` isn't a system profile or a guest profile before
+  // returning a pointer to the value of the First-Party Sets Overrides policy.
+  // If one of the above criteria isn't met this method returns a nullptr.
   //
   // Note: this method doesn't check if the kFirstPartySetsEnabled pref is
   // enabled since that may dynamically change.

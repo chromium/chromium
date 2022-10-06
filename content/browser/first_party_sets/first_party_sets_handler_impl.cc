@@ -59,11 +59,15 @@ FirstPartySetsHandler::ValidateEnterprisePolicy(
 }
 
 void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
-    const base::Value::Dict& policy,
+    const base::Value::Dict* policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!policy || !enabled_) {
+    std::move(callback).Run(net::FirstPartySetsContextConfig());
+    return;
+  }
   if (global_sets_.has_value()) {
-    std::move(callback).Run(GetContextConfigForPolicyInternal(policy));
+    std::move(callback).Run(GetContextConfigForPolicyInternal(*policy));
     return;
   }
   // Add to the deque of callbacks that will be processed once the list
@@ -73,7 +77,7 @@ void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
           &FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal,
           // base::Unretained(this) is safe here because this is a static
           // singleton.
-          base::Unretained(this), policy.Clone())
+          base::Unretained(this), policy->Clone())
           .Then(std::move(callback)));
 }
 
@@ -223,6 +227,7 @@ void FirstPartySetsHandlerImpl::SetDatabase(
 
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(enabled_);
   base::circular_deque<base::OnceClosure> queue;
   queue.swap(on_sets_ready_callbacks_);
   while (!queue.empty()) {
@@ -246,6 +251,11 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!enabled_) {
+    std::move(callback).Run(std::move(context_config));
+    return;
+  }
+
   if (global_sets_.has_value()) {
     ClearSiteDataOnChangedSetsForContextInternal(
         browser_context_getter, browser_context_id, std::move(context_config),
@@ -268,6 +278,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(global_sets_.has_value());
   DCHECK(!browser_context_id.empty());
+  DCHECK(enabled_);
 
   if (!db_helper_.is_null()) {
     // TODO(crbug.com/1219656): Call site state clearing.

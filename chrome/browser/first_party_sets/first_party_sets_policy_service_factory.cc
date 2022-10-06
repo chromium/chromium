@@ -86,12 +86,8 @@ KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
   // profile is guaranteed to be non-null since we create this factory with a
   // non-null `context` from the ProfileNetworkContextService.
   DCHECK(profile);
-  if (const base::Value::Dict* policy = GetOverridesPolicyForProfile(*profile);
-      policy) {
-    return new FirstPartySetsPolicyService(context, *policy);
-  } else {
-    return nullptr;
-  }
+  return new FirstPartySetsPolicyService(
+      context, GetOverridesPolicyForProfile(*profile));
 }
 
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()

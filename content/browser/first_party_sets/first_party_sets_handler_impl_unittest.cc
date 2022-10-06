@@ -515,7 +515,7 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        DefaultOverridesPolicy_DefaultContextConfigs) {
   base::Value policy = base::JSONReader::Read(R"({})").value();
   FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
-      policy.GetDict(), GetConfigCallback());
+      &policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
@@ -529,7 +529,7 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
   })")
                            .value();
   FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
-      policy.GetDict(), GetConfigCallback());
+      &policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(GetConfig(), net::FirstPartySetsContextConfig());
@@ -555,7 +555,7 @@ TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
             )")
                            .value();
   FirstPartySetsHandlerImpl::GetInstance()->GetContextConfigForPolicy(
-      policy.GetDict(), GetConfigCallback());
+      &policy.GetDict(), GetConfigCallback());
 
   InitPublicFirstPartySets();
   // We don't care what the customizations are, here; we only care that they're

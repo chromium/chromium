@@ -84,7 +84,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void ResetForTesting() override;
   const net::GlobalFirstPartySets* GetGlobalSetsIfReady() const override;
   void GetContextConfigForPolicy(
-      const base::Value::Dict& policy,
+      const base::Value::Dict* policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
