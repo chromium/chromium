@@ -11,28 +11,26 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsSmbSharesPageElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement);
+import {getTemplate} from './smb_shares_page.html.js';
 
-/** @polymer */
+const SettingsSmbSharesPageElementBase =
+    mixinBehaviors([RouteObserverBehavior], PolymerElement) as {
+      new (): PolymerElement & RouteObserverBehaviorInterface,
+    };
+
 class SettingsSmbSharesPageElement extends SettingsSmbSharesPageElementBase {
   static get is() {
     return 'settings-smb-shares-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -45,32 +43,35 @@ class SettingsSmbSharesPageElement extends SettingsSmbSharesPageElementBase {
         notify: true,
       },
 
-      /** @private */
       showAddSmbDialog_: Boolean,
     };
   }
 
+  prefs: object;
+  private showAddSmbDialog_: boolean;
+
   /**
    * Overridden from RouteObserverBehavior.
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   * @protected
    */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     if (route === routes.SMB_SHARES) {
       this.showAddSmbDialog_ = Router.getInstance().getQueryParameters().get(
                                    'showAddShare') === 'true';
     }
   }
 
-  /** @private */
-  onAddShareTap_() {
+  private onAddShareTap_() {
     this.showAddSmbDialog_ = true;
   }
 
-  /** @private */
-  onAddSmbDialogClosed_() {
+  private onAddSmbDialogClosed_() {
     this.showAddSmbDialog_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-smb-shares-page': SettingsSmbSharesPageElement;
   }
 }
 

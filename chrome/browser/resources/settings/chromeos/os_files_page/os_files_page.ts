@@ -13,7 +13,7 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import './smb_shares_page.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
@@ -21,23 +21,22 @@ import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsFilesPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+import {getTemplate} from './os_files_page.html.js';
 
-/** @polymer */
+const OsSettingsFilesPageElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement) as {
+      new (): DeepLinkingBehaviorInterface & RouteObserverBehaviorInterface &
+          PolymerElement,
+    };
+
 class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   static get is() {
     return 'os-settings-files-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -50,7 +49,14 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
         notify: true,
       },
 
-      /** @private {!Map<string, string>} */
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([Setting.kGoogleDriveConnection]),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -61,23 +67,14 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
           return map;
         },
       },
-
-      /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set([Setting.kGoogleDriveConnection]),
-      },
     };
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  prefs: Object;
+  override supportedSettingIds: Set<Setting>;
+  private focusConfig_: Map<string, string>;
+
+  override currentRouteChanged(route: Route, _oldRoute?: Route) {
     // Does not apply to this page.
     if (route !== routes.FILES) {
       return;
@@ -86,9 +83,14 @@ class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onTapSmbShares_() {
+  private onTapSmbShares_() {
     Router.getInstance().navigateTo(routes.SMB_SHARES);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-settings-files-page': OsSettingsFilesPageElement;
   }
 }
 
