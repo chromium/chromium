@@ -498,20 +498,24 @@ export class Camera extends View implements CameraViewUI {
     toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
   }
 
+  async cropIfUsingSquareResolution(result: Promise<PhotoResult>):
+      Promise<PhotoResult> {
+    if (!this.cameraManager.useSquareResolution()) {
+      return result;
+    }
+    const photoResult = await result;
+    const croppedBlob = await util.cropSquare(photoResult.blob);
+    return {
+      ...photoResult,
+      blob: croppedBlob,
+    };
+  }
+
   async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
     state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
 
-    if (this.cameraManager.useSquareResolution()) {
-      pendingPhotoResult = (async () => {
-        const photoResult = await pendingPhotoResult;
-        const croppedBlob = await util.cropSquare(photoResult.blob);
-        return {
-          ...photoResult,
-          blob: croppedBlob,
-        };
-      })();
-    }
+    pendingPhotoResult = this.cropIfUsingSquareResolution(pendingPhotoResult);
 
     try {
       const {resolution, blob, timestamp, metadata} =
@@ -548,6 +552,10 @@ export class Camera extends View implements CameraViewUI {
       pendingReference: Promise<PhotoResult>,
       pendingPortrait: Promise<PhotoResult>): Promise<void> {
     state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
+
+    pendingReference = this.cropIfUsingSquareResolution(pendingReference);
+    pendingPortrait = this.cropIfUsingSquareResolution(pendingPortrait);
+
     let hasError = false;
     try {
       const {timestamp, resolution, blob, metadata} =
