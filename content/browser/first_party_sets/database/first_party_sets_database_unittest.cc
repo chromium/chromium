@@ -4,12 +4,16 @@
 
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 
+#include <memory>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -17,17 +21,16 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
-#include "sql/transaction.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using ::testing::IsEmpty;
-using ::testing::Pair;
-using ::testing::UnorderedElementsAre;
 
 namespace content {
 
 namespace {
+
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 static const size_t kTableCount = 7u;
 
@@ -1052,4 +1055,5 @@ TEST_F(FirstPartySetsDatabaseTest, FetchManualSets) {
   OpenDatabase();
   EXPECT_THAT(db()->FetchManualSets("b2"), res);
 }
+
 }  // namespace content

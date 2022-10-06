@@ -5,24 +5,28 @@
 #ifndef CONTENT_BROWSER_FIRST_PARTY_SETS_DATABASE_FIRST_PARTY_SETS_DATABASE_H_
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_DATABASE_FIRST_PARTY_SETS_DATABASE_H_
 
+#include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
 }  // namespace base
 
 namespace net {
+class FirstPartySetEntry;
+class FirstPartySetsContextConfig;
 class GlobalFirstPartySets;
 class SchemefulSite;
 }  // namespace net
