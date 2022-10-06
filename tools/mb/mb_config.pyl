@@ -821,20 +821,20 @@
     },
 
     'client.v8.fyi': {
-      'Android V8 FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
-      'Linux ASAN Builder': 'asan_lsan_release_trybot',
-      'Linux Debug Builder': 'debug_bot_blink',
-      'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols',
-      'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp',
-      'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols',
-      'V8 Android GN (dbg)': 'android_debug_bot',
-      'V8 Blink Linux': 'release_bot_blink',
-      'V8 Blink Linux Debug': 'release_bot_blink_v8_debug',
-      'V8 Blink Linux Future': 'release_bot_blink',
-      'V8 Blink Mac': 'release_bot_blink',
-      'V8 Blink Win': 'release_bot_blink',
-      'V8 Linux GN': 'release_bot',
-      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting',
+      'Android V8 FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_reclient',
+      'Linux ASAN Builder': 'asan_lsan_release_trybot_reclient',
+      'Linux Debug Builder': 'debug_bot_blink_reclient',
+      'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
+      'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp_reclient',
+      'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
+      'V8 Android GN (dbg)': 'android_debug_bot_reclient',
+      'V8 Blink Linux': 'release_bot_blink_reclient',
+      'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_reclient',
+      'V8 Blink Linux Future': 'release_bot_blink_reclient',
+      'V8 Blink Mac': 'release_bot_blink_reclient',
+      'V8 Blink Win': 'release_bot_blink_reclient',
+      'V8 Linux GN': 'release_bot_reclient',
+      'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
     },
 
     'internal.chrome.fyi': {
@@ -2003,10 +2003,6 @@
       'asan', 'lsan', 'release_bot_blink_reclient',
     ],
 
-    'asan_lsan_release_trybot': [
-      'asan', 'lsan', 'release_trybot_minimal_symbols',
-    ],
-
     'asan_lsan_release_trybot_minimum_symbols_reclient': [
       'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
     ],
@@ -2538,8 +2534,8 @@
       'debug_bot_reclient', 'arm64',
     ],
 
-    'debug_bot_blink': [
-      'debug_bot_blink',
+    'debug_bot_blink_reclient': [
+      'debug_bot_blink_reclient',
     ],
 
     'debug_bot_enable_blink_animation_use_time_delta': [
@@ -2883,16 +2879,8 @@
       'gpu_tests', 'release_trybot', 'mbi_mode_per_site_instance'
     ],
 
-    'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting': [
-      'gpu_tests', 'release_trybot_minimal_symbols', 'x86', 'resource_allowlisting',
-    ],
-
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'x86', 'resource_allowlisting',
-    ],
-
-    'gpu_tests_release_trybot_minimal_symbols': [
-      'gpu_tests', 'release_trybot_minimal_symbols',
     ],
 
     'gpu_tests_release_trybot_minimal_symbols_reclient': [
@@ -2940,8 +2928,8 @@
       'invert_fieldtrials',
     ],
 
-    'gpu_tests_release_trybot_ptr_comp': [
-      'gpu_tests', 'release_trybot_minimal_symbols', 'v8_pointer_compression',
+    'gpu_tests_release_trybot_ptr_comp_reclient': [
+      'gpu_tests', 'release_trybot_minimal_symbols_reclient', 'v8_pointer_compression',
     ],
 
     'gpu_tests_release_trybot_reclient': [
@@ -3480,8 +3468,8 @@
       'release_bot_blink_reclient',
     ],
 
-    'release_bot_blink_v8_debug': [
-      'release_bot_blink', 'v8_enable_debugging_features',
+    'release_bot_blink_v8_debug_reclient': [
+      'release_bot_blink_reclient', 'v8_enable_debugging_features',
     ],
 
     'release_bot_blink_x64_minimal_symbols': [
@@ -4146,8 +4134,8 @@
       'mixins': ['debug', 'shared', 'goma', 'minimal_symbols'],
     },
 
-    'debug_bot_blink': {
-      'mixins': ['debug', 'shared', 'goma', 'minimal_symbols', 'chrome_with_codecs' ],
+    'debug_bot_blink_reclient': {
+      'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols', 'chrome_with_codecs'],
     },
 
     'debug_bot_local_build': {
