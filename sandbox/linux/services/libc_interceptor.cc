@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stddef.h>
@@ -21,6 +22,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -334,6 +336,47 @@ bool HandleInterceptedCall(int kind,
 void InitLibcLocaltimeFunctions() {
   CHECK_EQ(0, pthread_once(&g_libc_localtime_funcs_guard,
                            InitLibcLocaltimeFunctionsImpl));
+}
+
+namespace {
+std::atomic<bool> g_getaddrinfo_discouraged;
+
+DISABLE_CFI_DLSYM
+int CallRealGetaddrinfo(const char* node,
+                        const char* service,
+                        const struct addrinfo* hints,
+                        struct addrinfo** res) {
+  using GetaddrinfoFunction = decltype(getaddrinfo)*;
+  static GetaddrinfoFunction fn_ptr =
+      reinterpret_cast<GetaddrinfoFunction>(dlsym(RTLD_NEXT, "getaddrinfo"));
+
+  if (!fn_ptr) {
+    LOG(ERROR) << "Cannot find getaddrinfo with dlsym.";
+    return EAI_SYSTEM;
+  }
+
+  return fn_ptr(node, service, hints, res);
+}
+}  // namespace
+
+extern "C" {
+__attribute__((visibility("default"), noinline)) int getaddrinfo(
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res) {
+  if (g_getaddrinfo_discouraged.load(std::memory_order_relaxed)) {
+    DLOG(FATAL) << "Called getaddrinfo() in a sandboxed process.";
+    base::debug::DumpWithoutCrashing();
+    // In non-debug builds, deliberately fall through to call the real version.
+  }
+
+  return CallRealGetaddrinfo(node, service, hints, res);
+}
+}
+
+void DiscourageGetaddrinfo() {
+  g_getaddrinfo_discouraged = true;
 }
 
 }  // namespace sandbox
