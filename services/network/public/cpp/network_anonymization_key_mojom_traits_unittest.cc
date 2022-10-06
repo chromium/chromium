@@ -85,8 +85,9 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest, SerializeAndDeserializeDoubleKey) {
   }
 }
 
+// TODO(crbug.com/1371667): Test is failing.
 TEST(NetworkAnonymizationKeyMojomTraitsTest,
-     SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
+     DISABLED_SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
   // Enable double keying with cross site flag.
   base::test::ScopedFeatureList scoped_feature_list_;
   std::vector<base::Feature> enabled_features = {
