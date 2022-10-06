@@ -1273,7 +1273,6 @@ source_set("unit_tests") {
     "../ash/attestation/enrollment_id_upload_manager_unittest.cc",
     "../ash/attestation/machine_certificate_uploader_impl_unittest.cc",
     "../ash/attestation/platform_verification_flow_unittest.cc",
-    "../ash/attestation/soft_bind_attestation_flow_unittest.cc",
     "../ash/attestation/tpm_challenge_key_result_unittest.cc",
     "../ash/attestation/tpm_challenge_key_subtle_unittest.cc",
     "../ash/attestation/tpm_challenge_key_unittest.cc",
@@ -2028,6 +2027,7 @@ source_set("unit_tests") {
   public_deps = [ ":chromeos" ]
   deps = [
     ":test_support",
+    ":test_with_shadow_variables",
     ":user_event_reporter_testing_record_proto",
     "//ash",
     "//ash:test_support",
@@ -2180,9 +2180,6 @@ source_set("unit_tests") {
     "//third_party/icu",
     "//third_party/leveldatabase",
     "//third_party/private_membership:private_membership_proto",
-    "//third_party/securemessage",
-    "//third_party/securemessage:securemessage_cpp_protobuf",
-    "//third_party/securemessage:securemessage_openssl",
     "//third_party/zlib/google:compression_utils",
     "//ui/base:test_support",
     "//ui/base/ime/ash",
@@ -2217,6 +2214,35 @@ source_set("unit_tests") {
   data = [
     "//chromeos/test/data/",
     "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+  ]
+}
+
+config("allow_shadow_variables") {
+  cflags = [ "-Wno-shadow" ]
+}
+
+# TODO(b/247823913): Merge this target back into the unit_tests target above
+# when third_party/securemessage code stops generating -Wshadow warnings.
+source_set("test_with_shadow_variables") {
+  testonly = true
+
+  sources = [ "../ash/attestation/soft_bind_attestation_flow_unittest.cc" ]
+
+  configs += [ ":allow_shadow_variables" ]
+
+  deps = [
+    ":chromeos",
+    "//base",
+    "//chrome/browser/ash",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/settings",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//testing/gtest",
+    "//third_party/securemessage",
+    "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
 }
 
