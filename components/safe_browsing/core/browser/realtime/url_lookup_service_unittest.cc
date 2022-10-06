@@ -211,8 +211,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void EnableRealTimeUrlLookup(
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features) {
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
     EnableMbb();
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -220,7 +220,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   void EnableRealTimeUrlLookupWithParameters(
       const std::vector<base::test::ScopedFeatureList::FeatureAndParams>&
           enabled_features_and_params,
-      const std::vector<base::Feature>& disabled_features) {
+      const std::vector<base::test::FeatureRef>& disabled_features) {
     EnableMbb();
     feature_list_.InitWithFeaturesAndParameters(enabled_features_and_params,
                                                 disabled_features);
