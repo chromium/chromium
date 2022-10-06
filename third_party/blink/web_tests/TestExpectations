@@ -2372,7 +2372,6 @@ crbug.com/1209900 fast/peerconnection/RTCPeerConnection-reload-sctptransport.htm
 crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Skip ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
-crbug.com/1135405 http/tests/devtools/sources/debugger-pause/debugger-pause-infinite-loop.js [ Pass Timeout ]
 crbug.com/1072022 [ Mac ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/1072022 [ Linux ] http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html [ Pass Timeout ]
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
