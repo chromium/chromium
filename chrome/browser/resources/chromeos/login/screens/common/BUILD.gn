@@ -14,7 +14,6 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 group("polymer3_elements") {
   public_deps = [
     ":app_launch_splash_module",
-    ":assistant_optin_module",
     ":device_disabled_module",
     ":family_link_notice_module",
     ":gaia_signin_module",
@@ -52,7 +51,7 @@ js_type_check("closure_compile_local") {
     ":app_launch_splash.m",
     ":arc_terms_of_service",
 
-    #":assistant_optin.m",
+    #":assistant_optin",
     ":autolaunch",
     ":consolidated_consent",
     ":device_disabled.m",
@@ -154,10 +153,10 @@ js_library("arc_terms_of_service") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("assistant_optin.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.m.js" ]
+js_library("assistant_optin") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.js" ]
   deps = []
-  extra_deps = [ ":assistant_optin_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("autolaunch") {
@@ -680,15 +679,6 @@ polymer_modulizer("app_launch_splash") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("assistant_optin") {
-  js_file = "assistant_optin.js"
-  html_file = "assistant_optin.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("device_disabled") {
   js_file = "device_disabled.js"
   html_file = "device_disabled.html"
@@ -802,6 +792,7 @@ html_to_js("web_components") {
     "adb_sideloading.js",
     "app_downloading.js",
     "arc_terms_of_service.js",
+    "assistant_optin.js",
     "autolaunch.js",
     "consolidated_consent.js",
     "enable_kiosk.js",
