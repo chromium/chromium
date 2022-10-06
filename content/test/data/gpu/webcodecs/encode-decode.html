@@ -10,7 +10,12 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
   <script src="webcodecs_common.js"></script>
   <script type="text/javascript">
     'use strict';
-    const acceleration = 'prefer-hardware';
+    function showFrameForDebug(frame) {
+      const cnv = document.getElementById('debug_cnv');
+      var ctx = cnv.getContext('2d');
+      ctx.drawImage(frame, 0, 0);
+    }
+
     async function main(arg) {
       const width = 640;
       const height = 480;
@@ -21,7 +26,7 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
 
       const encoder_config = {
         codec: arg.codec,
-        hardwareAcceleration: acceleration,
+        hardwareAcceleration: arg.acceleration,
         width: width,
         height: height,
         bitrate: 5000000,
@@ -39,6 +44,15 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
 
       let decoder = new VideoDecoder({
         output(frame) {
+          let dots = frames_decoded;
+          // Check that we have intended number of dots and no more.
+          // Completely black frame shouldn't pass the test.
+          if(!validateBlackDots(frame, dots) ||
+            validateBlackDots(frame, dots + 1)) {
+            showFrameForDebug(frame);
+            TEST.reportFailure(
+                `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+          }
           frames_decoded++;
           frame.close();
         },
@@ -54,9 +68,6 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
         output(chunk, metadata) {
           let config = metadata.decoderConfig;
           if (config) {
-            // Here we assume that if accelerated encoding is supported,
-            // accelerated decoding should be supported too.
-            config.hardwareAcceleration = acceleration;
             decoder.configure(config);
           }
           decoder.decode(chunk);
@@ -76,7 +87,12 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
 
       let encoder = new VideoEncoder(encoder_init);
       encoder.configure(encoder_config);
-      let source = new CanvasSource(width, height);
+
+      let source = await createFrameSource(arg.source_type, width, height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + arg.source_type);
+        return;
+      }
 
       for (let i = 0; i < frames_to_encode; i++) {
         let frame = await source.getNextFrame();
@@ -106,6 +122,7 @@ several frames and accelerated VideoDecoder needs to successfully decode them.
 </head>
 
 <body>
+  <canvas id="debug_cnv" width="640" height="480"></canvas>
 </body>
 
 </html>
