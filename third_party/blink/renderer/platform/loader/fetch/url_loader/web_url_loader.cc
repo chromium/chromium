@@ -117,34 +117,6 @@ network::mojom::LoadTimingInfo ToMojoLoadTiming(
       load_timing.service_worker_respond_with_settled);
 }
 
-// This is complementary to ConvertNetPriorityToWebKitPriority, defined in
-// service_worker_context_client.cc.
-// TODO(yhirano): Move this to blink/platform/loader.
-net::RequestPriority ConvertWebKitPriorityToNetPriority(
-    const WebURLRequest::Priority& priority) {
-  switch (priority) {
-    case WebURLRequest::Priority::kVeryHigh:
-      return net::HIGHEST;
-
-    case WebURLRequest::Priority::kHigh:
-      return net::MEDIUM;
-
-    case WebURLRequest::Priority::kMedium:
-      return net::LOW;
-
-    case WebURLRequest::Priority::kLow:
-      return net::LOWEST;
-
-    case WebURLRequest::Priority::kVeryLow:
-      return net::IDLE;
-
-    case WebURLRequest::Priority::kUnresolved:
-    default:
-      NOTREACHED();
-      return net::LOW;
-  }
-}
-
 // TODO(crbug.com/862940): Use KURL here.
 void SetSecurityStyleAndDetails(const GURL& url,
                                 const network::mojom::URLResponseHead& head,
@@ -394,7 +366,7 @@ void WebURLLoader::Context::DidChangePriority(
     int intra_priority_value) {
   if (request_id_ != -1) {
     net::RequestPriority net_priority =
-        ConvertWebKitPriorityToNetPriority(new_priority);
+        WebURLRequest::ConvertToNetPriority(new_priority);
     resource_request_sender_->DidChangePriority(net_priority,
                                                 intra_priority_value);
     // TODO(https://crbug.com/1137682): Change this to

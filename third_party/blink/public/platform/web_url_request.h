@@ -36,6 +36,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "net/base/request_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "ui/base/page_transition_types.h"
@@ -88,6 +89,7 @@ class BLINK_PLATFORM_EXPORT WebURLRequest {
     kLowest = kVeryLow,
     kHighest = kVeryHigh,
   };
+  static net::RequestPriority ConvertToNetPriority(WebURLRequest::Priority);
 
   ~WebURLRequest();
   WebURLRequest();
