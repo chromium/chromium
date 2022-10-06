@@ -646,12 +646,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf openClearBrowsingData];
         });
 
-    if (!self.isIncognito && IsWebChannelsEnabled() &&
-        GetFollowActionState(self.webState) != FollowActionStateHidden) {
-      NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
-                                               base::SysNSStringToUTF16(@""));
+    if (GetFollowActionState(self.webState) != FollowActionStateHidden) {
       OverflowMenuAction* action = CreateOverflowMenuActionWithString(
-          name, kPlusSymbol, YES, kToolsMenuFollow,
+          l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW, u""), kPlusSymbol,
+          YES, kToolsMenuFollow,
           ^{
           });
 
@@ -761,22 +759,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                    [weakSelf openClearBrowsingData];
                                  });
 
-    if (!self.isIncognito && IsWebChannelsEnabled() &&
-        GetFollowActionState(self.webState) != FollowActionStateHidden) {
-      NSString* name = l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
-                                               base::SysNSStringToUTF16(@""));
-
-      OverflowMenuAction* action = [[OverflowMenuAction alloc]
-                     initWithName:name
-                            image:[UIImage
-                                      imageNamed:@"overflow_menu_action_follow"]
-          accessibilityIdentifier:kToolsMenuFollow
-               enterpriseDisabled:NO
-                          handler:^{
-                          }];
-      action.enabled = NO;
-      self.followAction = action;
-    }
+    self.followAction = [self createFollowActionIfNeeded];
 
     self.addBookmarkAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
@@ -1016,17 +999,21 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   NSMutableArray<OverflowMenuAction*>* pageActions =
       [[NSMutableArray alloc] init];
 
-  if (self.followAction &&
-      GetFollowActionState(self.webState) != FollowActionStateHidden) {
-    DCHECK(IsWebChannelsEnabled());
+  // Try to create the followAction if there isn't one. It's possible that
+  // sometimes when creating the model the followActionState is hidden so the
+  // followAction hasn't been created but at the time when updating the model,
+  // the followAction should be valid.
+  if (!self.followAction) {
+    self.followAction = [self createFollowActionIfNeeded];
+  }
 
+  if (self.followAction) {
+    [pageActions addObject:self.followAction];
     FollowTabHelper* followTabHelper =
         FollowTabHelper::FromWebState(self.webState);
     if (followTabHelper) {
       followTabHelper->UpdateFollowMenuItem();
     }
-
-    [pageActions addObject:self.followAction];
   }
 
   // Add actions before a possible Clear Browsing Data action.
@@ -1228,6 +1215,27 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   return visibleItem->GetUserAgentType();
+}
+
+// Creates a follow action if needed, when the follow action state is not
+// hidden.
+- (OverflowMenuAction*)createFollowActionIfNeeded {
+  // Returns nil if the follow action state is hidden.
+  if (GetFollowActionState(self.webState) == FollowActionStateHidden) {
+    return nil;
+  }
+
+  OverflowMenuAction* action = [[OverflowMenuAction alloc]
+                 initWithName:l10n_util::GetNSStringF(IDS_IOS_TOOLS_MENU_FOLLOW,
+                                                      u"")
+                        image:[UIImage
+                                  imageNamed:@"overflow_menu_action_follow"]
+      accessibilityIdentifier:kToolsMenuFollow
+           enterpriseDisabled:NO
+                      handler:^{
+                      }];
+  action.enabled = NO;
+  return action;
 }
 
 #pragma mark - CRWWebStateObserver

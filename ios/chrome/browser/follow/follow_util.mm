@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/web/public/web_client.h"
@@ -32,21 +34,29 @@ NSString* const kFollowIPHHost = @"host";
 NSString* const kFollowIPHDate = @"date";
 
 FollowActionState GetFollowActionState(web::WebState* webState) {
-  // This method should be called only if the feature flag has been enabled.
-  DCHECK(IsWebChannelsEnabled());
-
-  if (!webState) {
+  if (!webState || !IsWebChannelsEnabled()) {
     return FollowActionStateHidden;
   }
 
   ChromeBrowserState* browserState =
       ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
+
+  // Don't show follow option when following feed is disabled by enterprise
+  // policy.
+  if (!browserState->GetPrefs()->GetBoolean(
+          prefs::kNTPContentSuggestionsEnabled)) {
+    return FollowActionStateHidden;
+  }
+
+  // Don't show follow option if the user is not signed in.
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
 
-  // Hide the follow action when users have not signed in.
-  if (!authenticationService || !authenticationService->GetPrimaryIdentity(
-                                    signin::ConsentLevel::kSignin)) {
+  // Hide the follow action when users are in incognito mode or when users have
+  // not signed in.
+  if (browserState->IsOffTheRecord() || !authenticationService ||
+      !authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     return FollowActionStateHidden;
   }
 
@@ -54,9 +64,8 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
   // Show the follow action when:
   // 1. The page url is valid;
   // 2. Users are not on NTP or Chrome internal pages;
-  // 3. Users are not in incognito mode.
-  if (URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL) &&
-      !browserState->IsOffTheRecord()) {
+  if (URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL)) {
+    DCHECK(!browserState->IsOffTheRecord());
     return FollowActionStateEnabled;
   }
   return FollowActionStateHidden;

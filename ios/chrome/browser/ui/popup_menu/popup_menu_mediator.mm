@@ -1108,8 +1108,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 - (NSArray<TableViewItem*>*)actionItems {
   NSMutableArray* actionsArray = [NSMutableArray array];
 
-  if (!self.isIncognito && IsWebChannelsEnabled() &&
-      GetFollowActionState(self.webState) != FollowActionStateHidden) {
+  if (GetFollowActionState(self.webState) != FollowActionStateHidden) {
     // Follow.
     self.followItem =
         CreateFollowItem(IDS_IOS_TOOLS_MENU_FOLLOW, PopupMenuActionFollow,

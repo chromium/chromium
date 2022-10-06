@@ -28,8 +28,10 @@ source_set("utils") {
   ]
   deps = [
     ":enums",
+    "//components/prefs",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/web/public",
     "//url",
