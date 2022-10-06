@@ -98,14 +98,6 @@ openssl req \
   -out out/ok_cert.req \
   -config ee.cnf
 
-copy_or_generate_key ../certificates/name_constraint_good.pem \
-  out/name_constrained.key
-openssl req \
-  -new \
-  -key out/name_constrained.key \
-  -out out/name_constrained.req \
-  -config ee.cnf
-
 copy_or_generate_key ../certificates/wildcard.pem out/wildcard.key
 openssl req \
   -new \
@@ -173,26 +165,6 @@ CA_NAME="req_ca_dn" \
 CA_NAME="req_ca_dn" \
   openssl ca \
     -batch \
-    -extensions name_constraint_bad \
-    -subj "/CN=Leaf certificate/" \
-    -days ${CERT_LIFETIME} \
-    -in out/name_constrained.req \
-    -out out/name_constraint_bad.pem \
-    -config ca.cnf
-
-CA_NAME="req_ca_dn" \
-  openssl ca \
-    -batch \
-    -extensions name_constraint_good \
-    -subj "/CN=Leaf Certificate/" \
-    -days ${CERT_LIFETIME} \
-    -in out/name_constrained.req \
-    -out out/name_constraint_good.pem \
-    -config ca.cnf
-
-CA_NAME="req_ca_dn" \
-  openssl ca \
-    -batch \
     -extensions user_cert \
     -days ${CERT_LIFETIME} \
     -in out/localhost_cert.req \
@@ -229,10 +201,6 @@ CA_NAME="req_ca_dn" \
     > ../certificates/expired_cert.pem"
 /bin/sh -c "cat out/2048-sha256-root.key out/2048-sha256-root.pem \
     > ../certificates/root_ca_cert.pem"
-/bin/sh -c "cat out/name_constrained.key out/name_constraint_bad.pem \
-    > ../certificates/name_constraint_bad.pem"
-/bin/sh -c "cat out/name_constrained.key out/name_constraint_good.pem \
-    > ../certificates/name_constraint_good.pem"
 /bin/sh -c "cat out/ok_cert.key out/bad_validity.pem \
     > ../certificates/bad_validity.pem"
 /bin/sh -c "cat out/ok_cert.key out/int/ok_cert.pem \

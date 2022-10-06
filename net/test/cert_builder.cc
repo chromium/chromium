@@ -836,6 +836,15 @@ void CertBuilder::GenerateRSAKey() {
   Invalidate();
 }
 
+bool CertBuilder::UseKeyFromFile(const base::FilePath& key_file) {
+  bssl::UniquePtr<EVP_PKEY> private_key(LoadPrivateKeyFromFile(key_file));
+  if (!private_key)
+    return false;
+  key_ = std::move(private_key);
+  Invalidate();
+  return true;
+}
+
 void CertBuilder::GenerateSubjectKeyIdentifier() {
   // 20 bytes are chosen here for no other reason than it's compatible with
   // systems that assume the SKI is SHA-1(SPKI), which RFC 5280 notes as one

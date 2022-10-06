@@ -115,6 +115,10 @@ unit tests.
   tests and otherwise kept fixed. The signature, etc., are intentionally
   invalid.
 
+- name_constrained_key.pem
+  The private key matching the public_key_hash of the kDomainsTest constraint
+  in CertVerifyProc::HasNameConstraintsViolation.
+
 ===== From net/data/ssl/scripts/generate-quic-chain.sh
 - quic-chain.pem
 - quic-leaf-cert.key
@@ -146,11 +150,6 @@ unit tests.
 - test_names.pem
     A certificate and private key valid for a number of test names. See
     [test_names] in ee.cnf. Other names may be added as needed.
-
-- name_constraint_bad.pem
-- name_constraint_good.pem
-    Two certificates used to test the built-in ability to restrict a root to
-    a particular namespace.
 
 - bad_validity.pem
     A certificate and private key only valid on 0001-01-01. Windows refuses to
