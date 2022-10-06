@@ -121,6 +121,10 @@ class MojoMediaClientImpl : public MojoMediaClient {
           VideoDecodeAccelerator::Config::OutputMode::IMPORT);
     } else {
       return VideoDecoderPipeline::Create(
+          // TODO(b/195769334): we should pass a meaningful
+          // gpu::GpuDriverBugWorkarounds so that we can restrict the supported
+          // configurations using that facility.
+          gpu::GpuDriverBugWorkarounds(),
           /*client_task_runner=*/std::move(task_runner),
           std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<media::VideoFrameConverter>(), std::move(log),

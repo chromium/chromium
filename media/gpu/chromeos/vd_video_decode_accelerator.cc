@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_util.h"
@@ -241,7 +242,10 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
   if (!vd_) {
     std::unique_ptr<VdaVideoFramePool> frame_pool =
         std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
-    vd_ = create_vd_cb_.Run(client_task_runner_, std::move(frame_pool),
+    // TODO(b/238684141): Wire a meaningful GpuDriverBugWorkarounds or remove
+    // its use.
+    vd_ = create_vd_cb_.Run(gpu::GpuDriverBugWorkarounds(), client_task_runner_,
+                            std::move(frame_pool),
                             std::make_unique<VideoFrameConverter>(),
                             std::make_unique<NullMediaLog>(),
                             /*oop_video_decoder=*/{});

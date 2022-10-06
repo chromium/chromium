@@ -18,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/async_destroy_video_decoder.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
@@ -181,6 +180,7 @@ bool VideoDecoderMixin::NeedsTranscryption() {
 
 // static
 std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
+    const gpu::GpuDriverBugWorkarounds& workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
@@ -205,7 +205,7 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   }
 
   auto* pipeline = new VideoDecoderPipeline(
-      std::move(client_task_runner), std::move(frame_pool),
+      workarounds, std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(media_log),
       std::move(create_decoder_function_cb));
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
@@ -253,12 +253,14 @@ VideoDecoderPipeline::GetSupportedConfigs(
 }
 
 VideoDecoderPipeline::VideoDecoderPipeline(
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
-    : client_task_runner_(std::move(client_task_runner)),
+    : gpu_workarounds_(gpu_workarounds),
+      client_task_runner_(std::move(client_task_runner)),
       decoder_task_runner_(DecoderThreadPool::CreateTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
@@ -386,6 +388,25 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
     return;
   }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
+  // Make sure that the configuration requested is supported by the driver,
+  // which must provide such information.
+  const auto supported_configs =
+      supported_configs_for_testing_.empty()
+          ? VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds_)
+          : supported_configs_for_testing_;
+  if (!supported_configs.has_value()) {
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
+    return;
+  }
+  if (!IsVideoDecoderConfigSupported(supported_configs.value(), config)) {
+    VLOGF(1) << "Video configuration is not supported: "
+             << config.AsHumanReadableString();
+    MEDIA_LOG(INFO, media_log_) << "Video configuration is not supported: "
+                                << config.AsHumanReadableString();
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
+    return;
+  }
 
   needs_bitstream_conversion_ = (config.codec() == VideoCodec::kH264) ||
                                 (config.codec() == VideoCodec::kHEVC);

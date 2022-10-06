@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_util.h"
 #include "media/base/waiting.h"
 #include "media/gpu/macros.h"
@@ -161,7 +162,7 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
     case DecoderImplementation::kVD:
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       decoder_ = VideoDecoderPipeline::Create(
-          base::ThreadTaskRunnerHandle::Get(),
+          gpu::GpuDriverBugWorkarounds(), base::ThreadTaskRunnerHandle::Get(),
           std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<VideoFrameConverter>(),
           std::make_unique<NullMediaLog>(),

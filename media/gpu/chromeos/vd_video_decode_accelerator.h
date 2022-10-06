@@ -21,6 +21,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
+#include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
@@ -30,7 +31,6 @@
 
 namespace media {
 
-class MediaLog;
 class VideoFrame;
 
 // Implements the VideoDecodeAccelerator backed by a VideoDecoder.
@@ -49,12 +49,7 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
  public:
   // Callback for creating VideoDecoder instance.
   using CreateVideoDecoderCb =
-      base::RepeatingCallback<std::unique_ptr<VideoDecoder>(
-          scoped_refptr<base::SequencedTaskRunner>,
-          std::unique_ptr<DmabufVideoFramePool>,
-          std::unique_ptr<VideoFrameConverter>,
-          std::unique_ptr<MediaLog>,
-          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)>;
+      base::RepeatingCallback<decltype(VideoDecoderPipeline::Create)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.

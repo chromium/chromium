@@ -19,6 +19,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
 #include "media/base/video_codecs.h"
@@ -103,7 +104,9 @@ void GpuArcVideoDecoder::Initialize(
   }
 
   decoder_ = media::VideoDecoderPipeline::Create(
-      client_task_runner_,
+      // TODO(b/238684141): Wire a meaningful GpuDriverBugWorkarounds or remove
+      // its use.
+      gpu::GpuDriverBugWorkarounds(), client_task_runner_,
       std::make_unique<media::VdaVideoFramePool>(video_frame_pool_->WeakThis(),
                                                  client_task_runner_),
       std::make_unique<media::VideoFrameConverter>(),

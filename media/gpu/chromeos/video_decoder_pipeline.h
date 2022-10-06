@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/cdm_context.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
@@ -32,10 +33,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 namespace base {
 class SequencedTaskRunner;
-}
-
-namespace gpu {
-class GpuDriverBugWorkarounds;
 }
 
 namespace media {
@@ -142,6 +139,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // Creates a VideoDecoderPipeline instance that allocates VideoFrames from
   // |frame_pool| and converts the decoded VideoFrames using |frame_converter|.
   static std::unique_ptr<VideoDecoder> Create(
+      const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
@@ -191,6 +189,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 #endif
 
   VideoDecoderPipeline(
+      const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
@@ -238,6 +237,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void OnBufferTranscrypted(scoped_refptr<DecoderBuffer> transcrypted_buffer,
                             DecodeCB decode_callback);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Used to figure out the supported configurations in Initialize().
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
+
+  SupportedVideoDecoderConfigs supported_configs_for_testing_;
 
   // The client task runner and its sequence checker. All public methods should
   // run on this task runner.
