@@ -116,7 +116,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
   auto request = std::make_unique<CopyOutputRequest>(
       kResultFormat, kResultDestination,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
-                     weak_factory_.GetWeakPtr(), ResultType::kShared,
+                     weak_factory_.GetMutableWeakPtr(), ResultType::kShared,
                      shared_pass_index, draw_data));
   request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
   return request;
