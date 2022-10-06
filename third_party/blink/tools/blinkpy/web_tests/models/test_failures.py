@@ -271,7 +271,10 @@ class FailureTimeout(AbstractTestResultType):
         self.is_reftest = is_reftest
 
     def message(self):
-        return 'test timed out'
+        if self.is_reftest:
+            return 'test reference timed out'
+        else:
+            return 'test timed out'
 
     def driver_needs_restart(self):
         return True
@@ -305,8 +308,18 @@ class FailureCrash(AbstractTestResultType):
 
     def message(self):
         if self.pid:
-            return '%s crashed [pid=%d]' % (self.process_name, self.pid)
-        return self.process_name + ' crashed'
+            return self._pid_message_format() % (self.process_name, self.pid)
+        else:
+            return self._process_message_format() % (self.process_name)
+
+    def _pid_message_format(self):
+        return self._process_message_format() + ' [pid=%d]'
+
+    def _process_message_format(self):
+        if self.is_reftest:
+            return '%s crashed in reference'
+        else:
+            return '%s crashed'
 
     def driver_needs_restart(self):
         return True
@@ -327,7 +340,13 @@ class FailureLeak(TestFailure):
                                  self.log, force_overwrite)
 
     def message(self):
-        return 'leak detected: %s' % (self.log)
+        return self._message_format() % (self.log)
+
+    def _message_format(self):
+        if self.is_reftest:
+            return 'leak detected in reference: %s'
+        else:
+            return 'leak detected: %s'
 
 
 class ActualAndBaselineArtifacts(TestFailure):
