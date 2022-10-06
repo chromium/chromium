@@ -36,11 +36,10 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
   // After `kInfobarBannerDefaultPresentationDurationInSeconds` seconds the
   // banner should disappear. Includes `kWaitForUIElementTimeout` for EG
   // synchronization.
-  base::TimeDelta delay =
-      base::Seconds(kInfobarBannerDefaultPresentationDurationInSeconds) +
-      base::test::ios::kWaitForUIElementTimeout;
-  BOOL bannerShown =
-      WaitUntilConditionOrTimeout(delay, ^{
+  constexpr base::TimeDelta kDelay = kInfobarBannerDefaultPresentationDuration +
+                                     base::test::ios::kWaitForUIElementTimeout;
+  const BOOL banner_shown =
+      WaitUntilConditionOrTimeout(kDelay, ^{
         NSError* error = nil;
         [[EarlGrey
             selectElementWithMatcher:grey_allOf(
@@ -52,7 +51,7 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
         return error == nil;
       });
 
-  GREYAssertTrue(bannerShown, condition_name);
+  GREYAssertTrue(banner_shown, condition_name);
 }
 
 }  // namespace

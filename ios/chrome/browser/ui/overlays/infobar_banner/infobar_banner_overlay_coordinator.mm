@@ -126,13 +126,12 @@
   if (!UIAccessibilityIsVoiceOverRunning()) {
     // Auto-dismiss the banner after timeout if VoiceOver is off (banner should
     // persist until user explicitly swipes it away).
-    NSTimeInterval timeout =
-        config->is_high_priority()
-            ? kInfobarBannerLongPresentationDurationInSeconds
-            : kInfobarBannerDefaultPresentationDurationInSeconds;
+    const base::TimeDelta timeout =
+        config->is_high_priority() ? kInfobarBannerLongPresentationDuration
+                                   : kInfobarBannerDefaultPresentationDuration;
     [self performSelector:@selector(dismissBannerIfReady)
                withObject:nil
-               afterDelay:timeout];
+               afterDelay:timeout.InSecondsF()];
   }
 }
 
@@ -143,15 +142,10 @@
   // stopAnimated: executions.
   self.started = NO;
   __weak InfobarBannerOverlayCoordinator* weakSelf = self;
-  [self.baseViewController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           InfobarBannerOverlayCoordinator* strongSelf =
-                               weakSelf;
-                           if (strongSelf) {
-                             [strongSelf finishDismissal];
-                           }
-                         }];
+  [self.baseViewController dismissViewControllerAnimated:animated
+                                              completion:^{
+                                                [weakSelf finishDismissal];
+                                              }];
 }
 
 - (UIViewController*)viewController {

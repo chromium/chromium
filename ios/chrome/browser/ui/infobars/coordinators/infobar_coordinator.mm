@@ -8,6 +8,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -49,13 +50,14 @@
 @property(nonatomic, assign, readwrite) BOOL bannerWasPresented;
 // YES if the banner is in the process of being dismissed.
 @property(nonatomic, assign) BOOL bannerIsBeingDismissed;
-// Completion block used to dismiss the banner after a set period of time. This
-// needs to be created by dispatch_block_create() since it may get cancelled.
-@property(nonatomic, copy) dispatch_block_t dismissBannerBlock;
 
 @end
 
-@implementation InfobarCoordinator
+@implementation InfobarCoordinator {
+  // Timer used to schedule the auto-dismiss of the banner.
+  base::OneShotTimer _autoDismissBannerTimer;
+}
+
 // Synthesize since readonly property from superclass is changed to readwrite.
 @synthesize baseViewController = _baseViewController;
 // Synthesize since readonly property from superclass is changed to readwrite.
@@ -77,6 +79,8 @@
 #pragma mark - Public Methods.
 
 - (void)stop {
+  // Cancel any scheduled automatic dismissal block.
+  _autoDismissBannerTimer.Stop();
   _animatedFullscreenDisabler = nullptr;
   _badgeDelegate = nil;
   _infobarDelegate = nil;
@@ -139,23 +143,17 @@
 
   // Dismisses the presented banner after a certain number of seconds.
   if (!UIAccessibilityIsVoiceOverRunning() && self.shouldUseDefaultDismissal) {
-    NSTimeInterval timeInterval =
+    const base::TimeDelta timeDelta =
         self.highPriorityPresentation
-            ? kInfobarBannerLongPresentationDurationInSeconds
-            : kInfobarBannerDefaultPresentationDurationInSeconds;
-    dispatch_time_t popTime =
-        dispatch_time(DISPATCH_TIME_NOW, timeInterval * NSEC_PER_SEC);
-    if (self.dismissBannerBlock) {
-      // TODO:(crbug.com/1021805): Write unittest to cover this situation.
-      dispatch_block_cancel(self.dismissBannerBlock);
-    }
+            ? kInfobarBannerLongPresentationDuration
+            : kInfobarBannerDefaultPresentationDuration;
+
+    // Calling base::OneShotTimer::Start() will cancel any previously scheduled
+    // timer, so there is no need to call base::OneShotTimer::Stop() first.
     __weak InfobarCoordinator* weakSelf = self;
-    self.dismissBannerBlock =
-        dispatch_block_create(DISPATCH_BLOCK_ASSIGN_CURRENT, ^{
-          [weakSelf dismissInfobarBannerIfReady];
-          weakSelf.dismissBannerBlock = nil;
-        });
-    dispatch_after(popTime, dispatch_get_main_queue(), self.dismissBannerBlock);
+    _autoDismissBannerTimer.Start(FROM_HERE, timeDelta, base::BindOnce(^{
+                                    [weakSelf dismissInfobarBannerIfReady];
+                                  }));
   }
 }
 

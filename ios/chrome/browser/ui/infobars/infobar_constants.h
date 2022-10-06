@@ -7,17 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/time/time.h"
+
 extern const int kInfobarBackgroundColor;
 
 // a11y identifier so that automation can tap on either infobar button
 extern NSString* const kConfirmInfobarButton1AccessibilityIdentifier;
 extern NSString* const kConfirmInfobarButton2AccessibilityIdentifier;
 
-// The duration in seconds that the InfobarCoordinator banner will be presented
-// for.
-extern const NSTimeInterval kInfobarBannerDefaultPresentationDurationInSeconds;
-// The duration in seconds that a high priority presentation InfobarCoordinator
+// The duration that the InfobarCoordinator banner will be presented for.
+constexpr base::TimeDelta kInfobarBannerDefaultPresentationDuration =
+    base::Seconds(8);
+
+// The duration that a high priority presentation InfobarCoordinator
 // banner will be presented for.
-extern const NSTimeInterval kInfobarBannerLongPresentationDurationInSeconds;
+constexpr base::TimeDelta kInfobarBannerLongPresentationDuration =
+    base::Seconds(15);
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_INFOBAR_CONSTANTS_H_

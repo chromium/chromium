@@ -656,7 +656,7 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Wait for banner to dismiss.
   BOOL showOriginalBannerDismiss = WaitUntilConditionOrTimeout(
-      kInfobarBannerLongPresentationDurationInSeconds + 1.0, ^{
+      kInfobarBannerLongPresentationDuration + base::Seconds(1), ^{
         NSError* error = nil;
         [[EarlGrey
             selectElementWithMatcher:

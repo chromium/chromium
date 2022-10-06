@@ -253,9 +253,8 @@ const char kInfobarSyncErrorBadgeTappedHistogram[] =
   }
 }
 
-- (void)recordBannerOnScreenDuration:(double)duration {
-  base::TimeDelta timeDelta = base::Seconds(duration);
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", timeDelta);
+- (void)recordBannerOnScreenDuration:(base::TimeDelta)duration {
+  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", duration);
 }
 
 - (void)recordModalEvent:(MobileMessagesModalEvent)event {

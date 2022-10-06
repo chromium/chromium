@@ -12,6 +12,7 @@ source_set("constants") {
     "infobar_constants.h",
     "infobar_constants.mm",
   ]
+  deps = [ "//base" ]
 }
 
 source_set("eg2_tests") {

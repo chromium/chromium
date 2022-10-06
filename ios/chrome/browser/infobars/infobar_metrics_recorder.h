@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/time/time.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 
 // Values for the UMA Mobile.Messages.Banner.Event histogram. These values
@@ -89,7 +90,7 @@ enum class MobileMessagesBadgeState {
 - (void)recordBannerDismissType:(MobileMessagesBannerDismissType)dismissType;
 
 // Records histogram for Banner On Screen duration.
-- (void)recordBannerOnScreenDuration:(double)duration;
+- (void)recordBannerOnScreenDuration:(base::TimeDelta)duration;
 
 // Records histogram for Modal `event`.
 - (void)recordModalEvent:(MobileMessagesModalEvent)event;
