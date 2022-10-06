@@ -695,6 +695,7 @@ void CaptureModeSession::Shutdown() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   display_observer_.reset();
   user_nudge_controller_.reset();
+  capture_window_observer_.reset();
   TabletModeController::Get()->RemoveObserver(this);
   if (input_capture_window_) {
     input_capture_window_->RemoveObserver(this);
@@ -718,15 +719,17 @@ void CaptureModeSession::Shutdown() {
   UpdateFloatingPanelBoundsIfNeeded();
 
   if (!is_stopping_to_start_video_recording_) {
+    // Kill the camera preview when the capture mode session ends without
+    // starting any recording. Note that we need to kill the camera preview
+    // before aborting the projector session to avoid repareting the camera
+    // preview widget which will lead to crash.
+    if (!controller_->is_recording_in_progress())
+      controller_->camera_controller()->SetShouldShowPreview(false);
+
     // Stopping the session for any reason other than starting video recording
     // means a cancellation to an ongoing projector session (if any).
     if (is_in_projector_mode_)
       ProjectorControllerImpl::Get()->OnRecordingStartAborted();
-
-    // Kill the camera preview when the capture mode session ends without
-    // starting any recording.
-    if (!controller_->is_recording_in_progress())
-      controller_->camera_controller()->SetShouldShowPreview(false);
   }
 
   Shell::Get()->RemoveShellObserver(this);
