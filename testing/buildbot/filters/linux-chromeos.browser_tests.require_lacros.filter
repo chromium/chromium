@@ -28,8 +28,6 @@ WebAppsCrosapiBrowserTest*
 -ChromeVoxPortalsTest.ShouldFocusPortal
 -SelectToSpeakEnhancedNetworkTtsVoicesTest.*
 -SelectToSpeakNavigationControlTest.*
--SwitchAccessFocusRingManagerTest.BackButtonForMenuFocus
--SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
