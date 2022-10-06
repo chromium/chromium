@@ -3865,11 +3865,6 @@ void UpdateUserActivationStateInterceptor::UpdateUserActivationState(
                                                       notification_type);
 }
 
-WebContents* GetEmbedderForGuest(content::WebContents* guest) {
-  CHECK(guest);
-  return static_cast<WebContentsImpl*>(guest)->GetOuterWebContents();
-}
-
 namespace {
 
 int LoadBasicRequest(

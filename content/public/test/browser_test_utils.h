@@ -2043,8 +2043,6 @@ class UpdateUserActivationStateInterceptor
   bool update_user_activation_state_ = false;
 };
 
-WebContents* GetEmbedderForGuest(content::WebContents* guest);
-
 // Load the given |url| with |network_context| and return the |net::Error| code.
 //
 // This overload simulates loading through a URLLoaderFactory created for a
