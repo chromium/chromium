@@ -10,16 +10,12 @@ void StubLogManager::OnLogRouterAvailabilityChanged(bool router_can_be_used) {}
 
 void StubLogManager::SetSuspended(bool suspended) {}
 
-void StubLogManager::LogTextMessage(const std::string& text) const {}
-
-void StubLogManager::LogEntry(const base::Value::Dict& entry) const {}
-
 bool StubLogManager::IsLoggingActive() const {
-  return false;
+  return true;
 }
 
 LogBufferSubmitter StubLogManager::Log() {
-  return LogBufferSubmitter(nullptr);
+  return LogBufferSubmitter(this);
 }
 
 void StubLogManager::ProcessLog(base::Value::Dict node,

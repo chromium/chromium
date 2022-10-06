@@ -57,7 +57,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
       delete;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_METHOD(const autofill::LogManager*, GetLogManager, (), (const override));
+  MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (const override));
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
   MOCK_METHOD(void,

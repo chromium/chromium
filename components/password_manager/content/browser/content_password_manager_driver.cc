@@ -373,7 +373,7 @@ void ContentPasswordManagerDriver::RecordSavePasswordProgress(
   // chrome://password-manager-internals based debugging.
   if (GetLastCommittedURL().SchemeIs(content::kChromeUIScheme))
     return;
-  client_->GetLogManager()->LogTextMessage(log);
+  LOG_AF(client_->GetLogManager()) << log;
 }
 
 void ContentPasswordManagerDriver::UserModifiedPasswordField() {

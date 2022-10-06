@@ -119,7 +119,7 @@ class WebViewPasswordManagerClient
   url::Origin GetLastCommittedOrigin() const override;
   const password_manager::CredentialsFilter* GetStoreResultFilter()
       const override;
-  const autofill::LogManager* GetLogManager() const override;
+  autofill::LogManager* GetLogManager() override;
   ukm::SourceId GetUkmSourceId() override;
   password_manager::PasswordManagerMetricsRecorder* GetMetricsRecorder()
       override;

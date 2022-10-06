@@ -138,7 +138,7 @@ bool PasswordManagerClient::IsCommittedMainFrameSecure() const {
   return false;
 }
 
-const autofill::LogManager* PasswordManagerClient::GetLogManager() const {
+autofill::LogManager* PasswordManagerClient::GetLogManager() {
   return nullptr;
 }
 

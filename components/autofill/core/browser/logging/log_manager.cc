@@ -24,8 +24,6 @@ class LogManagerImpl : public LogManager {
   // LogManager
   void OnLogRouterAvailabilityChanged(bool router_can_be_used) override;
   void SetSuspended(bool suspended) override;
-  void LogTextMessage(const std::string& text) const override;
-  void LogEntry(const base::Value::Dict& entry) const override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
   void ProcessLog(base::Value::Dict node,
@@ -77,18 +75,6 @@ void LogManagerImpl::SetSuspended(bool suspended) {
     if (!notification_callback_.is_null())
       notification_callback_.Run();
   }
-}
-
-void LogManagerImpl::LogTextMessage(const std::string& text) const {
-  if (!IsLoggingActive())
-    return;
-  log_router_->ProcessLog(text);
-}
-
-void LogManagerImpl::LogEntry(const base::Value::Dict& entry) const {
-  if (!IsLoggingActive())
-    return;
-  log_router_->ProcessLog(entry);
 }
 
 bool LogManagerImpl::IsLoggingActive() const {

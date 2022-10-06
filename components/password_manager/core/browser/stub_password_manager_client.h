@@ -71,7 +71,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
   const CredentialsFilter* GetStoreResultFilter() const override;
-  const autofill::LogManager* GetLogManager() const override;
+  autofill::LogManager* GetLogManager() override;
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override;
   MockPasswordFeatureManager* GetPasswordFeatureManager();
   bool IsAutofillAssistantUIVisible() const override;

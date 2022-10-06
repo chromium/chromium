@@ -93,7 +93,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
 // Determines whether the leak check can be started depending on |prefs|. Will
 // use |client| for logging if non-null.
 bool CanStartLeakCheck(const PrefService& prefs,
-                       const PasswordManagerClient* client = nullptr);
+                       PasswordManagerClient* client = nullptr);
 
 }  // namespace password_manager
 

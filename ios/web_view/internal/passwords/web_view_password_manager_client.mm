@@ -280,8 +280,7 @@ WebViewPasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-const autofill::LogManager* WebViewPasswordManagerClient::GetLogManager()
-    const {
+autofill::LogManager* WebViewPasswordManagerClient::GetLogManager() {
   return log_manager_.get();
 }
 

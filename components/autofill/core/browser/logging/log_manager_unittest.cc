@@ -11,13 +11,24 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Property;
 
 namespace autofill {
 
 namespace {
 
 const char kTestText[] = "abcd1234";
+
+auto JsonHasText(base::StringPiece text) {
+  return testing::ResultOf(
+      [](const base::Value::Dict& dict) {
+        const std::string* value = dict.FindString("value");
+        return value ? *value : "";
+      },
+      Eq(text));
+}
 
 class MockLogReceiver : public autofill::LogReceiver {
  public:
@@ -64,7 +75,7 @@ class LogManagerTest : public testing::Test {
 TEST_F(LogManagerTest, LogTextMessageNoReceiver) {
   EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
   // Before attaching the receiver, no text should be passed.
-  manager_->LogTextMessage(kTestText);
+  LOG_AF(*manager_) << kTestText;
   EXPECT_FALSE(manager_->IsLoggingActive());
 }
 
@@ -75,9 +86,8 @@ TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
   router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
   // After attaching the logger, text should be passed.
-  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
-  EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))));
-  manager_->LogTextMessage(kTestText);
+  EXPECT_CALL(receiver_, LogEntry(JsonHasText(kTestText)));
+  LOG_AF(*manager_) << kTestText;
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
   router_.UnregisterReceiver(&receiver_);
   EXPECT_FALSE(manager_->IsLoggingActive());
@@ -93,7 +103,7 @@ TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
 
   // After detaching the logger, no text should be passed.
   EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
-  manager_->LogTextMessage(kTestText);
+  LOG_AF(*manager_) << kTestText;
 }
 
 TEST_F(LogManagerTest, NullCallbackWillNotCrash) {

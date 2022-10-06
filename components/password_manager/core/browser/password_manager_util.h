@@ -71,7 +71,7 @@ void TrimUsernameOnlyCredentials(
 // and that that LogManager returns true for IsLoggingActive. This function can
 // be removed once PasswordManagerClient::GetLogManager is implemented on iOS
 // and required to always return non-null.
-bool IsLoggingActive(const password_manager::PasswordManagerClient* client);
+bool IsLoggingActive(password_manager::PasswordManagerClient* client);
 
 // True iff the manual password generation is enabled for the current site.
 bool ManualPasswordGenerationEnabled(

@@ -21,7 +21,7 @@ namespace password_manager {
 // chrome://password-manager-internals.
 class CredentialManagerLogger {
  public:
-  explicit CredentialManagerLogger(const autofill::LogManager*);
+  explicit CredentialManagerLogger(autofill::LogManager*);
   CredentialManagerLogger(const CredentialManagerLogger&) = delete;
   CredentialManagerLogger& operator=(const CredentialManagerLogger&) = delete;
   ~CredentialManagerLogger();
@@ -35,7 +35,7 @@ class CredentialManagerLogger {
 
  private:
   // The LogManager to which logs can be sent for display.
-  const raw_ptr<const autofill::LogManager> log_manager_;
+  const raw_ptr<autofill::LogManager> log_manager_;
 };
 
 }  // namespace password_manager

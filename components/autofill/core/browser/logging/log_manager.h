@@ -46,15 +46,7 @@ class LogManager {
   // logging, by setting |suspended| to true or false, respectively.
   virtual void SetSuspended(bool suspended) = 0;
 
-  // Forward |text| for display to the LogRouter (if registered with one).
-  virtual void LogTextMessage(const std::string& text) const = 0;
-
-  // Forward a DOM structured log entry to the LogRouter (if registered with
-  // one).
-  virtual void LogEntry(const base::Value::Dict& entry) const = 0;
-
-  // Returns true if logs recorded via LogTextMessage will be displayed, and
-  // false otherwise.
+  // Returns true if logs recorded will be displayed, and false otherwise.
   virtual bool IsLoggingActive() const = 0;
 
   // This is the preferred way to submitting log entries.

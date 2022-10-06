@@ -31,8 +31,7 @@ namespace {
 
 using Logger = autofill::SavePasswordProgressLogger;
 
-void LogString(const PasswordManagerClient* client,
-               Logger::StringID string_id) {
+void LogString(PasswordManagerClient* client, Logger::StringID string_id) {
   if (client && password_manager_util::IsLoggingActive(client)) {
     BrowserSavePasswordProgressLogger logger(client->GetLogManager());
     logger.LogMessage(string_id);
@@ -174,7 +173,7 @@ void LeakDetectionDelegate::OnError(LeakDetectionError error) {
 }
 
 bool CanStartLeakCheck(const PrefService& prefs,
-                       const PasswordManagerClient* client) {
+                       PasswordManagerClient* client) {
   const bool is_leak_protection_on =
       prefs.GetBoolean(password_manager::prefs::kPasswordLeakDetectionEnabled);
 

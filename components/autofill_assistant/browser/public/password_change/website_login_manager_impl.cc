@@ -65,7 +65,7 @@ class WebsiteLoginManagerImpl::PendingRequest
  public:
   PendingRequest(
       const password_manager::PasswordFormDigest& form_digest,
-      const password_manager::PasswordManagerClient* client,
+      password_manager::PasswordManagerClient* client,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
       : form_fetcher_(
             std::make_unique<password_manager::FormFetcherImpl>(form_digest,
@@ -120,7 +120,7 @@ class WebsiteLoginManagerImpl::PendingFetchLoginsRequest
  public:
   PendingFetchLoginsRequest(
       const password_manager::PasswordFormDigest& form_digest,
-      const password_manager::PasswordManagerClient* client,
+      password_manager::PasswordManagerClient* client,
       base::OnceCallback<void(std::vector<Login>)> callback,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
       : PendingRequest(form_digest,
@@ -150,7 +150,7 @@ class WebsiteLoginManagerImpl::PendingFetchPasswordRequest
  public:
   PendingFetchPasswordRequest(
       const password_manager::PasswordFormDigest& form_digest,
-      const password_manager::PasswordManagerClient* client,
+      password_manager::PasswordManagerClient* client,
       const Login& login,
       base::OnceCallback<void(bool, std::string)> callback,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
@@ -187,7 +187,7 @@ class WebsiteLoginManagerImpl::PendingFetchLastTimePasswordUseRequest
  public:
   PendingFetchLastTimePasswordUseRequest(
       const password_manager::PasswordFormDigest& form_digest,
-      const password_manager::PasswordManagerClient* client,
+      password_manager::PasswordManagerClient* client,
       const Login& login,
       base::OnceCallback<void(absl::optional<base::Time>)> callback,
       base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)

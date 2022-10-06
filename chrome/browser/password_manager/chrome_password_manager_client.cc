@@ -920,7 +920,7 @@ ChromePasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
 }
 
-const autofill::LogManager* ChromePasswordManagerClient::GetLogManager() const {
+autofill::LogManager* ChromePasswordManagerClient::GetLogManager() {
   return log_manager_.get();
 }
 

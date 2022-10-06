@@ -32,7 +32,7 @@ class FormFetcherImpl : public FormFetcher,
   // |form_digest| describes what credentials need to be retrieved and
   // |client| serves the PasswordStore, the logging information etc.
   FormFetcherImpl(PasswordFormDigest form_digest,
-                  const PasswordManagerClient* client,
+                  PasswordManagerClient* client,
                   bool should_migrate_http_passwords);
 
   FormFetcherImpl(const FormFetcherImpl&) = delete;
@@ -74,7 +74,7 @@ class FormFetcherImpl : public FormFetcher,
   const PasswordFormDigest form_digest_;
 
   // Client used to obtain a CredentialFilter.
-  const raw_ptr<const PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   // State of the fetcher.
   State state_ = State::NOT_WAITING;

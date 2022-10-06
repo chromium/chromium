@@ -117,8 +117,8 @@ void TrimUsernameOnlyCredentials(
       });
 }
 
-bool IsLoggingActive(const password_manager::PasswordManagerClient* client) {
-  const autofill::LogManager* log_manager = client->GetLogManager();
+bool IsLoggingActive(password_manager::PasswordManagerClient* client) {
+  autofill::LogManager* log_manager = client->GetLogManager();
   return log_manager && log_manager->IsLoggingActive();
 }
 

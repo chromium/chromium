@@ -386,7 +386,7 @@ class PasswordManagerClient {
   virtual const CredentialsFilter* GetStoreResultFilter() const = 0;
 
   // Returns a LogManager instance.
-  virtual const autofill::LogManager* GetLogManager() const;
+  virtual autofill::LogManager* GetLogManager();
 
   // Record that we saw a password field on this page.
   virtual void AnnotateNavigationEntry(bool has_password_field);

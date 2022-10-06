@@ -117,7 +117,7 @@ BrowserSavePasswordProgressLogger::StringID FormSchemeToStringID(
 }  // namespace
 
 BrowserSavePasswordProgressLogger::BrowserSavePasswordProgressLogger(
-    const autofill::LogManager* log_manager)
+    autofill::LogManager* log_manager)
     : log_manager_(log_manager) {
   DCHECK(log_manager_);
 }
@@ -350,7 +350,7 @@ void BrowserSavePasswordProgressLogger::LogPasswordRequirements(
 }
 
 void BrowserSavePasswordProgressLogger::SendLog(const std::string& log) {
-  log_manager_->LogTextMessage(log);
+  LOG_AF(*log_manager_) << log;
 }
 
 std::string BrowserSavePasswordProgressLogger::PasswordAttributeLogString(

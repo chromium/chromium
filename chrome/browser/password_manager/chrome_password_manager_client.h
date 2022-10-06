@@ -226,7 +226,7 @@ class ChromePasswordManagerClient
   url::Origin GetLastCommittedOrigin() const override;
   const password_manager::CredentialsFilter* GetStoreResultFilter()
       const override;
-  const autofill::LogManager* GetLogManager() const override;
+  autofill::LogManager* GetLogManager() override;
   void AnnotateNavigationEntry(bool has_password_field) override;
   autofill::LanguageCode GetPageLanguage() const override;
 

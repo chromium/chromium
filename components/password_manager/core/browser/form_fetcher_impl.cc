@@ -61,7 +61,7 @@ std::vector<std::unique_ptr<PasswordForm>> MakeCopies(
 }  // namespace
 
 FormFetcherImpl::FormFetcherImpl(PasswordFormDigest form_digest,
-                                 const PasswordManagerClient* client,
+                                 PasswordManagerClient* client,
                                  bool should_migrate_http_passwords)
     : form_digest_(std::move(form_digest)),
       client_(client),

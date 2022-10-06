@@ -27,8 +27,7 @@ struct PasswordForm;
 class BrowserSavePasswordProgressLogger
     : public autofill::SavePasswordProgressLogger {
  public:
-  explicit BrowserSavePasswordProgressLogger(
-      const autofill::LogManager* log_manager);
+  explicit BrowserSavePasswordProgressLogger(autofill::LogManager* log_manager);
   BrowserSavePasswordProgressLogger(const BrowserSavePasswordProgressLogger&) =
       delete;
   BrowserSavePasswordProgressLogger& operator=(
@@ -68,7 +67,7 @@ class BrowserSavePasswordProgressLogger
  private:
   // The LogManager to which logs can be sent for display. The log_manager must
   // outlive this logger.
-  const raw_ptr<const autofill::LogManager> log_manager_;
+  const raw_ptr<autofill::LogManager> log_manager_;
 
   // Returns string representation for |FormStructure|.
   std::string FormStructureToFieldsLogString(
