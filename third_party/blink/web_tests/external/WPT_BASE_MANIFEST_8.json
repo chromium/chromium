@@ -281550,7 +281550,7 @@
        []
       ],
       "at-font-face-descriptors-expected.txt": [
-       "fbd2e47a5ac5ead48bb613a2702a1ca9e63c6984",
+       "aac4466b88fcad42bdb48386717f62747154142b",
        []
       ],
       "font-descriptor-range-reversed-ref.html": [
@@ -317752,12 +317752,16 @@
        []
       ]
      },
-     "cross-origin-isolated-permission.https-expected.txt": [
-      "9ba1e94eead1a6e1e5aa8fc45751951a2a98afca",
+     "cross-origin-isolated-permission-iframe.https.window.js.headers": [
+      "3b7825def9d70c572868afbec6939fea25055cd7",
       []
      ],
-     "cross-origin-isolated-permission.https.html.headers": [
-      "5f8621ef83660c66f0d037ea28fafefb558140f1",
+     "cross-origin-isolated-permission-worker.https.window-expected.txt": [
+      "35f6092468befc4b0a5b0004290e755bee8c982e",
+      []
+     ],
+     "cross-origin-isolated-permission-worker.https.window.js.headers": [
+      "3b7825def9d70c572868afbec6939fea25055cd7",
       []
      ],
      "data.https.html.headers": [
@@ -317915,16 +317919,12 @@
        "6604450991a122e3e241e40b1b9e0516c525389d",
        []
       ],
+      "common.js": [
+       "8f038a7278159c5a6f7beea4ec0aa3b530cb9022",
+       []
+      ],
       "corp-image.py": [
        "e507846181d980fe045028b0aacd9e31600b3b89",
-       []
-      ],
-      "cross-origin-isolated-frame.html": [
-       "b79fe288b3ba6de26ccd15947e8521839a18c62a",
-       []
-      ],
-      "cross-origin-isolated-worker.js": [
-       "9f1e3710af6e21832050b3f99f65f51f49fac461",
        []
       ],
       "dedicated-worker.js": [
@@ -409271,7 +409271,7 @@
       ]
      ],
      "transform-2d-getComputedStyle-001.html": [
-      "8fc4f9380fe4739334032975da15f626964277d3",
+      "b6a2a7cef211392c0e379809cbdac2fbfd286ddb",
       [
        null,
        {}
@@ -482312,11 +482312,64 @@
        ]
       ]
      },
-     "cross-origin-isolated-permission.https.html": [
-      "661d449e1af4f46b909afdd0bcfee24d7a6b706a",
+     "cross-origin-isolated-permission-iframe.https.window.js": [
+      "9190303206d50d74fa0434b9d3aff776c583ed73",
       [
-       null,
-       {}
+       "html/cross-origin-embedder-policy/cross-origin-isolated-permission-iframe.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "./credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "cross-origin-isolated-permission-worker.https.window.js": [
+      "d9431cdb50427438cb09bfb80a8f3a70cbf94c45",
+      [
+       "html/cross-origin-embedder-policy/cross-origin-isolated-permission-worker.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "./credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
       ]
      ],
      "data.https.html": [
