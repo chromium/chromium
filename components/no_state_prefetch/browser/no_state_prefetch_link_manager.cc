@@ -89,17 +89,16 @@ NoStatePrefetchLinkManager::~NoStatePrefetchLinkManager() {
 absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
+    int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      launcher_render_process_id, launcher_render_view_id);
-  content::WebContents* web_contents =
-      rvh ? content::WebContents::FromRenderViewHost(rvh) : nullptr;
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      launcher_render_process_id, launcher_render_frame_id);
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
-  if (guest_view::GuestViewBase::IsGuest(web_contents))
+  if (guest_view::GuestViewBase::IsGuest(rfh))
     return absl::nullopt;
 #endif
 

@@ -24,6 +24,7 @@ class MockNoStatePrefetchLinkManager final : public NoStatePrefetchLinkManager {
   absl::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
+      int launcher_render_frame_id,
       blink::mojom::PrerenderAttributesPtr attributes,
       const url::Origin& initiator_origin) override {
     DCHECK(!is_start_called_);

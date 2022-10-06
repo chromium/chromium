@@ -131,6 +131,7 @@ class NoStatePrefetchTest : public testing::Test {
  public:
   static const int kDefaultChildId = -1;
   static const int kDefaultRenderViewRouteId = -1;
+  static const int kDefaultRenderFrameRouteId = -1;
 
   NoStatePrefetchTest()
       : no_state_prefetch_manager_(
@@ -193,7 +194,8 @@ class NoStatePrefetchTest : public testing::Test {
   bool AddLinkTrigger(const GURL& url,
                       const GURL& initiator_url,
                       int render_process_id,
-                      int render_view_id) {
+                      int render_view_id,
+                      int render_frame_id) {
     auto attributes = blink::mojom::PrerenderAttributes::New();
     attributes->url = url;
     attributes->trigger_type =
@@ -205,8 +207,8 @@ class NoStatePrefetchTest : public testing::Test {
     // This could delete an existing prefetcher as a side-effect.
     absl::optional<int> link_trigger_id =
         no_state_prefetch_link_manager()->OnStartLinkTrigger(
-            render_process_id, render_view_id, std::move(attributes),
-            url::Origin::Create(initiator_url));
+            render_process_id, render_view_id, render_frame_id,
+            std::move(attributes), url::Origin::Create(initiator_url));
 
     // Check if the new prefetch request was added and running.
     return link_trigger_id && LastTriggerIsRunning();
@@ -218,7 +220,8 @@ class NoStatePrefetchTest : public testing::Test {
   // handle.
   bool AddSimpleLinkTrigger(const GURL& url) {
     return AddLinkTrigger(url, GURL(), kDefaultChildId,
-                          kDefaultRenderViewRouteId);
+                          kDefaultRenderViewRouteId,
+                          kDefaultRenderFrameRouteId);
   }
 
   // Shorthand to add a simple link trigger with a reasonable source. Returns
@@ -227,7 +230,8 @@ class NoStatePrefetchTest : public testing::Test {
   // handle. The referrer is set to a google domain.
   bool AddSimpleGWSLinkTrigger(const GURL& url) {
     return AddLinkTrigger(url, GURL("https://www.google.com"), kDefaultChildId,
-                          kDefaultRenderViewRouteId);
+                          kDefaultRenderViewRouteId,
+                          kDefaultRenderFrameRouteId);
   }
 
   void AbandonFirstTrigger() {
@@ -816,7 +820,7 @@ TEST_F(NoStatePrefetchTest, SourceRenderViewClosed) {
   GURL url("http://www.google.com/");
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, FINAL_STATUS_PROFILE_DESTROYED);
-  AddLinkTrigger(url, url, 100, 200);
+  AddLinkTrigger(url, url, 100, 200, 300);
   EXPECT_FALSE(LastTriggerExists());
 }
 

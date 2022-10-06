@@ -78,7 +78,7 @@ void NoStatePrefetchProcessorImpl::Start(
   DCHECK(!link_trigger_id_);
   link_trigger_id_ = link_manager->OnStartLinkTrigger(
       render_process_id_,
-      render_frame_host->GetRenderViewHost()->GetRoutingID(),
+      render_frame_host->GetRenderViewHost()->GetRoutingID(), render_frame_id_,
       std::move(attributes), initiator_origin_);
 }
 
