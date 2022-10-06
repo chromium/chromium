@@ -179,7 +179,7 @@ export function inputListTestSuite() {
     assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
   });
 
-  test('TouchscreenTesterShow', async () => {
+  test('TouchscreenTesterShowAndClose', async () => {
     await initializeInputList([], [fakeTouchDevices[1]]);
 
     const resolver = new PromiseResolver();
@@ -203,6 +203,9 @@ export function inputListTestSuite() {
     await flushTasks();
     assertEquals(1, requestFullscreenCalled);
     assertTrue(introDialog.open);
+
+    touchscreenTester.shadowRoot.dispatchEvent(new Event('fullscreenchange'));
+    assertFalse(introDialog.open);
   });
 
   test('EmptySectionsHidden', async () => {
