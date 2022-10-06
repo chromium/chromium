@@ -1024,10 +1024,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test pagehide's persisted value and whether the page can be BFCached when a
 // sticky/non-sticky feature is used on the mainframe/subframe.
-// TODO(crbug.com/1277888): flaky.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
-    DISABLED_TestPagehidePersistedValue) {
+    TestPagehidePersistedValue) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
