@@ -37,7 +37,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -176,13 +175,8 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
     *os << "Waiting for auth error";
-    // Note: This is quite fragile. It relies on Sync trying to fetch a new
-    // access token, even though it might already be in a persistent auth error
-    // state.
-    return (service()
-                ->GetSyncTokenStatusForDebugging()
-                .last_get_token_error.state() !=
-            GoogleServiceAuthError::NONE) ||
+    return service()->GetAuthError() !=
+               GoogleServiceAuthError::AuthErrorNone() ||
            UpdatedProgressMarkerChecker::IsExitConditionSatisfied(os);
   }
 };
@@ -641,10 +635,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnPersistentError) {
 
   // Run until an auth error is encountered.
   TestForAuthError(GetSyncService(0)).Wait();
-  GoogleServiceAuthError oauth_error =
-      GetSyncService(0)->GetSyncTokenStatusForDebugging().last_get_token_error;
+  GoogleServiceAuthError oauth_error = GetSyncService(0)->GetAuthError();
   ASSERT_TRUE(oauth_error.IsPersistentError());
-  ASSERT_FALSE(syncer::IsWebSignout(oauth_error));
+  // Verify it's not a locally-initiated web signout, which would otherwise mean
+  // this test is redundant with test ClearOnSyncPaused.
+  ASSERT_NE(oauth_error,
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT));
 
   // This should result in the data & metadata being gone.
   WaitForNumberOfCards(0, pdm);

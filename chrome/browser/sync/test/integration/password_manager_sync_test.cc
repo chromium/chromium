@@ -37,7 +37,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -915,7 +914,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
 
   // Enter a persistent auth error state (web signout).
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
-  ASSERT_TRUE(syncer::IsWebSignout(GetSyncService(0)->GetAuthError()));
+  ASSERT_EQ(GetSyncService(0)->GetAuthError(),
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    CREDENTIALS_REJECTED_BY_CLIENT));
 
   // Passwords are not sync-ing actively while sync is paused due to a web
   // signout. Note that this is not the case for other persistent auth errors.
