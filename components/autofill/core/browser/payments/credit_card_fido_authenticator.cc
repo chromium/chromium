@@ -397,87 +397,10 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
   LogWebauthnResult(status);
 
-  // End the flow if there was an authentication error.
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    // Report failure to |requester_| if card unmasking was requested.
-    if (current_flow_ == AUTHENTICATION_FLOW && requester_) {
-      FidoAuthenticationResponse response{.did_succeed = false};
-      requester_->OnFIDOAuthenticationComplete(response);
-    }
-    if (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW && requester_)
-      requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
-
-    // Treat failure to perform user verification as a strong signal not to
-    // offer opt-in in the future.
-    if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
-#if BUILDFLAG(IS_ANDROID)
-      // For Android, even if GetAssertion fails for opting-in, we still report
-      // success to |requester_| to fill the form with the fetched card info.
-      if (requester_)
-        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
-#endif  // BUILDFLAG(IS_ANDROID)
-      GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
-          FidoAuthenticationStrikeDatabase::
-              kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
-      user_is_opted_in_ = false;
-      UpdateUserPref();
-    }
-
-    current_flow_ = NONE_FLOW;
-    return;
-  }
-
-  if (current_flow_ == AUTHENTICATION_FLOW) {
-    base::Value response =
-        ParseAssertionResponse(std::move(assertion_response));
-    full_card_request_ = std::make_unique<payments::FullCardRequest>(
-        autofill_client_, autofill_client_->GetPaymentsClient(),
-        autofill_client_->GetPersonalDataManager());
-
-    absl::optional<GURL> last_committed_primary_main_frame_origin;
-    if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
-        autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
-      last_committed_primary_main_frame_origin =
-          autofill_client_->GetLastCommittedPrimaryMainFrameURL()
-              .DeprecatedGetOriginAsURL();
-    }
-
-#if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableFIDOProgressDialog)) {
-      // Open the progress dialog when authenticating and getting the full card
-      // from FIDO.
-      autofill_client_->ShowAutofillProgressDialog(
-          AutofillProgressDialogType::kAndroidFIDOProgressDialog,
-          base::BindOnce(&CreditCardFIDOAuthenticator::CancelVerification,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-#endif
-
-    full_card_request_->GetFullCardViaFIDO(
-        *card_, AutofillClient::UnmaskCardReason::kAutofill,
-        weak_ptr_factory_.GetWeakPtr(), std::move(response),
-        last_committed_primary_main_frame_origin, context_token_);
+  if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    HandleGetAssertionSuccess(std::move(assertion_response));
   } else {
-    DCHECK(current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW ||
-           current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);
-    // The user-facing portion of the authorization is complete, which should be
-    // reported so that the form can be filled.
-    bool should_respond_to_requester =
-        (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW);
-#if BUILDFLAG(IS_ANDROID)
-    // For Android, opt-in flow (OPT_IN_WITH_CHALLENGE_FLOW) also delays form
-    // filling.
-    should_respond_to_requester |=
-        (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);
-#endif
-    if (should_respond_to_requester && requester_)
-      requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
-
-    base::Value response = base::Value(base::Value::Type::DICTIONARY);
-    response.SetKey("fido_assertion_info",
-                    ParseAssertionResponse(std::move(assertion_response)));
-    OptChange(std::move(response));
+    HandleGetAssertionFailure();
   }
 }
 
@@ -821,6 +744,118 @@ void CreditCardFIDOAuthenticator::LogWebauthnResult(
 void CreditCardFIDOAuthenticator::UpdateUserPref() {
   prefs::SetCreditCardFIDOAuthEnabled(autofill_client_->GetPrefs(),
                                       user_is_opted_in_);
+}
+
+void CreditCardFIDOAuthenticator::HandleGetAssertionSuccess(
+    blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
+  switch (current_flow_) {
+    case AUTHENTICATION_FLOW: {
+      base::Value response =
+          ParseAssertionResponse(std::move(assertion_response));
+      full_card_request_ = std::make_unique<payments::FullCardRequest>(
+          autofill_client_, autofill_client_->GetPaymentsClient(),
+          autofill_client_->GetPersonalDataManager());
+
+      absl::optional<GURL> last_committed_primary_main_frame_origin;
+      if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
+          autofill_client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
+        last_committed_primary_main_frame_origin =
+            autofill_client_->GetLastCommittedPrimaryMainFrameURL()
+                .DeprecatedGetOriginAsURL();
+      }
+#if BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableFIDOProgressDialog)) {
+        // Open the progress dialog when authenticating and getting the full
+        // card from FIDO.
+        autofill_client_->ShowAutofillProgressDialog(
+            AutofillProgressDialogType::kAndroidFIDOProgressDialog,
+            base::BindOnce(&CreditCardFIDOAuthenticator::CancelVerification,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+#endif
+      full_card_request_->GetFullCardViaFIDO(
+          *card_, AutofillClient::UnmaskCardReason::kAutofill,
+          weak_ptr_factory_.GetWeakPtr(), std::move(response),
+          last_committed_primary_main_frame_origin, context_token_);
+      // Return here to skip the OptChange call.
+      return;
+    }
+
+    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+      // The user-facing portion of the authorization is complete, which should
+      // be reported so that the form can be filled.
+      if (requester_)
+        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
+      break;
+    }
+
+    case OPT_IN_WITH_CHALLENGE_FLOW: {
+#if BUILDFLAG(IS_ANDROID)
+      // For Android, opt-in flow (OPT_IN_WITH_CHALLENGE_FLOW) also delays form
+      // filling.
+      if (requester_)
+        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
+#endif
+      break;
+    }
+
+    case NONE_FLOW:
+    case OPT_IN_FETCH_CHALLENGE_FLOW:
+    case OPT_OUT_FLOW: {
+      NOTREACHED();
+      return;
+    }
+  }
+
+  base::Value response = base::Value(base::Value::Type::DICTIONARY);
+  response.SetKey("fido_assertion_info",
+                  ParseAssertionResponse(std::move(assertion_response)));
+  OptChange(std::move(response));
+}
+
+void CreditCardFIDOAuthenticator::HandleGetAssertionFailure() {
+  switch (current_flow_) {
+    case AUTHENTICATION_FLOW: {
+      // End the flow if there was an authentication error.
+      if (requester_) {
+        requester_->OnFIDOAuthenticationComplete(
+            FidoAuthenticationResponse{.did_succeed = false});
+      }
+      break;
+    }
+
+    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+      if (requester_)
+        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
+      break;
+    }
+
+    case OPT_IN_WITH_CHALLENGE_FLOW: {
+      // Treat failure to perform user verification as a strong signal not to
+      // offer opt-in in the future.
+#if BUILDFLAG(IS_ANDROID)
+      // For Android, even if GetAssertion fails for opting-in, we still report
+      // success to |requester_| to fill the form with the fetched card info.
+      if (requester_)
+        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
+#endif  // BUILDFLAG(IS_ANDROID)
+      GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
+          FidoAuthenticationStrikeDatabase::
+              kStrikesToAddWhenUserVerificationFailsOnOptInAttempt);
+      user_is_opted_in_ = false;
+      UpdateUserPref();
+      break;
+    }
+
+    case NONE_FLOW:
+    case OPT_IN_FETCH_CHALLENGE_FLOW:
+    case OPT_OUT_FLOW: {
+      NOTREACHED();
+      break;
+    }
+  }
+  current_flow_ = NONE_FLOW;
 }
 
 webauthn::InternalAuthenticator* CreditCardFIDOAuthenticator::authenticator() {

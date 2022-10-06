@@ -240,6 +240,11 @@ class CreditCardFIDOAuthenticator
   // Updates the user preference to the value of |user_is_opted_in_|.
   void UpdateUserPref();
 
+  // Helper functions to handle the GetAssertion result.
+  void HandleGetAssertionSuccess(
+      blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response);
+  void HandleGetAssertionFailure();
+
   // Gets or creates Authenticator pointer to facilitate WebAuthn.
   webauthn::InternalAuthenticator* authenticator();
 
