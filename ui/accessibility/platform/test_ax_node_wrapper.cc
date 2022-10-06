@@ -157,7 +157,7 @@ AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
     return ui::AXNodePosition::CreateTextPosition(
         GetTreeData().tree_id, node_->id(), offset, affinity);
   }
-  return AXNodePosition::CreateTreePosition(*tree_, node_->id(), offset);
+  return AXNodePosition::CreateTreePosition(*tree_, *node_, offset);
 }
 
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreateTextPositionAt(

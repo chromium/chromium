@@ -7119,11 +7119,12 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes = {root_1,       generic_container_2, heading_3, static_text_4,
                   inline_box_5, generic_container_6, button_7};
 
-  Init(update);
+  AXTree* tree = Init(update);
 
   AXNode* root_node = GetRoot();
+  AXNode* generic_container_2_node = tree->GetFromId(generic_container_2.id);
   AXNodePosition::AXPositionInstance range_start =
-      AXNodePosition::CreateTreePosition(*GetTree(), generic_container_2.id,
+      AXNodePosition::CreateTreePosition(*tree, *generic_container_2_node,
                                          /*child_index*/ 3);
   AXNodePosition::AXPositionInstance range_end = range_start->Clone();
 
@@ -7137,11 +7138,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   generic_container_2.child_ids = {heading_3.id, button_7.id};
   AXTreeUpdate test_update;
   test_update.nodes = {generic_container_2};
-  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+  ASSERT_TRUE(tree->Unserialize(test_update));
 
   root_1.child_ids = {};
   test_update.nodes = {root_1};
-  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+  ASSERT_TRUE(tree->Unserialize(test_update));
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,

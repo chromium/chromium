@@ -115,6 +115,40 @@ class AXPositionTest : public ::testing::Test, public TestAXTreeManager {
       const std::vector<AXNodeData>& nodes,
       const AXTreeID& parent_tree_id = AXTreeID()) const;
 
+  const AXNode& GetRootNode() const { return *ax_tree()->GetFromId(root_.id); }
+
+  const AXNode& GetButtonNode() const {
+    return *ax_tree()->GetFromId(button_.id);
+  }
+
+  const AXNode& GetCheckBoxNode() const {
+    return *ax_tree()->GetFromId(check_box_.id);
+  }
+
+  const AXNode& GetTextFieldNode() const {
+    return *ax_tree()->GetFromId(text_field_.id);
+  }
+
+  const AXNode& GetStaticText1Node() const {
+    return *ax_tree()->GetFromId(static_text1_.id);
+  }
+
+  const AXNode& GetLineBreakNode() const {
+    return *ax_tree()->GetFromId(line_break_.id);
+  }
+
+  const AXNode& GetStaticText2Node() const {
+    return *ax_tree()->GetFromId(static_text2_.id);
+  }
+
+  const AXNode& GetInlineBox1Node() const {
+    return *ax_tree()->GetFromId(inline_box1_.id);
+  }
+
+  const AXNode& GetInlineBox2Node() const {
+    return *ax_tree()->GetFromId(inline_box2_.id);
+  }
+
   AXNodeData root_;
   AXNodeData button_;
   AXNodeData check_box_;
@@ -695,7 +729,7 @@ TEST_F(AXPositionTest, DISABLED_Clone) {
   EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
 
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   copy_position = tree_position->Clone();
   ASSERT_NE(nullptr, copy_position);
@@ -704,7 +738,7 @@ TEST_F(AXPositionTest, DISABLED_Clone) {
   EXPECT_EQ(0, copy_position->child_index());
   EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
 
-  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), root_.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                                      1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   copy_position = tree_position->Clone();
@@ -718,7 +752,7 @@ TEST_F(AXPositionTest, DISABLED_Clone) {
   // a leaf. A non-leaf must use a child index >= 0 and <= AnchorChildOffset().
   // A child index of BEFORE_TEXT can only be used with a leaf anchor.
   EXPECT_DEATH_IF_SUPPORTED(
-      AXNodePosition::CreateTreePosition(*ax_tree(), root_.id,
+      AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                          AXNodePosition::BEFORE_TEXT),
       "Creating invalid positions is disallowed.");
 
@@ -757,7 +791,7 @@ TEST_F(AXPositionTest, Serialize) {
   EXPECT_TRUE(copy_position->IsNullPosition());
 
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 1 /* child_index */);
+      *ax_tree(), GetRootNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   copy_position = AXNodePosition::Unserialize(tree_position->Serialize());
   ASSERT_NE(nullptr, copy_position);
@@ -767,7 +801,7 @@ TEST_F(AXPositionTest, Serialize) {
   EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
 
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox2Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position);
   copy_position = AXNodePosition::Unserialize(tree_position->Serialize());
   ASSERT_NE(nullptr, copy_position);
@@ -973,6 +1007,10 @@ TEST_F(AXPositionTest, DISABLED_IsIgnored) {
       CreateAXTree({root_data, static_text_data_1, inline_box_data_1,
                     container_data, static_text_data_2, inline_box_data_2}));
 
+  AXNode* root = ax_tree()->GetFromId(root_data.id);
+  AXNode* static_text_1 = ax_tree()->GetFromId(static_text_data_1.id);
+  AXNode* inline_box_1 = ax_tree()->GetFromId(inline_box_data_1.id);
+
   //
   // Text positions.
   //
@@ -1031,32 +1069,32 @@ TEST_F(AXPositionTest, DISABLED_IsIgnored) {
   // A "before children" position on the root should be ignored because the
   // first child of the root is ignored.
   TestPositionType tree_position_1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_data.id, 0 /* child_index */);
+      *ax_tree(), *root, 0 /* child_index */);
   ASSERT_TRUE(tree_position_1->IsTreePosition());
   EXPECT_TRUE(tree_position_1->IsIgnored());
 
   // A tree position pointing to an ignored child node should be ignored.
   TestPositionType tree_position_2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_data.id, 1 /* child_index */);
+      *ax_tree(), *root, 1 /* child_index */);
   ASSERT_TRUE(tree_position_2->IsTreePosition());
   EXPECT_TRUE(tree_position_2->IsIgnored());
 
   // An "after text" tree position on an ignored leaf node should be ignored.
   TestPositionType tree_position_3 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_data_1.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_1, 0 /* child_index */);
   ASSERT_TRUE(tree_position_3->IsTreePosition());
   EXPECT_TRUE(tree_position_3->IsIgnored());
 
   // A "before text" tree position on an ignored leaf node should be ignored.
   TestPositionType tree_position_4 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_data_1.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), *inline_box_1, AXNodePosition::BEFORE_TEXT);
   ASSERT_TRUE(tree_position_4->IsTreePosition());
   EXPECT_TRUE(tree_position_4->IsIgnored());
 
   // An "after children" tree position on the root node, where the last child is
   // ignored, should be ignored.
   TestPositionType tree_position_5 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_data.id, 2 /* child_index */);
+      *ax_tree(), *root, 2 /* child_index */);
   ASSERT_TRUE(tree_position_5->IsTreePosition());
   EXPECT_TRUE(tree_position_5->IsIgnored());
 
@@ -1064,7 +1102,7 @@ TEST_F(AXPositionTest, DISABLED_IsIgnored) {
   // However, such a position is illegal. The child index must point to one
   // node's children.
   EXPECT_DEATH_IF_SUPPORTED(
-      AXNodePosition::CreateTreePosition(*ax_tree(), static_text_data_1.id,
+      AXNodePosition::CreateTreePosition(*ax_tree(), *static_text_1,
                                          AXNodePosition::BEFORE_TEXT),
       "Creating invalid positions is disallowed.");
 }
@@ -1425,7 +1463,7 @@ TEST_F(AXPositionTest, AtStartOfAnchorWithNullPosition) {
 
 TEST_F(AXPositionTest, AtStartOfAnchorWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_TRUE(tree_position->AtStartOfAnchor());
 
@@ -1441,13 +1479,13 @@ TEST_F(AXPositionTest, AtStartOfAnchorWithTreePosition) {
 
   // A "before text" position.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_TRUE(tree_position->AtStartOfAnchor());
 
   // An "after text" position.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, 0 /* child_index */);
+      *ax_tree(), GetInlineBox1Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_FALSE(tree_position->AtStartOfAnchor());
 }
@@ -1483,16 +1521,16 @@ TEST_F(AXPositionTest, AtEndOfAnchorWithNullPosition) {
 
 TEST_F(AXPositionTest, AtEndOfAnchorWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 3 /* child_index */);
+      *ax_tree(), GetRootNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_TRUE(tree_position->AtEndOfAnchor());
 
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                                      2 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_FALSE(tree_position->AtEndOfAnchor());
 
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                                      0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_FALSE(tree_position->AtEndOfAnchor());
@@ -1682,7 +1720,7 @@ TEST_F(AXPositionTest, AtStartOfBlankLine) {
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 1 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_TRUE(tree_position->AtStartOfLine());
@@ -1714,7 +1752,7 @@ TEST_F(AXPositionTest, AtEndOfBlankLine) {
   ASSERT_TRUE(GetTree()->Unserialize(update));
 
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 1 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_FALSE(tree_position->AtEndOfLine());
@@ -1829,9 +1867,12 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineWhenAtEndOfTextSpan) {
                         inline_box_data_2, inline_box_data_3, inline_box_data_4,
                         static_text_data_2, inline_box_data_5}));
 
+  AXNode* inline_box_2 = ax_tree()->GetFromId(inline_box_data_2.id);
+  AXNode* inline_box_4 = ax_tree()->GetFromId(inline_box_data_4.id);
+
   // An "after text" tree position - after the soft line break.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_data_2.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_2, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_TRUE(tree_position->AtStartOfLine());
@@ -1839,8 +1880,8 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineWhenAtEndOfTextSpan) {
 
   // An "after text" tree position - after the space character and before the
   // hard line break caused by the second static text object.
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_data_4.id, 0 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *inline_box_4,
+                                                     0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_FALSE(tree_position->AtStartOfLine());
@@ -1972,29 +2013,32 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
                     text_field_data_2, static_text_data_2, inline_box_data_4,
                     inline_box_data_5, inline_box_data_6}));
 
+  AXNode* text_field_1 = ax_tree()->GetFromId(text_field_data_1.id);
+  AXNode* text_field_2 = ax_tree()->GetFromId(text_field_data_2.id);
+
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_data_1.id, 0 /* child_index */);
+      *ax_tree(), *text_field_1, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_TRUE(tree_position->AtStartOfLine());
   EXPECT_FALSE(tree_position->AtEndOfLine());
 
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_data_1.id, 1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *text_field_1,
+                                                     1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_FALSE(tree_position->AtStartOfLine());
   EXPECT_TRUE(tree_position->AtEndOfLine());
 
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_data_2.id, 0 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *text_field_2,
+                                                     0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_TRUE(tree_position->AtStartOfLine());
   EXPECT_FALSE(tree_position->AtEndOfLine());
 
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_data_2.id, 1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *text_field_2,
+                                                     1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_FALSE(tree_position->AtStartOfLine());
@@ -3398,20 +3442,20 @@ TEST_F(AXPositionTest, LowestCommonAncestor) {
   ASSERT_NE(nullptr, null_position);
   // An "after children" position.
   TestPositionType root_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 3 /* child_index */);
+      *ax_tree(), GetRootNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, root_position);
   // A "before text" position.
   TestPositionType button_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetButtonNode(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, button_position);
   TestPositionType text_field_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 2 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, text_field_position);
   TestPositionType static_text1_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), static_text1_.id, 0 /* child_index */);
+      *ax_tree(), GetStaticText1Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, static_text1_position);
   TestPositionType static_text2_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), static_text2_.id, 0 /* child_index */);
+      *ax_tree(), GetStaticText2Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, static_text2_position);
   TestPositionType inline_box1_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 0 /* text_offset */,
@@ -3488,7 +3532,7 @@ TEST_F(AXPositionTest, AsTreePositionWithNullPosition) {
 
 TEST_F(AXPositionTest, AsTreePositionWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 1 /* child_index */);
+      *ax_tree(), GetRootNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->AsTreePosition();
   ASSERT_NE(nullptr, test_position);
@@ -3558,7 +3602,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
   // Create a tree position pointing to the line break node inside the text
   // field.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 1 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3577,7 +3621,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
 
   // Test for a "before text" position.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3590,7 +3634,7 @@ TEST_F(AXPositionTest, AsTextPositionWithTreePosition) {
 
   // Test for an "after text" position.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, 0 /* child_index */);
+      *ax_tree(), GetInlineBox1Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3630,7 +3674,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
   // Create a tree position pointing to the first static text node inside the
   // text field: a "before children" position.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 0 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
@@ -3641,8 +3685,8 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
 
   // Create a tree position pointing to the line break node inside the text
   // field.
-  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), text_field_.id,
-                                                     1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(
+      *ax_tree(), GetTextFieldNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
@@ -3653,8 +3697,8 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTreePosition) {
 
   // Create a text position pointing to the second static text node inside the
   // text field.
-  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), text_field_.id,
-                                                     2 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(
+      *ax_tree(), GetTextFieldNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsLeafTreePosition();
   ASSERT_NE(nullptr, test_position);
@@ -3820,7 +3864,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
   // Create a tree position pointing to the first static text node inside the
   // text field.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 0 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3832,8 +3876,8 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
 
   // Create a tree position pointing to the line break node inside the text
   // field.
-  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), text_field_.id,
-                                                     1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(
+      *ax_tree(), GetTextFieldNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3845,8 +3889,8 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTreePosition) {
 
   // Create a text position pointing to the second static text node inside the
   // text field.
-  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), text_field_.id,
-                                                     2 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(
+      *ax_tree(), GetTextFieldNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3879,9 +3923,11 @@ TEST_F(AXPositionTest,
 
   SetTree(CreateAXTree({root_data, empty_div_data1, empty_div_data2}));
 
+  AXNode* root = ax_tree()->GetFromId(root_data.id);
+
   // Create a tree position on the root pointing to the second empty div child.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_data.id, 1 /* child_index */);
+      *ax_tree(), *root, 1 /* child_index */);
   ASSERT_FALSE(tree_position->IsLeafTextPosition());
   TestPositionType test_position = tree_position->AsLeafTextPosition();
   ASSERT_NE(nullptr, test_position);
@@ -3892,7 +3938,7 @@ TEST_F(AXPositionTest,
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 
   // Create an "after children" tree position.
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_data.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *root,
                                                      2 /* child_index */);
   ASSERT_FALSE(tree_position->IsLeafTextPosition());
   test_position = tree_position->AsLeafTextPosition();
@@ -4327,6 +4373,9 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
                         inline_box_data_2, container_data, static_text_data_2,
                         inline_box_data_3}));
 
+  AXNode* container = ax_tree()->GetFromId(container_data.id);
+  AXNode* static_text_1 = ax_tree()->GetFromId(static_text_data_1.id);
+
   // 1. In the case of a text position, we move up the parent positions until we
   // find the next unignored equivalent parent position. We don't do this for
   // tree positions because, unlike text positions which maintain the
@@ -4364,7 +4413,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
 
   // "Before children" position.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), container_data.id, 0 /* child_index */);
+      *ax_tree(), *container, 0 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
@@ -4374,8 +4423,8 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
   // "After children" position.
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), container_data.id, 1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *container,
+                                                     1 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   // Changing the adjustment behavior should not affect the outcome.
   test_position = tree_position->AsUnignoredPosition(
@@ -4387,8 +4436,8 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
 
   // "After children" tree positions that are anchored to an unignored node
   // whose last child is ignored.
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), static_text_data_1.id, 2 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *static_text_1,
+                                                     2 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
@@ -4407,9 +4456,13 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
                         inline_box_data_2, container_data, static_text_data_2,
                         inline_box_data_3}));
 
+  AXNode* root = ax_tree()->GetFromId(root_data.id);
+  AXNode* inline_box_2 = ax_tree()->GetFromId(inline_box_data_2.id);
+  container = ax_tree()->GetFromId(container_data.id);
+
   // TODO(nektar): AXTree has a bug whereby it doesn't update the unignored
   // cached values when the ignored state is flipped on the root.
-  GetNode(root_data.id)->UpdateUnignoredCachedValues();
+  root->UpdateUnignoredCachedValues();
 
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 0 /* text_offset */,
@@ -4455,7 +4508,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
   // "After children" position.
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_data.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *root,
                                                      2 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
@@ -4474,8 +4527,8 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(0, test_position->child_index());
 
   // "Before children" position.
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), container_data.id, 0 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *container,
+                                                     0 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
@@ -4485,8 +4538,8 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
   // "After children" position.
-  tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), container_data.id, 1 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), *container,
+                                                     1 /* child_index */);
   EXPECT_TRUE(tree_position->IsIgnored());
   // Changing the adjustment behavior should not affect the outcome.
   test_position = tree_position->AsUnignoredPosition(
@@ -4534,7 +4587,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_data_2.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), *inline_box_2, AXNodePosition::BEFORE_TEXT);
   EXPECT_TRUE(tree_position->IsIgnored());
 
   test_position = tree_position->AsUnignoredPosition(
@@ -4739,7 +4792,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAnchorWithNullPosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtStartOfAnchorWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position =
       tree_position->CreatePositionAtStartOfAnchor();
@@ -4748,7 +4801,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAnchorWithTreePosition) {
   EXPECT_EQ(root_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                                      1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->CreatePositionAtStartOfAnchor();
@@ -4759,7 +4812,7 @@ TEST_F(AXPositionTest, CreatePositionAtStartOfAnchorWithTreePosition) {
 
   // An "after text" position.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, 0 /* child_index */);
+      *ax_tree(), GetInlineBox1Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->CreatePositionAtStartOfAnchor();
   EXPECT_NE(nullptr, test_position);
@@ -4806,7 +4859,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAnchorWithNullPosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtEndOfAnchorWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 3 /* child_index */);
+      *ax_tree(), GetRootNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->CreatePositionAtEndOfAnchor();
   EXPECT_NE(nullptr, test_position);
@@ -4814,7 +4867,7 @@ TEST_F(AXPositionTest, CreatePositionAtEndOfAnchorWithTreePosition) {
   EXPECT_EQ(root_.id, test_position->anchor_id());
   EXPECT_EQ(3, test_position->child_index());
 
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
+  tree_position = AXNodePosition::CreateTreePosition(*ax_tree(), GetRootNode(),
                                                      1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->CreatePositionAtEndOfAnchor();
@@ -4876,7 +4929,7 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), static_text1_.id, 1 /* child_index */);
+      *ax_tree(), GetStaticText1Node(), 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
 
@@ -5013,7 +5066,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
       AXEmbeddedObjectBehavior::kExposeCharacter);
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_.id, 0 /* child_index */);
+      *ax_tree(), GetButtonNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
 
@@ -5735,9 +5788,11 @@ TEST_F(AXPositionTest, CreatePositionAtPageBoundaryWithTreePosition) {
                                   page_2_data, page_2_text_data, page_3_data,
                                   page_3_text_data));
 
+  AXNode* page_1 = ax_tree()->GetFromId(page_1_data.id);
+
   // Test CreateNextPageStartPosition at the start of the whole content.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), page_1_data.id, 0 /* child_index */);
+      *ax_tree(), *page_1, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
 
@@ -7589,7 +7644,7 @@ TEST_F(AXPositionTest, CreateChildPositionAtWithNullPosition) {
 
 TEST_F(AXPositionTest, CreateChildPositionAtWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 2 /* child_index */);
+      *ax_tree(), GetRootNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->CreateChildPositionAt(1);
   EXPECT_NE(nullptr, test_position);
@@ -7599,8 +7654,8 @@ TEST_F(AXPositionTest, CreateChildPositionAtWithTreePosition) {
   // a "before text" position.
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
-  tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), button_.id,
-                                                     0 /* child_index */);
+  tree_position = AXNodePosition::CreateTreePosition(
+      *ax_tree(), GetButtonNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   test_position = tree_position->CreateChildPositionAt(0);
   EXPECT_NE(nullptr, test_position);
@@ -7639,7 +7694,8 @@ TEST_F(AXPositionTest, CreateParentPositionWithNullPosition) {
 
 TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), check_box_.id, AXNodePosition::BEFORE_TEXT /* child_index */);
+      *ax_tree(), GetCheckBoxNode(),
+      AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType test_position = tree_position->CreateParentPosition();
   EXPECT_NE(nullptr, test_position);
@@ -7671,7 +7727,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
       << "We should cross into a minimalistic Views tree.";
 
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id,
+      *ax_tree(), GetInlineBox2Node(),
       AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
@@ -7691,7 +7747,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithTreePosition) {
   EXPECT_EQ(2, test_position->child_index());
 
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id, 0 /* child_index */);
+      *ax_tree(), GetInlineBox2Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ASSERT_TRUE(tree_position->IsTreePosition());
 
@@ -7834,6 +7890,9 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   SetTree(CreateAXTree({root_1, link_2, static_text_3, inline_box_4,
                         paragraph_5, static_text_6, inline_box_7}));
 
+  AXNode* inline_box_4_node = ax_tree()->GetFromId(inline_box_4.id);
+  AXNode* inline_box_7_node = ax_tree()->GetFromId(inline_box_7.id);
+
   //
   // Tree positions.
   //
@@ -7841,7 +7900,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // before "Hello", with a forward direction.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_4.id,
+      *ax_tree(), *inline_box_4_node,
       AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   TestPositionType ancestor_position = tree_position->CreateAncestorPosition(
@@ -7858,7 +7917,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // before "Hello", with a backward direction.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_4.id,
+      *ax_tree(), *inline_box_4_node,
       AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ancestor_position = tree_position->CreateAncestorPosition(
@@ -7875,7 +7934,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // after "Hello", with a forward direction.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_4.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_4_node, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ancestor_position = tree_position->CreateAncestorPosition(
       GetRoot(), ax::mojom::MoveDirection::kForward);
@@ -7890,7 +7949,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // after "Hello", with a backward direction.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_4.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_4_node, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ancestor_position = tree_position->CreateAncestorPosition(
       GetRoot(), ax::mojom::MoveDirection::kBackward);
@@ -7905,7 +7964,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // after "world.", with a forward direction.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_7.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_7_node, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ancestor_position = tree_position->CreateAncestorPosition(
       GetRoot(), ax::mojom::MoveDirection::kForward);
@@ -7921,7 +7980,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // Find the equivalent position on the root, when the original position is
   // after "world.", with a backward direction.
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_7.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_7_node, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
   ancestor_position = tree_position->CreateAncestorPosition(
       GetRoot(), ax::mojom::MoveDirection::kBackward);
@@ -8145,6 +8204,11 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithIgnoredNodes) {
                         inline_box_ignored_1, static_text_ignored_2,
                         inline_box_ignored_2, static_text_2, inline_box_2}));
 
+  AXNode* inline_box_ignored_1_node =
+      ax_tree()->GetFromId(inline_box_ignored_1.id);
+  AXNode* inline_box_ignored_2_node =
+      ax_tree()->GetFromId(inline_box_ignored_2.id);
+
   // "<H>elloWorld"
   TestPositionType before_root = AXNodePosition::CreateTextPosition(
       GetTreeID(), root.id, 0 /* text_offset */,
@@ -8195,12 +8259,12 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithIgnoredNodes) {
 
   TestPositionType before_inline_box_ignored_1_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), inline_box_ignored_1.id,
+          *ax_tree(), *inline_box_ignored_1_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_inline_box_ignored_1_tree->IsNullPosition());
   ASSERT_TRUE(before_inline_box_ignored_1_tree->IsIgnored());
   TestPositionType after_inline_box_ignored_1_tree =
-      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_ignored_1.id,
+      AXNodePosition::CreateTreePosition(*ax_tree(), *inline_box_ignored_1_node,
                                          0 /* child_index */);
   ASSERT_FALSE(after_inline_box_ignored_1_tree->IsNullPosition());
   ASSERT_TRUE(after_inline_box_ignored_1_tree->IsIgnored());
@@ -8215,12 +8279,12 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithIgnoredNodes) {
 
   TestPositionType before_inline_box_ignored_2_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), inline_box_ignored_2.id,
+          *ax_tree(), *inline_box_ignored_2_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_inline_box_ignored_2_tree->IsNullPosition());
   ASSERT_TRUE(before_inline_box_ignored_2_tree->IsIgnored());
   TestPositionType after_inline_box_ignored_2_tree =
-      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_ignored_2.id,
+      AXNodePosition::CreateTreePosition(*ax_tree(), *inline_box_ignored_2_node,
                                          0 /* child_index */);
   ASSERT_FALSE(after_inline_box_ignored_2_tree->IsNullPosition());
   ASSERT_TRUE(after_inline_box_ignored_2_tree->IsIgnored());
@@ -8435,6 +8499,9 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
                         static_text_empty, inline_box_empty, button_empty,
                         static_text_2, inline_box_2}));
 
+  AXNode* inline_box_empty_node = ax_tree()->GetFromId(inline_box_empty.id);
+  AXNode* button_empty_node = ax_tree()->GetFromId(button_empty.id);
+
   // "<H>elloWorld"
   TestPositionType before_root = AXNodePosition::CreateTextPosition(
       GetTreeID(), root.id, 0 /* text_offset */,
@@ -8473,11 +8540,11 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 
   TestPositionType before_inline_box_empty_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), inline_box_empty.id,
+          *ax_tree(), *inline_box_empty_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_inline_box_empty_tree->IsNullPosition());
   TestPositionType after_inline_box_empty_tree =
-      AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_empty.id,
+      AXNodePosition::CreateTreePosition(*ax_tree(), *inline_box_empty_node,
                                          0 /* child_index */);
   ASSERT_FALSE(after_inline_box_empty_tree->IsNullPosition());
 
@@ -8488,11 +8555,11 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 
   TestPositionType before_button_empty_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), button_empty.id,
+          *ax_tree(), *button_empty_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_button_empty_tree->IsNullPosition());
   TestPositionType after_button_empty_tree = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_empty.id, 0 /* child_index */);
+      *ax_tree(), *button_empty_node, 0 /* child_index */);
   ASSERT_FALSE(after_button_empty_tree->IsNullPosition());
 
   // "<W>orld"
@@ -8679,6 +8746,10 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
   SetTree(CreateAXTree({root, paragraph, static_text_1, inline_box_1,
                         static_text_2, inline_box_2, button_empty}));
 
+  AXNode* inline_box_1_node = ax_tree()->GetFromId(inline_box_1.id);
+  AXNode* inline_box_2_node = ax_tree()->GetFromId(inline_box_2.id);
+  AXNode* button_empty_node = ax_tree()->GetFromId(button_empty.id);
+
   TestPositionType before_root = AXNodePosition::CreateTextPosition(
       GetTreeID(), root.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -8717,7 +8788,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
   ASSERT_FALSE(after_inline_box_1->IsNullPosition());
 
   TestPositionType after_inline_box_1_tree = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_1.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_1_node, 0 /* child_index */);
   ASSERT_FALSE(after_inline_box_1_tree->IsNullPosition());
 
   // "<H>ello"
@@ -8733,11 +8804,11 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
 
   TestPositionType before_inline_box_2_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), inline_box_2.id,
+          *ax_tree(), *inline_box_2_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_inline_box_2_tree->IsNullPosition());
   TestPositionType after_inline_box_2_tree = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_2.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_2_node, 0 /* child_index */);
   ASSERT_FALSE(after_inline_box_2_tree->IsNullPosition());
 
   TestPositionType before_button_empty = AXNodePosition::CreateTextPosition(
@@ -8747,11 +8818,11 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
 
   TestPositionType before_button_empty_tree =
       AXNodePosition::CreateTreePosition(
-          *ax_tree(), button_empty.id,
+          *ax_tree(), *button_empty_node,
           AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_FALSE(before_button_empty_tree->IsNullPosition());
   TestPositionType after_button_empty_tree = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_empty.id, 0 /* child_index */);
+      *ax_tree(), *button_empty_node, 0 /* child_index */);
   ASSERT_FALSE(after_button_empty_tree->IsNullPosition());
 
   TestPositionType parent_position = before_inline_box_1->CreateParentPosition()
@@ -8885,7 +8956,7 @@ TEST_F(AXPositionTest, CreateNextAndPreviousLeafTextPositionWithNullPosition) {
 
 TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   TestPositionType check_box_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 1 /* child_index */);
+      *ax_tree(), GetRootNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, check_box_position);
   TestPositionType test_position =
       check_box_position->CreateNextLeafTextPosition();
@@ -8947,7 +9018,7 @@ TEST_F(AXPositionTest, CreateNextLeafTextPosition) {
   EXPECT_TRUE(test_position->IsNullPosition());
 
   TestPositionType text_field_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 2 /* child_index */);
+      *ax_tree(), GetRootNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, text_field_position);
   test_position = text_field_position->CreateNextLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
@@ -8987,7 +9058,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
 
   // Create a "before text" tree position on the second line of the text box.
   TestPositionType before_text_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox2Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, before_text_position);
   test_position = before_text_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
@@ -9022,7 +9093,7 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
   EXPECT_TRUE(test_position->IsNullPosition());
 
   TestPositionType text_field_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 2 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, text_field_position);
   test_position = text_field_position->CreatePreviousLeafTextPosition();
   EXPECT_NE(nullptr, test_position);
@@ -9062,19 +9133,19 @@ TEST_F(AXPositionTest, CreatePreviousLeafTextPosition) {
 
 TEST_F(AXPositionTest, CreateNextLeafTreePosition) {
   TestPositionType root_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_TRUE(root_position->IsTreePosition());
 
   TestPositionType button_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetButtonNode(), AXNodePosition::BEFORE_TEXT);
   TestPositionType checkbox_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), check_box_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetCheckBoxNode(), AXNodePosition::BEFORE_TEXT);
   TestPositionType inline_box1_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   TestPositionType line_break_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), line_break_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetLineBreakNode(), AXNodePosition::BEFORE_TEXT);
   TestPositionType inline_box2_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox2Node(), AXNodePosition::BEFORE_TEXT);
 
   TestPositionType test_position = root_position->CreateNextLeafTreePosition();
   EXPECT_TRUE(test_position->IsTreePosition());
@@ -9121,17 +9192,17 @@ TEST_F(AXPositionTest, CreateNextLeafTreePosition) {
 
 TEST_F(AXPositionTest, CreatePreviousLeafTreePosition) {
   TestPositionType inline_box2_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box2_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox2Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_TRUE(inline_box2_position->IsTreePosition());
 
   TestPositionType line_break_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), line_break_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetLineBreakNode(), AXNodePosition::BEFORE_TEXT);
   TestPositionType inline_box1_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   TestPositionType checkbox_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), check_box_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetCheckBoxNode(), AXNodePosition::BEFORE_TEXT);
   TestPositionType button_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), button_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetButtonNode(), AXNodePosition::BEFORE_TEXT);
 
   TestPositionType test_position =
       inline_box2_position->CreatePreviousLeafTreePosition();
@@ -10281,7 +10352,7 @@ TEST_F(AXPositionTest, CreatePreviousCharacterPositionAtGraphemeBoundary) {
 
 TEST_F(AXPositionTest, ReciprocalCreateNextAndPreviousCharacterPosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   TestPositionType text_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
@@ -10299,7 +10370,7 @@ TEST_F(AXPositionTest, ReciprocalCreateNextAndPreviousCharacterPosition) {
   }
 
   tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, root_.child_ids.size() /* child_index */);
+      *ax_tree(), GetRootNode(), root_.child_ids.size() /* child_index */);
   text_position = tree_position->AsTextPosition();
   ASSERT_NE(nullptr, text_position);
   ASSERT_TRUE(text_position->IsTextPosition());
@@ -10359,10 +10430,10 @@ TEST_F(AXPositionTest, OperatorEquals) {
 
   // Child indices must match.
   TestPositionType button_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, button_position1);
   TestPositionType button_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, button_position2);
   EXPECT_EQ(*button_position1, *button_position2);
 
@@ -10374,7 +10445,7 @@ TEST_F(AXPositionTest, OperatorEquals) {
   // An invalid position should not be equivalent to an "after children"
   // position.
   TestPositionType tree_position1 = AXNodePosition::CreateTreePosition(
-      GetTreeID(), root_.id, 3 /* child_index */);
+      *ax_tree(), GetRootNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position1);
   TestPositionType tree_position2 = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, tree_position2);
@@ -10382,19 +10453,19 @@ TEST_F(AXPositionTest, OperatorEquals) {
 
   // Two "after children" positions on the same node should be equivalent.
   tree_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 3 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position1);
   tree_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 3 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_EQ(*tree_position1, *tree_position2);
 
   // Two "before text" positions on the same node should be equivalent.
   tree_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position1);
   tree_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_EQ(*tree_position1, *tree_position2);
 
@@ -10773,44 +10844,50 @@ TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
       CreateAXTree({root_1, paragraph_2, link_3, static_text_4, inline_box_5,
                     paragraph_6, static_text_7, inline_box_8}));
 
+  AXNode* root_1_node = ax_tree()->GetFromId(root_1.id);
+  AXNode* paragraph_2_node = ax_tree()->GetFromId(paragraph_2.id);
+  AXNode* paragraph_6_node = ax_tree()->GetFromId(paragraph_6.id);
+  AXNode* inline_box_5_node = ax_tree()->GetFromId(inline_box_5.id);
+  AXNode* inline_box_8_node = ax_tree()->GetFromId(inline_box_8.id);
+
   TestPositionType before_root_1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_1.id, 0 /* child_index */);
+      *ax_tree(), *root_1_node, 0 /* child_index */);
   ASSERT_NE(nullptr, before_root_1);
   TestPositionType middle_root_1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_1.id, 1 /* child_index */);
+      *ax_tree(), *root_1_node, 1 /* child_index */);
   ASSERT_NE(nullptr, middle_root_1);
   TestPositionType after_root_1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_1.id, 2 /* child_index */);
+      *ax_tree(), *root_1_node, 2 /* child_index */);
   ASSERT_NE(nullptr, after_root_1);
 
   TestPositionType before_paragraph_2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), paragraph_2.id, 0 /* child_index */);
+      *ax_tree(), *paragraph_2_node, 0 /* child_index */);
   ASSERT_NE(nullptr, before_paragraph_2);
   TestPositionType after_paragraph_2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), paragraph_2.id, 1 /* child_index */);
+      *ax_tree(), *paragraph_2_node, 1 /* child_index */);
   ASSERT_NE(nullptr, after_paragraph_2);
 
   TestPositionType before_paragraph_6 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), paragraph_6.id, 0 /* child_index */);
+      *ax_tree(), *paragraph_6_node, 0 /* child_index */);
   ASSERT_NE(nullptr, before_paragraph_6);
   TestPositionType after_paragraph_6 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), paragraph_6.id, 1 /* child_index */);
+      *ax_tree(), *paragraph_6_node, 1 /* child_index */);
   ASSERT_NE(nullptr, before_paragraph_6);
 
   TestPositionType before_inline_box_5 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_5.id,
+      *ax_tree(), *inline_box_5_node,
       AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, before_inline_box_5);
   TestPositionType after_inline_box_5 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_5.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_5_node, 0 /* child_index */);
   ASSERT_NE(nullptr, after_inline_box_5);
 
   TestPositionType before_inline_box_8 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_8.id,
+      *ax_tree(), *inline_box_8_node,
       AXNodePosition::BEFORE_TEXT /* child_index */);
   ASSERT_NE(nullptr, before_inline_box_8);
   TestPositionType after_inline_box_8 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box_8.id, 0 /* child_index */);
+      *ax_tree(), *inline_box_8_node, 0 /* child_index */);
   ASSERT_NE(nullptr, after_inline_box_8);
 
   EXPECT_EQ(*before_root_1, *before_paragraph_2);
@@ -11071,31 +11148,31 @@ TEST_F(AXPositionTest, OperatorsLessThanAndGreaterThan) {
   EXPECT_FALSE(*null_position1 > *null_position2);
 
   TestPositionType button_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 0 /* child_index */);
+      *ax_tree(), GetRootNode(), 0 /* child_index */);
   ASSERT_NE(nullptr, button_position1);
   TestPositionType button_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 1 /* child_index */);
+      *ax_tree(), GetRootNode(), 1 /* child_index */);
   ASSERT_NE(nullptr, button_position2);
   EXPECT_LT(*button_position1, *button_position2);
   EXPECT_GT(*button_position2, *button_position1);
 
   TestPositionType tree_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 2 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, tree_position1);
   // An "after children" position.
   TestPositionType tree_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 3 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_LT(*tree_position1, *tree_position2);
   EXPECT_GT(*tree_position2, *tree_position1);
 
   // A "before text" position.
   tree_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
+      *ax_tree(), GetInlineBox1Node(), AXNodePosition::BEFORE_TEXT);
   ASSERT_NE(nullptr, tree_position1);
   // An "after text" position.
   tree_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), inline_box1_.id, 0 /* child_index */);
+      *ax_tree(), GetInlineBox1Node(), 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_LT(*tree_position1, *tree_position2);
   EXPECT_GT(*tree_position2, *tree_position1);
@@ -11215,10 +11292,10 @@ TEST_F(AXPositionTest, Swap) {
   EXPECT_TRUE(null_position2->IsNullPosition());
 
   TestPositionType tree_position1 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), root_.id, 2 /* child_index */);
+      *ax_tree(), GetRootNode(), 2 /* child_index */);
   ASSERT_NE(nullptr, tree_position1);
   TestPositionType tree_position2 = AXNodePosition::CreateTreePosition(
-      *ax_tree(), text_field_.id, 3 /* child_index */);
+      *ax_tree(), GetTextFieldNode(), 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position2);
 
   swap(*tree_position1, *tree_position2);
@@ -12127,6 +12204,8 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   embed_object.AddChildTreeId(child_tree_id);
   SetTree(CreateAXTree({root, embed_object}));
 
+  AXNode* embed_object_node = ax_tree()->GetFromId(embed_object.id);
+
   // Create tree manager for child tree.
   AXNodeData child_root;
   child_root.id = 1;
@@ -12143,7 +12222,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   // Verify that kEmbeddedObject node with child tree is not treated as an
   // empty object.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      *ax_tree(), embed_object.id, 0 /* child_index */);
+      *ax_tree(), *embed_object_node, 0 /* child_index */);
   ASSERT_TRUE(tree_position->IsTreePosition());
   EXPECT_FALSE(tree_position->IsLeaf());
 }
