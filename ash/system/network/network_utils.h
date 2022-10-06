@@ -17,7 +17,8 @@ enum class NetworkRowClickedAction {
   kConnectToNetwork = 0,
   kOpenNetworkSettingsPage = 1,
   kOpenSimUnlockDialog = 2,
-  kMaxValue = kOpenSimUnlockDialog
+  kOpenPortalSignin = 3,
+  kMaxValue = kOpenPortalSignin
 };
 
 // This enum is tied directly to a UMA enum |DetailedViewSection| defined in

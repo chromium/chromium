@@ -71153,6 +71153,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="Connect to Network"/>
   <int value="1" label="Open Network settings page"/>
   <int value="2" label="Open SIM unlock dialog"/>
+  <int value="3" label="Open portal signin"/>
 </enum>
 
 <enum name="NetworkSandboxState">

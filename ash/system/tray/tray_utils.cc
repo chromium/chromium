@@ -66,6 +66,16 @@ void SetupConnectingScrollListItem(HoverHighlightView* view) {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING));
 }
 
+void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
+  DCHECK(view->is_populated());
+
+  view->SetSubText(subtext);
+  view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
+  view->sub_text_label()->SetEnabledColor(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorWarning));
+}
+
 SkColor TrayIconColor(session_manager::SessionState session_state) {
   if (!features::IsDarkLightModeEnabled() &&
       session_state == session_manager::SessionState::OOBE) {

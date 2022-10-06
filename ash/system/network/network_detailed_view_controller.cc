@@ -39,6 +39,7 @@ using ::chromeos::network_config::mojom::DeviceStateType;
 using ::chromeos::network_config::mojom::NetworkStateProperties;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
+using ::chromeos::network_config::mojom::PortalState;
 
 void LogUserNetworkEvent(const NetworkStateProperties& network) {
   auto* const logger = ml::UserSettingsEventLogger::Get();
@@ -69,6 +70,11 @@ bool NetworkTypeIsConfigurable(NetworkType type) {
   }
   NOTREACHED();
   return false;
+}
+
+bool IsNetworkBehindPortalOrProxy(PortalState portalState) {
+  return portalState == PortalState::kPortal ||
+         portalState == PortalState::kProxyAuthRequired;
 }
 
 bool IsNetworkConnectable(const NetworkStatePropertiesPtr& network_properties) {
@@ -163,6 +169,17 @@ void NetworkDetailedViewController::OnNetworkListItemSelected(
       RecordNetworkRowClickedAction(
           NetworkRowClickedAction::kOpenSimUnlockDialog);
       Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
+      return;
+    }
+
+    // If the captive portal UI flag is enabled, the network is connected, and
+    // the network is in a portal or proxy state, the user is shown the portal
+    // signin.
+    if (features::IsCaptivePortalUI2022Enabled() &&
+        chromeos::network_config::StateIsConnected(network->connection_state) &&
+        IsNetworkBehindPortalOrProxy(network->portal_state)) {
+      RecordNetworkRowClickedAction(NetworkRowClickedAction::kOpenPortalSignin);
+      NetworkConnect::Get()->ShowPortalSignin(network->guid);
       return;
     }
 

@@ -37,6 +37,9 @@ void SetupConnectedScrollListItem(HoverHighlightView* view,
 // accessibility label.
 void SetupConnectingScrollListItem(HoverHighlightView* view);
 
+// Add `subtext` with warning color to `view`.
+void SetWarningSubText(HoverHighlightView* view, std::u16string subtext);
+
 // Gets the current tray icon color for the given session state.
 SkColor TrayIconColor(session_manager::SessionState session_state);
 

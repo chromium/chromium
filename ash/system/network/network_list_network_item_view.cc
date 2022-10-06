@@ -48,6 +48,7 @@ using chromeos::network_config::mojom::NetworkStateProperties;
 using chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using chromeos::network_config::mojom::NetworkType;
 using chromeos::network_config::mojom::OncSource;
+using chromeos::network_config::mojom::PortalState;
 using chromeos::network_config::mojom::ProxyMode;
 using chromeos::network_config::mojom::SecurityType;
 
@@ -342,11 +343,39 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
 }
 
 void NetworkListNetworkItemView::SetupNetworkSubtext() {
-  if (StateIsConnected(network_properties()->connection_state)) {
-    SetupConnectedScrollListItem(this);
-  } else if (network_properties_.get()->connection_state ==
-             ConnectionStateType::kConnecting) {
+  if (network_properties()->connection_state ==
+      ConnectionStateType::kConnecting) {
     SetupConnectingScrollListItem(this);
+    return;
+  }
+
+  if (!StateIsConnected(network_properties()->connection_state)) {
+    return;
+  }
+
+  if (!ash::features::IsCaptivePortalUI2022Enabled()) {
+    SetupConnectedScrollListItem(this);
+    return;
+  }
+
+  switch (network_properties()->portal_state) {
+    // Portal state is portal or proxy auth, setup signin subtext.
+    case PortalState::kPortal:
+    case PortalState::kProxyAuthRequired:
+      SetWarningSubText(this, l10n_util::GetStringUTF16(
+                                  IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN));
+      return;
+    // Portal state is portal-suspected or no internet, setup no internet
+    // subtext.
+    case PortalState::kPortalSuspected:
+    case PortalState::kNoInternet:
+      SetWarningSubText(
+          this, l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED_NO_INTERNET));
+      return;
+    default:
+      SetupConnectedScrollListItem(this);
+      return;
   }
 }
 

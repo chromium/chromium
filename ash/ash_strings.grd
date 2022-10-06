@@ -2243,6 +2243,12 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING" desc="The label used when a network connection is connecting. [CHAR_LIMIT=14]">
         Connecting...
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN" desc="The label used when a network connection is behind a captive portal and requires signin.">
+        Sign in to network
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED_NO_INTERNET" desc="The label used when a network connection is connected but has no internet.">
+        Connected, no internet
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE" desc="The label used in quick settings to indicate an unactivated cellular network that can be clicked to launch activation through setup flow. [CHAR_LIMIT=29]">
         Click to activate
       </message>
