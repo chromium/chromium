@@ -281,7 +281,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
           type[static_cast<size_t>(DeviceType::kCamera)],
           type[static_cast<size_t>(DeviceType::kMic)],
           base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-              weak_ptr_factory_.GetWeakPtr()));
+              weak_ptr_factory_.GetMutableWeakPtr()));
       notification->set_fullscreen_visibility(
           message_center::FullscreenVisibility::OVER_USER);
 
@@ -307,7 +307,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
             ash::kVmCameraMicNotifierId, NotificationCatalogName::kVMCameraMic),
         rich_notification_data,
         base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetMutableWeakPtr()));
 
     NotificationDisplayService::GetForProfile(profile_)->Display(
         NotificationHandler::Type::TRANSIENT, notification,
