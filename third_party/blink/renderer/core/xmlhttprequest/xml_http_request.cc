@@ -754,7 +754,12 @@ bool XMLHttpRequest::InitSend(ExceptionState& exception_state) {
       }
     }
     v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
-    if (isolate && v8::MicrotasksScope::IsRunningMicrotasks(isolate)) {
+    v8::MicrotaskQueue* microtask_queue =
+        ToMicrotaskQueue(GetExecutionContext());
+    if (isolate &&
+        ((microtask_queue && microtask_queue->IsRunningMicrotasks()) ||
+         (!microtask_queue &&
+          v8::MicrotasksScope::IsRunningMicrotasks(isolate)))) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kDuring_Microtask_SyncXHR);
     }

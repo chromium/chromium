@@ -152,6 +152,14 @@
 
 namespace blink {
 
+namespace {
+bool IsRunningMicrotasks(ScriptState* script_state) {
+  if (auto* microtask_queue = ToMicrotaskQueue(script_state))
+    return microtask_queue->IsRunningMicrotasks();
+  return v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate());
+}
+}  // namespace
+
 class LocalDOMWindow::NetworkStateObserver final
     : public GarbageCollected<LocalDOMWindow::NetworkStateObserver>,
       public NetworkStateNotifier::NetworkStateObserver,
@@ -1253,8 +1261,7 @@ void LocalDOMWindow::print(ScriptState* script_state) {
   if (!GetFrame())
     return;
 
-  if (script_state &&
-      v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate())) {
+  if (script_state && IsRunningMicrotasks(script_state)) {
     UseCounter::Count(this, WebFeature::kDuring_Microtask_Print);
   }
 
@@ -1293,7 +1300,7 @@ void LocalDOMWindow::alert(ScriptState* script_state, const String& message) {
     return;
   }
 
-  if (v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate())) {
+  if (IsRunningMicrotasks(script_state)) {
     UseCounter::Count(this, WebFeature::kDuring_Microtask_Alert);
   }
 
@@ -1327,7 +1334,7 @@ bool LocalDOMWindow::confirm(ScriptState* script_state, const String& message) {
     return false;
   }
 
-  if (v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate())) {
+  if (IsRunningMicrotasks(script_state)) {
     UseCounter::Count(this, WebFeature::kDuring_Microtask_Confirm);
   }
 
@@ -1363,7 +1370,7 @@ String LocalDOMWindow::prompt(ScriptState* script_state,
     return String();
   }
 
-  if (v8::MicrotasksScope::IsRunningMicrotasks(script_state->GetIsolate())) {
+  if (IsRunningMicrotasks(script_state)) {
     UseCounter::Count(this, WebFeature::kDuring_Microtask_Prompt);
   }
 
