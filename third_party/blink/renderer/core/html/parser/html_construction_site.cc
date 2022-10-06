@@ -258,12 +258,8 @@ static String AtomizeIfAllWhitespace(const String& string,
   return string;
 }
 
-void HTMLConstructionSite::FlushPendingText(FlushMode mode) {
+void HTMLConstructionSite::FlushPendingText() {
   if (pending_text_.IsEmpty())
-    return;
-
-  if (mode == kFlushIfAtTextLimit &&
-      !ShouldUseLengthLimit(*pending_text_.parent))
     return;
 
   PendingText pending_text;
@@ -308,7 +304,7 @@ void HTMLConstructionSite::FlushPendingText(FlushMode mode) {
 }
 
 void HTMLConstructionSite::QueueTask(const HTMLConstructionSiteTask& task) {
-  FlushPendingText(kFlushAlways);
+  FlushPendingText();
   DCHECK(pending_text_.IsEmpty());
   task_queue_.push_back(task);
 }
@@ -632,7 +628,7 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
 
 void HTMLConstructionSite::ProcessEndOfFile() {
   DCHECK(CurrentNode());
-  Flush(kFlushAlways);
+  Flush();
   OpenElements()->PopAll();
 }
 
@@ -640,7 +636,7 @@ void HTMLConstructionSite::FinishedParsing() {
   // We shouldn't have any queued tasks but we might have pending text which we
   // need to promote to tasks and execute.
   DCHECK(task_queue_.empty());
-  Flush(kFlushAlways);
+  Flush();
   document_->FinishedParsing();
 }
 
@@ -830,7 +826,7 @@ void HTMLConstructionSite::InsertTextNode(const StringView& string,
   if (!pending_text_.IsEmpty() &&
       (pending_text_.parent != dummy_task.parent ||
        pending_text_.next_child != dummy_task.next_child))
-    FlushPendingText(kFlushAlways);
+    FlushPendingText();
   pending_text_.Append(dummy_task.parent, dummy_task.next_child, string,
                        whitespace_mode);
 }

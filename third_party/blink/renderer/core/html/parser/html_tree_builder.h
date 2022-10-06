@@ -94,7 +94,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   // Synchronously flush pending text and queued tasks, possibly creating more
   // DOM nodes. Flushing pending text depends on |mode|.
-  void Flush(FlushMode mode) { tree_.Flush(mode); }
+  void Flush() { tree_.Flush(); }
 
   void SetShouldSkipLeadingNewline(bool should_skip) {
     should_skip_leading_newline_ = should_skip;

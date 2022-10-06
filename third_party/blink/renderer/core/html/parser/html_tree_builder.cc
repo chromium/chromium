@@ -137,11 +137,6 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     DCHECK(!IsEmpty());
   }
 
-  explicit CharacterTokenBuffer(const String& characters)
-      : characters_(characters.Impl()), current_(0), end_(characters.length()) {
-    DCHECK(!IsEmpty());
-  }
-
   CharacterTokenBuffer(const CharacterTokenBuffer&) = delete;
   CharacterTokenBuffer& operator=(const CharacterTokenBuffer&) = delete;
 
@@ -366,7 +361,7 @@ void HTMLTreeBuilder::ProcessToken(AtomicHTMLToken* token) {
   // Any non-character token needs to cause us to flush any pending text
   // immediately. NOTE: flush() can cause any queued tasks to execute, possibly
   // re-entering the parser.
-  tree_.Flush(kFlushAlways);
+  tree_.Flush();
   should_skip_leading_newline_ = false;
 
   switch (token->GetType()) {
@@ -2830,7 +2825,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
     return;
   }
 
-  tree_.Flush(kFlushAlways);
+  tree_.Flush();
   HTMLStackItem* adjusted_current_node = AdjustedCurrentStackItem();
 
   switch (token->GetType()) {

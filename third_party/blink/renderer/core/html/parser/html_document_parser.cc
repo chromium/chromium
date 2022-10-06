@@ -933,7 +933,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
     // There should only be PendingText left since the tree-builder always
     // flushes the task queue before returning. In case that ever changes,
     // crash.
-    tree_builder_->Flush(kFlushAlways);
+    tree_builder_->Flush();
     CHECK(!IsStopped());
   }
 
