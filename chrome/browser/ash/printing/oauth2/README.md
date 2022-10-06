@@ -52,4 +52,4 @@ The sequence diagram below shows example interactions between the instance of
 the class `PrinterAuthenticator` and the API defined in
 `AuthorizationZonesManager`.
 
-![The sequence diagram](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/printing/oauth2/sequence_diagram.png){style="display:block;margin:auto"}
+![The sequence diagram](sequence_diagram.png)
