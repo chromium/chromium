@@ -33,7 +33,6 @@ WebAppsCrosapiBrowserTest*
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
 -ChromeVoxAutoScrollHandlerTest.RecyclerViewByPredicate
--DockedMagnifierVirtualKeyboardTest.WelcomeScreen
 -ChromeVoxTutorialTest.Gestures
 -ChromeVoxTutorialTest.ExitButtonTest
 -ChromeVoxTutorialTest.EscapeTest
