@@ -317,6 +317,31 @@ Alternatively, a developer with commit access can [directly
 commit][direct-commit] a change, bypassing the commit queue. This should only
 be used in emergencies because it will bypass all the safety nets.
 
+## Relanding a change
+
+Occasionally changes that pass the [commit queue][commit-queue] and get
+submitted into Chromium will later be reverted. If this happens to your change,
+don't be discouraged! This can be a common part of the Chromium development
+cycle and happens for a variety of reasons, including a conflict with an
+unanticipated change or tests not covered on the commit queue.
+
+If this happens to your change, you're encouraged to pursue a reland. When doing
+so, following these basic steps can streamline the re-review process:
+- **Create the reland**: Click the `CREATE RELAND` button on the original change
+  in Gerrit. This will create a new change whose diff is identical to the
+  original, but has a small paper-trail in the commit message that leads back to
+  the original. This can be useful for sheriffs when debugging regressions.
+- **Append the fix**: If the reland requires file modifications not present in
+  the original change, simply upload these fixes in a subsequent patchset to the
+  reland change. By comparing the first patchset with the latest, this gives
+  reviewers the ability to see the diff of _just_ the reland fix.
+- **Describe the fix**: In the commit message of the reland change, briefly
+  summarize what's changed that makes relanding again safe. Explanations can
+  include: "included needed fix", "disabled failing tests", "crash was fixed
+  elsewhere". Specifically for that last case: if the reland change is identical
+  to the original and the reland fix was handled separately in a preceding
+  change, make sure to link to that change in the commit message of the reland.
+
 ## Code guidelines
 
 In addition to the adhering to the [styleguide][cr-styleguide], the following
