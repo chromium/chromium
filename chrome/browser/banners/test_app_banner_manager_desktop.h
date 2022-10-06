@@ -38,7 +38,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   // Blocks until the existing installability check has been cleared.
   void WaitForInstallableCheckTearDown();
 
-  // Returns whether the installable check passed.
+  // Returns whether both the installable and promotable check passed.
   bool WaitForInstallableCheck();
 
   // Configures a callback to be invoked when the app banner flow finishes.
@@ -54,6 +54,8 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   void OnDidGetManifest(const InstallableData& result) override;
   void OnDidPerformInstallableWebAppCheck(
       const InstallableData& result) override;
+  void PerformServiceWorkerCheck() override;
+  void OnDidPerformWorkerCheck(const InstallableData& result) override;
   void ResetCurrentPageData() override;
 
   // AppBannerManagerDesktop:
@@ -71,11 +73,15 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
 
  private:
   void SetInstallable(bool installable);
+  void SetPromotable(bool promotable);
   void OnFinished();
 
   absl::optional<bool> installable_;
+  bool waiting_for_worker_;
+  bool promotable_;
   base::OnceClosure tear_down_quit_closure_;
   base::OnceClosure installable_quit_closure_;
+  base::OnceClosure promotable_quit_closure_;
   base::OnceClosure on_done_;
   base::OnceClosure on_install_;
 };

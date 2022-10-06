@@ -1063,7 +1063,7 @@ public class AppBannerManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
 
-        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 8);
+        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 9);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(BottomSheetController.SheetState.HIDDEN,
@@ -1182,7 +1182,7 @@ public class AppBannerManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { backgroundTab.loadUrl(new LoadUrlParams(url)); });
 
-        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 8);
+        waitForAppBannerPipelineStatus(backgroundTab, /* PENDING_PROMPT */ 9);
 
         assertNoHelpBubble(withText(R.string.iph_pwa_install_available_text));
     }

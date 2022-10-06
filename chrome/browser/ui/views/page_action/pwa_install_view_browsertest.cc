@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_prefer_related_chrome_app.json"));
-  ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
+  ASSERT_FALSE(app_banner_manager_->WaitForInstallableCheck());
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
 
   StartNavigateToUrl(https_server_.GetURL(
       "/banners/manifest_test_page.html?manifest=" + intercept_request_path_));
-  ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
+  ASSERT_FALSE(app_banner_manager_->WaitForInstallableCheck());
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_listing_related_android_app.json"));
-  ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
+  ASSERT_FALSE(app_banner_manager_->WaitForInstallableCheck());
 
   EXPECT_FALSE(pwa_install_view_->GetVisible());
   EXPECT_TRUE(base::EqualsASCII(
