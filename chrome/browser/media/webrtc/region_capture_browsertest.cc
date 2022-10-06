@@ -721,8 +721,16 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
 }
 
 // Original track becomes unblocked for cropping after clone is GCed 1/3.
+// TODO(crbug.com/1353349)  Re-enable for macOS after flakes are resolved.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
+  DISABLED_CanCropOriginalTrackAfterCloneIsGarbageCollected
+#else
+#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
+  CanCropOriginalTrackAfterCloneIsGarbageCollected
+#endif
 IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
-                       CanCropOriginalTrackAfterCloneIsGarbageCollected) {
+                       MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected) {
   ManualSetUp();
 
   ASSERT_TRUE(CloneTrack());
