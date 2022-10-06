@@ -11,7 +11,6 @@ import("../../oobe_auto_imports.gni")
 group("polymer3_elements") {
   public_deps = [
     ":demo_preferences_module",
-    ":demo_setup_module",
     ":enterprise_enrollment_module",
     ":packaged_license_module",
     ":quick_start_module",
@@ -33,7 +32,7 @@ js_type_check("closure_compile") {
   deps = [
     ":auto_enrollment_check",
     ":demo_preferences.m",
-    ":demo_setup.m",
+    ":demo_setup",
     ":enable_debugging",
     ":enterprise_enrollment.m",
     ":hid_detection",
@@ -74,8 +73,8 @@ js_library("demo_preferences.m") {
   extra_deps = [ ":demo_preferences_module" ]
 }
 
-js_library("demo_setup.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_setup.m.js" ]
+js_library("demo_setup") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_setup.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -87,7 +86,7 @@ js_library("demo_setup.m") {
     "../../components/progress_list_item:progress_list_item.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":demo_setup_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("enable_debugging") {
@@ -237,15 +236,6 @@ polymer_modulizer("demo_preferences") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("demo_setup") {
-  js_file = "demo_setup.js"
-  html_file = "demo_setup.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("enterprise_enrollment") {
   js_file = "enterprise_enrollment.js"
   html_file = "enterprise_enrollment.html"
@@ -303,6 +293,7 @@ polymer_modulizer("welcome_dialog") {
 html_to_js("web_components") {
   js_files = [
     "auto_enrollment_check.js",
+    "demo_setup.js",
     "enable_debugging.js",
     "hid_detection.js",
     "oobe_network.js",

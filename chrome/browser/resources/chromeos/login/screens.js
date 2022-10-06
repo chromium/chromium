@@ -55,7 +55,7 @@ import './screens/login/update_required_card.m.js';
 // SCREENS USED DURING THE OOBE FLOW
 import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/demo_preferences.m.js';
-import './screens/oobe/demo_setup.m.js';
+import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.m.js';
 import './screens/oobe/hid_detection.js';
