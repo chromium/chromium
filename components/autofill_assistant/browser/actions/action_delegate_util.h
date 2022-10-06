@@ -72,13 +72,13 @@ void AddStepWithoutCallback(
     element_action_util::ElementActionVector* actions);
 
 void PerformClickOrTapElement(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     ClickType click_type,
     const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
 void PerformSetFieldValue(
-    const ActionDelegate* delegate,
+    ActionDelegate* delegate,
     const std::string& value,
     KeyboardValueFillStrategy fill_strategy,
     int key_press_delay_in_millisecond,

@@ -842,7 +842,7 @@ bool ScriptExecutor::MaybeShowSlowWarning(const std::string& message,
   return true;
 }
 
-base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() const {
+base::WeakPtr<ActionDelegate> ScriptExecutor::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

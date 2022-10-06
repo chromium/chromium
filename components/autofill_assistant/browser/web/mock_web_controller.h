@@ -166,7 +166,7 @@ class MockWebController : public WebController {
                     const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  base::WeakPtr<WebController> GetWeakPtr() const override {
+  base::WeakPtr<WebController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

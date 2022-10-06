@@ -269,7 +269,7 @@ class ScriptExecutor : public ActionDelegate,
   void MaybeShowSlowWebsiteWarning(
       base::OnceCallback<void(bool)> callback) override;
   void MaybeShowSlowConnectionWarning() override;
-  base::WeakPtr<ActionDelegate> GetWeakPtr() const override;
+  base::WeakPtr<ActionDelegate> GetWeakPtr() override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   void RequestUserData(
       UserDataEventField event_field,

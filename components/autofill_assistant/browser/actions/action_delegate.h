@@ -529,7 +529,7 @@ class ActionDelegate {
       const std::string& xml_string,
       const std::vector<std::string>& keys) const = 0;
 
-  virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
+  virtual base::WeakPtr<ActionDelegate> GetWeakPtr() = 0;
 
   // Make a fire-and-forget call to report progress.
   virtual void ReportProgress(const std::string& payload,

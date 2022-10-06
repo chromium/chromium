@@ -401,7 +401,7 @@ class WebController {
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  virtual base::WeakPtr<WebController> GetWeakPtr() const;
+  virtual base::WeakPtr<WebController> GetWeakPtr();
 
  private:
   friend class BatchElementCheckerBrowserTest;

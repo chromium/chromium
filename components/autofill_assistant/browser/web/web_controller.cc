@@ -1686,7 +1686,7 @@ void WebController::OnSetNativeExecution(
                                   : UnexpectedErrorStatus(__FILE__, __LINE__));
 }
 
-base::WeakPtr<WebController> WebController::GetWeakPtr() const {
+base::WeakPtr<WebController> WebController::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

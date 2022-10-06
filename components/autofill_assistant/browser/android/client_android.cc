@@ -641,9 +641,9 @@ void ClientAndroid::GetAnnotateDomModelVersion(
     return;
   }
 
-  annotate_dom_model_service_->NotifyOnModelFileAvailable(
-      base::BindOnce(&ClientAndroid::OnAnnotateDomModelFileAvailable,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  annotate_dom_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
+      &ClientAndroid::OnAnnotateDomModelFileAvailable,
+      weak_ptr_factory_.GetMutableWeakPtr(), std::move(callback)));
 }
 
 bool ClientAndroid::IsXmlSigned(const std::string& xml_string) const {

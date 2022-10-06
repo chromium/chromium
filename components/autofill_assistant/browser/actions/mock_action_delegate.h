@@ -250,7 +250,7 @@ class MockActionDelegate : public ActionDelegate {
                void(const std::string& payload,
                     base::OnceCallback<void(bool)> callback));
 
-  base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
+  base::WeakPtr<ActionDelegate> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
