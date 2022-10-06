@@ -15,7 +15,5 @@ extern NSString* const kIOSChromeUpgradeURLKey;
 extern NSString* const kIOSChromeUpToDateKey;
 // The user defaults key for the last time the update infobar was shown.
 extern NSString* const kLastInfobarDisplayTimeKey;
-// The amount of time that must elapse before showing the infobar again.
-extern const NSTimeInterval kInfobarDisplayIntervalInSeconds;
 
 #endif  // IOS_CHROME_BROWSER_UPGRADE_UPGRADE_CONSTANTS_H_

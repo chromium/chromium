@@ -12,5 +12,3 @@ NSString* const kIOSChromeNextVersionKey = @"UpdateInfobarUpgradeURL";
 NSString* const kIOSChromeUpgradeURLKey = @"UpdateInfobarNextVersion";
 NSString* const kIOSChromeUpToDateKey = @"UpdateInfobarIsUpToDate";
 NSString* const kLastInfobarDisplayTimeKey = @"UpdateInfobarLastDisplayTime";
-const NSTimeInterval kInfobarDisplayIntervalInSeconds =
-    24 * 60 * 60;  // One day.
