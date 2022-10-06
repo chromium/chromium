@@ -2548,6 +2548,19 @@
           'linux-focal',
         ],
       },
+      'fuchsia-arm64-chrome-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_chrome_large_gtests',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-focal',
+        ],
+      },
       # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
       'fuchsia-arm64-rel': {
         'additional_compile_targets': [
@@ -2633,6 +2646,29 @@
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
+        },
+      },
+      'fuchsia-x64-chrome-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'browser_config': 'fuchsia-chrome',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          # TODO(crbug.com/1302427): Only run the gpu_telemetry_tests that do
+          # not run on CI or another FYI bot. Ideally, they would all run there.
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
+          'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
       'fuchsia-x64-rel' : {
@@ -3145,19 +3181,6 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
-      'fuchsia-arm64-chrome-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_chrome_large_gtests',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-      },
       'fuchsia-code-coverage': {
         'additional_compile_targets': [
           'chrome_pkg',
@@ -3238,29 +3261,6 @@
           # TODO(chonggu): Consider running all telemetry tests.
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           # TODO(chonggu): Consider running more gtests here, ideally "fuchsia_gtests".
-          'gtest_tests': 'fuchsia_chrome_large_gtests',
-        },
-      },
-      'fuchsia-x64-chrome-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'fuchsia-chrome',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          # TODO(crbug.com/1302427): Only run the gpu_telemetry_tests that do
-          # not run on CI or another FYI bot. Ideally, they would all run there.
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
