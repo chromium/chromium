@@ -326,6 +326,45 @@ TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ClientNotRunning) {
   EXPECT_EQ(0u, future.Get().size());
 }
 
+TEST_F(DlpFilesControllerTest, GetDisallowedTransfers_ErrorResponse) {
+  AddFilesToDlpClient();
+
+  std::vector<storage::FileSystemURL> transferred_files(
+      {file_url1_, file_url2_, file_url3_});
+
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RegisterFileSystem(
+      chromeos::kSystemMountNameArchive, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(),
+      base::FilePath(file_manager::util::kArchiveMountPath));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
+  auto dst_url = mount_points->CreateExternalFileSystemURL(
+      blink::StorageKey(), "archive",
+      base::FilePath("file.rar/path/in/archive"));
+
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_url1_.path().value());
+  check_files_transfer_response.add_files_paths(file_url3_.path().value());
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  base::test::TestFuture<std::vector<storage::FileSystemURL>> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->GetDisallowedTransfers(transferred_files, dst_url,
+                                            future.GetCallback());
+
+  std::vector<storage::FileSystemURL> expected_restricted_files(
+      {file_url1_, file_url2_, file_url3_});
+  ASSERT_EQ(3u, future.Get().size());
+  EXPECT_EQ(expected_restricted_files, future.Take());
+}
+
 TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_EmptyList) {
   AddFilesToDlpClient();
 
@@ -443,14 +482,6 @@ TEST_F(DlpFilesControllerTest, FilterDisallowedUploads_ErrorResponse) {
   files_controller_->FilterDisallowedUploads(std::move(uploaded_files),
                                              GURL("https://example.com"),
                                              future.GetCallback());
-
-  std::vector<FileChooserFileInfoPtr> filtered_uploads;
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
-  filtered_uploads.push_back(FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(file_url2_.path(), std::u16string())));
-  filtered_uploads.push_back(
-      FileChooserFileInfo::NewFileSystem(FileSystemFileInfo::New()));
 
   ASSERT_EQ(0u, future.Get().size());
 }

@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -187,11 +188,19 @@ void DlpFilesController::GetDisallowedTransfers(
 
   request.set_destination_url(destination.path().value());
   request.set_file_action(::dlp::FileAction::TRANSFER);
-  chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request,
+  auto return_transfers_callback =
       base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,
                      weak_ptr_factory_.GetWeakPtr(), std::move(filtered_files),
-                     std::move(result_callback)));
+                     std::move(result_callback));
+  auto close_dialog_callback =
+      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
+                     // base::Unretained() is safe since |this| is bound to
+                     // |return_transfers_callback|, which will be called after
+                     // |close_dialog_callback|
+                     base::Unretained(this));
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request, std::move(close_dialog_callback)
+                   .Then(std::move(return_transfers_callback)));
 }
 
 void DlpFilesController::GetDlpMetadata(
@@ -241,11 +250,18 @@ void DlpFilesController::FilterDisallowedUploads(
 
   request.set_destination_url(destination.spec());
   request.set_file_action(::dlp::FileAction::UPLOAD);
+  auto return_uploads_callback = base::BindOnce(
+      &DlpFilesController::ReturnAllowedUploads, weak_ptr_factory_.GetWeakPtr(),
+      std::move(uploaded_files), std::move(result_callback));
+  auto close_dialog_callback =
+      base::BindOnce(&DlpFilesController::MaybeCloseDialog,
+                     // base::Unretained() is safe since |this| is bound to
+                     // |return_uploads_callback|, which will be called after
+                     // |close_dialog_callback|
+                     base::Unretained(this));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
-      request,
-      base::BindOnce(&DlpFilesController::ReturnAllowedUploads,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(uploaded_files),
-                     std::move(result_callback)));
+      request, std::move(close_dialog_callback)
+                   .Then(std::move(return_uploads_callback)));
 }
 
 void DlpFilesController::MaybeReportEvent(
@@ -289,6 +305,16 @@ void DlpFilesController::MaybeReportWarnProceededEvent(
     reporting_manager->ReportWarningProceededEvent(
         src, dst.url_or_path.value(), DlpRulesManager::Restriction::kFiles);
   }
+}
+
+::dlp::CheckFilesTransferResponse DlpFilesController::MaybeCloseDialog(
+    ::dlp::CheckFilesTransferResponse response) {
+  if (response.has_error_message() && warn_dialog_widget_ &&
+      !warn_dialog_widget_->IsClosed()) {
+    warn_dialog_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
+  return response;
 }
 
 void DlpFilesController::CheckIfDownloadAllowed(
@@ -398,7 +424,10 @@ void DlpFilesController::IsFilesTransferRestricted(
       dst_component.has_value() ? DlpFileDestination(dst_component.value())
                                 : DlpFileDestination(*destination.url_or_path);
 
-  // TODO(crbug.com/1368520): Add check for closed |warn_dialog_widget_|.
+  if (warn_dialog_widget_ && !warn_dialog_widget_->IsClosed()) {
+    warn_dialog_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
   warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
       base::BindOnce(
           &DlpFilesController::OnDlpWarnDialogReply,
@@ -526,14 +555,15 @@ void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
-  // TODO(crbug.com/1368520): Close |warn_dialog_widget_| and block all file
-  // transfers if response has error.
+  std::vector<storage::FileSystemURL> restricted_files;
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
+    for (const auto& [file_path, file_system_url] : files_map)
+      restricted_files.push_back(file_system_url);
+    std::move(result_callback).Run(std::move(restricted_files));
+    return;
   }
-
-  std::vector<storage::FileSystemURL> restricted_files;
   for (const auto& file : response.files_paths()) {
     DCHECK(files_map.find(file) != files_map.end());
     restricted_files.push_back(files_map.at(file));
@@ -548,10 +578,6 @@ void DlpFilesController::ReturnAllowedUploads(
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
                << response.error_message();
-    if (warn_dialog_widget_ && !warn_dialog_widget_->IsClosed()) {
-      warn_dialog_widget_->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
-    }
     std::move(result_callback)
         .Run(std::vector<blink::mojom::FileChooserFileInfoPtr>());
     return;

@@ -233,6 +233,9 @@ class DlpFilesController {
                         DlpRulesManager::Level level);
   void MaybeReportWarnProceededEvent(const std::string& src,
                                      const DlpFileDestination& dst);
+  // Closes warning dialog if `response` has error.
+  ::dlp::CheckFilesTransferResponse MaybeCloseDialog(
+      ::dlp::CheckFilesTransferResponse response);
 
   const DlpRulesManager& rules_manager_;
 
