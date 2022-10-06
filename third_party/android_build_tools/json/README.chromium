@@ -1,0 +1,19 @@
+Name: Android's org.json implementation
+Short Name: org.json
+Version: fac974ff3c27a5d77ee5338ae9594787119eb3e4
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: No
+URL: https://android.googlesource.com/platform/libcore/+/refs/heads/master/json/src/main/java/org/json
+
+Description:
+  Android's implementation of the org.json package. Used because org.json uses
+  non-standard licenses.
+
+Local Modifications:
+* Removed all references to internal android code to avoid unecessary deps.
+  These were just annotations (eg: NonNull, UnsupportedAppUsage, etc.).
+
+What version is this:
+  Latest at the time of landing. However, this has minimal usage and is not
+  shipped and is not expected to need to be updated.
