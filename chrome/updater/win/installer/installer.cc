@@ -26,6 +26,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -325,14 +326,13 @@ ProcessExitResult WMain(HMODULE module) {
     return args_result;
 
   // Both `RunElevated` and `RunDeElevated` use shell APIs to run the process,
-  // which can have issues with relative paths. So we get the full exe path and
-  // substitute it for the program in the command line.
+  // which can have issues with relative paths. So we use the full exe path for
+  // the program in the command line.
   base::FilePath exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &exe_path))
     return ProcessExitResult(UNABLE_TO_GET_EXE_PATH);
-  base::CommandLine command_line =
-      base::CommandLine::FromString(::GetCommandLineW());
-  command_line.SetProgram(exe_path);
+  const base::CommandLine command_line = base::CommandLine::FromString(
+      base::StrCat({L"\"", exe_path.value(), L"\" ", cmd_line_args.get()}));
 
   const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
 

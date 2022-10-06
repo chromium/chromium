@@ -416,6 +416,47 @@ installer. See [installdataindex](#installdataindex) below for details.
 
 #### Dynamic Install Parameters
 
+##### Steps to create a tagged metainstaller
+
+A tagged metainstaller can be created using the signing tool
+[sign.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/sign.py)
+and the metainstaller tagging tool
+[tag.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag.py).
+
+Here are the steps to create a tagged metainstaller for the following tag:
+`--tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"`
+
+The source file is the untagged metainstaller `out\Default\UpdaterSetup.exe`,
+and the final tagged file will be `out\Default\Tagged_UpdaterSetup.signed.exe`.
+
+* One-time step: from an elevated powershell prompt:
+```
+New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
+ -CertStoreLocation cert:\CurrentUser\My
+```
+* Note: all the steps below are run from a medium cmd prompt.
+* One-time step: `python3 -m pip install pypiwin32`
+* One-time step:
+`set PYTHONPATH=C:\src\chromium\src\chrome\tools\build\win`
+*
+```
+python3 C:\src\chromium\src\chrome\updater\win\signing\sign.py --in_file
+ C:\src\chromium\src\out\Default\UpdaterSetup.exe
+ --out_file C:\src\chromium\src\out\Default\UpdaterSetup.signed.exe
+ --lzma_7z "C:\Program Files\7-Zip\7z.exe"
+ --signtool c:\windows_sdk_10\files\bin\10.0.22000.0\x64\signtool.exe
+ --identity id@domain.tld
+ --certificate_tag C:\src\chromium\src\out\Default\certificate_tag.exe
+```
+*
+```
+python3 C:\src\chromium\src\chrome\updater\tools\tag.py
+ --certificate_tag=C:\src\chromium\src\out\Default\certificate_tag.exe
+ --in_file=C:\src\chromium\src\out\Default\UpdaterSetup.signed.exe
+ --out_file=out\Default\Tagged_UpdaterSetup.signed.exe
+ --tag="appguid=FOO_BAR_APP_ID&appname=SomeName&needsadmin=prefers"
+```
+
 ##### `needsadmin`
 
 `needsadmin` is one of the install parameters that can be specified for
