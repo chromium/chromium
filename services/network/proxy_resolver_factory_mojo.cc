@@ -4,6 +4,7 @@
 
 #include "services/network/proxy_resolver_factory_mojo.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -11,8 +12,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_runner.h"
@@ -21,6 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
@@ -53,32 +59,6 @@ base::Value NetLogErrorParams(int line_number, const std::string& message) {
   return base::Value(std::move(dict));
 }
 
-// Implementation for myIpAddress() and myIpAddressEx() that is expected to run
-// on a worker thread. Will notify |client| on completion.
-void DoMyIpAddressOnWorker(
-    bool is_ex,
-    mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
-        client_remote) {
-  // Resolve the list of IP addresses.
-  std::vector<net::IPAddress> my_ip_addresses =
-      is_ex ? PacMyIpAddressEx() : PacMyIpAddress();
-
-  mojo::Remote<proxy_resolver::mojom::HostResolverRequestClient> client(
-      std::move(client_remote));
-
-  // TODO(eroman): Note that this code always returns a success response (with
-  // loopback) rather than passing forward the error. This is to ensure that the
-  // response gets cached on the proxy resolver process side, since this layer
-  // here does not currently do any caching or de-duplication. This should be
-  // cleaned up once the interfaces are refactored. Lastly note that for
-  // myIpAddress() this doesn't change the final result. However for
-  // myIpAddressEx() it means we return 127.0.0.1 rather than empty string.
-  if (my_ip_addresses.empty())
-    my_ip_addresses.push_back(net::IPAddress::IPv4Localhost());
-
-  client->ReportResult(net::OK, my_ip_addresses);
-}
-
 // A mixin that forwards logging to (Bound)NetLog and ProxyResolverErrorObserver
 // and DNS requests to a MojoHostResolverImpl, which is implemented in terms of
 // a HostResolver, or myIpAddress[Ex]() which is implemented by //net.
@@ -90,6 +70,10 @@ class ClientMixin : public ClientInterface {
               net::NetLog* net_log,
               const net::NetLogWithSource& net_log_with_source)
       : host_resolver_(host_resolver, net_log_with_source),
+        my_ip_address_impl_(base::MakeRefCounted<MyIpAddressImpl>(
+            MyIpAddressImpl::Mode::kMyIpAddress)),
+        my_ip_address_impl_ex_(base::MakeRefCounted<MyIpAddressImpl>(
+            MyIpAddressImpl::Mode::kMyIpAddressEx)),
         error_observer_(error_observer),
         net_log_(net_log),
         net_log_with_source_(net_log_with_source) {}
@@ -125,15 +109,12 @@ class ClientMixin : public ClientInterface {
       const net::NetworkIsolationKey& network_isolation_key,
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           client) override {
-    bool is_ex = operation == net::ProxyResolveDnsOperation::DNS_RESOLVE_EX ||
-                 operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX;
-
-    if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS ||
-        operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX) {
-      GetMyIpAddressTaskRuner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&DoMyIpAddressOnWorker, is_ex, std::move(client)));
+    if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS) {
+      my_ip_address_impl_ex_->AddRequest(std::move(client));
+    } else if (operation == net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX) {
+      my_ip_address_impl_->AddRequest(std::move(client));
     } else {
+      bool is_ex = operation == net::ProxyResolveDnsOperation::DNS_RESOLVE_EX;
       // Request was for dnsResolve() or dnsResolveEx().
       host_resolver_.Resolve(hostname, network_isolation_key, is_ex,
                              std::move(client));
@@ -146,24 +127,19 @@ class ClientMixin : public ClientInterface {
     return host_resolver_.request_in_progress();
   }
 
-  // Returns a task runner used to run the code for myIpAddress[Ex].
-  static scoped_refptr<base::TaskRunner> GetMyIpAddressTaskRuner() {
-    // TODO(eroman): While these tasks are expected to normally run quickly,
-    // it would be prudent to enforce a bound on outstanding tasks, and maybe
-    // de-duplication of requests.
-    //
-    // However the better place to focus on is de-duplication and caching on the
-    // proxy service side (which currently caches but doesn't de-duplicate).
-    return base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-         base::TaskPriority::USER_VISIBLE});
-  }
-
  private:
+  // Handles DNS queries and owns the Remote<HostResolverRequestClient>'s.
   MojoHostResolverImpl host_resolver_;
+  // Handles myIpAddress() queries and also owns the
+  // Remote<HostResolverRequestClient>'s.
+  scoped_refptr<MyIpAddressImpl> my_ip_address_impl_;
+  scoped_refptr<MyIpAddressImpl> my_ip_address_impl_ex_;
+
   const raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
   const raw_ptr<net::NetLog> net_log_;
   const net::NetLogWithSource net_log_with_source_;
+
+  base::WeakPtrFactory<ClientMixin> weak_ptr_factory_{this};
 };
 
 // Implementation of ProxyResolver that connects to a Mojo service to evaluate

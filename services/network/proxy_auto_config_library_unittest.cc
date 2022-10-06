@@ -4,25 +4,64 @@
 
 #include "services/network/proxy_auto_config_library.h"
 
+#include <algorithm>
+#include <memory>
+
+#include "base/containers/circular_deque.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
+#include "net/base/completion_once_callback.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
-#include "net/socket/client_socket_handle.h"
 #include "net/socket/datagram_client_socket.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 namespace {
 
+class MockClient : public proxy_resolver::mojom::HostResolverRequestClient {
+ public:
+  MockClient(
+      mojo::PendingReceiver<proxy_resolver::mojom::HostResolverRequestClient>
+          pending_receiver,
+      base::OnceClosure results_callback)
+      : receiver_(this, std::move(pending_receiver)),
+        results_callback_(std::move(results_callback)) {}
+
+  void ReportResult(int error, const net::IPAddressList& results) override {
+    results_ = results;
+    std::move(results_callback_).Run();
+  }
+
+  net::IPAddressList GetResults() const { return results_; }
+
+ private:
+  mojo::Receiver<proxy_resolver::mojom::HostResolverRequestClient> receiver_;
+  base::OnceClosure results_callback_;
+  net::IPAddressList results_;
+};
+
 // Helper for verifying whether the address list returned by myIpAddress() /
 // myIpAddressEx() looks correct.
 void VerifyActualMyIpAddresses(const net::IPAddressList& test_list) {
   // Enumerate all of the IP addresses for the system (skipping loopback and
   // link-local ones). This is used as a reference implementation to check
-  // whether |test_list| (which was obtained using a different strategy) looks
+  // whether `test_list` (which was obtained using a different strategy) looks
   // correct.
   std::set<net::IPAddress> candidates;
   net::NetworkInterfaceList networks;
@@ -33,24 +72,21 @@ void VerifyActualMyIpAddresses(const net::IPAddressList& test_list) {
     candidates.insert(network.address);
   }
 
+  EXPECT_GT(test_list.size(), 0u);
+
   // Ordinarily the machine running this test will have an IP address. However
   // for some bot configurations (notably Android) that may not be the case.
-  EXPECT_EQ(candidates.empty(), test_list.empty());
+  if (candidates.empty()) {
+    // There are no possible candidates, so myIpAddress() should return IPV4
+    // localhost.
+    ASSERT_EQ(1u, test_list.size());
+    EXPECT_EQ("127.0.0.1", test_list.front().ToString());
+    return;
+  }
 
-  // |test_list| should be a subset of |candidates|.
+  // `test_list` should be a subset of `candidates`.
   for (const auto& ip : test_list)
     EXPECT_EQ(1u, candidates.count(ip));
-}
-
-// Tests for PacMyIpAddress() and PacMyIpAddressEx().
-TEST(PacLibraryTest, ActualPacMyIpAddress) {
-  auto my_ip_addresses = PacMyIpAddress();
-
-  VerifyActualMyIpAddresses(my_ip_addresses);
-}
-
-TEST(PacLibraryTest, ActualPacMyIpAddressEx) {
-  VerifyActualMyIpAddresses(PacMyIpAddressEx());
 }
 
 net::IPAddress CreateIPAddress(base::StringPiece literal) {
@@ -252,26 +288,81 @@ class MockSocketFactory : public net::ClientSocketFactory {
   std::vector<std::unique_ptr<MockUDPSocket>> udp_sockets_;
 };
 
-// Tests myIpAddress() when there is a route to 8.8.8.8.
-TEST(PacLibraryTest, PacMyIpAddress8888) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectSuccess("8.8.8.8", "192.168.1.1");
+class PacLibraryTest : public testing::Test {
+ public:
+  PacLibraryTest() = default;
+  ~PacLibraryTest() override = default;
 
-  auto result = PacMyIpAddressForTest(&factory, {});
+ protected:
+  net::IPAddressList PacMyIpAddressForTest() {
+    impl_ = base::MakeRefCounted<MyIpAddressImpl>(
+        MyIpAddressImpl::Mode::kMyIpAddress);
+    return RunMyIpAddressUntilCompletion();
+  }
+
+  net::IPAddressList PacMyIpAddressExForTest() {
+    impl_ = base::MakeRefCounted<MyIpAddressImpl>(
+        MyIpAddressImpl::Mode::kMyIpAddressEx);
+    return RunMyIpAddressUntilCompletion();
+  }
+
+  net::IPAddressList RunMyIpAddressUntilCompletion() {
+    if (use_mocks_) {
+      impl_->SetSocketFactoryForTest(&factory_);
+      impl_->SetDNSResultForTest(dns_result_);
+    }
+
+    base::RunLoop run_loop;
+    mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
+        remote;
+    MockClient client(remote.InitWithNewPipeAndPassReceiver(),
+                      run_loop.QuitClosure());
+    impl_->AddRequest(std::move(remote));
+    run_loop.Run();
+    return client.GetResults();
+  }
+
+  void SetRealTest() { use_mocks_ = false; }
+
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<MyIpAddressImpl> impl_;
+  MockSocketFactory factory_;
+  net::AddressList dns_result_;
+  bool use_mocks_ = true;
+};
+
+// Tests for actual PacMyIpAddress() and PacMyIpAddressEx() (real socket
+// connections and DNS results rather than mocks)
+TEST_F(PacLibraryTest, ActualPacMyIpAddress) {
+  SetRealTest();
+  auto my_ip_addresses = PacMyIpAddressForTest();
+
+  VerifyActualMyIpAddresses(my_ip_addresses);
+}
+
+TEST_F(PacLibraryTest, ActualPacMyIpAddressEx) {
+  SetRealTest();
+  auto my_ip_addresses = PacMyIpAddressExForTest();
+
+  VerifyActualMyIpAddresses(my_ip_addresses);
+}
+
+// Tests myIpAddress() when there is a route to 8.8.8.8.
+TEST_F(PacLibraryTest, PacMyIpAddress8888) {
+  factory_.AddUDPConnectSuccess("8.8.8.8", "192.168.1.1");
+
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("192.168.1.1", result.front().ToString());
 }
 
 // Tests myIpAddress() when there is no route to 8.8.8.8, but there is one to
 // 2001:4860:4860::8888.
-TEST(PacLibraryTest, PacMyIpAddress2001) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::beef");
+TEST_F(PacLibraryTest, PacMyIpAddress2001) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::beef");
 
-  net::AddressList dns_result;
-
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("2001::beef", result.front().ToString());
 }
@@ -279,12 +370,11 @@ TEST(PacLibraryTest, PacMyIpAddress2001) {
 // Tests myIpAddress() when there is no route to 8.8.8.8, no route to
 // 2001:4860:4860::8888, however getaddrinfo(gethostname()) finds results. Most
 // of those results are skipped over, and the IPv4 one is favored.
-TEST(PacLibraryTest, PacMyIpAddressHostname) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressHostname) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result = CreateAddressList({
+  dns_result_ = CreateAddressList({
       "169.254.13.16",
       "127.0.0.1",
       "::1",
@@ -294,7 +384,7 @@ TEST(PacLibraryTest, PacMyIpAddressHostname) {
       "192.168.1.3",
   });
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("178.1.99.3", result.front().ToString());
 }
@@ -302,15 +392,14 @@ TEST(PacLibraryTest, PacMyIpAddressHostname) {
 // Tests myIpAddress() when there is no route to 8.8.8.8, no route to
 // 2001:4860:4860::8888, however getaddrinfo(gethostname()) finds multiple IPv6
 // results.
-TEST(PacLibraryTest, PacMyIpAddressHostnameAllIPv6) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressHostnameAllIPv6) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result =
+  dns_result_ =
       CreateAddressList({"::1", "2001::f001", "2001::f00d", "169.254.0.6"});
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("2001::f001", result.front().ToString());
 }
@@ -318,23 +407,22 @@ TEST(PacLibraryTest, PacMyIpAddressHostnameAllIPv6) {
 // Tests myIpAddress() when there is no route to 8.8.8.8, no route to
 // 2001:4860:4860::8888, no acceptable result in getaddrinfo(gethostname()),
 // however there is a route for private address.
-TEST(PacLibraryTest, PacMyIpAddressPrivateIPv4) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressPrivateIPv4) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result = CreateAddressList({
+  dns_result_ = CreateAddressList({
       "169.254.13.16",
       "127.0.0.1",
       "::1",
       "fe89::beef",
   });
 
-  factory.AddUDPConnectSuccess("10.0.0.0", "127.0.0.1");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectSuccess("192.168.0.0", "63.31.9.8");
+  factory_.AddUDPConnectSuccess("10.0.0.0", "127.0.0.1");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectSuccess("192.168.0.0", "63.31.9.8");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("63.31.9.8", result.front().ToString());
 }
@@ -342,134 +430,125 @@ TEST(PacLibraryTest, PacMyIpAddressPrivateIPv4) {
 // Tests myIpAddress() when there is no route to 8.8.8.8, no route to
 // 2001:4860:4860::8888, no acceptable result in getaddrinfo(gethostname()),
 // however there is a route for private address.
-TEST(PacLibraryTest, PacMyIpAddressPrivateIPv6) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressPrivateIPv6) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result;
+  // No DNS result
 
-  factory.AddUDPConnectSuccess("10.0.0.0", "127.0.0.1");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectSuccess("FC00::", "2001::7777");
+  factory_.AddUDPConnectSuccess("10.0.0.0", "127.0.0.1");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectSuccess("FC00::", "2001::7777");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("2001::7777", result.front().ToString());
 }
 
 // Tests myIpAddress() when there are no routes, and getaddrinfo(gethostname())
 // fails.
-TEST(PacLibraryTest, PacMyIpAddressAllFail) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressAllFail) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result;
+  // No DNS result
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
-  EXPECT_EQ(0u, result.size());
+  auto result = PacMyIpAddressForTest();
+  // Every method failed, so myIpAddress() should return IPV4 localhost.
+  ASSERT_EQ(1u, result.size());
+  EXPECT_EQ("127.0.0.1", result.front().ToString());
 }
 
 // Tests myIpAddress() when there are no routes, and
 // getaddrinfo(gethostname()) only returns loopback.
-TEST(PacLibraryTest, PacMyIpAddressAllFailOrLoopback) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressAllFailOrLoopback) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result = CreateAddressList({"127.0.0.1", "::1"});
+  dns_result_ = CreateAddressList({"127.0.0.1", "::1"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
-  EXPECT_EQ(0u, result.size());
+  auto result = PacMyIpAddressForTest();
+  // Every method failed, so myIpAddress() should return IPV4 localhost.
+  ASSERT_EQ(1u, result.size());
+  EXPECT_EQ("127.0.0.1", result.front().ToString());
 }
 
 // Tests myIpAddress() when there is only an IPv6 link-local address.
-TEST(PacLibraryTest, PacMyIpAddressAllFailHasLinkLocal) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressAllFailHasLinkLocal) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result =
-      CreateAddressList({"127.0.0.1", "::1", "fe81::8881"});
+  dns_result_ = CreateAddressList({"127.0.0.1", "::1", "fe81::8881"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("fe81::8881", result.front().ToString());
 }
 
 // Tests myIpAddress() when there are only link-local addresses. The IPv4
 // link-local address is favored.
-TEST(PacLibraryTest, PacMyIpAddressAllFailHasLinkLocalFavorIPv4) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressAllFailHasLinkLocalFavorIPv4) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result =
+  dns_result_ =
       CreateAddressList({"127.0.0.1", "::1", "fe81::8881", "169.254.89.133"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressForTest(&factory, dns_result);
+  auto result = PacMyIpAddressForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("169.254.89.133", result.front().ToString());
 }
 
 // Tests myIpAddressEx() when there is a route to 8.8.8.8 but not one to
 // 2001:4860:4860::8888
-TEST(PacLibraryTest, PacMyIpAddressEx8888) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectSuccess("8.8.8.8", "192.168.1.1");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressEx8888) {
+  factory_.AddUDPConnectSuccess("8.8.8.8", "192.168.1.1");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  auto result = PacMyIpAddressExForTest(&factory, {});
+  auto result = PacMyIpAddressExForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("192.168.1.1", result.front().ToString());
 }
 
 // Tests myIpAddressEx() when there is a route to 2001:4860:4860::8888 but
 // not 8.8.8.8.
-TEST(PacLibraryTest, PacMyIpAddressEx2001) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::3333");
+TEST_F(PacLibraryTest, PacMyIpAddressEx2001) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::3333");
 
-  net::AddressList dns_result;
-
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("2001::3333", result.front().ToString());
 }
 
 // Tests myIpAddressEx() when there is a route to both 8.8.8.8 and
 // 2001:4860:4860::8888.
-TEST(PacLibraryTest, PacMyIpAddressEx8888And2001) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectSuccess("8.8.8.8", "192.168.17.8");
-  factory.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::8333");
+TEST_F(PacLibraryTest, PacMyIpAddressEx8888And2001) {
+  factory_.AddUDPConnectSuccess("8.8.8.8", "192.168.17.8");
+  factory_.AddUDPConnectSuccess("2001:4860:4860::8888", "2001::8333");
 
-  net::AddressList dns_result;
-
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
   ASSERT_EQ(2u, result.size());
   EXPECT_EQ("192.168.17.8", result.front().ToString());
   EXPECT_EQ("2001::8333", result.back().ToString());
@@ -478,12 +557,11 @@ TEST(PacLibraryTest, PacMyIpAddressEx8888And2001) {
 // Tests myIpAddressEx() when there is no route to 8.8.8.8, no route to
 // 2001:4860:4860::8888, however getaddrinfo(gethostname()) finds results. Some
 // of those results are skipped due to being link-local and loopback.
-TEST(PacLibraryTest, PacMyIpAddressExHostname) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExHostname) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result = CreateAddressList({
+  dns_result_ = CreateAddressList({
       "169.254.13.16",
       "::1",
       "fe89::beef",
@@ -493,7 +571,7 @@ TEST(PacLibraryTest, PacMyIpAddressExHostname) {
       "192.168.1.3",
   });
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
   ASSERT_EQ(3u, result.size());
   EXPECT_EQ("2001::bebe", result[0].ToString());
   EXPECT_EQ("178.1.99.3", result[1].ToString());
@@ -501,19 +579,18 @@ TEST(PacLibraryTest, PacMyIpAddressExHostname) {
 }
 
 // Tests myIpAddressEx() when routes are found for private IP space.
-TEST(PacLibraryTest, PacMyIpAddressExPrivateDuplicates) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExPrivateDuplicates) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result;
+  // No DNS result
 
-  factory.AddUDPConnectSuccess("10.0.0.0", "192.168.3.3");
-  factory.AddUDPConnectSuccess("172.16.0.0", "192.168.3.4");
-  factory.AddUDPConnectSuccess("192.168.0.0", "192.168.3.3");
-  factory.AddUDPConnectSuccess("FC00::", "2001::beef");
+  factory_.AddUDPConnectSuccess("10.0.0.0", "192.168.3.3");
+  factory_.AddUDPConnectSuccess("172.16.0.0", "192.168.3.4");
+  factory_.AddUDPConnectSuccess("192.168.0.0", "192.168.3.3");
+  factory_.AddUDPConnectSuccess("FC00::", "2001::beef");
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
 
   // Note that 192.168.3.3. was probed twice, but only added once to the final
   // result.
@@ -525,37 +602,37 @@ TEST(PacLibraryTest, PacMyIpAddressExPrivateDuplicates) {
 
 // Tests myIpAddressEx() when there are no routes, and
 // getaddrinfo(gethostname()) fails.
-TEST(PacLibraryTest, PacMyIpAddressExAllFail) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExAllFail) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result;
+  // No DNS result
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
-  EXPECT_EQ(0u, result.size());
+  auto result = PacMyIpAddressExForTest();
+  // Every method failed, so myIpAddress() should return IPV4 localhost.
+  ASSERT_EQ(1u, result.size());
+  EXPECT_EQ("127.0.0.1", result.front().ToString());
 }
 
 // Tests myIpAddressEx() when there are only IPv6 link-local address.
-TEST(PacLibraryTest, PacMyIpAddressExAllFailHasLinkLocal) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExAllFailHasLinkLocal) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result =
+  dns_result_ =
       CreateAddressList({"127.0.0.1", "::1", "fe81::8881", "fe80::8899"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectSuccess("FC00::", "fe80::1");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectSuccess("FC00::", "fe80::1");
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
   // There were four link-local addresses found, but only the first one is
   // returned.
   ASSERT_EQ(1u, result.size());
@@ -564,40 +641,84 @@ TEST(PacLibraryTest, PacMyIpAddressExAllFailHasLinkLocal) {
 
 // Tests myIpAddressEx() when there are only link-local addresses. The IPv4
 // link-local address is favored.
-TEST(PacLibraryTest, PacMyIpAddressExAllFailHasLinkLocalFavorIPv4) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExAllFailHasLinkLocalFavorIPv4) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result =
+  dns_result_ =
       CreateAddressList({"127.0.0.1", "::1", "fe81::8881", "169.254.89.133"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
+  auto result = PacMyIpAddressExForTest();
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ("169.254.89.133", result.front().ToString());
 }
 
 // Tests myIpAddressEx() when there are no routes, and
 // getaddrinfo(gethostname()) only returns loopback.
-TEST(PacLibraryTest, PacMyIpAddressExAllFailOrLoopback) {
-  MockSocketFactory factory;
-  factory.AddUDPConnectFailure("8.8.8.8");
-  factory.AddUDPConnectFailure("2001:4860:4860::8888");
+TEST_F(PacLibraryTest, PacMyIpAddressExAllFailOrLoopback) {
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
 
-  net::AddressList dns_result = CreateAddressList({"127.0.0.1", "::1"});
+  dns_result_ = CreateAddressList({"127.0.0.1", "::1"});
 
-  factory.AddUDPConnectFailure("10.0.0.0");
-  factory.AddUDPConnectFailure("172.16.0.0");
-  factory.AddUDPConnectFailure("192.168.0.0");
-  factory.AddUDPConnectFailure("FC00::");
+  factory_.AddUDPConnectFailure("10.0.0.0");
+  factory_.AddUDPConnectFailure("172.16.0.0");
+  factory_.AddUDPConnectFailure("192.168.0.0");
+  factory_.AddUDPConnectFailure("FC00::");
 
-  auto result = PacMyIpAddressExForTest(&factory, dns_result);
-  EXPECT_EQ(0u, result.size());
+  auto result = PacMyIpAddressExForTest();
+  // Every method failed, so myIpAddress() should return IPV4 localhost.
+  ASSERT_EQ(1u, result.size());
+  EXPECT_EQ("127.0.0.1", result.front().ToString());
+}
+
+TEST_F(PacLibraryTest, PacMyIpAddressExRunMultipleTimes) {
+  impl_ = base::MakeRefCounted<MyIpAddressImpl>(
+      MyIpAddressImpl::Mode::kMyIpAddressEx);
+
+  // Run the PacMyIpAddressExHostname test.
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
+
+  dns_result_ = CreateAddressList({
+      "169.254.13.16",
+      "::1",
+      "fe89::beef",
+      "2001::bebe",
+      "178.1.99.3",
+      "127.0.0.1",
+      "192.168.1.3",
+  });
+
+  auto result = RunMyIpAddressUntilCompletion();
+  ASSERT_EQ(3u, result.size());
+  EXPECT_EQ("2001::bebe", result[0].ToString());
+  EXPECT_EQ("178.1.99.3", result[1].ToString());
+  EXPECT_EQ("192.168.1.3", result[2].ToString());
+
+  // Run the PacMyIpAddressExPrivateDuplicates with the same `impl_` as the
+  // previous test.
+  factory_.AddUDPConnectFailure("8.8.8.8");
+  factory_.AddUDPConnectFailure("2001:4860:4860::8888");
+
+  dns_result_.clear();
+
+  factory_.AddUDPConnectSuccess("10.0.0.0", "192.168.3.3");
+  factory_.AddUDPConnectSuccess("172.16.0.0", "192.168.3.4");
+  factory_.AddUDPConnectSuccess("192.168.0.0", "192.168.3.3");
+  factory_.AddUDPConnectSuccess("FC00::", "2001::beef");
+
+  result = RunMyIpAddressUntilCompletion();
+
+  ASSERT_EQ(3u, result.size());
+  EXPECT_EQ("192.168.3.3", result[0].ToString());
+  EXPECT_EQ("192.168.3.4", result[1].ToString());
+  EXPECT_EQ("2001::beef", result[2].ToString());
 }
 
 }  // namespace
