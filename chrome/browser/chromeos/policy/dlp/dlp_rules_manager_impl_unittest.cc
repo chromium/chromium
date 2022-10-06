@@ -758,6 +758,10 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
+  // Disable feature
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()

@@ -240,7 +240,7 @@ BASE_FEATURE(kDataLeakPreventionPolicy,
 // DLP policy there. The daemon might restrict access to some protected files.
 BASE_FEATURE(kDataLeakPreventionFilesRestriction,
              "DataLeakPreventionFilesRestriction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
