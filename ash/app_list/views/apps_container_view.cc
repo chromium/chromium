@@ -89,12 +89,6 @@ constexpr int kPreferredGridColumns = 5;
 // * number of columns in portrait mode
 constexpr int kPreferredGridRows = 4;
 
-// Range of the height of centerline above screen bottom that all apps should
-// change opacity. NOTE: this is used to change page switcher's opacity as
-// well.
-constexpr float kAppsOpacityChangeStart = 8.0f;
-constexpr float kAppsOpacityChangeEnd = 144.0f;
-
 // The amount by which the apps container UI should be offset downwards when
 // shown on non apps page UI.
 constexpr int kNonAppsStateVerticalOffset = 24;
@@ -899,9 +893,6 @@ void AppsContainerView::AnimateOpacity(AppListViewState current_view_state,
 
   if (!apps_grid_view_->layer()->GetAnimator()->IsAnimatingProperty(
           ui::LayerAnimationElement::OPACITY)) {
-    apps_grid_view_->UpdateOpacity(true /*restore_opacity*/,
-                                   kAppsOpacityChangeStart,
-                                   kAppsOpacityChangeEnd);
     apps_grid_view_->layer()->SetOpacity(
         current_view_state != AppListViewState::kClosed ? 1.0f : 0.0f);
   }
@@ -1268,11 +1259,8 @@ void AppsContainerView::OnAnimationStarted(AppListState from_state,
 }
 
 void AppsContainerView::UpdatePageOpacityForState(AppListState state,
-                                                  float search_box_opacity,
-                                                  bool restore_opacity) {
+                                                  float search_box_opacity) {
   UpdateContainerOpacityForState(state);
-
-  UpdateContentsOpacity(restore_opacity);
 }
 
 void AppsContainerView::UpdatePageBoundsForState(
@@ -1490,36 +1478,6 @@ void AppsContainerView::UpdateContainerOpacityForState(AppListState state) {
       state == AppListState::kStateApps ? 1.0f : kNonAppsStateOpacity;
   if (layer()->GetTargetOpacity() != target_opacity)
     layer()->SetOpacity(target_opacity);
-}
-
-void AppsContainerView::UpdateContentsOpacity(bool restore_opacity) {
-  apps_grid_view_->UpdateOpacity(restore_opacity, kAppsOpacityChangeStart,
-                                 kAppsOpacityChangeEnd);
-
-  // Updates the opacity of page switcher buttons. The same rule as all apps in
-  // AppsGridView.
-  AppListView* app_list_view = contents_view_->app_list_view();
-  int screen_bottom = app_list_view->GetScreenBottom();
-  gfx::Rect switcher_bounds = page_switcher_->GetBoundsInScreen();
-  float centerline_above_work_area =
-      std::max<float>(screen_bottom - switcher_bounds.CenterPoint().y(), 0.f);
-  float opacity =
-      std::min(std::max((centerline_above_work_area - kAppsOpacityChangeStart) /
-                            (kAppsOpacityChangeEnd - kAppsOpacityChangeStart),
-                        0.f),
-               1.0f);
-  page_switcher_->layer()->SetOpacity(restore_opacity ? 1.0f : opacity);
-
-  if (suggestion_chip_container_view_) {
-    // Changes the opacity of suggestion chips between 0 and 1 when app list
-    // transition progress changes.
-    float chips_opacity = contents_view_->app_list_view()->app_list_state() !=
-                                  AppListViewState::kClosed
-                              ? 1.0f
-                              : 0.0f;
-    suggestion_chip_container_view_->layer()->SetOpacity(
-        restore_opacity ? 1.0 : chips_opacity);
-  }
 }
 
 void AppsContainerView::UpdateContentsYPosition(AppListViewState state) {

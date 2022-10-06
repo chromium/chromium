@@ -133,8 +133,7 @@ class ASH_EXPORT AppsContainerView
   void OnAnimationStarted(AppListState from_state,
                           AppListState to_state) override;
   void UpdatePageOpacityForState(AppListState state,
-                                 float search_box_opacity,
-                                 bool restore_opacity) override;
+                                 float search_box_opacity) override;
   void UpdatePageBoundsForState(AppListState state,
                                 const gfx::Rect& contents_bounds,
                                 const gfx::Rect& search_box_bounds) override;
@@ -257,14 +256,6 @@ class ASH_EXPORT AppsContainerView
 
   // Updates the whole container opacity to match the app list state.
   void UpdateContainerOpacityForState(AppListState state);
-
-  // Updates the opacity of the apps container elements for the current app list
-  // view position.
-  // |restore_opacity| - Whether the opacity should be restored.
-
-  // TODO(crbug.com/1356674): Maybe remove this method or remove
-  // |restore_opacity| as parameter.
-  void UpdateContentsOpacity(bool restore_opacity);
 
   // Updates the y position of the apps container elements for the current app
   // list view position.

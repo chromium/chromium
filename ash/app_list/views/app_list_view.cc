@@ -1358,27 +1358,6 @@ void AppListView::SelectInitialAppsPage() {
     GetAppsPaginationModel()->SelectPage(0, false /* animate */);
   }
 }
-int AppListView::GetScreenBottom() const {
-  return GetDisplayNearestView().bounds().bottom();
-}
-
-int AppListView::GetCurrentAppListHeight() const {
-  if (!GetWidget())
-    return delegate_->GetShelfSize();
-
-  int current_height =
-      GetScreenBottom() - GetWidget()->GetWindowBoundsInScreen().y();
-
-  // App list may be translated on fullscreen when the Virtual Keyboard is
-  // showing, effectively moving the app list bounds upwards. Current height
-  // needs to account for this translation.
-  if (offset_to_show_folder_with_onscreen_keyboard_) {
-    current_height +=
-        GetWidget()->GetNativeView()->transform().To2dTranslation().y();
-  }
-
-  return current_height;
-}
 
 int AppListView::GetHeightForState(AppListViewState state) const {
   switch (app_list_state_) {

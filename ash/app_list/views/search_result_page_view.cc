@@ -840,8 +840,7 @@ void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,
 }
 
 void SearchResultPageView::UpdatePageOpacityForState(AppListState state,
-                                                     float search_box_opacity,
-                                                     bool restore_opacity) {
+                                                     float search_box_opacity) {
   layer()->SetOpacity(search_box_opacity);
 }
 

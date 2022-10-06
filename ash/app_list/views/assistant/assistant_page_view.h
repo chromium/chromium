@@ -51,8 +51,7 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
   void UpdatePageOpacityForState(AppListState state,
-                                 float search_box_opacity,
-                                 bool restore_opacity) override;
+                                 float search_box_opacity) override;
   gfx::Rect GetPageBoundsForState(
       AppListState state,
       const gfx::Rect& contents_bounds,

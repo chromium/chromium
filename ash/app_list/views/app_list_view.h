@@ -250,12 +250,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // screen coordinates.
   gfx::Rect GetAppInfoDialogBounds() const;
 
-  // Gets current screen bottom.
-  int GetScreenBottom() const;
-
-  // Returns current app list height above display bottom.
-  int GetCurrentAppListHeight() const;
-
   // Returns the expected app list view height (measured from the screen bottom)
   // in the provided state.
   int GetHeightForState(AppListViewState state) const;

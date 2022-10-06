@@ -58,12 +58,8 @@ class ASH_EXPORT AppListPage : public views::View {
   // well.
   // |state| - The current app list state.
   // |search_box_opacity| - The current search box opacity.
-  // |restore_opacity| - Whether the page opacity should be restored, e.g. when
-  //     the app list drag ends. Note that |search_box_opacity| will be 1.0f if
-  //     |restore_opacity| is true.
   virtual void UpdatePageOpacityForState(AppListState state,
-                                         float search_box_opacity,
-                                         bool restore_opacity) = 0;
+                                         float search_box_opacity) = 0;
 
   // Updates the page bounds to match the provided app list state.
   // The default implementation sets the bounds returned by

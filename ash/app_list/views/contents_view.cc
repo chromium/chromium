@@ -607,15 +607,14 @@ void ContentsView::UpdateYPositionAndOpacity() {
           ConvertRectToWidgetWithoutTransform(search_box_bounds));
   search_box->GetWidget()->SetBounds(search_rect);
 
-  const bool restore_opacity = target_view_state() != AppListViewState::kClosed;
-  const float search_box_opacity = restore_opacity ? 1.0f : 0.0f;
+  const float search_box_opacity =
+      target_view_state() != AppListViewState::kClosed ? 1.0f : 0.0f;
   search_box->layer()->SetOpacity(search_box_opacity);
 
   for (AppListPage* page : app_list_pages_) {
     page->UpdatePageBoundsForState(current_state, GetContentsBounds(),
                                    search_box_bounds);
-    page->UpdatePageOpacityForState(current_state, search_box_opacity,
-                                    restore_opacity);
+    page->UpdatePageOpacityForState(current_state, search_box_opacity);
   }
 
   target_page_for_last_view_state_update_ = current_state;
