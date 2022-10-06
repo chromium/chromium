@@ -36,10 +36,10 @@ class OverlayPopupAdViolationBrowserTest : public SubresourceFilterBrowserTest {
   OverlayPopupAdViolationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> disabled = {
         blink::features::kFrequencyCappingForOverlayPopupDetection};
 
     feature_list_.InitWithFeatures(enabled, disabled);
@@ -129,8 +129,9 @@ class OverlayPopupAdViolationBrowserTestWithoutEnforcement
   OverlayPopupAdViolationBrowserTestWithoutEnforcement() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {subresource_filter::kAdTagging};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> enabled = {
+        subresource_filter::kAdTagging};
+    std::vector<base::test::FeatureRef> disabled = {
         subresource_filter::kAdsInterventionsEnforced,
         blink::features::kFrequencyCappingForOverlayPopupDetection};
 

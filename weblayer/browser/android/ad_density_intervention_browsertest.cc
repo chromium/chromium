@@ -40,10 +40,10 @@ class AdDensityViolationBrowserTest : public SubresourceFilterBrowserTest {
   AdDensityViolationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    std::vector<base::Feature> disabled = {};
+    std::vector<base::test::FeatureRef> disabled = {};
 
     feature_list_.InitWithFeatures(enabled, disabled);
     SubresourceFilterBrowserTest::SetUp();
@@ -164,8 +164,9 @@ class AdDensityViolationBrowserTestWithoutEnforcement
   AdDensityViolationBrowserTestWithoutEnforcement() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {subresource_filter::kAdTagging};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> enabled = {
+        subresource_filter::kAdTagging};
+    std::vector<base::test::FeatureRef> disabled = {
         subresource_filter::kAdsInterventionsEnforced};
 
     feature_list_.InitWithFeatures(enabled, disabled);
