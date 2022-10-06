@@ -886,6 +886,8 @@ const char kLacrosPrimaryInternalName[] = "lacros-primary";
 const char kLacrosSupportInternalName[] = "lacros-support";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kWebAppsCrosapiInternalName[] = "web-apps-crosapi";
+const char kArcEnableVirtioBlkForDataInternalName[] =
+    "arc-enable-virtio-blk-for-data";
 const char kArcVmBalloonPolicyInternalName[] =
     "arc-use-limit-cache-balloon-policy";
 
@@ -5236,7 +5238,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"arc-enable-usap", flag_descriptions::kArcEnableUsapName,
      flag_descriptions::kArcEnableUsapDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableUsap)},
-    {"arc-enable-virtio-blk-for-data",
+    {kArcEnableVirtioBlkForDataInternalName,
      flag_descriptions::kArcEnableVirtioBlkForDataName,
      flag_descriptions::kArcEnableVirtioBlkForDataDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableVirtioBlkForData)},
@@ -9761,6 +9763,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kWebAppsCrosapiInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
+  }
+
+  if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
+    return !arc::IsArcVmEnabled();
   }
 
   if (!strcmp(kArcVmBalloonPolicyInternalName, entry.internal_name)) {
