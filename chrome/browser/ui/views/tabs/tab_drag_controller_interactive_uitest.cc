@@ -706,10 +706,6 @@ class DetachToBrowserTabDragControllerTest
 // its group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragRightToUngroupTab) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -755,10 +751,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // its group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragLeftToUngroupTab) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -803,10 +795,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // modify the group of the dragged tab.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragTabWithinGroupDoesNotModifyGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -847,10 +835,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // the only tab in that group will remove the group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragOnlyTabInGroupRemovesGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -883,10 +867,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Tab Group 1 as well.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabLeftIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -945,10 +925,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Tab Group 1 as well.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabRightIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -996,10 +972,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Dragging the first tab past the last slot should allow it to exit the group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabRightOfRightmostGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1037,10 +1009,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragMultipleTabsRightIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1094,10 +1062,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabs joining the same group as the tab in the third position.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragMultipleTabsLeftIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1144,10 +1108,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragUngroupedTabGroupedTabOutsideGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1185,10 +1145,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // group of the tab to before the drag session started.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragSingleTabIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1223,10 +1179,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // session started.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragSingleTabGroupIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1268,10 +1220,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // together.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderDragsGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1316,10 +1264,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // right will result in Tab Group 1 moving but avoiding Tab Group 2.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderRightAvoidsOtherGroups) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1366,10 +1310,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // left will result in Tab Group 2 moving but avoiding Tab Group 1.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderLeftAvoidsOtherGroups) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -1417,10 +1357,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // into the group.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragPinnedTabDoesNotGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2425,10 +2361,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // tabs into the {group1}} after the first tab.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragWindowIntoGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2478,10 +2410,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Creates two browsers, then drags a group from one to the other.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragGroupHeaderToSeparateWindow) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2519,10 +2447,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // presses escape to revert the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragRight) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2557,10 +2481,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // escape to revert the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragLeft) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2622,10 +2542,6 @@ void PressEscapeWhileDetachedHeaderStep2(
 // the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragWhileDetached) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2657,10 +2573,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // fourth tab should swap places with the collapsed group header.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragTabLeftPastCollapsedGroupHeader) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2697,10 +2609,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // first tab should swap places with the collapsed group header.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragTabRightPastCollapsedGroupHeader) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2737,10 +2645,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // the drag.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertCollapsedHeaderDragWhileDetached) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2776,10 +2680,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // expanding.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragCollapsedGroupHeaderExpandsGroup) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
@@ -2823,10 +2723,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // Creates two browsers, then drags a collapsed group from one to the other.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragCollapsedGroupHeaderToSeparateWindow) {
-  // TODO(crbug.com/1346023): Skip until this feature supports tab groups.
-  if (base::FeatureList::IsEnabled(features::kSplitTabStrip))
-    GTEST_SKIP();
-
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   TabStrip* tab_strip = GetTabStripForBrowser(browser());

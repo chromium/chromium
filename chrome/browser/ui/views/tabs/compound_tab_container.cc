@@ -122,7 +122,7 @@ class UnpinnedTabContainerController final : public TabContainerController {
       const tab_groups::TabGroupId& group) const override {
     const gfx::Range model_range = base_controller_->ListTabsInGroup(group);
     return gfx::Range(ModelToContainerIndex(model_range.start()).value(),
-                      ModelToContainerIndex(model_range.end()).value());
+                      ModelToContainerIndex(model_range.end() - 1).value());
   }
 
   bool CanExtendDragHandle() const override {
@@ -307,45 +307,38 @@ void CompoundTabContainer::ScrollTabContainerByOffset(int offset) {
 }
 
 void CompoundTabContainer::OnGroupCreated(const tab_groups::TabGroupId& group) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->OnGroupCreated(group);
 }
 
 void CompoundTabContainer::OnGroupEditorOpened(
     const tab_groups::TabGroupId& group) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->OnGroupEditorOpened(group);
 }
 
 void CompoundTabContainer::OnGroupMoved(const tab_groups::TabGroupId& group) {
-  NOTREACHED();
+  unpinned_tab_container_->OnGroupMoved(group);
 }
 
 void CompoundTabContainer::OnGroupContentsChanged(
     const tab_groups::TabGroupId& group) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->OnGroupContentsChanged(group);
 }
 
 void CompoundTabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->OnGroupClosed(group);
 }
 
 void CompoundTabContainer::UpdateTabGroupVisuals(
     tab_groups::TabGroupId group_id) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->UpdateTabGroupVisuals(group_id);
 }
 
 void CompoundTabContainer::NotifyTabGroupEditorBubbleOpened() {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->NotifyTabGroupEditorBubbleOpened();
 }
 
 void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  unpinned_tab_container_->NotifyTabGroupEditorBubbleClosed();
 }
 
 int CompoundTabContainer::GetModelIndexOf(const TabSlotView* slot_view) const {
@@ -424,7 +417,10 @@ void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
 }
 
 void CompoundTabContainer::StartBasicAnimation() {
-  // TODO(crbug.com/1346023): Implement this, or better, remove callers.
+  // TODO(crbug.com/1346023): Remove callers so this method can be private to
+  // TabContainerImpl.
+  pinned_tab_container_->StartBasicAnimation();
+  unpinned_tab_container_->StartBasicAnimation();
 }
 
 void CompoundTabContainer::InvalidateIdealBounds() {
