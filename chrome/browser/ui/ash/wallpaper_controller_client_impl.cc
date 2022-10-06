@@ -635,12 +635,6 @@ void WallpaperControllerClientImpl::SetDefaultWallpaper(
                                              std::move(callback));
 }
 
-void WallpaperControllerClientImpl::MigrateCollectionIdFromChromeApp(
-    const AccountId& account_id,
-    base::OnceCallback<void(const std::string&)> result_callback) {
-  std::move(result_callback).Run(std::string());
-}
-
 void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {

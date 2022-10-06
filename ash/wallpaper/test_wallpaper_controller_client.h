@@ -38,9 +38,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   size_t set_default_wallpaper_count() const {
     return set_default_wallpaper_count_;
   }
-  size_t migrate_collection_id_from_chrome_app_count() const {
-    return migrate_collection_id_from_chrome_app_count_;
-  }
   size_t fetch_images_for_collection_count() const {
     return fetch_images_for_collection_count_;
   }
@@ -83,9 +80,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
       const AccountId& account_id,
       bool show_wallpaper,
       base::OnceCallback<void(bool success)> callback) override;
-  void MigrateCollectionIdFromChromeApp(
-      const AccountId& account_id,
-      base::OnceCallback<void(const std::string&)> result_callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
@@ -116,7 +110,6 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
  private:
   size_t open_count_ = 0;
   size_t set_default_wallpaper_count_ = 0;
-  size_t migrate_collection_id_from_chrome_app_count_ = 0;
   size_t fetch_images_for_collection_count_ = 0;
   std::string fetch_daily_refresh_wallpaper_param_;
   bool fetch_daily_refresh_info_fails_ = false;

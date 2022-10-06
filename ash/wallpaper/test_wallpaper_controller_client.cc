@@ -46,7 +46,6 @@ void TestWallpaperControllerClient::AddCollection(
 void TestWallpaperControllerClient::ResetCounts() {
   open_count_ = 0;
   set_default_wallpaper_count_ = 0;
-  migrate_collection_id_from_chrome_app_count_ = 0;
   fetch_daily_refresh_wallpaper_param_ = std::string();
   fetch_daily_refresh_info_fails_ = false;
   get_wallpaper_path_from_drive_fs_account_id_.clear();
@@ -66,12 +65,6 @@ void TestWallpaperControllerClient::SetDefaultWallpaper(
     base::OnceCallback<void(bool success)> callback) {
   set_default_wallpaper_count_++;
   std::move(callback).Run(/*success=*/true);
-}
-
-void TestWallpaperControllerClient::MigrateCollectionIdFromChromeApp(
-    const AccountId& account_id,
-    base::OnceCallback<void(const std::string&)>) {
-  migrate_collection_id_from_chrome_app_count_++;
 }
 
 void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(

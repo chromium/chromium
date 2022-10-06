@@ -66,9 +66,6 @@ class WallpaperControllerClientImpl
       const AccountId& account_id,
       bool show_wallpaper,
       ash::WallpaperController::SetWallpaperCallback callback) override;
-  void MigrateCollectionIdFromChromeApp(
-      const AccountId& account_id,
-      base::OnceCallback<void(const std::string&)> result_callback) override;
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;

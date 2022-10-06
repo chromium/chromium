@@ -3553,7 +3553,6 @@ TEST_F(WallpaperControllerTest, MigrateWallpaperInfoDaily) {
   WallpaperInfo info;
   ASSERT_TRUE(pref_manager_->GetSyncedWallpaperInfo(kAccountId1, &info));
   EXPECT_EQ(expected_info, info);
-  EXPECT_EQ(client_.migrate_collection_id_from_chrome_app_count(), 1u);
 }
 
 TEST_F(WallpaperControllerTest,
