@@ -27,7 +27,7 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
   absl::optional<bool> is_cross_site = absl::nullopt;
   if (net::NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
       top_frame_site.has_value()) {
-    is_cross_site = absl::make_optional(data.is_cross_site());
+    is_cross_site = data.is_cross_site();
   }
 
   // Read nonce value.
@@ -51,8 +51,8 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
     *out = net::NetworkAnonymizationKey();
   } else {
     *out = net::NetworkAnonymizationKey(std::move(top_frame_site.value()),
-                                        std::move(frame_site),
-                                        std::move(is_cross_site), nonce);
+                                        std::move(frame_site), is_cross_site,
+                                        nonce);
   }
 
   return true;

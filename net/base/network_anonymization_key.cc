@@ -86,7 +86,7 @@ NetworkAnonymizationKey& NetworkAnonymizationKey::operator=(
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateTransient() {
   SchemefulSite site_with_opaque_origin;
   return NetworkAnonymizationKey(site_with_opaque_origin,
-                                 site_with_opaque_origin);
+                                 site_with_opaque_origin, false);
 }
 
 std::string NetworkAnonymizationKey::ToDebugString() const {
