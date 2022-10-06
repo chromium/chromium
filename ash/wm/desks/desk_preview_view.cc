@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
@@ -29,6 +30,7 @@
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -232,11 +234,13 @@ void GetLayersData(aura::Window* window,
   if (window->GetProperty(kForceVisibleInMiniViewKey))
     layer_data.should_force_mirror_visible = true;
 
-  // Visible on all desks windows aren't children of inactive desk's container
-  // so mark them explicitly to clear overview transforms. Additionally, windows
-  // in overview mode are transformed into their positions in the grid, but we
-  // want to show a preview of the windows in their untransformed state.
+  // Visible on all desks windows and floated windows aren't children of
+  // inactive desk's container so mark them explicitly to clear overview
+  // transforms. Additionally, windows in overview mode are transformed into
+  // their positions in the grid, but we want to show a preview of the windows
+  // in their untransformed state.
   if (desks_util::IsWindowVisibleOnAllWorkspaces(window) ||
+      (window_state && window_state->IsFloated()) ||
       desks_util::IsDeskContainer(window->parent())) {
     layer_data.should_clear_transform = true;
   }
@@ -343,6 +347,16 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   base::flat_map<ui::Layer*, LayerData> layers_data;
   GetLayersData(desk_container, &layers_data);
 
+  // If there is a floated window that belongs to this desk, since it doesn't
+  // belong to `desk_container`, we need to add it separately.
+  aura::Window* floated_window = nullptr;
+  if (chromeos::wm::features::IsFloatWindowEnabled() &&
+      (floated_window =
+           Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+               mini_view_->desk()))) {
+    GetLayersData(floated_window, &layers_data);
+  }
+
   base::flat_set<aura::Window*> visible_on_all_desks_windows_to_mirror;
   if (!desks_util::IsActiveDeskContainer(desk_container)) {
     // Since visible on all desks windows reside on the active desk, only mirror
@@ -358,6 +372,14 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   auto* desk_container_layer = desk_container->layer();
   MirrorLayerTree(desk_container_layer, mirrored_content_root_layer.get(),
                   layers_data, visible_on_all_desks_windows_to_mirror);
+
+  // Since floated window is not stored in desk container, we need to mirror it
+  // separately.
+  if (floated_window) {
+    auto* floated_window_layer = floated_window->layer();
+    MirrorLayerTree(floated_window_layer, mirrored_content_root_layer.get(),
+                    layers_data, /*visible_on_all_desks_windows_to_mirror=*/{});
+  }
 
   // Add the root of the mirrored layer tree as a child of the
   // |desk_mirrored_contents_view_|'s layer.
