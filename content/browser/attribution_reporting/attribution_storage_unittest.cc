@@ -1091,8 +1091,8 @@ TEST_F(AttributionStorageTest,
   store_source("https://s1.test", "https://a.r.test", "https://d3.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
 
-  // This should succeed because the destination is already present on a pending
-  // source.
+  // This should succeed because the destination is already present on an
+  // unexpired source.
   store_source("https://s1.test", "https://a.r.test", "https://d2.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
 
@@ -1111,7 +1111,7 @@ TEST_F(AttributionStorageTest,
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(6));
 }
 
-TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
+TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimitAndEmitMetric) {
   base::HistogramTester histograms;
 
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
@@ -1135,10 +1135,14 @@ TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
   };
 
   // Allowed by pending, allowed by unexpired.
-  store_source("https://s.test", "https://a.r.test", "https://d1.test");
+  EXPECT_EQ(
+      store_source("https://s.test", "https://a.r.test", "https://d1.test"),
+      StorableSource::Result::kSuccess);
 
-  // Dropped by pending, dropped by expired.
-  store_source("https://s.test", "https://a.r.test", "https://d2.test");
+  // Dropped by pending, dropped by unexpired.
+  EXPECT_EQ(
+      store_source("https://s.test", "https://a.r.test", "https://d2.test"),
+      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
   EXPECT_EQ(
       AttributionTrigger::EventLevelResult::kSuccess,
@@ -1149,13 +1153,17 @@ TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
                   url::Origin::Create(GURL("https://d1.test")))
               .Build()));
 
-  // Allowed by pending, dropped by unexpired (but still stored).
-  store_source("https://s.test", "https://a.r.test", "https://d2.test");
+  // Allowed by pending, dropped by unexpired (therefore dropped and not stored).
+  EXPECT_EQ(
+      store_source("https://s.test", "https://a.r.test", "https://d2.test"),
+      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
 
   task_environment_.FastForwardBy(expiry);
 
   // Allowed by pending, allowed by unexpired.
-  store_source("https://s.test", "https://a.r.test", "https://d3.test");
+  EXPECT_EQ(
+      store_source("https://s.test", "https://a.r.test", "https://d3.test"),
+      StorableSource::Result::kSuccess);
 
   static constexpr char kMetric[] =
       "Conversions.UniqueDestinationLimitForUnexpiredSourcesResult";

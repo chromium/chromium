@@ -509,7 +509,7 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       GetDestinationLimitResult(pending_sources_destination_limit,
                                 unexpired_sources_destination_limit));
 
-  switch (pending_sources_destination_limit) {
+  switch (unexpired_sources_destination_limit) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
