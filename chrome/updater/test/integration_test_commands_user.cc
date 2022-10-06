@@ -61,6 +61,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::EnterTestMode(url);
   }
 
+  void ExitTestMode() const override {
+    updater::test::ExitTestMode(updater_scope_);
+  }
+
   void ExpectSelfUpdateSequence(ScopedServer* test_server) const override {
     updater::test::ExpectSelfUpdateSequence(updater_scope_, test_server);
   }

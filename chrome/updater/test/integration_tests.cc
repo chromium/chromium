@@ -52,8 +52,8 @@
 
 // TODO(noahrose): Enable tests once updater is implemented for Linux
 #if !BUILDFLAG(IS_LINUX)
-namespace updater {
-namespace test {
+
+namespace updater::test {
 namespace {
 
 #if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
@@ -103,6 +103,7 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    ExitTestMode();
     ExpectClean();
     PrintLog();
     // TODO(crbug.com/1159189): Use a specific test output directory
@@ -137,6 +138,8 @@ class IntegrationTest : public ::testing::Test {
   void ExpectClean() { test_commands_->ExpectClean(); }
 
   void EnterTestMode(const GURL& url) { test_commands_->EnterTestMode(url); }
+
+  void ExitTestMode() { test_commands_->ExitTestMode(); }
 
   void SetGroupPolicies(const base::Value::Dict& values) {
     test_commands_->SetGroupPolicies(values);
@@ -339,6 +342,9 @@ class IntegrationTest : public ::testing::Test {
 // expected to work and these tests do not run on component builders.
 // See crbug.com/1112527.
 #if BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
+
+// Tests the setup and teardown of the fixture.
+TEST_F(IntegrationTest, DoNothing) {}
 
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
@@ -926,6 +932,6 @@ TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
 
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
-}  // namespace test
-}  // namespace updater
+}  // namespace updater::test
+
 #endif  // !BUILDFLAG(IS_LINUX)

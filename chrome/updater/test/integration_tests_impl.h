@@ -65,6 +65,10 @@ void ExpectClean(UpdaterScope scope);
 // CUP).
 void EnterTestMode(const GURL& url);
 
+// Takes the updater our of the test mode by deleting the external constants
+// JSON file.
+void ExitTestMode(UpdaterScope scope);
+
 // Sets the external constants for group policies.
 void SetGroupPolicies(const base::Value::Dict& values);
 

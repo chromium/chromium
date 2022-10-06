@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -18,44 +16,31 @@
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/external_constants_override.h"
+#include "chrome/updater/test_scope.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_branding.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace updater {
-namespace {
-
-void DeleteOverridesFile() {
-  const absl::optional<base::FilePath> target =
-      GetBaseDataDirectory(GetUpdaterScope());
-  if (!target) {
-    LOG(ERROR) << "Could not get base directory to clean out overrides file.";
-    return;
-  }
-  if (!base::DeleteFile(target->AppendASCII(kDevOverrideFileName))) {
-    // Note: base::DeleteFile returns `true` if there is no such file, which
-    // is what we want; "file already doesn't exist" is not an error here.
-    LOG(ERROR) << "Could not delete override file.";
-  }
-}
-
-}  // namespace
 
 class ExternalConstantsBuilderTests : public ::testing::Test {
  protected:
-  void SetUp() override;
-  void TearDown() override;
+  void SetUp() override {
+    EXPECT_TRUE(
+        test::DeleteFileAndEmptyParentDirectories(overrides_file_path_));
+  }
+  void TearDown() override {
+    EXPECT_TRUE(
+        test::DeleteFileAndEmptyParentDirectories(overrides_file_path_));
+  }
+
+ private:
+  // This test runs non-elevated.
+  const absl::optional<base::FilePath> overrides_file_path_ =
+      test::GetOverrideFilePath(UpdaterScope::kUser);
 };
-
-void ExternalConstantsBuilderTests::SetUp() {
-  DeleteOverridesFile();
-}
-
-void ExternalConstantsBuilderTests::TearDown() {
-  DeleteOverridesFile();
-}
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
   EXPECT_TRUE(ExternalConstantsBuilder().Overwrite());

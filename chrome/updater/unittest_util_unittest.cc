@@ -4,11 +4,15 @@
 
 #include "chrome/updater/unittest_util.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/win/test/test_executables.h"
@@ -67,6 +71,24 @@ TEST(UnitTestUtil, DISABLED_PrintTestTimeouts) {
           << TestTimeouts::action_max_timeout().InMilliseconds()
           << ", test-launcher-timeout:"
           << TestTimeouts::test_launcher_timeout().InMilliseconds();
+}
+
+TEST(UnitTestUtil, DeleteFileAndEmptyParentDirectories) {
+  EXPECT_FALSE(DeleteFileAndEmptyParentDirectories(absl::nullopt));
+
+  const base::FilePath path_not_found(FILE_PATH_LITERAL("path-not-found"));
+  EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(path_not_found));
+
+  // Create and delete the following path "some_dir/dir_in_dir/file_in_dir".
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath dir_in_dir;
+  EXPECT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("UnitTestUtil"), &dir_in_dir));
+  base::FilePath file_in_dir;
+  EXPECT_TRUE(CreateTemporaryFileInDir(dir_in_dir, &file_in_dir));
+  EXPECT_TRUE(DeleteFileAndEmptyParentDirectories(file_in_dir));
+  EXPECT_FALSE(base::DirectoryExists(temp_dir.GetPath()));
 }
 
 }  // namespace updater::test

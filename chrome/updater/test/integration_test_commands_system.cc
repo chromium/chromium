@@ -81,6 +81,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("enter_test_mode", {Param("url", url.spec())});
   }
 
+  void ExitTestMode() const override { RunCommand("exit_test_mode"); }
+
   void SetGroupPolicies(const base::Value::Dict& values) const override {
     RunCommand("set_group_policies",
                {Param("values", StringFromValue(base::Value(values.Clone())))});

@@ -230,6 +230,7 @@ void AppTestHelper::FirstTaskRun() {
     // then use the With* helper functions to provide its arguments.
     {"clean", WithSystemScope(Wrap(&Clean))},
     {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
     {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
     {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
     {"expect_registered",

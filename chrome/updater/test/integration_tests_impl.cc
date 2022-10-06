@@ -177,6 +177,10 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
 
 }  // namespace
 
+void ExitTestMode(UpdaterScope scope) {
+  DeleteFileAndEmptyParentDirectories(GetOverrideFilePath(scope));
+}
+
 int CountDirectoryFiles(const base::FilePath& dir) {
   base::FileEnumerator it(dir, false, base::FileEnumerator::FILES);
   int res = 0;

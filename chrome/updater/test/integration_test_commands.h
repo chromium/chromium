@@ -29,6 +29,7 @@ class IntegrationTestCommands
     : public base::RefCountedThreadSafe<IntegrationTestCommands> {
  public:
   virtual void EnterTestMode(const GURL& url) const = 0;
+  virtual void ExitTestMode() const = 0;
   virtual void SetGroupPolicies(const base::Value::Dict& values) const = 0;
   virtual void Clean() const = 0;
   virtual void ExpectClean() const = 0;
