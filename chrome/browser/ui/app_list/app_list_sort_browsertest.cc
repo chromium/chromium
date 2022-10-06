@@ -172,8 +172,7 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(client);
     client->UpdateProfile();
 
-    // Since the ProductivityLauncher flag is enabled, the sort buttons will
-    // only be shown in tablet mode.
+    // Start in tablet mode.
     ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
     // Ensure async callbacks are run.
