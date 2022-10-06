@@ -225,7 +225,7 @@ class ClipboardInternal {
         base::BindOnce(&ClipboardData::EncodeBitmapData,
                        std::move(maybe_bitmap.value())),
         base::BindOnce(&ClipboardInternal::DidEncodePng,
-                       weak_factory_.GetWeakPtr(), sequence_number()));
+                       weak_factory_.GetMutableWeakPtr(), sequence_number()));
   }
 
   // Reads data of type |type| from the ClipboardData.
