@@ -156,17 +156,6 @@
     </issue>
 
     <issue
-        id="CoarseFineLocation"
-        message="If you need access to FINE location, you must request both `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION`"
-        errorLine1="  &lt;uses-permission android:name=&quot;android.permission.ACCESS_FINE_LOCATION&quot;/>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="25"
-            column="3"/>
-    </issue>
-
-    <issue
         id="UnsupportedChromeOsCameraSystemFeature"
         message="You should look for any camera available on the device, not just the rear"
         errorLine1="        return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)"
@@ -541,32 +530,10 @@
     </issue>
 
     <issue
-        id="InefficientWeight"
-        message="Use a `layout_width` of `0dp` instead of `wrap_content` for better performance"
-        errorLine1="            android:layout_width=&quot;wrap_content&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"
-            line="26"
-            column="13"/>
-    </issue>
-
-    <issue
         id="IconMissingDensityFolder"
         message="Missing density variation folders in `../../android_webview/tools/system_webview_shell/apk/res`: drawable-hdpi, drawable-xhdpi, drawable-xxhdpi">
         <location
             file="$SRC/android_webview/tools/system_webview_shell/apk/res"/>
-    </issue>
-
-    <issue
-        id="LabelFor"
-        message="Missing accessibility label: provide either a view with an `android:labelFor` that references this view or provide an `android:hint`"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="$SRC/android_webview/tools/system_webview_shell/apk/res/layout/activity_webview_browser.xml"
-            line="24"
-            column="10"/>
     </issue>
 
 </issues>
