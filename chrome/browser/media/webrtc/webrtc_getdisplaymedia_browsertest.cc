@@ -5,12 +5,10 @@
 #include <string>
 #include <vector>
 
-#include "base/base_switches.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,12 +86,6 @@ struct TestConfigForFakeUI {
 struct TestConfigForSelectAllScreens {
   const char* display_surface;
   bool enable_select_all_screens;
-};
-
-struct TestConfigForHiDpi {
-  bool enable_hidpi;
-  int constraint_width;
-  int constraint_height;
 };
 
 constexpr char kAppWindowTitle[] = "AppWindow Display Capture Test";
@@ -899,169 +891,6 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
     EXPECT_EQ(GetAudioTrackType(), "MediaStreamTrack");
   }
 }
-
-// Flaky on Mac bots, https://crbug.com/1371309
-#if !BUILDFLAG(IS_MAC)
-class GetDisplayMediaHiDpiBrowserTest
-    : public WebRtcTestBase,
-      public testing::WithParamInterface<TestConfigForHiDpi> {
- public:
-  GetDisplayMediaHiDpiBrowserTest() : test_config_(GetParam()) {}
-
-  // The browser window size must be consistent with the
-  // INSTANTIATE_TEST_SUITE_P TestConfigForHiDpi configurations below. See the
-  // comments there for more details.
-  static constexpr int kBrowserWindowWidth = 800;
-  static constexpr int kBrowserWindowHeight = 600;
-
-  bool enable_hidpi() const { return test_config_.enable_hidpi; }
-  int constraint_width() const { return test_config_.constraint_width; }
-  int constraint_height() const { return test_config_.constraint_height; }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    if (enable_hidpi()) {
-      feature_list_.InitWithFeatures({media::kWebContentsCaptureHiDpi}, {});
-    }
-
-    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
-
-    DetectErrorsInJavaScript();
-  }
-
-  void SetUpOnMainThread() override {
-    WebRtcTestBase::SetUpOnMainThread();
-
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The picker itself shows previews which are unsupported in Lacros tests.
-    base::Value matchlist(base::Value::Type::LIST);
-    matchlist.Append("*");
-    browser()->profile()->GetPrefs()->Set(prefs::kTabCaptureAllowedByOrigins,
-                                          matchlist);
-#endif
-
-    // Fire up the page.
-    tab_ = OpenTestPageInNewTab(kMainHtmlPage);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebRtcTestBase::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
-
-    command_line->AppendSwitch(switches::kThisTabCaptureAutoAccept);
-
-    command_line->AppendSwitchASCII(
-        switches::kWindowSize,
-        base::StringPrintf("%d,%d", kBrowserWindowWidth, kBrowserWindowHeight));
-
-    // Optionally, in case the test isn't working correctly, you can turn on
-    // debug logging for the feature to help track down problems. For example:
-    // command_line->AppendSwitchASCII(switches::kVModule,
-    //                                "*host_view*=1,*frame_tracker*=3");
-  }
-
-  std::string ResizeVideoForHiDpiCapture(int width, int height) {
-    return RunJs(base::StringPrintf("resizeVideoForHiDpiCapture(%d, %d);",
-                                    width, height));
-  }
-
-  double GetDevicePixelRatio() {
-    std::string result = RunJs("getDevicePixelRatio();");
-    double device_pixel_ratio;
-    EXPECT_TRUE(base::StringToDouble(result, &device_pixel_ratio));
-    return device_pixel_ratio;
-  }
-
-  std::string GetDisplaySurfaceSetting() {
-    return RunJs("getDisplaySurfaceSetting();");
-  }
-
-  std::string GetLogicalSurfaceSetting() {
-    return RunJs("getLogicalSurfaceSetting();");
-  }
-
-  content::WebContents* Tab() const { return tab_; }
-
- private:
-  std::string RunJs(const std::string& command) {
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        tab_->GetPrimaryMainFrame(), command, &result));
-    return result;
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  const TestConfigForHiDpi test_config_;
-  raw_ptr<content::WebContents> tab_ = nullptr;
-};
-
-IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
-  ASSERT_EQ(GetDevicePixelRatio(), 1.0);
-
-  // Initiate the capture.
-  RunGetDisplayMedia(
-      Tab(),
-      base::StringPrintf("{video: {width: {max: %d}, height: {max: %d}}, "
-                         "preferCurrentTab: true}",
-                         constraint_width(), constraint_height()),
-      /*is_fake_ui=*/false, /*expect_success=*/true,
-      /*is_tab_capture=*/true);
-
-  // Ensure that the video is larger than the source tab to encourage use of a
-  // higher-resolution video stream. The size is arbitrary, but it should be
-  // significantly bigger than the switches::kWindowSize configured in this
-  // test's setup.
-  EXPECT_EQ(ResizeVideoForHiDpiCapture(kBrowserWindowWidth * 2,
-                                       kBrowserWindowHeight * 2),
-            "success");
-
-  EXPECT_EQ(GetDisplaySurfaceSetting(), "browser");
-
-  EXPECT_EQ(GetLogicalSurfaceSetting(), "true");
-
-  // The HiDPI scale change only occurs once the capture has actually started
-  // and the size information was propagated back to the browser process.
-  // Waiting for the video to start playing helps ensure that this is the case.
-  StartDetectingVideo(Tab(), "local-view");
-  WaitForVideoToPlay(Tab());
-
-  // If the video size is higher resolution than the browser window
-  // size, expect that HiDPI mode should be active. This requires
-  // the feature to be enabled.
-  bool expect_hidpi = enable_hidpi() &&
-                      constraint_width() > kBrowserWindowWidth &&
-                      constraint_height() > kBrowserWindowHeight;
-
-  double device_pixel_ratio = GetDevicePixelRatio();
-  if (expect_hidpi) {
-    EXPECT_GT(device_pixel_ratio, 1.0);
-    EXPECT_LE(device_pixel_ratio, 2.0);
-  } else {
-    EXPECT_EQ(device_pixel_ratio, 1.0);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    GetDisplayMediaHiDpiBrowserTest,
-    // The test configurations use both large and small constraint sizes. The
-    // small constraint sizes must be smaller than the configured window size
-    // (cf. kBrowserWindowWidth and kBrowserWindowHeight in
-    // GetDisplayMediaHiDpiBrowserTest above), and the large sizes must be
-    // significantly larger than the browser window size.
-    testing::Values(TestConfigForHiDpi{/*enable_hidpi=*/false,
-                                       /*constraint_width=*/3840,
-                                       /*constraint_height=*/2160},
-                    TestConfigForHiDpi{/*enable_hidpi=*/true,
-                                       /*constraint_width=*/640,
-                                       /*constraint_height=*/480},
-                    TestConfigForHiDpi{/*enable_hidpi=*/true,
-                                       /*constraint_width=*/3840,
-                                       /*constraint_height=*/2160}));
-#endif
 
 // TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

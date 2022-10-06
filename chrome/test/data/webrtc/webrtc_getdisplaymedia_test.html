@@ -3,18 +3,16 @@
 <head>
   <title>WebRTC Automated Test</title>
   <script type="text/javascript" src="test_functions.js"></script>
-  <script type="text/javascript" src="video_detector.js"></script>
   <script>
   'use strict';
-  let settings;
-  let video_track;
-  let audio_track;
-  let stored_media_stream;
-  let video;
+  var settings;
+  var video_track;
+  var audio_track;
+  var stored_media_stream;
 
   function handleSuccess(stream) {
     settings = stream.getVideoTracks()[0].getSettings();
-    video = document.querySelector('video');
+    var video = document.querySelector('video');
     video.srcObject = stream;
     video_track = stream.getVideoTracks()[0];
     if (stream.getAudioTracks().length > 0) {
@@ -49,12 +47,6 @@
                                               : handleError);
   }
 
-  function resizeVideoForHiDpiCapture(width, height) {
-    video.style.width = width + 'px';
-    video.style.height = height + 'px';
-    returnToTest("success");
-  }
-
   function hasAudioTrack() {
     returnToTest(`${!!audio_track}`);
   }
@@ -85,7 +77,7 @@
   }
 
   function getLogicalSurfaceSetting() {
-    returnToTest(settings.logicalSurface.toString());
+    returnToTest(settings.logicalSurface ? "true" : "false");
   }
 
   function getCursorSetting() {
@@ -98,18 +90,6 @@
 
   function getFrameRateSetting() {
     returnToTest(settings.frameRate.toString());
-  }
-
-  function getDevicePixelRatio() {
-    returnToTest(window.devicePixelRatio.toString());
-  }
-
-  function getVideoWidth() {
-    returnToTest(video.videoWidth.toString());
-  }
-
-  function getVideoHeight() {
-    returnToTest(video.videoHeight.toString());
   }
 
   function waitVideoMuted() {
