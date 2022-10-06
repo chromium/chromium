@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-class LogRouter;
+class LogManager;
 
 // A container for a LogBuffer that submits the buffer to the passed destination
 // on destruction.
@@ -20,7 +20,7 @@ class LogRouter;
 // The submitter is destroyed after this statement and "Foobar" is logged.
 class LogBufferSubmitter {
  public:
-  LogBufferSubmitter(LogRouter* destination, bool active);
+  explicit LogBufferSubmitter(LogManager* manager);
   ~LogBufferSubmitter();
 
   LogBufferSubmitter(LogBufferSubmitter&& that) noexcept;
@@ -33,7 +33,7 @@ class LogBufferSubmitter {
   operator LogBuffer&() { return buffer_; }
 
  private:
-  raw_ptr<LogRouter> destination_;
+  raw_ptr<LogManager> log_manager_;
   LogBuffer buffer_;
   // If set to false, the destructor does not perform any logging. This is used
   // for move assignment so that the original copy does not trigger logging.

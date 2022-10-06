@@ -19,7 +19,10 @@ bool StubLogManager::IsLoggingActive() const {
 }
 
 LogBufferSubmitter StubLogManager::Log() {
-  return LogBufferSubmitter(nullptr, false);
+  return LogBufferSubmitter(nullptr);
 }
+
+void StubLogManager::ProcessLog(base::Value::Dict node,
+                                base::PassKey<LogBufferSubmitter>) {}
 
 }  // namespace autofill

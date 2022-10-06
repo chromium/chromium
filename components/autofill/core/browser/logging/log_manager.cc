@@ -28,6 +28,8 @@ class LogManagerImpl : public LogManager {
   void LogEntry(const base::Value::Dict& entry) const override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
+  void ProcessLog(base::Value::Dict node,
+                  base::PassKey<LogBufferSubmitter>) override;
 
  private:
   // A LogRouter instance obtained on construction. May be null.
@@ -94,7 +96,12 @@ bool LogManagerImpl::IsLoggingActive() const {
 }
 
 LogBufferSubmitter LogManagerImpl::Log() {
-  return LogBufferSubmitter(log_router_, IsLoggingActive());
+  return LogBufferSubmitter(this);
+}
+
+void LogManagerImpl::ProcessLog(base::Value::Dict node,
+                                base::PassKey<LogBufferSubmitter>) {
+  log_router_->ProcessLog(std::move(node));
 }
 
 }  // namespace

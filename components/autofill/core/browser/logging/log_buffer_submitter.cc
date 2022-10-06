@@ -4,24 +4,24 @@
 
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 
-#include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 
 namespace autofill {
 
-LogBufferSubmitter::LogBufferSubmitter(LogRouter* destination, bool active)
-    : destination_(destination),
-      buffer_(LogBuffer::IsActive(destination != nullptr && active)),
+LogBufferSubmitter::LogBufferSubmitter(LogManager* log_manager)
+    : log_manager_(log_manager),
+      buffer_(IsLoggingActive(log_manager)),
       destruct_with_logging_(buffer_.active()) {}
 
 LogBufferSubmitter::LogBufferSubmitter(LogBufferSubmitter&& that) noexcept
-    : destination_(std::move(that.destination_)),
+    : log_manager_(std::move(that.log_manager_)),
       buffer_(std::move(that.buffer_)),
       destruct_with_logging_(std::move(that.destruct_with_logging_)) {
   that.destruct_with_logging_ = false;
 }
 
 LogBufferSubmitter& LogBufferSubmitter::operator=(LogBufferSubmitter&& that) {
-  destination_ = std::move(that.destination_);
+  log_manager_ = std::move(that.log_manager_);
   buffer_ = std::move(that.buffer_);
   destruct_with_logging_ = std::move(that.destruct_with_logging_);
   that.destruct_with_logging_ = false;
@@ -29,12 +29,12 @@ LogBufferSubmitter& LogBufferSubmitter::operator=(LogBufferSubmitter&& that) {
 }
 
 LogBufferSubmitter::~LogBufferSubmitter() {
-  if (!destruct_with_logging_ || !destination_)
+  if (!destruct_with_logging_ || !log_manager_)
     return;
   absl::optional<base::Value::Dict> message = buffer_.RetrieveResult();
   if (!message)
     return;
-  destination_->ProcessLog(*message);
+  log_manager_->ProcessLog(std::move(*message), {});
 }
 
 }  // namespace autofill

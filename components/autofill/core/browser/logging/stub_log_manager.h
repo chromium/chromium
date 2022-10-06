@@ -29,6 +29,8 @@ class StubLogManager : public LogManager {
   void LogEntry(const base::Value::Dict& entry) const override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
+  void ProcessLog(base::Value::Dict node,
+                  base::PassKey<LogBufferSubmitter>) override;
 };
 
 }  // namespace autofill

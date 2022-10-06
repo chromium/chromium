@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "base/callback.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 
@@ -25,6 +26,13 @@ class LogRouter;
 // logs about progress of actions like saving a password.
 class LogManager {
  public:
+  // Returns the production code implementation of LogManager. If |log_router|
+  // is null, the manager will do nothing. |notification_callback| will be
+  // called every time the activity status of logging changes.
+  static std::unique_ptr<LogManager> Create(
+      LogRouter* log_router,
+      base::RepeatingClosure notification_callback);
+
   virtual ~LogManager() = default;
 
   // This method is called by a LogRouter, after the LogManager registers with
@@ -49,15 +57,13 @@ class LogManager {
   // false otherwise.
   virtual bool IsLoggingActive() const = 0;
 
-  // Returns the production code implementation of LogManager. If |log_router|
-  // is null, the manager will do nothing. |notification_callback| will be
-  // called every time the activity status of logging changes.
-  static std::unique_ptr<LogManager> Create(
-      LogRouter* log_router,
-      base::RepeatingClosure notification_callback);
-
   // This is the preferred way to submitting log entries.
   virtual LogBufferSubmitter Log() = 0;
+
+  // Emits the log entry. This is only supposed to be called by the RAII type
+  // LogBufferSubmitter when it submits its buffer on destruction.
+  virtual void ProcessLog(base::Value::Dict node,
+                          base::PassKey<LogBufferSubmitter>) = 0;
 };
 
 inline LogBuffer::IsActive IsLoggingActive(LogManager* log_manager) {
