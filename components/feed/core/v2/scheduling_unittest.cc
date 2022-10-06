@@ -218,8 +218,8 @@ TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Valid) {
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_WithNoSubscriptions) {
   // Enable WebFeed and WebFeedOnboarding flags.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
+                                      disabled_features = {};
   features.InitWithFeatures(enabled_features, disabled_features);
   EXPECT_FALSE(ShouldWaitForNewContent(
       metadata_, StreamType(StreamKind::kFollowing), base::Days(6),
@@ -319,8 +319,8 @@ TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Invalid) {
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_SubscriptionlessThreshold) {
   // Enable WebFeed and WebFeedOnboarding flags.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
+                                      disabled_features = {};
   features.InitWithFeatures(enabled_features, disabled_features);
   EXPECT_FALSE(ContentInvalidFromAge(metadata_,
                                      StreamType(StreamKind::kFollowing),

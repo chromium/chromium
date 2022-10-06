@@ -108,7 +108,7 @@ feedwire::UploadActionsResponse GetTestActionResponse() {
 void SetConsentLevelNeededForFeedPersonalization(
     base::test::ScopedFeatureList& feature_list,
     signin::ConsentLevel consent_level) {
-  std::vector<base::Feature> enable_features, disable_features;
+  std::vector<base::test::FeatureRef> enable_features, disable_features;
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
       enable_features.push_back(kPersonalizeFeedNonSyncUsers);

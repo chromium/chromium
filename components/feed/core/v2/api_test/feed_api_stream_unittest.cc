@@ -354,8 +354,9 @@ TEST_P(FeedStreamTestForAllStreamTypes, UseFeedQueryOverride) {
 TEST_F(FeedApiTest, OnboardingFetchAfterStartup) {
   // Enable WebFeed and WebFeedOnboarding flags.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
+                                                          kWebFeedOnboarding},
+                                      disabled_features = {};
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   features.InitWithFeatures(enabled_features, disabled_features);
 
@@ -377,8 +378,8 @@ TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptions) {
 TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsAndOnboarding) {
   // Turn on the onboarding feature.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
+                                      disabled_features = {};
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   features.InitWithFeatures(enabled_features, disabled_features);
 
@@ -414,8 +415,8 @@ TEST_F(FeedApiTest, WebFeedLoadWithNoSubscriptionsAndOnboarding) {
 TEST_F(FeedApiTest, WebFeedContentExprirationWithNoSubscriptionsAndOnboarding) {
   // Turn on the onboarding feature.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeedOnboarding},
+                                      disabled_features = {};
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   features.InitWithFeatures(enabled_features, disabled_features);
 
@@ -473,8 +474,8 @@ TEST_P(FeedNetworkEndpointTest, TestAllNetworkEndpointConfigs) {
   // Enable WebFeed and subscribe to a page, so that we can check if the WebFeed
   // is refreshed by ForceRefreshForDebugging.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeed},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed},
+                                      disabled_features = {};
   if (GetDiscoFeedEnabled()) {
     enabled_features.push_back(kDiscoFeedEndpoint);
   } else {
@@ -3281,8 +3282,9 @@ TEST_F(FeedApiTest, InvalidateFeedCache_UnknownDoesNotForceRefreshAnyFeeds) {
   // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
   // without subscriptions.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
+                                                          kWebFeedOnboarding},
+                                      disabled_features = {};
   features.InitWithFeatures(enabled_features, disabled_features);
   {
     // Load both feeds and allow them to fetch network contents.
@@ -3321,8 +3323,9 @@ TEST_F(FeedApiTest, InvalidateFeedCache_DoesNotRefreshOtherFeed) {
   // Enable WebFeed and WebFeedOnboarding flags to force WebFeed to fetch
   // without subscriptions.
   base::test::ScopedFeatureList features;
-  std::vector<base::Feature> enabled_features = {kWebFeed, kWebFeedOnboarding},
-                             disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {kWebFeed,
+                                                          kWebFeedOnboarding},
+                                      disabled_features = {};
   features.InitWithFeatures(enabled_features, disabled_features);
   {
     // Load both feeds and allow them to fetch network contents.
