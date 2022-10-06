@@ -285,7 +285,7 @@ void SpdyProxyClientSocket::RunWriteCallback(CompletionOnceCallback callback,
   if (end_stream_state_ == EndStreamState::kEndStreamReceived) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&SpdyProxyClientSocket::MaybeSendEndStream,
-                                  weak_factory_.GetWeakPtr()));
+                                  weak_factory_.GetMutableWeakPtr()));
   }
 }
 
