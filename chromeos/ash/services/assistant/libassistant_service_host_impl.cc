@@ -27,8 +27,7 @@ LibassistantServiceHostImpl::LibassistantServiceHostImpl() {
 LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
 
 void LibassistantServiceHostImpl::Launch(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
-        receiver) {
+    mojo::PendingReceiver<libassistant::mojom::LibassistantService> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (assistant::features::IsLibAssistantSandboxEnabled()) {
     AssistantBrowserDelegate::Get()->RequestLibassistantService(
@@ -51,8 +50,7 @@ LibassistantServiceHostImpl::LibassistantServiceHostImpl() = default;
 LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
 
 void LibassistantServiceHostImpl::Launch(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
-        receiver) {}
+    mojo::PendingReceiver<libassistant::mojom::LibassistantService> receiver) {}
 
 void LibassistantServiceHostImpl::Stop() {}
 

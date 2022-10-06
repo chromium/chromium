@@ -30,9 +30,8 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   ~LibassistantServiceHostImpl() override;
 
   // LibassistantServiceHost implementation:
-  void Launch(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
-          receiver) override;
+  void Launch(mojo::PendingReceiver<libassistant::mojom::LibassistantService>
+                  receiver) override;
   void Stop() override;
 
  private:

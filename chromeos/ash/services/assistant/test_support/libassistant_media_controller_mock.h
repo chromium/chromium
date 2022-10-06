@@ -14,7 +14,7 @@
 namespace ash::assistant {
 
 class LibassistantMediaControllerMock
-    : public chromeos::libassistant::mojom::MediaController {
+    : public libassistant::mojom::MediaController {
  public:
   LibassistantMediaControllerMock();
   LibassistantMediaControllerMock(const LibassistantMediaControllerMock&) =
@@ -23,20 +23,18 @@ class LibassistantMediaControllerMock
       const LibassistantMediaControllerMock&) = delete;
   ~LibassistantMediaControllerMock() override;
 
-  void Bind(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>);
+  void Bind(mojo::PendingReceiver<libassistant::mojom::MediaController>);
   void FlushForTesting();
 
-  // chromeos::libassistant::mojom::MediaController implementation:
+  // libassistant::mojom::MediaController implementation:
   MOCK_METHOD(void, ResumeInternalMediaPlayer, ());
   MOCK_METHOD(void, PauseInternalMediaPlayer, ());
   MOCK_METHOD(void,
               SetExternalPlaybackState,
-              (chromeos::libassistant::mojom::MediaStatePtr state));
+              (libassistant::mojom::MediaStatePtr state));
 
  private:
-  mojo::Receiver<chromeos::libassistant::mojom::MediaController> receiver_{
-      this};
+  mojo::Receiver<libassistant::mojom::MediaController> receiver_{this};
 };
 
 }  // namespace ash::assistant

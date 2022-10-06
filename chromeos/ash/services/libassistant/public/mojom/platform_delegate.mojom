@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.libassistant.mojom;
+module ash.libassistant.mojom;
 
 import "ash/public/mojom/assistant_volume_control.mojom";
 import "chromeos/ash/services/assistant/public/mojom/assistant_audio_decoder.mojom";

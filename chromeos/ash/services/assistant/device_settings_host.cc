@@ -12,8 +12,8 @@ namespace ash::assistant {
 
 namespace {
 
-using chromeos::libassistant::mojom::GetBrightnessResult;
-using GetScreenBrightnessLevelCallback = chromeos::libassistant::mojom::
+using libassistant::mojom::GetBrightnessResult;
+using GetScreenBrightnessLevelCallback = libassistant::mojom::
     DeviceSettingsDelegate::GetScreenBrightnessLevelCallback;
 
 void HandleScreenBrightnessCallback(GetScreenBrightnessLevelCallback callback,

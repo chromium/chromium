@@ -21,9 +21,8 @@ namespace ash::assistant {
 namespace {
 
 using LidState = chromeos::PowerManagerClient::LidState;
-using MojomLidState = chromeos::libassistant::mojom::LidState;
-using MojomAudioInputController =
-    chromeos::libassistant::mojom::AudioInputController;
+using MojomLidState = libassistant::mojom::LidState;
+using MojomAudioInputController = libassistant::mojom::AudioInputController;
 using ::testing::_;
 using ::testing::NiceMock;
 

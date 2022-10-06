@@ -22,7 +22,7 @@ class LibassistantServiceHost {
   // as long as both the receiver and this host class remain alive, or until
   // |Stop| is called.
   virtual void Launch(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+      mojo::PendingReceiver<libassistant::mojom::LibassistantService>
           receiver) = 0;
 
   // Stop the mojom service.

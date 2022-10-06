@@ -47,9 +47,7 @@ class DeviceSettingsController
   DeviceSettingsController& operator=(DeviceSettingsController&) = delete;
   ~DeviceSettingsController() override;
 
-  void Bind(
-      mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
-          delegate);
+  void Bind(mojo::PendingRemote<mojom::DeviceSettingsDelegate> delegate);
 
   // chromeos::assistant::action::AssistantActionObserver implementation:
   void OnModifyDeviceSetting(
@@ -74,7 +72,7 @@ class DeviceSettingsController
 
   std::vector<std::unique_ptr<Setting>> settings_;
   AssistantClient* assistant_client_ = nullptr;
-  mojo::Remote<chromeos::libassistant::mojom::DeviceSettingsDelegate> remote_;
+  mojo::Remote<mojom::DeviceSettingsDelegate> remote_;
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<DeviceSettingsController> weak_factory_{this};
 };

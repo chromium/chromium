@@ -51,8 +51,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
     AudioInputImpl* input_;
   };
 
-  void Initialize(
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  void Initialize(mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioInput overrides. These function are called by
   // assistant from assistant thread, for which we should not assume any
@@ -74,7 +73,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   void SetHotwordDeviceId(const absl::optional<std::string>& device_id);
 
   // Called when the user opens/closes the lid.
-  void OnLidStateChanged(chromeos::libassistant::mojom::LidState new_state);
+  void OnLidStateChanged(mojom::LidState new_state);
 
   void RecreateAudioInputStream(bool use_dsp);
 
@@ -126,7 +125,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
   std::unique_ptr<AudioCapturer> audio_capturer_;
 
   // Owned by |LibassistantService|.
-  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Preferred audio input device which will be used for capture.
   absl::optional<std::string> preferred_device_id_;
@@ -138,8 +137,7 @@ class AudioInputImpl : public assistant_client::AudioInput {
 
   // Start with lidstate |kClosed| so we do not open the microphone before we
   // know if the lid is open or closed.
-  chromeos::libassistant::mojom::LidState lid_state_ =
-      chromeos::libassistant::mojom::LidState ::kClosed;
+  mojom::LidState lid_state_ = mojom::LidState ::kClosed;
 
   base::WeakPtrFactory<AudioInputImpl> weak_factory_;
 };

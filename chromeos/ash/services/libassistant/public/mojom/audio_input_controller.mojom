@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.libassistant.mojom;
+module ash.libassistant.mojom;
 
 // Interface managing Libassistant audio input, allowing Libassistant to open
 // the microphone both for hotword detection ('ok google') as well for the

@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     // Calling |assistant_manager()| will still return a nullptr.
     // TODO(b/171748795): I think we no longer need this state once
     // Libassistant has migrated to a mojom service (in fact, we should be able
-    // to remove this enum and use chromeos::libassistant::mojom::ServiceState).
+    // to remove this enum and use ash::libassistant::mojom::ServiceState).
     STARTING = 1,
     // The service is started, libassistant has been created, but libassistant
     // is not ready yet to take requests.
@@ -111,18 +111,17 @@ class AssistantManagerService::StateObserver : public base::CheckedObserver {
 };
 
 class AuthenticationStateObserver
-    : public ::chromeos::libassistant::mojom::AuthenticationStateObserver {
+    : public libassistant::mojom::AuthenticationStateObserver {
  public:
   AuthenticationStateObserver();
   ~AuthenticationStateObserver() override;
 
-  mojo::PendingRemote<
-      ::chromeos::libassistant::mojom::AuthenticationStateObserver>
+  mojo::PendingRemote<libassistant::mojom::AuthenticationStateObserver>
   BindNewPipeAndPassRemote();
 
  private:
-  mojo::Receiver<::chromeos::libassistant::mojom::AuthenticationStateObserver>
-      receiver_{this};
+  mojo::Receiver<libassistant::mojom::AuthenticationStateObserver> receiver_{
+      this};
 };
 
 }  // namespace ash::assistant

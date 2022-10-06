@@ -41,8 +41,7 @@ PowerManagerProviderImpl::PowerManagerProviderImpl()
     : main_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       weak_factory_(this) {}
 
-void PowerManagerProviderImpl::Initialize(
-    chromeos::libassistant::mojom::PlatformDelegate* delegate) {
+void PowerManagerProviderImpl::Initialize(mojom::PlatformDelegate* delegate) {
   platform_delegate_ = delegate;
 }
 

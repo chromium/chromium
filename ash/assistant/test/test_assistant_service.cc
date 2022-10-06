@@ -248,10 +248,9 @@ void TestAssistantService::RemoveAssistantInteractionSubscriber(
   interaction_subscribers_.RemoveObserver(subscriber);
 }
 
-mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
 TestAssistantService::GetPendingNotificationDelegate() {
-  return mojo::PendingReceiver<
-      chromeos::libassistant::mojom::NotificationDelegate>();
+  return mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>();
 }
 
 void TestAssistantService::RetrieveNotification(

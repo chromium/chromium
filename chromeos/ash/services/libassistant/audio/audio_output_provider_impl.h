@@ -62,9 +62,8 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
   ~AudioOutputProviderImpl() override;
 
   void Bind(
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-          audio_output_delegate,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::AudioOutputProvider overrides:
   assistant_client::AudioOutput* CreateAudioOutput(
@@ -91,10 +90,9 @@ class AudioOutputProviderImpl : public assistant_client::AudioOutputProvider {
       const assistant_client::OutputStreamFormat& stream_format);
 
   // Owned by |AssistantManagerServiceImpl|.
-  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
-  mojo::Remote<chromeos::libassistant::mojom::AudioOutputDelegate>
-      audio_output_delegate_;
+  mojo::Remote<mojom::AudioOutputDelegate> audio_output_delegate_;
 
   AudioInputImpl loop_back_input_;
   VolumeControlImpl volume_control_impl_;

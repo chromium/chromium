@@ -10,8 +10,7 @@ AuthenticationStateObserver::AuthenticationStateObserver() = default;
 
 AuthenticationStateObserver::~AuthenticationStateObserver() = default;
 
-mojo::PendingRemote<
-    ::chromeos::libassistant::mojom::AuthenticationStateObserver>
+mojo::PendingRemote<libassistant::mojom::AuthenticationStateObserver>
 AuthenticationStateObserver::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }

@@ -12,9 +12,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory() {

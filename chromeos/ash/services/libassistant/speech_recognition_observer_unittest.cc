@@ -22,8 +22,6 @@ using RecognitionState =
     assistant_client::ConversationStateListener::RecognitionState;
 using RecognitionResult =
     assistant_client::ConversationStateListener::RecognitionResult;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 std::string CreateDisplayAssistantEvent(float speech_level) {
   ::assistant::display::AssistantEvent result;

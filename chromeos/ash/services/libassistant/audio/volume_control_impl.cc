@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
-using chromeos::libassistant::mojom::AudioOutputStreamType;
+using ::ash::libassistant::mojom::AudioOutputStreamType;
 
 namespace mojo {
 template <>
@@ -36,9 +36,6 @@ struct TypeConverter<AudioOutputStreamType,
 }  // namespace mojo
 
 namespace ash::libassistant {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 VolumeControlImpl::VolumeControlImpl()
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),

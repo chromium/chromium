@@ -17,8 +17,7 @@ namespace ash::assistant {
 // TimerDelegateImpl
 ////////////////////////////////////////////////////////////////////////////////
 
-class TimerHost::TimerDelegateImpl
-    : public chromeos::libassistant::mojom::TimerDelegate {
+class TimerHost::TimerDelegateImpl : public libassistant::mojom::TimerDelegate {
  public:
   explicit TimerDelegateImpl(
       mojo::PendingReceiver<TimerDelegate> pending_receiver,
@@ -29,7 +28,7 @@ class TimerHost::TimerDelegateImpl
   ~TimerDelegateImpl() override = default;
 
  private:
-  // chromeos::libassistant::mojom::TimerDelegate implementation:
+  // libassistant::mojom::TimerDelegate implementation:
   void OnTimerStateChanged(const std::vector<AssistantTimer>& timers) override {
     assistant_alarm_timer_controller().OnTimerStateChanged(timers);
   }
@@ -57,9 +56,8 @@ TimerHost::TimerHost(ServiceContext* context) : context_(*context) {
 TimerHost::~TimerHost() = default;
 
 void TimerHost::Initialize(
-    chromeos::libassistant::mojom::TimerController* libassistant_controller,
-    mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
-        delegate) {
+    libassistant::mojom::TimerController* libassistant_controller,
+    mojo::PendingReceiver<libassistant::mojom::TimerDelegate> delegate) {
   timer_delegate_ =
       std::make_unique<TimerDelegateImpl>(std::move(delegate), &context_);
   libassistant_controller_ = libassistant_controller;
@@ -82,8 +80,7 @@ void TimerHost::ResumeTimer(const std::string& id) {
   libassistant_controller().ResumeTimer(id);
 }
 
-chromeos::libassistant::mojom::TimerController&
-TimerHost::libassistant_controller() {
+libassistant::mojom::TimerController& TimerHost::libassistant_controller() {
   DCHECK(libassistant_controller_);
   return *libassistant_controller_;
 }

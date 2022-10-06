@@ -16,9 +16,9 @@ namespace ash::assistant {
 // Default implementation of |mojom::ConversationObserver|, which allow child
 // child classes to only implement handlers they are interested in.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
-    : public chromeos::libassistant::mojom::ConversationObserver {
+    : public libassistant::mojom::ConversationObserver {
  public:
-  // chromeos::libassistant::mojom::ConversationObserver:
+  // libassistant::mojom::ConversationObserver:
   void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) override {}
   void OnInteractionFinished(
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   void OnOpenAppResponse(const AndroidAppInfo& app_info) override {}
   void OnWaitStarted() override {}
 
-  mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
+  mojo::PendingRemote<libassistant::mojom::ConversationObserver>
   BindNewPipeAndPassRemote();
 
  protected:
@@ -41,8 +41,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
   ~ConversationObserver() override;
 
  private:
-  mojo::Receiver<chromeos::libassistant::mojom::ConversationObserver>
-      remote_observer_{this};
+  mojo::Receiver<libassistant::mojom::ConversationObserver> remote_observer_{
+      this};
 };
 
 }  // namespace ash::assistant

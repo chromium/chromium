@@ -13,7 +13,7 @@
 
 namespace ash::libassistant {
 
-class MediaController : public chromeos::libassistant::mojom::MediaController,
+class MediaController : public mojom::MediaController,
                         public AssistantClientObserver {
  public:
   MediaController();
@@ -21,16 +21,13 @@ class MediaController : public chromeos::libassistant::mojom::MediaController,
   MediaController& operator=(const MediaController&) = delete;
   ~MediaController() override;
 
-  void Bind(mojo::PendingReceiver<
-                chromeos::libassistant::mojom::MediaController> receiver,
-            mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
-                delegate);
+  void Bind(mojo::PendingReceiver<mojom::MediaController> receiver,
+            mojo::PendingRemote<mojom::MediaDelegate> delegate);
 
   // mojom::MediaController implementation:
   void ResumeInternalMediaPlayer() override;
   void PauseInternalMediaPlayer() override;
-  void SetExternalPlaybackState(
-      chromeos::libassistant::mojom::MediaStatePtr state) override;
+  void SetExternalPlaybackState(mojom::MediaStatePtr state) override;
 
   // AssistantClientObserver implementation:
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
@@ -40,9 +37,8 @@ class MediaController : public chromeos::libassistant::mojom::MediaController,
 
   AssistantClient* assistant_client_ = nullptr;
 
-  mojo::Receiver<chromeos::libassistant::mojom::MediaController> receiver_{
-      this};
-  mojo::Remote<chromeos::libassistant::mojom::MediaDelegate> delegate_;
+  mojo::Receiver<mojom::MediaController> receiver_{this};
+  mojo::Remote<mojom::MediaDelegate> delegate_;
   std::unique_ptr<GrpcEventsObserver> events_observer_;
 };
 

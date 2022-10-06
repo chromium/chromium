@@ -15,7 +15,7 @@ namespace ash::assistant {
 class AssistantMediaSession;
 
 class AudioOutputDelegateImpl
-    : public chromeos::libassistant::mojom::AudioOutputDelegate {
+    : public libassistant::mojom::AudioOutputDelegate {
  public:
   explicit AudioOutputDelegateImpl(AssistantMediaSession* media_session);
   AudioOutputDelegateImpl(const AudioOutputDelegateImpl&) = delete;
@@ -24,9 +24,9 @@ class AudioOutputDelegateImpl
 
   void Bind(mojo::PendingReceiver<AudioOutputDelegate> pending_receiver);
 
-  // chromeos::libassistant::mojom::AudioOutputDelegate implementation:
-  void RequestAudioFocus(chromeos::libassistant::mojom::AudioOutputStreamType
-                             stream_type) override;
+  // libassistant::mojom::AudioOutputDelegate implementation:
+  void RequestAudioFocus(
+      libassistant::mojom::AudioOutputStreamType stream_type) override;
   void AbandonAudioFocusIfNeeded() override;
   void AddMediaSessionObserver(
       mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>

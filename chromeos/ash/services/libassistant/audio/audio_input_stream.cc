@@ -24,9 +24,6 @@ audio::DeadStreamDetection ToDeadStreamDetection(bool detect_dead_stream) {
 }
 #endif  // !BUILDFLAG(ENABLE_FAKE_ASSISTANT_MICROPHONE)
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 }  // namespace
 
 AudioInputStream::AudioInputStream(

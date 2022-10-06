@@ -13,9 +13,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 class NotificationDelegateMock : public mojom::NotificationDelegate {
@@ -35,8 +32,7 @@ class NotificationDelegateMock : public mojom::NotificationDelegate {
               (const std::string& grouping_key, bool from_server));
 
   void Bind(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
-          pending_receiver) {
+      mojo::PendingReceiver<mojom::NotificationDelegate> pending_receiver) {
     receiver_.Bind(std::move(pending_receiver));
   }
 

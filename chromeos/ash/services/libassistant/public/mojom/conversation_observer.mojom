@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.libassistant.mojom;
+module ash.libassistant.mojom;
 
 import "chromeos/ash/services/libassistant/public/mojom/android_app_info.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";

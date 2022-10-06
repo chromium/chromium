@@ -15,9 +15,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 PlatformApi::PlatformApi()
     : audio_output_provider_(std::make_unique<AudioOutputProviderImpl>(
           media::AudioDeviceDescription::kDefaultDeviceId)),

@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void AbandonAudioFocusIfNeeded();
 
   void NotifyMediaSessionMetadataChanged(
-      const chromeos::libassistant::mojom::MediaState& status);
+      const libassistant::mojom::MediaState& status);
 
   base::WeakPtr<AssistantMediaSession> GetWeakPtr();
 

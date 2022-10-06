@@ -18,9 +18,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 class LibassistantFactoryImpl : public LibassistantFactory {
@@ -157,8 +154,7 @@ void LibassistantService::AddSpeechRecognitionObserver(
 }
 
 void LibassistantService::AddAuthenticationStateObserver(
-    mojo::PendingRemote<
-        chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
+    mojo::PendingRemote<mojom::AuthenticationStateObserver> observer) {
   conversation_controller_.AddAuthenticationStateObserver(std::move(observer));
 }
 

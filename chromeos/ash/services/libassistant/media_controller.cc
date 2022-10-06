@@ -32,8 +32,6 @@ constexpr char kWebUrlPrefix[] = "http";
 
 using assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 // A macro which ensures we are running on the mojom thread.
 #define ENSURE_MOJOM_THREAD(method, ...)                                    \

@@ -16,23 +16,19 @@
 
 namespace ash::libassistant {
 
-class SettingsController
-    : public AssistantClientObserver,
-      public chromeos::libassistant::mojom::SettingsController {
+class SettingsController : public AssistantClientObserver,
+                           public mojom::SettingsController {
  public:
   SettingsController();
   SettingsController(const SettingsController&) = delete;
   SettingsController& operator=(const SettingsController&) = delete;
   ~SettingsController() override;
 
-  void Bind(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
-          receiver);
+  void Bind(mojo::PendingReceiver<mojom::SettingsController> receiver);
 
   // mojom::SettingsController implementation:
   void SetAuthenticationTokens(
-      std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> tokens)
-      override;
+      std::vector<mojom::AuthenticationTokenPtr> tokens) override;
   void SetListeningEnabled(bool value) override;
   void SetLocale(const std::string& value) override;
   void SetSpokenFeedbackEnabled(bool value) override;
@@ -56,9 +52,7 @@ class SettingsController
   // must be updated.
   void UpdateListeningEnabled(absl::optional<bool> listening_enabled);
   void UpdateAuthenticationTokens(
-      const absl::optional<
-          std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>>&
-          tokens);
+      const absl::optional<std::vector<mojom::AuthenticationTokenPtr>>& tokens);
   void UpdateInternalOptions(const absl::optional<std::string>& locale,
                              absl::optional<bool> spoken_feedback_enabled,
                              absl::optional<bool> dark_mode_enabled);
@@ -83,12 +77,10 @@ class SettingsController
   absl::optional<bool> dark_mode_enabled_;
   absl::optional<bool> listening_enabled_;
   absl::optional<std::string> locale_;
-  absl::optional<
-      std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>>
+  absl::optional<std::vector<mojom::AuthenticationTokenPtr>>
       authentication_tokens_;
 
-  mojo::Receiver<chromeos::libassistant::mojom::SettingsController> receiver_{
-      this};
+  mojo::Receiver<mojom::SettingsController> receiver_{this};
 };
 
 }  // namespace ash::libassistant

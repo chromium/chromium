@@ -9,8 +9,7 @@
 
 namespace ash::assistant {
 
-class FakePlatformDelegate
-    : public chromeos::libassistant::mojom::PlatformDelegate {
+class FakePlatformDelegate : public libassistant::mojom::PlatformDelegate {
  public:
   FakePlatformDelegate();
   FakePlatformDelegate(FakePlatformDelegate&) = delete;

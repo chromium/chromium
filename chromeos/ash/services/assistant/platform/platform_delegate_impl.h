@@ -11,8 +11,7 @@
 namespace ash::assistant {
 
 // Delegate that will fetch all instances from the |AssistantBrowserDelegate|.
-class PlatformDelegateImpl
-    : public chromeos::libassistant::mojom::PlatformDelegate {
+class PlatformDelegateImpl : public libassistant::mojom::PlatformDelegate {
  public:
   PlatformDelegateImpl();
   PlatformDelegateImpl(const PlatformDelegateImpl&) = delete;
@@ -21,7 +20,7 @@ class PlatformDelegateImpl
 
   void Bind(mojo::PendingReceiver<PlatformDelegate> pending_receiver);
 
-  // chromeos::libassistant::mojom::PlatformDelegate implementation:
+  // libassistant::mojom::PlatformDelegate implementation:
   void BindAudioStreamFactory(
       mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver)
       override;

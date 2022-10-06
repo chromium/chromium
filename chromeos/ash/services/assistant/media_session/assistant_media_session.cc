@@ -138,7 +138,7 @@ void AssistantMediaSession::AbandonAudioFocusIfNeeded() {
 }
 
 void AssistantMediaSession::NotifyMediaSessionMetadataChanged(
-    const chromeos::libassistant::mojom::MediaState& status) {
+    const libassistant::mojom::MediaState& status) {
   media_session::MediaMetadata metadata;
 
   if (!status.metadata.is_null()) {

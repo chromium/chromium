@@ -20,8 +20,6 @@ namespace {
 
 using assistant::AssistantTimerState;
 using ::testing::Invoke;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 // Adds an AlarmTimerEvent of the given |type| to |events|.
 void AddAlarmTimerEvent(std::vector<assistant_client::AlarmTimerEvent>* events,

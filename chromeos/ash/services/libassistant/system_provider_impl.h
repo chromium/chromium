@@ -32,8 +32,7 @@ class SystemProviderImpl : public assistant_client::SystemProvider {
 
   ~SystemProviderImpl() override;
 
-  void Initialize(
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  void Initialize(mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::SystemProvider implementation:
   assistant_client::MicMuteState GetMicMuteState() override;

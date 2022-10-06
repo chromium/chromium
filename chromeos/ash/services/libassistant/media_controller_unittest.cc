@@ -24,10 +24,7 @@ using LibassistantPlaybackState = assistant_client::MediaStatus::PlaybackState;
 using ProtoAndroidAppInfo = chromeos::assistant::shared::AndroidAppInfo;
 using assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
-using ::chromeos::libassistant::mojom::PlaybackState;
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
+using mojom::PlaybackState;
 
 #define EXPECT_NO_CALLS(args...) EXPECT_CALL(args).Times(0);
 

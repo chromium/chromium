@@ -24,9 +24,8 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
 
   ~VolumeControlImpl() override;
 
-  void Initialize(
-      chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  void Initialize(mojom::AudioOutputDelegate* audio_output_delegate,
+                  mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::VolumeControl overrides:
   void SetAudioFocus(
@@ -49,8 +48,7 @@ class VolumeControlImpl : public assistant_client::VolumeControl,
   void SetSystemMutedOnMainThread(bool muted);
 
   // Owned by |AudioOutputProviderImpl|.
-  chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate_ =
-      nullptr;
+  mojom::AudioOutputDelegate* audio_output_delegate_ = nullptr;
   mojo::Remote<ash::mojom::AssistantVolumeControl> volume_control_;
   mojo::Receiver<ash::mojom::VolumeObserver> receiver_{this};
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

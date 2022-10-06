@@ -178,10 +178,10 @@ void AssistantBrowserDelegateImpl::OpenUrl(GURL url) {
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 void AssistantBrowserDelegateImpl::RequestLibassistantService(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+    mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
         receiver) {
   content::ServiceProcessHost::Launch<
-      chromeos::libassistant::mojom::LibassistantService>(
+      ash::libassistant::mojom::LibassistantService>(
       std::move(receiver), content::ServiceProcessHost::Options()
                                .WithDisplayName("Libassistant Service")
                                .Pass());

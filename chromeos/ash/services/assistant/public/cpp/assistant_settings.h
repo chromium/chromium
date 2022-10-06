@@ -16,19 +16,18 @@
 namespace ash::assistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) SpeakerIdEnrollmentClient
-    : public chromeos::libassistant::mojom::SpeakerIdEnrollmentClient {
+    : public libassistant::mojom::SpeakerIdEnrollmentClient {
  public:
   SpeakerIdEnrollmentClient();
   ~SpeakerIdEnrollmentClient() override;
 
-  mojo::PendingRemote<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
+  mojo::PendingRemote<libassistant::mojom::SpeakerIdEnrollmentClient>
   BindNewPipeAndPassRemote();
 
   void ResetReceiver();
 
  private:
-  mojo::Receiver<chromeos::libassistant::mojom::SpeakerIdEnrollmentClient>
-      client_{this};
+  mojo::Receiver<libassistant::mojom::SpeakerIdEnrollmentClient> client_{this};
 };
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSettings {

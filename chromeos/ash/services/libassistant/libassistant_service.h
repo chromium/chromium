@@ -29,11 +29,10 @@
 namespace ash::libassistant {
 
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
-    : public chromeos::libassistant::mojom::LibassistantService {
+    : public mojom::LibassistantService {
  public:
   explicit LibassistantService(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
-          receiver,
+      mojo::PendingReceiver<mojom::LibassistantService> receiver,
       // Allows to inject a custom instance during unittests.
       std::unique_ptr<LibassistantFactory> factory = nullptr);
   LibassistantService(LibassistantService&) = delete;
@@ -42,43 +41,27 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
 
   // mojom::LibassistantService implementation:
   void Bind(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::AudioInputController>
-          audio_input_controller,
-      mojo::PendingReceiver<
-          chromeos::libassistant::mojom::ConversationController>
+      mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
+      mojo::PendingReceiver<mojom::ConversationController>
           conversation_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::DisplayController>
-          display_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::MediaController>
-          media_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
-          service_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
-          settings_controller,
-      mojo::PendingReceiver<
-          chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
+      mojo::PendingReceiver<mojom::DisplayController> display_controller,
+      mojo::PendingReceiver<mojom::MediaController> media_controller,
+      mojo::PendingReceiver<mojom::ServiceController> service_controller,
+      mojo::PendingReceiver<mojom::SettingsController> settings_controller,
+      mojo::PendingReceiver<mojom::SpeakerIdEnrollmentController>
           speaker_id_enrollment_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::TimerController>
-          timer_controller,
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-          audio_output_delegate,
-      mojo::PendingRemote<chromeos::libassistant::mojom::DeviceSettingsDelegate>
+      mojo::PendingReceiver<mojom::TimerController> timer_controller,
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojo::PendingRemote<mojom::DeviceSettingsDelegate>
           device_settings_delegate,
-      mojo::PendingRemote<chromeos::libassistant::mojom::MediaDelegate>
-          media_delegate,
-      mojo::PendingRemote<chromeos::libassistant::mojom::NotificationDelegate>
-          notification_delegate,
-      mojo::PendingRemote<chromeos::libassistant::mojom::PlatformDelegate>
-          platform_delegate,
-      mojo::PendingRemote<chromeos::libassistant::mojom::TimerDelegate>
-          timer_delegate) override;
+      mojo::PendingRemote<mojom::MediaDelegate> media_delegate,
+      mojo::PendingRemote<mojom::NotificationDelegate> notification_delegate,
+      mojo::PendingRemote<mojom::PlatformDelegate> platform_delegate,
+      mojo::PendingRemote<mojom::TimerDelegate> timer_delegate) override;
   void AddSpeechRecognitionObserver(
-      mojo::PendingRemote<
-          chromeos::libassistant::mojom::SpeechRecognitionObserver> observer)
-      override;
+      mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;
   void AddAuthenticationStateObserver(
-      mojo::PendingRemote<
-          chromeos::libassistant::mojom::AuthenticationStateObserver> observer)
+      mojo::PendingRemote<mojom::AuthenticationStateObserver> observer)
       override;
 
   ConversationController& conversation_controller() {
@@ -88,11 +71,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   ServiceController& service_controller() { return service_controller_; }
 
  private:
-  mojo::Receiver<chromeos::libassistant::mojom::LibassistantService> receiver_;
-  mojo::Remote<chromeos::libassistant::mojom::PlatformDelegate>
-      platform_delegate_;
+  mojo::Receiver<mojom::LibassistantService> receiver_;
+  mojo::Remote<mojom::PlatformDelegate> platform_delegate_;
 
-  mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>
+  mojo::RemoteSet<mojom::SpeechRecognitionObserver>
       speech_recognition_observers_;
 
   // These controllers are part of the platform api which is called from

@@ -29,8 +29,6 @@ using ::assistant_client::OutputStreamMetadata;
 using ::base::test::ScopedFeatureList;
 using ::base::test::SingleThreadTaskEnvironment;
 using ::chromeos::assistant::FakePlatformDelegate;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr char kFakeDeviceId[] = "device_id";
 }  // namespace
@@ -100,8 +98,7 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   bool end_of_stream_ = false;
 };
 
-class FakeAudioOutputDelegateMojom
-    : public chromeos::libassistant::mojom::AudioOutputDelegate {
+class FakeAudioOutputDelegateMojom : public mojom::AudioOutputDelegate {
  public:
   FakeAudioOutputDelegateMojom() = default;
   FakeAudioOutputDelegateMojom(const FakeAudioOutputDelegateMojom&) = delete;
@@ -110,8 +107,7 @@ class FakeAudioOutputDelegateMojom
   ~FakeAudioOutputDelegateMojom() override = default;
 
   // libassistant::mojom::AudioOutputDelegate implementation:
-  void RequestAudioFocus(chromeos::libassistant::mojom::AudioOutputStreamType
-                             stream_type) override {}
+  void RequestAudioFocus(mojom::AudioOutputStreamType stream_type) override {}
   void AbandonAudioFocusIfNeeded() override {}
   void AddMediaSessionObserver(
       mojo::PendingRemote<::media_session::mojom::MediaSessionObserver>

@@ -105,8 +105,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) Assistant {
   virtual void AddRemoteConversationObserver(
       ConversationObserver* observer) = 0;
 
-  virtual mojo::PendingReceiver<
-      chromeos::libassistant::mojom::NotificationDelegate>
+  virtual mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() = 0;
 
   // Retrieves a notification. A voiceless interaction will be sent to server to

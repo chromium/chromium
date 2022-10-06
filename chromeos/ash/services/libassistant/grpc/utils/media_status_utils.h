@@ -23,12 +23,11 @@ void ConvertMediaStatusToV2FromV1(
     const assistant_client::MediaStatus& media_status,
     MediaStatus* media_status_proto);
 
-chromeos::libassistant::mojom::MediaStatePtr ConvertMediaStatusToMojomFromV2(
+mojom::MediaStatePtr ConvertMediaStatusToMojomFromV2(
     const MediaStatus& media_status_proto);
 
-void ConvertMediaStatusToV2FromMojom(
-    const chromeos::libassistant::mojom::MediaState& state,
-    MediaStatus* media_status_proto);
+void ConvertMediaStatusToV2FromMojom(const mojom::MediaState& state,
+                                     MediaStatus* media_status_proto);
 
 }  // namespace ash::libassistant
 

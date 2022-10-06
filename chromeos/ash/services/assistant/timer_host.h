@@ -33,9 +33,8 @@ class TimerHost {
   ~TimerHost();
 
   void Initialize(
-      chromeos::libassistant::mojom::TimerController* libassistant_controller,
-      mojo::PendingReceiver<chromeos::libassistant::mojom::TimerDelegate>
-          delegate);
+      libassistant::mojom::TimerController* libassistant_controller,
+      mojo::PendingReceiver<libassistant::mojom::TimerDelegate> delegate);
 
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration);
   void PauseTimer(const std::string& id);
@@ -46,13 +45,12 @@ class TimerHost {
   class TimerDelegateImpl;
 
   AssistantAlarmTimerController* assistant_alarm_timer_controller();
-  chromeos::libassistant::mojom::TimerController& libassistant_controller();
+  libassistant::mojom::TimerController& libassistant_controller();
 
   bool IsStopped() const;
 
   // Owned by our parent |AssistantManagerServiceImpl|.
-  chromeos::libassistant::mojom::TimerController* libassistant_controller_ =
-      nullptr;
+  libassistant::mojom::TimerController* libassistant_controller_ = nullptr;
   std::unique_ptr<TimerDelegateImpl> timer_delegate_;
 
   // Owned by the parent |Service| which will destroy |this| before

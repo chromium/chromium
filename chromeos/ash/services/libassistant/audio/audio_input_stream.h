@@ -25,7 +25,7 @@ namespace ash::libassistant {
 class AudioInputStream {
  public:
   AudioInputStream(
-      chromeos::libassistant::mojom::PlatformDelegate* delegate,
+      mojom::PlatformDelegate* delegate,
       const std::string& device_id,
       bool detect_dead_stream,
       assistant_client::BufferFormat buffer_format,
@@ -48,7 +48,7 @@ class AudioInputStream {
   std::string device_id_;
   bool detect_dead_stream_;
   assistant_client::BufferFormat buffer_format_;
-  chromeos::libassistant::mojom::PlatformDelegate* const delegate_;
+  mojom::PlatformDelegate* const delegate_;
   media::AudioCapturerSource::CaptureCallback* const capture_callback_;
   scoped_refptr<media::AudioCapturerSource> source_;
 };

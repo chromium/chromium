@@ -20,13 +20,10 @@
 
 namespace client_op = ::assistant::api::client_op;
 
-using chromeos::libassistant::mojom::DeviceSettingsDelegate;
-using chromeos::libassistant::mojom::GetBrightnessResultPtr;
-
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
+using mojom::DeviceSettingsDelegate;
+using mojom::GetBrightnessResultPtr;
 
 namespace {
 // A macro which ensures we are running on the main thread.

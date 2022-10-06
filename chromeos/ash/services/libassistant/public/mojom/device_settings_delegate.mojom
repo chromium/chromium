@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.libassistant.mojom;
+module ash.libassistant.mojom;
 
 // Interface that allows the Libassistant mojom service to change device
 // settings on ChromeOS.

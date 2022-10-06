@@ -32,9 +32,6 @@ namespace ash::libassistant {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 constexpr assistant_client::BufferFormat kFormatMono{
     16000 /* sample_rate */, assistant_client::INTERLEAVED_S16, 1 /* channels */
 };

@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
       private AudioDevices::Observer {
  public:
   AudioInputHostImpl(
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+      mojo::PendingRemote<libassistant::mojom::AudioInputController>
           pending_remote,
       CrasAudioHandler* cras_audio_handler,
       chromeos::PowerManagerClient* power_manager_client,
@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputHostImpl
   void OnInitialLidStateReceived(
       absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
-  mojo::Remote<chromeos::libassistant::mojom::AudioInputController> remote_;
+  mojo::Remote<libassistant::mojom::AudioInputController> remote_;
   chromeos::PowerManagerClient* const power_manager_client_;
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

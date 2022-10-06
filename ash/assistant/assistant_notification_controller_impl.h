@@ -27,7 +27,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
     : public AssistantNotificationController,
       public AssistantNotificationModelObserver,
       public message_center::MessageCenterObserver,
-      public chromeos::libassistant::mojom::NotificationDelegate {
+      public libassistant::mojom::NotificationDelegate {
  public:
   using AssistantNotification = assistant::AssistantNotification;
 
@@ -50,7 +50,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   void RemoveNotificationById(const std::string& id, bool from_server) override;
   void SetQuietMode(bool enabled) override;
 
-  // chromeos::libassistant::mojom::NotificationDelegate:
+  // libassistant::mojom::NotificationDelegate:
   void AddOrUpdateNotification(AssistantNotification notification) override;
   void RemoveNotificationByGroupingKey(const std::string& grouping_id,
                                        bool from_server) override;
@@ -83,8 +83,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
 
   const message_center::NotifierId notifier_id_;
 
-  mojo::Receiver<chromeos::libassistant::mojom::NotificationDelegate> receiver_{
-      this};
+  mojo::Receiver<libassistant::mojom::NotificationDelegate> receiver_{this};
 };
 
 }  // namespace ash

@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
 
   ~PowerManagerProviderImpl() override;
 
-  void Initialize(chromeos::libassistant::mojom::PlatformDelegate* delegate);
+  void Initialize(mojom::PlatformDelegate* delegate);
 
   // assistant_client::PowerManagerProvider overrides. These are called from
   // libassistant threads.
@@ -108,7 +108,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) PowerManagerProviderImpl
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
 
   // Owned by |PlatformApi|. Used to initialize |wake_lock_|.
-  chromeos::libassistant::mojom::PlatformDelegate* platform_delegate_ = nullptr;
+  mojom::PlatformDelegate* platform_delegate_ = nullptr;
 
   // Clock to use to calculate time ticks. Set and used only for testing.
   const base::TickClock* tick_clock_ = nullptr;

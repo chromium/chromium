@@ -19,9 +19,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 // Helper class to fire interaction response handlers for tests.

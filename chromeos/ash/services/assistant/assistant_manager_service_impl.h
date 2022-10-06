@@ -91,7 +91,7 @@ enum class AssistantQueryResponseType {
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
       public AppListEventSubscriber,
-      private chromeos::libassistant::mojom::StateObserver,
+      private libassistant::mojom::StateObserver,
       public ConversationObserver {
  public:
   // |callback| is called when AssistantManagerServiceImpl got initialized
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void RemoveAlarmOrTimer(const std::string& id) override;
   void ResumeTimer(const std::string& id) override;
   void AddRemoteConversationObserver(ConversationObserver* observer) override;
-  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
 
   // ConversationObserver overrides:
@@ -184,9 +184,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   base::Thread& GetBackgroundThreadForTesting();
 
  private:
-  // chromeos::libassistant::mojom::StateObserver implementation:
-  void OnStateChanged(
-      chromeos::libassistant::mojom::ServiceState new_state) override;
+  // libassistant::mojom::StateObserver implementation:
+  void OnStateChanged(libassistant::mojom::ServiceState new_state) override;
 
   void InitAssistant(const absl::optional<UserInfo>& user);
   void OnServiceStarted();
@@ -226,11 +225,10 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   DeviceActions* device_actions();
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
-  chromeos::libassistant::mojom::ConversationController&
-  conversation_controller();
-  chromeos::libassistant::mojom::DisplayController& display_controller();
-  chromeos::libassistant::mojom::ServiceController& service_controller();
-  chromeos::libassistant::mojom::SettingsController& settings_controller();
+  libassistant::mojom::ConversationController& conversation_controller();
+  libassistant::mojom::DisplayController& display_controller();
+  libassistant::mojom::ServiceController& service_controller();
+  libassistant::mojom::SettingsController& settings_controller();
   base::Thread& background_thread();
 
   void SetStateAndInformObservers(State new_state);
@@ -254,8 +252,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AudioOutputDelegateImpl> audio_output_delegate_;
   std::unique_ptr<SpeechRecognitionObserverWrapper>
       speech_recognition_observer_;
-  mojo::Receiver<chromeos::libassistant::mojom::StateObserver>
-      state_observer_receiver_{this};
+  mojo::Receiver<libassistant::mojom::StateObserver> state_observer_receiver_{
+      this};
 
   bool spoken_feedback_enabled_ = false;
   bool dark_mode_enabled_ = false;
@@ -266,7 +264,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::string receive_url_response_;
 
   // Configuration passed to libassistant.
-  chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
+  libassistant::mojom::BootupConfigPtr bootup_config_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::ScopedObservation<DeviceActions,

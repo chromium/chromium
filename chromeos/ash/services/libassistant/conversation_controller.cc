@@ -27,8 +27,6 @@ namespace ash::libassistant {
 using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionType;
 using assistant::AssistantQuerySource;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 namespace {
 
@@ -229,8 +227,7 @@ void ConversationController::AddActionObserver(
 }
 
 void ConversationController::AddAuthenticationStateObserver(
-    mojo::PendingRemote<
-        chromeos::libassistant::mojom::AuthenticationStateObserver> observer) {
+    mojo::PendingRemote<mojom::AuthenticationStateObserver> observer) {
   authentication_state_observers_.Add(std::move(observer));
 }
 

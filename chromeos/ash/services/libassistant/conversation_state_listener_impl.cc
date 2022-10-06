@@ -13,9 +13,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 // A macro which ensures we are running on the mojom thread.

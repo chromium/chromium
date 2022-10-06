@@ -34,9 +34,8 @@ class PlatformApi : public assistant_client::PlatformApi,
   ~PlatformApi() override;
 
   void Bind(
-      mojo::PendingRemote<chromeos::libassistant::mojom::AudioOutputDelegate>
-          audio_output_delegate,
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+      mojo::PendingRemote<mojom::AudioOutputDelegate> audio_output_delegate,
+      mojom::PlatformDelegate* platform_delegate);
 
   PlatformApi& SetAudioInputProvider(assistant_client::AudioInputProvider*);
 

@@ -12,15 +12,13 @@
 
 namespace mojo {
 
-using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
-using AssistantResolution = chromeos::assistant::AssistantInteractionResolution;
+using AssistantResolution = ::ash::assistant::AssistantInteractionResolution;
 using MojoResolution =
-    chromeos::libassistant::mojom::AssistantInteractionResolution;
+    ::ash::libassistant::mojom::AssistantInteractionResolution;
 using MojomInteractionType =
-    chromeos::libassistant::mojom::AssistantInteractionType;
-using MojomQuerySource = chromeos::libassistant::mojom::AssistantQuerySource;
-using MojoSuggestionType =
-    chromeos::libassistant::mojom::AssistantSuggestionType;
+    ::ash::libassistant::mojom::AssistantInteractionType;
+using MojomQuerySource = ::ash::libassistant::mojom::AssistantQuerySource;
+using MojoSuggestionType = ::ash::libassistant::mojom::AssistantSuggestionType;
 using ::ash::assistant::AndroidAppInfo;
 using ::ash::assistant::AppStatus;
 using ::ash::assistant::AssistantFeedback;
@@ -33,15 +31,16 @@ using ::ash::assistant::AssistantSuggestion;
 using ::ash::assistant::AssistantSuggestionType;
 using ::ash::assistant::AssistantTimer;
 using ::ash::assistant::AssistantTimerState;
-using chromeos::libassistant::mojom::AndroidAppInfoDataView;
-using chromeos::libassistant::mojom::AssistantFeedbackDataView;
-using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
-using chromeos::libassistant::mojom::AssistantNotificationButtonDataView;
-using chromeos::libassistant::mojom::AssistantNotificationDataView;
-using chromeos::libassistant::mojom::AssistantSuggestionDataView;
-using chromeos::libassistant::mojom::AssistantTimerDataView;
+using ::ash::libassistant::mojom::AndroidAppInfoDataView;
+using ::ash::libassistant::mojom::AndroidAppStatus;
+using ::ash::libassistant::mojom::AssistantFeedbackDataView;
+using ::ash::libassistant::mojom::AssistantInteractionMetadataDataView;
+using ::ash::libassistant::mojom::AssistantNotificationButtonDataView;
+using ::ash::libassistant::mojom::AssistantNotificationDataView;
+using ::ash::libassistant::mojom::AssistantSuggestionDataView;
+using ::ash::libassistant::mojom::AssistantTimerDataView;
 using MojomAssistantTimerState =
-    chromeos::libassistant::mojom::AssistantTimerState;
+    ::ash::libassistant::mojom::AssistantTimerState;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AndroidAppStatus
@@ -122,7 +121,7 @@ const std::string& StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::action(
 }
 
 bool StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::Read(
-    chromeos::libassistant::mojom::AndroidAppInfoDataView data,
+    AndroidAppInfoDataView data,
     AndroidAppInfo* output) {
   if (!data.ReadPackageName(&output->package_name))
     return false;
@@ -214,7 +213,7 @@ bool StructTraits<AssistantNotificationDataView, AssistantNotification>::
 }
 
 bool StructTraits<AssistantNotificationDataView, AssistantNotification>::Read(
-    chromeos::libassistant::mojom::AssistantNotificationDataView data,
+    AssistantNotificationDataView data,
     AssistantNotification* output) {
   if (!data.ReadTitle(&output->title))
     return false;
@@ -299,7 +298,7 @@ StructTraits<AssistantFeedbackDataView, AssistantFeedback>::screenshot_png(
 }
 
 bool StructTraits<AssistantFeedbackDataView, AssistantFeedback>::Read(
-    chromeos::libassistant::mojom::AssistantFeedbackDataView data,
+    AssistantFeedbackDataView data,
     AssistantFeedback* output) {
   if (!data.ReadDescription(&output->description))
     return false;
@@ -531,7 +530,7 @@ StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::action_url(
 }
 
 bool StructTraits<AssistantSuggestionDataView, AssistantSuggestion>::Read(
-    chromeos::libassistant::mojom::AssistantSuggestionDataView data,
+    AssistantSuggestionDataView data,
     AssistantSuggestion* output) {
   if (!data.ReadId(&output->id))
     return false;
@@ -621,7 +620,7 @@ AssistantTimerState StructTraits<AssistantTimerDataView, AssistantTimer>::state(
 }
 
 bool StructTraits<AssistantTimerDataView, AssistantTimer>::Read(
-    chromeos::libassistant::mojom::AssistantTimerDataView data,
+    AssistantTimerDataView data,
     AssistantTimer* output) {
   if (!data.ReadId(&output->id))
     return false;

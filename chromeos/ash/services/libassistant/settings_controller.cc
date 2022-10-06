@@ -24,9 +24,6 @@
 
 namespace ash::libassistant {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 namespace {
 
 // Each authentication token exists of a [gaia_id, access_token] tuple.

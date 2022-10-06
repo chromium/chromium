@@ -68,7 +68,7 @@ class AssistantBrowserDelegateImpl
   void OpenUrl(GURL url) override;
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   void RequestLibassistantService(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+      mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
           receiver) override;
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 

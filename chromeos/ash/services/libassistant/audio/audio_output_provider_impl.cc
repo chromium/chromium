@@ -21,9 +21,6 @@ namespace ash::libassistant {
 
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
-
 bool IsEncodedFormat(const assistant_client::OutputStreamFormat& format) {
   return format.encoding ==
              assistant_client::OutputStreamEncoding::STREAM_MP3 ||

@@ -44,8 +44,8 @@
 
 namespace ash::assistant {
 
-using chromeos::libassistant::mojom::ServiceState;
-using chromeos::libassistant::mojom::SpeakerIdEnrollmentStatus;
+using libassistant::mojom::ServiceState;
+using libassistant::mojom::SpeakerIdEnrollmentStatus;
 using media_session::mojom::MediaSessionAction;
 using testing::_;
 using testing::ElementsAre;
@@ -86,9 +86,8 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
   explicit FakeLibassistantServiceHost(FakeLibassistantService* service)
       : service_(service) {}
 
-  void Launch(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
-          receiver) override {
+  void Launch(mojo::PendingReceiver<libassistant::mojom::LibassistantService>
+                  receiver) override {
     service_->Bind(std::move(receiver));
   }
   void Stop() override { service_->Unbind(); }
@@ -256,7 +255,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
 };
 
 class SpeakerIdEnrollmentControllerMock
-    : public chromeos::libassistant::mojom::SpeakerIdEnrollmentController {
+    : public libassistant::mojom::SpeakerIdEnrollmentController {
  public:
   SpeakerIdEnrollmentControllerMock() = default;
   SpeakerIdEnrollmentControllerMock(const SpeakerIdEnrollmentControllerMock&) =
@@ -265,24 +264,23 @@ class SpeakerIdEnrollmentControllerMock
       const SpeakerIdEnrollmentControllerMock&) = delete;
   ~SpeakerIdEnrollmentControllerMock() override = default;
 
-  // chromeos::libassistant::mojom::SpeakerIdEnrollmentController
-  // implementation:
+  // libassistant::mojom::SpeakerIdEnrollmentController implementation:
   MOCK_METHOD(
       void,
       StartSpeakerIdEnrollment,
       (const std::string& user_gaia_id,
        bool skip_cloud_enrollment,
-       mojo::PendingRemote<
-           chromeos::libassistant::mojom::SpeakerIdEnrollmentClient> client));
+       mojo::PendingRemote<libassistant::mojom::SpeakerIdEnrollmentClient>
+           client));
   MOCK_METHOD(void, StopSpeakerIdEnrollment, ());
   MOCK_METHOD(void,
               GetSpeakerIdEnrollmentStatus,
               (const std::string& user_gaia_id,
                GetSpeakerIdEnrollmentStatusCallback callback));
 
-  void Bind(mojo::PendingReceiver<
-            chromeos::libassistant::mojom::SpeakerIdEnrollmentController>
-                pending_receiver) {
+  void Bind(
+      mojo::PendingReceiver<libassistant::mojom::SpeakerIdEnrollmentController>
+          pending_receiver) {
     receiver_.Bind(std::move(pending_receiver));
   }
 

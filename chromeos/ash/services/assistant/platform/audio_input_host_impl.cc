@@ -14,7 +14,7 @@ namespace ash::assistant {
 
 namespace {
 
-using MojomLidState = chromeos::libassistant::mojom::LidState;
+using MojomLidState = libassistant::mojom::LidState;
 
 MojomLidState ConvertLidState(chromeos::PowerManagerClient::LidState state) {
   switch (state) {
@@ -31,7 +31,7 @@ MojomLidState ConvertLidState(chromeos::PowerManagerClient::LidState state) {
 }  // namespace
 
 AudioInputHostImpl::AudioInputHostImpl(
-    mojo::PendingRemote<chromeos::libassistant::mojom::AudioInputController>
+    mojo::PendingRemote<libassistant::mojom::AudioInputController>
         pending_remote,
     CrasAudioHandler* cras_audio_handler,
     chromeos::PowerManagerClient* power_manager_client,

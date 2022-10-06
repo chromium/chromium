@@ -52,8 +52,6 @@ using ::testing::ElementsAre;
 using ::testing::FloatNear;
 using ::testing::Return;
 using ::testing::StrictMock;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr char kWiFi[] = "WIFI";
 constexpr char kBluetooth[] = "BLUETOOTH";

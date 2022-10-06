@@ -20,7 +20,7 @@ class DeviceActions;
 class ServiceContext;
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
-    : public chromeos::libassistant::mojom::DeviceSettingsDelegate {
+    : public libassistant::mojom::DeviceSettingsDelegate {
  public:
   explicit DeviceSettingsHost(ServiceContext* context);
   DeviceSettingsHost(const DeviceSettingsHost&) = delete;
@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
 
   void Bind(mojo::PendingReceiver<DeviceSettingsDelegate> pending_receiver);
 
-  // chromeos::libassistant::mojom::DeviceSettingsDelegate implementation:
+  // libassistant::mojom::DeviceSettingsDelegate implementation:
   void GetScreenBrightnessLevel(
       GetScreenBrightnessLevelCallback callback) override;
   void SetBluetoothEnabled(bool enabled) override;

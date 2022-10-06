@@ -92,10 +92,9 @@ void FakeAssistantManagerServiceImpl::AddAssistantInteractionSubscriber(
 void FakeAssistantManagerServiceImpl::RemoveAssistantInteractionSubscriber(
     AssistantInteractionSubscriber* subscriber) {}
 
-mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
 FakeAssistantManagerServiceImpl::GetPendingNotificationDelegate() {
-  return mojo::PendingReceiver<
-      chromeos::libassistant::mojom::NotificationDelegate>();
+  return mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>();
 }
 
 void FakeAssistantManagerServiceImpl::RetrieveNotification(

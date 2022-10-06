@@ -22,8 +22,6 @@ using GetSpeakerIdEnrollmentStatusCallback =
     SpeakerIdEnrollmentController::GetSpeakerIdEnrollmentStatusCallback;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 class SpeakerIdEnrollmentClientMock : public mojom::SpeakerIdEnrollmentClient {
  public:

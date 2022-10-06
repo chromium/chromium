@@ -35,7 +35,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
   ~AudioDeviceOwner() override;
 
   void Start(
-      chromeos::libassistant::mojom::AudioOutputDelegate* audio_output_delegate,
+      mojom::AudioOutputDelegate* audio_output_delegate,
       assistant_client::AudioOutput::Delegate* delegate,
       mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       const assistant_client::OutputStreamFormat& format);
@@ -72,8 +72,7 @@ class AudioDeviceOwner : public media::AudioRendererSink::RenderCallback,
  private:
   void StartDevice(
       mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
-      chromeos::libassistant::mojom::AudioOutputDelegate*
-          audio_output_delegate);
+      mojom::AudioOutputDelegate* audio_output_delegate);
 
   // Requests assistant to fill buffer with more data.
   void ScheduleFillLocked(const base::TimeTicks& time);

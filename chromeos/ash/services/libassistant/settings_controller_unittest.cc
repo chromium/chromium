@@ -21,8 +21,6 @@ namespace {
 #define IGNORE_CALLS(args...) EXPECT_CALL(args).Times(testing::AnyNumber());
 // The auth tokens are pairs of <user, token>
 using AuthTokens = std::vector<std::pair<std::string, std::string>>;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 std::vector<mojom::AuthenticationTokenPtr> ToVector(
     mojom::AuthenticationTokenPtr token) {

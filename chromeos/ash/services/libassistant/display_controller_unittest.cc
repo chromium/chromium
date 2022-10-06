@@ -18,8 +18,6 @@ namespace {
 
 using assistant::AndroidAppInfo;
 using chromeos::assistant::InteractionInfo;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr int kSampleInteractionId = 123;
 constexpr char kSampleUserId[] = "user-id";

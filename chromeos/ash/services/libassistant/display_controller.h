@@ -15,12 +15,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
-namespace libassistant {
-namespace mojom {
-class SpeechRecognitionObserver;
-}  // namespace mojom
-}  // namespace libassistant
-
 namespace assistant {
 namespace action {
 class CrosActionModule;
@@ -30,23 +24,24 @@ class CrosActionModule;
 
 namespace ash::libassistant {
 
+namespace mojom {
+class SpeechRecognitionObserver;
+}
+
 class DisplayConnection;
 
 class DisplayController
-    : public chromeos::libassistant::mojom::DisplayController,
+    : public mojom::DisplayController,
       public AssistantClientObserver,
       public chromeos::assistant::action::AssistantActionObserver {
  public:
-  explicit DisplayController(
-      mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>*
-          speech_recognition_observers);
+  explicit DisplayController(mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
+                                 speech_recognition_observers);
   DisplayController(const DisplayController&) = delete;
   DisplayController& operator=(const DisplayController&) = delete;
   ~DisplayController() override;
 
-  void Bind(
-      mojo::PendingReceiver<chromeos::libassistant::mojom::DisplayController>
-          receiver);
+  void Bind(mojo::PendingReceiver<mojom::DisplayController> receiver);
 
   void SetActionModule(
       chromeos::assistant::action::CrosActionModule* action_module);
@@ -74,13 +69,12 @@ class DisplayController
   // device.
   assistant::AppStatus GetAndroidAppStatus(const std::string& package_name);
 
-  mojo::Receiver<chromeos::libassistant::mojom::DisplayController> receiver_{
-      this};
+  mojo::Receiver<mojom::DisplayController> receiver_{this};
   std::unique_ptr<EventObserver> event_observer_;
   std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>&
+  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
       speech_recognition_observers_;
 
   AssistantClient* assistant_client_ = nullptr;

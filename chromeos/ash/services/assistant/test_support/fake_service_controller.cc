@@ -33,9 +33,9 @@ void FakeServiceController::SetState(State new_state) {
 }
 
 void FakeServiceController::Bind(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::ServiceController>
+    mojo::PendingReceiver<libassistant::mojom::ServiceController>
         service_receiver,
-    mojo::PendingReceiver<chromeos::libassistant::mojom::SettingsController>
+    mojo::PendingReceiver<libassistant::mojom::SettingsController>
         settings_receiver) {
   service_receiver_.Bind(std::move(service_receiver));
   settings_receiver_.Bind(std::move(settings_receiver));
@@ -73,7 +73,7 @@ std::string FakeServiceController::gaia_id() {
 }
 
 void FakeServiceController::Initialize(
-    chromeos::libassistant::mojom::BootupConfigPtr config,
+    libassistant::mojom::BootupConfigPtr config,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory) {
   mojom_task_runner_ = base::SequencedTaskRunnerHandle::Get();
   libassistant_config_ = std::move(config);
@@ -100,9 +100,8 @@ void FakeServiceController::ResetAllDataAndStop() {
 }
 
 void FakeServiceController::AddAndFireStateObserver(
-    mojo::PendingRemote<chromeos::libassistant::mojom::StateObserver>
-        pending_observer) {
-  mojo::Remote<chromeos::libassistant::mojom::StateObserver> observer(
+    mojo::PendingRemote<libassistant::mojom::StateObserver> pending_observer) {
+  mojo::Remote<libassistant::mojom::StateObserver> observer(
       std::move(pending_observer));
 
   observer->OnStateChanged(state_);
@@ -111,7 +110,7 @@ void FakeServiceController::AddAndFireStateObserver(
 }
 
 void FakeServiceController::SetAuthenticationTokens(
-    std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> tokens) {
+    std::vector<libassistant::mojom::AuthenticationTokenPtr> tokens) {
   authentication_tokens_ = std::move(tokens);
 }
 

@@ -101,7 +101,7 @@ class TestAssistantService : public assistant::Assistant {
       assistant::AssistantInteractionSubscriber* subscriber) override;
   void AddRemoteConversationObserver(
       assistant::ConversationObserver* observer) override {}
-  mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+  mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
   void RetrieveNotification(
       const assistant::AssistantNotification& notification,

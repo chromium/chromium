@@ -20,7 +20,7 @@ SystemProviderImpl::SystemProviderImpl(
 SystemProviderImpl::~SystemProviderImpl() = default;
 
 void SystemProviderImpl::Initialize(
-    chromeos::libassistant::mojom::PlatformDelegate* platform_delegate) {
+    mojom::PlatformDelegate* platform_delegate) {
   if (power_manager_provider_)
     power_manager_provider_->Initialize(platform_delegate);
 

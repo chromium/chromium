@@ -9,7 +9,7 @@ namespace ash::assistant {
 ConversationObserver::ConversationObserver() = default;
 ConversationObserver::~ConversationObserver() = default;
 
-mojo::PendingRemote<chromeos::libassistant::mojom::ConversationObserver>
+mojo::PendingRemote<libassistant::mojom::ConversationObserver>
 ConversationObserver::BindNewPipeAndPassRemote() {
   DCHECK(!remote_observer_.is_bound());
 

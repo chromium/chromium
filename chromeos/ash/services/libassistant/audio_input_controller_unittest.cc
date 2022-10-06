@@ -27,11 +27,9 @@
 namespace ash::libassistant {
 
 namespace {
-using ::chromeos::libassistant::mojom::LidState;
+using mojom::LidState;
 using testing::_;
 using Resolution = assistant_client::ConversationStateListener::Resolution;
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom = ::chromeos::libassistant::mojom;
 
 constexpr char kNormalDeviceId[] = "normal-device-id";
 constexpr char kHotwordDeviceId[] = "hotword-device-id";

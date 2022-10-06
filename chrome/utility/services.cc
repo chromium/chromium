@@ -409,7 +409,7 @@ auto RunAssistantAudioDecoder(
 }
 
 auto RunLibassistantService(
-    mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
+    mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
         receiver) {
   return std::make_unique<ash::libassistant::LibassistantService>(
       std::move(receiver));

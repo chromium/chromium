@@ -60,15 +60,14 @@ static bool is_first_init = true;
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
 
-std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr>
-ToAuthenticationTokens(
+std::vector<libassistant::mojom::AuthenticationTokenPtr> ToAuthenticationTokens(
     const absl::optional<AssistantManagerService::UserInfo>& user) {
-  std::vector<chromeos::libassistant::mojom::AuthenticationTokenPtr> result;
+  std::vector<libassistant::mojom::AuthenticationTokenPtr> result;
 
   if (user.has_value()) {
     DCHECK(!user.value().gaia_id.empty());
     DCHECK(!user.value().access_token.empty());
-    result.emplace_back(chromeos::libassistant::mojom::AuthenticationToken::New(
+    result.emplace_back(libassistant::mojom::AuthenticationToken::New(
         /*gaia_id=*/user.value().gaia_id,
         /*access_token=*/user.value().access_token));
   }
@@ -76,10 +75,10 @@ ToAuthenticationTokens(
   return result;
 }
 
-chromeos::libassistant::mojom::BootupConfigPtr CreateBootupConfig(
+libassistant::mojom::BootupConfigPtr CreateBootupConfig(
     const absl::optional<std::string>& s3_server_uri_override,
     const absl::optional<std::string>& device_id_override) {
-  auto result = chromeos::libassistant::mojom::BootupConfig::New();
+  auto result = libassistant::mojom::BootupConfig::New();
   result->s3_server_uri_override = s3_server_uri_override;
   result->device_id_override = device_id_override;
   return result;
@@ -90,7 +89,7 @@ chromeos::libassistant::mojom::BootupConfigPtr CreateBootupConfig(
 // Observer that will receive all speech recognition related events,
 // and forwards them to all |AssistantInteractionSubscriber|.
 class SpeechRecognitionObserverWrapper
-    : public chromeos::libassistant::mojom::SpeechRecognitionObserver {
+    : public libassistant::mojom::SpeechRecognitionObserver {
  public:
   explicit SpeechRecognitionObserverWrapper(
       const base::ObserverList<AssistantInteractionSubscriber>* observers)
@@ -103,12 +102,12 @@ class SpeechRecognitionObserverWrapper
       const SpeechRecognitionObserverWrapper&) = delete;
   ~SpeechRecognitionObserverWrapper() override = default;
 
-  mojo::PendingRemote<chromeos::libassistant::mojom::SpeechRecognitionObserver>
+  mojo::PendingRemote<libassistant::mojom::SpeechRecognitionObserver>
   BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  // chromeos::libassistant::mojom::SpeechRecognitionObserver implementation:
+  // libassistant::mojom::SpeechRecognitionObserver implementation:
   void OnSpeechLevelUpdated(float speech_level_in_decibels) override {
     for (auto& it : interaction_subscribers_)
       it.OnSpeechLevelUpdated(speech_level_in_decibels);
@@ -142,8 +141,8 @@ class SpeechRecognitionObserverWrapper
   const base::ObserverList<AssistantInteractionSubscriber>&
       interaction_subscribers_;
 
-  mojo::Receiver<chromeos::libassistant::mojom::SpeechRecognitionObserver>
-      receiver_{this};
+  mojo::Receiver<libassistant::mojom::SpeechRecognitionObserver> receiver_{
+      this};
 };
 
 // static
@@ -431,8 +430,8 @@ void AssistantManagerServiceImpl::OnOpenUrlResponse(const GURL& url,
 }
 
 void AssistantManagerServiceImpl::OnStateChanged(
-    chromeos::libassistant::mojom::ServiceState new_state) {
-  using chromeos::libassistant::mojom::ServiceState;
+    libassistant::mojom::ServiceState new_state) {
+  using libassistant::mojom::ServiceState;
 
   DVLOG(1) << "Libassistant service state changed to " << new_state;
   switch (new_state) {
@@ -613,7 +612,7 @@ void AssistantManagerServiceImpl::AddRemoteConversationObserver(
       observer->BindNewPipeAndPassRemote());
 }
 
-mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
+mojo::PendingReceiver<libassistant::mojom::NotificationDelegate>
 AssistantManagerServiceImpl::GetPendingNotificationDelegate() {
   return assistant_host_->ExtractNotificationDelegate();
 }
@@ -679,12 +678,12 @@ AssistantManagerServiceImpl::main_task_runner() {
   return context_->main_task_runner();
 }
 
-chromeos::libassistant::mojom::DisplayController&
+libassistant::mojom::DisplayController&
 AssistantManagerServiceImpl::display_controller() {
   return assistant_host_->display_controller();
 }
 
-chromeos::libassistant::mojom::ServiceController&
+libassistant::mojom::ServiceController&
 AssistantManagerServiceImpl::service_controller() {
   return assistant_host_->service_controller();
 }
@@ -694,12 +693,12 @@ void AssistantManagerServiceImpl::SetMicState(bool mic_open) {
   audio_input_host_->SetMicState(mic_open);
 }
 
-chromeos::libassistant::mojom::ConversationController&
+libassistant::mojom::ConversationController&
 AssistantManagerServiceImpl::conversation_controller() {
   return assistant_host_->conversation_controller();
 }
 
-chromeos::libassistant::mojom::SettingsController&
+libassistant::mojom::SettingsController&
 AssistantManagerServiceImpl::settings_controller() {
   return assistant_host_->settings_controller();
 }

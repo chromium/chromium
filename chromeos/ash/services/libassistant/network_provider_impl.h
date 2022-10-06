@@ -26,8 +26,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
 
   ~NetworkProviderImpl() override;
 
-  void Initialize(
-      chromeos::libassistant::mojom::PlatformDelegate* platform_delegate);
+  void Initialize(mojom::PlatformDelegate* platform_delegate);
 
   // assistant_client::NetworkProvider:
   ConnectionStatus GetConnectionStatus() override;

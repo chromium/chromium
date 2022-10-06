@@ -12,16 +12,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
-namespace libassistant {
+namespace ash::libassistant {
+
 namespace mojom {
 class ConversationObserver;
 class SpeechRecognitionObserver;
 }  // namespace mojom
-}  // namespace libassistant
-}  // namespace chromeos
-
-namespace ash::libassistant {
 
 class AudioInputController;
 
@@ -30,10 +26,9 @@ class ConversationStateListenerImpl
       public AssistantClientObserver {
  public:
   ConversationStateListenerImpl(
-      mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>*
+      mojo::RemoteSet<mojom::SpeechRecognitionObserver>*
           speech_recognition_observers,
-      const mojo::RemoteSet<
-          chromeos::libassistant::mojom::ConversationObserver>*
+      const mojo::RemoteSet<mojom::ConversationObserver>*
           conversation_observers,
       AudioInputController* audio_input_controller);
   ConversationStateListenerImpl(const ConversationStateListenerImpl&) = delete;
@@ -58,12 +53,11 @@ class ConversationStateListenerImpl
       assistant::AssistantInteractionResolution resolution);
 
   // Owned by |LibassistantService|.
-  mojo::RemoteSet<chromeos::libassistant::mojom::SpeechRecognitionObserver>&
+  mojo::RemoteSet<mojom::SpeechRecognitionObserver>&
       speech_recognition_observers_;
 
   // Owned by |ConversationController|.
-  const mojo::RemoteSet<chromeos::libassistant::mojom::ConversationObserver>&
-      conversation_observers_;
+  const mojo::RemoteSet<mojom::ConversationObserver>& conversation_observers_;
 
   AudioInputController* const audio_input_controller_ = nullptr;
 
