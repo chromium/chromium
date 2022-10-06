@@ -17,6 +17,10 @@ declare_args() {
   #
   # Design doc: https://goo.gle/chrome-for-testing
   is_chrome_for_testing_branded = false
+
+  # Set to true to enable settings for high end Android devices, typically
+  # enhancing speed at the expense of resources such as binary sizes and memory.
+  is_high_end_android = false
 }
 
 declare_args() {

@@ -7,6 +7,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/create_unwind_table.gni")
 import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/linker_version_script.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
@@ -17,7 +18,7 @@ declare_args() {
   # efficient, but supported only on API 28+.
   # This is not permanently enabled for Trichrome because it shares its native
   # library with Monochrome.
-  use_relr_relocations = false
+  use_relr_relocations = is_high_end_android
 }
 
 # This template contains all common configuration for native shared libraries,
