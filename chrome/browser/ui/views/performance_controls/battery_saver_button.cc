@@ -55,9 +55,12 @@ bool BatterySaverButton::IsBubbleShowing() const {
 void BatterySaverButton::Show() {
   bool was_visible = GetVisible();
   SetVisible(true);
+  PreferredSizeChanged();
 
+  // Wait until the view is properly laid out before triggering the promo
+  // The promo will be triggered in |OnBoundsChanged| if the flag is set
   if (!was_visible)
-    MaybeShowFeaturePromo();
+    pending_promo_ = true;
 }
 
 void BatterySaverButton::Hide() {
@@ -69,10 +72,25 @@ void BatterySaverButton::Hide() {
   }
 
   SetVisible(false);
+  PreferredSizeChanged();
 }
 
 void BatterySaverButton::OnBubbleHidden() {
   bubble_ = nullptr;
+}
+
+bool BatterySaverButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
+}
+
+void BatterySaverButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  ToolbarButton::OnBoundsChanged(previous_bounds);
+
+  if (!GetVisible() || size().IsEmpty())
+    return;
+
+  if (pending_promo_)
+    MaybeShowFeaturePromo();
 }
 
 void BatterySaverButton::OnClicked() {
@@ -91,6 +109,7 @@ void BatterySaverButton::OnClicked() {
 }
 
 void BatterySaverButton::MaybeShowFeaturePromo() {
+  pending_promo_ = false;
   browser_view_->MaybeShowStartupFeaturePromo(
       feature_engagement::kIPHBatterySaverModeFeature);
 }
@@ -98,6 +117,7 @@ void BatterySaverButton::MaybeShowFeaturePromo() {
 void BatterySaverButton::CloseFeaturePromo() {
   // CloseFeaturePromo checks if the promo is active for the feature before
   // attempting to close the promo bubble
+  pending_promo_ = false;
   browser_view_->CloseFeaturePromo(
       feature_engagement::kIPHBatterySaverModeFeature);
 }

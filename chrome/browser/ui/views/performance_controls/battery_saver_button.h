@@ -46,6 +46,10 @@ class BatterySaverButton : public ToolbarButton,
   void OnBubbleShown() override {}
   void OnBubbleHidden() override;
 
+  // ToolbarButton:
+  bool ShouldShowInkdropAfterIphInteraction() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
  private:
   // Handles press events from the button
   void OnClicked();
@@ -57,6 +61,7 @@ class BatterySaverButton : public ToolbarButton,
   const raw_ptr<BrowserView> browser_view_;
   BatterySaverButtonController controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+  bool pending_promo_ = false;
   base::WeakPtrFactory<BatterySaverButton> weak_ptr_factory_{this};
 };
 
