@@ -13,7 +13,7 @@
   <template is="dom-if" if="[[showPowerBookmarks_]]" restamp>
     <template is="dom-repeat" items="[[topLevelBookmarks_]]">
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-          description="[[getBookmarkDescription_(item)]]"
+          description="[[getBookmarkDescription_(item, descriptions_.*)]]"
           compact="[[compact_]]">
           <div slot="extra-content-container">
             <power-bookmark-chip>
