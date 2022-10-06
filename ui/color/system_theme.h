@@ -9,8 +9,8 @@
 
 namespace ui {
 
-// Don't change the order or value of these entries as they are stored in prefs.
-// This must be kept in sync with the SystemTheme enum in
+// Don't change the order or value of these entries as they are stored in prefs
+// and logged in UMA. This must be kept in sync with the SystemTheme enum in
 // chrome/browser/resources/settings/appearance_page/appearance_page.ts.
 enum class SystemTheme {
   // Classic theme, used in the default or users' chosen theme.
@@ -18,6 +18,9 @@ enum class SystemTheme {
 #if BUILDFLAG(IS_LINUX)
   kGtk = 1,
   kQt = 2,
+  kMaxValue = kQt,
+#else
+  kMaxValue = kDefault,
 #endif
 };
 

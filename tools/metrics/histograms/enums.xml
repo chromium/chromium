@@ -98376,6 +98376,13 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Frame has video (either inline or fullscreen)"/>
 </enum>
 
+<enum name="Ui.SystemTheme">
+  <summary>This enum corresponds to ui::SystemTheme.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="GTK"/>
+  <int value="2" label="QT"/>
+</enum>
+
 <enum name="UIEventType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Touch released"/>

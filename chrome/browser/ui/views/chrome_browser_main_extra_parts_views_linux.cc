@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/theme_profile_key.h"
@@ -14,6 +15,7 @@
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/linux/linux_ui_getter.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace {
@@ -49,6 +51,10 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // Cursor theme changes are tracked by LinuxUI (via a CursorThemeManager
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
+  }
+  if (auto* linux_ui_theme = ui::GetDefaultLinuxUiTheme()) {
+    UMA_HISTOGRAM_ENUMERATION("Linux.SystemTheme.Default",
+                              linux_ui_theme->GetNativeTheme()->system_theme());
   }
 }
 

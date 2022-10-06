@@ -7861,6 +7861,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Linux.SystemTheme.Default" enum="Ui.SystemTheme"
+    expires_after="M115">
+  <owner>thomasanderson@google.com</owner>
+  <summary>The default system theme. Logged once on startup.</summary>
+</histogram>
+
+<histogram name="Linux.SystemTheme.Profile" enum="Ui.SystemTheme"
+    expires_after="M115">
+  <owner>thomasanderson@google.com</owner>
+  <summary>
+    The per-profile system theme. Logged once for each profile on startup, and
+    whenever the system theme changes.
+  </summary>
+</histogram>
+
 <histogram name="Linux.Wayland.BaseShellUsed" enum="LinuxWaylandShellName"
     expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->
