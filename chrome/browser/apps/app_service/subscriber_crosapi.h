@@ -61,10 +61,6 @@ class SubscriberCrosapi : public KeyedService,
   void OnCapabilityAccesses(
       std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
-  void OnPreferredAppsChanged(
-      apps::mojom::PreferredAppChangesPtr changes) override;
-  void InitializePreferredApps(
-      std::vector<apps::mojom::PreferredAppPtr> preferred_apps) override;
   void OnCrosapiDisconnected();
 
   // crosapi::mojom::AppServiceProxy overrides.

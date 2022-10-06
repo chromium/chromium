@@ -128,24 +128,6 @@ void SubscriberCrosapi::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
-void SubscriberCrosapi::OnPreferredAppsChanged(
-    apps::mojom::PreferredAppChangesPtr changes) {
-  if (!subscriber_.is_bound()) {
-    return;
-  }
-  subscriber_->OnPreferredAppsChanged(
-      ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
-}
-
-void SubscriberCrosapi::InitializePreferredApps(
-    std::vector<apps::mojom::PreferredAppPtr> preferred_apps) {
-  if (!subscriber_.is_bound()) {
-    return;
-  }
-  subscriber_->InitializePreferredApps(
-      ConvertMojomPreferredAppsToPreferredApps(preferred_apps));
-}
-
 void SubscriberCrosapi::OnCrosapiDisconnected() {
   crosapi_receiver_.reset();
   subscriber_.reset();

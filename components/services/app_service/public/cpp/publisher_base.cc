@@ -161,19 +161,6 @@ void PublisherBase::OpenNativeSettings(const std::string& app_id) {
   NOTIMPLEMENTED();
 }
 
-void PublisherBase::OnPreferredAppSet(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) {
-  NOTIMPLEMENTED();
-}
-
-void PublisherBase::OnSupportedLinksPreferenceChanged(const std::string& app_id,
-                                                      bool open_in_app) {
-  NOTIMPLEMENTED();
-}
-
 void PublisherBase::SetResizeLocked(const std::string& app_id,
                                     apps::mojom::OptionalBool locked) {
   NOTIMPLEMENTED();

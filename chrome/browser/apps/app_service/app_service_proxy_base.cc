@@ -913,18 +913,6 @@ void AppServiceProxyBase::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
-void AppServiceProxyBase::OnPreferredAppsChanged(
-    apps::mojom::PreferredAppChangesPtr changes) {
-  preferred_apps_list_.ApplyBulkUpdate(
-      ConvertMojomPreferredAppChangesToPreferredAppChanges(changes));
-}
-
-void AppServiceProxyBase::InitializePreferredApps(
-    std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) {
-  preferred_apps_list_.Init(
-      ConvertMojomPreferredAppsToPreferredApps(mojom_preferred_apps));
-}
-
 IntentFilterPtr AppServiceProxyBase::FindBestMatchingFilter(
     const IntentPtr& intent) {
   IntentFilterPtr best_matching_intent_filter;

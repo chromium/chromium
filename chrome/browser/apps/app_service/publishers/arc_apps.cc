@@ -1433,25 +1433,6 @@ void ArcApps::OpenNativeSettings(const std::string& app_id) {
                        display::Screen::GetScreen()->GetPrimaryDisplay().id());
 }
 
-void ArcApps::OnPreferredAppSet(
-    const std::string& app_id,
-    apps::mojom::IntentFilterPtr intent_filter,
-    apps::mojom::IntentPtr intent,
-    apps::mojom::ReplacedAppPreferencesPtr replaced_app_preferences) {
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (!prefs) {
-    return;
-  }
-  AddPreferredApp(app_id, ConvertMojomIntentFilterToIntentFilter(intent_filter),
-                  ConvertMojomIntentToIntent(intent), arc_service_manager,
-                  prefs);
-  ResetVerifiedLinks(ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
-                         replaced_app_preferences),
-                     arc_service_manager, prefs);
-}
-
 void ArcApps::OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                 bool open_in_app) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);

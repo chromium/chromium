@@ -239,26 +239,6 @@ interface Publisher {
   OpenNativeSettings(
       string app_id);
 
-  // Indicates that the app identified by |app_id| has been set as a preferred
-  // app for |intent_filter|, and the |replaced_app_preferences| is the apps
-  // that are no longer preferred apps for their corresponding |intent_filters|.
-  // This method is used by the App Service to sync the change to publishers.
-  // |intent| is needed to set the preferred app in ARC.
-  OnPreferredAppSet(
-      string app_id,
-      IntentFilter intent_filter,
-      Intent intent,
-      ReplacedAppPreferences replaced_app_preferences);
-
-  // Indicates that the app identified by |app_id| has had its supported links
-  // preference changed, so that all supported link filters are either preferred
-  // (|open_in_app| is true) or not preferred (|open_in_app| is false). This
-  // method is used by the App Service to sync changes to publishers, and is
-  // called instead of OnPreferredAppSet for supported links changes.
-  OnSupportedLinksPreferenceChanged(
-    string app_id,
-    bool open_in_app);
-
   // Enables resize lock mode for the app identified by |app_id|. When |locked|
   // is kTrue, this means the app cannot be resized and is locked to a certain
   // set of dimensions. Implemented if the publisher supports resize locking of
@@ -298,14 +278,6 @@ interface Subscriber {
   //
   // See https://groups.google.com/a/chromium.org/d/msg/chromium-mojo/nFhBzGsb5Pg/V7t_8kNRAgAJ
   Clone(pending_receiver<Subscriber> receiver);
-
-  // Indicates that a changes have been made by App Service to the preferred
-  // apps list. All of the changes should be applied to the subscriber's copy of
-  // the list using PreferredAppsList::ApplyBulkUpdate.
-  OnPreferredAppsChanged(PreferredAppChanges changes);
-
-  // Initialize the |preferred_apps| in the subscribers from the app service.
-  InitializePreferredApps(array<PreferredApp> preferred_apps);
 };
 
 struct ConnectOptions {

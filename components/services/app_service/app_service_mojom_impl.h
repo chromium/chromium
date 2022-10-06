@@ -26,8 +26,7 @@ namespace apps {
 // The implementation of the apps::mojom::AppService Mojo interface.
 //
 // See components/services/app_service/README.md.
-class AppServiceMojomImpl : public apps::mojom::AppService,
-                            public PreferredAppsImpl::Host {
+class AppServiceMojomImpl : public apps::mojom::AppService {
  public:
   AppServiceMojomImpl(
       const base::FilePath& profile_dir,
@@ -103,28 +102,6 @@ class AppServiceMojomImpl : public apps::mojom::AppService,
       apps::mojom::AppType app_type,
       const std::string& app_id,
       apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
-
-  // PreferredApps::Host overrides.
-  void InitializePreferredAppsForAllSubscribers() override;
-
-  void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
-
-  void OnPreferredAppSet(
-      const std::string& app_id,
-      IntentFilterPtr intent_filter,
-      IntentPtr intent,
-      ReplacedAppPreferences replaced_app_preferences) override;
-
-  void OnSupportedLinksPreferenceChanged(const std::string& app_id,
-                                         bool open_in_app) override;
-
-  void OnSupportedLinksPreferenceChanged(AppType app_type,
-                                         const std::string& app_id,
-                                         bool open_in_app) override;
-
-  // Returns true if there is a publisher for `app_type`. Otherwise, returns
-  // false.
-  bool HasPublisher(AppType app_type) override;
 
  private:
   void OnPublisherDisconnected(apps::mojom::AppType app_type);

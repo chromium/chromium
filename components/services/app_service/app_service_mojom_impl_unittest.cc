@@ -194,13 +194,6 @@ class FakeSubscriber : public apps::mojom::Subscriber {
     receivers_.Add(this, std::move(receiver));
   }
 
-  void OnPreferredAppsChanged(
-      apps::mojom::PreferredAppChangesPtr changes) override {}
-
-  void InitializePreferredApps(
-      std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override {
-  }
-
   mojo::ReceiverSet<apps::mojom::Subscriber> receivers_;
   std::set<std::string> app_ids_seen_;
   AppCapabilityAccessCache cache_;

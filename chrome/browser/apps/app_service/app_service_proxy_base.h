@@ -430,10 +430,6 @@ class AppServiceProxyBase : public KeyedService,
   void OnCapabilityAccesses(
       std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
-  void OnPreferredAppsChanged(
-      apps::mojom::PreferredAppChangesPtr changes) override;
-  void InitializePreferredApps(
-      std::vector<apps::mojom::PreferredAppPtr> mojom_preferred_apps) override;
 
   IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);
   // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
