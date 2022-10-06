@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 53
+version_id: 54
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -2401,7 +2401,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: ALLOW_ON_USER_GESTURE
+    danger_level: DANGEROUS
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2415,7 +2415,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: ALLOW_ON_USER_GESTURE
+    danger_level: DANGEROUS
     auto_open_hint: ALLOW_AUTO_OPEN
   }
 }
@@ -2529,7 +2529,7 @@ file_types {
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_WINDOWS
-    danger_level: ALLOW_ON_USER_GESTURE
+    danger_level: DANGEROUS
     auto_open_hint: DISALLOW_AUTO_OPEN
   }
 }
