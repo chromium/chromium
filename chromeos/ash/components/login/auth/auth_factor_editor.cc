@@ -357,7 +357,7 @@ void AuthFactorEditor::ReplacePinFactor(std::unique_ptr<UserContext> context,
   auto on_updated_callback = base::BindOnce(
       &AuthFactorEditor::OnUpdateAuthFactor, weak_factory_.GetWeakPtr(),
       std::move(context), std::move(callback));
-  LOGIN_LOG(EVENT) << "Adding pin factor";
+  LOGIN_LOG(EVENT) << "Replacing pin factor";
   UserDataAuthClient::Get()->UpdateAuthFactor(std::move(request),
                                               std::move(on_updated_callback));
 }
