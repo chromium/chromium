@@ -46,8 +46,7 @@ class PinStorageCryptohome {
 
   ~PinStorageCryptohome();
 
-  void IsPinSetInCryptohome(const AccountId& account_id,
-                            BoolCallback result) const;
+  void IsPinSetInCryptohome(std::unique_ptr<UserContext>, BoolCallback result);
   // Sets a new PIN. If `pin_salt` is empty, `pin` will be hashed and should be
   // plain-text. If `pin_salt` contains a value, `pin` will not be hashed.
   void SetPin(std::unique_ptr<UserContext> user_context,
@@ -56,9 +55,9 @@ class PinStorageCryptohome {
               AuthOperationCallback callback);
   void RemovePin(std::unique_ptr<UserContext> user_context,
                  AuthOperationCallback callback);
-  void CanAuthenticate(const AccountId& account_id,
+  void CanAuthenticate(std::unique_ptr<UserContext> user_context,
                        Purpose purpose,
-                       BoolCallback result) const;
+                       BoolCallback result);
   void TryAuthenticate(const AccountId& account_id,
                        const Key& key,
                        Purpose purpose,

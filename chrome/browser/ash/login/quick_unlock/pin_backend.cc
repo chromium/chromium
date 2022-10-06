@@ -158,7 +158,16 @@ void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
   }
 
   if (ShouldUseCryptohome(account_id)) {
-    cryptohome_backend_->IsPinSetInCryptohome(account_id, std::move(result));
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(account_id);
+    if (!user) {
+      NOTREACHED() << "IsSet called with invalid user";
+      std::move(result).Run(false);
+      return;
+    }
+    auto user_context = std::make_unique<UserContext>(*user);
+    cryptohome_backend_->IsPinSetInCryptohome(std::move(user_context),
+                                              std::move(result));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
     PostResponse(std::move(result),
@@ -283,7 +292,15 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
   }
 
   if (ShouldUseCryptohome(account_id)) {
-    cryptohome_backend_->CanAuthenticate(account_id, purpose,
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(account_id);
+    if (!user) {
+      NOTREACHED() << "CanAuthenticate called with invalid user";
+      std::move(result).Run(false);
+      return;
+    }
+    auto user_context = std::make_unique<UserContext>(*user);
+    cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,
                                          std::move(result));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);

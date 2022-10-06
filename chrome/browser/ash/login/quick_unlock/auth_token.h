@@ -47,6 +47,7 @@ class AuthToken {
 
   // The UserContext returned here can be null if Reset() was called.
   const UserContext* user_context() const { return user_context_.get(); }
+  UserContext* user_context() { return user_context_.get(); }
 
   // Replace the user context that is stored with this token. If Reset() has
   // been called earlier, the call is ignored, and the user context passed to

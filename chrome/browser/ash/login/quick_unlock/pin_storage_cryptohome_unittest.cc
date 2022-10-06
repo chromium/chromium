@@ -85,11 +85,11 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
     SystemSaltGetter::Shutdown();
   }
 
-  bool IsPinSet() const {
+  bool IsPinSet() {
     bool res;
     base::RunLoop loop;
     storage_->IsPinSetInCryptohome(
-        test_account_id_,
+        std::make_unique<UserContext>(*user_context_),
         base::BindOnce(
             [](base::OnceClosure closure, bool* res, bool is_set) {
               *res = is_set;
@@ -100,11 +100,11 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
     return res;
   }
 
-  bool CanAuthenticate() const {
+  bool CanAuthenticate() {
     bool res;
     base::RunLoop loop;
     storage_->CanAuthenticate(
-        test_account_id_, Purpose::kAny,
+        std::make_unique<UserContext>(*user_context_), Purpose::kAny,
         base::BindOnce(
             [](base::OnceClosure closure, bool* res, bool can_auth) {
               *res = can_auth;

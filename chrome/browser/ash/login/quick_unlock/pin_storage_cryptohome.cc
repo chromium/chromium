@@ -9,11 +9,15 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
@@ -77,6 +81,31 @@ void CheckCryptohomePinKey(
     }
   }
   std::move(callback).Run(false);
+}
+
+void CheckCryptohomePinFactor(PinStorageCryptohome::BoolCallback callback,
+                              bool require_unlocked,
+                              std::unique_ptr<UserContext> user_context,
+                              absl::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const auto& config = user_context->GetAuthFactorsConfiguration();
+  const cryptohome::AuthFactor* pin_factor =
+      config.FindFactorByType(cryptohome::AuthFactorType::kPin);
+  if (!pin_factor) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (require_unlocked && pin_factor->GetPinStatus().auth_locked) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(true);
 }
 
 // Called after cryptohomed backend is available; used to check if the
@@ -179,17 +208,28 @@ PinStorageCryptohome::PinStorageCryptohome()
 
 PinStorageCryptohome::~PinStorageCryptohome() = default;
 
-void PinStorageCryptohome::IsPinSetInCryptohome(const AccountId& account_id,
-                                                BoolCallback result) const {
-  user_data_auth::GetKeyDataRequest request;
-  *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
-  request.mutable_authorization_request();
-  request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
+void PinStorageCryptohome::IsPinSetInCryptohome(
+    std::unique_ptr<UserContext> user_context,
+    BoolCallback result) {
+  if (!features::IsUseAuthFactorsEnabled()) {
+    // Legacy implementation. Uses the deprecated GetKeyData cryptohome call.
+    user_data_auth::GetKeyDataRequest request;
+    *request.mutable_account_id() =
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            user_context->GetAccountId());
+    request.mutable_authorization_request();
+    request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
 
-  UserDataAuthClient::Get()->GetKeyData(
-      request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                              false /*require_unlocked*/));
+    UserDataAuthClient::Get()->GetKeyData(
+        request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
+                                false /*require_unlocked*/));
+    return;
+  }
+
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(user_context),
+      base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
+                     false /*require_unlocked*/));
 }
 
 void PinStorageCryptohome::SetPin(std::unique_ptr<UserContext> user_context,
@@ -329,22 +369,32 @@ void PinStorageCryptohome::OnSystemSaltObtained(
   DCHECK(system_salt_callbacks_.empty());
 }
 
-void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
-                                           Purpose purpose,
-                                           BoolCallback result) const {
-  if (IsCryptohomePinDisabledByPolicy(account_id, purpose)) {
+void PinStorageCryptohome::CanAuthenticate(
+    std::unique_ptr<UserContext> user_context,
+    Purpose purpose,
+    BoolCallback result) {
+  if (IsCryptohomePinDisabledByPolicy(user_context->GetAccountId(), purpose)) {
     std::move(result).Run(false);
     return;
   }
 
-  user_data_auth::GetKeyDataRequest request;
-  request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  *request.mutable_account_id() =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
-  request.mutable_authorization_request();
-  UserDataAuthClient::Get()->GetKeyData(
-      request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                              true /*require_unlocked*/));
+  if (!features::IsUseAuthFactorsEnabled()) {
+    user_data_auth::GetKeyDataRequest request;
+    request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
+    *request.mutable_account_id() =
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            user_context->GetAccountId());
+    request.mutable_authorization_request();
+    UserDataAuthClient::Get()->GetKeyData(
+        request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
+                                true /*require_unlocked*/));
+    return;
+  }
+
+  auth_factor_editor_.GetAuthFactorsConfiguration(
+      std::move(user_context),
+      base::BindOnce(&CheckCryptohomePinFactor, std::move(result),
+                     true /*require_unlocked*/));
 }
 
 void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
