@@ -30,8 +30,8 @@ class TokenType : public StrongAlias<TypeMarker, UnguessableToken> {
     // mistake; do not propagate that mistake here as well.
     CHECK(!token.is_empty());
   }
-  TokenType(const TokenType& token) : Super(token.value()) {}
-  TokenType(TokenType&& token) noexcept : Super(token.value()) {}
+  TokenType(const TokenType& token) = default;
+  TokenType(TokenType&& token) noexcept = default;
   TokenType& operator=(const TokenType& token) = default;
   TokenType& operator=(TokenType&& token) noexcept = default;
 

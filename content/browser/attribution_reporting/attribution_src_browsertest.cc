@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                                       attributionsrc: ''});)"));
 
   // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = source_observer.Wait();
+  source_observer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   "attributionsrc=");)"));
 
   // Wait for the impression to be seen by the observer.
-  blink::Impression last_impression = source_observer.Wait();
+  source_observer.Wait();
 }
 
 // See crbug.com/1322450

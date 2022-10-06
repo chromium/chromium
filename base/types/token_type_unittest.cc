@@ -11,6 +11,11 @@
 namespace base {
 
 using FooToken = TokenType<class Foo>;
+static_assert(std::is_trivially_copy_constructible_v<FooToken>);
+static_assert(std::is_trivially_copy_assignable_v<FooToken>);
+static_assert(std::is_trivially_move_constructible_v<FooToken>);
+static_assert(std::is_trivially_move_assignable_v<FooToken>);
+static_assert(std::is_trivially_destructible_v<FooToken>);
 
 TEST(TokenType, TokenApi) {
   // Test default initialization.
