@@ -170,7 +170,7 @@ PrefetchProxyCanaryChecker::~PrefetchProxyCanaryChecker() {
 }
 
 base::WeakPtr<PrefetchProxyCanaryChecker>
-PrefetchProxyCanaryChecker::AsWeakPtr() const {
+PrefetchProxyCanaryChecker::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

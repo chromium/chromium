@@ -100,7 +100,7 @@ class PrefetchProxyCanaryChecker {
 
   ~PrefetchProxyCanaryChecker();
 
-  base::WeakPtr<PrefetchProxyCanaryChecker> AsWeakPtr() const;
+  base::WeakPtr<PrefetchProxyCanaryChecker> AsWeakPtr();
 
   // Returns the successfulness of the last canary check, if there was one. If
   // the last status was not cached or was cached and needs to be revalidated,
