@@ -87,7 +87,8 @@ import org.chromium.ui.util.ColorUtils;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
 class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.OnClickListener,
-                                      StartSurface.OnTabSelectingListener, BackPressHandler {
+                                      StartSurface.OnTabSelectingListener, BackPressHandler,
+                                      LogoCoordinator.VisibilityObserver {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -444,6 +445,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     void destroy() {
         if (mLogoCoordinator != null) {
+            mLogoCoordinator.removeObserver(this);
             mLogoCoordinator.destroy();
             mLogoCoordinator = null;
         }
@@ -480,7 +482,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // TODO(qinmin): show query tiles when flag is enabled.
         setQueryTilesVisibility(false);
         setFakeBoxVisibility(!mIsIncognito);
-        setTopToolbarPlaceholderHeight(getTopToolbarPlaceholderHeight());
+        updateTopToolbarPlaceholderHeight();
         // Set the top margin to the top controls min height (indicator height if it's shown)
         // since the toolbar height as extra margin is handled by top toolbar placeholder.
         setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
@@ -661,7 +663,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             setQueryTilesVisibility(!mIsIncognito);
             setFakeBoxVisibility(!mIsIncognito);
             setSecondaryTasksSurfaceVisibility(mIsIncognito, /* skipUpdateController = */ false);
-            setTopToolbarPlaceholderHeight(getTopToolbarPlaceholderHeight());
+            updateTopToolbarPlaceholderHeight();
             // Set the top margin to the top controls min height (indicator height if it's shown)
             // since the toolbar height as extra margin is handled by top toolbar placeholder.
             setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
@@ -682,7 +684,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             setSecondaryTasksSurfaceVisibility(
                     /* isVisible= */ true, /* skipUpdateController = */ false);
             setExploreSurfaceVisibility(false);
-            setTopToolbarPlaceholderHeight(0);
+            updateTopToolbarPlaceholderHeight();
             // Set the top margin to the top controls height (toolbar height + indicator height).
             setTopMargin(mBrowserControlsStateProvider.getTopControlsHeight());
             setBottomMargin(0);
@@ -969,6 +971,12 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mOnTabSelectingListener.onTabSelecting(time, tabId);
     }
 
+    // LogoCoordinator.VisibilityObserver
+    @Override
+    public void onLogoVisibilityChanged() {
+        updateTopToolbarPlaceholderHeight();
+    }
+
     @VisibleForTesting
     public boolean shouldShowFeedPlaceholder() {
         if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
@@ -1100,8 +1108,11 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
      * shown or not to decide the height.
      * @param height The height of the top toolbar placeholder.
      */
-    private void setTopToolbarPlaceholderHeight(int height) {
-        mPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT, height);
+    private void updateTopToolbarPlaceholderHeight() {
+        mPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT,
+                mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                        ? 0
+                        : getTopToolbarPlaceholderHeight());
     }
 
     private void setTabCarouselVisibility(boolean isVisible) {
@@ -1337,6 +1348,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mLogoCoordinator = new LogoCoordinator(logoClickedCallback,
                 mLogoContainerView.findViewById(R.id.search_provider_logo), true, null, null,
                 isShowingStartSurfaceHomepage());
+        mLogoCoordinator.addObserver(this);
         return mLogoCoordinator;
     }
 

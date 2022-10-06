@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
+
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -35,6 +39,15 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     private boolean mShouldShowLogo;
     private boolean mIsNativeInitialized;
     private boolean mIsLoadPending;
+
+    private final ObserverList<VisibilityObserver> mVisibilityObservers = new ObserverList<>();
+
+    /**
+     * Interface for the observers of the logo visibility change.
+     */
+    public interface VisibilityObserver {
+        void onLogoVisibilityChanged();
+    }
 
     /**
      * Creates a LogoCoordinator object.
@@ -198,6 +211,22 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     }
 
     /**
+     * Add {@link Observer} object.
+     * @param observer Observer object monitoring logo visibility.
+     */
+    public void addObserver(VisibilityObserver observer) {
+        mVisibilityObservers.addObserver(observer);
+    }
+
+    /**
+     * Remove {@link Observer} object.
+     * @param observer Observer object monitoring logo visibility.
+     */
+    public void removeObserver(VisibilityObserver observer) {
+        mVisibilityObservers.removeObserver(observer);
+    }
+
+    /**
      * Load the search provider logo on Start surface.
      *
      * @param animationEnabled Whether to enable the fade in animation.
@@ -249,10 +278,15 @@ public class LogoCoordinator implements TemplateUrlServiceObserver {
     }
 
     private void updateVisibility() {
-        mShouldShowLogo = mIsParentSurfaceShown
-                && (!mIsNativeInitialized
-                        || TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo());
+        boolean doesDSEHaveLogo = mIsNativeInitialized
+                ? TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo()
+                : SharedPreferencesManager.getInstance().readBoolean(
+                        APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
+        mShouldShowLogo = mIsParentSurfaceShown && doesDSEHaveLogo;
         mLogoView.setVisibility(mShouldShowLogo ? View.VISIBLE : View.GONE);
+        for (VisibilityObserver observer : mVisibilityObservers) {
+            observer.onLogoVisibilityChanged();
+        }
     }
 
     @VisibleForTesting

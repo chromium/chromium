@@ -19,6 +19,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/android/features/start_surface:public_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//components/image_fetcher:java",

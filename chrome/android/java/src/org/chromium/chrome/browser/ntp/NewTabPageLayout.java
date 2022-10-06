@@ -491,7 +491,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
      * Updates the margins for the tile grid based on what is shown above it.
      */
     private void updateTilesLayoutMargins() {
-        // Set a bit more top padding on the tile grid if there is no logo.
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
@@ -508,6 +507,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
             marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
                     R.dimen.tile_carousel_layout_bottom_margin);
         } else {
+            // Set a bit more top padding on the tile grid if there is no logo.
             ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
             marginLayoutParams.topMargin = getGridMvtTopMargin();
