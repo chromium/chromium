@@ -508,8 +508,8 @@ void BluetoothAdapterFloss::NotifyDeviceConnectedStateChanged(
   // Also log the total number of connected devices. This uses a sampled
   // histogram rather than a enumeration.
   int count = 0;
-  for (auto& [address, device] : devices_) {
-    if (device->IsPaired() && device->IsConnected()) {
+  for (auto& [unused_address, current_device] : devices_) {
+    if (current_device->IsPaired() && current_device->IsConnected()) {
       count++;
     }
   }

@@ -14,8 +14,8 @@ namespace apps {
 
 namespace {
 
-constexpr char app_id[] = "abcdefgh";
-constexpr char launch_id[] = "abc";
+constexpr char kAppId[] = "abcdefgh";
+constexpr char kLaunchId[] = "abc";
 
 }  // namespace
 
@@ -53,11 +53,10 @@ TEST_F(InstanceTest, CreateInstanceWithInstanceId) {
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
 
-  std::unique_ptr<Instance> instance1 =
-      std::make_unique<Instance>(app_id, instance_id, &window);
+  auto instance1 = std::make_unique<Instance>(kAppId, instance_id, &window);
   std::unique_ptr<Instance> instance2 = instance1->Clone();
 
-  VerifyInstance(instance2.get(), app_id, instance_id, &window);
+  VerifyInstance(instance2.get(), kAppId, instance_id, &window);
 }
 
 TEST_F(InstanceTest, ModifyWindow) {
@@ -65,15 +64,14 @@ TEST_F(InstanceTest, ModifyWindow) {
   window1.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
 
-  std::unique_ptr<Instance> instance1 =
-      std::make_unique<Instance>(app_id, instance_id, &window1);
+  auto instance1 = std::make_unique<Instance>(kAppId, instance_id, &window1);
 
   aura::Window window2(nullptr);
   window2.Init(ui::LAYER_NOT_DRAWN);
   instance1->SetWindow(&window2);
   std::unique_ptr<Instance> instance2 = instance1->Clone();
 
-  VerifyInstance(instance2.get(), app_id, instance_id, &window2);
+  VerifyInstance(instance2.get(), kAppId, instance_id, &window2);
 }
 
 TEST_F(InstanceTest, AllFields) {
@@ -81,12 +79,11 @@ TEST_F(InstanceTest, AllFields) {
   window.Init(ui::LAYER_NOT_DRAWN);
   base::UnguessableToken instance_id = base::UnguessableToken::Create();
 
-  std::unique_ptr<Instance> instance1 =
-      std::make_unique<Instance>(app_id, instance_id, &window);
+  auto instance1 = std::make_unique<Instance>(kAppId, instance_id, &window);
 
   SetInstanceId(instance1.get(), instance_id);
 
-  instance1->SetLaunchId(launch_id);
+  instance1->SetLaunchId(kLaunchId);
   base::Time current_time = base::Time::Now();
   instance1->UpdateState(InstanceState::kActive, current_time);
   TestingProfile profile;
@@ -94,10 +91,10 @@ TEST_F(InstanceTest, AllFields) {
 
   std::unique_ptr<Instance> instance2 = instance1->Clone();
 
-  EXPECT_EQ(app_id, instance2->AppId());
+  EXPECT_EQ(kAppId, instance2->AppId());
   EXPECT_EQ(instance_id, instance2->InstanceId());
   EXPECT_EQ(&window, instance2->Window());
-  EXPECT_EQ(launch_id, instance2->LaunchId());
+  EXPECT_EQ(kLaunchId, instance2->LaunchId());
   EXPECT_EQ(InstanceState::kActive, instance2->State());
   EXPECT_EQ(current_time, instance2->LastUpdatedTime());
   EXPECT_EQ(&profile, instance2->BrowserContext());

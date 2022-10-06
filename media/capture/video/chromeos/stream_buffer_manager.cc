@@ -90,7 +90,7 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
         gfx::Size(format->frame_size.height(), format->frame_size.width());
   }
 
-  absl::optional<gfx::BufferFormat> gfx_format =
+  const absl::optional<gfx::BufferFormat> gfx_format =
       PixFormatVideoToGfx(format->pixel_format);
   DCHECK(gfx_format);
   const auto& original_gmb = buffer_pair.gmb;
@@ -140,45 +140,42 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
                          temp_uv_height);
     original_gmb->Unmap();
     return std::move(buffer_pair.vcd_buffer);
-  } else {
-    // We have to reserve a new buffer because the size is different.
-    Buffer rotated_buffer;
-    auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
-    if (!device_context_->ReserveVideoCaptureBufferFromPool(
-            client_type, format->frame_size, format->pixel_format,
-            &rotated_buffer)) {
-      DLOG(WARNING) << "Failed to reserve video capture buffer";
-      original_gmb->Unmap();
-      return std::move(buffer_pair.vcd_buffer);
-    }
-
-    absl::optional<gfx::BufferFormat> gfx_format =
-        PixFormatVideoToGfx(format->pixel_format);
-    DCHECK(gfx_format);
-    auto rotated_gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
-        rotated_buffer.handle_provider->GetGpuMemoryBufferHandle(),
-        format->frame_size, *gfx_format, stream_context->buffer_usage,
-        base::NullCallback());
-
-    if (!rotated_gmb || !rotated_gmb->Map()) {
-      DLOG(WARNING) << "Failed to map rotated buffer";
-      original_gmb->Unmap();
-      return std::move(buffer_pair.vcd_buffer);
-    }
-
-    libyuv::NV12ToI420Rotate(
-        static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
-        static_cast<uint8_t*>(original_gmb->memory(1)), original_gmb->stride(1),
-        static_cast<uint8_t*>(rotated_gmb->memory(0)), rotated_gmb->stride(0),
-        temp_u, temp_uv_height, temp_v, temp_uv_height, original_width,
-        original_height, translate_rotation(rotation));
-    libyuv::MergeUVPlane(temp_u, temp_uv_height, temp_v, temp_uv_height,
-                         static_cast<uint8_t*>(rotated_gmb->memory(1)),
-                         rotated_gmb->stride(1), temp_uv_height, temp_uv_width);
-    rotated_gmb->Unmap();
-    original_gmb->Unmap();
-    return std::move(rotated_buffer);
   }
+
+  // We have to reserve a new buffer because the size is different.
+  Buffer rotated_buffer;
+  auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
+  if (!device_context_->ReserveVideoCaptureBufferFromPool(
+          client_type, format->frame_size, format->pixel_format,
+          &rotated_buffer)) {
+    DLOG(WARNING) << "Failed to reserve video capture buffer";
+    original_gmb->Unmap();
+    return std::move(buffer_pair.vcd_buffer);
+  }
+
+  auto rotated_gmb = gmb_support_->CreateGpuMemoryBufferImplFromHandle(
+      rotated_buffer.handle_provider->GetGpuMemoryBufferHandle(),
+      format->frame_size, *gfx_format, stream_context->buffer_usage,
+      base::NullCallback());
+
+  if (!rotated_gmb || !rotated_gmb->Map()) {
+    DLOG(WARNING) << "Failed to map rotated buffer";
+    original_gmb->Unmap();
+    return std::move(buffer_pair.vcd_buffer);
+  }
+
+  libyuv::NV12ToI420Rotate(
+      static_cast<uint8_t*>(original_gmb->memory(0)), original_gmb->stride(0),
+      static_cast<uint8_t*>(original_gmb->memory(1)), original_gmb->stride(1),
+      static_cast<uint8_t*>(rotated_gmb->memory(0)), rotated_gmb->stride(0),
+      temp_u, temp_uv_height, temp_v, temp_uv_height, original_width,
+      original_height, translate_rotation(rotation));
+  libyuv::MergeUVPlane(temp_u, temp_uv_height, temp_v, temp_uv_height,
+                       static_cast<uint8_t*>(rotated_gmb->memory(1)),
+                       rotated_gmb->stride(1), temp_uv_height, temp_uv_width);
+  rotated_gmb->Unmap();
+  original_gmb->Unmap();
+  return std::move(rotated_buffer);
 }
 
 VideoCaptureFormat StreamBufferManager::GetStreamCaptureFormat(
