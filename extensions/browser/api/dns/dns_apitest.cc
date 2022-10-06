@@ -65,14 +65,13 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveIPLiteral) {
 
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), "[\"127.0.0.1\"]", browser_context()));
-  base::DictionaryValue* dict = nullptr;
-  ASSERT_TRUE(result->GetAsDictionary(&dict));
+  const base::Value::Dict& dict = result->GetDict();
 
-  EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));
+  EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
 
-  std::string address;
-  EXPECT_TRUE(dict->GetString("address", &address));
-  EXPECT_EQ("127.0.0.1", address);
+  const std::string* address = dict.FindString("address");
+  ASSERT_TRUE(address);
+  EXPECT_EQ("127.0.0.1", *address);
 }
 
 IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
@@ -88,14 +87,13 @@ IN_PROC_BROWSER_TEST_F(DnsApiTest, DnsResolveHostname) {
   std::string function_arguments = base::StringPrintf(R"(["%s"])", kHostname);
   std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
       resolve_function.get(), function_arguments, browser_context()));
-  base::DictionaryValue* dict = nullptr;
-  ASSERT_TRUE(result->GetAsDictionary(&dict));
+  const base::Value::Dict& dict = result->GetDict();
 
-  EXPECT_EQ(net::OK, dict->FindIntKey("resultCode"));
+  EXPECT_EQ(net::OK, dict.FindInt("resultCode"));
 
-  std::string address;
-  EXPECT_TRUE(dict->GetString("address", &address));
-  EXPECT_EQ(kAddress, address);
+  const std::string* address = dict.FindString("address");
+  ASSERT_TRUE(address);
+  EXPECT_EQ(kAddress, *address);
 
   // Make sure the extension's NetworkIsolationKey was used. Do a cache only DNS
   // lookup using the expected NIK, and make sure the IP address is retrieved.
