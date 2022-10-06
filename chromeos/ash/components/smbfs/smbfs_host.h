@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
-#define ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#define CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
 
 #include <memory>
 
-#include "ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "chromeos/ash/components/disks/mount_point.h"
+#include "chromeos/ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -22,7 +22,7 @@ namespace smbfs {
 // provided by smbfs over Mojo (eg. server-side copy), and provides access to
 // the host from smbfs using the Delegate interface. Destroying SmbFsHost will
 // unmount and clean up the smbfs instance.
-class COMPONENT_EXPORT(SMBFS) SmbFsHost {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsHost {
  public:
   class Delegate {
    public:
@@ -94,4 +94,4 @@ class COMPONENT_EXPORT(SMBFS) SmbFsHost {
 
 }  // namespace smbfs
 
-#endif  // ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_HOST_H_

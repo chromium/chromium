@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_
-#define ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_
+#define CHROMEOS_ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_
 
-#include "ash/components/smbfs/mojom/ip_address.mojom-shared.h"
 #include "base/containers/span.h"
+#include "chromeos/ash/components/smbfs/mojom/ip_address.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/ip_address.h"
 
@@ -24,4 +24,4 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 }  // namespace mojo
 
-#endif  // ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SMBFS_IP_ADDRESS_MOJOM_TRAITS_H_

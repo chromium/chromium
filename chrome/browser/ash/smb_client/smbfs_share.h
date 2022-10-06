@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/smbfs/smbfs_host.h"
-#include "ash/components/smbfs/smbfs_mounter.h"
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -18,6 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 #include "chrome/browser/ash/smb_client/smb_url.h"
+#include "chromeos/ash/components/smbfs/smbfs_host.h"
+#include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 
 class Profile;
 

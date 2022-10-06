@@ -4,12 +4,12 @@
 
 module smbfs.mojom;
 
-import "ash/components/smbfs/mojom/file_path.mojom";
-import "ash/components/smbfs/mojom/ip_address.mojom";
+import "chromeos/ash/components/smbfs/mojom/file_path.mojom";
+import "chromeos/ash/components/smbfs/mojom/ip_address.mojom";
 
 // This file is shared between Chrome and Chrome OS.
 // In Chrome, this file is located at:
-// //ash/components/smbfs/mojom/smbfs.mojom
+// //chromeos/ash/components/smbfs/mojom/smbfs.mojom
 // In Chrome OS, this file is located at:
 // //platform2/smbfs/mojom/smbfs.mojom
 

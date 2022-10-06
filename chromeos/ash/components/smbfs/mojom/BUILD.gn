@@ -22,8 +22,10 @@ mojom_component("mojom") {
           cpp = "::base::FilePath"
         },
       ]
-      traits_headers = [ "//ash/components/smbfs/file_path_mojom_traits.h" ]
-      traits_sources = [ "//ash/components/smbfs/file_path_mojom_traits.cc" ]
+      traits_headers =
+          [ "//chromeos/ash/components/smbfs/file_path_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/components/smbfs/file_path_mojom_traits.cc" ]
       traits_public_deps = [ "//base" ]
     },
     {
@@ -33,8 +35,10 @@ mojom_component("mojom") {
           cpp = "::net::IPAddress"
         },
       ]
-      traits_headers = [ "//ash/components/smbfs/ip_address_mojom_traits.h" ]
-      traits_sources = [ "//ash/components/smbfs/ip_address_mojom_traits.cc" ]
+      traits_headers =
+          [ "//chromeos/ash/components/smbfs/ip_address_mojom_traits.h" ]
+      traits_sources =
+          [ "//chromeos/ash/components/smbfs/ip_address_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
     },
   ]

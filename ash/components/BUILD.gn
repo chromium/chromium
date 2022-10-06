@@ -26,7 +26,6 @@ test("ash_components_unittests") {
     "//ash/components/fwupd:unit_tests",
     "//ash/components/peripheral_notification:unit_tests",
     "//ash/components/phonehub:unit_tests",
-    "//ash/components/smbfs:unit_tests",
     "//ash/components/tether:unit_tests",
     "//ash/components/timezone:unit_tests",
     "//ash/components/tpm:unit_tests",

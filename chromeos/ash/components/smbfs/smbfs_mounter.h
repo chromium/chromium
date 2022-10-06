@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
-#define ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#define CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/smbfs/mojom/smbfs.mojom.h"
-#include "ash/components/smbfs/smbfs_host.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
@@ -19,6 +17,8 @@
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mount_point.h"
+#include "chromeos/ash/components/smbfs/mojom/smbfs.mojom.h"
+#include "chromeos/ash/components/smbfs/smbfs_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/ip_address.h"
@@ -29,7 +29,7 @@ namespace smbfs {
 // SmbFsMounter is a helper class that is used to mount an instance of smbfs. It
 // performs all the actions necessary to start smbfs and initiate a connection
 // to the SMB server.
-class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SMBFS) SmbFsMounter {
  public:
   using DoneCallback =
       base::OnceCallback<void(mojom::MountError, std::unique_ptr<SmbFsHost>)>;
@@ -142,4 +142,4 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
 
 }  // namespace smbfs
 
-#endif  // ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SMBFS_SMBFS_MOUNTER_H_

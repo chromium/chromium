@@ -13,7 +13,7 @@ component("smbfs") {
     "smbfs_mounter.cc",
     "smbfs_mounter.h",
   ]
-  public_deps = [ "//ash/components/smbfs/mojom" ]
+  public_deps = [ "//chromeos/ash/components/smbfs/mojom" ]
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/cros_disks",
@@ -22,7 +22,7 @@ component("smbfs") {
     "//mojo/public/cpp/bindings",
     "//net",
   ]
-  defines = [ "IS_SMBFS_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SMBFS_IMPL" ]
 }
 
 source_set("unit_tests") {
@@ -34,10 +34,10 @@ source_set("unit_tests") {
 
   deps = [
     ":smbfs",
-    "//ash/components/smbfs/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/smbfs/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

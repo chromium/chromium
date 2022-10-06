@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/smbfs/smbfs_mounter.h"
+#include "chromeos/ash/components/smbfs/smbfs_mounter.h"
 
 #include <string.h>
 
@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -564,6 +565,16 @@ class SmbFsMounterE2eTest : public testing::Test {
                                   MakeMountPointInfo(source_path, mount_path)));
   }
 
+  void SetUp() override {
+    testing::Test::SetUp();
+
+    ASSERT_TRUE(ipc_thread.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
+    ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
+        ipc_thread.task_runner(),
+        mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
+  }
+
  protected:
   // This test performs actual IPC using sockets, and therefore cannot use
   // MOCK_TIME, which automatically advances time when the main loop is idle.
@@ -571,6 +582,10 @@ class SmbFsMounterE2eTest : public testing::Test {
 
   MockDelegate mock_delegate_;
   ash::disks::MockDiskMountManager mock_disk_mount_manager_;
+
+ private:
+  base::Thread ipc_thread{"IPC thread"};
+  std::unique_ptr<mojo::core::ScopedIPCSupport> ipc_support_;
 };
 
 // Child process that emulates the behaviour of smbfs.

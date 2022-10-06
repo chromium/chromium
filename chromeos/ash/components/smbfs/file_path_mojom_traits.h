@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
-#define ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
+#define CHROMEOS_ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
 
 #include <string>
 
-#include "ash/components/smbfs/mojom/file_path.mojom-shared.h"
 #include "base/files/file_path.h"
+#include "chromeos/ash/components/smbfs/mojom/file_path.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -24,4 +24,4 @@ struct StructTraits<smbfs::mojom::FilePathDataView, base::FilePath> {
 
 }  // namespace mojo
 
-#endif  // ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_SMBFS_FILE_PATH_MOJOM_TRAITS_H_
