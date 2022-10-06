@@ -912,14 +912,16 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
 
     const NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
+    const auto container_writing_direction =
+        ConstraintSpace().GetWritingDirection();
     bool is_last_baseline =
         FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
         ItemPosition::kLastBaseline;
     const auto baseline_writing_mode = DetermineBaselineWritingMode(
-        ConstraintSpace().GetWritingMode(), child_writing_mode,
+        container_writing_direction, child_writing_mode,
         /* is_parallel_context */ !is_column_);
     const auto baseline_group = DetermineBaselineGroup(
-        ConstraintSpace().GetWritingDirection(), baseline_writing_mode,
+        container_writing_direction, baseline_writing_mode,
         /* is_parallel_context */ !is_column_, is_last_baseline,
         /* is_flipped */ is_wrap_reverse);
     algorithm_

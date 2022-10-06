@@ -13,7 +13,7 @@ enum class BaselineGroup { kMajor, kMinor };
 
 // Determines the writing-mode to read a baseline from a fragment.
 inline WritingMode DetermineBaselineWritingMode(
-    const WritingMode container_writing_mode,
+    const WritingDirectionMode container_writing_direction,
     const WritingMode child_writing_mode,
     bool is_parallel_context) {
   // From: https://drafts.csswg.org/css-align-3/#generate-baselines
@@ -28,12 +28,14 @@ inline WritingMode DetermineBaselineWritingMode(
   //    either "horizontal-tb" or "vertical-lr" whichever is orthogonal."
   const auto orthogonal_writing_mode =
       (is_parallel_context)
-          ? container_writing_mode
+          ? container_writing_direction.GetWritingMode()
           : ((child_writing_mode == WritingMode::kHorizontalTb)
-                 ? WritingMode::kVerticalLr
+                 ? (container_writing_direction.IsLtr()
+                        ? WritingMode::kVerticalLr
+                        : WritingMode::kVerticalRl)
                  : WritingMode::kHorizontalTb);
-  const bool is_parallel =
-      IsParallelWritingMode(container_writing_mode, child_writing_mode);
+  const bool is_parallel = IsParallelWritingMode(
+      container_writing_direction.GetWritingMode(), child_writing_mode);
 
   if (is_parallel_context)
     return is_parallel ? child_writing_mode : orthogonal_writing_mode;
@@ -72,17 +74,15 @@ inline BaselineGroup DetermineBaselineGroup(
   // For each writing-mode the "major" group is aligned with the container's
   // direction. This is to ensure the inline-start offset (for the grid-item)
   // matches the baseline offset we calculate.
-  //
-  // TODO(ikilpatrick): The logic below may be incorrect. We may want to flip
-  // the group based on the container's direction.
+  bool is_ltr = container_writing_direction.IsLtr();
   switch (baseline_writing_mode) {
     case WritingMode::kHorizontalTb:
     case WritingMode::kVerticalLr:
     case WritingMode::kSidewaysLr:
-      return start_group;
+      return is_ltr ? start_group : end_group;
     case WritingMode::kVerticalRl:
     case WritingMode::kSidewaysRl:
-      return end_group;
+      return is_ltr ? end_group : start_group;
   }
 
   NOTREACHED();

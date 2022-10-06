@@ -152,16 +152,14 @@ GridItemData::GridItemData(
 
   const auto container_writing_direction =
       container_style.GetWritingDirection();
-  const auto container_writing_mode =
-      container_writing_direction.GetWritingMode();
   const auto item_writing_mode = style.GetWritingMode();
 
-  column_baseline_writing_mode =
-      DetermineBaselineWritingMode(container_writing_mode, item_writing_mode,
-                                   /* is_parallel_context */ false);
-  row_baseline_writing_mode =
-      DetermineBaselineWritingMode(container_writing_mode, item_writing_mode,
-                                   /* is_parallel_context */ true);
+  column_baseline_writing_mode = DetermineBaselineWritingMode(
+      container_writing_direction, item_writing_mode,
+      /* is_parallel_context */ false);
+  row_baseline_writing_mode = DetermineBaselineWritingMode(
+      container_writing_direction, item_writing_mode,
+      /* is_parallel_context */ true);
 
   column_baseline_group = DetermineBaselineGroup(
       container_writing_direction, column_baseline_writing_mode,
@@ -179,8 +177,8 @@ GridItemData::GridItemData(
     has_subgridded_rows = style.GridTemplateRows().IsSubgriddedAxis();
   }
 
-  const bool item_is_parallel_with_container =
-      IsParallelWritingMode(container_writing_mode, item_writing_mode);
+  const bool item_is_parallel_with_container = IsParallelWritingMode(
+      container_writing_direction.GetWritingMode(), item_writing_mode);
 
   if (parent_must_consider_grid_items_for_column_sizing) {
     is_considered_for_column_sizing = item_is_parallel_with_container
