@@ -136,12 +136,21 @@ class PLATFORM_EXPORT ParkableStringManager {
     allocator_for_testing_ = std::move(allocator);
   }
 
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    task_runner_ = std::move(task_runner);
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner() {
+    return task_runner_;
+  }
+
   void ResetForTesting();
   ParkableStringManager();
 
-  bool has_pending_aging_task_;
-  bool has_posted_unparking_time_accounting_task_;
-  bool did_register_memory_pressure_listener_;
+  bool has_pending_aging_task_ = false;
+  bool has_posted_unparking_time_accounting_task_ = false;
+  bool did_register_memory_pressure_listener_ = false;
   base::TimeDelta total_unparking_time_;
   base::TimeDelta total_parking_thread_time_;
   base::TimeDelta total_disk_read_time_;
@@ -153,6 +162,7 @@ class PLATFORM_EXPORT ParkableStringManager {
 
   bool first_string_aging_was_delayed_ = false;
 
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<DiskDataAllocator> allocator_for_testing_;
 
   friend class ParkableStringTest;

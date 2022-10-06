@@ -20,8 +20,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -208,10 +207,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   }
 
   if (!has_posted_unparking_time_accounting_task_) {
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        Thread::Current()->GetDeprecatedTaskRunner();
-    DCHECK(task_runner);
-    task_runner->PostDelayedTask(
+    task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
@@ -395,9 +391,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
     first_string_aging_was_delayed_ = true;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetDeprecatedTaskRunner();
-  task_runner->PostDelayedTask(
+  task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
@@ -494,9 +488,7 @@ void ParkableStringManager::ResetForTesting() {
 }
 
 ParkableStringManager::ParkableStringManager()
-    : has_pending_aging_task_(false),
-      has_posted_unparking_time_accounting_task_(false),
-      did_register_memory_pressure_listener_(false),
-      allocator_for_testing_(nullptr) {}
+    : task_runner_(Thread::MainThread()->GetTaskRunner(
+          MainThreadTaskRunnerRestricted())) {}
 
 }  // namespace blink

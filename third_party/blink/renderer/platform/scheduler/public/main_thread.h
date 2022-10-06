@@ -22,6 +22,7 @@ class MainThreadTaskRunnerRestricted {
   friend class InspectorNetworkAgent;
   friend class MemoryCache;
   friend class ParkableImageManager;
+  friend class ParkableStringManager;
   friend class RendererResourceCoordinatorImpl;
   friend class SharedGpuContext;
   friend class ThreadedIconLoader;

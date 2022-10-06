@@ -118,6 +118,8 @@ class ParkableStringTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     auto& manager = ParkableStringManager::Instance();
     manager.ResetForTesting();
+    manager.SetTaskRunnerForTesting(
+        task_environment_.GetMainThreadTaskRunner());
     manager.SetDataAllocatorForTesting(
         std::make_unique<InMemoryDataAllocator>());
   }
