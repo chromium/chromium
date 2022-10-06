@@ -127,7 +127,7 @@ void ScreencastManager::GetVideo(
   integration_service->LocateFilesByItemIds(
       {video_file_id},
       base::BindOnce(&ScreencastManager::OnVideoFilePathLocated,
-                     weak_ptr_factory_.GetWeakPtr(), video_file_id,
+                     weak_ptr_factory_.GetMutableWeakPtr(), video_file_id,
                      std::move(callback)));
 }
 
