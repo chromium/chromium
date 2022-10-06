@@ -14,12 +14,14 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/partying_shelf_item.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
@@ -45,6 +47,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
@@ -58,6 +61,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -75,6 +79,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
@@ -2607,6 +2612,30 @@ void ShelfView::HandleShelfParty() {
   UpdateShelfItemViewsVisibility();
   PreferredSizeChanged();
   AnimateToIdealBounds();
+
+  if (!model_->in_shelf_party()) {
+    party_.clear();
+    return;
+  }
+
+  // Update `party_` to include the items that should be partying, and not the
+  // items that should not be partying.
+  aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
+  const int icon_size = GetButtonSize();
+  for (const ShelfItem& item : model_->items()) {
+    if (item.status != STATUS_CLOSED) {
+      party_.erase(item.id);
+      continue;
+    }
+    DCHECK(IsItemPinned(item));
+    DCHECK(!IsItemVisible(item));
+    // Add the item if it is not already partying.
+    const auto insertion_results = party_.try_emplace(item.id);
+    if (insertion_results.second) {
+      insertion_results.first->second = std::make_unique<PartyingShelfItem>(
+          root_window, item.image, icon_size);
+    }
+  }
 }
 
 void ShelfView::RemoveGhostView() {

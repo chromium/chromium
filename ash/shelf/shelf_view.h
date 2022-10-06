@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -58,6 +59,7 @@ class Separator;
 
 namespace ash {
 class GhostImageView;
+class PartyingShelfItem;
 class ShelfAppButton;
 class ShelfButton;
 class ShelfModel;
@@ -739,6 +741,9 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Called when showing shelf context menu.
   base::RepeatingClosure context_menu_shown_callback_;
+
+  // The shelf party animations.
+  base::flat_map<ShelfID, std::unique_ptr<PartyingShelfItem>> party_;
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };

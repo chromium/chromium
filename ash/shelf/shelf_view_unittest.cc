@@ -3624,4 +3624,23 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
 }
 
+class ShelfPartyTest : public ShelfViewTest {
+ public:
+  ShelfPartyTest()
+      : ShelfViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ShelfPartyTest(const ShelfPartyTest&) = delete;
+  ShelfPartyTest& operator=(const ShelfPartyTest&) = delete;
+  ~ShelfPartyTest() override = default;
+};
+
+// Exercises the party animation.
+TEST_F(ShelfPartyTest, PartyAnimation) {
+  for (int i = 0; i < 16; ++i)
+    AddAppShortcut();
+  model_->ToggleShelfParty();
+  task_environment()->FastForwardBy(base::Seconds(2));
+  model_->ToggleShelfParty();
+  test_api_->RunMessageLoopUntilAnimationsDone();
+}
+
 }  // namespace ash

@@ -48,9 +48,16 @@ BASE_EXPORT uint64_t RandGenerator(uint64_t range);
 // Returns a random double in range [0, 1). Thread-safe.
 BASE_EXPORT double RandDouble();
 
+// Returns a random float in range [0, 1). Thread-safe.
+BASE_EXPORT float RandFloat();
+
 // Given input |bits|, convert with maximum precision to a double in
 // the range [0, 1). Thread-safe.
 BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
+
+// Given input `bits`, convert with maximum precision to a float in the range
+// [0, 1). Thread-safe.
+BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //

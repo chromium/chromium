@@ -39,6 +39,10 @@ double RandDouble() {
   return BitsToOpenEndedUnitInterval(base::RandUint64());
 }
 
+float RandFloat() {
+  return BitsToOpenEndedUnitIntervalF(base::RandUint64());
+}
+
 double BitsToOpenEndedUnitInterval(uint64_t bits) {
   // We try to get maximum precision by masking out as many bits as will fit
   // in the target type's mantissa, and raising it to an appropriate power to
@@ -48,6 +52,16 @@ double BitsToOpenEndedUnitInterval(uint64_t bits) {
                 "otherwise use scalbn");
   constexpr int kBits = std::numeric_limits<double>::digits;
   return ldexp(bits & ((UINT64_C(1) << kBits) - 1u), -kBits);
+}
+
+float BitsToOpenEndedUnitIntervalF(uint64_t bits) {
+  // We try to get maximum precision by masking out as many bits as will fit
+  // in the target type's mantissa, and raising it to an appropriate power to
+  // produce output in the range [0, 1).  For IEEE 754 floats, the mantissa is
+  // expected to accommodate 12 bits (including the implied bit).
+  static_assert(std::numeric_limits<float>::radix == 2, "otherwise use scalbn");
+  constexpr int kBits = std::numeric_limits<float>::digits;
+  return ldexpf(bits & ((UINT64_C(1) << kBits) - 1u), -kBits);
 }
 
 uint64_t RandGenerator(uint64_t range) {

@@ -906,6 +906,8 @@ component("ash") {
     "shelf/login_shelf_view.h",
     "shelf/login_shelf_widget.cc",
     "shelf/login_shelf_widget.h",
+    "shelf/partying_shelf_item.cc",
+    "shelf/partying_shelf_item.h",
     "shelf/scroll_arrow_view.cc",
     "shelf/scroll_arrow_view.h",
     "shelf/scrollable_shelf_constants.cc",
