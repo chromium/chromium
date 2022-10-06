@@ -1859,7 +1859,6 @@ if (!is_android) {
       "../browser/media/webrtc/webrtc_browsertest_perf_unittest.cc",
       "../browser/media/webrtc/webrtc_desktop_capture_browsertest.cc",
       "../browser/media/webrtc/webrtc_disable_encryption_flag_browsertest.cc",
-      "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/media/webrtc/webrtc_internals_integration_browsertest.cc",
       "../browser/media/webrtc/webrtc_internals_perf_browsertest.cc",
       "../browser/media/webrtc/webrtc_pan_tilt_zoom_browsertest.cc",
@@ -2412,6 +2411,7 @@ if (!is_android) {
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
+        "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
         "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
@@ -4785,6 +4785,8 @@ if (is_chromeos_lacros) {
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
+      "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
+      "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
       "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
@@ -4818,6 +4820,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/lacros/window_lacros_browsertest.cc",
+      "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
@@ -4837,6 +4840,7 @@ if (is_chromeos_lacros) {
       ":lacros_test_support_ui",
       ":test_support",
       ":test_support_ui",
+      ":webrtc_browser_tests_base",
       "//chrome/app:command_ids",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/metrics/structured",
@@ -4886,6 +4890,7 @@ if (is_chromeos_lacros) {
       "data/web_app_shortcuts/",
       "data/web_apps/",
       "data/web_share_target/",
+      "data/webrtc",
       "data/webshare/",
     ]
 

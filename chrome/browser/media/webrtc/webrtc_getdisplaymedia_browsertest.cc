@@ -51,8 +51,6 @@ namespace {
 static const char kMainHtmlPage[] = "/webrtc/webrtc_getdisplaymedia_test.html";
 static const char kMainHtmlFileName[] = "webrtc_getdisplaymedia_test.html";
 static const char kSameOriginRenamedTitle[] = "Renamed Same Origin Tab";
-// TODO(https://crbug.com/1215089): Enable on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 static const char kMainHtmlTitle[] = "WebRTC Automated Test";
 // The captured tab is identified by its title.
 static const char kCapturedTabTitle[] = "totally-unique-captured-page-title";
@@ -60,7 +58,6 @@ static const char kCapturedPageMain[] = "/webrtc/captured_page_main.html";
 static const std::u16string kShareThisTabInsteadMessage =
     u"Share this tab instead";
 static const std::u16string kViewTabMessagePrefix = u"View tab:";
-#endif
 
 enum class DisplaySurfaceType { kTab, kWindow, kScreen };
 
@@ -150,8 +147,6 @@ GURL GetFileURL(const char* filename) {
   return net::FilePathToFileURL(path);
 }
 
-// TODO(https://crbug.com/1215089): Enable on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 infobars::ContentInfoBarManager* GetInfoBarManager(
     content::WebContents* web_contents) {
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
@@ -172,7 +167,6 @@ std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
   return GetDelegate(web_contents)
       ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
 }
-#endif
 
 }  // namespace
 
@@ -456,8 +450,6 @@ INSTANTIATE_TEST_SUITE_P(
                     TestConfigForFakeUI{/*should_prefer_current_tab_=*/true,
                                         /*display_surface=*/"browser"}));
 
-// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class WebRtcScreenCapturePermissionPolicyBrowserTest
     : public WebRtcScreenCaptureBrowserTest,
       public testing::WithParamInterface<
@@ -523,7 +515,6 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
   EXPECT_EQ(result, allowlisted_by_policy_ ? "embedded-capture-success"
                                            : "embedded-capture-failure");
 }
-#endif
 
 // Test class used to test WebRTC with App Windows. Unfortunately, due to
 // creating a diamond pattern of inheritance, we can only inherit from one of
@@ -735,14 +726,6 @@ class GetDisplayMediaVideoTrackBrowserTest
     WebRtcTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The picker itself shows previews which are unsupported in Lacros tests.
-    base::Value matchlist(base::Value::Type::LIST);
-    matchlist.Append("*");
-    browser()->profile()->GetPrefs()->Set(prefs::kTabCaptureAllowedByOrigins,
-                                          matchlist);
-#endif
   }
 
   // Unlike SetUp(), this is called from the test body. This allows skipping
@@ -892,8 +875,6 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaVideoTrackBrowserTest, RunCombinedTest) {
   }
 }
 
-// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class GetDisplayMediaChangeSourceBrowserTest
     : public WebRtcTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -1075,10 +1056,6 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
               url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
 
-#endif
-
-// TODO(https://crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class GetDisplayMediaSelfBrowserSurfaceBrowserTest
     : public WebRtcTestBase,
       public testing::WithParamInterface<std::string> {
@@ -1172,8 +1149,6 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
   EXPECT_EQ(!IsSelfBrowserSurfaceExclude(), capturing_tab->IsBeingCaptured());
   EXPECT_FALSE(other_tab->IsBeingCaptured());
 }
-
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
 
