@@ -460,19 +460,7 @@ function testDone(result) {
       }
     } else if (hasWindow && window.webUiTest) {
       let testRunner;
-      if (webUiTest.mojom.TestRunnerPtr) {
-        // For mojo WebUI tests.
-        testRunner = new webUiTest.mojom.TestRunnerPtr();
-
-        /**
-         * @suppress {missingProperties} for mojo.makeRequest - internal method
-         * declared in mojo/public/js/bindings.js.
-         */
-        const mojoMakeRequest = () => mojo.makeRequest(testRunner);
-
-        Mojo.bindInterface(
-            webUiTest.mojom.TestRunner.name, mojoMakeRequest().handle);
-      } else if (webUiTest.mojom.TestRunnerRemote) {
+      if (webUiTest.mojom.TestRunnerRemote) {
         // For mojo-lite WebUI tests.
         testRunner = webUiTest.mojom.TestRunner.getRemote();
       } else {
@@ -480,7 +468,7 @@ function testDone(result) {
             'Mojo bindings found, but no valid test interface loaded');
       }
       if (success) {
-        testRunner.testComplete();
+        testRunner.testComplete(null);
       } else {
         testRunner.testComplete(errorMessage);
       }
