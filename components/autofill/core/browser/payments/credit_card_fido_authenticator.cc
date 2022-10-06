@@ -90,7 +90,7 @@ void CreditCardFIDOAuthenticator::Authenticate(
   if (card_ && IsValidRequestOptions(request_options.Clone())) {
     current_flow_ = AUTHENTICATION_FLOW;
     GetAssertion(ParseRequestOptions(std::move(request_options)));
-  } else {
+  } else if (requester_) {
     FidoAuthenticationResponse response{.did_succeed = false};
     requester_->OnFIDOAuthenticationComplete(response);
   }
@@ -400,11 +400,11 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
   // End the flow if there was an authentication error.
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     // Report failure to |requester_| if card unmasking was requested.
-    if (current_flow_ == AUTHENTICATION_FLOW) {
+    if (current_flow_ == AUTHENTICATION_FLOW && requester_) {
       FidoAuthenticationResponse response{.did_succeed = false};
       requester_->OnFIDOAuthenticationComplete(response);
     }
-    if (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW)
+    if (current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW && requester_)
       requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
 
     // Treat failure to perform user verification as a strong signal not to
@@ -413,7 +413,8 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
 #if BUILDFLAG(IS_ANDROID)
       // For Android, even if GetAssertion fails for opting-in, we still report
       // success to |requester_| to fill the form with the fetched card info.
-      requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
+      if (requester_)
+        requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
 #endif  // BUILDFLAG(IS_ANDROID)
       GetOrCreateFidoAuthenticationStrikeDatabase()->AddStrikes(
           FidoAuthenticationStrikeDatabase::
@@ -469,7 +470,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     should_respond_to_requester |=
         (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);
 #endif
-    if (should_respond_to_requester)
+    if (should_respond_to_requester && requester_)
       requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
 
     base::Value response = base::Value(base::Value::Type::DICTIONARY);
@@ -554,6 +555,10 @@ void CreditCardFIDOAuthenticator::OnFullCardRequestSucceeded(
     const std::u16string& cvc) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
+
+  if (!requester_)
+    return;
+
   FidoAuthenticationResponse response{
       .did_succeed = true, .card = &card, .cvc = cvc};
   requester_->OnFIDOAuthenticationComplete(response);
@@ -563,6 +568,10 @@ void CreditCardFIDOAuthenticator::OnFullCardRequestFailed(
     payments::FullCardRequest::FailureType failure_type) {
   DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
   current_flow_ = NONE_FLOW;
+
+  if (!requester_)
+    return;
+
   FidoAuthenticationResponse response{.did_succeed = false,
                                       .failure_type = failure_type};
   requester_->OnFIDOAuthenticationComplete(response);
