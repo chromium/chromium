@@ -15,6 +15,12 @@ sys.path.append(
                  os.pardir, os.pardir, os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
+# And to be able to import filter_clang_args
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
+                 os.pardir, os.pardir, os.pardir, 'build', 'rust'))
+
+from filter_clang_args import filter_clang_args
 
 def atomic_copy(in_path, out_path):
   with open(in_path, 'rb') as input:
@@ -68,7 +74,7 @@ def main():
     genargs.append('--cxx-h-path')
     genargs.append(args.cxx_h_path)
   genargs.append('--')
-  genargs.extend(args.clangargs)
+  genargs.extend(filter_clang_args(args.clangargs))
   env = os.environ
   if args.ld_library_path:
     env["LD_LIBRARY_PATH"] = args.ld_library_path

@@ -169,23 +169,29 @@ template("rust_autocxx") {
       }
     }
 
-    # TODO(crbug.com/1306841): solve by passing cflags (and similar) to action
-    # targets as well as defines and includes.
     args += [
       "--",
       "{{defines}}",
       "{{include_dirs}}",
-      "-fparse-all-comments",  # so rustdoc includes comments of the form
-                               # // This is what this API does
-                               # not just
-                               # /// This is what this API does
-      "-std=c++17",  # Keep in sync with main Chromium build.
-      "-nostdinc++",
-      "-isystem" + rebase_path(libcxx_prefix + "/include"),
-      "-isystem" + rebase_path(libcxxabi_prefix + "/include"),
-      "--sysroot=" + rebase_path(sysroot),
+      "{{cflags}}",
+      "{{cflags_cc}}",
+
+      # This path contains important C headers (e.g. stddef.h) and {{cflags}}
+      # does not include it. Normally this path is implicitly added by clang but
+      # it does not happen for libclang.
+      #
+      # Add it last so includes from deps and configs take precedence.
       "-isystem" + rebase_path(
-              clang_base_path + "/lib/clang/" + clang_version + "/include"),
+              clang_base_path + "/lib/clang/" + clang_version + "/include",
+              root_build_dir),
+
+      # Passes C comments through as rustdoc attributes.
+      "-fparse-all-comments",
+
+      # Default configs include "-fvisibility=hidden", and for some reason this
+      # causes bindgen not to emit function bindings. Override it.
+      "-fvisibility=default",
+      "-fno-visibility-inlines-hidden",
     ]
   }
 

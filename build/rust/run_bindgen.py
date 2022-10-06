@@ -15,6 +15,8 @@ sys.path.append(
                  os.pardir, 'build', 'android', 'gyp'))
 from util import build_utils
 
+from filter_clang_args import filter_clang_args
+
 
 def atomic_copy(in_path, out_path):
   with open(in_path, 'rb') as input:
@@ -26,24 +28,6 @@ def atomic_copy(in_path, out_path):
 def copy_to_prefixed_filename(path, filename, prefix):
   atomic_copy(os.path.join(path, filename),
               os.path.join(path, prefix + "_" + filename))
-
-
-def filter_clang_args(clangargs):
-  def do_filter(args):
-    i = 0
-    while i < len(args):
-      # Intercept plugin arguments
-      if args[i] == '-Xclang':
-        i += 1
-        if args[i] == '-add-plugin':
-          pass
-        elif args[i].startswith('-plugin-arg'):
-          i += 2
-      else:
-        yield args[i]
-      i += 1
-
-  return list(do_filter(clangargs))
 
 
 def main():
