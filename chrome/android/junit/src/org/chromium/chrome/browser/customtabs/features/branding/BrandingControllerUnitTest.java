@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import androidx.appcompat.view.ContextThemeWrapper;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -229,6 +230,32 @@ public class BrandingControllerUnitTest {
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(false)
                 .assertShownToastBranding(false);
+    }
+
+    @Test
+    public void testDestroyed_ToolbarInitAfterDestroyed() {
+        new BrandingCheckTester()
+                .newBrandingController()
+                .destroyController()
+                .idleMainLooper() // Finish Branding checker
+                .onToolbarInitialized()
+                .assertShownBrandingLocationBar(false)
+                .assertShownRegularLocationBar(false)
+                .assertShownToastBranding(false);
+    }
+
+    @Test
+    public void testDestroyed_ToastCanceled() {
+        new BrandingCheckTester()
+                .newBrandingController()
+                .onToolbarInitialized()
+                .idleMainLooper() // Finish Branding checker.
+                .assertShownToastBranding(true)
+                .destroyController();
+
+        ShadowToast shadowToast = Shadows.shadowOf(ShadowToast.getLatestToast());
+        Assert.assertTrue(
+                "Toast should be canceled when controller destroyed.", shadowToast.isCancelled());
     }
 
     class BrandingCheckTester {
