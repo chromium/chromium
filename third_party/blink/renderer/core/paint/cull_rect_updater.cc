@@ -23,6 +23,8 @@ namespace blink {
 
 namespace {
 
+bool g_is_overriding_cull_rects = false;
+
 void SetLayerNeedsRepaintOnCullRectChange(PaintLayer& layer) {
   if (layer.PreviousPaintResult() == kMayBeClippedByCullRect ||
       RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled()) {
@@ -256,7 +258,10 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
     UpdateForDescendants(context, layer);
   }
 
-  layer.ClearNeedsCullRectUpdate();
+  if (g_is_overriding_cull_rects)
+    layer.SetNeedsCullRectUpdate();
+  else
+    layer.ClearNeedsCullRectUpdate();
 }
 
 // "Children" in |force_update_children| means children in the containing block
@@ -516,8 +521,7 @@ void CullRectUpdater::PaintPropertiesChanged(
 }
 
 OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
-                                                 const CullRect& cull_rect)
-    : starting_layer_(starting_layer) {
+                                                 const CullRect& cull_rect) {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
   if (starting_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
@@ -529,7 +533,9 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
     return;
   }
 
-  updated_ = true;
+  DCHECK(!g_is_overriding_cull_rects);
+  g_is_overriding_cull_rects = true;
+
   starting_layer.SetNeedsCullRectUpdate();
   CullRectUpdater(starting_layer).UpdateInternal(cull_rect);
 }
@@ -537,8 +543,8 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
 OverriddenCullRectScope::~OverriddenCullRectScope() {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
-  if (updated_)
-    starting_layer_.SetNeedsCullRectUpdate();
+
+  g_is_overriding_cull_rects = false;
 }
 
 }  // namespace blink
