@@ -187,8 +187,12 @@ void AccountManagerMojoService::ReportAuthError(
 
   absl::optional<GoogleServiceAuthError> maybe_error =
       account_manager::FromMojoGoogleServiceAuthError(mojo_error);
-  DCHECK(maybe_error) << "Can't unmarshal error with state: "
-                      << mojo_error->state;
+  if (!maybe_error.has_value()) {
+    // Newer version of Lacros may have reported an error that older version of
+    // Ash doesn't understand yet. Ignore such errors.
+    LOG(ERROR) << "Can't unmarshal error with state: " << mojo_error->state;
+    return;
+  }
 
   const GoogleServiceAuthError& error = maybe_error.value();
   if (error.IsTransientError()) {
