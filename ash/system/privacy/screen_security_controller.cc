@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/privacy/screen_security_notification_controller.h"
+#include "ash/system/privacy/screen_security_controller.h"
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -32,21 +33,20 @@ const char kScreenShareNotificationId[] = "chrome://screen/share";
 const char kNotifierScreenCapture[] = "ash.screen-capture";
 const char kNotifierScreenShare[] = "ash.screen-share";
 
-ScreenSecurityNotificationController::ScreenSecurityNotificationController() {
+ScreenSecurityController::ScreenSecurityController() {
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->system_tray_notifier()->AddScreenCaptureObserver(this);
   Shell::Get()->system_tray_notifier()->AddScreenShareObserver(this);
 }
 
-ScreenSecurityNotificationController::~ScreenSecurityNotificationController() {
+ScreenSecurityController::~ScreenSecurityController() {
   Shell::Get()->system_tray_notifier()->RemoveScreenShareObserver(this);
   Shell::Get()->system_tray_notifier()->RemoveScreenCaptureObserver(this);
   Shell::Get()->RemoveShellObserver(this);
 }
 
-void ScreenSecurityNotificationController::CreateNotification(
-    const std::u16string& message,
-    bool is_capture) {
+void ScreenSecurityController::CreateNotification(const std::u16string& message,
+                                                  bool is_capture) {
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(l10n_util::GetStringUTF16(
       is_capture ? IDS_ASH_STATUS_TRAY_SCREEN_CAPTURE_STOP
@@ -62,7 +62,7 @@ void ScreenSecurityNotificationController::CreateNotification(
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              [](base::WeakPtr<ScreenSecurityNotificationController> controller,
+              [](base::WeakPtr<ScreenSecurityController> controller,
                  bool is_capture, absl::optional<int> button_index) {
                 if (!button_index)
                   return;
@@ -125,7 +125,7 @@ void ScreenSecurityNotificationController::CreateNotification(
       std::move(notification));
 }
 
-void ScreenSecurityNotificationController::StopAllSessions(bool is_capture) {
+void ScreenSecurityController::StopAllSessions(bool is_capture) {
   message_center::MessageCenter::Get()->RemoveNotification(
       is_capture ? kScreenCaptureNotificationId : kScreenShareNotificationId,
       false /* by_user */);
@@ -141,12 +141,12 @@ void ScreenSecurityNotificationController::StopAllSessions(bool is_capture) {
   change_source_callback_.Reset();
 }
 
-void ScreenSecurityNotificationController::ChangeSource() {
+void ScreenSecurityController::ChangeSource() {
   if (change_source_callback_ && capture_stop_callbacks_.size() == 1)
     change_source_callback_.Run();
 }
 
-void ScreenSecurityNotificationController::OnScreenCaptureStart(
+void ScreenSecurityController::OnScreenCaptureStart(
     const base::RepeatingClosure& stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& screen_capture_status) {
@@ -166,11 +166,11 @@ void ScreenSecurityNotificationController::OnScreenCaptureStart(
   CreateNotification(screen_capture_status, true /* is_capture */);
 }
 
-void ScreenSecurityNotificationController::OnScreenCaptureStop() {
+void ScreenSecurityController::OnScreenCaptureStop() {
   StopAllSessions(true /* is_capture */);
 }
 
-void ScreenSecurityNotificationController::OnScreenShareStart(
+void ScreenSecurityController::OnScreenShareStart(
     const base::RepeatingClosure& stop_callback,
     const std::u16string& helper_name) {
   share_stop_callbacks_.emplace_back(std::move(stop_callback));
@@ -185,14 +185,19 @@ void ScreenSecurityNotificationController::OnScreenShareStart(
   }
 
   CreateNotification(help_label_text, false /* is_capture */);
+
+  if (features::IsPrivacyIndicatorsEnabled())
+    UpdatePrivacyIndicatorsScreenShareStatus(/*is_screen_sharing=*/true);
 }
 
-void ScreenSecurityNotificationController::OnScreenShareStop() {
+void ScreenSecurityController::OnScreenShareStop() {
   StopAllSessions(false /* is_capture */);
+
+  if (features::IsPrivacyIndicatorsEnabled())
+    UpdatePrivacyIndicatorsScreenShareStatus(/*is_screen_sharing=*/false);
 }
 
-void ScreenSecurityNotificationController::OnCastingSessionStartedOrStopped(
-    bool started) {
+void ScreenSecurityController::OnCastingSessionStartedOrStopped(bool started) {
   is_casting_ = started;
 }
 

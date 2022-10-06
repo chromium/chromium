@@ -7,11 +7,13 @@
 #include <string>
 
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -151,6 +153,23 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used, bool is_microphone_used) {
     root_window_controller->GetStatusAreaWidget()
         ->unified_system_tray()
         ->UpdatePrivacyIndicatorsTrayItem(is_camera_used, is_microphone_used);
+  }
+}
+
+void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
+  if (!features::IsPrivacyIndicatorsEnabled())
+    return;
+
+  DCHECK(ash::Shell::HasInstance());
+  for (auto* root_window_controller :
+       ash::Shell::Get()->GetAllRootWindowControllers()) {
+    DCHECK(root_window_controller);
+    DCHECK(root_window_controller->GetStatusAreaWidget());
+
+    root_window_controller->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->privacy_indicators_view()
+        ->UpdateScreenShareStatus(is_screen_sharing);
   }
 }
 

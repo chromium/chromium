@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
-#define ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
+#ifndef ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_CONTROLLER_H_
+#define ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_CONTROLLER_H_
 
 #include <string>
 #include <vector>
@@ -21,19 +21,16 @@ extern ASH_EXPORT const char kNotifierScreenCapture[];
 extern ASH_EXPORT const char kNotifierScreenShare[];
 
 // Controller class to manage screen security notifications.
-class ASH_EXPORT ScreenSecurityNotificationController
-    : public ScreenCaptureObserver,
-      public ScreenShareObserver,
-      public ShellObserver {
+class ASH_EXPORT ScreenSecurityController : public ScreenCaptureObserver,
+                                            public ScreenShareObserver,
+                                            public ShellObserver {
  public:
-  ScreenSecurityNotificationController();
+  ScreenSecurityController();
 
-  ScreenSecurityNotificationController(
-      const ScreenSecurityNotificationController&) = delete;
-  ScreenSecurityNotificationController& operator=(
-      const ScreenSecurityNotificationController&) = delete;
+  ScreenSecurityController(const ScreenSecurityController&) = delete;
+  ScreenSecurityController& operator=(const ScreenSecurityController&) = delete;
 
-  ~ScreenSecurityNotificationController() override;
+  ~ScreenSecurityController() override;
 
  private:
   void CreateNotification(const std::u16string& message, bool is_capture);
@@ -69,10 +66,9 @@ class ASH_EXPORT ScreenSecurityNotificationController
   std::vector<base::OnceClosure> share_stop_callbacks_;
   base::RepeatingClosure change_source_callback_;
 
-  base::WeakPtrFactory<ScreenSecurityNotificationController> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<ScreenSecurityController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_NOTIFICATION_CONTROLLER_H_
+#endif  // ASH_SYSTEM_PRIVACY_SCREEN_SECURITY_CONTROLLER_H_

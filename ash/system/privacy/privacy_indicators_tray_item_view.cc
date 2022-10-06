@@ -14,7 +14,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,6 +40,7 @@ const int kPrivacyIndicatorsViewSpacing = 2;
 const int kPrivacyIndicatorsIconSize = 16;
 const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
 const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
+const int kPrivacyIndicatorsViewExpandedWithScreenShareSize = 68;
 const int kPrivacyIndicatorsViewSize = 8;
 
 constexpr auto kDwellInExpandDuration = base::Milliseconds(1000);
@@ -108,19 +108,22 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
 
-  auto camera_icon = std::make_unique<views::ImageView>();
-  camera_icon->SetPaintToLayer();
-  camera_icon->layer()->SetFillsBoundsOpaquely(false);
-  camera_icon_ = container_view->AddChildView(std::move(camera_icon));
+  auto add_icon_to_container = [&container_view]() {
+    auto icon = std::make_unique<views::ImageView>();
+    icon->SetPaintToLayer();
+    icon->layer()->SetFillsBoundsOpaquely(false);
+    icon->SetVisible(false);
+    return container_view->AddChildView(std::move(icon));
+  };
 
-  auto microphone_icon = std::make_unique<views::ImageView>();
-  microphone_icon->SetPaintToLayer();
-  microphone_icon->layer()->SetFillsBoundsOpaquely(false);
-  microphone_icon_ = container_view->AddChildView(std::move(microphone_icon));
+  camera_icon_ = add_icon_to_container();
+  microphone_icon_ = add_icon_to_container();
+  screen_share_icon_ = add_icon_to_container();
 
   AddChildView(std::move(container_view));
 
   UpdateIcons();
+  TooltipTextChanged();
 }
 
 PrivacyIndicatorsTrayItemView::~PrivacyIndicatorsTrayItemView() = default;
@@ -134,13 +137,23 @@ void PrivacyIndicatorsTrayItemView::Update(bool camera_is_used,
   camera_is_used_ = camera_is_used;
   microphone_is_used_ = microphone_is_used;
 
-  SetVisible(camera_is_used_ || microphone_is_used_);
+  SetVisible(camera_is_used_ || microphone_is_used_ || is_screen_sharing_);
   if (!GetVisible())
     return;
 
   camera_icon_->SetVisible(camera_is_used);
   microphone_icon_->SetVisible(microphone_is_used);
+  TooltipTextChanged();
+}
 
+void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
+    bool is_screen_sharing) {
+  if (is_screen_sharing_ == is_screen_sharing)
+    return;
+  is_screen_sharing_ = is_screen_sharing;
+
+  SetVisible(camera_is_used_ || microphone_is_used_ || is_screen_sharing_);
+  screen_share_icon_->SetVisible(is_screen_sharing_);
   TooltipTextChanged();
 }
 
@@ -153,18 +166,32 @@ void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
 
 std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
     const gfx::Point& point) const {
+  auto cam_and_mic_status = std::u16string();
   if (camera_is_used_ && microphone_is_used_) {
-    return l10n_util::GetStringUTF16(
+    cam_and_mic_status = l10n_util::GetStringUTF16(
         IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
+  } else if (camera_is_used_) {
+    cam_and_mic_status =
+        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+  } else if (microphone_is_used_) {
+    cam_and_mic_status =
+        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
   }
 
-  if (camera_is_used_)
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+  auto screen_share_status =
+      is_screen_sharing_
+          ? l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE)
+          : std::u16string();
 
-  if (microphone_is_used_)
-    return l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
+  if (cam_and_mic_status.empty())
+    return screen_share_status;
 
-  return std::u16string();
+  if (screen_share_status.empty())
+    return cam_and_mic_status;
+
+  return l10n_util::GetStringFUTF16(IDS_PRIVACY_INDICATORS_VIEW_TOOLTIP,
+                                    {cam_and_mic_status, screen_share_status},
+                                    /*offsets=*/nullptr);
 }
 
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
@@ -197,13 +224,13 @@ gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
     case AnimationState::kExpand:
       shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
       longer_side =
-          kPrivacyIndicatorsViewExpandedLongerSideSize *
+          GetLongerSideLengthInExpandedMode() *
           gfx::Tween::CalculateValue(gfx::Tween::ACCEL_20_DECEL_100,
                                      expand_animation_->GetCurrentValue());
       break;
     case AnimationState::kDwellInExpand:
       shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
-      longer_side = kPrivacyIndicatorsViewExpandedLongerSideSize;
+      longer_side = GetLongerSideLengthInExpandedMode();
       break;
     case AnimationState::kOnlyLongerSideShrink:
       shorter_side = kPrivacyIndicatorsViewExpandedShorterSideSize;
@@ -309,6 +336,9 @@ void PrivacyIndicatorsTrayItemView::UpdateIcons() {
   microphone_icon_->SetImage(
       gfx::CreateVectorIcon(kPrivacyIndicatorsMicrophoneIcon,
                             kPrivacyIndicatorsIconSize, icon_color));
+  screen_share_icon_->SetImage(
+      gfx::CreateVectorIcon(kPrivacyIndicatorsScreenShareIcon,
+                            kPrivacyIndicatorsIconSize, icon_color));
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {
@@ -337,13 +367,20 @@ int PrivacyIndicatorsTrayItemView::CalculateSizeDuringShrinkAnimation(
   double animation_value = gfx::Tween::CalculateValue(
       gfx::Tween::ACCEL_20_DECEL_100, animation->GetCurrentValue());
   int begin_size = for_longer_side
-                       ? kPrivacyIndicatorsViewExpandedLongerSideSize
+                       ? GetLongerSideLengthInExpandedMode()
                        : kPrivacyIndicatorsViewExpandedShorterSideSize;
 
   // The size shrink from `begin_size` to kPrivacyIndicatorsViewSize when
   // `animation_value` goes from 0 to 1, and here is the calculation for it.
   return begin_size -
          (begin_size - kPrivacyIndicatorsViewSize) * animation_value;
+}
+
+int PrivacyIndicatorsTrayItemView::GetLongerSideLengthInExpandedMode() const {
+  // If all three icons are visible, the view should be longer.
+  return camera_is_used_ && microphone_is_used_ && is_screen_sharing_
+             ? kPrivacyIndicatorsViewExpandedWithScreenShareSize
+             : kPrivacyIndicatorsViewExpandedLongerSideSize;
 }
 
 void PrivacyIndicatorsTrayItemView::EndAllAnimations() {

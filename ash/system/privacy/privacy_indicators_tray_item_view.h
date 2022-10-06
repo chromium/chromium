@@ -58,6 +58,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // Update the view according to the state of camara/microphone access.
   void Update(bool camera_is_used, bool microphone_is_used);
 
+  // Update the view according to the state of screen sharing.
+  void UpdateScreenShareStatus(bool is_screen_sharing);
+
   // Update the view according to the shelf alignment.
   void UpdateAlignmentForShelf(Shelf* shelf);
 
@@ -90,6 +93,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // shorter side.
   int CalculateSizeDuringShrinkAnimation(bool for_longer_side) const;
 
+  // Calculate the length of the longer size, based on `is_screen_sharing_`.
+  int GetLongerSideLengthInExpandedMode() const;
+
   // End all 3 animations contained in this class.
   void EndAllAnimations();
 
@@ -98,9 +104,11 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // Owned by the views hierarchy.
   views::ImageView* camera_icon_ = nullptr;
   views::ImageView* microphone_icon_ = nullptr;
+  views::ImageView* screen_share_icon_ = nullptr;
 
   bool camera_is_used_ = false;
   bool microphone_is_used_ = false;
+  bool is_screen_sharing_ = false;
 
   // Keep track the current animation state during the multi-part animation.
   AnimationState animation_state_ = kIdle;

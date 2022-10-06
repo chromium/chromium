@@ -69,6 +69,11 @@ void ASH_EXPORT ModifyPrivacyIndicatorsNotification(
 void ASH_EXPORT UpdatePrivacyIndicatorsView(bool is_camera_used,
                                             bool is_microphone_used);
 
+// Update `PrivacyIndicatorsTrayItemView` screen share status across all status
+// area widgets.
+void ASH_EXPORT
+UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_PRIVACY_PRIVACY_INDICATORS_CONTROLLER_H_

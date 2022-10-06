@@ -18,7 +18,7 @@ class CellularSetupNotifier;
 class ManagedSimLockNotifier;
 class MicrophoneMuteNotificationController;
 class PowerNotificationController;
-class ScreenSecurityNotificationController;
+class ScreenSecurityController;
 class SessionLimitNotificationController;
 class TracingNotificationController;
 class UpdateNotificationController;
@@ -50,7 +50,7 @@ class SystemNotificationController {
   std::unique_ptr<ManagedSimLockNotifier> managed_sim_lock_notifier_;
   std::unique_ptr<MicrophoneMuteNotificationController> microphone_mute_;
   const std::unique_ptr<PowerNotificationController> power_;
-  const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;
+  const std::unique_ptr<ScreenSecurityController> screen_security_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;
   const std::unique_ptr<TracingNotificationController> tracing_;
   const std::unique_ptr<UpdateNotificationController> update_;
