@@ -289,8 +289,7 @@ TEST_F(CdmStorageTest, ParallelRead) {
   ASSERT_TRUE(cdm_file.is_bound());
 
   // Attempts to reads the contents of the previously opened |cdm_file| twice.
-  // We don't really care about the data, just that 1 read succeeds and the
-  // other fails.
+  // We don't really care about the data, just that the first read succeeds.
   base::test::TestFuture<CdmFile::Status, std::vector<uint8_t>> future1;
   base::test::TestFuture<CdmFile::Status, std::vector<uint8_t>> future2;
 
@@ -305,10 +304,11 @@ TEST_F(CdmStorageTest, ParallelRead) {
   CdmFile::Status status1 = future1.Get<0>();
   CdmFile::Status status2 = future2.Get<0>();
 
-  // One call should succeed, one should fail.
-  EXPECT_TRUE((status1 == CdmFile::Status::kSuccess &&
-               status2 == CdmFile::Status::kFailure) ||
-              (status1 == CdmFile::Status::kFailure &&
+  // The first call should succeed. The second call might fail, if its blocked
+  // by our locking system, or might succeed, if the reads are processed faster
+  // than expected.
+  EXPECT_TRUE(status1 == CdmFile::Status::kSuccess &&
+              (status2 == CdmFile::Status::kFailure ||
                status2 == CdmFile::Status::kSuccess))
       << "status 1: " << status1 << ", status2: " << status2;
 }
@@ -320,8 +320,7 @@ TEST_F(CdmStorageTest, ParallelWrite) {
   ASSERT_TRUE(cdm_file.is_bound());
 
   // Attempts to write the contents of the previously opened |cdm_file| twice.
-  // We don't really care about the data, just that 1 write succeeds and the
-  // other fails.
+  // We don't really care about the data, just that the first write succeeds.
   base::test::TestFuture<CdmFile::Status> future1;
   base::test::TestFuture<CdmFile::Status> future2;
 
@@ -334,11 +333,12 @@ TEST_F(CdmStorageTest, ParallelWrite) {
   CdmFile::Status status1 = future1.Get();
   CdmFile::Status status2 = future2.Get();
 
-  // One call should succeed, one should fail.
-  EXPECT_TRUE((status1 == CdmFile::Status::kSuccess &&
-               status2 == CdmFile::Status::kFailure) ||
-              (status1 == CdmFile::Status::kFailure &&
-               status2 == CdmFile::Status::kSuccess))
+  // The first call should succeed. The second call might fail, if its blocked
+  // by our locking system, or might succeed, if the writes are processed
+  // faster than expected.
+  EXPECT_TRUE(status1 == CdmFile::Status::kSuccess &&
+              (status2 == CdmFile::Status::kSuccess ||
+               status2 == CdmFile::Status::kFailure))
       << "status 1: " << status1 << ", status2: " << status2;
 }
 
