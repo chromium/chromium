@@ -224,7 +224,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
       OmniboxEventProto::PageClassification(j_page_classification);
   bool interaction_clobber_focus_type =
       base::FeatureList::IsEnabled(
-          omnibox::kOmniboxOnClobberFocusTypeOnAndroid) &&
+          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
       !BaseSearchProvider::IsNTPPage(page_class);
   if (interaction_clobber_focus_type)
     omnibox_text.clear();

@@ -786,6 +786,22 @@ bool IsZeroSuggestPrefetchingEnabled() {
          base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnWeb);
 }
 
+bool IsZeroSuggestPrefetchingEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  switch (page_classification) {
+    case metrics::OmniboxEventProto::NTP_ZPS_PREFETCH:
+      return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching);
+    case metrics::OmniboxEventProto::SRP_ZPS_PREFETCH:
+      return base::FeatureList::IsEnabled(
+          omnibox::kZeroSuggestPrefetchingOnSRP);
+    case metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH:
+      return base::FeatureList::IsEnabled(
+          omnibox::kZeroSuggestPrefetchingOnWeb);
+    default:
+      return false;
+  }
+}
+
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "ZeroSuggestIgnoreDuplicateVisits",

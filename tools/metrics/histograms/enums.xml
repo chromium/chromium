@@ -61300,6 +61300,7 @@ from previous Chrome versions.
   <int value="749516419" label="DragToSnapInClamshellMode:disabled"/>
   <int value="749994865" label="MessagesForAndroidSyncError:enabled"/>
   <int value="750028579" label="CommerceCoupons:disabled"/>
+  <int value="751734414" label="OmniboxOnClobberFocusTypeOnContent:disabled"/>
   <int value="751862578" label="OffsetParentNewSpecBehavior:enabled"/>
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
@@ -61621,7 +61622,6 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:disabled"/>
   <int value="956716414" label="GlobalMediaControlsPictureInPicture:disabled"/>
   <int value="957191538" label="EcheSWADebugMode:enabled"/>
-  <int value="962834398" label="OmniboxOnClobberFocusTypeOnAndroid:disabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>
@@ -61940,7 +61940,6 @@ from previous Chrome versions.
   <int value="1142788238" label="FontCacheScaling:disabled"/>
   <int value="1142970266"
       label="SignedExchangePrefetchCacheForNavigations:disabled"/>
-  <int value="1143538862" label="OmniboxOnClobberFocusTypeOnAndroid:enabled"/>
   <int value="1147703885" label="SecondaryGoogleAccountUsage:enabled"/>
   <int value="1147924185" label="enable-navigation-predictor-renderer-warmup"/>
   <int value="1148284632" label="NewTabPageUIMd:disabled"/>
@@ -62196,6 +62195,7 @@ from previous Chrome versions.
   <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
   <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>
+  <int value="1295669314" label="OmniboxOnClobberFocusTypeOnContent:enabled"/>
   <int value="1296661698" label="CrOSLateBootMediaDynamicCgroup:disabled"/>
   <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>

@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -653,6 +654,29 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
   input_.set_keyword_mode_entry_method(keyword_mode_entry_method_);
 
   omnibox_controller_->StartAutocomplete(input_);
+}
+
+void OmniboxEditModel::StartPrefetch() {
+  auto page_classification =
+      controller()->GetLocationBarModel()->GetPageClassification(
+          OmniboxFocusSource::OMNIBOX, /*is_prefetch=*/true);
+  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
+          page_classification)) {
+    return;
+  }
+
+  const bool interaction_clobber_focus_type =
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
+      !BaseSearchProvider::IsNTPPage(page_classification);
+
+  AutocompleteInput input(u"", page_classification,
+                          client()->GetSchemeClassifier());
+  input.set_current_url(client()->GetURL());
+  input.set_focus_type(interaction_clobber_focus_type
+                           ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                           : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocomplete_controller()->StartPrefetch(input);
 }
 
 void OmniboxEditModel::StopAutocomplete() {

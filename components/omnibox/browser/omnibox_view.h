@@ -29,7 +29,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
-class AutocompleteInput;
 class GURL;
 class OmniboxEditController;
 class OmniboxViewMacTest;
@@ -152,10 +151,6 @@ class OmniboxView {
   // conflicts with the OSX class override as that has a base class that also
   // defines a method with that name.
   virtual void CloseOmniboxPopup();
-
-  // Starts an autocomplete prefetch query so those providers that benefit from
-  // it could perform a prefetch request and populate their caches.
-  virtual void StartPrefetch(const AutocompleteInput& input);
 
   // Sets the focus to the omnibox. |is_user_initiated| is true when the user
   // explicitly focused the omnibox, and false when the omnibox was

@@ -2113,11 +2113,11 @@ const char kOmniboxMostVisitedTilesOnSrpDescription[] =
     "Offer most visited website tiles when the User is on the Search Results "
     "Page.";
 
-const char kOmniboxOnClobberFocusTypeOnAndroidName[] =
-    "Omnibox On Clobber Focus Type On Android";
-const char kOmniboxOnClobberFocusTypeOnAndroidDescription[] =
+const char kOmniboxOnClobberFocusTypeOnContentName[] =
+    "Omnibox On Clobber Focus Type On Content";
+const char kOmniboxOnClobberFocusTypeOnContentDescription[] =
     "Send ON_CLOBBER focus type for zero-prefix requests with an empty input "
-    "on Web/SRP on Android platform.";
+    "on Web/SRP.";
 
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";

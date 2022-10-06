@@ -5039,7 +5039,7 @@
       "expiry_milestone": 107
   },
   {
-    "name": "omnibox-on-clobber-focus-type-on-android",
+    "name": "omnibox-on-clobber-focus-type-on-content",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
   },

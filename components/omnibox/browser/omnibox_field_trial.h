@@ -523,6 +523,10 @@ extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
 // Returns true if any of the zero-suggest prefetching features are enabled.
 bool IsZeroSuggestPrefetchingEnabled();
 
+// Returns whether zero-suggest prefetching is enabled in the given context.
+bool IsZeroSuggestPrefetchingEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification);
+
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller
 // than kAutocompleteDuplicateVisitIntervalThreshold.

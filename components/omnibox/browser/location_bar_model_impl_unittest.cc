@@ -13,6 +13,9 @@
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/common/omnibox_focus_state.h"
+#include "components/search_engines/template_url_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
@@ -23,9 +26,15 @@
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
 
+using metrics::OmniboxEventProto;
+using testing::_;
+using testing::Invoke;
+using testing::Return;
+using testing::WithArg;
+
 namespace {
 
-class FakeLocationBarModelDelegate : public LocationBarModelDelegate {
+class TestLocationBarModelDelegate : public LocationBarModelDelegate {
  public:
   void SetURL(const GURL& url) { url_ = url; }
   void SetShouldPreventElision(bool should_prevent_elision) {
@@ -86,20 +95,28 @@ class FakeLocationBarModelDelegate : public LocationBarModelDelegate {
   bool connection_info_initialized_ = true;
 };
 
+class MockLocationBarModelDelegate
+    : public testing::NiceMock<TestLocationBarModelDelegate> {
+ public:
+  ~MockLocationBarModelDelegate() override = default;
+
+  // TestLocationBarModelDelegate:
+  MOCK_METHOD(bool, GetURL, (GURL * url), (override, const));
+  MOCK_METHOD(bool, IsNewTabPage, (), (override, const));
+  MOCK_METHOD(bool, IsNewTabPageURL, (const GURL& url), (override, const));
+};
+
 class LocationBarModelImplTest : public testing::Test {
  protected:
-  const GURL kValidSearchResultsPage =
-      GURL("https://www.google.com/search?q=foo+query");
-
   LocationBarModelImplTest() : model_(&delegate_, 1024) {}
 
-  FakeLocationBarModelDelegate* delegate() { return &delegate_; }
+  TestLocationBarModelDelegate* delegate() { return &delegate_; }
 
   LocationBarModelImpl* model() { return &model_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  FakeLocationBarModelDelegate delegate_;
+  TestLocationBarModelDelegate delegate_;
   LocationBarModelImpl model_;
 };
 
@@ -199,5 +216,117 @@ TEST_F(LocationBarModelImplTest, BlobDisplayURLIOS) {
 }
 
 #endif  // BUILDFLAG(IS_IOS)
+
+// Test that the expected page classification is returned.
+TEST_F(LocationBarModelImplTest, GetPageClassification) {
+  MockLocationBarModelDelegate delegate;
+  LocationBarModelImpl model(&delegate, 0);
+
+  // Simulate the page URL not being successfully retrieved.
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(Return(false));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+
+  // Simulate the page URL is being empty.
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(Return(true));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+
+  // Simulate the page being the 1P NTP.
+  EXPECT_CALL(delegate, GetURL(_))
+      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
+        *url = GURL("https://foobar.com");
+        return url->is_valid();
+      })));
+  EXPECT_CALL(delegate, IsNewTabPage()).WillRepeatedly(Return(true));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+
+  // Simulate the page URL being chrome://newtab/.
+  EXPECT_CALL(delegate, IsNewTabPage()).WillRepeatedly(Return(false));
+  EXPECT_CALL(delegate, IsNewTabPageURL(_)).WillRepeatedly(Return(true));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::NTP,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::NTP,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+
+  // Simulate the page URL being successfully retrieved, and is the SRP.
+  EXPECT_CALL(delegate, GetURL(_))
+      .WillRepeatedly(WithArg<0>(Invoke([&delegate](GURL* url) {
+        auto* turl_service = delegate.GetTemplateURLService();
+        *url = turl_service->GenerateSearchURLForDefaultSearchProvider(u"foo");
+        return url->is_valid();
+      })));
+  EXPECT_CALL(delegate, IsNewTabPageURL(_)).WillRepeatedly(Return(false));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+
+  // Simulate the page URL being successfully retrieved, and is non-empty.
+  EXPECT_CALL(delegate, GetURL(_))
+      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
+        *url = GURL("https://foobar.com");
+        return url->is_valid();
+      })));
+
+  // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+  EXPECT_EQ(OmniboxEventProto::OTHER,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
+                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH,
+            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
+                                        /*is_prefetch=*/true));
+}
 
 }  // namespace

@@ -4,16 +4,12 @@
 
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 
-#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/base_search_provider.h"
@@ -22,74 +18,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-
-namespace {
-
-using OEP = metrics::OmniboxEventProto;
-
-// Returns whether or not the given URL represents a New Tab Page (NTP).
-bool IsNTP(const GURL& url) {
-  return url == GURL(chrome::kChromeUINewTabPageURL);
-}
-
-// Returns whether or not the given URL represents a prefetch-eligible Web page.
-bool IsEligibleWebPage(const GURL& url) {
-  return BaseSearchProvider::CanSendPageURLInRequest(url);
-}
-
-// Returns whether or not the given URL is eligible for ZPS prefetching.
-bool IsURLEligibleForZPSPrefetching(const GURL& url) {
-  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
-      IsNTP(url)) {
-    return true;
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kZeroSuggestPrefetchingOnSRP) &&
-             google_util::IsGoogleSearchUrl(url)) {
-    return true;
-  } else if (base::FeatureList::IsEnabled(
-                 omnibox::kZeroSuggestPrefetchingOnWeb) &&
-             IsEligibleWebPage(url)) {
-    return true;
-  }
-  return false;
-}
-
-// Starts prefetching zero-prefix suggestions using the AutocompleteController
-// instance owned by the omnibox with a dedicated page context.
-void StartPrefetch(content::WebContents* web_contents, const GURL& page_url) {
-  auto* omnibox_view = search::GetOmniboxView(web_contents);
-  if (!omnibox_view) {
-    return;
-  }
-
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
-  OEP::PageClassification page_classification = OEP::INVALID_SPEC;
-  if (IsNTP(page_url)) {
-    page_classification = OEP::NTP_ZPS_PREFETCH;
-  } else if (google_util::IsGoogleSearchUrl(page_url)) {
-    page_classification = OEP::SRP_ZPS_PREFETCH;
-  } else if (IsEligibleWebPage(page_url)) {
-    page_classification = OEP::OTHER_ZPS_PREFETCH;
-  }
-  DCHECK(page_classification != OEP::INVALID_SPEC)
-      << "Prefetch page classification undefined for given URL.";
-
-  AutocompleteInput autocomplete_input(
-      u"", page_classification, ChromeAutocompleteSchemeClassifier(profile));
-  autocomplete_input.set_focus_type(
-      metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  // Construct proper on-clobber input for ZPS prefetch requests on SRP/Web.
-  if (page_classification != OEP::NTP_ZPS_PREFETCH) {
-    autocomplete_input.set_focus_type(
-        metrics::OmniboxFocusType::INTERACTION_CLOBBER);
-    autocomplete_input.set_current_url(page_url);
-  }
-  omnibox_view->StartPrefetch(autocomplete_input);
-}
-
-}  // namespace
 
 ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
     content::WebContents* web_contents)
@@ -100,10 +28,6 @@ ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
 
 void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
-  const auto& last_committed_url = page.GetMainDocument().GetLastCommittedURL();
-  if (!IsURLEligibleForZPSPrefetching(last_committed_url))
-    return;
-
   // Make sure to observe the TabStripModel, if not already, in order to get
   // notified when a New Tab Page is switched to.
   // Note that this is done here, i.e., after the New Tab Page is navigated to,
@@ -118,23 +42,34 @@ void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
     browser->tab_strip_model()->AddObserver(this);
   }
 
-  StartPrefetch(web_contents(), last_committed_url);
+  StartPrefetch();
 }
 
 void ZeroSuggestPrefetchTabHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  const auto& last_committed_url =
-      web_contents()->GetPrimaryPage().GetMainDocument().GetLastCommittedURL();
   if (!selection.active_tab_changed() ||
-      web_contents() != selection.new_contents ||
-      !IsURLEligibleForZPSPrefetching(last_committed_url)) {
+      web_contents() != selection.new_contents) {
     return;
   }
 
   // We get here when a New Tab Page is brought to foreground (aka switched to).
-  StartPrefetch(web_contents(), last_committed_url);
+  StartPrefetch();
+}
+
+void ZeroSuggestPrefetchTabHelper::StartPrefetch() {
+  auto* omnibox_view = search::GetOmniboxView(web_contents());
+  if (!omnibox_view) {
+    return;
+  }
+
+  auto* omnibox_edit_model = omnibox_view->model();
+  if (!omnibox_edit_model) {
+    return;
+  }
+
+  omnibox_edit_model->StartPrefetch();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZeroSuggestPrefetchTabHelper);

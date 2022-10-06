@@ -183,11 +183,13 @@ BASE_FEATURE(kOmniboxLocalZeroSuggestAgeThreshold,
              "OmniboxLocalZeroSuggestAgeThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
-// requests with an empty input on Web/SRP on Android platform.
-BASE_FEATURE(kOmniboxOnClobberFocusTypeOnAndroid,
-             "OmniboxOnClobberFocusTypeOnAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
+// requests with an empty input on Web/SRP on Mobile. Enabled by default on
+// Desktop because it is also used by Desktop in the cross-platform code in the
+// OmniboxEditModel for triggering zero-suggest prefetching on Web/SRP.
+BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
+             "OmniboxOnClobberFocusTypeOnContent",
+             enabled_by_default_desktop_only);
 
 // Enables on-focus zero-prefix suggestions on the NTP for signed-out users.
 BASE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers,

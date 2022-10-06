@@ -47,7 +47,8 @@ net::CertStatus TestLocationBarModel::GetCertStatus() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-TestLocationBarModel::GetPageClassification(OmniboxFocusSource focus_source) {
+TestLocationBarModel::GetPageClassification(OmniboxFocusSource focus_source,
+                                            bool is_prefetch) {
   return metrics::OmniboxEventProto::OTHER;
 }
 

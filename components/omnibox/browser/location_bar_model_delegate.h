@@ -26,6 +26,8 @@ class X509Certificate;
 // Delegate which is used by LocationBarModel class.
 class LocationBarModelDelegate {
  public:
+  LocationBarModelDelegate() = default;
+
   // Formats |url| using AutocompleteInput::FormattedStringWithEquivalentMeaning
   // providing an appropriate AutocompleteSchemeClassifier for the embedder.
   virtual std::u16string FormattedStringWithEquivalentMeaning(

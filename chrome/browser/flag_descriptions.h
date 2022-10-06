@@ -1168,8 +1168,8 @@ extern const char kOmniboxMostVisitedTilesFadingOnTabletDescription[];
 extern const char kOmniboxMostVisitedTilesOnSrpName[];
 extern const char kOmniboxMostVisitedTilesOnSrpDescription[];
 
-extern const char kOmniboxOnClobberFocusTypeOnAndroidName[];
-extern const char kOmniboxOnClobberFocusTypeOnAndroidDescription[];
+extern const char kOmniboxOnClobberFocusTypeOnContentName[];
+extern const char kOmniboxOnClobberFocusTypeOnContentDescription[];
 
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];

@@ -52,7 +52,8 @@ class LocationBarModel {
   // UMA opted-in users.  Examines the user's profile to determine if the
   // current page is the user's home page.
   virtual metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source) = 0;
+      OmniboxFocusSource focus_source,
+      bool is_prefetch = false) = 0;
 
   // Returns the id of the icon to show to the left of the address, based on the
   // current URL.  When search term replacement is active, this returns a search

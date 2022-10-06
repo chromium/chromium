@@ -159,37 +159,47 @@ net::CertStatus LocationBarModelImpl::GetCertStatus() const {
 }
 
 OmniboxEventProto::PageClassification
-LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
+LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
+                                            bool is_prefetch) {
   // We may be unable to fetch the current URL during startup or shutdown when
   // the omnibox exists but there is no attached page.
   GURL gurl;
-  if (!delegate_->GetURL(&gurl))
+  if (!delegate_->GetURL(&gurl)) {
     return OmniboxEventProto::OTHER;
-
+  }
   if (delegate_->IsNewTabPage()) {
     // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
     // i.e., if input isn't actually in progress.
-    return (focus_source == OmniboxFocusSource::FAKEBOX)
+    return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
+           : focus_source == OmniboxFocusSource::FAKEBOX
                ? OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS
                : OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS;
   }
-  if (!gurl.is_valid())
+  if (!gurl.is_valid()) {
     return OmniboxEventProto::INVALID_SPEC;
-  if (delegate_->IsNewTabPageURL(gurl))
-    return OmniboxEventProto::NTP;
-  if (gurl.spec() == url::kAboutBlankURL)
+  }
+  if (delegate_->IsNewTabPageURL(gurl)) {
+    return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
+                       : OmniboxEventProto::NTP;
+  }
+  if (gurl.spec() == url::kAboutBlankURL) {
     return OmniboxEventProto::BLANK;
-  if (delegate_->IsHomePage(gurl))
+  }
+  if (delegate_->IsHomePage(gurl)) {
     return OmniboxEventProto::HOME_PAGE;
+  }
 
   TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
   if (template_url_service &&
       template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
           gurl)) {
-    return OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
+    return is_prefetch ? OmniboxEventProto::SRP_ZPS_PREFETCH
+                       : OmniboxEventProto::
+                             SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
   }
 
-  return OmniboxEventProto::OTHER;
+  return is_prefetch ? OmniboxEventProto::OTHER_ZPS_PREFETCH
+                     : OmniboxEventProto::OTHER;
 }
 
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {

@@ -261,11 +261,6 @@ void OmniboxView::CloseOmniboxPopup() {
     model_->StopAutocomplete();
 }
 
-void OmniboxView::StartPrefetch(const AutocompleteInput& input) {
-  if (model_)
-    model_->autocomplete_controller()->StartPrefetch(input);
-}
-
 bool OmniboxView::IsImeShowingPopup() const {
   // Default to claiming that the IME is not showing a popup, since hiding the
   // omnibox dropdown is a bad user experience when we don't know for sure that
