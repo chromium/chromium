@@ -10,9 +10,12 @@
 #include <limits>
 #include <memory>
 
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/window_properties.h"
 #include "base/check_op.h"
@@ -54,6 +57,28 @@ bool RandBool() {
   return static_cast<bool>(byte & 0x1);
 }
 
+// Returns a random float in range [0, `length`). Thread-safe.
+float SampleInterval(float length) {
+  return length * base::RandFloat();
+}
+
+// Returns a random float in range [`a`, `b`). Thread-safe.
+float SampleInterval(float a, float b) {
+  const float t = base::RandFloat();
+  return a * (1.f - t) + b * t;
+}
+
+// Returns a random float in range [0, `interval_length`), excluding range
+// [`gap_left`, `gap_left`+`gap_length`). Thread-safe.
+float SampleIntervalWithGap(float interval_length,
+                            float gap_left,
+                            float gap_length) {
+  float result = SampleInterval(interval_length - gap_length);
+  if (result >= gap_left)
+    result += gap_length;
+  return result;
+}
+
 // Evaluates an animation curve at `t_star`. `N` is the number of segments. `t`
 // and `value` give the keyframes. Mostly, each segment is interpolated with
 // `gfx::Tween::EASE_IN_OUT`. If `rush_in` is true, then the first segment (if
@@ -88,10 +113,10 @@ PartyingShelfItem::PartyingShelfItem(aura::Window* root_window,
     : gfx::LinearAnimation(this),
       widget_(new views::Widget),
       icon_size_(icon_size),
-      speed_(RandBool() ? 0.25f + 0.75f * base::RandFloat()
-                        : 1.0f + 3.0f * base::RandFloat()),
+      speed_(RandBool() ? SampleInterval(0.25f, 1.0f)
+                        : SampleInterval(1.0f, 4.0f)),
       leftward_or_upward_(RandBool()),
-      travel_angle_in_degrees_(45.f * base::RandFloat()) {
+      travel_angle_in_degrees_(SampleInterval(45.f)) {
   // Set up `widget_`.
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -116,13 +141,10 @@ PartyingShelfItem::PartyingShelfItem(aura::Window* root_window,
   widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
   widget_->Show();
 
-  // Randomly choose a point on the perimeter of the work area. Make the item
-  // spawn just outside the work area, and enter through the chosen point.
-  // TODO(https://crbug.com/1262374): Keep this point away from the shelf.
   const gfx::Rect work_area =
       screen_util::GetDisplayWorkAreaBoundsInParent(widget_->GetNativeView());
   const float distance_clockwise_from_origin =
-      2 * (work_area.width() + work_area.height()) * base::RandFloat();
+      RandDistanceClockwiseFromOriginToEntryPoint();
   gfx::PointF entry_point;
   if (distance_clockwise_from_origin < work_area.width()) {
     bounce_side_ = kTop;
@@ -147,6 +169,7 @@ PartyingShelfItem::PartyingShelfItem(aura::Window* root_window,
         work_area.x(), work_area.bottom() - distance_clockwise_from_origin +
                            2 * work_area.width() + work_area.height());
   }
+  // Start just outside the work area and enter through the chosen entry point.
   center_point_at_0_in_parent_ =
       entry_point -
       ScaleVector2d(ComputeTravelDirection(),
@@ -438,6 +461,40 @@ gfx::Vector2dF PartyingShelfItem::ComputeTravelDirection() const {
       return gfx::Vector2dF(c, s);
     case kRight:
       return gfx::Vector2dF(-c, s);
+  }
+}
+
+float PartyingShelfItem::RandDistanceClockwiseFromOriginToEntryPoint() const {
+  aura::Window* window = widget_->GetNativeView();
+  const Shelf* shelf = Shelf::ForWindow(window);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window);
+  const float perimeter = 2 * (work_area.width() + work_area.height());
+  switch (shelf->GetVisibilityState()) {
+    case SHELF_VISIBLE: {
+      const float min_distance_from_shelf_side =
+          ShelfConfig::Get()->shelf_size() + 0.5f * icon_size_;
+      switch (shelf->alignment()) {
+        case ShelfAlignment::kBottom:
+        case ShelfAlignment::kBottomLocked:
+          return SampleIntervalWithGap(
+              perimeter,
+              work_area.width() + work_area.height() -
+                  min_distance_from_shelf_side,
+              work_area.width() + 2 * min_distance_from_shelf_side);
+        case ShelfAlignment::kLeft:
+          return SampleInterval(min_distance_from_shelf_side,
+                                2 * work_area.width() + work_area.height() -
+                                    min_distance_from_shelf_side);
+        case ShelfAlignment::kRight:
+          return SampleIntervalWithGap(
+              perimeter, work_area.width() - min_distance_from_shelf_side,
+              work_area.height() + 2 * min_distance_from_shelf_side);
+      }
+    } break;
+    case SHELF_AUTO_HIDE:
+    case SHELF_HIDDEN:
+      return SampleInterval(perimeter);
   }
 }
 

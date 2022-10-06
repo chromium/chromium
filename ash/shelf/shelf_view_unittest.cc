@@ -3624,17 +3624,38 @@ TEST_F(ShelfViewGestureTapTest, MouseClickInterruptionBeforeGestureLongPress) {
   EXPECT_EQ(views::InkDropState::HIDDEN, GetInkDropStateOfAppIcon1());
 }
 
-class ShelfPartyTest : public ShelfViewTest {
+class ShelfPartyTest : public ShelfViewTest,
+                       public testing::WithParamInterface<
+                           std::pair<ShelfAlignment, ShelfAutoHideBehavior>> {
  public:
   ShelfPartyTest()
       : ShelfViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ShelfPartyTest(const ShelfPartyTest&) = delete;
   ShelfPartyTest& operator=(const ShelfPartyTest&) = delete;
   ~ShelfPartyTest() override = default;
+
+  void SetUp() override {
+    ShelfViewTest::SetUp();
+    shelf_view_->shelf()->SetAlignment(GetParam().first);
+    shelf_view_->shelf()->SetAutoHideBehavior(GetParam().second);
+  }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ShelfPartyTest,
+    testing::Values(
+        std::make_pair(ShelfAlignment::kBottom, ShelfAutoHideBehavior::kAlways),
+        std::make_pair(ShelfAlignment::kBottom, ShelfAutoHideBehavior::kNever),
+        std::make_pair(ShelfAlignment::kLeft, ShelfAutoHideBehavior::kNever),
+        std::make_pair(ShelfAlignment::kRight, ShelfAutoHideBehavior::kNever),
+        std::make_pair(ShelfAlignment::kBottomLocked,
+                       ShelfAutoHideBehavior::kNever),
+        std::make_pair(ShelfAlignment::kBottom,
+                       ShelfAutoHideBehavior::kAlwaysHidden)));
+
 // Exercises the party animation.
-TEST_F(ShelfPartyTest, PartyAnimation) {
+TEST_P(ShelfPartyTest, PartyAnimation) {
   for (int i = 0; i < 16; ++i)
     AddAppShortcut();
   model_->ToggleShelfParty();

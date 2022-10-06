@@ -89,6 +89,11 @@ class PartyingShelfItem : public gfx::LinearAnimation,
   // Computes a unit vector in the direction of the item's travel.
   gfx::Vector2dF ComputeTravelDirection() const;
 
+  // Returns a random entry point for the item, represented as a distance
+  // clockwise from the origin along the work area perimeter. The entry point is
+  // kept away from the shelf unless autohide is enabled.
+  float RandDistanceClockwiseFromOriginToEntryPoint() const;
+
   // The item representation that is animated by `PartyingShelfItem`. Separate
   // from representations outside of `PartyingShelfItem` for items not partying.
   // The bounds are always at the top left of the parent, and the animation only
