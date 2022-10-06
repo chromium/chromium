@@ -26,7 +26,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "ipc/ipc_channel.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -35,17 +34,12 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/encode/SkWebpEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
 
 namespace {
-
-const int64_t kMaxImageSizeInBytes =
-    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
 
 std::map<std::string, std::string> ParseParams(
     const std::string& param_string) {
@@ -83,29 +77,19 @@ bool IsGooglePhotosUrl(const GURL& url) {
 
 }  // namespace
 
-void SanitizedImageSource::DataDecoderDelegate::DecodeAnimation(
-    const std::string& data,
-    DecodeAnimationCallback callback) {
-  base::span<const uint8_t> bytes = base::make_span(
-      reinterpret_cast<const uint8_t*>(data.data()), data.size());
-
-  data_decoder::DecodeAnimation(&data_decoder_, bytes, /*shrink_to_fit=*/true,
-                                kMaxImageSizeInBytes, std::move(callback));
-}
-
 SanitizedImageSource::SanitizedImageSource(Profile* profile)
     : SanitizedImageSource(profile,
                            profile->GetDefaultStoragePartition()
                                ->GetURLLoaderFactoryForBrowserProcess(),
-                           std::make_unique<DataDecoderDelegate>()) {}
+                           std::make_unique<ImageDecoderImpl>()) {}
 
 SanitizedImageSource::SanitizedImageSource(
     Profile* profile,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<DataDecoderDelegate> delegate)
+    std::unique_ptr<image_fetcher::ImageDecoder> image_decoder)
     : identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       url_loader_factory_(url_loader_factory),
-      data_decoder_delegate_(std::move(delegate)) {}
+      image_decoder_(std::move(image_decoder)) {}
 
 SanitizedImageSource::~SanitizedImageSource() = default;
 
@@ -249,36 +233,20 @@ void SanitizedImageSource::OnImageLoaded(
     return;
   }
 
-  data_decoder_delegate_->DecodeAnimation(
-      *body,
-      base::BindOnce(&SanitizedImageSource::OnAnimationDecoded,
+  // Send image body to image decoder in isolated process.
+  image_decoder_->DecodeImage(
+      *body, gfx::Size() /* No particular size desired. */,
+      /*data_decoder=*/nullptr,
+      base::BindOnce(&SanitizedImageSource::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void SanitizedImageSource::OnAnimationDecoded(
+void SanitizedImageSource::OnImageDecoded(
     content::URLDataSource::GotDataCallback callback,
-    std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
+    const gfx::Image& image) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!mojo_frames.size()) {
-    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
-    return;
-  }
-
-  // Re-encode static image as PNG and send to requester.
-  if (mojo_frames.size() == 1) {
-    EncodeAndReplyStaticImage(std::move(callback), mojo_frames[0]->bitmap);
-    return;
-  }
-
-  // The image is animated, re-encode as WebP animated image and send to
-  // requester.
-  EncodeAndReplyAnimatedImage(std::move(callback), std::move(mojo_frames));
-}
-
-void SanitizedImageSource::EncodeAndReplyStaticImage(
-    content::URLDataSource::GotDataCallback callback,
-    const SkBitmap& bitmap) {
+  // Re-encode vetted image as PNG and send to requester.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -289,40 +257,6 @@ void SanitizedImageSource::EncodeAndReplyStaticImage(
                        ? encoded
                        : base::MakeRefCounted<base::RefCountedBytes>();
           },
-          bitmap),
-      std::move(callback));
-  return;
-}
-
-void SanitizedImageSource::EncodeAndReplyAnimatedImage(
-    content::URLDataSource::GotDataCallback callback,
-    std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
-  std::vector<gfx::WebpCodec::Frame> frames;
-  for (auto& mojo_frame : mojo_frames) {
-    gfx::WebpCodec::Frame frame;
-    frame.bitmap = mojo_frame->bitmap;
-    frame.duration = mojo_frame->duration.InMilliseconds();
-    frames.push_back(frame);
-  }
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](const std::vector<gfx::WebpCodec::Frame>& frames) {
-            SkWebpEncoder::Options options;
-            options.fCompression = SkWebpEncoder::Compression::kLossless;
-            // Lower quality under kLossless compression means compress faster
-            // into larger files.
-            options.fQuality = 0;
-
-            auto encoded = gfx::WebpCodec::EncodeAnimated(frames, options);
-            if (encoded.has_value()) {
-              return base::MakeRefCounted<base::RefCountedBytes>(
-                  encoded.value());
-            }
-
-            return base::MakeRefCounted<base::RefCountedBytes>();
-          },
-          frames),
+          image.AsBitmap()),
       std::move(callback));
 }
