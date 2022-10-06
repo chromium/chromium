@@ -4,6 +4,7 @@
 
 package org.chromium.components.omnibox;
 
+import android.text.TextUtils;
 import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
@@ -12,13 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
-import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -31,6 +28,36 @@ import java.util.List;
  */
 @MockedInTests
 public class AutocompleteResult {
+    /** Describes details of the Suggestions group. */
+    public static class GroupDetails {
+        // Title of the group, that will be shown to the user.
+        public final String title;
+        // Default/recommended group collapsed state.
+        public final boolean collapsedByDefault;
+
+        public GroupDetails(String title, boolean collapsedByDefault) {
+            this.title = title;
+            this.collapsedByDefault = collapsedByDefault;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = title != null ? title.hashCode() : 0;
+            hash ^= (collapsedByDefault ? 0x3ff : 0);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object otherObj) {
+            if (otherObj == this) return true;
+            if (!(otherObj instanceof GroupDetails)) return false;
+
+            GroupDetails other = (GroupDetails) otherObj;
+            return (collapsedByDefault == other.collapsedByDefault)
+                    && TextUtils.equals(title, other.title);
+        }
+    };
+
     @IntDef({VerificationPoint.INVALID, VerificationPoint.SELECT_MATCH,
             VerificationPoint.UPDATE_MATCH, VerificationPoint.DELETE_MATCH,
             VerificationPoint.GROUP_BY_SEARCH_VS_URL_BEFORE,
@@ -50,10 +77,8 @@ public class AutocompleteResult {
             new AutocompleteResult(0, Collections.emptyList(), null);
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
-    /** Initial capacity of the mGroupsDetails SparseArray. */
-    private static final int GROUPS_DETAILS_INIT_CAPACITY = 5;
 
-    private final @NonNull SparseArray<GroupConfig> mGroupsDetails;
+    private final @NonNull SparseArray<GroupDetails> mGroupsDetails;
     private final @NonNull List<AutocompleteMatch> mSuggestions;
     private final boolean mIsFromCachedResult;
     private long mNativeAutocompleteResult;
@@ -69,7 +94,7 @@ public class AutocompleteResult {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
-            @Nullable SparseArray<GroupConfig> groupsDetails) {
+            @Nullable SparseArray<GroupDetails> groupsDetails) {
         // Consider all locally constructed AutocompleteResult objects as coming from Cache.
         // These results do not have a native counterpart, meaning there's no corresponding C++
         // structure describing the same AutocompleteResult.
@@ -93,7 +118,7 @@ public class AutocompleteResult {
      * @return AutocompleteResult object encompassing supplied information.
      */
     public static AutocompleteResult fromCache(@Nullable List<AutocompleteMatch> suggestions,
-            @Nullable SparseArray<GroupConfig> groupsDetails) {
+            @Nullable SparseArray<GroupDetails> groupsDetails) {
         return new AutocompleteResult(0, suggestions, groupsDetails);
     }
 
@@ -116,16 +141,15 @@ public class AutocompleteResult {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     static AutocompleteResult fromNative(long nativeAutocompleteResult,
-            @NonNull AutocompleteMatch[] suggestions, @NonNull byte[] groupDefinitions) {
-        var groupsDetails = new SparseArray<GroupConfig>(GROUPS_DETAILS_INIT_CAPACITY);
+            @NonNull AutocompleteMatch[] suggestions, @NonNull int[] groupIds,
+            @NonNull String[] groupNames, @NonNull boolean[] groupCollapsedStates) {
+        assert groupIds.length == groupNames.length;
+        assert groupIds.length == groupCollapsedStates.length;
 
-        try {
-            var groupsInfo = GroupsInfo.parseFrom(groupDefinitions);
-            var groupsMap = groupsInfo.getGroupConfigsMap();
-            for (var entry : groupsMap.entrySet()) {
-                groupsDetails.put(entry.getKey(), entry.getValue());
-            }
-        } catch (InvalidProtocolBufferException e) {
+        SparseArray<GroupDetails> groupsDetails = new SparseArray<>(groupIds.length);
+        for (int index = 0; index < groupIds.length; index++) {
+            groupsDetails.put(groupIds[index],
+                    new GroupDetails(groupNames[index], groupCollapsedStates[index]));
         }
 
         AutocompleteResult result =
@@ -155,10 +179,10 @@ public class AutocompleteResult {
     }
 
     /**
-     * @return Map of Group ID to GroupConfig objects.
+     * @return Map of Group ID to GroupDetails objects.
      */
     @NonNull
-    public SparseArray<GroupConfig> getGroupsDetails() {
+    public SparseArray<GroupDetails> getGroupsDetails() {
         return mGroupsDetails;
     }
 
@@ -200,7 +224,7 @@ public class AutocompleteResult {
         AutocompleteResult other = (AutocompleteResult) otherObj;
         if (!mSuggestions.equals(other.mSuggestions)) return false;
 
-        final SparseArray<GroupConfig> otherGroupsDetails = other.mGroupsDetails;
+        final SparseArray<GroupDetails> otherGroupsDetails = other.mGroupsDetails;
         if (mGroupsDetails.size() != otherGroupsDetails.size()) return false;
         for (int index = 0; index < mGroupsDetails.size(); index++) {
             if (mGroupsDetails.keyAt(index) != otherGroupsDetails.keyAt(index)) return false;

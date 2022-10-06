@@ -38,7 +38,7 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -308,15 +308,16 @@ class DropdownItemViewInfoListBuilder {
             // determines rounding boundaries of suggestion group.
             if (currentGroup != suggestion.getGroupId()) {
                 currentGroup = suggestion.getGroupId();
-                final GroupConfig details = autocompleteResult.getGroupsDetails().get(currentGroup);
+                final GroupDetails details =
+                        autocompleteResult.getGroupsDetails().get(currentGroup);
 
                 // Only add the Header Group when both ID and details are specified.
                 // Note that despite GroupsDetails map not holding <null> values,
                 // a group definition for specific ID may be unavailable, or the group
                 // header text may be empty.
-                if (details != null && !TextUtils.isEmpty(details.getHeaderText())) {
+                if (details != null && !TextUtils.isEmpty(details.title)) {
                     final PropertyModel model = mHeaderProcessor.createModel();
-                    mHeaderProcessor.populateModel(model, currentGroup, details.getHeaderText());
+                    mHeaderProcessor.populateModel(model, currentGroup, details.title);
                     viewInfoList.add(
                             new DropdownItemViewInfo(mHeaderProcessor, model, currentGroup));
                 }

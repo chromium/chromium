@@ -57,7 +57,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -192,7 +191,7 @@ public class MostVisitedTilesTest {
         builder.reset();
 
         autocompleteResult.getGroupsDetails().put(
-                1, GroupConfig.newBuilder().setHeaderText("See also").build());
+                1, new AutocompleteResult.GroupDetails("See also", false));
 
         doAnswer(invocation -> {
             mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl, true);

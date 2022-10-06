@@ -40,7 +40,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.ShadowGURL;
 
@@ -96,27 +96,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         }
     }
 
-    /**
-     * Create a simple GroupConfig instance with supplied text and visibility.
-     *
-     * @param headerText The header text to apply to group config.
-     * @param isHidden Whether the newly built group is default-collapsed.
-     * @return Newly constructed GroupConfig.
-     */
-    private GroupConfig buildGroupConfig(String headerText, boolean isHidden) {
-        return GroupConfig.newBuilder()
-                .setHeaderText(headerText)
-                .setVisibility(isHidden ? GroupConfig.Visibility.HIDDEN
-                                        : GroupConfig.Visibility.DEFAULT_VISIBLE)
-                .build();
-    }
-
     @Test
     @SmallTest
     public void headers_buildsHeaderForFirstSuggestion() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, buildGroupConfig("Header 1", false));
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+        groupsDetails.put(1, new GroupDetails("Header 1", false));
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch suggestion =
@@ -153,9 +138,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @SmallTest
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, buildGroupConfig("Header 1", false));
-        groupsDetails.put(2, buildGroupConfig("Header 2", false));
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+        groupsDetails.put(1, new GroupDetails("Header 1", false));
+        groupsDetails.put(2, new GroupDetails("Header 2", false));
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
@@ -214,11 +199,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
-    public void headers_respectGroupHeadersWithNoTitle() {
+    public void headers_ignoreGroupHeadersWithNoTitle() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, buildGroupConfig("", false));
-        groupsDetails.put(2, buildGroupConfig("Header 2", false));
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+        groupsDetails.put(1, new GroupDetails(null, false));
+        groupsDetails.put(2, new GroupDetails("Header 2", false));
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
