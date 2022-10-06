@@ -231,12 +231,6 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
   if (read_completed_for_testing_) {
     std::move(read_completed_for_testing_).Run();
   }
-
-  if (preferred_apps_upgraded && write_completed_for_testing_) {
-    // Test clients can rely on the callback being called, even if WriteToJSON()
-    // is not called.
-    std::move(write_completed_for_testing_).Run();
-  }
 }
 
 void PreferredAppsImpl::RunAfterPreferredAppsReady(base::OnceClosure task) {
