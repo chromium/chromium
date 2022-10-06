@@ -72,8 +72,10 @@ class Session::ScopedAudioMuter {
 //  Session
 ////////////////////////////////////////////////////////////////////////////////
 
-Session::Session(Shell* shell)
+Session::Session(Shell* shell,
+                 SecurityCurtainController::InitParams init_params)
     : shell_(*shell),
+      init_params_(init_params),
       root_windows_observer_(
           std::make_unique<RootWindowsObserver>(this, shell)),
       scoped_audio_muter_(std::make_unique<ScopedAudioMuter>()) {
@@ -99,7 +101,8 @@ void Session::CurtainOffRootWindow(aura::Window* root_window) {
 
   controller->SetSecurityCurtainWidgetController(
       std::make_unique<SecurityCurtainWidgetController>(
-          SecurityCurtainWidgetController::CreateForRootWindow(root_window)));
+          SecurityCurtainWidgetController::CreateForRootWindow(
+              root_window, init_params_.event_filter)));
 }
 
 void Session::RemoveCurtainOfAllRootWindows() {

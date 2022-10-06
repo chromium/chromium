@@ -11,8 +11,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/ash_proxy.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 
 namespace remoting {
+
+namespace {
+
+using ash::curtain::FilterResult;
+
+FilterResult OnlyEventsFromSource(ui::EventDeviceId source_device_id,
+                                  const ui::Event& event) {
+  return event.source_device_id() == source_device_id
+             ? FilterResult::kKeepEvent
+             : FilterResult::kSuppressEvent;
+}
+}  // namespace
 
 // static
 std::unique_ptr<CurtainMode> CurtainMode::Create(
@@ -38,7 +52,10 @@ CurtainModeChromeOs::Core::~Core() {
 }
 
 void CurtainModeChromeOs::Core::Activate() {
-  security_curtain_controller().Enable();
+  ash::curtain::SecurityCurtainController::InitParams params;
+  params.event_filter =
+      base::BindRepeating(OnlyEventsFromSource, ui::ED_REMOTE_INPUT_DEVICE);
+  security_curtain_controller().Enable(params);
 }
 
 ash::curtain::SecurityCurtainController&

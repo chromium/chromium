@@ -9,10 +9,12 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/callback_forward.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
 namespace aura {
@@ -31,25 +33,50 @@ using ::testing::Ne;
 
 using DisplayId = uint64_t;
 
-// Simple event handler that can track mouse presses.
+// Simple event handler that can track any events.
 class TestEventHandler : public ui::EventHandler {
  public:
   TestEventHandler() = default;
   ~TestEventHandler() override = default;
 
   // ui::EventHandler:
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() != ui::ET_MOUSE_PRESSED)
-      return;
+  void OnEvent(ui::Event* event) override {
+    has_seen_event_ = true;
 
-    has_seen_mouse_press_ = true;
     event->SetHandled();
     event->StopPropagation();
   }
-  bool HasSeenMousePress() { return has_seen_mouse_press_; }
+
+  bool HasSeenAnyEvent() { return has_seen_event_; }
 
  private:
-  bool has_seen_mouse_press_ = false;
+  bool has_seen_event_ = false;
+};
+
+// Helper class that allows observing of all ui::Event's on a given target
+// window, and which allows easy generation of input events.
+class EventTester {
+ public:
+  EventTester(std::unique_ptr<aura::Window> window,
+              ui::test::EventGenerator& event_generator)
+      : window_(std::move(window)), event_generator_(event_generator) {
+    window_->SetTargetHandler(&event_handler_);
+    event_generator_->SetTargetWindow(window_.get());
+  }
+
+  EventTester(const EventTester&) = delete;
+  EventTester& operator=(const EventTester&) = delete;
+  ~EventTester() = default;
+
+  ui::test::EventGenerator& event_generator() { return *event_generator_; }
+  TestEventHandler& event_handler() { return event_handler_; }
+
+  gfx::Point location() const { return window_->bounds().CenterPoint(); }
+
+ private:
+  std::unique_ptr<aura::Window> window_;
+  TestEventHandler event_handler_;
+  raw_ref<ui::test::EventGenerator> event_generator_;
 };
 
 class SecurityCurtainControllerImplTest : public AshTestBase {
@@ -74,6 +101,14 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
 
   SecurityCurtainController& security_curtain_controller() {
     return security_curtain_controller_.value();
+  }
+
+  SecurityCurtainController::InitParams init_params() {
+    return SecurityCurtainController::InitParams();
+  }
+
+  SecurityCurtainController::InitParams WithEventFilter(EventFilter filter) {
+    return SecurityCurtainController::InitParams{filter};
   }
 
   bool IsCurtainShownOnDisplay(const display::Display& display) {
@@ -145,10 +180,9 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
     return last_display_id;
   }
 
-  void SimulateMouseClickOn(const aura::Window& window) {
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(window.GetBoundsInScreen().CenterPoint());
-    event_generator->ClickLeftButton();
+  EventTester CreateEventTester() {
+    return EventTester(CreateTestWindow({0, 0, 1000, 5000}),
+                       *GetEventGenerator());
   }
 
   bool IsOutputMuted() {
@@ -156,9 +190,21 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
            CrasAudioHandler::Get()->IsOutputMuted();
   }
 
+  EventTester CreateEventTesterOnDisplay(const display::Display& display) {
+    return EventTester(CreateTestWindow(display.bounds()),
+                       *GetEventGenerator());
+  }
+
  private:
   absl::optional<SecurityCurtainControllerImpl> security_curtain_controller_;
 };
+
+EventFilter only_mouse_events_filter() {
+  return base::BindRepeating([](const ui::Event& event) {
+    return event.IsMouseEvent() ? FilterResult::kKeepEvent
+                                : FilterResult::kSuppressEvent;
+  });
+}
 
 TEST_F(SecurityCurtainControllerImplTest,
        ShouldNotBeEnabledBeforeEnableIsCalled) {
@@ -170,20 +216,21 @@ TEST_F(SecurityCurtainControllerImplTest,
   CreateMultipleDisplays();
 
   for (auto display : GetDisplays()) {
-    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false))
-        << "Curtain should not be shown on display " << display.ToString();
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false));
   }
 }
 
 TEST_F(SecurityCurtainControllerImplTest, ShouldBeEnabledWhenCallingEnable) {
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(true));
 }
 
 TEST_F(SecurityCurtainControllerImplTest,
        ShouldNotBeEnabledWhenCallingDisable) {
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
   security_curtain_controller().Disable();
 
   EXPECT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
@@ -193,11 +240,12 @@ TEST_F(SecurityCurtainControllerImplTest,
        CurtainsShouldBeCreatedWhenCallingEnable) {
   CreateMultipleDisplays();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   for (auto display : GetDisplays()) {
-    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(true))
-        << "Curtain should be shown on display " << display.ToString();
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(true));
   }
 }
 
@@ -205,21 +253,22 @@ TEST_F(SecurityCurtainControllerImplTest,
        CurtainsShouldBeDestroyedWhenCallingDisable) {
   CreateMultipleDisplays();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
   security_curtain_controller().Disable();
 
   for (auto display : GetDisplays()) {
-    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false))
-        << "Curtain should no longer be shown on display "
-        << display.ToString();
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false));
   }
 }
 
 TEST_F(SecurityCurtainControllerImplTest, CurtainsShouldCoverTheEntireDisplay) {
   CreateMultipleDisplays();
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   for (auto display : GetDisplays()) {
+    SCOPED_TRACE("Failure on display " + display.ToString());
     const views::Widget& curtain = GetCurtainForDisplay(display);
     EXPECT_THAT(curtain.IsVisible(), Eq(true));
     EXPECT_THAT(curtain.GetWindowBoundsInScreen(), Eq(display.bounds()));
@@ -230,7 +279,7 @@ TEST_F(SecurityCurtainControllerImplTest,
        CurtainShouldKeepCoveringTheEntireDisplayAfterResizing) {
   display::Display display = CreateSingleDisplay();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   const views::Widget& curtain = GetCurtainForDisplay(display);
 
@@ -248,7 +297,7 @@ TEST_F(SecurityCurtainControllerImplTest,
   // container, and if it has the wrong size the stream will fail.
   display::Display display = CreateSingleDisplay();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   const aura::Window* curtained_off_container = Shell::GetContainer(
       Shell::GetRootWindowForDisplayId(GetFirstDisplay().id()),
@@ -264,16 +313,97 @@ TEST_F(SecurityCurtainControllerImplTest,
   }
 }
 
-TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotConsumeMouseEvents) {
-  security_curtain_controller().Enable();
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockMouseEvents) {
+  security_curtain_controller().Enable(init_params());
+  EventTester tester = CreateEventTester();
 
-  auto other_window = CreateTestWindow(gfx::Rect(100, 100));
-  TestEventHandler other_window_event_handler;
-  other_window->SetTargetHandler(&other_window_event_handler);
+  tester.event_generator().ClickLeftButton();
 
-  SimulateMouseClickOn(*other_window);
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+}
 
-  EXPECT_THAT(other_window_event_handler.HasSeenMousePress(), Eq(true));
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockTouchEvents) {
+  security_curtain_controller().Enable(init_params());
+  EventTester tester = CreateEventTester();
+
+  tester.event_generator().PressTouch();
+
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+}
+
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockGestureEvents) {
+  security_curtain_controller().Enable(init_params());
+  EventTester tester = CreateEventTester();
+
+  tester.event_generator().GestureTapAt(tester.location());
+
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+}
+
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldBlockKeyboardEvents) {
+  security_curtain_controller().Enable(init_params());
+  EventTester tester = CreateEventTester();
+
+  tester.event_generator().PressAndReleaseKey(ui::KeyboardCode::VKEY_B);
+
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+}
+
+TEST_F(SecurityCurtainControllerImplTest, CurtainShouldRespectEventFilter) {
+  security_curtain_controller().Enable(
+      WithEventFilter(only_mouse_events_filter()));
+  EventTester tester = CreateEventTester();
+
+  // With our 'only mouse' filter touch events should be suppressed.
+  tester.event_generator().PressTouch();
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+
+  // ... and mouse events should go through
+  tester.event_generator().ClickLeftButton();
+  EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       CurtainShouldRespectEventFilterOnAllDisplays) {
+  CreateMultipleDisplays();
+  security_curtain_controller().Enable(
+      WithEventFilter(only_mouse_events_filter()));
+
+  for (auto display : GetDisplays()) {
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EventTester tester = CreateEventTesterOnDisplay(display);
+
+    // With our 'only mouse' filter touch events should be suppressed.
+    tester.event_generator().PressTouch();
+    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+
+    // ... and mouse events should go through
+    tester.event_generator().ClickLeftButton();
+    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
+  }
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       CurtainShouldRespectEventFilterOnNewlyAddedDisplays) {
+  CreateSingleDisplay();
+  security_curtain_controller().Enable(
+      WithEventFilter(only_mouse_events_filter()));
+
+  CreateMultipleDisplays();
+  for (auto display : GetDisplays()) {
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EventTester tester = CreateEventTesterOnDisplay(display);
+
+    // With our 'only mouse' filter touch events should be suppressed.
+    tester.event_generator().PressTouch();
+    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(false));
+
+    // ... and mouse events should go through
+    tester.event_generator().ClickLeftButton();
+    EXPECT_THAT(tester.event_handler().HasSeenAnyEvent(), Eq(true));
+  }
 }
 
 TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotOccludeOtherWindows) {
@@ -282,7 +412,7 @@ TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotOccludeOtherWindows) {
   ASSERT_THAT(other_window->GetOcclusionState(),
               Eq(aura::Window::OcclusionState::VISIBLE));
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   EXPECT_THAT(other_window->GetOcclusionState(),
               Ne(aura::Window::OcclusionState::OCCLUDED));
@@ -293,7 +423,7 @@ TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotStealFocus) {
   other_window->Focus();
   ASSERT_THAT(other_window->HasFocus(), Eq(true));
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   EXPECT_THAT(other_window->HasFocus(), Eq(true));
 }
@@ -301,12 +431,13 @@ TEST_F(SecurityCurtainControllerImplTest, CurtainShouldNotStealFocus) {
 TEST_F(SecurityCurtainControllerImplTest, ShouldAddCurtainToNewDisplays) {
   CreateSingleDisplay();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
 
   CreateMultipleDisplays();
   for (auto display : GetDisplays()) {
-    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(true))
-        << "Curtain should be shown on display " << display.ToString();
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(true));
   }
 }
 
@@ -314,7 +445,7 @@ TEST_F(SecurityCurtainControllerImplTest,
        ShouldRemoveCurtainFromRemovedDisplays) {
   CreateMultipleDisplays();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
   DisplayId removed_display_id = RemoveAllButFirstDisplay();
 
   EXPECT_THAT(IsCurtainShownOnDisplay(removed_display_id), Eq(false));
@@ -324,13 +455,14 @@ TEST_F(SecurityCurtainControllerImplTest,
        ShouldNotAddCurtainToNewDisplaysAfterCallingDisable) {
   CreateSingleDisplay();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
   security_curtain_controller().Disable();
 
   CreateMultipleDisplays();
   for (auto display : GetDisplays()) {
-    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false))
-        << "No curtain should be shown on display " << display.ToString();
+    SCOPED_TRACE("Failure on display " + display.ToString());
+
+    EXPECT_THAT(IsCurtainShownOnDisplay(display), Eq(false));
   }
 }
 
@@ -338,7 +470,7 @@ TEST_F(SecurityCurtainControllerImplTest,
        ShouldToggleAudioHandlerWhenEnabledAndDisabled) {
   CreateSingleDisplay();
 
-  security_curtain_controller().Enable();
+  security_curtain_controller().Enable(init_params());
   EXPECT_TRUE(IsOutputMuted());
 
   security_curtain_controller().Disable();

@@ -79,9 +79,10 @@ class FakeSecurityCurtainController
   ~FakeSecurityCurtainController() override = default;
 
   // ash::curtain::SecurityCurtainController implementation:
-  void Enable() override {
+  void Enable(InitParams params) override {
     DCHECK(!is_enabled_);
     is_enabled_ = true;
+    init_params_ = params;
   }
   void Disable() override {
     DCHECK(is_enabled_);
@@ -89,8 +90,12 @@ class FakeSecurityCurtainController
   }
   bool IsEnabled() const override { return is_enabled_; }
 
+  // InitParams passed to the last |Enable()| call.
+  InitParams last_init_params() const { return init_params_; }
+
  private:
   bool is_enabled_ = false;
+  InitParams init_params_;
 };
 
 class It2MeDesktopEnvironmentTest : public ::testing::Test {
@@ -137,7 +142,7 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
     environment_.RunUntilIdle();
   }
 
-  ash::curtain::SecurityCurtainController& security_curtain_controller() {
+  FakeSecurityCurtainController& security_curtain_controller() {
     return security_curtain_controller_;
   }
 
@@ -152,6 +157,13 @@ class It2MeDesktopEnvironmentTest : public ::testing::Test {
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
+ui::KeyEvent EventWithSource(int source_device_id) {
+  ui::KeyEvent result{ui::EventType::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_C,
+                      /*flags=*/0};
+  result.set_source_device_id(source_device_id);
+  return result;
+}
+
 TEST_F(It2MeDesktopEnvironmentTest,
        ShouldStartCurtainWhenEnableCurtainingIsTrue) {
   base::test::ScopedFeatureList feature_list;
@@ -199,7 +211,24 @@ TEST_F(It2MeDesktopEnvironmentTest,
 }
 
 TEST_F(It2MeDesktopEnvironmentTest,
-       ClosingACurtainedSessionShouldDisableSecurityCurtain) {
+       ACurtainedSessionShouldFilterNonRemoteEvents) {
+  ASSERT_THAT(security_curtain_controller().IsEnabled(), Eq(false));
+
+  auto desktop_environment = CreateCurtainedSession();
+  FlushUiSequence();
+
+  ash::curtain::EventFilter event_filter =
+      security_curtain_controller().last_init_params().event_filter;
+
+  EXPECT_THAT(event_filter.Run(EventWithSource(ui::ED_REMOTE_INPUT_DEVICE)),
+              Eq(ash::curtain::FilterResult::kKeepEvent));
+
+  EXPECT_THAT(event_filter.Run(EventWithSource(5)),
+              Eq(ash::curtain::FilterResult::kSuppressEvent));
+}
+
+TEST_F(It2MeDesktopEnvironmentTest,
+       ClosingACurtainedSessionShouldDisableCurtainMode) {
   auto desktop_environment = CreateCurtainedSession();
   FlushUiSequence();
 

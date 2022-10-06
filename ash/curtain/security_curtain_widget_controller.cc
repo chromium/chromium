@@ -4,6 +4,7 @@
 
 #include "ash/curtain/security_curtain_widget_controller.h"
 
+#include "ash/curtain/input_event_filter.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
@@ -12,7 +13,6 @@
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace ash::curtain {
 
@@ -131,24 +131,28 @@ SecurityCurtainWidgetController::~SecurityCurtainWidgetController() = default;
 
 SecurityCurtainWidgetController::SecurityCurtainWidgetController(
     std::unique_ptr<views::Widget> widget,
-    Layers layers)
+    Layers layers,
+    std::unique_ptr<InputEventFilter> input_event_filter)
     : widget_layers_(std::move(layers)),
       widget_(std::move(widget)),
       occlusion_tracker_exclude_(
           std::make_unique<aura::WindowOcclusionTracker::ScopedExclude>(
               widget_->GetNativeView())),
-      widget_maximizer_(std::make_unique<WidgetMaximizer>(widget_.get())) {
+      widget_maximizer_(std::make_unique<WidgetMaximizer>(widget_.get())),
+      input_event_filter_(std::move(input_event_filter)) {
   DCHECK(widget_);
   widget_->Show();
 }
 
 // static
 SecurityCurtainWidgetController
-SecurityCurtainWidgetController::CreateForRootWindow(
-    aura::Window* root_window) {
+SecurityCurtainWidgetController::CreateForRootWindow(aura::Window* root_window,
+                                                     EventFilter event_filter) {
   auto widget = CreateWidget(root_window);
   auto layers = InitWidgetLayers(*widget->GetLayer());
-  return SecurityCurtainWidgetController(std::move(widget), std::move(layers));
+  return SecurityCurtainWidgetController(
+      std::move(widget), std::move(layers),
+      std::make_unique<InputEventFilter>(root_window, event_filter));
 }
 
 const views::Widget& SecurityCurtainWidgetController::GetWidget() const {

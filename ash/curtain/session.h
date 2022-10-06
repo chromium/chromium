@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/curtain/input_event_filter.h"
+#include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/raw_ref.h"
 
 namespace ash {
@@ -27,7 +29,7 @@ namespace ash::curtain {
 // curtained off.
 class Session {
  public:
-  explicit Session(Shell* shell);
+  Session(Shell* shell, SecurityCurtainController::InitParams params);
   Session(const Session&) = delete;
   Session& operator=(const Session&) = delete;
   ~Session();
@@ -44,6 +46,7 @@ class Session {
   class ScopedAudioMuter;
 
   raw_ref<Shell> shell_;
+  SecurityCurtainController::InitParams init_params_;
   std::unique_ptr<RootWindowsObserver> root_windows_observer_;
   std::unique_ptr<ScopedAudioMuter> scoped_audio_muter_;
 };

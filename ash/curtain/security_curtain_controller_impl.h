@@ -29,7 +29,7 @@ class ASH_EXPORT SecurityCurtainControllerImpl
   ~SecurityCurtainControllerImpl() override;
 
   // SecurityCurtainController implementation:
-  void Enable() override;
+  void Enable(InitParams params) override;
   void Disable() override;
   bool IsEnabled() const override;
 
