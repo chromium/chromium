@@ -155,7 +155,7 @@ FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
         // check its effective frame policy instead.
         if (frame_policy.is_fenced) {
           return FencedFrameStatus::kFencedFrameRoot;
-        } else if (parent && parent->frame_tree_node()->IsInFencedFrameTree()) {
+        } else if (parent && parent->IsNestedWithinFencedFrame()) {
           return FencedFrameStatus::kIframeNestedWithinFencedFrame;
         }
         return FencedFrameStatus::kNotNestedInFencedFrame;
