@@ -44,9 +44,6 @@
     }
   },
   "$build/reclient": {
-    "bootstrap_env": {
-      "RBE_v": "1"
-    },
     "instance": "rbe-chromium-trusted",
     "metrics_project": "chromium-reclient-metrics"
   },

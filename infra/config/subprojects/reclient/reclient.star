@@ -165,9 +165,6 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     priority = 35,
-    reclient_bootstrap_env = {
-        "RBE_v": "1",
-    },
 )
 
 fyi_reclient_test_builder(
@@ -191,9 +188,6 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     priority = 35,
-    reclient_bootstrap_env = {
-        "RBE_v": "1",
-    },
 )
 
 fyi_reclient_staging_builder(
@@ -306,9 +300,6 @@ fyi_reclient_test_builder(
     cores = None,
     xcode = xcode.x13main,
     priority = 35,
-    reclient_bootstrap_env = {
-        "RBE_v": "1",
-    },
 )
 
 fyi_reclient_staging_builder(
@@ -333,9 +324,6 @@ fyi_reclient_staging_builder(
     cores = None,
     xcode = xcode.x13main,
     priority = 35,
-    reclient_bootstrap_env = {
-        "RBE_v": "1",
-    },
 )
 
 fyi_reclient_staging_builder(
@@ -359,9 +347,6 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     priority = 35,
-    reclient_bootstrap_env = {
-        "RBE_v": "1",
-    },
 )
 
 fyi_reclient_test_builder(
