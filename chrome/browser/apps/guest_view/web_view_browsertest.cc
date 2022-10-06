@@ -4106,10 +4106,8 @@ class WebViewChannelTest : public WebViewTestBase,
 
 // This test verify that the set of rules registries of a webview will be
 // removed from RulesRegistryService after the webview is gone.
-// http://crbug.com/438327
-IN_PROC_BROWSER_TEST_P(
-    WebViewChannelTest,
-    DISABLED_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone) {
+IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
+                       Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone) {
   ASSERT_EQ(extensions::GetCurrentChannel(), GetChannelParam());
   SCOPED_TRACE(base::StringPrintf(
       "Testing Channel %s",
@@ -4143,8 +4141,9 @@ IN_PROC_BROWSER_TEST_P(
   registry_service->RegisterRulesRegistry(base::WrapRefCounted(rules_registry));
 
   EXPECT_TRUE(
-      registry_service->GetRulesRegistry(rules_registry_id, "ui").get());
+      registry_service->HasRulesRegistryForTesting(rules_registry_id, "ui"));
 
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   // Kill the embedder's render process, so the webview will go as well.
   embedder_web_contents->GetPrimaryMainFrame()
       ->GetProcess()
@@ -4153,7 +4152,7 @@ IN_PROC_BROWSER_TEST_P(
   observer->WaitForEmbedderRenderProcessTerminate();
 
   EXPECT_FALSE(
-      registry_service->GetRulesRegistry(rules_registry_id, "ui").get());
+      registry_service->HasRulesRegistryForTesting(rules_registry_id, "ui"));
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewChannelTest,

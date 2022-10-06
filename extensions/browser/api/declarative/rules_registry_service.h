@@ -113,6 +113,11 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   // For testing.
   void SimulateExtensionUninstalled(const Extension* extension);
 
+  // For testing. Returns true if `rule_registries_` has the RulesRegistry for
+  // `event_name` and `rules_registry_id`.
+  bool HasRulesRegistryForTesting(int rules_registry_id,
+                                  const std::string& event_name);
+
  private:
   friend class BrowserContextKeyedAPIFactory<RulesRegistryService>;
 

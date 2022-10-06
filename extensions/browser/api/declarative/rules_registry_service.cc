@@ -159,6 +159,13 @@ void RulesRegistryService::SimulateExtensionUninstalled(
   NotifyRegistriesHelper(&RulesRegistry::OnExtensionUninstalled, extension);
 }
 
+bool RulesRegistryService::HasRulesRegistryForTesting(
+    int rules_registry_id,
+    const std::string& event_name) {
+  return base::Contains(rule_registries_,
+                        RulesRegistryKey(event_name, rules_registry_id));
+}
+
 void RulesRegistryService::OnUpdateRules() {
   // Forward rule updates to observers.
   for (auto& observer : observers_)
