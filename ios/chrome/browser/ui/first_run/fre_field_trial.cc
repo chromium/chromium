@@ -64,7 +64,7 @@ constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>::Option
 constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>
     kNewDefaultBrowserPromoFREParam{&kEnableFREDefaultBrowserPromoScreen,
                                     kFREDefaultBrowserPromoParam,
-                                    NewDefaultBrowserPromoFRE::kDefaultDelay,
+                                    NewDefaultBrowserPromoFRE::kShortDelay,
                                     &kNewDefaultBrowserPromoFREOptions};
 
 // Options for kkNewMobileIdentityConsistencyFREParam.
