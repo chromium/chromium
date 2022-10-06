@@ -3015,6 +3015,14 @@ TEST_F(SavedDeskTest, LaunchTemplateRecordsMetric) {
   constexpr int kExpectedLaunches = 1;
   histogram_tester.ExpectTotalCount(kLaunchTemplateHistogramName,
                                     kExpectedLaunches);
+
+  histogram_tester.ExpectBucketCount(
+      kNewDeskHistogramName,
+      static_cast<int>(DesksCreationRemovalSource::kLaunchTemplate),
+      kExpectedLaunches);
+  histogram_tester.ExpectBucketCount(
+      kDeskSwitchHistogramName,
+      static_cast<int>(DesksSwitchSource::kLaunchTemplate), kExpectedLaunches);
 }
 
 // Tests that clicking the save desk as template button records to the
@@ -4268,6 +4276,9 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
 
   // Assert that histogram metrics were recorded.
   histogram_tester.ExpectTotalCount(kLaunchSaveAndRecallHistogramName, 1);
+  histogram_tester.ExpectBucketCount(
+      ash::kNewDeskHistogramName,
+      static_cast<int>(DesksCreationRemovalSource::kSaveAndRecall), 1);
 }
 
 TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {

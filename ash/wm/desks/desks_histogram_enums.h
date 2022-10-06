@@ -18,7 +18,8 @@ enum class DesksCreationRemovalSource {
   kDragToNewDeskButton = 4,
   kSaveAndRecall = 5,
   kApi = 6,
-  kMaxValue = kApi,
+  kEnsureDefaultDesk = 7,
+  kMaxValue = kEnsureDefaultDesk,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -51,6 +52,9 @@ enum class DesksSwitchSource {
   kApi = 11,
   kMaxValue = kApi,
 };
+
+constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
+constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 
 }  // namespace ash
 

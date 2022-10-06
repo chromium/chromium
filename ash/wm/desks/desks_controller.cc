@@ -84,12 +84,10 @@ namespace {
 // Used to initialize toasts to undo desk removal with different IDs.
 unsigned int g_close_desk_toast_counter = 0;
 
-constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";
 constexpr char kDesksCountHistogramName[] = "Ash.Desks.DesksCount3";
 constexpr char kWeeklyActiveDesksHistogramName[] =
     "Ash.Desks.WeeklyActiveDesks";
 constexpr char kRemoveDeskHistogramName[] = "Ash.Desks.RemoveDesk";
-constexpr char kDeskSwitchHistogramName[] = "Ash.Desks.DesksSwitch";
 constexpr char kMoveWindowFromActiveDeskHistogramName[] =
     "Ash.Desks.MoveWindowFromActiveDesk";
 constexpr char kCloseAllUndoHistogramName[] = "Ash.Desks.CloseAllUndo";
@@ -1060,7 +1058,7 @@ void DesksController::CaptureActiveDeskAsTemplate(
 }
 
 const Desk* DesksController::CreateNewDeskForTemplate(
-    bool activate_desk,
+    DeskTemplateType template_type,
     const std::u16string& customized_desk_name) {
   DCHECK(CanCreateDesks());
 
@@ -1084,7 +1082,17 @@ const Desk* DesksController::CreateNewDeskForTemplate(
     }
   }
 
-  NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
+  switch (template_type) {
+    case DeskTemplateType::kTemplate:
+      NewDesk(DesksCreationRemovalSource::kLaunchTemplate);
+      break;
+    case DeskTemplateType::kSaveAndRecall:
+      NewDesk(DesksCreationRemovalSource::kSaveAndRecall);
+      break;
+    case DeskTemplateType::kUnknown:
+      return nullptr;
+  }
+
   Desk* desk = desks().back().get();
 
   if (!desk_name.empty()) {
@@ -1097,7 +1105,7 @@ const Desk* DesksController::CreateNewDeskForTemplate(
   // Force update user prefs because `SetName()` does not trigger it.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
 
-  if (activate_desk) {
+  if (template_type == DeskTemplateType::kTemplate) {
     // We're staying in overview mode, so move desks bar window and the save
     // template button to the new desk. They would otherwise disappear when the
     // new desk is activated.

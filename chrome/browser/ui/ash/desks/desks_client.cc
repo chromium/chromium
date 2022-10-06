@@ -355,7 +355,7 @@ void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
   }
 
   const ash::Desk* new_desk = desks_controller_->CreateNewDeskForTemplate(
-      /*activate_desk=*/true, customized_desk_name);
+      ash::DeskTemplateType::kTemplate, customized_desk_name);
   std::move(callback).Run(/*error=*/"", new_desk->uuid());
 }
 
@@ -560,10 +560,9 @@ void DesksClient::OnGetTemplateForDeskLaunch(
   const auto& template_name = customized_desk_name.empty()
                                   ? saved_desk->template_name()
                                   : customized_desk_name;
-  const bool activate_desk =
-      saved_desk->type() == ash::DeskTemplateType::kTemplate;
-  const ash::Desk* new_desk =
-      desks_controller_->CreateNewDeskForTemplate(activate_desk, template_name);
+
+  const ash::Desk* new_desk = desks_controller_->CreateNewDeskForTemplate(
+      saved_desk->type(), template_name);
 
   if (!saved_desk->desk_restore_data()) {
     std::move(callback).Run(kMissingTemplateDataError, {});
@@ -630,7 +629,7 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
     // remove the current one.
     if (!desks_controller_->CanRemoveDesks())
       desks_controller_->NewDesk(
-          ash::DesksCreationRemovalSource::kSaveAndRecall);
+          ash::DesksCreationRemovalSource::kEnsureDefaultDesk);
 
     // Remove the current desk, this will be done without animation.
     desks_controller_->RemoveDesk(

@@ -253,7 +253,8 @@ class WindowCloseObserver : public aura::WindowObserver {
       auto* desks_controller = DesksController::Get();
       if (DeskExists(desks_controller, desk_to_remove_)) {
         if (!desks_controller->CanRemoveDesks())
-          desks_controller->NewDesk(DesksCreationRemovalSource::kSaveAndRecall);
+          desks_controller->NewDesk(
+              DesksCreationRemovalSource::kEnsureDefaultDesk);
 
         desks_controller->RemoveDesk(desk_to_remove_,
                                      DesksCreationRemovalSource::kSaveAndRecall,
@@ -415,10 +416,8 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   // Copy fields we need from `desk_template` since we're about to move it.
   const auto saved_desk_type = saved_desk->type();
-  const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
-
   const Desk* new_desk = desks_controller->CreateNewDeskForTemplate(
-      activate_desk, saved_desk->template_name());
+      saved_desk_type, saved_desk->template_name());
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 
   // Note: `LaunchSavedDeskIntoNewDesk` *may* cause overview mode to exit. This

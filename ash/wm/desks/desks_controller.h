@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
@@ -307,12 +308,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
                                    DeskTemplateType template_type,
                                    aura::Window* root_window_to_show) const;
 
-  // Creates (and optionally activates) a new desk. If `customized_desk_name` is
-  // provided, desk name will be `customized_desk_name` or `customized_desk_name
+  // Creates a new desk and optionally activates it depending on
+  // `template_type`. If `customized_desk_name` is provided, desk name will be
+  // `customized_desk_name` or `customized_desk_name
   // ({counter})` to resolve naming conflicts. CanCreateDesks() must be checked
   // before calling this.
   const Desk* CreateNewDeskForTemplate(
-      bool activate_desk,
+      DeskTemplateType template_type,
       const std::u16string& customized_desk_name = std::u16string());
 
   // Called when an app with `app_id` is a single instance app which is about to
