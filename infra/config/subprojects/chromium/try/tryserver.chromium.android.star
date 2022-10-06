@@ -694,16 +694,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "cast_shell_android",
-    branch_selector = branches.STANDARD_MILESTONE,
-    mirrors = [
-        "ci/Cast Android (dbg)",
-    ],
-    builderless = not settings.is_main,
-    main_list_view = "try",
-)
-
-try_.builder(
     name = "linux_android_dbg_ng",
 )
 

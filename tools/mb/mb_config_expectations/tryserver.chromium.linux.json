@@ -10,51 +10,6 @@
       "use_goma": true
     }
   },
-  "cast_shell_audio_linux": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_cast_receiver": true,
-      "is_cast_audio_only": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
-  "cast_shell_linux": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
-  "cast_shell_linux_arm64": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "use_goma": true
-    }
-  },
-  "cast_shell_linux_dbg": {
-    "gn_args": {
-      "enable_cast_receiver": true,
-      "is_castos": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
   "gpu-fyi-try-lacros-amd-rel": {
     "gn_args": {
       "dcheck_always_on": true,

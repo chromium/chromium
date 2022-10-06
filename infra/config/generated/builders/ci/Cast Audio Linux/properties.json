@@ -40,10 +40,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "cast_shell_audio_linux",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-x64-castos-audio",
           "group": "tryserver.chromium.linux"
         }

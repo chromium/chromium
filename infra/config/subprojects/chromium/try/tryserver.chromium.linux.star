@@ -35,42 +35,6 @@ consoles.list_view(
 )
 
 try_.builder(
-    name = "cast_shell_audio_linux",
-    mirrors = [
-        "ci/Cast Audio Linux",
-    ],
-)
-
-try_.builder(
-    name = "cast_shell_linux",
-    branch_selector = branches.STANDARD_MILESTONE,
-    mirrors = [
-        "ci/Cast Linux",
-    ],
-    builderless = not settings.is_main,
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "cast_shell_linux_dbg",
-    branch_selector = branches.STANDARD_MILESTONE,
-    mirrors = [
-        "ci/Cast Linux Debug",
-    ],
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "cast_shell_linux_arm64",
-    branch_selector = branches.MAIN,
-    mirrors = [
-        "ci/Cast Linux ARM64",
-    ],
-    main_list_view = "try",
-    os = os.LINUX_BIONIC,
-)
-
-try_.builder(
     name = "layout_test_leak_detection",
     mirrors = [
         "ci/WebKit Linux Leak",

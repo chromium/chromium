@@ -42,10 +42,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "cast_shell_linux_arm64",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-arm64-castos",
           "group": "tryserver.chromium.linux"
         }

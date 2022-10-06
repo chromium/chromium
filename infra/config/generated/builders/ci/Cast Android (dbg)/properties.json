@@ -47,10 +47,6 @@
         {
           "builder": "android-x64-cast",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "cast_shell_android",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

@@ -1050,7 +1050,6 @@
       'android_n5x_swarming_dbg': 'android_debug_trybot_arm64',
       'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot',
       'android_unswarmed_pixel_aosp': 'android_debug_trybot_arm64',
-      'cast_shell_android': 'android_cast_debug_static_bot_compile_only',
       'gpu-fyi-try-android-l-nexus-5-32': 'gpu_tests_android_release_trybot',
       'gpu-fyi-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
       'gpu-fyi-try-android-nvidia-shield-tv': 'gpu_tests_android_release_trybot',
@@ -1164,10 +1163,6 @@
 
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
-      'cast_shell_audio_linux': 'cast_audio_release_trybot',
-      'cast_shell_linux': 'cast_release_trybot',
-      'cast_shell_linux_arm64': 'cast_arm64_release_bot',
-      'cast_shell_linux_dbg': 'cast_debug_bot',
       'chromium_presubmit': 'presubmit',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
