@@ -44,7 +44,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
           const net::FirstPartySetEntry& old_entry) -> bool {
         if (!old_config.Contains(old_member)) {
           absl::optional<net::FirstPartySetEntry> current_entry =
-              current_sets.FindEntry(old_member, &current_config);
+              current_sets.FindEntry(old_member, current_config);
           // Look for the removed sites and the ones have owner changed.
           if (!current_entry.has_value() ||
               current_entry.value().primary() != old_entry.primary()) {
@@ -58,7 +58,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
       [&](const net::SchemefulSite& old_member,
           const absl::optional<net::FirstPartySetEntry>& old_entry) -> bool {
         const absl::optional<net::FirstPartySetEntry> current_entry =
-            current_sets.FindEntry(old_member, &current_config);
+            current_sets.FindEntry(old_member, current_config);
         // Look for the ones have owner changed.
         if (old_entry.has_value() && current_entry != old_entry) {
           result.push_back(old_member);

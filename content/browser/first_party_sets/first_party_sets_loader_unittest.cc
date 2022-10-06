@@ -15,6 +15,7 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,10 +63,10 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 TEST_F(FirstPartySetsLoaderTest, IgnoresInvalidFile) {
   loader().SetManuallySpecifiedSet(LocalSetDeclaration());
   SetComponentSets(loader(), "certainly not valid JSON");
-  EXPECT_EQ(
-      WaitAndGetResult().FindEntry(
-          net::SchemefulSite(GURL("https://example.test")), /*config=*/nullptr),
-      absl::nullopt);
+  EXPECT_EQ(WaitAndGetResult().FindEntry(
+                net::SchemefulSite(GURL("https://example.test")),
+                net::FirstPartySetsContextConfig()),
+            absl::nullopt);
 }
 
 TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
@@ -85,7 +86,7 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
 
   EXPECT_THAT(
       WaitAndGetResult().FindEntries({example, associated1, foo, associated2},
-                                     /*config=*/nullptr),
+                                     net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -121,7 +122,7 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
   // The second call to SetComponentSets should have had no effect.
   EXPECT_THAT(
       WaitAndGetResult().FindEntries({example, foo, example2, foo2},
-                                     /*config=*/nullptr),
+                                     net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(example, net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)),
@@ -139,7 +140,7 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
 
   EXPECT_THAT(WaitAndGetResult().FindEntry(
                   net::SchemefulSite(GURL("https://associatedsite2.test")),
-                  /*config=*/nullptr),
+                  net::FirstPartySetsContextConfig()),
               Optional(net::FirstPartySetEntry(
                   net::SchemefulSite(GURL("https://bar.test")),
                   net::SiteType::kAssociated, 0)));

@@ -73,13 +73,13 @@ class NET_EXPORT GlobalFirstPartySets {
   // insecure.
   absl::optional<FirstPartySetEntry> FindEntry(
       const SchemefulSite& site,
-      const FirstPartySetsContextConfig* config) const;
+      const FirstPartySetsContextConfig& config) const;
 
   // Batched version of `FindEntry`. Where `FindEntry` would have returned
   // nullopt, this just omits from the result map.
   base::flat_map<SchemefulSite, FirstPartySetEntry> FindEntries(
       const base::flat_set<SchemefulSite>& sites,
-      const FirstPartySetsContextConfig* config) const;
+      const FirstPartySetsContextConfig& config) const;
 
   // Computes the First-Party Set metadata related to the given request context.
   FirstPartySetMetadata ComputeMetadata(
@@ -113,6 +113,12 @@ class NET_EXPORT GlobalFirstPartySets {
 
   friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
                                              const GlobalFirstPartySets& sets);
+
+  // Same as the public version of FindEntry, but is allowed to omit the
+  // `config` argument (i.e. pass nullptr instead of a reference).
+  absl::optional<FirstPartySetEntry> FindEntry(
+      const SchemefulSite& site,
+      const FirstPartySetsContextConfig* config) const;
 
   // Preprocesses a collection of "addition" sets, such that any sets that
   // transitively overlap (when taking the current `entries_` of this map, plus

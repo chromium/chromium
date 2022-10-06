@@ -115,12 +115,18 @@ GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
 
 absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     const SchemefulSite& site,
-    const FirstPartySetsContextConfig* fps_context_config) const {
+    const FirstPartySetsContextConfig& config) const {
+  return FindEntry(site, &config);
+}
+
+absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
+    const SchemefulSite& site,
+    const FirstPartySetsContextConfig* config) const {
   const SchemefulSite normalized_site = NormalizeScheme(site);
 
   // Check if `normalized_site` can be found in the customizations first.
-  if (fps_context_config) {
-    if (const auto entry = fps_context_config->FindOverride(normalized_site);
+  if (config) {
+    if (const auto entry = config->FindOverride(normalized_site);
         entry.has_value()) {
       return entry.value();
     }
@@ -147,7 +153,7 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
 base::flat_map<SchemefulSite, FirstPartySetEntry>
 GlobalFirstPartySets::FindEntries(
     const base::flat_set<SchemefulSite>& sites,
-    const FirstPartySetsContextConfig* config) const {
+    const FirstPartySetsContextConfig& config) const {
   std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> sites_to_entries;
   for (const SchemefulSite& site : sites) {
     const absl::optional<FirstPartySetEntry> entry = FindEntry(site, config);
@@ -176,11 +182,11 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
       base::Microseconds(1), base::Milliseconds(100), 50);
 
   absl::optional<FirstPartySetEntry> top_frame_entry =
-      top_frame_site ? FindEntry(*top_frame_site, &fps_context_config)
+      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
                      : absl::nullopt;
 
   return FirstPartySetMetadata(
-      context, base::OptionalToPtr(FindEntry(site, &fps_context_config)),
+      context, base::OptionalToPtr(FindEntry(site, fps_context_config)),
       base::OptionalToPtr(top_frame_entry));
 }
 
@@ -190,7 +196,7 @@ bool GlobalFirstPartySets::IsContextSamePartyWithSite(
     const std::set<SchemefulSite>& party_context,
     const FirstPartySetsContextConfig& fps_context_config) const {
   const absl::optional<FirstPartySetEntry> site_entry =
-      FindEntry(site, &fps_context_config);
+      FindEntry(site, fps_context_config);
   if (!site_entry.has_value())
     return false;
 
@@ -198,7 +204,7 @@ bool GlobalFirstPartySets::IsContextSamePartyWithSite(
       [this, &site_entry,
        &fps_context_config](const SchemefulSite& context_site) -> bool {
     const absl::optional<FirstPartySetEntry> context_entry =
-        FindEntry(context_site, &fps_context_config);
+        FindEntry(context_site, fps_context_config);
     return context_entry.has_value() &&
            context_entry->primary() == site_entry->primary();
   };

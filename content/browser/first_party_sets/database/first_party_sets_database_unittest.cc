@@ -997,7 +997,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
   OpenDatabase();
   EXPECT_THAT(db()->GetGlobalSets("b").FindEntries(
                   {net::SchemefulSite(GURL("https://example.test"))},
-                  /*config=*/nullptr),
+                  net::FirstPartySetsContextConfig()),
               IsEmpty());
 }
 
@@ -1017,7 +1017,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
   OpenDatabase();
   EXPECT_THAT(
       db()->GetGlobalSets("b0").FindEntries({aaa, bbb},
-                                            /*config=*/nullptr),
+                                            net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated,
                                             absl::nullopt)),

@@ -44,8 +44,9 @@ class GlobalFirstPartySetsTest : public ::testing::Test {
 TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
   SchemefulSite example(GURL("https://example.test"));
 
-  EXPECT_THAT(GlobalFirstPartySets().FindEntry(example, /*config=*/nullptr),
-              absl::nullopt);
+  EXPECT_THAT(
+      GlobalFirstPartySets().FindEntry(example, FirstPartySetsContextConfig()),
+      absl::nullopt);
 }
 
 TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
@@ -60,7 +61,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
                       {decoy_site, decoy_entry},
                   },
                   {})
-                  .FindEntry(example, /*config=*/nullptr),
+                  .FindEntry(example, FirstPartySetsContextConfig()),
               Optional(entry));
 }
 
@@ -74,7 +75,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
                       {https_example, entry},
                   },
                   {})
-                  .FindEntry(wss_example, /*config=*/nullptr),
+                  .FindEntry(wss_example, FirstPartySetsContextConfig()),
               Optional(entry));
 }
 
@@ -90,7 +91,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
                       {example, public_entry},
                   },
                   {})
-                  .FindEntry(example, &config),
+                  .FindEntry(example, config),
               Optional(override_entry));
 }
 
@@ -105,7 +106,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
                       {example, public_entry},
                   },
                   {})
-                  .FindEntry(example, &config),
+                  .FindEntry(example, config),
               absl::nullopt);
 }
 
@@ -119,7 +120,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaAlias) {
                       {example, entry},
                   },
                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, /*config=*/nullptr),
+                  .FindEntry(example_cctld, FirstPartySetsContextConfig()),
               Optional(entry));
 }
 
@@ -136,7 +137,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
                       {example, public_entry},
                   },
                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, &config),
+                  .FindEntry(example_cctld, config),
               Optional(override_entry));
 }
 
@@ -152,7 +153,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
                       {example, public_entry},
                   },
                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, &config),
+                  .FindEntry(example_cctld, config),
               absl::nullopt);
 }
 
@@ -171,7 +172,7 @@ TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
                       {example, public_entry},
                   },
                   {{example_cctld, example}})
-                  .FindEntry(example_cctld, &config),
+                  .FindEntry(example_cctld, config),
               public_entry);
 }
 
@@ -253,7 +254,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
               kService,
               kAssociated1Cctld,
           },
-          /*config=*/nullptr),
+          FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -282,7 +283,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
               kPrimary3,
               kAssociated1Cctld,
           },
-          /*config=*/nullptr),
+          FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(kPrimary3, FirstPartySetEntry(kPrimary3, SiteType::kPrimary,
                                              absl::nullopt)),
@@ -313,7 +314,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
               kPrimary3,
               kAssociated1Cctld,
           },
-          /*config=*/nullptr),
+          FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -349,7 +350,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
               kPrimary3,
               kAssociated1Cctld,
           },
-          /*config=*/nullptr),
+          FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)),
@@ -373,8 +374,9 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
       {kAssociated3, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
   });
 
-  EXPECT_THAT(global_sets().FindEntries({kPrimary2}, /*config=*/nullptr),
-              IsEmpty());
+  EXPECT_THAT(
+      global_sets().FindEntries({kPrimary2}, FirstPartySetsContextConfig()),
+      IsEmpty());
 }
 
 TEST_F(PopulatedGlobalFirstPartySetsTest,
@@ -397,7 +399,7 @@ TEST_F(PopulatedGlobalFirstPartySetsTest,
               kAssociated1Cctld,
               kAssociated1Cctld2,
           },
-          /*config=*/nullptr),
+          FirstPartySetsContextConfig()),
       UnorderedElementsAre(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)),
@@ -808,7 +810,7 @@ TEST_F(GlobalFirstPartySetsTest,
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      sets.FindEntries({kAssociated2, kPrimary2}, &config),
+      sets.FindEntries({kAssociated2, kPrimary2}, config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -846,7 +848,7 @@ TEST_F(
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      sets.FindEntries({kPrimary2, kAssociated2}, &config),
+      sets.FindEntries({kPrimary2, kAssociated2}, config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -884,7 +886,7 @@ TEST_F(
       /*addition_sets=*/{});
   EXPECT_THAT(
       sets.FindEntries({kAssociated3, kPrimary, kAssociated1, kAssociated2},
-                       &config),
+                       config),
       UnorderedElementsAre(
           Pair(kAssociated3, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
                                                 absl::nullopt)),
@@ -919,7 +921,7 @@ TEST_F(
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      sets.FindEntries({kAssociated1, kPrimary3, kPrimary}, &config),
+      sets.FindEntries({kAssociated1, kPrimary3, kPrimary}, config),
       UnorderedElementsAre(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated,
@@ -953,7 +955,7 @@ TEST_F(GlobalFirstPartySetsTest,
           },
       });
   EXPECT_THAT(
-      sets.FindEntries({kAssociated2, kPrimary2}, &config),
+      sets.FindEntries({kAssociated2, kPrimary2}, config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -994,7 +996,7 @@ TEST_F(
       });
   EXPECT_THAT(
       sets.FindEntries({kPrimary, kAssociated2, kAssociated3, kAssociated1},
-                       &config),
+                       config),
       UnorderedElementsAre(
           Pair(kPrimary, FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
                                             absl::nullopt)),
@@ -1036,7 +1038,7 @@ TEST_F(
       }});
   EXPECT_THAT(
       sets.FindEntries({kAssociated1, kAssociated2, kAssociated3, kPrimary},
-                       &config),
+                       config),
       UnorderedElementsAre(
           Pair(kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
                                                 absl::nullopt)),
@@ -1085,7 +1087,7 @@ TEST_F(
   EXPECT_THAT(
       sets.FindEntries(
           {kAssociated1, kAssociated2, kAssociated3, kPrimary, kPrimary2},
-          &config),
+          config),
       UnorderedElementsAre(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -1157,7 +1159,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
               primary2,
               primary42,
           },
-          &config),
+          config),
       UnorderedElementsAre(
           Pair(associated_site0,
                FirstPartySetEntry(primary0, SiteType::kAssociated,
@@ -1238,7 +1240,7 @@ TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
               primary2,
               primary42,
           },
-          &config),
+          config),
       UnorderedElementsAre(
           Pair(associated_site0,
                FirstPartySetEntry(primary0, SiteType::kAssociated,

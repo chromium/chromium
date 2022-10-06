@@ -101,8 +101,7 @@ absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(
   const base::ElapsedTimer timer;
 
   absl::optional<net::FirstPartySetEntry> entry =
-      is_enabled() ? sets_->FindEntry(site, &fps_context_config)
-                   : absl::nullopt;
+      is_enabled() ? sets_->FindEntry(site, fps_context_config) : absl::nullopt;
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Cookie.FirstPartySets.FindOwner.Latency", timer.Elapsed(),
@@ -148,7 +147,7 @@ FirstPartySetsManager::EntriesResult FirstPartySetsManager::FindEntriesInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  return sets_->FindEntries(sites, &fps_context_config);
+  return sets_->FindEntries(sites, fps_context_config);
 }
 
 void FirstPartySetsManager::InvokePendingQueries() {
