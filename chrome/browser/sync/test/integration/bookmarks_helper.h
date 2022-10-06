@@ -177,7 +177,9 @@ void SetTitle(int profile,
 enum FaviconSource { FROM_UI, FROM_SYNC };
 
 // Sets the |icon_url| and |image| data for the favicon for |node| in the
-// bookmark model for |profile|.
+// bookmark model for |profile|. Waits until the favicon is loaded, but does so
+// comparing the icon URL and hence is unreliable if the same icon URL has been
+// used before.
 void SetFavicon(int profile,
                 const bookmarks::BookmarkNode* node,
                 const GURL& icon_url,
