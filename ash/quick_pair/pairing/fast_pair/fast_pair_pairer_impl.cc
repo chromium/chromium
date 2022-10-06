@@ -310,6 +310,22 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                               ask_confirm_passkey_initial_time_);
   confirm_passkey_initial_time_ = base::TimeTicks::Now();
 
+  // TODO(b/251281330): Make handling this edge case more robust.
+  //
+  // We can get to this point where the BLE instance of the device is lost
+  // (due to device specific flaky ADV), thus the FastPairHandshake is null,
+  // and |fast_pair_handshake_| is garbage memory, but the classic Bluetooth
+  // pairing continues. We stop the pairing in this case and show an error to
+  // the user.
+  if (!FastPairHandshakeLookup::GetInstance()->Get(device_)) {
+    QP_LOG(ERROR) << __func__
+                  << ": BLE device instance lost during passkey exchange";
+    device->CancelPairing();
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kBleDeviceLostMidPair);
+    return;
+  }
+
   pairing_device_address_ = device->GetAddress();
   expected_passkey_ = passkey;
   fast_pair_gatt_service_client_->WritePasskeyAsync(

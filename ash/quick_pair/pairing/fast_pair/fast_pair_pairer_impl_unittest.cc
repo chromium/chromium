@@ -946,6 +946,31 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial) {
   histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 1);
 }
 
+TEST_F(FastPairPairerImplTest, BleDeviceLostMidPair) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
+  CreateMockDevice(/*fast_pair_v1=*/false,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  // When pairing starts, if the classic address can't be resolved to
+  // a device then we pair via address.
+  SetGetDeviceNullptr();
+  CreatePairer();
+  fake_fast_pair_handshake_->InvokeCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  SetDecryptPasskeyForSuccess();
+
+  // Simulate BLE device being lost in the middle of pairing flow.
+  EraseHandshake();
+
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(PairFailure::kBleDeviceLostMidPair, GetPairFailure());
+  EXPECT_FALSE(IsDevicePaired());
+}
+
 TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();

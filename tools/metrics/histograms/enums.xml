@@ -36712,6 +36712,8 @@ Called by update_extension_permission.py.-->
       label="Potential pairing device lost during Passkey exchange"/>
   <int value="21" label="Failed to bond to discovered device"/>
   <int value="22" label="Failed to bond to device via public address"/>
+  <int value="23"
+      label="BLE device instance lost mid pair with classic device instance"/>
 </enum>
 
 <enum name="FastPairPairingMethod">

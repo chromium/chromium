@@ -83,6 +83,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
     case PairFailure::kAddressConnect:
       stream << "[Failed to bond to device via public address]";
       break;
+    case PairFailure::kBleDeviceLostMidPair:
+      stream << "[[BLE device instance lost mid pair with classic device "
+                "instance]]";
+      break;
   }
 
   return stream;
