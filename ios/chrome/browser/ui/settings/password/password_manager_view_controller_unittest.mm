@@ -342,10 +342,6 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedAndBlocked) {
 
 // Tests the order in which the saved passwords are displayed.
 TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrder) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kEnableFaviconForPasswords);
-
   AddSavedForm2();
 
   CheckURLCellTitleAndDetailText(
@@ -363,10 +359,6 @@ TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrder) {
 
 // Tests the order in which the blocked passwords are displayed.
 TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrder) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kEnableFaviconForPasswords);
-
   AddBlockedForm2();
   CheckURLCellEmptyTitle(@"secret2.com",
                          GetSectionIndex(SectionIdentifierSavedPasswords), 0);
@@ -382,6 +374,10 @@ TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrder) {
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
 // removed.
 TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrderLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kEnableFaviconForPasswords);
+
   AddSavedForm2();
 
   CheckTextCellTextAndDetailText(
@@ -401,6 +397,10 @@ TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrderLegacy) {
 // TODO(crbug.com/1300569): Remove this when kEnableFaviconForPasswords flag is
 // removed.
 TEST_F(PasswordManagerViewControllerTest, TestBlockedPasswordsOrderLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kEnableFaviconForPasswords);
+
   AddBlockedForm2();
   CheckTextCellText(@"secret2.com",
                     GetSectionIndex(SectionIdentifierSavedPasswords), 0);
@@ -716,7 +716,7 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   EXPECT_EQ(0,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  CheckTextCellTextAndDetailText(
+  CheckURLCellTitleAndDetailText(
       @"example.com", @"test@egmail.com",
       GetSectionIndex(SectionIdentifierSavedPasswords), 0);
 
@@ -726,10 +726,10 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   EXPECT_EQ(0,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  CheckTextCellTextAndDetailText(
+  CheckURLCellTitleAndDetailText(
       @"example.com", @"test@egmail.com",
       GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  CheckTextCellTextAndDetailText(
+  CheckURLCellTitleAndDetailText(
       @"example2.com", @"test@egmail.com",
       GetSectionIndex(SectionIdentifierSavedPasswords), 1);
 
@@ -739,10 +739,10 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   EXPECT_EQ(2,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  CheckTextCellText(@"secret.com", GetSectionIndex(SectionIdentifierBlocked),
-                    0);
-  CheckTextCellText(@"secret2.com", GetSectionIndex(SectionIdentifierBlocked),
-                    1);
+  CheckURLCellEmptyTitle(@"secret.com",
+                         GetSectionIndex(SectionIdentifierBlocked), 0);
+  CheckURLCellEmptyTitle(@"secret2.com",
+                         GetSectionIndex(SectionIdentifierBlocked), 1);
 
   [passwords_controller searchBar:bar textDidChange:@""];
   // All items should be back.

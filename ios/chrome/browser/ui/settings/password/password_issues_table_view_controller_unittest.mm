@@ -104,7 +104,7 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestPasswordIssue) {
   EXPECT_EQ(1, NumberOfSections());
 
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckTextCellTextAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
+  CheckURLCellTitleAndDetailText(@"example.com", @"test@egmail.com", 0, 0);
 }
 
 // Test verifies tapping item triggers function in presenter.

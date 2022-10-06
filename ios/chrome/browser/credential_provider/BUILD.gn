@@ -80,6 +80,8 @@ if (ios_enable_credential_provider_extension) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//ios/chrome/browser/browser_state:test_support",
+      "//ios/chrome/browser/favicon",
+      "//ios/chrome/browser/history",
       "//ios/chrome/browser/signin",
       "//ios/chrome/browser/signin:test_support",
       "//ios/chrome/common/app_group",
