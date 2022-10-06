@@ -3343,6 +3343,14 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 [ Win ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/orb-v01/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 external/wpt/avif/animated-avif-timeout.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]

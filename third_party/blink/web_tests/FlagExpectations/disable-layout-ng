@@ -11,6 +11,9 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/orb-v01/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/css/css-flexbox/flexbox-definite-cross-size-constrained-percentage.html [ Failure ]
 crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
