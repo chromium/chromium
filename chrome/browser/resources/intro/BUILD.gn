@@ -4,15 +4,21 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/resources/tools/build_webui.gni")
+import("//components/signin/features.gni")
 
-assert(!is_chromeos_ash && !is_android)
+assert(is_chromeos_lacros || enable_dice_support)
 
 build_webui("build") {
   grd_prefix = "intro"
 
   static_files = [ "intro.html" ]
 
-  web_component_files = [ "app.ts" ]
+  if (is_chromeos_lacros) {
+    web_component_files = [ "lacros_app.ts" ]
+  }
+  if (enable_dice_support) {
+    web_component_files = [ "dice_app.ts" ]
+  }
 
   non_web_component_files = [ "browser_proxy.ts" ]
 

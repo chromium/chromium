@@ -9,8 +9,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './app.html.js';
 import {IntroBrowserProxy, IntroBrowserProxyImpl} from './browser_proxy.js';
+import {getTemplate} from './dice_app.html.js';
 
 export interface IntroAppElement {
   $: {
