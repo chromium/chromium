@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,12 +21,12 @@
 
 namespace {
 
-void AppendAcceleratorData(std::vector<ash::AcceleratorData>& data,
-                           const ash::AcceleratorData accelerators[],
-                           size_t accelerators_length) {
-  data.reserve(data.size() + accelerators_length);
-  for (size_t i = 0; i < accelerators_length; ++i) {
-    data.push_back(accelerators[i]);
+void AppendAcceleratorData(
+    std::vector<ash::AcceleratorData>& data,
+    base::span<const ash::AcceleratorData> accelerators) {
+  data.reserve(data.size() + accelerators.size());
+  for (const auto& accelerator : accelerators) {
+    data.push_back(accelerator);
   }
 }
 
@@ -48,9 +47,10 @@ AshAcceleratorConfiguration::GetAcceleratorLayoutInfos() {
 
 const std::vector<AcceleratorInfo>&
 AshAcceleratorConfiguration::GetConfigForAction(AcceleratorActionId action_id) {
-  DCHECK(base::Contains(id_to_accelerator_infos_, action_id));
+  const auto accelerator_iter = id_to_accelerator_infos_.find(action_id);
+  DCHECK(accelerator_iter != id_to_accelerator_infos_.end());
 
-  return id_to_accelerator_infos_[action_id];
+  return accelerator_iter->second;
 }
 
 bool AshAcceleratorConfiguration::IsMutable() const {
@@ -87,35 +87,45 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
 
 void AshAcceleratorConfiguration::Initialize() {
   std::vector<AcceleratorData> accelerators;
-  AppendAcceleratorData(accelerators, kAcceleratorData, kAcceleratorDataLength);
+  AppendAcceleratorData(
+      accelerators, base::make_span(kAcceleratorData, kAcceleratorDataLength));
 
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
-    AppendAcceleratorData(accelerators, kEnableWithPositionalAcceleratorsData,
-                          kEnableWithPositionalAcceleratorsDataLength);
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kEnableWithPositionalAcceleratorsData,
+                        kEnableWithPositionalAcceleratorsDataLength));
     if (ash::features::IsImprovedDesksKeyboardShortcutsEnabled()) {
       AppendAcceleratorData(
           accelerators,
-          kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
-          kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength);
+          base::make_span(
+              kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
+              kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
     }
   } else if (::features::IsNewShortcutMappingEnabled()) {
-    AppendAcceleratorData(accelerators, kEnableWithNewMappingAcceleratorData,
-                          kEnableWithNewMappingAcceleratorDataLength);
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kEnableWithNewMappingAcceleratorData,
+                        kEnableWithNewMappingAcceleratorDataLength));
   } else {
-    AppendAcceleratorData(accelerators, kDisableWithNewMappingAcceleratorData,
-                          kDisableWithNewMappingAcceleratorDataLength);
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kDisableWithNewMappingAcceleratorData,
+                        kDisableWithNewMappingAcceleratorDataLength));
   }
 
   // Debug accelerators.
   if (debug::DebugAcceleratorsEnabled()) {
-    AppendAcceleratorData(accelerators, kDebugAcceleratorData,
-                          kDebugAcceleratorDataLength);
+    AppendAcceleratorData(
+        accelerators,
+        base::make_span(kDebugAcceleratorData, kDebugAcceleratorDataLength));
   }
 
   // Developer accelerators.
   if (debug::DeveloperAcceleratorsEnabled()) {
-    AppendAcceleratorData(accelerators, kDeveloperAcceleratorData,
-                          kDeveloperAcceleratorDataLength);
+    AppendAcceleratorData(accelerators,
+                          base::make_span(kDeveloperAcceleratorData,
+                                          kDeveloperAcceleratorDataLength));
   }
 
   Initialize(accelerators);
@@ -188,11 +198,11 @@ bool AshAcceleratorConfiguration::IsDeprecated(
   if (!action_id) {
     return false;
   }
-  DCHECK(base::Contains(id_to_accelerator_infos_, *action_id));
 
-  const std::vector<AcceleratorInfo> infos =
-      id_to_accelerator_infos_.at(*action_id);
-  for (auto const& info : infos) {
+  const auto accelerators_iter = id_to_accelerator_infos_.find(*action_id);
+  DCHECK(accelerators_iter != id_to_accelerator_infos_.end());
+
+  for (auto const& info : accelerators_iter->second) {
     if (info.type == mojom::AcceleratorType::kDeprecated &&
         info.accelerator == accelerator) {
       return true;
@@ -202,9 +212,9 @@ bool AshAcceleratorConfiguration::IsDeprecated(
 }
 
 void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {
-  DCHECK(kAcceleratorLayouts.contains(data.action));
-  const AcceleratorLayoutDetails& layout_details =
-      kAcceleratorLayouts.at(data.action);
+  const auto* layout_iter = kAcceleratorLayouts.find(data.action);
+  DCHECK(layout_iter != kAcceleratorLayouts.end());
+  const AcceleratorLayoutDetails& layout_details = layout_iter->second;
 
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();

@@ -523,6 +523,8 @@ void AcceleratorControllerImpl::Init() {
 void AcceleratorControllerImpl::RegisterAccelerators(
     base::span<const AcceleratorData> accelerators) {
   std::vector<ui::Accelerator> ui_accelerators;
+  ui_accelerators.reserve(accelerators.size());
+
   for (const auto& accelerator_data : accelerators) {
     ui::Accelerator accelerator =
         CreateAccelerator(accelerator_data.keycode, accelerator_data.modifiers,
