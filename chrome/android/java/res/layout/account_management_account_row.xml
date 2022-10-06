@@ -11,17 +11,26 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
+    android:baselineAligned="false"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingEnd="16dp"
     android:paddingStart="16dp">
 
-    <ImageView
-        android:id="@android:id/icon"
+    <!-- https://crbug.com/1369955: android::scaleType="fitStart" does not work correctly in RTL
+         layout as it always aligns the top left. Using wrapping FrameLayout as workaround. -->
+    <FrameLayout
         android:layout_width="56dp"
         android:layout_height="40dp"
-        tools:ignore="ContentDescription"
-        android:scaleType="fitStart" />
+        android:gravity="start">
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
 
     <!-- Padding asymmetry (16dp top vs 18dp bottom) is necessary to move text 1dp up according to
          the Material spec. See https://crbug.com/701221#c37. -->
