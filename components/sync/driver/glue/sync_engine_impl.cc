@@ -392,7 +392,7 @@ void SyncEngineImpl::GetThrottledDataTypesForTest(
              base::OnceCallback<void(ModelTypeSet)> cb) {
             std::move(cb).Run(engine->cached_status_.throttled_types);
           },
-          weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
+          weak_ptr_factory_.GetMutableWeakPtr(), std::move(cb)));
 }
 
 void SyncEngineImpl::RequestBufferedProtocolEventsAndEnableForwarding() {
