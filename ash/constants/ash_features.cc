@@ -1512,6 +1512,10 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
              "PhoneHubMonochromeNotificationIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
+             "PhoneHubPingOnBubbleOpen",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate,
@@ -2725,6 +2729,10 @@ bool IsPhoneHubMonochromeNotificationIconsEnabled() {
 
 bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubFeatureSetupErrorHandling);
+}
+
+bool IsPhoneHubPingOnBubbleOpenEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubPingOnBubbleOpen);
 }
 
 bool IsPerformantSplitViewResizingEnabled() {
