@@ -1029,6 +1029,8 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.ScoringScriptJS",
       worklet_script.original_size_bytes());
+  base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.ScoringScriptJS",
+                          worklet_script.download_time());
   worklet_loader_.reset();
 
   // On failure, delete `this`, as it can't do anything without a loaded script.

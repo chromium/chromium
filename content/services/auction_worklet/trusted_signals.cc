@@ -417,6 +417,7 @@ TrustedSignals::~TrustedSignals() = default;
 void TrustedSignals::StartDownload(
     network::mojom::URLLoaderFactory* url_loader_factory,
     const GURL& full_signals_url) {
+  download_start_time_ = base::TimeTicks::Now();
   auction_downloader_ = std::make_unique<AuctionDownloader>(
       url_loader_factory, full_signals_url, AuctionDownloader::MimeType::kJson,
       base::BindOnce(&TrustedSignals::OnDownloadComplete,
@@ -434,14 +435,14 @@ void TrustedSignals::OnDownloadComplete(
   // over to the parser on the V8 thread.
   v8_helper_->v8_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&TrustedSignals::HandleDownloadResultOnV8Thread,
-                     v8_helper_, trusted_signals_url_,
-                     std::move(interest_group_names_),
-                     std::move(bidding_signals_keys_), std::move(render_urls_),
-                     std::move(ad_component_render_urls_), std::move(body),
-                     std::move(headers), std::move(error_msg),
-                     base::SequencedTaskRunnerHandle::Get(),
-                     weak_ptr_factory.GetWeakPtr()));
+      base::BindOnce(
+          &TrustedSignals::HandleDownloadResultOnV8Thread, v8_helper_,
+          trusted_signals_url_, std::move(interest_group_names_),
+          std::move(bidding_signals_keys_), std::move(render_urls_),
+          std::move(ad_component_render_urls_), std::move(body),
+          std::move(headers), std::move(error_msg),
+          base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory.GetWeakPtr(),
+          base::TimeTicks::Now() - download_start_time_));
 }
 
 // static
@@ -456,7 +457,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     scoped_refptr<net::HttpResponseHeaders> headers,
     absl::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
-    base::WeakPtr<TrustedSignals> weak_instance) {
+    base::WeakPtr<TrustedSignals> weak_instance,
+    base::TimeDelta download_time) {
   if (!body) {
     PostCallbackToUserThread(std::move(user_thread_task_runner), weak_instance,
                              nullptr, std::move(error_msg));
@@ -503,6 +505,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     // Handle bidding signals case.
     base::UmaHistogramCounts10M(
         "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedBidding", body->size());
+    base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.TrustedBidding",
+                            download_time);
     int format_version = 1;
     std::string format_version_string;
     if (headers &&
@@ -537,6 +541,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     // Handle scoring signals case.
     base::UmaHistogramCounts10M(
         "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedScoring", body->size());
+    base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.TrustedScoring",
+                            download_time);
     result = base::MakeRefCounted<Result>(
         ParseChildKeyValueMap(v8_helper.get(), v8_object, "renderUrls",
                               *render_urls),

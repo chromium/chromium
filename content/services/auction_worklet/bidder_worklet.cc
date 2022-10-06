@@ -989,6 +989,8 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.BiddingScriptJS",
       worklet_script.original_size_bytes());
+  base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.BiddingScriptJS",
+                          worklet_script.download_time());
   worklet_loader_.reset();
 
   // On failure, close pipe and delete `this`, as it can't do anything without a
@@ -1016,6 +1018,9 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
   base::UmaHistogramCounts10M(
       "Ads.InterestGroup.Net.ResponseSizeBytes.BiddingScriptWasm",
       wasm_helper.original_size_bytes());
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Net.DownloadTime.BiddingScriptWasm",
+      wasm_helper.download_time());
   wasm_loader_.reset();
 
   // If the WASM helper is actually requested, delete `this` and inform the

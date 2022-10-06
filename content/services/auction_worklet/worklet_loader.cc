@@ -28,19 +28,23 @@ WorkletLoaderBase::Result::Result()
 
 WorkletLoaderBase::Result::Result(scoped_refptr<AuctionV8Helper> v8_helper,
                                   v8::Global<v8::UnboundScript> script,
-                                  size_t original_size_bytes)
+                                  size_t original_size_bytes,
+                                  base::TimeDelta download_time)
     : state_(new V8Data(v8_helper, std::move(script)),
              base::OnTaskRunnerDeleter(v8_helper->v8_runner())),
-      original_size_bytes_(original_size_bytes) {
+      original_size_bytes_(original_size_bytes),
+      download_time_(download_time) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
 }
 
 WorkletLoaderBase::Result::Result(scoped_refptr<AuctionV8Helper> v8_helper,
                                   v8::Global<v8::WasmModuleObject> module,
-                                  size_t original_size_bytes)
+                                  size_t original_size_bytes,
+                                  base::TimeDelta download_time)
     : state_(new V8Data(v8_helper, std::move(module)),
              base::OnTaskRunnerDeleter(v8_helper->v8_runner())),
-      original_size_bytes_(original_size_bytes) {
+      original_size_bytes_(original_size_bytes),
+      download_time_(download_time) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
 }
 
@@ -85,6 +89,7 @@ WorkletLoaderBase::WorkletLoaderBase(
       mime_type_(mime_type),
       v8_helper_(v8_helper),
       debug_id_(std::move(debug_id)),
+      start_time_(base::TimeTicks::Now()),
       load_worklet_callback_(std::move(load_worklet_callback)) {
   DCHECK(load_worklet_callback_);
   DCHECK(mime_type == AuctionDownloader::MimeType::kJavascript ||
@@ -111,7 +116,8 @@ void WorkletLoaderBase::OnDownloadComplete(
                      source_url_, mime_type_, v8_helper_, debug_id_,
                      std::move(body), std::move(error_msg),
                      base::SequencedTaskRunnerHandle::Get(),
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::TimeTicks::Now() - start_time_));
 }
 
 // static
@@ -123,7 +129,8 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
     std::unique_ptr<std::string> body,
     absl::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
-    base::WeakPtr<WorkletLoaderBase> weak_instance) {
+    base::WeakPtr<WorkletLoaderBase> weak_instance,
+    base::TimeDelta download_time) {
   DCHECK(v8_helper->v8_runner()->RunsTasksInCurrentSequence());
   Result result;
   if (!body) {
@@ -137,10 +144,11 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
   DCHECK(!error_msg.has_value());
 
   if (mime_type == AuctionDownloader::MimeType::kJavascript) {
-    result = CompileJs(*body, v8_helper, source_url, debug_id.get(), error_msg);
+    result = CompileJs(*body, v8_helper, source_url, debug_id.get(), error_msg,
+                       download_time);
   } else {
-    result =
-        CompileWasm(*body, v8_helper, source_url, debug_id.get(), error_msg);
+    result = CompileWasm(*body, v8_helper, source_url, debug_id.get(),
+                         error_msg, download_time);
   }
 
   user_thread_task_runner->PostTask(
@@ -155,7 +163,8 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileJs(
     scoped_refptr<AuctionV8Helper> v8_helper,
     const GURL& source_url,
     AuctionV8Helper::DebugId* debug_id,
-    absl::optional<std::string>& error_msg) {
+    absl::optional<std::string>& error_msg,
+    base::TimeDelta download_time) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
 
@@ -168,7 +177,7 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileJs(
   v8::Isolate* isolate = v8_helper->isolate();
   return Result(std::move(v8_helper),
                 v8::Global<v8::UnboundScript>(isolate, local_script),
-                body.size());
+                body.size(), download_time);
 }
 
 // static
@@ -177,7 +186,8 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileWasm(
     scoped_refptr<AuctionV8Helper> v8_helper,
     const GURL& source_url,
     AuctionV8Helper::DebugId* debug_id,
-    absl::optional<std::string>& error_msg) {
+    absl::optional<std::string>& error_msg,
+    base::TimeDelta download_time) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
 
@@ -189,7 +199,7 @@ WorkletLoaderBase::Result WorkletLoaderBase::CompileWasm(
   v8::Isolate* isolate = v8_helper->isolate();
   return Result(std::move(v8_helper),
                 v8::Global<v8::WasmModuleObject>(isolate, wasm_result),
-                body.size());
+                body.size(), download_time);
 }
 
 void WorkletLoaderBase::DeliverCallbackOnUserThread(

@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -47,10 +48,12 @@ class CONTENT_EXPORT WorkletLoaderBase {
     Result();
     Result(scoped_refptr<AuctionV8Helper> v8_helper,
            v8::Global<v8::UnboundScript> script,
-           size_t original_size_bytes);
+           size_t original_size_bytes,
+           base::TimeDelta download_time);
     Result(scoped_refptr<AuctionV8Helper> v8_helper,
            v8::Global<v8::WasmModuleObject> module,
-           size_t original_size_bytes);
+           size_t original_size_bytes,
+           base::TimeDelta download_time);
     Result(Result&&);
     ~Result();
 
@@ -60,6 +63,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
     bool success() const;
 
     size_t original_size_bytes() const { return original_size_bytes_; }
+    base::TimeDelta download_time() const { return download_time_; }
 
    private:
     friend class WorkletLoader;
@@ -86,6 +90,8 @@ class CONTENT_EXPORT WorkletLoaderBase {
     // Used only for metrics; the original size of the uncompiled JS or WASM
     // body.
     size_t original_size_bytes_ = 0;
+    // Used only for metrics; the time required to download.
+    base::TimeDelta download_time_;
   };
 
   using LoadWorkletCallback =
@@ -122,19 +128,22 @@ class CONTENT_EXPORT WorkletLoaderBase {
       std::unique_ptr<std::string> body,
       absl::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
-      base::WeakPtr<WorkletLoaderBase> weak_instance);
+      base::WeakPtr<WorkletLoaderBase> weak_instance,
+      base::TimeDelta download_time);
 
   static Result CompileJs(const std::string& body,
                           scoped_refptr<AuctionV8Helper> v8_helper,
                           const GURL& source_url,
                           AuctionV8Helper::DebugId* debug_id,
-                          absl::optional<std::string>& error_msg);
+                          absl::optional<std::string>& error_msg,
+                          base::TimeDelta download_time);
 
   static Result CompileWasm(const std::string& body,
                             scoped_refptr<AuctionV8Helper> v8_helper,
                             const GURL& source_url,
                             AuctionV8Helper::DebugId* debug_id,
-                            absl::optional<std::string>& error_msg);
+                            absl::optional<std::string>& error_msg,
+                            base::TimeDelta download_time);
 
   void DeliverCallbackOnUserThread(Result result,
                                    absl::optional<std::string> error_msg);
@@ -143,6 +152,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
   const AuctionDownloader::MimeType mime_type_;
   const scoped_refptr<AuctionV8Helper> v8_helper_;
   const scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
+  const base::TimeTicks start_time_;
 
   std::unique_ptr<AuctionDownloader> auction_downloader_;
   LoadWorkletCallback load_worklet_callback_;

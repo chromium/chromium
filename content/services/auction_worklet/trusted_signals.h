@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -193,7 +194,8 @@ class CONTENT_EXPORT TrustedSignals {
       scoped_refptr<net::HttpResponseHeaders> headers,
       absl::optional<std::string> error_msg,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
-      base::WeakPtr<TrustedSignals> weak_instance);
+      base::WeakPtr<TrustedSignals> weak_instance,
+      base::TimeDelta download_time);
 
   // Called from V8 thread.
   static void PostCallbackToUserThread(
@@ -221,6 +223,8 @@ class CONTENT_EXPORT TrustedSignals {
 
   LoadSignalsCallback load_signals_callback_;
   std::unique_ptr<AuctionDownloader> auction_downloader_;
+  // Used only for metrics; time when download started.
+  base::TimeTicks download_start_time_;
 
   base::WeakPtrFactory<TrustedSignals> weak_ptr_factory{this};
 };

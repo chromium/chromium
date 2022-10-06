@@ -591,6 +591,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Net.DownloadTime.{Type}" units="ms"
+    expires_after="2023-07-31">
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time required to download {Type} requests, reported upon receving a
+    response.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="Type" variants="InterestGroupRequestType"/>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Net.RequestUrlSizeBytes.{Type}"
     units="bytes" expires_after="2023-07-31">
   <owner>caraitto@chromium.org</owner>
