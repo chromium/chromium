@@ -736,7 +736,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     bool skip_proxy = true;
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
-    if (web_contents && WebViewGuest::IsGuest(web_contents)) {
+    if (web_contents && WebViewGuest::IsGuest(frame)) {
       auto* guest_web_contents =
           WebViewGuest::GetTopLevelWebContents(web_contents);
       auto& guest_url = guest_web_contents->GetLastCommittedURL();
