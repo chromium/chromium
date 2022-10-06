@@ -92,6 +92,7 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name) {
 }
 
 bool CanGetReputationOfUrl(const GURL& url) {
+  // net::IsLocalhost(url) includes: "//localhost/", "//127.0.0.1/"
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
     return false;
   }
@@ -99,11 +100,6 @@ bool CanGetReputationOfUrl(const GURL& url) {
   // A valid hostname should be longer than 3 characters and have at least 1
   // dot.
   if (hostname.size() < 4 || base::STLCount(hostname, '.') < 1) {
-    return false;
-  }
-
-  if (net::IsLocalhost(url)) {
-    // Includes: "//localhost/", "//127.0.0.1/"
     return false;
   }
 
