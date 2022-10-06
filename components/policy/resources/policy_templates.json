@@ -17334,7 +17334,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable dictation on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable dictation on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 611,
       'caption': '''Enable the dictation on the login screen''',
       'tags': [],
@@ -17359,7 +17374,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable select to speak on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable select to speak on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 612,
       'caption': '''Enable the select to speak on the login screen''',
       'tags': [],
@@ -17384,7 +17414,22 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable cursor highlight on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable cursor highlight on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 613,
       'caption': '''Enable the cursor highlight on the login screen''',
       'tags': [],
@@ -17409,9 +17454,24 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable caret highlight on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable caret highlight on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 614,
-      'caption': '''Enable the caret highlight on the login screen''',
+      'caption': '''Enable caret highlight on the login screen''',
       'tags': [],
       'desc': '''Enable the caret highlight accessibility feature on the login screen.
 
@@ -17434,9 +17494,24 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable mono audio on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable mono audio on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 615,
-      'caption': '''Enable the mono audio on the login screen''',
+      'caption': '''Enable mono audio on the login screen''',
       'tags': [],
       'desc': '''Enable the mono audio accessibility feature on the login screen.
 
@@ -17461,9 +17536,24 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable auto-click on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable auto-click on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 617,
-      'caption': '''Enable the autoclick on the login screen''',
+      'caption': '''Enable autoclick on the login screen''',
       'tags': [],
       'desc': '''Enable the autoclick accessibility feature on the login screen.
 
@@ -17488,9 +17578,24 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable sticky keys on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable sticky keys on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 618,
-      'caption': '''Enable the sticky keys on the login screen''',
+      'caption': '''Enable sticky keys on the login screen''',
       'tags': [],
       'desc': '''Enable the sticky keys accessibility feature on the login screen.
 
@@ -17512,8 +17617,23 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable keyboard focus highlighting on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable keyboard focus highlighting on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'device_only': True,
       'example_value': True,
+      'default': None,
       'id': 619,
       'caption': '''Enable the keyboard focus highlighting accessibility feature''',
       'tags': [],
@@ -17540,6 +17660,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not show the Chrome Web Store icon in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> launcher or on the new tab page',
+        },
+        {
+          'value': False,
+          'caption': 'Show the Chrome Web Store icon in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> launcher and on the new tab page',
+        },
+      ],
       'example_value': True,
       'id': 189,
       'caption': '''Hide the web store from the New Tab Page and app launcher''',
@@ -17603,6 +17733,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow automatic reboot after updates',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow automatic reboot after updates',
+        },
+      ],
       'example_value': True,
       'id': 193,
       'caption': '''Automatically reboot after update''',
