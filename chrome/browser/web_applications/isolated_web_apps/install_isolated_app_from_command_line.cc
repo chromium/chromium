@@ -60,7 +60,9 @@ void ScheduleInstallIsolatedApp(WebAppProvider& provider,
 
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
-          url, CreateWebContents(profile), std::make_unique<WebAppUrlLoader>(),
+          url,
+          IsolationData{IsolationData::DevModeProxy{.proxy_url = url.spec()}},
+          CreateWebContents(profile), std::make_unique<WebAppUrlLoader>(),
           provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
 }

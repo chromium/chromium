@@ -64,6 +64,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   // The `id` in the application's manifest must equal "/".
   explicit InstallIsolatedAppCommand(
       const GURL& application_url,
+      const IsolationData& isolation_data,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<WebAppUrlLoader> url_loader,
       WebAppInstallFinalizer& install_finalizer,
@@ -123,10 +124,12 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   std::unique_ptr<AppLock> lock_;
 
   GURL url_;
+  IsolationData isolation_data_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 
   std::unique_ptr<WebAppUrlLoader> url_loader_;
+
   WebAppInstallFinalizer& install_finalizer_;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;

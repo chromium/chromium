@@ -62,6 +62,7 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     const GURL& url,
+    const IsolationData& isolation_data,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<WebAppUrlLoader> url_loader,
     WebAppInstallFinalizer& install_finalizer,
@@ -71,6 +72,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     : lock_(std::make_unique<AppLock>(
           base::flat_set<AppId>{GenerateAppId("", GURL{url})})),
       url_(url),
+      isolation_data_(isolation_data),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
       install_finalizer_(install_finalizer),
@@ -110,6 +112,12 @@ void InstallIsolatedAppCommand::Start() {
 void InstallIsolatedAppCommand::LoadUrl() {
   DCHECK(url_.is_valid());
   DCHECK(web_contents_ != nullptr);
+
+  // |web_app::IsolatedWebAppURLLoaderFactory| uses the isolation data in order
+  // to determine the current state of content serving (installation process vs
+  // application data serving) and source of data (proxy, web bundle, etc...).
+  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents_)
+      .set_isolation_data(isolation_data_);
 
   url_loader_->LoadUrl(url_, web_contents_.get(),
                        WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
@@ -230,9 +238,7 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
 void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
   WebAppInstallFinalizer::FinalizeOptions options(
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
-  // Treat all apps as Dev Mode proxying apps (rewriting URLs to HTTP) for now.
-  options.isolation_data =
-      IsolationData(IsolationData::DevModeProxy{.proxy_url = url_.spec()});
+  options.isolation_data = isolation_data_;
 
   install_finalizer_.FinalizeInstall(
       info, options,
