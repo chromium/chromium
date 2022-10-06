@@ -84,7 +84,8 @@ class MessagePortFuchsiaClient : public MessagePortFuchsia {
 
   // Helpers for reading and writing messages on the |port_|
   void OnMessageReady(fuchsia::web::WebMessage message) {
-    base::WeakPtr<MessagePortFuchsia> weak_this = weak_factory_.GetWeakPtr();
+    base::WeakPtr<MessagePortFuchsia> weak_this =
+        weak_factory_.GetMutableWeakPtr();
     auto status = ExtractAndHandleMessageFromFidl(std::move(message));
     if (!weak_this)
       return;
@@ -175,7 +176,8 @@ class MessagePortFuchsiaServer : public MessagePortFuchsia,
   // fuchsia::web::MessagePort implementation.
   void PostMessage(fuchsia::web::WebMessage message,
                    PostMessageCallback callback) final {
-    base::WeakPtr<MessagePortFuchsia> weak_this = weak_factory_.GetWeakPtr();
+    base::WeakPtr<MessagePortFuchsia> weak_this =
+        weak_factory_.GetMutableWeakPtr();
     auto status = ExtractAndHandleMessageFromFidl(std::move(message));
     if (!weak_this)
       return;
