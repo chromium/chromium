@@ -55,11 +55,13 @@
 #include "ash/shelf/test/hotseat_state_watcher.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/lock_state_controller.h"
@@ -1208,6 +1210,7 @@ TEST_F(ShelfLayoutManagerTest, OpenAppListInFullscreenWithShelfHiddenState) {
   generator->PressLeftButton();
   base::RunLoop().RunUntilIdle();
   generator->ReleaseLeftButton();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4930,6 +4933,57 @@ TEST_P(NavigationWidgetRTLTest, VerifyHomeButtonBounds) {
         fetch_home_button_screen_bounds(navigation_widget, in_rtl_);
     EXPECT_EQ(display_bounds.bottom(), home_button_bounds_in_screen.bottom());
   }
+}
+
+class ShelfLayoutManagerWithEcheTest : public ShelfLayoutManagerTestBase {
+ public:
+  template <typename... TaskEnvironmentTraits>
+  explicit ShelfLayoutManagerWithEcheTest(TaskEnvironmentTraits&&... traits)
+      : ShelfLayoutManagerTestBase(
+            std::forward<TaskEnvironmentTraits>(traits)...) {
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kEcheSWA);
+  }
+
+ protected:
+  void SetUp() override { ShelfLayoutManagerTestBase::SetUp(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Calling the factory constructor is enough to set it up.
+  TestAshWebViewFactory test_web_view_factory_;
+};
+
+TEST_F(ShelfLayoutManagerWithEcheTest, AutoHideShelfWithEcheHidden) {
+  // Create and maximize a widget to cycle force auto hidden shelf.
+  views::Widget* widget = CreateTestWidget();
+  widget->Maximize();
+  // Set the shelf to auto-hide.
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  GetShelfLayoutManager()->UpdateVisibilityState();
+
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+
+  // Create and show Eche Bubble.
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(30, 30);
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image_skia.MakeThreadSafe();
+  status_area->eche_tray()->LoadBubble(GURL("http://google.com"),
+                                       gfx::Image(image_skia), u"app 1");
+  status_area->eche_tray()->ShowBubble();
+  UpdateAutoHideStateNow();
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  // Hide Eche Bubble.
+  status_area->eche_tray()->HideBubble();
+  UpdateAutoHideStateNow();
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 }
 
 }  // namespace ash

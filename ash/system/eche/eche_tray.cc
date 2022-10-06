@@ -270,6 +270,7 @@ void EcheTray::ShowBubble() {
   window_state->set_ignore_keyboard_bounds_change(true);
   bubble_->GetBubbleWidget()->GetNativeWindow()->AddPreTargetHandler(
       event_interceptor_.get());
+  shelf()->UpdateAutoHideState();
 }
 
 bool EcheTray::PerformAction(const ui::Event& event) {
@@ -308,6 +309,10 @@ void EcheTray::OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
   // Another bubble has become visible, so minimize this one.
   if (visible && IsBubbleVisible())
     HideBubble();
+}
+
+bool EcheTray::CacheBubbleViewForHide() const {
+  return true;
 }
 
 std::u16string EcheTray::GetAccessibleNameForBubble() {
@@ -456,6 +461,7 @@ void EcheTray::HideBubble() {
   bubble_->bubble_view()->SetVisible(false);
   bubble_->GetBubbleWidget()->Deactivate();
   bubble_->GetBubbleWidget()->Hide();
+  shelf()->UpdateAutoHideState();
 }
 
 void EcheTray::InitBubble() {

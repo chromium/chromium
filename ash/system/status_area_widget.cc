@@ -601,9 +601,30 @@ bool StatusAreaWidget::ShouldShowShelf() const {
   if (unified_system_tray_->IsSliderBubbleShown())
     return false;
 
-  // All other tray bubbles on the same display with status area widget will
-  // force the shelf to be visible.
-  return tray_bubble_count_ > 0;
+  // Some TrayBackgroundViews' cache their bubble, the shelf should only be
+  // forced to show if the bubble is visible, and we should not show the shelf
+  // for cached, hidden bubbles.
+  if (tray_bubble_count_ > 0) {
+    for (TrayBackgroundView* tray_button : tray_buttons_) {
+      if (!tray_button->GetBubbleView())
+        continue;
+
+      // Any tray bubble is showing, show shelf.
+      if (tray_button->GetBubbleView()->GetVisible())
+        return true;
+
+      // Tray bubble view is not null and not visible, tray bubble is cached
+      // for hidden case. If the tray caches the view for hidden, we should
+      // hide self otherwise show shelf.
+      if (!tray_button->GetBubbleView()->GetVisible() &&
+          !tray_button->CacheBubbleViewForHide()) {
+        return true;
+      }
+    }
+  }
+
+  // No cases to show shelf, returns false to hide shelf.
+  return false;
 }
 
 bool StatusAreaWidget::IsMessageBubbleShown() const {

@@ -142,24 +142,11 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // May close the bubble.
   virtual void ClickedOutsideBubble() = 0;
 
+  // Returns true if tray bubble view is cached when hidden
+  virtual bool CacheBubbleViewForHide() const;
+
   // Updates the background layer.
   virtual void UpdateBackground();
-
-  void SetIsActive(bool is_active);
-  bool is_active() const { return is_active_; }
-
-  TrayContainer* tray_container() const { return tray_container_; }
-  TrayEventFilter* tray_event_filter() { return tray_event_filter_.get(); }
-  Shelf* shelf() { return shelf_; }
-  TrayBackgroundViewCatalogName catalog_name() const { return catalog_name_; }
-
-  // Updates the visibility of this tray's separator.
-  void set_separator_visibility(bool visible) { separator_visible_ = visible; }
-
-  // Sets whether to show the view when the status area is collapsed.
-  void set_show_when_collapsed(bool show_when_collapsed) {
-    show_when_collapsed_ = show_when_collapsed;
-  }
 
   // Gets the anchor for bubbles, which is tray_container().
   views::View* GetBubbleAnchor() const;
@@ -197,6 +184,22 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
 
   // Returns the corners based on the `corner_behavior_`;
   gfx::RoundedCornersF GetRoundedCorners();
+
+  void SetIsActive(bool is_active);
+  bool is_active() const { return is_active_; }
+
+  TrayContainer* tray_container() const { return tray_container_; }
+  TrayEventFilter* tray_event_filter() { return tray_event_filter_.get(); }
+  Shelf* shelf() { return shelf_; }
+  TrayBackgroundViewCatalogName catalog_name() const { return catalog_name_; }
+
+  // Updates the visibility of this tray's separator.
+  void set_separator_visibility(bool visible) { separator_visible_ = visible; }
+
+  // Sets whether to show the view when the status area is collapsed.
+  void set_show_when_collapsed(bool show_when_collapsed) {
+    show_when_collapsed_ = show_when_collapsed;
+  }
 
  protected:
   // ActionableView:

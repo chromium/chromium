@@ -870,6 +870,10 @@ bool TrayBackgroundView::GetEffectiveVisibility() {
   return true;
 }
 
+bool TrayBackgroundView::CacheBubbleViewForHide() const {
+  return false;
+}
+
 BEGIN_METADATA(TrayBackgroundView, ActionableView)
 END_METADATA
 

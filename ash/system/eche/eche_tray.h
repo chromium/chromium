@@ -94,6 +94,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void OnVirtualKeyboardVisibilityChanged() override;
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
                                     bool visible) override;
+  bool CacheBubbleViewForHide() const override;
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

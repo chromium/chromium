@@ -21,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
+#include "ash/system/eche/eche_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/virtual_keyboard_model.h"
@@ -35,6 +36,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_ash_web_view_factory.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -45,6 +47,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image.h"
 
 using session_manager::SessionState;
 
@@ -670,6 +673,44 @@ TEST_F(StatusAreaWidgetQSRevampTest, DateTrayRoundedCornerBehavior) {
 
   EXPECT_EQ(GetTrayCornerBehavior(status_area->date_tray()),
             TrayBackgroundView::RoundedCornerBehavior::kStartRounded);
+}
+
+class StatusAreaWidgetEcheTest : public AshTestBase {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*disabled_features=*/{});
+    DCHECK(test_web_view_factory_.get());
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Calling the factory constructor is enough to set it up.
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
+      std::make_unique<TestAshWebViewFactory>();
+};
+
+// Tests that Eche Tray is shown or hidden
+TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
+  StatusAreaWidget* status_area =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget();
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(30, 30);
+  gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  image_skia.MakeThreadSafe();
+  status_area->eche_tray()->LoadBubble(GURL("http://google.com"),
+                                       gfx::Image(image_skia), u"app 1");
+  status_area->eche_tray()->ShowBubble();
+
+  // Auto-hidden shelf would be forced to be visible.
+  EXPECT_TRUE(status_area->ShouldShowShelf());
+
+  status_area->eche_tray()->HideBubble();
+
+  // Auto-hidden shelf would not be forced to be visible.
+  EXPECT_FALSE(status_area->ShouldShowShelf());
 }
 
 }  // namespace ash
