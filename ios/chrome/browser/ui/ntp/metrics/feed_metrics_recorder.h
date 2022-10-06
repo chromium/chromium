@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 
@@ -133,22 +134,41 @@ class Time;
 
 // Records the `durationInSeconds` it took to Discover feed to Fetch articles.
 // `success` is YES if operation was successful.
+// DEPRECATED: use -recordFeedArticlesFetchDuration:success:.
 - (void)recordFeedArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
 
+// Records the `duration` it took to Discover feed to Fetch articles.
+// `success` is YES if operation was successful.
+- (void)recordFeedArticlesFetchDuration:(base::TimeDelta)duration
+                                success:(BOOL)success;
+
 // Records the `durationInSeconds` it took to Discover feed to Fetch more
 // articles (e.g. New "infinite feed" articles). `success` is YES if operation
 // was successful.
+// DEPRECATED: use -recordFeedMoreArticlesFetchDuration:success:.
 - (void)recordFeedMoreArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                              success:(BOOL)success;
 
+// Records the `duration` it took to Discover feed to Fetch more articles
+// (e.g. New "infinite feed" articles). `success` is YES if operation
+// was successful.
+- (void)recordFeedMoreArticlesFetchDuration:(base::TimeDelta)duration
+                                    success:(BOOL)success;
+
 // Records the `durationInSeconds` it took to Discover feed to upload actions.
 // `success` is YES if operation was successful.
+// DEPRECATED: use -recordFeedUploadActionsDuration:success:.
 - (void)recordFeedUploadActionsDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success;
+
+// Records the `duration` it took to Discover feed to upload actions.
+// `success` is YES if operation was successful.
+- (void)recordFeedUploadActionsDuration:(base::TimeDelta)duration
+                                success:(BOOL)success;
 
 // Records the native context menu visibility change.
 - (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown;

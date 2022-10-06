@@ -301,42 +301,58 @@ using feed::FeedUserActionType;
 - (void)recordFeedArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success {
+  [self recordFeedArticlesFetchDuration:base::Seconds(durationInSeconds)
+                                success:success];
+}
+
+- (void)recordFeedArticlesFetchDuration:(base::TimeDelta)duration
+                                success:(BOOL)success {
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationSuccess,
-                               base::Seconds(durationInSeconds));
+                               duration);
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedArticlesFetchNetworkDurationFailure,
-                               base::Seconds(durationInSeconds));
+                               duration);
   }
-  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+  [self recordNetworkRequestDuration:duration];
 }
 
 - (void)recordFeedMoreArticlesFetchDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                              success:(BOOL)success {
+  [self recordFeedMoreArticlesFetchDuration:base::Seconds(durationInSeconds)
+                                    success:success];
+}
+
+- (void)recordFeedMoreArticlesFetchDuration:(base::TimeDelta)duration
+                                    success:(BOOL)success {
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(
-        kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess,
-        base::Seconds(durationInSeconds));
+        kDiscoverFeedMoreArticlesFetchNetworkDurationSuccess, duration);
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(
-        kDiscoverFeedMoreArticlesFetchNetworkDurationFailure,
-        base::Seconds(durationInSeconds));
+        kDiscoverFeedMoreArticlesFetchNetworkDurationFailure, duration);
   }
-  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+  [self recordNetworkRequestDuration:duration];
 }
 
 - (void)recordFeedUploadActionsDurationInSeconds:
             (NSTimeInterval)durationInSeconds
                                          success:(BOOL)success {
+  [self recordFeedUploadActionsDuration:base::Seconds(durationInSeconds)
+                                success:success];
+}
+
+- (void)recordFeedUploadActionsDuration:(base::TimeDelta)duration
+                                success:(BOOL)success {
   if (success) {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationSuccess,
-                               base::Seconds(durationInSeconds));
+                               duration);
   } else {
     UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedUploadActionsNetworkDurationFailure,
-                               base::Seconds(durationInSeconds));
+                               duration);
   }
-  [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+  [self recordNetworkRequestDuration:duration];
 }
 
 - (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown {
@@ -794,12 +810,10 @@ using feed::FeedUserActionType;
   self.scrolledReportedFollowing = NO;
 }
 
-// Records the `durationInSeconds` it took to Discover feed to perform any
+// Records the `duration` it took to Discover feed to perform any
 // network operation.
-- (void)recordNetworkRequestDurationInSeconds:
-    (NSTimeInterval)durationInSeconds {
-  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration,
-                             base::Seconds(durationInSeconds));
+- (void)recordNetworkRequestDuration:(base::TimeDelta)duration {
+  UMA_HISTOGRAM_MEDIUM_TIMES(kDiscoverFeedNetworkDuration, duration);
 }
 
 // Records that a URL was opened regardless of the target surface (e.g. New Tab,

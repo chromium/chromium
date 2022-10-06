@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder+testing.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -14,25 +15,19 @@
 #error "This file requires ARC support."
 #endif
 
-// Category for exposing properties and methods for testing.
-@interface FeedSessionRecorder (Testing)
-// Exposing the recorded session duration.
-@property(nonatomic, assign) NSTimeInterval sessionDurationInSeconds;
-// Exposing the recorded time between sessions.
-@property(nonatomic, assign) NSTimeInterval secondsBetweenSessions;
-// Exposing the recorded time between interactions.
-@property(nonatomic, assign) NSTimeInterval secondsBetweenInteractions;
-// Exposing a private version of the method `recordUserInteractionOrScrolling`
-// that takes an argument. `interactionDate` is the date (and time) of the user
-// interaction or scrolling event.
-- (void)recordUserInteractionOrScrollingAtDate:(NSDate*)interactionDate;
-@end
+namespace {
+
+// Reference of time.
+constexpr base::Time kOriginOfTime =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(0));
+
+}  // anonymous namespace
 
 // Subclass used for testing the FeedSessionRecorder.
 @interface TestFeedSessionRecorder : FeedSessionRecorder
 // Redefining this property in a subclass prevents reading and writing to
 // NSUserDefaults during testing.
-@property(nonatomic, copy) NSDate* previousInteractionDate;
+@property(nonatomic, assign) base::Time previousInteractionDate;
 @end
 
 @implementation TestFeedSessionRecorder
@@ -44,61 +39,58 @@ using FeedSessionRecorderTest = PlatformTest;
 TEST_F(FeedSessionRecorderTest, SessionDuration) {
   TestFeedSessionRecorder* recorder = [[TestFeedSessionRecorder alloc] init];
 
-  // Note: time intervals are in seconds.
-  NSDate* date_0 = [NSDate dateWithTimeIntervalSinceReferenceDate:0];
-  NSDate* date_1 = [NSDate dateWithTimeIntervalSinceReferenceDate:5];
+  const base::Time date_0 = kOriginOfTime;
+  const base::Time date_1 = kOriginOfTime + base::Seconds(5);
   [recorder recordUserInteractionOrScrollingAtDate:date_0];
   [recorder recordUserInteractionOrScrollingAtDate:date_1];
 
   // There should be no session duration yet, since there is no interaction
   // outside of the session timeout (5 mins).
-  EXPECT_EQ(0, recorder.sessionDurationInSeconds);
+  EXPECT_EQ(base::Seconds(0), recorder.sessionDuration);
 
   // date_2 must be at least 5 minutes after date_1.
-  NSDate* date_2 = [NSDate dateWithTimeIntervalSinceReferenceDate:6 * 60];
+  const base::Time date_2 = kOriginOfTime + base::Minutes(6);
   [recorder recordUserInteractionOrScrollingAtDate:date_2];
 
-  EXPECT_EQ(5, recorder.sessionDurationInSeconds);
+  EXPECT_EQ(base::Seconds(5), recorder.sessionDuration);
 }
 
 // Tests that the time between session is correctly calculated.
 TEST_F(FeedSessionRecorderTest, TimeBetweenSessions) {
   TestFeedSessionRecorder* recorder = [[TestFeedSessionRecorder alloc] init];
 
-  // Note: time intervals are in seconds.
-  NSDate* date_0 = [NSDate dateWithTimeIntervalSinceReferenceDate:0];
-  NSDate* date_1 = [NSDate dateWithTimeIntervalSinceReferenceDate:5];
+  const base::Time date_0 = kOriginOfTime;
+  const base::Time date_1 = kOriginOfTime + base::Seconds(5);
   [recorder recordUserInteractionOrScrollingAtDate:date_0];
   [recorder recordUserInteractionOrScrollingAtDate:date_1];
 
   // A new session hasn't yet begun.
-  EXPECT_EQ(0, recorder.secondsBetweenSessions);
+  EXPECT_EQ(base::Seconds(0), recorder.timeBetweenSessions);
 
   // date_2 must be at least 5 minutes after date_1.
-  NSDate* date_2 = [NSDate dateWithTimeIntervalSinceReferenceDate:5 + 6 * 60];
+  const base::Time date_2 = kOriginOfTime + base::Minutes(6) + base::Seconds(5);
   [recorder recordUserInteractionOrScrollingAtDate:date_2];
 
-  EXPECT_EQ(6 * 60, recorder.secondsBetweenSessions);
+  EXPECT_EQ(base::Minutes(6), recorder.timeBetweenSessions);
 }
 
 // Tests that the time between interactions is correctly calculated.
 TEST_F(FeedSessionRecorderTest, TimeBetweenInteractions) {
   TestFeedSessionRecorder* recorder = [[TestFeedSessionRecorder alloc] init];
 
-  // Note: time intervals are in seconds.
-  NSDate* date_0 = [NSDate dateWithTimeIntervalSinceReferenceDate:0];
+  const base::Time date_0 = kOriginOfTime;
   [recorder recordUserInteractionOrScrollingAtDate:date_0];
 
   // Cannot compute the time between interactions if there is only one.
-  EXPECT_EQ(0, recorder.secondsBetweenInteractions);
+  EXPECT_EQ(base::Seconds(0), recorder.timeBetweenInteractions);
 
-  NSDate* date_1 = [NSDate dateWithTimeIntervalSinceReferenceDate:5];
+  const base::Time date_1 = kOriginOfTime + base::Seconds(5);
   [recorder recordUserInteractionOrScrollingAtDate:date_1];
 
-  EXPECT_EQ(5, recorder.secondsBetweenInteractions);
+  EXPECT_EQ(base::Seconds(5), recorder.timeBetweenInteractions);
 
-  NSDate* date_2 = [NSDate dateWithTimeIntervalSinceReferenceDate:9];
+  const base::Time date_2 = kOriginOfTime + base::Seconds(9);
   [recorder recordUserInteractionOrScrollingAtDate:date_2];
 
-  EXPECT_EQ(4, recorder.secondsBetweenInteractions);
+  EXPECT_EQ(base::Seconds(4), recorder.timeBetweenInteractions);
 }

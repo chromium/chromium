@@ -9,6 +9,7 @@ source_set("metrics") {
     "feed_metrics_constants.mm",
     "feed_metrics_recorder.h",
     "feed_metrics_recorder.mm",
+    "feed_session_recorder+testing.h",
     "feed_session_recorder.h",
     "feed_session_recorder.mm",
     "metrics.h",

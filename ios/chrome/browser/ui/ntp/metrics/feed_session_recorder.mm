@@ -7,6 +7,8 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_session_recorder+testing.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,10 +38,10 @@ NSString* const kFeedPreviousInteractionDateKey =
     @"DiscoverFeedPreviousInteractionDate";
 
 // Two interactions (including scrolling) are considered to be within the same
-// session if they are at most `kSessionTimeoutInSeconds` apart from each other.
+// session if they are at most `kSessionTimeout` apart from each other.
 // Otherwise, the later interaction (including scrolling) is considered a new
 // session.
-const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
+constexpr base::TimeDelta kSessionTimeout = base::Minutes(5);
 
 }  // namespace
 
@@ -47,19 +49,19 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 
 // The date (and time) when the first interaction (including scrolling) was
 // recorded for the current session.
-@property(nonatomic, copy) NSDate* sessionStartDate;
+@property(nonatomic, assign) base::Time sessionStartDate;
 
 // The date (and time) of the previous interaction (including scrolling).
-@property(nonatomic, copy) NSDate* previousInteractionDate;
+@property(nonatomic, assign) base::Time previousInteractionDate;
 
 // Session duration.
-@property(nonatomic, assign) NSTimeInterval sessionDurationInSeconds;
+@property(nonatomic, assign) base::TimeDelta sessionDuration;
 
 // Time between sessions.
-@property(nonatomic, assign) NSTimeInterval secondsBetweenSessions;
+@property(nonatomic, assign) base::TimeDelta timeBetweenSessions;
 
 // Time between interactions.
-@property(nonatomic, assign) NSTimeInterval secondsBetweenInteractions;
+@property(nonatomic, assign) base::TimeDelta timeBetweenInteractions;
 
 @end
 
@@ -68,23 +70,27 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 
 #pragma mark - Properties
 
-- (NSDate*)previousInteractionDate {
-  if (!_previousInteractionDate) {
-    // Reads from disk if there was a cold start and the property is nil.
+- (base::Time)previousInteractionDate {
+  if (_previousInteractionDate.is_null()) {
+    // Reads from disk if there was a cold start and the property is null.
     // Disk value can be nil if this is a fresh install or if there was an issue
     // writing to NSUserDefaults.
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    _previousInteractionDate =
-        [defaults objectForKey:kFeedPreviousInteractionDateKey];
+    NSDate* previousInteractionDate = base::mac::ObjCCast<NSDate>(
+        [defaults objectForKey:kFeedPreviousInteractionDateKey]);
+    if (previousInteractionDate) {
+      _previousInteractionDate =
+          base::Time::FromNSDate(previousInteractionDate);
+    }
   }
   return _previousInteractionDate;
 }
 
-- (void)setPreviousInteractionDate:(NSDate*)previousInteractionDate {
+- (void)setPreviousInteractionDate:(base::Time)previousInteractionDate {
   // Sets both in-memory and disk memory at the same time.
   _previousInteractionDate = previousInteractionDate;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setObject:previousInteractionDate
+  [defaults setObject:_previousInteractionDate.ToNSDate()
                forKey:kFeedPreviousInteractionDateKey];
   [defaults synchronize];
 }
@@ -92,13 +98,13 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 #pragma mark - Public
 
 - (void)recordUserInteractionOrScrolling {
-  [self recordUserInteractionOrScrollingAtDate:[[NSDate alloc] init]];
+  [self recordUserInteractionOrScrollingAtDate:base::Time::Now()];
 }
 
 #pragma mark - Helpers
 
-- (void)recordUserInteractionOrScrollingAtDate:(NSDate*)interactionDate {
-  if (!self.previousInteractionDate) {
+- (void)recordUserInteractionOrScrollingAtDate:(base::Time)interactionDate {
+  if (self.previousInteractionDate.is_null()) {
     // This probably means this is the first feed interaction since a new
     // install. We cannot record session time metrics without this value so
     // start a new session.
@@ -108,9 +114,9 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
         recordTimeBetweenInteractionsWithStartDate:self.previousInteractionDate
                                            endDate:interactionDate];
     // Determine if this interaction should start a new session.
-    NSTimeInterval previousInteractionAge =
-        [interactionDate timeIntervalSinceDate:self.previousInteractionDate];
-    if (previousInteractionAge > kSessionTimeoutInSeconds) {
+    const base::TimeDelta previousInteractionAge =
+        interactionDate - self.previousInteractionDate;
+    if (previousInteractionAge > kSessionTimeout) {
       // Close out current session.
       [self recordSessionDurationWithStartDate:self.sessionStartDate
                                        endDate:self.previousInteractionDate];
@@ -128,12 +134,10 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 // session durations are only a few seconds long. Our goal is to increase this
 // over time. The histogram max value is 5 minutes. Session durations of 0
 // indicate that there was only a single interaction or scrolling.
-- (void)recordSessionDurationWithStartDate:(NSDate*)startDate
-                                   endDate:(NSDate*)endDate {
-  self.sessionDurationInSeconds = [endDate timeIntervalSinceDate:startDate];
-  const base::TimeDelta timeDelta =
-      base::Seconds(self.sessionDurationInSeconds);
-  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedSessionDuration, timeDelta,
+- (void)recordSessionDurationWithStartDate:(base::Time)startDate
+                                   endDate:(base::Time)endDate {
+  self.sessionDuration = endDate - startDate;
+  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedSessionDuration, self.sessionDuration,
                              /*min=*/base::Milliseconds(0),
                              /*max=*/base::Minutes(5), /*bucket_count=*/100);
 }
@@ -143,11 +147,11 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 // prefetching can be. The time between sessions is by definition longer than 5
 // minutes. This histogram only captures those users who return to the feed
 // within a day. The histogram max is 24 hours.
-- (void)recordTimeBetweenSessionsWithStartDate:(NSDate*)startDate
-                                       endDate:(NSDate*)endDate {
-  self.secondsBetweenSessions = [endDate timeIntervalSinceDate:startDate];
-  const base::TimeDelta timeDelta = base::Seconds(self.secondsBetweenSessions);
-  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedTimeBetweenSessions, timeDelta,
+- (void)recordTimeBetweenSessionsWithStartDate:(base::Time)startDate
+                                       endDate:(base::Time)endDate {
+  self.timeBetweenSessions = endDate - startDate;
+  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedTimeBetweenSessions,
+                             self.timeBetweenSessions,
                              /*min=*/base::Minutes(5),
                              /*max=*/base::Hours(24), /*bucket_count=*/50);
 }
@@ -156,12 +160,11 @@ const NSTimeInterval kSessionTimeoutInSeconds = 5 * 60;
 // expect interactions within a single session to be within a few seconds to a
 // minute or two of each other. We want to test if 5 minutes is the right
 // session timeout value. The histogram max value is 10 minutes.
-- (void)recordTimeBetweenInteractionsWithStartDate:(NSDate*)startDate
-                                           endDate:(NSDate*)endDate {
-  self.secondsBetweenInteractions = [endDate timeIntervalSinceDate:startDate];
-  const base::TimeDelta timeDelta =
-      base::Seconds(self.secondsBetweenInteractions);
-  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedTimeBetweenInteractions, timeDelta,
+- (void)recordTimeBetweenInteractionsWithStartDate:(base::Time)startDate
+                                           endDate:(base::Time)endDate {
+  self.timeBetweenInteractions = endDate - startDate;
+  UMA_HISTOGRAM_CUSTOM_TIMES(kDiscoverFeedTimeBetweenInteractions,
+                             self.timeBetweenInteractions,
                              /*min=*/base::Milliseconds(1),
                              /*max=*/base::Minutes(10), /*bucket_count=*/50);
 }
