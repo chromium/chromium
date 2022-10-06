@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/wizard_controller.h"
 
-#include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -99,6 +98,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/timezone/timezone_request.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/system/fake_statistics_provider.h"

@@ -812,7 +812,7 @@
       'filepath': 'chromeos/tast_control.gni',
     },
     'chromeos_timezone': {
-      'filepath': 'ash/components/timezone/',
+      'filepath': 'chromeos/ash/components/timezone/',
     },
     'chromeos_webui': {
       'filepath': 'chrome/browser/ui/webui/chromeos/|'\

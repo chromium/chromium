@@ -40,6 +40,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/smbfs:unit_tests",
     "//chromeos/ash/components/string_matching:unit_tests",
     "//chromeos/ash/components/sync_wifi:unit_tests",
+    "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/trash_service:unit_tests",
     "//chromeos/components/sensors:ash_unit_tests",
   ]

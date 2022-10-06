@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/accessibility/ui/focus_ring_controller.h"
-#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
@@ -81,6 +80,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/language/core/browser/pref_names.h"

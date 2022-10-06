@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/timezone/timezone_provider.h"
+#include "chromeos/ash/components/timezone/timezone_provider.h"
 
 #include <iterator>
 #include <utility>
@@ -22,7 +22,7 @@ TimeZoneProvider::TimeZoneProvider(
     : shared_url_loader_factory_(std::move(factory)), url_(url) {}
 
 TimeZoneProvider::~TimeZoneProvider() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void TimeZoneProvider::RequestTimezone(

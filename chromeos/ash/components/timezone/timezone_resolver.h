@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
-#define ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#define CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
 
 #include <memory>
 
@@ -24,7 +24,7 @@ namespace ash {
 struct TimeZoneResponseData;
 
 // This class implements periodic timezone synchronization.
-class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResolver {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
  public:
   class TimeZoneResolverImpl;
 
@@ -111,7 +111,7 @@ class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResolver {
 
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ash
@@ -121,4 +121,4 @@ namespace chromeos {
 using ::ash::TimeZoneResolver;
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_RESOLVER_H_

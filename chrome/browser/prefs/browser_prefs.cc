@@ -297,7 +297,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/services/device_sync/public/cpp/device_sync_prefs.h"
@@ -407,6 +406,7 @@
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller_impl.h"

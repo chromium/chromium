@@ -9,7 +9,6 @@
 
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
-#include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -38,6 +37,7 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"

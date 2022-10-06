@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
-#define ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
+#define CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
 
 #include <memory>
 
@@ -24,7 +24,7 @@ class SimpleURLLoader;
 
 namespace ash {
 
-struct COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResponseData {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResponseData {
   enum Status {
     OK,
     INVALID_REQUEST,
@@ -48,7 +48,8 @@ struct COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResponseData {
 };
 
 // Returns default timezone service URL.
-COMPONENT_EXPORT(ASH_TIMEZONE) GURL DefaultTimezoneProviderURL();
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE)
+GURL DefaultTimezoneProviderURL();
 
 // Takes Geoposition and sends it to a server to get local timezone information.
 // It performs formatting of the request and interpretation of the response.
@@ -57,7 +58,7 @@ COMPONENT_EXPORT(ASH_TIMEZONE) GURL DefaultTimezoneProviderURL();
 // Request is owned and destroyed by caller (usually TimeZoneProvider).
 // If request is destroyed while callback has not beed called yet, request
 // is silently cancelled.
-class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneRequest {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneRequest {
  public:
   // Called when a new geo timezone information is available.
   // The second argument indicates whether there was a server error or not.
@@ -130,9 +131,9 @@ class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneRequest {
   unsigned retries_;
 
   // Creation and destruction should happen on the same thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_REQUEST_H_

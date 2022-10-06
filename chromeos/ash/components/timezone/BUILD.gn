@@ -8,7 +8,7 @@ import("//testing/test.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 component("timezone") {
-  defines = [ "IS_ASH_TIMEZONE_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_TIMEZONE_IMPL" ]
   deps = [
     "//base",
     "//chromeos/ash/components/geolocation",

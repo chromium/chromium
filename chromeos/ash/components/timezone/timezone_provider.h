@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
-#define ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/timezone/timezone_request.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/timezone/timezone_request.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -28,7 +28,7 @@ struct Geoposition;
 //
 // Note: this should probably be a singleton to monitor requests rate.
 // But as it is used only from WizardController, it can be owned by it for now.
-class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneProvider {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneProvider {
  public:
   TimeZoneProvider(scoped_refptr<network::SharedURLLoaderFactory> factory,
                    const GURL& url);
@@ -60,9 +60,9 @@ class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneProvider {
   std::vector<std::unique_ptr<TimeZoneRequest>> requests_;
 
   // Creation and destruction should happen on the same thread.
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TIMEZONE_TIMEZONE_PROVIDER_H_

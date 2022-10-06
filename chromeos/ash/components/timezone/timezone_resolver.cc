@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/timezone/timezone_resolver.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 
 #include <math.h>
 #include <stdint.h>
@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/components/timezone/timezone_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -22,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/timezone/timezone_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -273,10 +273,10 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
 
   base::PowerMonitor::AddPowerSuspendObserver(this);
 
-  const int64_t last_refresh_at_raw =
+  const int64_t last_refresh_at_us =
       resolver_->local_state()->GetInt64(kLastTimeZoneRefreshTime);
-  const base::Time last_refresh_at =
-      base::Time::FromInternalValue(last_refresh_at_raw);
+  const base::Time last_refresh_at = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(last_refresh_at_us));
   const base::Time next_refresh_not_before =
       last_refresh_at + base::Seconds(kRefreshTimeZoneMinimumDelayOnRestartSec);
   if (next_refresh_not_before > base::Time::Now()) {
@@ -356,8 +356,9 @@ void TimeZoneResolver::TimeZoneResolverImpl::CreateNewRequest() {
 }
 
 void TimeZoneResolver::TimeZoneResolverImpl::RecordAttempt() {
-  resolver_->local_state()->SetInt64(kLastTimeZoneRefreshTime,
-                                     base::Time::Now().ToInternalValue());
+  resolver_->local_state()->SetInt64(
+      kLastTimeZoneRefreshTime,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   ++requests_count_;
 }
 
@@ -415,7 +416,7 @@ TimeZoneResolver::~TimeZoneResolver() {
 }
 
 void TimeZoneResolver::Start() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!implementation_) {
     implementation_ = std::make_unique<TimeZoneResolverImpl>(this);
     implementation_->Start();
@@ -423,7 +424,7 @@ void TimeZoneResolver::Start() {
 }
 
 void TimeZoneResolver::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   implementation_.reset();
 }
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
-#include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -51,6 +50,7 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/system/statistics_provider.h"

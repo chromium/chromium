@@ -7,18 +7,20 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/timezone/timezone_provider.h"
-#include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/timezone/timezone_provider.h"
+#include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace ash {
 
 namespace {
 
@@ -49,7 +51,7 @@ struct SimpleRequest {
     position.accuracy = 1;
     position.error_code = 0;
     position.timestamp = base::Time::FromTimeT(1331161200);
-    position.status = ash::Geoposition::STATUS_NONE;
+    position.status = Geoposition::STATUS_NONE;
     EXPECT_EQ(
         "latitude=39.603481, longitude=-119.682251, accuracy=1.000000, "
         "error_code=0, error_message='', status=0 (NONE)",
@@ -60,7 +62,7 @@ struct SimpleRequest {
     timezone.timeZoneId = "America/Los_Angeles";
     timezone.timeZoneName = "Pacific Standard Time";
     timezone.error_message.erase();
-    timezone.status = ash::TimeZoneResponseData::OK;
+    timezone.status = TimeZoneResponseData::OK;
     EXPECT_EQ(
         "dstOffset=0.000000, rawOffset=-28800.000000, "
         "timeZoneId='America/Los_Angeles', timeZoneName='Pacific Standard "
@@ -69,14 +71,12 @@ struct SimpleRequest {
   }
 
   GURL url;
-  ash::Geoposition position;
+  Geoposition position;
   std::string http_response;
-  ash::TimeZoneResponseData timezone;
+  TimeZoneResponseData timezone;
 };
 
 }  // anonymous namespace
-
-namespace ash {
 
 // This implements fake TimeZone API remote endpoint.
 class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {

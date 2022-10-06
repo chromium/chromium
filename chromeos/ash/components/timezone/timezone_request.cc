@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/timezone/timezone_request.h"
+#include "chromeos/ash/components/timezone/timezone_request.h"
 
 #include <stddef.h>
 
@@ -64,7 +64,8 @@ const StatusString2Enum statusString2Enum[] = {
     {"OVER_QUERY_LIMIT", TimeZoneResponseData::OVER_QUERY_LIMIT},
     {"REQUEST_DENIED", TimeZoneResponseData::REQUEST_DENIED},
     {"UNKNOWN_ERROR", TimeZoneResponseData::UNKNOWN_ERROR},
-    {"ZERO_RESULTS", TimeZoneResponseData::ZERO_RESULTS}, };
+    {"ZERO_RESULTS", TimeZoneResponseData::ZERO_RESULTS},
+};
 
 enum TimeZoneRequestEvent {
   // NOTE: Do not renumber these as that would confuse interpretation of
@@ -359,8 +360,7 @@ std::unique_ptr<TimeZoneResponseData> GetTimeZoneFromResponse(
 }  // namespace
 
 TimeZoneResponseData::TimeZoneResponseData()
-    : dstOffset(0), rawOffset(0), status(ZERO_RESULTS) {
-}
+    : dstOffset(0), rawOffset(0), status(ZERO_RESULTS) {}
 
 GURL DefaultTimezoneProviderURL() {
   return GURL(kDefaultTimezoneProviderUrl);
@@ -382,7 +382,7 @@ TimeZoneRequest::TimeZoneRequest(
       retries_(0) {}
 
 TimeZoneRequest::~TimeZoneRequest() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If callback is not empty, request is cancelled.
   if (!callback_.is_null()) {
@@ -392,7 +392,7 @@ TimeZoneRequest::~TimeZoneRequest() {
 }
 
 void TimeZoneRequest::StartRequest() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordUmaEvent(TIMEZONE_REQUEST_EVENT_REQUEST_START);
   request_started_at_ = base::Time::Now();
   ++retries_;
