@@ -219,7 +219,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
 }
 
 std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
-DiceWebSigninInterceptionBubbleView::GetHandle() const {
+DiceWebSigninInterceptionBubbleView::GetHandle() {
   return std::make_unique<ScopedHandle>(weak_factory_.GetWeakPtr());
 }
 

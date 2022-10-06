@@ -108,8 +108,7 @@ class DiceWebSigninInterceptionBubbleView
   // Gets a handle on the bubble. Warning: the bubble is closed when the handle
   // is destroyed ; it is the responsibility of the caller to keep the handle
   // alive until the bubble should be closed.
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle()
-      const;
+  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle();
 
   // This bubble has no native buttons. The user accepts or cancels or selects
   // Guest profile through this method, which is called by the inner web UI.
