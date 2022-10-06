@@ -148,6 +148,7 @@ public class ToolbarControlContainerTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.SNAPSHOT_SAME));
+        Assert.assertTrue(adapter.getDirtyRect().isEmpty());
     }
 
     @Test

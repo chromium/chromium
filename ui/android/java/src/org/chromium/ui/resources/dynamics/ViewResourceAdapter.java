@@ -194,7 +194,12 @@ public class ViewResourceAdapter
 
     /** Returns the dirty rect that will be drawn on capture. */
     @VisibleForTesting
-    protected Rect getDirtyRect() {
+    public Rect getDirtyRect() {
         return mDirtyRect;
+    }
+
+    /** Clears the contents of the current dirty rect. */
+    protected void setDirtyRectEmpty() {
+        mDirtyRect.setEmpty();
     }
 }

@@ -280,6 +280,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
             CaptureReadinessResult isReadyResult =
                     mToolbar == null ? null : mToolbar.isReadyForTextureCapture();
+            if (isReadyResult != null
+                    && isReadyResult.blockReason == TopToolbarBlockCaptureReason.SNAPSHOT_SAME) {
+                // If our view was invalidated but no meaningful properties have changed (which is
+                // what SNAPSHOT_SAME implies), we can safely avoid re-checking until the next view
+                // invalidation.
+                setDirtyRectEmpty();
+            }
+
             CaptureReadinessResult.logCaptureReasonFromResult(isReadyResult);
             return isReadyResult == null ? false : isReadyResult.isReady;
         }
