@@ -142,7 +142,8 @@ void CaptivePortalDetector::OnSimpleLoaderCompleteInternal(
   GetCaptivePortalResultFromResponse(net_error, response_code, url, headers,
                                      &results);
   simple_loader_.reset();
-  std::move(detection_callback_).Run(results);
+  if (detection_callback_)
+    std::move(detection_callback_).Run(results);
 }
 
 void CaptivePortalDetector::GetCaptivePortalResultFromResponse(
