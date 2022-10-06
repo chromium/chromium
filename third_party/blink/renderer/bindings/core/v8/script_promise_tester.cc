@@ -54,7 +54,8 @@ ScriptPromiseTester::ScriptPromiseTester(ScriptState* script_state,
 void ScriptPromiseTester::WaitUntilSettled() {
   auto* isolate = script_state_->GetIsolate();
   while (state_ == State::kNotSettled) {
-    v8::MicrotasksScope::PerformCheckpoint(isolate);
+    script_state_->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        isolate);
     test::RunPendingTasks();
   }
 }

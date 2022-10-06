@@ -88,7 +88,8 @@ void ExpectRejected(ScriptState* script_state,
   StubScriptFunction resolved, rejected;
   promise.Then(resolved.GetFunction(script_state),
                rejected.GetFunction(script_state));
-  v8::MicrotasksScope::PerformCheckpoint(promise.GetIsolate());
+  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      script_state->GetIsolate());
   EXPECT_EQ(0ul, resolved.CallCount());
   EXPECT_EQ(1ul, rejected.CallCount());
   if (rejected.CallCount())

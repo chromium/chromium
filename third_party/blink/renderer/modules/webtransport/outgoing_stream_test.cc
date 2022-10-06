@@ -196,7 +196,7 @@ TEST(OutgoingStreamTest, AsyncWrite) {
   test::RunPendingTasks();
 
   // Let microtasks run just in case write() returns prematurely.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_FALSE(tester.IsFulfilled());
 
   // Read the first part of the data.
@@ -260,7 +260,7 @@ TEST(OutgoingStreamTest, WriteThenClose) {
 
   // Make sure that write() and close() both run before the event loop is
   // serviced.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   write_tester.WaitUntilSettled();
   EXPECT_TRUE(write_tester.IsFulfilled());
@@ -442,7 +442,7 @@ TEST(OutgoingStreamTest, CloseAndConnectionError) {
 
   // Run microtasks to ensure that the underlying sink's close function is
   // called immediately.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   writer->close(script_state, ASSERT_NO_EXCEPTION);
   outgoing_stream->Error(ScriptValue(isolate, v8::Undefined(isolate)));

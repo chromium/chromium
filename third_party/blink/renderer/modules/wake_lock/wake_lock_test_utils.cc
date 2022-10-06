@@ -294,7 +294,8 @@ void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
       MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
-  v8::MicrotasksScope::PerformCheckpoint(GetScriptState()->GetIsolate());
+  GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      GetScriptState()->GetIsolate());
   RunWithStack(&run_loop);
 }
 
@@ -308,7 +309,8 @@ void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
           MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
-  v8::MicrotasksScope::PerformCheckpoint(GetScriptState()->GetIsolate());
+  GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      GetScriptState()->GetIsolate());
   RunWithStack(&run_loop);
 }
 

@@ -108,7 +108,8 @@ TEST(StreamPromiseResolverTest, ResolveDoesNothingInsideResolve) {
       auto* isolate = script_state->GetIsolate();
       EXPECT_TRUE(promise_->IsSettled());
       promise_->Resolve(script_state, v8::Undefined(isolate));
-      v8::MicrotasksScope::PerformCheckpoint(isolate);
+      script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+          isolate);
     }
 
    private:

@@ -44,6 +44,9 @@ class V8TestingScope {
   Document& GetDocument();
   ~V8TestingScope();
 
+  // Perform a checkpoint on the context's microtask queue.
+  void PerformMicrotaskCheckpoint();
+
  private:
   std::unique_ptr<DummyPageHolder> holder_;
   v8::HandleScope handle_scope_;

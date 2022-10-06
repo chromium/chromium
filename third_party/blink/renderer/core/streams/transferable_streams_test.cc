@@ -233,7 +233,7 @@ TEST(TransferableStreamsTest, SmokeTest) {
   test::RunPendingTasks();
 
   // Resolve promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(got_response);
 }
@@ -258,7 +258,7 @@ TEST(ConcatenatedReadableStreamTest, Empty) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectDone(__LINE__, script_state, read_promise->Result());
   }
@@ -288,7 +288,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
     EXPECT_TRUE(source1->IsStarted());
@@ -297,7 +297,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
     EXPECT_TRUE(source2->IsStarted());
@@ -305,14 +305,14 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulRead) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 6);
   }
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectDone(__LINE__, script_state, read_promise->Result());
   }
@@ -340,7 +340,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
     EXPECT_TRUE(source1->IsStarted());
@@ -349,7 +349,7 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
     EXPECT_TRUE(source2->IsStarted());
@@ -357,14 +357,14 @@ TEST(ConcatenatedReadableStreamTest, SuccessfulReadForPushSources) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 6);
   }
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectDone(__LINE__, script_state, read_promise->Result());
   }
@@ -392,14 +392,14 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource1) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
   }
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kRejected);
   }
   EXPECT_TRUE(source1->IsStarted());
@@ -428,14 +428,14 @@ TEST(ConcatenatedReadableStreamTest, ErrorInSource2) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
   }
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kRejected);
   }
   EXPECT_TRUE(source1->IsStarted());
@@ -466,7 +466,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
   }
@@ -476,7 +476,7 @@ TEST(ConcatenatedReadableStreamTest, Cancel1) {
   EXPECT_FALSE(source2->IsCancelled());
   {
     reader->cancel(script_state, reason, ASSERT_NO_EXCEPTION);
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
   }
   EXPECT_TRUE(source1->IsStarted());
   EXPECT_TRUE(source1->IsCancelled());
@@ -508,13 +508,13 @@ TEST(ConcatenatedReadableStreamTest, Cancel2) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
   }
   {
     reader->cancel(script_state, reason, ASSERT_NO_EXCEPTION);
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
   }
   EXPECT_TRUE(source1->IsStarted());
   EXPECT_FALSE(source1->IsCancelled());
@@ -545,11 +545,11 @@ TEST(ConcatenatedReadableStreamTest, PendingStart1) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kPending);
 
     resolver->Resolve();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
   }
@@ -579,18 +579,18 @@ TEST(ConcatenatedReadableStreamTest, PendingStart2) {
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 1);
   }
   {
     v8::Local<v8::Promise> read_promise =
         reader->read(script_state, ASSERT_NO_EXCEPTION).V8Promise();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kPending);
 
     resolver->Resolve();
-    v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+    scope.PerformMicrotaskCheckpoint();
     ASSERT_EQ(read_promise->State(), v8::Promise::kFulfilled);
     ExpectValue(__LINE__, script_state, read_promise->Result(), 5);
   }

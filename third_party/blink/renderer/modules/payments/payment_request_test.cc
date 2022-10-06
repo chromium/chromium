@@ -370,7 +370,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {
       payments::mojom::blink::PaymentErrorReason::NOT_SUPPORTED,
       "The payment method \"foo\" is not supported");
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("NotSupportedError: The payment method \"foo\" is not supported",
             error_message);
 }
@@ -392,7 +392,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorCancelled) {
       payments::mojom::blink::PaymentErrorReason::USER_CANCEL,
       "Request cancelled");
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("AbortError: Request cancelled", error_message);
 }
 
@@ -413,7 +413,7 @@ TEST(PaymentRequestTest, RejectShowPromiseOnUpdateDetailsFailure) {
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   request->OnUpdatePaymentDetailsFailure("oops");
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("AbortError: oops", error_message);
 }
 

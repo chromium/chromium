@@ -845,7 +845,7 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
   }
 
   // The first two promises are resolved immediately.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(promise1.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_EQ(promise2.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_EQ(promise3.V8Promise()->State(), v8::Promise::kPending);
@@ -853,7 +853,7 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
 
   // The rest are resolved by the callback.
   test::RunPendingTasks();
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ(promise3.V8Promise()->State(), v8::Promise::kFulfilled);
   EXPECT_EQ(promise4.V8Promise()->State(), v8::Promise::kFulfilled);
 }

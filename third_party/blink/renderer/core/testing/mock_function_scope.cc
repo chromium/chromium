@@ -14,7 +14,8 @@ MockFunctionScope::MockFunctionScope(ScriptState* script_state)
     : script_state_(script_state) {}
 
 MockFunctionScope::~MockFunctionScope() {
-  v8::MicrotasksScope::PerformCheckpoint(script_state_->GetIsolate());
+  script_state_->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      script_state_->GetIsolate());
   for (MockFunction* mock_function : mock_functions_) {
     testing::Mock::VerifyAndClearExpectations(mock_function);
   }

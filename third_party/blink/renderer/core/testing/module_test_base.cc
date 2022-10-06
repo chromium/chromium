@@ -83,7 +83,8 @@ v8::Local<v8::Value> ModuleTestBase::GetResult(ScriptState* script_state,
           MakeGarbageCollected<ScriptFunction>(
               script_state, MakeGarbageCollected<ExpectNotReached>()));
 
-  v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
+  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      script_state->GetIsolate());
 
   return resolve_function->GetResult();
 }
@@ -106,7 +107,8 @@ v8::Local<v8::Value> ModuleTestBase::GetException(
           script_state, MakeGarbageCollected<ExpectNotReached>()),
       MakeGarbageCollected<ScriptFunction>(script_state, reject_function));
 
-  v8::MicrotasksScope::PerformCheckpoint(script_state->GetIsolate());
+  script_state->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+      script_state->GetIsolate());
 
   return reject_function->GetResult();
 }

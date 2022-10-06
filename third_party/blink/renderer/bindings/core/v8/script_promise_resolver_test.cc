@@ -46,7 +46,7 @@ class ScriptPromiseResolverTest : public testing::Test {
 
   ~ScriptPromiseResolverTest() override {
     // Execute all pending microtasks
-    v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+    PerformMicrotaskCheckpoint();
   }
 
   std::unique_ptr<DummyPageHolder> page_holder_;
@@ -57,6 +57,12 @@ class ScriptPromiseResolverTest : public testing::Test {
     return page_holder_->GetFrame().DomWindow();
   }
   v8::Isolate* GetIsolate() const { return GetScriptState()->GetIsolate(); }
+
+  void PerformMicrotaskCheckpoint() {
+    ScriptState::Scope scope(GetScriptState());
+    GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
+        GetIsolate());
+  }
 };
 
 TEST_F(ScriptPromiseResolverTest, construct) {
@@ -89,7 +95,7 @@ TEST_F(ScriptPromiseResolverTest, resolve) {
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
@@ -104,14 +110,14 @@ TEST_F(ScriptPromiseResolverTest, resolve) {
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
   resolver->Resolve("bye");
   resolver->Reject("bye");
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
@@ -141,7 +147,7 @@ TEST_F(ScriptPromiseResolverTest, reject) {
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
@@ -156,14 +162,14 @@ TEST_F(ScriptPromiseResolverTest, reject) {
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
 
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ("hello", on_rejected);
 
   resolver->Resolve("bye");
   resolver->Reject("bye");
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ("hello", on_rejected);
@@ -197,7 +203,7 @@ TEST_F(ScriptPromiseResolverTest, stop) {
   }
 
   resolver->Resolve("hello");
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
@@ -346,7 +352,7 @@ TEST_F(ScriptPromiseResolverTest, resolveVoid) {
   }
 
   resolver->Resolve();
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("undefined", on_fulfilled);
   EXPECT_EQ(String(), on_rejected);
@@ -374,7 +380,7 @@ TEST_F(ScriptPromiseResolverTest, rejectVoid) {
   }
 
   resolver->Reject();
-  v8::MicrotasksScope::PerformCheckpoint(GetIsolate());
+  PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(String(), on_fulfilled);
   EXPECT_EQ("undefined", on_rejected);

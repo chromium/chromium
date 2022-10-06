@@ -213,7 +213,7 @@ TEST_F(BodyStreamBufferTest, TeeFromHandleMadeFromStream) {
   // TODO(yhirano): A uniformed behavior is preferred.
   EXPECT_FALSE(buffer->IsStreamDisturbed());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(buffer->IsStreamLocked());
   EXPECT_TRUE(buffer->IsStreamDisturbed());
@@ -651,7 +651,7 @@ TEST_F(BodyStreamBufferTest, NestedPull) {
   EvalWithPrintingError(scope.GetScriptState(), "reader.read();");
 
   test::RunPendingTasks();
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(BodyStreamBufferTest, NullAbortSignalIsNotAborted) {

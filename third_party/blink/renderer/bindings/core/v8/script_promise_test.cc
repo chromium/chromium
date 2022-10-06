@@ -145,13 +145,13 @@ TEST(ScriptPromiseTest, ThenResolve) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Resolve(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled));
   EXPECT_TRUE(on_rejected.IsEmpty());
@@ -169,12 +169,12 @@ TEST(ScriptPromiseTest, ThenResolveScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_fulfilled->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Resolve(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_fulfilled->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled->Value()));
 }
@@ -194,7 +194,7 @@ TEST(ScriptPromiseTest, ResolveThen) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled));
   EXPECT_TRUE(on_rejected.IsEmpty());
@@ -213,7 +213,7 @@ TEST(ScriptPromiseTest, ResolveThenScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_fulfilled->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled->Value()));
 }
@@ -232,13 +232,13 @@ TEST(ScriptPromiseTest, ThenReject) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Reject(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_rejected));
@@ -256,12 +256,12 @@ TEST(ScriptPromiseTest, ThenRejectScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Reject(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_rejected->Value()));
 }
@@ -286,14 +286,14 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
   EXPECT_TRUE(on_rejected2.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Resolve(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_rejected.IsEmpty());
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
   EXPECT_TRUE(on_rejected2.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_rejected.IsEmpty());
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
@@ -316,12 +316,12 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilledScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Resolve(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(on_rejected->Value().IsEmpty());
 }
@@ -346,14 +346,14 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
   EXPECT_TRUE(on_rejected2.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Reject(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
   EXPECT_TRUE(on_rejected2.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_fulfilled2.IsEmpty());
@@ -376,12 +376,12 @@ TEST(ScriptPromiseTest, ThrowingOnRejectedScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   resolver.Reject(V8String(scope.GetIsolate(), "hello"));
 
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(on_rejected->Value().IsEmpty());
 }
@@ -401,7 +401,7 @@ TEST(ScriptPromiseTest, RejectThen) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_rejected));
@@ -420,7 +420,7 @@ TEST(ScriptPromiseTest, RejectThenScriptFunction) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(on_rejected->Value().IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_rejected->Value()));
 }
@@ -466,7 +466,7 @@ TEST(ScriptPromiseTest, CastNonPromise) {
   EXPECT_TRUE(on_rejected1.IsEmpty());
   EXPECT_TRUE(on_rejected2.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled1));
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_fulfilled2));
@@ -493,7 +493,7 @@ TEST(ScriptPromiseTest, Reject) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_EQ("hello", ToString(scope.GetContext(), on_rejected));
@@ -515,7 +515,7 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_EQ("SyntaxError: some syntax error",
@@ -538,7 +538,7 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(ToStringArray(scope.GetIsolate(), on_fulfilled).empty());
@@ -565,7 +565,7 @@ TEST(ScriptPromiseTest, AllWithResolvedPromises) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(on_fulfilled.IsEmpty());
   Vector<String> values = ToStringArray(scope.GetIsolate(), on_fulfilled);
@@ -595,7 +595,7 @@ TEST(ScriptPromiseTest, AllWithRejectedPromise) {
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_TRUE(on_rejected.IsEmpty());
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
   EXPECT_FALSE(on_rejected.IsEmpty());

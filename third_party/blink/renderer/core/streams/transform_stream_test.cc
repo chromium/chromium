@@ -176,7 +176,7 @@ TEST_F(TransformStreamTest, TransformIsCalled) {
       scope.GetScriptState());
   Init(mock, scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyReadableAndWritableToGlobal(scope);
 
   EXPECT_CALL(*mock, Transform(_, _, _))
@@ -199,7 +199,7 @@ TEST_F(TransformStreamTest, FlushIsCalled) {
       scope.GetScriptState());
   Init(mock, scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyReadableAndWritableToGlobal(scope);
 
   EXPECT_CALL(*mock, Flush(_, _))
@@ -458,7 +458,7 @@ TEST_F(TransformStreamTest, WaitInTransform) {
                                    ScriptPromise::Cast(script_state, promise));
 
   // Give Transform() the opportunity to be called.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(write_tester.IsFulfilled());
   EXPECT_FALSE(transformer->FlushCalled());
@@ -516,7 +516,7 @@ TEST_F(TransformStreamTest, WaitInFlush) {
                                    ScriptPromise::Cast(script_state, promise));
 
   // Give Flush() the opportunity to be called.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   EXPECT_FALSE(close_tester.IsFulfilled());
   transformer->ResolvePromise();

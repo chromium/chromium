@@ -102,7 +102,7 @@ readAll(stream);
       test::RunPendingTasks();
 
       // Allow Promises to resolve.
-      v8::MicrotasksScope::PerformCheckpoint(isolate);
+      scope.PerformMicrotaskCheckpoint();
     }
     NOTREACHED();
     return absl::nullopt;
@@ -603,7 +603,7 @@ TEST_F(ReadableStreamTest, GarbageCollectCPlusPlusUnderlyingSource) {
   }
 
   // Allow Promises to resolve.
-  v8::MicrotasksScope::PerformCheckpoint(isolate);
+  scope.PerformMicrotaskCheckpoint();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
@@ -715,7 +715,7 @@ TEST_F(ReadableByteStreamTest, PullIsCalled) {
       MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
   Init(scope.GetScriptState(), mock);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyStreamToGlobal(scope);
 
   EXPECT_CALL(*mock, Pull(_, _))
@@ -735,7 +735,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
       MakeGarbageCollected<MockUnderlyingByteSource>(scope.GetScriptState());
   Init(scope.GetScriptState(), mock);
   // Need to run microtasks so the startAlgorithm promise resolves.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   CopyStreamToGlobal(scope);
 
   EXPECT_CALL(*mock, Cancel(_, _))

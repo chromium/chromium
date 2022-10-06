@@ -90,7 +90,7 @@ TEST_F(RemotePlaybackTest, PromptCancelledRejectsWithNotAllowedError) {
   CancelPrompt(remote_playback);
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, PromptConnectedRejectsWhenCancelled) {
@@ -114,7 +114,7 @@ TEST_F(RemotePlaybackTest, PromptConnectedRejectsWhenCancelled) {
   CancelPrompt(remote_playback);
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, PromptConnectedResolvesWhenDisconnected) {
@@ -139,7 +139,7 @@ TEST_F(RemotePlaybackTest, PromptConnectedResolvesWhenDisconnected) {
   SetState(remote_playback, mojom::blink::PresentationConnectionState::CLOSED);
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, StateChangeEvents) {
@@ -231,7 +231,7 @@ TEST_F(RemotePlaybackTest,
       *element, html_names::kDisableremoteplaybackAttr, true);
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
@@ -257,7 +257,7 @@ TEST_F(RemotePlaybackTest, DisableRemotePlaybackCancelsAvailabilityCallbacks) {
       *element, html_names::kDisableremoteplaybackAttr, true);
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
@@ -299,7 +299,7 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
 
   remote_playback.AvailabilityChangedForTesting(true);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   testing::Mock::VerifyAndClear(callback_function);
 
   // We now have twice as many callbacks as we started with, and should get
@@ -310,7 +310,7 @@ TEST_F(RemotePlaybackTest, CallingWatchAvailabilityFromAvailabilityCallback) {
 
   remote_playback.AvailabilityChangedForTesting(false);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   // Verify mock expectations explicitly as the mock objects are garbage
   // collected.
@@ -354,7 +354,7 @@ TEST_F(RemotePlaybackTest, WatchAvailabilityWorksWhenBackendDisabled) {
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 }
 
 TEST_F(RemotePlaybackTest, IsListening) {
@@ -421,7 +421,7 @@ TEST_F(RemotePlaybackTest, IsListening) {
   ASSERT_FALSE(IsListening(remote_playback));
 
   // Runs pending promises.
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
 
   // Verify mock expectations explicitly as the mock objects are garbage
   // collected.

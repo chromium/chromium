@@ -155,7 +155,7 @@ TEST(CompleteTest, RejectCompletePromiseOnUpdateDetailsFailure) {
 
   request->OnUpdatePaymentDetailsFailure("oops");
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("AbortError: oops", error_message);
 }
 
@@ -181,7 +181,7 @@ TEST(CompleteTest, RejectCompletePromiseAfterTimeout) {
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kInvalidStateError));
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("Timed out after 60 seconds, complete() called too late",
             scope.GetExceptionState().Message());
 }
