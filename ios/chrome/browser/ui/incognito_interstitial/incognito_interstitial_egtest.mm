@@ -255,12 +255,12 @@ using chrome_test_util::NTPIncognitoView;
   GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey sceneOpenURL:destinationURL];
   // Wait for the expected page content to be displayed.
-  double timeout = 10.0;
+  base::TimeDelta timeout = base::Seconds(10);
   if (@available(iOS 16.0, *)) {
-    timeout = 20.0;
+    timeout = base::Seconds(20);
   }
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
-                                        timeout:timeout];
+                                        timeout:timeout.InSecondsF()];
   // Wait for the Incognito tab count to be one, as expected.
   [ChromeEarlGrey waitForMainTabCount:1];
 }
@@ -281,12 +281,12 @@ using chrome_test_util::NTPIncognitoView;
   GURL destinationURL = self.testServer->GetURL("/destination.html");
   [ChromeEarlGrey sceneOpenURL:destinationURL];
   // Wait for the expected page content to be displayed.
-  double timeout = 10.0;
+  base::TimeDelta timeout = base::Seconds(10);
   if (@available(iOS 16.0, *)) {
-    timeout = 20.0;
+    timeout = base::Seconds(20);
   }
   [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"
-                                        timeout:timeout];
+                                        timeout:timeout.InSecondsF()];
   // Wait for the Incognito tab count to be one, as expected.
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 }
