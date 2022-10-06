@@ -147,10 +147,10 @@ bool PageAllocator::DecommitPages(void* address, size_t size) {
   return true;
 }
 
-partition_alloc::PageAccessibilityConfiguration
-PageAllocator::GetPageConfigForTesting(
+partition_alloc::PageAccessibilityConfiguration::Permissions
+PageAllocator::GetPageConfigPermissionsForTesting(
     v8::PageAllocator::Permission permission) {
-  return GetPageConfig(permission);
+  return GetPageConfig(permission).permissions;
 }
 
 }  // namespace gin

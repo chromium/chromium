@@ -25,29 +25,33 @@ namespace gin {
 TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
   auto sut = gin::PageAllocator();
 
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kNoAccess),
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kNoAccess),
            partition_alloc::PageAccessibilityConfiguration::kInaccessible);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kRead),
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kRead),
            partition_alloc::PageAccessibilityConfiguration::kRead);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadWrite),
-           partition_alloc::PageAccessibilityConfiguration::kReadWrite);
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadWriteExecute),
+  CHECK_EQ(
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadWrite),
+      partition_alloc::PageAccessibilityConfiguration::kReadWrite);
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
+               v8::PageAllocator::kReadWriteExecute),
            partition_alloc::PageAccessibilityConfiguration::kReadWriteExecute);
 
 #if defined(__ARM_FEATURE_BTI_DEFAULT)
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
-           base::CPU::GetInstanceNoAllocation().has_bti()
-               ? partition_alloc::PageAccessibilityConfiguration::
-                     kReadExecuteProtected
-               : partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+  CHECK_EQ(
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
+      base::CPU::GetInstanceNoAllocation().has_bti()
+          ? partition_alloc::PageAccessibilityConfiguration::
+                kReadExecuteProtected
+          : partition_alloc::PageAccessibilityConfiguration::kReadExecute);
 #else
-  CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
-           partition_alloc::PageAccessibilityConfiguration::kReadExecute);
+  CHECK_EQ(
+      sut.GetPageConfigPermissionsForTesting(v8::PageAllocator::kReadExecute),
+      partition_alloc::PageAccessibilityConfiguration::kReadExecute);
 #endif
 
-  CHECK_EQ(
-      sut.GetPageConfigForTesting(v8::PageAllocator::kNoAccessWillJitLater),
-      partition_alloc::PageAccessibilityConfiguration::kInaccessible);
+  CHECK_EQ(sut.GetPageConfigPermissionsForTesting(
+               v8::PageAllocator::kNoAccessWillJitLater),
+           partition_alloc::PageAccessibilityConfiguration::kInaccessible);
 }
 
 #if defined(ARCH_CPU_ARM64) && (OS_LINUX || OS_ANDROID)

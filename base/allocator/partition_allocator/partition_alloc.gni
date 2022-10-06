@@ -84,3 +84,9 @@ assert(enable_backup_ref_ptr_support || !enable_backup_ref_ptr_slow_checks,
 assert(
     enable_backup_ref_ptr_support || !enable_dangling_raw_ptr_checks,
     "Can't enable dangling raw_ptr checks if BackupRefPtr isn't enabled at all")
+
+declare_args() {
+  enable_pkeys = is_linux && target_cpu == "x64"
+}
+assert(!enable_pkeys || (is_linux && target_cpu == "x64"),
+       "Pkeys are only supported on x64 linux")

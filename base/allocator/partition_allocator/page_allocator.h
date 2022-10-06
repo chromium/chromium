@@ -11,24 +11,43 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
 
-enum class PageAccessibilityConfiguration {
-  kInaccessible,
-  kRead,
-  kReadWrite,
-  // This flag is mapped to kReadWrite on systems that
-  // don't support MTE.
-  kReadWriteTagged,
-  // This flag is mapped to kReadExecute on systems
-  // that don't support Arm's BTI.
-  kReadExecuteProtected,
-  kReadExecute,
-  // This flag is deprecated and will go away soon.
-  // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.
-  kReadWriteExecute,
+struct PageAccessibilityConfiguration {
+  enum Permissions {
+    kInaccessible,
+    kRead,
+    kReadWrite,
+    // This flag is mapped to kReadWrite on systems that
+    // don't support MTE.
+    kReadWriteTagged,
+    // This flag is mapped to kReadExecute on systems
+    // that don't support Arm's BTI.
+    kReadExecuteProtected,
+    kReadExecute,
+    // This flag is deprecated and will go away soon.
+    // TODO(bbudge) Remove this as soon as V8 doesn't need RWX pages.
+    kReadWriteExecute,
+  };
+
+#if BUILDFLAG(ENABLE_PKEYS)
+  constexpr PageAccessibilityConfiguration(Permissions permissions)
+      : permissions(permissions), pkey(0) {}
+  constexpr PageAccessibilityConfiguration(Permissions permissions, int pkey)
+      : permissions(permissions), pkey(pkey) {}
+#else
+  constexpr PageAccessibilityConfiguration(Permissions permissions)
+      : permissions(permissions) {}
+#endif  // BUILDFLAG(ENABLE_PKEYS)
+
+  Permissions permissions;
+#if BUILDFLAG(ENABLE_PKEYS)
+  // Tag the page with a Memory Protection Key. Use 0 for none.
+  int pkey;
+#endif  // BUILDFLAG(ENABLE_PKEYS)
 };
 
 // Use for De/RecommitSystemPages API.

@@ -54,8 +54,8 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 
   // For testing purposes only: Map the v8 page permissions into a page
   // configuration from base.
-  ::partition_alloc::PageAccessibilityConfiguration GetPageConfigForTesting(
-      v8::PageAllocator::Permission permission);
+  ::partition_alloc::PageAccessibilityConfiguration::Permissions
+  GetPageConfigPermissionsForTesting(v8::PageAllocator::Permission permission);
 };
 }  // namespace gin
 

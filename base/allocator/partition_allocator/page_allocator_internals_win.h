@@ -32,7 +32,7 @@ constexpr bool kHintIsAdvisory = false;
 std::atomic<int32_t> s_allocPageErrorCode{ERROR_SUCCESS};
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
-  switch (accessibility) {
+  switch (accessibility.permissions) {
     case PageAccessibilityConfiguration::kRead:
       return PAGE_READONLY;
     case PageAccessibilityConfiguration::kReadWrite:
@@ -58,10 +58,10 @@ uintptr_t SystemAllocPagesInternal(
     PageTag page_tag,
     [[maybe_unused]] int file_descriptor_for_shared_alloc) {
   DWORD access_flag = GetAccessFlags(accessibility);
-  const DWORD type_flags =
-      (accessibility != PageAccessibilityConfiguration::kInaccessible)
-          ? (MEM_RESERVE | MEM_COMMIT)
-          : MEM_RESERVE;
+  const DWORD type_flags = (accessibility.permissions !=
+                            PageAccessibilityConfiguration::kInaccessible)
+                               ? (MEM_RESERVE | MEM_COMMIT)
+                               : MEM_RESERVE;
   void* ret = VirtualAlloc(reinterpret_cast<void*>(hint), length, type_flags,
                            access_flag);
   if (ret == nullptr) {
@@ -92,7 +92,8 @@ bool TrySetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility == PageAccessibilityConfiguration::kInaccessible)
+  if (accessibility.permissions ==
+      PageAccessibilityConfiguration::kInaccessible)
     return VirtualFree(ptr, length, MEM_DECOMMIT) != 0;
   return nullptr !=
          VirtualAlloc(ptr, length, MEM_COMMIT, GetAccessFlags(accessibility));
@@ -103,7 +104,8 @@ void SetSystemPagesAccessInternal(
     size_t length,
     PageAccessibilityConfiguration accessibility) {
   void* ptr = reinterpret_cast<void*>(address);
-  if (accessibility == PageAccessibilityConfiguration::kInaccessible) {
+  if (accessibility.permissions ==
+      PageAccessibilityConfiguration::kInaccessible) {
     if (!VirtualFree(ptr, length, MEM_DECOMMIT)) {
       // We check `GetLastError` for `ERROR_SUCCESS` here so that in a crash
       // report we get the error number.

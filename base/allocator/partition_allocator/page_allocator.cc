@@ -316,7 +316,8 @@ void RecommitSystemPages(
     PageAccessibilityDisposition accessibility_disposition) {
   PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
   PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
-  PA_DCHECK(accessibility != PageAccessibilityConfiguration::kInaccessible);
+  PA_DCHECK(accessibility.permissions !=
+            PageAccessibilityConfiguration::kInaccessible);
   internal::RecommitSystemPagesInternal(address, length, accessibility,
                                         accessibility_disposition);
 }
@@ -330,7 +331,8 @@ bool TryRecommitSystemPages(
   // crashing case.
   PA_DCHECK(!(address & internal::SystemPageOffsetMask()));
   PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
-  PA_DCHECK(accessibility != PageAccessibilityConfiguration::kInaccessible);
+  PA_DCHECK(accessibility.permissions !=
+            PageAccessibilityConfiguration::kInaccessible);
   return internal::TryRecommitSystemPagesInternal(
       address, length, accessibility, accessibility_disposition);
 }

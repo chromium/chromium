@@ -16,7 +16,7 @@
 namespace partition_alloc::internal {
 
 int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
-  switch (accessibility) {
+  switch (accessibility.permissions) {
     case PageAccessibilityConfiguration::kRead:
       return PROT_READ;
     case PageAccessibilityConfiguration::kReadWriteTagged:

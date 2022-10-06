@@ -45,7 +45,7 @@ const char* PageTagToName(PageTag tag) {
 
 zx_vm_option_t PageAccessibilityToZxVmOptions(
     PageAccessibilityConfiguration accessibility) {
-  switch (accessibility) {
+  switch (accessibility.permissions) {
     case PageAccessibilityConfiguration::kRead:
       return ZX_VM_PERM_READ;
     case PageAccessibilityConfiguration::kReadWrite:

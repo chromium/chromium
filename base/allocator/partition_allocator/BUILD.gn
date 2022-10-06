@@ -401,6 +401,8 @@ buildflag_header("partition_alloc_buildflags") {
 
     # *Scan is currently only used by Chromium.
     "STARSCAN=$build_with_chromium",
+
+    "ENABLE_PKEYS=$enable_pkeys",
   ]
 }
 
