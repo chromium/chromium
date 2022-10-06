@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 #import <UIKit/UIKit.h>
 #import <cmath>
 #import <limits>
 
-#import "base/feature_list.h"
-#import "base/ios/ios_util.h"
-#import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

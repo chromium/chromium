@@ -42,7 +42,6 @@ source_set("util") {
     "transparent_link_button.h",
     "transparent_link_button.mm",
     "ui_util.h",
-    "ui_util.mm",
     "uikit_ui_util.h",
     "uikit_ui_util.mm",
   ]
@@ -120,7 +119,6 @@ source_set("unit_tests") {
     "optional_property_animator_unittest.mm",
     "pasteboard_util_unittest.mm",
     "terms_util_unittest.mm",
-    "ui_util_unittest.mm",
     "uikit_ui_util_unittest.mm",
     "uiview_window_coordinates_unittest.mm",
     "uiview_window_observing_unittest.mm",

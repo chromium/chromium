@@ -19,11 +19,14 @@ source_set("util") {
     "pointer_interaction_util.mm",
     "text_view_util.h",
     "text_view_util.mm",
+    "ui_util.h",
+    "ui_util.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/ui/colors",
+    "//ui/gfx",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -56,10 +59,12 @@ source_set("unit_tests") {
   sources = [
     "dynamic_type_util_unittest.mm",
     "image_util_unittest.mm",
+    "ui_util_unittest.mm",
   ]
   deps = [
     ":dynamic_type_util",
     ":image_util",
+    ":util",
     "//base",
     "//testing/gtest",
     "//third_party/ocmock",
