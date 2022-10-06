@@ -128,16 +128,16 @@ class AppLauncherHandlerTest : public BrowserWithTestWindowTest {
               app_launcher_handler->call_data()[0]->function_name());
 
     const base::Value* arg1 = app_launcher_handler->call_data()[0]->arg1();
+
     ASSERT_TRUE(arg1->is_dict());
+    const base::Value::Dict& app_info = arg1->GetDict();
 
-    const base::DictionaryValue* app_info;
-    arg1->GetAsDictionary(&app_info);
-
-    const std::string* app_id = app_info->FindStringKey(kKeyAppId);
+    const std::string* app_id = app_info.FindString(kKeyAppId);
     ASSERT_TRUE(app_id);
     EXPECT_EQ(*app_id, installed_app_id);
 
-    EXPECT_THAT(app_info->FindBoolPath(kKeyIsLocallyInstalled), Optional(true));
+    EXPECT_THAT(app_info.FindBoolByDottedPath(kKeyIsLocallyInstalled),
+                Optional(true));
   }
 
   std::unique_ptr<content::TestWebUI> CreateTestWebUI(

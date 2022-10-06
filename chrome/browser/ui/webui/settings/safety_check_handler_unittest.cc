@@ -314,18 +314,18 @@ class SafetyCheckHandlerTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  // Returns a |base::DictionaryValue| for safety check status update that
+  // Returns a |base::Value::Dict| for safety check status update that
   // has the specified |component| and |new_state| if it exists; nullptr
   // otherwise.
-  const base::DictionaryValue* GetSafetyCheckStatusChangedWithDataIfExists(
+  const base::Value::Dict* GetSafetyCheckStatusChangedWithDataIfExists(
       const std::string& component,
       int new_state);
 
   std::string GenerateExtensionId(char char_to_repeat);
 
-  void VerifyDisplayString(const base::DictionaryValue* event,
+  void VerifyDisplayString(const base::Value::Dict* event,
                            const std::u16string& expected);
-  void VerifyDisplayString(const base::DictionaryValue* event,
+  void VerifyDisplayString(const base::Value::Dict* event,
                            const std::string& expected);
 
   // Replaces any instances of browser name (e.g. Google Chrome, Chromium,
@@ -388,7 +388,7 @@ void SafetyCheckHandlerTest::TearDown() {
   test_passwords_delegate_.TearDown();
 }
 
-const base::DictionaryValue*
+const base::Value::Dict*
 SafetyCheckHandlerTest::GetSafetyCheckStatusChangedWithDataIfExists(
     const std::string& component,
     int new_state) {
@@ -403,11 +403,11 @@ SafetyCheckHandlerTest::GetSafetyCheckStatusChangedWithDataIfExists(
     const std::string* event = data.arg1()->GetIfString();
     if (!event || *event != "safety-check-" + component + "-status-changed")
       continue;
-    const base::DictionaryValue* dictionary = nullptr;
-    if (!data.arg2()->GetAsDictionary(&dictionary)) {
+    const base::Value::Dict* dictionary = data.arg2()->GetIfDict();
+    if (!dictionary) {
       continue;
     }
-    absl::optional<int> cur_new_state = dictionary->FindIntKey("newState");
+    absl::optional<int> cur_new_state = dictionary->FindInt("newState");
     if (cur_new_state == new_state)
       return dictionary;
   }
@@ -419,9 +419,9 @@ std::string SafetyCheckHandlerTest::GenerateExtensionId(char char_to_repeat) {
 }
 
 void SafetyCheckHandlerTest::VerifyDisplayString(
-    const base::DictionaryValue* event,
+    const base::Value::Dict* event,
     const std::u16string& expected) {
-  const std::string* display_ptr = event->FindStringKey("displayString");
+  const std::string* display_ptr = event->FindString("displayString");
   ASSERT_TRUE(display_ptr);
   std::u16string display = base::UTF8ToUTF16(*display_ptr);
   ReplaceBrowserName(&display);
@@ -433,9 +433,8 @@ void SafetyCheckHandlerTest::VerifyDisplayString(
   EXPECT_EQ(expected_replaced, display);
 }
 
-void SafetyCheckHandlerTest::VerifyDisplayString(
-    const base::DictionaryValue* event,
-    const std::string& expected) {
+void SafetyCheckHandlerTest::VerifyDisplayString(const base::Value::Dict* event,
+                                                 const std::string& expected) {
   VerifyDisplayString(event, base::ASCIIToUTF16(expected));
 }
 
@@ -448,10 +447,8 @@ void SafetyCheckHandlerTest::ReplaceBrowserName(std::u16string* s) {
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Checking) {
   version_updater_->SetReturnedStatus(VersionUpdater::Status::CHECKING);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kChecking));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::kChecking));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, u"");
   // Checking state should not get recorded.
@@ -461,10 +458,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Checking) {
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
   version_updater_->SetReturnedStatus(VersionUpdater::Status::UPDATED);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdated));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string expected =
@@ -481,10 +476,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updated) {
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updating) {
   version_updater_->SetReturnedStatus(VersionUpdater::Status::UPDATING);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdating));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::kUpdating));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VerifyDisplayString(event, "Updating your device");
@@ -499,10 +492,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Updating) {
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
   version_updater_->SetReturnedStatus(VersionUpdater::Status::NEARLY_UPDATED);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kRelaunch));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::kRelaunch));
   ASSERT_TRUE(event);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VerifyDisplayString(
@@ -522,10 +513,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Disabled) {
   safety_check_->PerformSafetyCheck();
   // TODO(crbug/1072432): Since the UNKNOWN state is not present in JS in M83,
   // use FAILED_OFFLINE, which uses the same icon.
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates,
+      static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event, base::UTF16ToUTF8(VersionUI::GetAnnotatedVersionStringForUi()));
@@ -538,10 +528,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_DisabledByAdmin) {
   version_updater_->SetReturnedStatus(
       VersionUpdater::Status::DISABLED_BY_ADMIN);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kDisabledByAdmin));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates,
+      static_cast<int>(SafetyCheckHandler::UpdateStatus::kDisabledByAdmin));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event,
@@ -556,10 +545,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_DisabledByAdmin) {
 TEST_F(SafetyCheckHandlerTest, CheckUpdates_FailedOffline) {
   version_updater_->SetReturnedStatus(VersionUpdater::Status::FAILED_OFFLINE);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates,
+      static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
   ASSERT_TRUE(event);
   VerifyDisplayString(event,
                       "Browser can't check for updates. Try checking your "
@@ -573,10 +561,8 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Failed_ConnectivityOnline) {
   update_helper_->SetConnectivity(true);
   version_updater_->SetReturnedStatus(VersionUpdater::Status::FAILED);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailed));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates, static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailed));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event,
@@ -592,10 +578,9 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Failed_ConnectivityOffline) {
   update_helper_->SetConnectivity(false);
   version_updater_->SetReturnedStatus(VersionUpdater::Status::FAILED);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kUpdates,
-          static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kUpdates,
+      static_cast<int>(SafetyCheckHandler::UpdateStatus::kFailedOffline));
   ASSERT_TRUE(event);
   VerifyDisplayString(event,
                       "Browser can't check for updates. Try checking your "
@@ -621,11 +606,10 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_EnabledStandard) {
       ->SetManagedPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(true));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(
-              SafetyCheckHandler::SafeBrowsingStatus::kEnabledStandard));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(
+          SafetyCheckHandler::SafeBrowsingStatus::kEnabledStandard));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "Standard Protection is on");
   histogram_tester_.ExpectBucketCount(
@@ -642,11 +626,9 @@ TEST_F(SafetyCheckHandlerTest,
       ->GetPrefs()
       ->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::
-                               kEnabledStandardAvailableEnhanced));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing, static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::
+                                          kEnabledStandardAvailableEnhanced));
   ASSERT_TRUE(event);
   VerifyDisplayString(event,
                       "Standard protection is on. For even more security, use "
@@ -665,11 +647,10 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_EnabledEnhanced) {
       ->GetPrefs()
       ->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(
-              SafetyCheckHandler::SafeBrowsingStatus::kEnabledEnhanced));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(
+          SafetyCheckHandler::SafeBrowsingStatus::kEnabledEnhanced));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "Enhanced Protection is on");
   histogram_tester_.ExpectBucketCount(
@@ -687,10 +668,9 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_InconsistentEnhanced) {
       ->GetPrefs()
       ->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kDisabled));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kDisabled));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event, "Safe Browsing is off. Browser recommends turning it on.");
@@ -704,10 +684,9 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_Disabled) {
       ->GetPrefs()
       ->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kDisabled));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kDisabled));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event, "Safe Browsing is off. Browser recommends turning it on.");
@@ -723,11 +702,10 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_DisabledByAdmin) {
       ->SetManagedPref(prefs::kSafeBrowsingEnabled,
                        std::make_unique<base::Value>(false));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(
-              SafetyCheckHandler::SafeBrowsingStatus::kDisabledByAdmin));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(
+          SafetyCheckHandler::SafeBrowsingStatus::kDisabledByAdmin));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event,
@@ -746,11 +724,10 @@ TEST_F(SafetyCheckHandlerTest, CheckSafeBrowsing_DisabledByExtension) {
       ->SetExtensionPref(prefs::kSafeBrowsingEnabled,
                          std::make_unique<base::Value>(false));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kSafeBrowsing,
-          static_cast<int>(
-              SafetyCheckHandler::SafeBrowsingStatus::kDisabledByExtension));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kSafeBrowsing,
+      static_cast<int>(
+          SafetyCheckHandler::SafeBrowsingStatus::kDisabledByExtension));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "An extension has turned off Safe Browsing");
   histogram_tester_.ExpectBucketCount(
@@ -763,20 +740,18 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, u"");
   histogram_tester_.ExpectTotalCount("Settings.SafetyCheck.PasswordsResult", 0);
   // Second, an "offline" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kNetworkError);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2,
                       "Browser can't check your passwords. Try checking your "
@@ -788,10 +763,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverRemovedAfterError) {
   // should no longer be observing the BulkLeakCheckService state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kServiceError);
-  const base::DictionaryValue* event3 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
+  const base::Value::Dict* event3 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
   ASSERT_TRUE(event3);
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
@@ -803,10 +777,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_InterruptedAndRefreshed) {
   // Password check running.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, u"");
   // The check gets interrupted and the page is refreshed.
@@ -820,17 +793,15 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_InterruptedAndRefreshed) {
   safety_check_->PerformSafetyCheck();
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event2);
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kSignedOut);
-  const base::DictionaryValue* event3 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSignedOut));
+  const base::Value::Dict* event3 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSignedOut));
   ASSERT_TRUE(event3);
   VerifyDisplayString(event3,
                       "Browser can't check your passwords because you're not "
@@ -846,18 +817,16 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StartedTwice) {
   // First, a "running" change of state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event);
   // Then, a network error.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kNetworkError);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kOffline));
   EXPECT_TRUE(event2);
   VerifyDisplayString(event2,
                       "Browser can't check your passwords. Try checking your "
@@ -879,10 +848,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_ObserverNotifiedTwice) {
       safety_check_.get())
       ->OnStateChanged(
           password_manager::BulkLeakCheckService::State::kServiceError);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
   ASSERT_TRUE(event);
 }
 
@@ -897,10 +865,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Safe) {
   // Second, a "safe" state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
   VerifyDisplayString(event, "No compromised passwords found");
   histogram_tester_.ExpectBucketCount(
@@ -929,20 +895,16 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
       password_manager::BulkLeakCheckService::State::kIdle);
   test_passwords_delegate_.SetPasswordCheckState(
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
   // An InsecureCredentialsManager callback fires once the compromised passwords
   // get written to disk.
   test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
   test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   EXPECT_TRUE(event2);
   VerifyDisplayString(
       event2, base::NumberToString(kCompromised) + " compromised passwords");
@@ -963,10 +925,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   test_passwords_delegate_.SetNumLeakedCredentials(0);
   test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
   // The event should get ignored, since the state is still running.
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_FALSE(event);
 
   // The check is completed with another safe state.
@@ -984,11 +944,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
   test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
   // The new event should get ignored, since the safe state was final.
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   EXPECT_FALSE(event2);
 }
 
@@ -1005,11 +963,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyLeakedExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2,
                       base::NumberToString(kLeaked) + " compromised passwords");
@@ -1031,11 +987,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyPhishedExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(
       event2, base::NumberToString(kPhished) + " compromised passwords");
@@ -1058,11 +1012,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_LeakedAndPhishedExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2, base::NumberToString(kLeaked + kPhished) +
                                   " compromised passwords");
@@ -1086,11 +1038,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_CompromisedAndWeakExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(
       event2, base::NumberToString(kCompromised) + " compromised passwords, " +
@@ -1113,11 +1063,10 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_OnlyWeakExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(
+          SafetyCheckHandler::PasswordsStatus::kWeakPasswordsExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2, base::NumberToString(kWeak) + " weak passwords");
   histogram_tester_.ExpectBucketCount(
@@ -1132,10 +1081,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error) {
       safety_check_.get())
       ->OnStateChanged(
           password_manager::BulkLeakCheckService::State::kServiceError);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
   ASSERT_TRUE(event);
   VerifyDisplayString(event,
                       "Browser can't check your passwords. Try again "
@@ -1159,11 +1107,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_MutedCompromisedExist) {
   // Compromised passwords found state.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event2);
   VerifyDisplayString(event2, base::NumberToString(kCompromised - kMuted) +
                                   " compromised passwords");
@@ -1185,10 +1131,8 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_AllMutedCompromisedCredentials) {
   // Compromised passwords not found.
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   ASSERT_TRUE(event);
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.PasswordsResult",
@@ -1202,10 +1146,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
       safety_check_.get())
       ->OnStateChanged(
           password_manager::BulkLeakCheckService::State::kServiceError);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kError));
   ASSERT_TRUE(event);
   VerifyDisplayString(event,
                       "Browser can't check your passwords. Try again "
@@ -1226,11 +1169,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Error_FutureEventsIgnored) {
   // get written to disk.
   test_passwords_delegate_.SetNumLeakedCredentials(kCompromised);
   test_passwords_delegate_.InvokeOnCompromisedCredentialsChanged();
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   // The event for compromised passwords should not exist, since the changes
   // should no longer be observed.
   EXPECT_FALSE(event2);
@@ -1243,11 +1184,10 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_FeatureUnavailable) {
       safety_check_.get())
       ->OnStateChanged(
           password_manager::BulkLeakCheckService::State::kTokenRequestFailure);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kFeatureUnavailable));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(
+          SafetyCheckHandler::PasswordsStatus::kFeatureUnavailable));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "Password check is not available in Chromium");
   histogram_tester_.ExpectBucketCount(
@@ -1262,11 +1202,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_RunningOneCompromised) {
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnStateChanged(password_manager::BulkLeakCheckService::State::kIdle);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(
-              SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kCompromisedExist));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, "1 compromised password");
   histogram_tester_.ExpectBucketCount(
@@ -1279,10 +1217,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_NoPasswords) {
   test_passwords_delegate_.SetStartPasswordCheckState(
       password_manager::BulkLeakCheckService::State::kIdle);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kNoPasswords));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kNoPasswords));
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "No saved passwords. Chrome can check your passwords "
@@ -1302,10 +1239,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event);
   VerifyDisplayString(event, u"Checking passwords (1 of 3)…");
 
@@ -1313,10 +1249,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);
-  const base::DictionaryValue* event2 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event2 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event2);
   VerifyDisplayString(event2, u"Checking passwords (2 of 3)…");
 
@@ -1328,10 +1263,9 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
       ->OnCredentialDone(credential, is_leaked);
-  const base::DictionaryValue* event3 =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kPasswords,
-          static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
+  const base::Value::Dict* event3 = GetSafetyCheckStatusChangedWithDataIfExists(
+      kPasswords,
+      static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   EXPECT_TRUE(event3);
   // Still 2/3 event.
   VerifyDisplayString(event3, u"Checking passwords (2 of 3)…");
@@ -1359,11 +1293,9 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_NoneBlocklisted) {
       extension_id, extensions::BitMapBlocklistState::NOT_BLOCKLISTED,
       test_extension_prefs_);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions,
-          static_cast<int>(
-              SafetyCheckHandler::ExtensionsStatus::kNoneBlocklisted));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kExtensions,
+      static_cast<int>(SafetyCheckHandler::ExtensionsStatus::kNoneBlocklisted));
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "You're protected from potentially harmful extensions");
@@ -1385,11 +1317,10 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedAllDisabled) {
   test_extension_service_.AddExtensionState(extension_id, Enabled(false),
                                             UserCanDisable(false));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions,
-          static_cast<int>(
-              SafetyCheckHandler::ExtensionsStatus::kBlocklistedAllDisabled));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kExtensions,
+      static_cast<int>(
+          SafetyCheckHandler::ExtensionsStatus::kBlocklistedAllDisabled));
   EXPECT_TRUE(event);
   VerifyDisplayString(
       event, "1 potentially harmful extension is off. You can also remove it.");
@@ -1412,10 +1343,9 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByUser) {
   test_extension_service_.AddExtensionState(extension_id, Enabled(true),
                                             UserCanDisable(true));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
-                                            kBlocklistedReenabledAllByUser));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
+                                        kBlocklistedReenabledAllByUser));
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "You turned 1 potentially harmful extension back on");
@@ -1438,10 +1368,9 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledAllByAdmin) {
   test_extension_service_.AddExtensionState(extension_id, Enabled(true),
                                             UserCanDisable(false));
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
-                                            kBlocklistedReenabledAllByAdmin));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
+                                        kBlocklistedReenabledAllByAdmin));
   VerifyDisplayString(event,
                       "Your administrator turned 1 potentially harmful "
                       "extension back on");
@@ -1478,10 +1407,9 @@ TEST_F(SafetyCheckHandlerTest, CheckExtensions_BlocklistedReenabledSomeByUser) {
                                             UserCanDisable(false));
 
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
-                                            kBlocklistedReenabledSomeByUser));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kExtensions, static_cast<int>(SafetyCheckHandler::ExtensionsStatus::
+                                        kBlocklistedReenabledSomeByUser));
   EXPECT_TRUE(event);
   VerifyDisplayString(event,
                       "You turned 1 potentially harmful extension back "
@@ -1518,9 +1446,8 @@ TEST_P(SafetyCheckHandlerChromeCleanerIdleTest, CheckChromeCleanerIdleStates) {
       idle_reason_);
   safety_check_->PerformSafetyCheck();
   // Ensure WebUI event is sent.
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kChromeCleaner, static_cast<int>(expected_cct_status_));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kChromeCleaner, static_cast<int>(expected_cct_status_));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, expected_display_string_);
   // Ensure UMA is logged.
@@ -1650,9 +1577,8 @@ TEST_P(SafetyCheckHandlerChromeCleanerNonIdleTest,
   safe_browsing::ChromeCleanerControllerImpl::GetInstance()->SetStateForTesting(
       state_);
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kChromeCleaner, static_cast<int>(expected_cct_status_));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kChromeCleaner, static_cast<int>(expected_cct_status_));
   ASSERT_TRUE(event);
   VerifyDisplayString(event, expected_display_string_);
   // Ensure UMA is logged.
@@ -1715,11 +1641,10 @@ TEST_F(SafetyCheckHandlerTest, CheckChromeCleaner_DisabledByAdmin) {
       ->SetDelegateForTesting(&test_chrome_cleaner_controller_delegate_);
 
   safety_check_->PerformSafetyCheck();
-  const base::DictionaryValue* event =
-      GetSafetyCheckStatusChangedWithDataIfExists(
-          kChromeCleaner,
-          static_cast<int>(
-              SafetyCheckHandler::ChromeCleanerStatus::kDisabledByAdmin));
+  const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
+      kChromeCleaner,
+      static_cast<int>(
+          SafetyCheckHandler::ChromeCleanerStatus::kDisabledByAdmin));
   ASSERT_TRUE(event);
   VerifyDisplayString(
       event,
@@ -1840,31 +1765,31 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckStartedWebUiEvents) {
   safety_check_->SendSafetyCheckStartedWebUiUpdates();
 
   // Check that all initial updates ("running" states) are sent.
-  const base::DictionaryValue* event_parent =
+  const base::Value::Dict* event_parent =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kParent,
           static_cast<int>(SafetyCheckHandler::ParentStatus::kChecking));
   ASSERT_TRUE(event_parent);
   VerifyDisplayString(event_parent, u"Running…");
-  const base::DictionaryValue* event_updates =
+  const base::Value::Dict* event_updates =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kUpdates,
           static_cast<int>(SafetyCheckHandler::UpdateStatus::kChecking));
   ASSERT_TRUE(event_updates);
   VerifyDisplayString(event_updates, u"");
-  const base::DictionaryValue* event_pws =
+  const base::Value::Dict* event_pws =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kPasswords,
           static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking));
   ASSERT_TRUE(event_pws);
   VerifyDisplayString(event_pws, u"");
-  const base::DictionaryValue* event_sb =
+  const base::Value::Dict* event_sb =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kSafeBrowsing,
           static_cast<int>(SafetyCheckHandler::SafeBrowsingStatus::kChecking));
   ASSERT_TRUE(event_sb);
   VerifyDisplayString(event_sb, u"");
-  const base::DictionaryValue* event_extensions =
+  const base::Value::Dict* event_extensions =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kExtensions,
           static_cast<int>(SafetyCheckHandler::ExtensionsStatus::kChecking));
@@ -1888,7 +1813,7 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
 #endif
 
   // Check that the parent update is sent after all children checks completed.
-  const base::DictionaryValue* event_parent =
+  const base::Value::Dict* event_parent =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kParent, static_cast<int>(SafetyCheckHandler::ParentStatus::kAfter));
   ASSERT_TRUE(event_parent);
@@ -1906,7 +1831,7 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
 #endif
 
   // Check that there is no new parent completion event.
-  const base::DictionaryValue* event_parent2 =
+  const base::Value::Dict* event_parent2 =
       GetSafetyCheckStatusChangedWithDataIfExists(
           kParent, static_cast<int>(SafetyCheckHandler::ParentStatus::kAfter));
   ASSERT_TRUE(event_parent2);
