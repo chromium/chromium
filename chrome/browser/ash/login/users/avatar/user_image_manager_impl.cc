@@ -452,6 +452,13 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
     bool image_is_safe_format,
     scoped_refptr<base::RefCountedBytes> image_bytes,
     user_manager::UserImage::ImageFormat image_format) {
+  // Ignore if data stored or cached outside the user's cryptohome is to be
+  // treated as ephemeral.
+  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id())) {
+    OnSaveImageDone(false);
+    return;
+  }
+
   // This can happen if a stub profile image is chosen (i.e. the profile
   // image hasn't been downloaded yet).
   if (!image_bytes) {
