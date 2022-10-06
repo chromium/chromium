@@ -57,6 +57,13 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
     return;
   }
 
+  if (image->width() == 1 || image->height() == 1) {
+    // We might need to convert the frame into I420 pixel format, and 1x1 frame
+    // can't be read back into I420. Capturing such a slim target is not a
+    // very practical thing to do anyway, so we're okay to fail here.
+    return;
+  }
+
   if (!image->IsTextureBacked()) {
     // Initially try accessing pixels directly if they are in memory.
     sk_sp<SkImage> sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
@@ -205,7 +212,10 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK(context_provider);
 
-  const gfx::Size image_size(image->width(), image->height());
+  // Our ReadbackYUVPixelsAsync() implementations either cut off odd pixels or
+  // simply fail. So, there is no point even trying reading odd sized images
+  // into I420.
+  const gfx::Size image_size(image->width() & ~1u, image->height() & ~1u);
   scoped_refptr<media::VideoFrame> output_frame = frame_pool_.CreateFrame(
       media::PIXEL_FORMAT_I420, image_size, gfx::Rect(image_size), image_size,
       base::TimeDelta());
