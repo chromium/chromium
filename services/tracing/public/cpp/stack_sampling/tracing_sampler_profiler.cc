@@ -501,22 +501,22 @@ void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
     return;
   }
   if (!buffered_samples_.empty()) {
-    for (const auto& sample : buffered_samples_) {
-      WriteSampleToTrace(sample);
+    for (auto& sample : buffered_samples_) {
+      WriteSampleToTrace(std::move(sample));
     }
     buffered_samples_.clear();
   }
 
-  WriteSampleToTrace(BufferedSample(sample_timestamp, std::move(frames)));
+  BufferedSample sample(sample_timestamp, std::move(frames));
+  WriteSampleToTrace(std::move(sample));
   if (sample_callback_for_testing_) {
     sample_callback_for_testing_.Run();
   }
 }
 
 void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
-    const TracingSamplerProfiler::TracingProfileBuilder::BufferedSample&
-        sample) {
-  const auto& frames = sample.sample;
+    TracingSamplerProfiler::TracingProfileBuilder::BufferedSample sample) {
+  auto& frames = sample.sample;
   auto reset_id =
       TracingSamplerProfilerDataSource::GetIncrementalStateResetID();
   if (reset_id != last_incremental_state_reset_id_) {
@@ -603,7 +603,7 @@ TracingSamplerProfiler::StackProfileWriter::~StackProfileWriter() = default;
 
 InterningID
 TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
-    const std::vector<base::Frame>& frames,
+    std::vector<base::Frame>& frames,
     perfetto::TraceWriter::TracePacketHandle* trace_packet) {
   size_t ip_hash = 0;
   for (const auto& frame : frames) {
@@ -619,7 +619,8 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
   auto* interned_data = (*trace_packet)->set_interned_data();
 
   std::vector<InterningID> frame_ids;
-  for (const auto& frame : frames) {
+  for (auto& frame : frames) {
+    bool is_unwinder_provided_function_name = false;
     FrameDetails frame_details;
     if (frame.module) {
       frame_details.SetModule(*frame.module);
@@ -634,12 +635,23 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
       if (!frame_details.has_valid_module()) {
         frame_details.SetChromeModuleInfo();
       }
-    } else if (frame.instruction_pointer == 0) {
-      // TODO(ssid): This frame is currently skipped from inserting. Find a way
-      // to specify that this frame is scanned in the trace.
-      frame_details.frame_name = "Scanned";
-    } else if (!frame_details.has_valid_module()) {
-      frame_details.SetSystemModuleInfo(frame.instruction_pointer);
+    } else {
+      if (!frame.function_name.empty()) {
+        // Set function names for modules other than native chrome.
+        // This includes Java frames and native Android system frames.
+        // Chrome native frames can already be symbolized server side.
+        // Currently only libunwindstack_unwinder fills function_names in
+        // frames.
+        is_unwinder_provided_function_name = true;
+        frame_details.frame_name = std::move(frame.function_name);
+      }
+      if (frame.instruction_pointer == 0) {
+        // TODO(ssid): This frame is currently skipped from inserting. Find a
+        // way to specify that this frame is scanned in the trace.
+        frame_details.frame_name = "Scanned";
+      } else if (!frame_details.has_valid_module()) {
+        frame_details.SetSystemModuleInfo(frame.instruction_pointer);
+      }
     }
 #endif  // !(ANDROID_ARM64_UNWINDING_SUPPORTED ||
         // ANDROID_CFI_UNWINDING_SUPPORTED)
@@ -654,9 +666,11 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
     frame_details.module_id =
         base::TransformModuleIDToBreakpadFormat(frame_details.module_id);
 
-    // We never emit frame names in privacy filtered mode.
+    // Allow uploading function names passed from unwinder, which would be
+    // coming from static compile time strings.
     bool should_emit_frame_names =
-        !frame_details.frame_name.empty() && !should_enable_filtering_;
+        !frame_details.frame_name.empty() &&
+        (is_unwinder_provided_function_name || !should_enable_filtering_);
 
     InterningIndexEntry interned_frame;
     if (should_emit_frame_names) {

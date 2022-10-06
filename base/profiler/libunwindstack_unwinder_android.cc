@@ -164,7 +164,8 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
   if (values.error_code == unwindstack::ERROR_NONE) {
     for (const unwindstack::FrameData& frame : values.frames) {
       stack->emplace_back(frame.pc,
-                          module_cache()->GetModuleForAddress(frame.pc));
+                          module_cache()->GetModuleForAddress(frame.pc),
+                          frame.function_name);
     }
     return UnwindResult::kCompleted;
   }

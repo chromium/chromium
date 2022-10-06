@@ -67,8 +67,12 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     StackProfileWriter(const StackProfileWriter&) = delete;
     StackProfileWriter& operator=(const StackProfileWriter&) = delete;
 
+    // This function receives stack sample from profiler and returns InterningID
+    // corresponding to the callstack. Meanwhile it could emit extra entries
+    // to intern data. |function_name| member in Frame could be std::move(ed) by
+    // this method to reduce number of copies we have for function names.
     InterningID GetCallstackIDAndMaybeEmit(
-        const std::vector<base::Frame>& frames,
+        std::vector<base::Frame>& frames,
         perfetto::TraceWriter::TracePacketHandle* trace_packet);
 
     void ResetEmittedState();
@@ -147,7 +151,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
       std::vector<base::Frame> sample;
     };
 
-    void WriteSampleToTrace(const BufferedSample& sample);
+    void WriteSampleToTrace(BufferedSample sample);
 
     // TODO(ssid): Consider using an interning scheme to reduce memory usage
     // and increase the sample size.
