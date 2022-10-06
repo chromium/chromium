@@ -463,6 +463,9 @@ TEST_P(FastCheckoutClientImplTestParametrized,
 
   // `FastCheckoutClient` state was reset after run finished.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutRunOutcome,
+                                       FastCheckoutRunOutcome::kSuccess, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_OnboardingRejected_NotStartableAgain) {
@@ -516,6 +519,10 @@ TEST_F(FastCheckoutClientImplTest, Start_OnboardingRejected_NotStartableAgain) {
   // Not startable again.
   EXPECT_FALSE(fast_checkout_client()->Start(delegate(), GURL(kUrl), false));
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaKeyFastCheckoutRunOutcome,
+      FastCheckoutRunOutcome::kOnboardingDeclined, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_FailsIfNoProfilesOnFile) {
@@ -780,6 +787,9 @@ TEST_F(FastCheckoutClientImplTest,
 
   // `FastCheckoutClient` state was reset after run finished.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
+
+  histogram_tester_.ExpectUniqueSample(kUmaKeyFastCheckoutRunOutcome,
+                                       FastCheckoutRunOutcome::kFail, 1u);
 }
 
 TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {

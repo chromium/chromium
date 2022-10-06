@@ -61,6 +61,8 @@ public class AutofillAssistantMetrics {
         switch (intent) {
             case IntentStrings.BUY_MOVIE_TICKET:
                 return "BuyMovieTicket";
+            case IntentStrings.CHROME_FAST_CHECKOUT:
+                return "ChromeFastCheckout";
             case IntentStrings.FLIGHTS_CHECKIN:
                 return "FlightsCheckin";
             case IntentStrings.FOOD_ORDERING:

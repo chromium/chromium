@@ -1261,6 +1261,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FastCheckout.RunOutcome"
+    enum="FastCheckoutRunOutcome" expires_after="2023-04-06">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    The outcome of a Fast Checkout run. It is recorded when a run is completed,
+    successfully or not, or when the run got cancelled, e.g. by the user closing
+    the tab.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FastCheckout.TriggerOutcome"
     enum="FastCheckoutTriggerOutcome" expires_after="2023-08-15">
   <owner>bwolfgang@google.com</owner>

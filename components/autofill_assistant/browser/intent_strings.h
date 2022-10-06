@@ -13,6 +13,7 @@ namespace autofill_assistant {
 
 // Please keep the list alphabetized.
 extern const char kBuyMovieTicket[];
+extern const char kChromeFastCheckout[];
 extern const char kFlightsCheckin[];
 extern const char kFoodOrdering[];
 extern const char kFoodOrderingDelivery[];

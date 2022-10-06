@@ -6,6 +6,7 @@
 
 namespace autofill_assistant {
 const char kBuyMovieTicket[] = "BUY_MOVIE_TICKET";
+const char kChromeFastCheckout[] = "CHROME_FAST_CHECKOUT";
 const char kFlightsCheckin[] = "FLIGHTS_CHECKIN";
 const char kFoodOrdering[] = "FOOD_ORDERING";
 const char kFoodOrderingDelivery[] = "FOOD_ORDERING_DELIVERY";

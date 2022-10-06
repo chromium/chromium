@@ -69,6 +69,7 @@ static bool DROPOUT_RECORDED = false;
 std::string GetSuffixForIntent(const std::string& intent) {
   base::flat_map<std::string, std::string> histogramsSuffixes = {
       {kBuyMovieTicket, ".BuyMovieTicket"},
+      {kChromeFastCheckout, ".ChromeFastCheckout"},
       {kFlightsCheckin, ".FlightsCheckin"},
       {kFoodOrdering, ".FoodOrdering"},
       {kFoodOrderingDelivery, ".FoodOrderingDelivery"},

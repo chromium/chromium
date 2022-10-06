@@ -36612,6 +36612,17 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Cache not available and no request made"/>
 </enum>
 
+<enum name="FastCheckoutRunOutcome">
+  <summary>Defines possible outcomes of a Fast Checkout run.</summary>
+  <int value="0"
+      label="Failure: Script did not run because the user has declined
+             onboarding."/>
+  <int value="1"
+      label="Failure: Script run did not complete or never started."/>
+  <int value="2" label="Failure: Script run failed."/>
+  <int value="3" label="Success: Script ran successfully."/>
+</enum>
+
 <enum name="FastCheckoutTriggerOutcome">
   <summary>
     Classifies different outcomes of the attempt to trigger showing a

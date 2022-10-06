@@ -21,6 +21,25 @@ namespace autofill_assistant {
 class RuntimeManager;
 }
 
+constexpr char kUmaKeyFastCheckoutRunOutcome[] =
+    "Autofill.FastCheckout.RunOutcome";
+
+// Enum defining possible outcomes of a Fast Checkout run. Must be kept in sync
+// with enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FastCheckoutRunOutcome {
+  // Script did not run because the user has declined onboarding.
+  kOnboardingDeclined = 0,
+  // The script run did not complete or never started.
+  kIncompleteRun = 1,
+  // Script run failed.
+  kFail = 2,
+  // Script ran successfully.
+  kSuccess = 3,
+  kMaxValue = kSuccess
+};
+
 class FastCheckoutClientImpl
     : public content::WebContentsUserData<FastCheckoutClientImpl>,
       public FastCheckoutClient,
