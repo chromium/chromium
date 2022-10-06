@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/wayland_display.h"
+#include "remoting/host/linux/wayland_seat.h"
 
 namespace remoting {
 
@@ -54,6 +55,7 @@ class WaylandConnection {
   };
   base::RepeatingTimer timer_;
   WaylandDisplay wayland_display_;
+  WaylandSeat wayland_seat_;
 };
 
 }  // namespace remoting

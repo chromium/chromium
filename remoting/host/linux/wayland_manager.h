@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include <xkbcommon/xkbcommon.h>
+
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,6 +32,11 @@ class WaylandManager {
                                                webrtc::ScreenId);
   using UpdateScreenResolutionCallback =
       base::RepeatingCallback<UpdateScreenResolutionSignature>;
+  using KeyboardLayoutCallback =
+      base::RepeatingCallback<void(XkbKeyMapUniquePtr)>;
+  using KeyboardModifiersCallbackSignature = void(uint32_t group);
+  using KeyboardModifiersCallback =
+      base::RepeatingCallback<KeyboardModifiersCallbackSignature>;
 
   WaylandManager();
   ~WaylandManager();
@@ -58,6 +65,20 @@ class WaylandManager {
   void OnUpdateScreenResolution(ScreenResolution resolution,
                                 webrtc::ScreenId screen_id);
 
+  // Sets callback to be invoked when new keyboard layout is detected.
+  void SetKeyboardLayoutCallback(KeyboardLayoutCallback callback);
+
+  // Invoked by the wayland keyboard, upon detecting a new keyboard layout
+  // mapping from the compositor.
+  void OnKeyboardLayout(XkbKeyMapUniquePtr);
+
+  // Adds callback to be invoked when new keyboard layout is detected.
+  void AddKeyboardModifiersCallback(KeyboardModifiersCallback callback);
+
+  // Invoked by the wayland keyboard, upon detecting a keyboard modifier
+  // changes from the compositor.
+  void OnKeyboardModifiers(uint32_t group);
+
   // Gets the current information about displays available on the host.
   DesktopDisplayInfo GetCurrentDisplayInfo();
 
@@ -70,6 +91,10 @@ class WaylandManager {
       capturer_metadata_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingCallbackList<UpdateScreenResolutionSignature>
       screen_resolution_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  KeyboardLayoutCallback keyboard_layout_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::RepeatingCallbackList<KeyboardModifiersCallbackSignature>
+      keyboard_modifier_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace remoting

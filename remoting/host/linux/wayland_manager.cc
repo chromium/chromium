@@ -82,6 +82,58 @@ void WaylandManager::OnUpdateScreenResolution(ScreenResolution resolution,
   screen_resolution_callbacks_.Notify(std::move(resolution), screen_id);
 }
 
+void WaylandManager::SetKeyboardLayoutCallback(
+    KeyboardLayoutCallback callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::SetKeyboardLayoutCallback,
+                       base::Unretained(this),
+                       base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                          std::move(callback))));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_layout_callback_ = std::move(callback);
+}
+
+void WaylandManager::OnKeyboardLayout(XkbKeyMapUniquePtr keymap) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnKeyboardLayout,
+                                  base::Unretained(this), std::move(keymap)));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_layout_callback_.Run(std::move(keymap));
+}
+
+void WaylandManager::AddKeyboardModifiersCallback(
+    KeyboardModifiersCallback callback) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandManager::AddKeyboardModifiersCallback,
+                       base::Unretained(this),
+                       base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                                          std::move(callback))));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_modifier_callbacks_.AddUnsafe(std::move(callback));
+}
+
+void WaylandManager::OnKeyboardModifiers(uint32_t group) {
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandManager::OnKeyboardModifiers,
+                                  base::Unretained(this), group));
+    return;
+  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  keyboard_modifier_callbacks_.Notify(group);
+}
+
 DesktopDisplayInfo WaylandManager::GetCurrentDisplayInfo() {
   return wayland_connection_->GetCurrentDisplayInfo();
 }

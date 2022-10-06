@@ -39,6 +39,9 @@ void WaylandConnection::OnGlobalEvent(void* data,
       strcmp(interface, zxdg_output_manager_v1_interface.name) == 0) {
     connection->wayland_display_.HandleGlobalDisplayEvent(registry, name,
                                                           interface, version);
+  } else if (strcmp(interface, wl_seat_interface.name) == 0) {
+    connection->wayland_seat_.HandleGlobalSeatEvent(registry, name, interface,
+                                                    version);
   }
 }
 

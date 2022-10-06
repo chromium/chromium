@@ -222,6 +222,12 @@ source_set("resources") {
   }
 }
 
+if (remoting_use_wayland) {
+  pkg_config("xkbcommon") {
+    packages = [ "xkbcommon" ]
+  }
+}
+
 # This must be a static library instead of a source set because
 # remoting_unittests requires that remoting_me2me_host.cc not be pulled in,
 # which in turn depends on remoting_me2me_host_static which isn't part of that
@@ -524,14 +530,19 @@ static_library("common") {
       "linux/wayland_display.h",
       "linux/wayland_display_info.cc",
       "linux/wayland_display_info.h",
+      "linux/wayland_keyboard.cc",
+      "linux/wayland_keyboard.h",
       "linux/wayland_manager.cc",
       "linux/wayland_manager.h",
+      "linux/wayland_seat.cc",
+      "linux/wayland_seat.h",
     ]
     public_deps += [
       "//third_party/wayland-protocols:xdg_output_protocol",
       "//third_party/wayland-protocols:xdg_shell_protocol",
     ]
     deps += [ "//ui/gtk:gtk_config" ]
+    public_configs = [ ":xkbcommon" ]
   }
 
   if (is_linux &&
@@ -556,10 +567,14 @@ static_library("common") {
       sources += [
         "curtain_mode_linux.cc",
         "keyboard_layout_monitor_linux.cc",
+        "linux/keyboard_layout_monitor_utils.cc",
+        "linux/keyboard_layout_monitor_utils.h",
       ]
     } else if (remoting_use_wayland) {
       sources += [
         "linux/curtain_mode_wayland.cc",
+        "linux/keyboard_layout_monitor_utils.cc",
+        "linux/keyboard_layout_monitor_utils.h",
         "linux/keyboard_layout_monitor_wayland.cc",
       ]
     }
