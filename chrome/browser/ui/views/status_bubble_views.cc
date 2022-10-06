@@ -790,7 +790,11 @@ void StatusBubbleViews::SetBounds(int x, int y, int w, int h) {
   position_.SetPoint(base_view_->GetMirroredXWithWidthInView(x, w), y);
   size_.SetSize(w, h);
   RepositionPopup();
-  if (popup_.get() && contains_mouse_)
+
+  // Initializing the `popup_` views::Widget can trigger a window manager work
+  // area change that calls into this function while `view_` is still null, so
+  // check both `popup_` and `view_`.
+  if (popup_.get() && view_ && contains_mouse_)
     AvoidMouse(last_mouse_moved_location_);
 }
 
