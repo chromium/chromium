@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -237,7 +238,7 @@ const CGFloat kButtonFontSize = 17;
   UIView* divider = [[UIView alloc] initWithFrame:CGRectZero];
   [divider setTranslatesAutoresizingMaskIntoConstraints:NO];
   divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-  CGFloat slidingConstant = ui_util::AlignValueToPixel(kDividerHeight);
+  CGFloat slidingConstant = AlignValueToPixel(kDividerHeight);
   [divider.heightAnchor constraintEqualToConstant:slidingConstant].active = YES;
   return divider;
 }

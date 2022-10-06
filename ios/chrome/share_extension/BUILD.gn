@@ -57,6 +57,7 @@ ios_appex_bundle("share_extension") {
     "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
 

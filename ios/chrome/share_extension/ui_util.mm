@@ -14,11 +14,6 @@ namespace ui_util {
 
 const CGFloat kAnimationDuration = 0.3;
 
-CGFloat AlignValueToPixel(CGFloat value) {
-  CGFloat scale = [[UIScreen mainScreen] scale];
-  return floor(value * scale) / scale;
-}
-
 void ConstrainAllSidesOfViewToView(UIView* container, UIView* filler) {
   [NSLayoutConstraint activateConstraints:@[
     [filler.leadingAnchor constraintEqualToAnchor:container.leadingAnchor],
