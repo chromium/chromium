@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        ExceptionInHandlerShouldNotCrash) {
   ASSERT_TRUE(RunExtensionTest("bindings/exception_in_handler_should_not_crash",
-                               {.page_url = "page.html"}))
+                               {.extension_url = "page.html"}))
       << message_;
 }
 
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, AboutBlankIframe) {
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        InternalAPIsNotOnChromeObject) {
   ASSERT_TRUE(RunExtensionTest("bindings/internal_apis_not_on_chrome_object",
-                               {.page_url = "page.html"}))
+                               {.extension_url = "page.html"}))
       << message_;
 }
 
@@ -161,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, DISABLED_EventOverriding) {
 // Tests the effectiveness of the 'nocompile' feature file property.
 // Regression test for http://crbug.com/356133.
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, Nocompile) {
-  ASSERT_TRUE(RunExtensionTest("bindings/nocompile", {.page_url = "page.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("bindings/nocompile", {.extension_url = "page.html"}))
       << message_;
 }
 

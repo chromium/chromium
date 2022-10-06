@@ -436,14 +436,14 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
 // chrome.proxy.onProxyError to fire with ERR_PROXY_CONNECTION_FAILED.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsInvalidProxy) {
   ASSERT_TRUE(
-      RunExtensionTest("proxy/events", {.page_url = "invalid_proxy.html"}))
+      RunExtensionTest("proxy/events", {.extension_url = "invalid_proxy.html"}))
       << message_;
 }
 
 // Tests error events: PAC script parse error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsParseError) {
   ASSERT_TRUE(
-      RunExtensionTest("proxy/events", {.page_url = "parse_error.html"}))
+      RunExtensionTest("proxy/events", {.extension_url = "parse_error.html"}))
       << message_;
 }
 
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsParseError) {
 // non-proxy error.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyEventsOtherError) {
   ASSERT_TRUE(
-      RunExtensionTest("proxy/events", {.page_url = "other_error.html"}))
+      RunExtensionTest("proxy/events", {.extension_url = "other_error.html"}))
       << message_;
 }
 

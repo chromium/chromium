@@ -33,10 +33,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FontSettingsIncognito) {
   prefs->SetString(prefs::kWebKitSansSerifFontFamily, "Arial");
   prefs->SetInteger(prefs::kWebKitDefaultFontSize, 16);
 
-  EXPECT_TRUE(
-      RunExtensionTest("font_settings/incognito",
-                       {.page_url = "launch.html", .open_in_incognito = true},
-                       {.allow_in_incognito = true}));
+  EXPECT_TRUE(RunExtensionTest(
+      "font_settings/incognito",
+      {.extension_url = "launch.html", .open_in_incognito = true},
+      {.allow_in_incognito = true}));
 }
 
 // Test the list of generic font families.

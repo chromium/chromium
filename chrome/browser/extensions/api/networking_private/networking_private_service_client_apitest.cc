@@ -51,9 +51,9 @@ class NetworkingPrivateServiceClientApiTest
       const NetworkingPrivateServiceClientApiTest&) = delete;
 
   bool RunNetworkingSubtest(const std::string& subtest) {
-    const std::string page_url = "main.html?" + subtest;
+    const std::string extension_url = "main.html?" + subtest;
     return RunExtensionTest("networking_private/service_client",
-                            {.page_url = page_url.c_str()},
+                            {.extension_url = extension_url.c_str()},
                             {.load_as_component = true});
   }
 

@@ -139,14 +139,15 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, GetPrinters) {
   GetPrintersManager()->AddPrinter(printer, chromeos::PrinterClass::kSaved);
 
   SetCustomArg(kName);
-  ASSERT_TRUE(RunExtensionTest("printing", {.page_url = "get_printers.html"}));
+  ASSERT_TRUE(
+      RunExtensionTest("printing", {.extension_url = "get_printers.html"}));
 }
 
 IN_PROC_BROWSER_TEST_F(PrintingApiTest, GetPrinterInfo) {
   AddAvailablePrinter(
       kId, std::make_unique<printing::PrinterSemanticCapsAndDefaults>());
   ASSERT_TRUE(
-      RunExtensionTest("printing", {.page_url = "get_printer_info.html"}));
+      RunExtensionTest("printing", {.extension_url = "get_printer_info.html"}));
 }
 
 // Verifies that:
@@ -167,7 +168,8 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, SubmitJob) {
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
-  ASSERT_TRUE(RunExtensionTest("printing", {.page_url = "submit_job.html"}));
+  ASSERT_TRUE(
+      RunExtensionTest("printing", {.extension_url = "submit_job.html"}));
 }
 
 // Verifies that:
@@ -184,7 +186,8 @@ IN_PROC_BROWSER_TEST_F(PrintingApiTest, CancelJob) {
   base::AutoReset<bool> skip_confirmation_dialog_reset(
       PrintJobSubmitter::SkipConfirmationDialogForTesting());
 
-  ASSERT_TRUE(RunExtensionTest("printing", {.page_url = "cancel_job.html"}));
+  ASSERT_TRUE(
+      RunExtensionTest("printing", {.extension_url = "cancel_job.html"}));
 }
 
 }  // namespace extensions

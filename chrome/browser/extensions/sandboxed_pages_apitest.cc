@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPages) {
   const char* kManifest =
       GetParam() == ManifestVersion::TWO ? kManifestV2 : kManifestV3;
   EXPECT_TRUE(
-      RunTest("sandboxed_pages", kManifest, {.page_url = "main.html"}, {}))
+      RunTest("sandboxed_pages", kManifest, {.extension_url = "main.html"}, {}))
       << message_;
 }
 
@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, SandboxedPagesCSP) {
   // Loading web content will fail because of CSP. In addition to that we will
   // show manifest warnings, hence ignore_manifest_warnings is set to true.
   ASSERT_TRUE(RunTest("sandboxed_pages_csp", kManifest,
-                      {.page_url = "main.html"},
+                      {.extension_url = "main.html"},
                       {.ignore_manifest_warnings = true}))
       << message_;
 }

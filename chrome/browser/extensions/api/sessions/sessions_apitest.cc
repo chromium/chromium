@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
 
 // http://crbug.com/251199
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, DISABLED_SessionsApis) {
-  ASSERT_TRUE(RunExtensionTest("sessions", {.page_url = "sessions.html"}))
+  ASSERT_TRUE(RunExtensionTest("sessions", {.extension_url = "sessions.html"}))
       << message_;
 }
 

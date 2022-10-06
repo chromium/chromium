@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TestRendererAccessibilityEnabled) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, SanityCheck) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "sanity_check.html"}))
+                               {.extension_url = "sanity_check.html"}))
       << message_;
 }
 
@@ -164,50 +164,50 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, ImageLabels) {
 #endif
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_GetTreeByTabId) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "tab_id.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "tab_id.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Events) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "events.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "events.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Actions) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "actions.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "actions.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Location) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "location.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "location.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Location2) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "location2.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "location2.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, BoundsForRange) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "bounds_for_range.html"}))
+                               {.extension_url = "bounds_for_range.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "line_start_offsets.html"}))
+                               {.extension_url = "line_start_offsets.html"}))
       << message_;
 }
 
@@ -220,14 +220,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LineStartOffsets) {
 IN_PROC_BROWSER_TEST_F(AutomationApiCanvasTest, MAYBE_ImageData) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "image_data.html"}))
+                               {.extension_url = "image_data.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, TableProperties) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "table_properties.html"}))
+                               {.extension_url = "table_properties.html"}))
       << message_;
 }
 
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
                        MAYBE_TabsAutomationBooleanPermissions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
-                               {.page_url = "permissions.html"}))
+                               {.extension_url = "permissions.html"}))
       << message_;
 }
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_TabsAutomationBooleanActions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_boolean",
-                               {.page_url = "actions.html"}))
+                               {.extension_url = "actions.html"}))
       << message_;
 }
 
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
                        MAYBE_TabsAutomationHostsPermissions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs_automation_hosts",
-                               {.page_url = "permissions.html"}))
+                               {.extension_url = "permissions.html"}))
       << message_;
 }
 
@@ -283,78 +283,78 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_CloseTab) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "close_tab.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "close_tab.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, QuerySelector) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "queryselector.html"}))
+                               {.extension_url = "queryselector.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Find) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "find.html"}))
+      RunExtensionTest("automation/tests/tabs", {.extension_url = "find.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Attributes) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "attributes.html"}))
+                               {.extension_url = "attributes.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, ReverseRelations) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "reverse_relations.html"}))
+                               {.extension_url = "reverse_relations.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, TreeChange) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "tree_change.html"}))
+                               {.extension_url = "tree_change.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, TreeChangeIndirect) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "tree_change_indirect.html"}))
+                               {.extension_url = "tree_change_indirect.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DocumentSelection) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "document_selection.html"}))
+                               {.extension_url = "document_selection.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, HitTest) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "hit_test.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "hit_test.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, WordBoundaries) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "word_boundaries.html"}))
+                               {.extension_url = "word_boundaries.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, SentenceBoundaries) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "sentence_boundaries.html"}))
+                               {.extension_url = "sentence_boundaries.html"}))
       << message_;
 }
 
@@ -371,42 +371,43 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTestWithLanguageDetection,
                        DetectedLanguage) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "detected_language.html"}))
+                               {.extension_url = "detected_language.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, IgnoredNodesNotReturned) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "ignored_nodes_not_returned.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("automation/tests/tabs",
+                       {.extension_url = "ignored_nodes_not_returned.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, ForceLayout) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "force_layout.html"}))
+                               {.extension_url = "force_layout.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Intents) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(
-      RunExtensionTest("automation/tests/tabs", {.page_url = "intents.html"}))
+  ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
+                               {.extension_url = "intents.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "enum_validity.html"}))
+                               {.extension_url = "enum_validity.html"}))
       << message_;
 }
 
 #if defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "desktop_not_requested.html"}))
+                               {.extension_url = "desktop_not_requested.html"}))
       << message_;
 }
 #endif  // defined(USE_AURA)
@@ -414,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotRequested) {
 #if !defined(USE_AURA)
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopNotSupported) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "desktop_not_supported.html"}))
+                               {.extension_url = "desktop_not_supported.html"}))
       << message_;
 }
 #endif  // !defined(USE_AURA)
@@ -448,39 +449,39 @@ INSTANTIATE_TEST_SUITE_P(AutomationApiFencedFrameTest,
 IN_PROC_BROWSER_TEST_P(AutomationApiFencedFrameTest, DesktopFindInFencedframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop/fencedframe",
-                               {.page_url = "focus_fencedframe.html"}))
+                               {.extension_url = "focus_fencedframe.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Desktop) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "desktop.html"}))
+                               {.extension_url = "desktop.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopInitialFocus) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "initial_focus.html"}))
+                               {.extension_url = "initial_focus.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusWeb) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "focus_web.html"}))
+                               {.extension_url = "focus_web.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "focus_iframe.html"}))
+                               {.extension_url = "focus_iframe.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test_iframe.html"}))
+                               {.extension_url = "hit_test_iframe.html"}))
       << message_;
 }
 
@@ -491,14 +492,14 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
                                                             {});
 
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "focus_views.html"}))
+                               {.extension_url = "focus_views.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "get_next_text_match.html"}))
+                               {.extension_url = "get_next_text_match.html"}))
       << message_;
 }
 
@@ -516,13 +517,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
                                                             {});
 
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "actions.html"}))
+                               {.extension_url = "actions.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test.html"}))
+                               {.extension_url = "hit_test.html"}))
       << message_;
 }
 
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
       shell_test_api.display_manager());
   // The browser will open in the primary display.
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test.html"}))
+                               {.extension_url = "hit_test.html"}))
       << message_;
 }
 
@@ -568,13 +569,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
   SelectFirstBrowser();
   // The test will run in browser().
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test.html"}))
+                               {.extension_url = "hit_test.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopLoadTabs) {
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "load_tabs.html"}))
+                               {.extension_url = "load_tabs.html"}))
       << message_;
 }
 
@@ -596,21 +597,21 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTestWithDeviceScaleFactor, LocationScaled) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTestWithDeviceScaleFactor, HitTest) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test.html"}))
+                               {.extension_url = "hit_test.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, Position) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "position.html"}))
+                               {.extension_url = "position.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "accessibility_focus.html"}))
+                               {.extension_url = "accessibility_focus.html"}))
       << message_;
 }
 
@@ -628,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
   }
 
   ASSERT_TRUE(RunExtensionTest("automation/tests/tabs",
-                               {.page_url = "textarea_append_perf.html"}))
+                               {.extension_url = "textarea_append_perf.html"}))
       << message_;
 
   std::string trace_output;
@@ -685,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DISABLED_TextareaAppendPerf) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "iframenav.html"}))
+                               {.extension_url = "iframenav.html"}))
       << message_;
 }
 
@@ -697,8 +698,9 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
 #endif
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "add_remove_event_listeners.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("automation/tests/desktop",
+                       {.extension_url = "add_remove_event_listeners.html"}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -713,8 +715,9 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_AddRemoveEventListeners) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_HitTestMultipleWindows) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
-                               {.page_url = "hit_test_multiple_windows.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("automation/tests/desktop",
+                       {.extension_url = "hit_test_multiple_windows.html"}))
       << message_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

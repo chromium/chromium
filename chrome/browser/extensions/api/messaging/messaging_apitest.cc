@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
 // no background page.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect_nobackground",
-                               {.page_url = "page_in_main_frame.html"}))
+                               {.extension_url = "page_in_main_frame.html"}))
       << message_;
 }
 

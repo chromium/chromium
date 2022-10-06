@@ -203,7 +203,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
       listener = std::make_unique<ExtensionTestMessageListener>("ready");
     // Show first popup in first window and expect it to have loaded.
     ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
-                                 {.page_url = "open_popup_succeeds.html"}))
+                                 {.extension_url = "open_popup_succeeds.html"}))
         << message_;
     if (listener)
       EXPECT_TRUE(listener->WaitUntilSatisfied());
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
       content::NotificationService::AllSources());
   ASSERT_TRUE(RunExtensionTest(
       "browser_action/open_popup",
-      {.page_url = "open_popup_succeeds.html", .open_in_incognito = true},
+      {.extension_url = "open_popup_succeeds.html", .open_in_incognito = true},
       {.allow_in_incognito = true}))
       << message_;
   frame_observer.Wait();
@@ -373,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // Load the test extension which will do nothing except notifyPass() to
   // return control here.
   ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
-                               {.page_url = "open_popup_fails.html"}))
+                               {.extension_url = "open_popup_fails.html"}))
       << message_;
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 

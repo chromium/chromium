@@ -224,21 +224,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       test_data_dir_.AppendASCII("extension_resource_request_policy")
           .AppendASCII("hosted_app")));
 
-  ASSERT_TRUE(
-      RunExtensionTest("extension_resource_request_policy/extension2/",
-                       {.page_url = "can_load_icons_from_hosted_apps.html"}))
+  ASSERT_TRUE(RunExtensionTest(
+      "extension_resource_request_policy/extension2/",
+      {.extension_url = "can_load_icons_from_hosted_apps.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Audio) {
   EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
-                               {.page_url = "audio.html"}))
+                               {.extension_url = "audio.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Video) {
   EXPECT_TRUE(RunExtensionTest("extension_resource_request_policy/extension2",
-                               {.page_url = "video.html"}))
+                               {.extension_url = "video.html"}))
       << message_;
 }
 
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest, Iframe) {
       .AppendASCII("inaccessible")));
   EXPECT_TRUE(
       RunExtensionTest("extension_resource_request_policy/web_accessible",
-                       {.page_url = "iframe.html"}))
+                       {.extension_url = "iframe.html"}))
       << message_;
 }
 

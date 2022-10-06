@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
 // service worker in a chrome.runtime.onMessage listener.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeSendMessage) {
   ASSERT_TRUE(
-      RunExtensionTest("runtime/send_message", {.page_url = "test.html"}));
+      RunExtensionTest("runtime/send_message", {.extension_url = "test.html"}));
 }
 
 // Simple test for chrome.runtime.getBackgroundPage with a persistent background
@@ -311,7 +311,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPage) {
   dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
   dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
 
-  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(),
+                               {.extension_url = "test.html"},
                                /*load_options=*/{}));
 }
 
@@ -356,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPageMV3) {
   dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
   dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
 
-  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
-                               /*load_options=*/{}));
+  ASSERT_TRUE(RunExtensionTest(
+      dir.UnpackedPath(), {.extension_url = "test.html"}, /*load_options=*/{}));
 }
 
 // Tests that updating a terminated extension sends runtime.onInstalled event

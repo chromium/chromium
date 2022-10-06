@@ -745,16 +745,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestUnloadAfterRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?1"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?1"}))
       << message_;
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?2"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?2"}))
       << message_;
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?3"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?3"}))
       << message_;
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?4"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?4"}))
       << message_;
 }
 
@@ -770,10 +770,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        MAYBE_WebRequestUnloadImmediately) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?5"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?5"}))
       << message_;
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_unload.html?6"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_unload.html?6"}))
       << message_;
 }
 
@@ -1057,7 +1057,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestDeclarative1) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_declarative1.html",
+                               {.extension_url = "test_declarative1.html",
                                 .custom_arg = R"({"testSuite": "normal"})"}))
       << message_;
 }
@@ -1070,15 +1070,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        DISABLED_WebRequestDeclarative1Broken) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_declarative1.html",
+                               {.extension_url = "test_declarative1.html",
                                 .custom_arg = R"({"testSuite": "broken"})"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestDeclarative2) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_declarative2.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.extension_url = "test_declarative2.html"}))
       << message_;
 }
 
@@ -1177,14 +1177,16 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData1) {
   // Test HTML form POST data access with the default and "url" encoding.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_post1.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("webrequest", {.extension_url = "test_post1.html"}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_PostData2) {
   // Test HTML form POST data access with the multipart and plaintext encoding.
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest", {.page_url = "test_post2.html"}))
+  ASSERT_TRUE(
+      RunExtensionTest("webrequest", {.extension_url = "test_post2.html"}))
       << message_;
 }
 
@@ -1821,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebSocketRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_websocket.html"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_websocket.html"}))
       << message_;
 }
 
@@ -1832,8 +1834,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        DISABLED_WebSocketRequestAuthRequired) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory(), true));
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_websocket_auth.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.extension_url = "test_websocket_auth.html"}))
       << message_;
 }
 
@@ -1843,7 +1845,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
   ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_websocket_worker.html"}))
+                               {.extension_url = "test_websocket_worker.html"}))
       << message_;
 }
 
@@ -1853,8 +1855,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketRequestOnWorker) {
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebSocketCleanClose) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
-  ASSERT_TRUE(RunExtensionTest("webrequest",
-                               {.page_url = "test_websocket_clean_close.html"}))
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest", {.extension_url = "test_websocket_clean_close.html"}))
       << message_;
 }
 
@@ -1877,7 +1879,7 @@ class ExtensionWebRequestApiWebTransportTest
 
  protected:
   bool RunTest(const char* page_url) {
-    return RunExtensionTest("webrequest", {.page_url = page_url});
+    return RunExtensionTest("webrequest", {.extension_url = page_url});
   }
 
   content::WebTransportSimpleTestServer server_;
@@ -2482,7 +2484,7 @@ IN_PROC_BROWSER_TEST_P(WebUiNtpInterceptionWebRequestAPITest,
 // Ensure that devtools frontend requests are hidden from the webRequest API.
 IN_PROC_BROWSER_TEST_F(DevToolsFrontendInWebRequestApiTest, HiddenRequests) {
   ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_devtools.html"}))
+      RunExtensionTest("webrequest", {.extension_url = "test_devtools.html"}))
       << message_;
 }
 
@@ -3696,7 +3698,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        ErrorPageForBlockedMainFrameNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_simple_cancel_navigation.html"}))
+      "webrequest", {.extension_url = "test_simple_cancel_navigation.html"}))
       << message_;
 
   std::string body;
@@ -4868,8 +4870,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Loader) {
   identifiability_metrics_test_helper_.PrepareForTest(&run_loop);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_simple_cancel.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.extension_url = "test_simple_cancel.html"}))
       << message_;
 
   content::WebContents* web_contents =
@@ -4898,7 +4900,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, Navigation) {
 
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_simple_cancel_navigation.html"}))
+      "webrequest", {.extension_url = "test_simple_cancel_navigation.html"}))
       << message_;
 
   content::WebContents* web_contents =
@@ -4928,7 +4930,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiIdentifiabilityTest, WebSocket) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(StartWebSocketServer(net::GetWebSocketTestDataDirectory()));
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_simple_websocket_cancel.html"}))
+      "webrequest", {.extension_url = "test_simple_websocket_cancel.html"}))
       << message_;
 
   content::WebContents* web_contents =
@@ -5189,7 +5191,7 @@ class ExtensionWebRequestApiFencedFrameTest
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_fenced_frames.html",
+      "webrequest", {.extension_url = "test_fenced_frames.html",
                      .custom_arg = !GetParam() ? R"({"mparch": true})" : ""}))
       << message_;
 }
@@ -5198,7 +5200,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiFencedFrameTest,
                        DeclarativeSendMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest(
-      "webrequest", {.page_url = "test_fenced_frames_send_message.html",
+      "webrequest", {.extension_url = "test_fenced_frames_send_message.html",
                      .custom_arg = !GetParam() ? R"({"mparch": true})" : ""}))
       << message_;
 }
@@ -5219,8 +5221,8 @@ class ExtensionWebRequestApiPrerenderingTest
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      RunExtensionTest("webrequest", {.page_url = "test_prerendering.html"}))
+  ASSERT_TRUE(RunExtensionTest("webrequest",
+                               {.extension_url = "test_prerendering.html"}))
       << message_;
 }
 

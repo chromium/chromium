@@ -158,8 +158,9 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunSubtest(const std::string& subtest) {
-    const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest("users_private", {.page_url = page_url.c_str()},
+    const std::string extension_url = "main.html?" + subtest;
+    return RunExtensionTest("users_private",
+                            {.extension_url = extension_url.c_str()},
                             {.load_as_component = true});
   }
 
@@ -241,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsOwner) {
 // User profile - logged in, screen not locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
   EXPECT_TRUE(RunExtensionTest("users_private",
-                               {.page_url = "main.html?getLoginStatus"},
+                               {.extension_url = "main.html?getLoginStatus"},
                                {.load_as_component = true}))
       << message_;
 }
@@ -252,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLockStatusTest, ScreenLock) {
   ash::ScreenLockerTester().Lock();
   EXPECT_TRUE(RunExtensionTest("users_private",
-                               {.page_url = "main.html?getLoginStatus"},
+                               {.extension_url = "main.html?getLoginStatus"},
                                {.load_as_component = true}))
       << message_;
 }

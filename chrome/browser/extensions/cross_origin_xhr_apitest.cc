@@ -41,9 +41,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginXHR, NoFileAccessAllURLs) {
 // Ensures that an extension tab having no corresponding background page can xhr
 // a file URL. Regression test for crbug.com/1179732.
 IN_PROC_BROWSER_TEST_F(CrossOriginXHR, FileAccessNoBackgroundPage) {
-  ASSERT_TRUE(
-      RunExtensionTest("cross_origin_xhr/file_access_no_background_page",
-                       {.page_url = "test.html"}, {.allow_file_access = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "cross_origin_xhr/file_access_no_background_page",
+      {.extension_url = "test.html"}, {.allow_file_access = true}))
       << message_;
 }
 

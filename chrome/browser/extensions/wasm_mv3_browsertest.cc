@@ -30,13 +30,13 @@ IN_PROC_BROWSER_TEST_F(WasmMV3BrowserTest, ServiceWorker) {
 
 // Test web assembly usage without explicit CSP allowing it.
 IN_PROC_BROWSER_TEST_F(WasmMV3BrowserTest, ExtensionPageNoCSP) {
-  ASSERT_TRUE(RunExtensionTest("no_wasm_mv3", {.page_url = "page.html"}))
+  ASSERT_TRUE(RunExtensionTest("no_wasm_mv3", {.extension_url = "page.html"}))
       << message_;
 }
 
 // Test web assembly usage in an extension page.
 IN_PROC_BROWSER_TEST_F(WasmMV3BrowserTest, ExtensionPage) {
-  ASSERT_TRUE(RunExtensionTest("wasm_mv3", {.page_url = "page.html"}))
+  ASSERT_TRUE(RunExtensionTest("wasm_mv3", {.extension_url = "page.html"}))
       << message_;
 }
 

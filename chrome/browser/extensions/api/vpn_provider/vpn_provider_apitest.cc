@@ -143,8 +143,9 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
 
   bool RunTest(const std::string& test_name) {
     DCHECK(extension_);
-    GURL url = extension_->GetResourceURL("basic.html?#" + test_name);
-    return RunExtensionTest("vpn_provider", {.page_url = url.spec().c_str()});
+    const std::string extension_url = "basic.html?#" + test_name;
+    return RunExtensionTest("vpn_provider",
+                            {.extension_url = extension_url.c_str()});
   }
 
   const std::string& extension_id() const {
