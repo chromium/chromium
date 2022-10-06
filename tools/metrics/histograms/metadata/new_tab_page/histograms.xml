@@ -1721,6 +1721,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.SearchResumptionModule.Show.Cached"
+    enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-03-05">
+  <owner>hanxi@chromium.org</owner>
+  <owner>spdonghao@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Logs whether the search resumption module is expanded or collapsed when the
+    module is shown on the NTP using cached results. Recorded when the
+    NewTabPage is created and the search resumption module is shown.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ShoppingTasks.ProductClick" units="index"
     expires_after="2022-11-20">
   <owner>danpeng@google.com</owner>
