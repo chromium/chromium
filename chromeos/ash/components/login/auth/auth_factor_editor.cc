@@ -41,9 +41,6 @@ base::WeakPtr<AuthFactorEditor> AuthFactorEditor::AsWeakPtr() {
 void AuthFactorEditor::GetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
-
   LOGIN_LOG(EVENT) << "Listing AuthFactors";
   user_data_auth::ListAuthFactorsRequest request;
 
