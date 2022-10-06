@@ -68,6 +68,12 @@ bool WebAXContext::SerializeEntireTree(bool exclude_offscreen,
                                        ui::AXTreeUpdate* response) {
   if (!private_->HasActiveDocument())
     return false;
+  if (!private_->GetDocument()->ExistingAXObjectCache()) {
+    // TODO(chrishtr): not clear why this can happen.
+    NOTREACHED();
+    return false;
+  }
+
   return private_->GetAXObjectCache().SerializeEntireTree(
       exclude_offscreen, max_node_count, timeout, response);
 }
