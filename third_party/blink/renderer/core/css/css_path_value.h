@@ -41,8 +41,8 @@ class CSSPathValue : public CSSValue {
   }
 
  private:
-  scoped_refptr<StylePath> style_path_;
   const PathSerializationFormat serialization_format_;
+  scoped_refptr<StylePath> style_path_;
 };
 
 }  // namespace cssvalue

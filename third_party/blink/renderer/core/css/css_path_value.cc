@@ -17,8 +17,8 @@ namespace cssvalue {
 CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
                            PathSerializationFormat serialization_format)
     : CSSValue(kPathClass),
-      style_path_(std::move(style_path)),
-      serialization_format_(serialization_format) {
+      serialization_format_(serialization_format),
+      style_path_(std::move(style_path)) {
   DCHECK(style_path_);
 }
 
