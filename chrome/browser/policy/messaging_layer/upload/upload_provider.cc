@@ -222,7 +222,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&UploadHelper::EnqueueUploadInternal,
-                     weak_ptr_factory_.GetWeakPtr(), need_encryption_key,
+                     weak_ptr_factory_.GetMutableWeakPtr(), need_encryption_key,
                      std::move(records), std::move(scoped_reservation),
                      std::move(enqueued_cb)));
 }
