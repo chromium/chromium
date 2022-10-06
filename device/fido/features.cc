@@ -42,10 +42,9 @@ BASE_FEATURE(kWebAuthPasskeysUI,
              "WebAuthenticationPasskeysUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(1358719): Resolve all i18n TODOs before default enabling.
 BASE_FEATURE(kWebAuthnNewDiscoverableCredentialsUi,
              "WebAuthenticationNewDiscoverableCredentialsUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebAuthnNoEmptyDisplayNameCBOR,
              "WebAuthenticationNoEmptyDisplayNameCBOR",

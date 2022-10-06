@@ -100,6 +100,9 @@ base::StringPiece RequestTypeToString(RequestType req_type) {
 
 enum class TransportAvailabilityParam {
   kHasPlatformCredential,
+  kOneRecognizedCred,
+  kTwoRecognizedCreds,
+  kEmptyAllowList,
   kHasWinNativeAuthenticator,
   kHasCableV1Extension,
   kHasCableV2Extension,
@@ -111,6 +114,12 @@ base::StringPiece TransportAvailabilityParamToString(
   switch (param) {
     case TransportAvailabilityParam::kHasPlatformCredential:
       return "kHasPlatformCredential";
+    case TransportAvailabilityParam::kOneRecognizedCred:
+      return "kOneRecognizedCred";
+    case TransportAvailabilityParam::kTwoRecognizedCreds:
+      return "kTwoRecognizedCreds";
+    case TransportAvailabilityParam::kEmptyAllowList:
+      return "kEmptyAllowList";
     case TransportAvailabilityParam::kHasWinNativeAuthenticator:
       return "kHasWinNativeAuthenticator";
     case TransportAvailabilityParam::kHasCableV1Extension:
@@ -128,6 +137,11 @@ std::string SetToString(base::flat_set<T> s) {
   std::transform(s.begin(), s.end(), std::back_inserter(names), F);
   return base::JoinString(names, ", ");
 }
+
+const device::DiscoverableCredentialMetadata
+    kCred1("rp.com", {0}, device::PublicKeyCredentialUserEntity({1, 2, 3, 4}));
+const device::DiscoverableCredentialMetadata
+    kCred2("rp.com", {1}, device::PublicKeyCredentialUserEntity({5, 6, 7, 8}));
 
 }  // namespace
 
@@ -156,6 +170,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto has_winapi =
       TransportAvailabilityParam::kHasWinNativeAuthenticator;
   const auto has_plat = TransportAvailabilityParam::kHasPlatformCredential;
+  const auto one_cred = TransportAvailabilityParam::kOneRecognizedCred;
+  const auto two_cred = TransportAvailabilityParam::kTwoRecognizedCreds;
+  const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
   const auto native = TransportAvailabilityParam::kPreferNativeAPI;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
@@ -166,6 +183,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
   const auto cable_ui = Step::kCableActivate;
+  [[maybe_unused]] const auto create_pk = Step::kCreatePasskey;
+  const auto use_pk = Step::kPreSelectSingleAccount;
+  const auto use_pk_multi = Step::kPreSelectAccount;
 
   const struct {
     RequestType request_type;
@@ -186,6 +206,33 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // If the platform authenticator has a credential it should activate.
       {ga, {usb, internal}, {has_plat}, {}, {t(usb), t(internal)}, plat_ui},
+      // ... but with an empty allow list the user should be prompted first.
+      {ga,
+       {usb, internal},
+       {has_plat, one_cred, empty_al},
+       {},
+       {t(usb), t(internal)},
+       use_pk},
+      {ga,
+       {usb, internal},
+       {has_plat, two_cred, empty_al},
+       {},
+       {t(usb), t(internal)},
+       use_pk_multi},
+
+      // MakeCredential with attachmemt=platform shows the 'Create a passkey'
+      // step, but only on macOS. On other OSes, we defer to the platform.
+      {mc,
+       {internal},
+       {},
+       {},
+       {t(internal)},
+#if BUILDFLAG(IS_MAC)
+       create_pk
+#else
+       plat_ui
+#endif
+      },
 
       // If the Windows API is available without caBLE, it should activate.
       {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
@@ -268,6 +315,18 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
                   kHasRecognizedCredential
             : device::FidoRequestHandlerBase::RecognizedCredential::
                   kNoRecognizedCredential;
+
+    if (base::Contains(test.params,
+                       TransportAvailabilityParam::kOneRecognizedCred)) {
+      transports_info.recognized_platform_authenticator_credentials = {kCred1};
+    } else if (base::Contains(
+                   test.params,
+                   TransportAvailabilityParam::kTwoRecognizedCreds)) {
+      transports_info.recognized_platform_authenticator_credentials = {kCred1,
+                                                                       kCred2};
+    }
+    transports_info.has_empty_allow_list = base::Contains(
+        test.params, TransportAvailabilityParam::kEmptyAllowList);
 
     if (base::Contains(
             test.params,
@@ -637,48 +696,6 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     EXPECT_EQ(test_case.expected_final_step, model.current_step());
     EXPECT_TRUE(model.ble_adapter_is_powered());
   }
-}
-
-TEST_F(AuthenticatorRequestDialogModelTest,
-       RequestCallbackOnlyCalledOncePerAuthenticator) {
-  ::device::FidoRequestHandlerBase::TransportAvailabilityInfo transports_info;
-  transports_info.request_type = RequestType::kMakeCredential;
-  transports_info.available_transports = {
-      AuthenticatorTransport::kInternal,
-      AuthenticatorTransport::kUsbHumanInterfaceDevice};
-
-  int num_called = 0;
-  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
-  model.SetRequestCallback(base::BindRepeating(
-      [](int* i, const std::string& authenticator_id) { ++(*i); },
-      &num_called));
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
-
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false,
-                  /*prefer_native_api=*/false);
-  EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kMechanismSelection,
-            model.current_step());
-  EXPECT_EQ(0, num_called);
-
-  // Simulate switching back and forth between transports. The request callback
-  // should only be invoked once (USB is not dispatched through the UI).
-  model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
-  EXPECT_TRUE(model.should_dialog_be_closed());
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(1, num_called);
-  model.StartTransportFlowForTesting(
-      AuthenticatorTransport::kUsbHumanInterfaceDevice);
-  EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate,
-            model.current_step());
-  task_environment()->RunUntilIdle();
-  EXPECT_FALSE(model.should_dialog_be_closed());
-  EXPECT_EQ(1, num_called);
-  model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
-  EXPECT_TRUE(model.should_dialog_be_closed());
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(1, num_called);
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest,
