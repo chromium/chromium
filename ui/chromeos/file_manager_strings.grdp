@@ -1525,8 +1525,17 @@
   </message>
 
 <!-- Data Leak Prevention -->
-  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST" desc="A toast informing the user that copying files is blocked by the administrator.">
-    Pasting this file is blocked by your administrator
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST" desc="A toast informing the user that copying a file is blocked by the administrator.">
+    Pasting this file is blocked by administrator policy
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST_PLURAL" desc="A toast informing the user that copying files is blocked by the administrator.">
+    Pasting <ph name="COUNT">$1<ex>10</ex></ph> files is blocked by administrator policy
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_MOVE_TOAST" desc="A toast informing the user that moving a file is blocked by the administrator.">
+    Moving this file is blocked by administrator policy
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_BLOCK_MOVE_TOAST_PLURAL" desc="A toast informing the user that moving files is blocked by the administrator.">
+    Moving <ph name="COUNT">$1<ex>10</ex></ph> files is blocked by administrator policy
   </message>
   <message name="IDS_FILE_BROWSER_DLP_TOAST_BUTTON_LABEL" desc="Toast button label, learn more about data leak prevention policies.">
     Learn more

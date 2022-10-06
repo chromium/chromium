@@ -468,8 +468,24 @@ export class FileTransferController {
     }
 
     if (disallowedTransfers && disallowedTransfers.length != 0) {
+      let toastText;
+      if (pastePlan.isMove) {
+        if (disallowedTransfers.length == 1) {
+          toastText = str('DLP_BLOCK_MOVE_TOAST');
+        } else {
+          toastText =
+              strf('DLP_BLOCK_MOVE_TOAST_PLURAL', disallowedTransfers.length);
+        }
+      } else {
+        if (disallowedTransfers.length == 1) {
+          toastText = str('DLP_BLOCK_COPY_TOAST');
+        } else {
+          toastText =
+              strf('DLP_BLOCK_COPY_TOAST_PLURAL', disallowedTransfers.length);
+        }
+      }
       this.filesToast_.show(
-          str('DLP_BLOCK_COPY_TOAST'), {
+          toastText, {
             text: str('DLP_TOAST_BUTTON_LABEL'),
             callback: () => {
               util.visitURL(
