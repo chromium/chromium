@@ -97,8 +97,11 @@ AXSelection::AXSelection(const AXTree& tree)
       tree_id_(tree.GetAXTreeID()) {}
 
 AXSelection& AXSelection::ToUnignoredSelection() {
+  DCHECK_NE(tree_id_, AXTreeIDUnknown())
+      << "Tree is not registered with a tree manager";
   const AXTreeManager* manager = AXTreeManager::FromID(tree_id_);
-  DCHECK(manager);
+  if (!manager)
+    return *this;
 
   // If one of the selection endpoints is invalid, then the other endpoint
   // should also be unset.
