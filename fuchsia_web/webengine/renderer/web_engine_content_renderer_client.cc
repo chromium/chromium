@@ -82,6 +82,7 @@ class PlayreadyKeySystemInfo : public ::media::KeySystemInfo {
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
     // Only empty robustness string is currently supported.
+    // TODO(crbug.com/1205716): Add support for robustness strings.
     if (requested_robustness.empty()) {
       return media::EmeConfig{.hw_secure_codecs =
                                   media::EmeConfigRuleState::kRequired};
