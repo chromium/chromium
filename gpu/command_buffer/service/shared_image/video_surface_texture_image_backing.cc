@@ -181,10 +181,16 @@ class VideoSurfaceTextureImageBacking::
     auto* video_backing =
         static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(passthrough_texture_->service_id());
+    passthrough_texture_->set_is_bind_pending(false);
     return true;
   }
 
-  void EndAccess() override {}
+  void EndAccess() override {
+    // NOTE: It is not necessary to mark |texture_passthrough_| as needing
+    // binding here: if there is a subsequent flow that requires that the
+    // texture be bound, that flow will itself invoke set_is_bind_pending() on
+    // the texture.
+  }
 
  private:
   std::unique_ptr<gles2::AbstractTexture> abstract_texture_;
