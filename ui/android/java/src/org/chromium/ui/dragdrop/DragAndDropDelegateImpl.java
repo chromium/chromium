@@ -75,10 +75,14 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private int mShadowHeight;
     private boolean mIsDragStarted;
 
-    /** Whether the current drop has happened on top of the view this object tracks.  */
+    /**
+     * Whether the current drop has happened on top of the view this object tracks.
+     */
     private boolean mIsDropOnView;
 
-    /** The type of drag target from the view this object tracks. */
+    /**
+     * The type of drag target from the view this object tracks.
+     */
     private @DragTargetType int mDragTargetType;
 
     private float mDragStartXDp;
@@ -89,10 +93,12 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private @Nullable DragAndDropBrowserDelegate mDragAndDropBrowserDelegate;
 
     // Implements ViewAndroidDelegate.DragAndDropDelegate
+
     /**
      * Wrapper to call {@link android.view.View#startDragAndDrop}.
+     *
      * @see ViewAndroidDelegate#startDragAndDrop(Bitmap, DropDataAndroid)
-     * */
+     */
     @Override
     @RequiresApi(api = VERSION_CODES.N)
     public boolean startDragAndDrop(@NonNull View containerView, @NonNull Bitmap shadowImage,
@@ -189,10 +195,10 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             case DragTargetType.TEXT:
                 return ClipData.newPlainText(null, dropData.text);
             case DragTargetType.IMAGE:
-                Uri uri = DropDataContentProvider.cache(dropData.imageContent,
-                        dropData.imageContentExtension, dropData.imageFilename);
+                Uri cachedUri = DropDataProviderUtils.cacheImageData(dropData);
+
                 ClipData clipData = ClipData.newUri(
-                        ContextUtils.getApplicationContext().getContentResolver(), null, uri);
+                        ContextUtils.getApplicationContext().getContentResolver(), null, cachedUri);
                 // Add image link URL to the ClipData if present. Since the ClipData MIME types for
                 // the items are different, this will not be supported for O- versions where {@link
                 // ClipData#addItem(ContentResolver, Item)} is not available.
@@ -383,7 +389,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             recordDragTargetType(mDragTargetType);
         }
 
-        DropDataContentProvider.onDragEnd(!mIsDropOnView && dragResult);
+        DropDataProviderUtils.clearImageCache(!mIsDropOnView && dragResult);
     }
 
     /**

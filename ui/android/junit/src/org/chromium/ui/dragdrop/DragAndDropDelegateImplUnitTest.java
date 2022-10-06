@@ -12,6 +12,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.VectorDrawable;
 import android.os.Build.VERSION_CODES;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowAccessibilityManager;
+import org.robolectric.shadows.ShadowContentResolver;
 
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.metrics.RecordHistogram;
@@ -52,7 +54,9 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DragAndDropDelegateImplUnitTest {
-    /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
+    /**
+     * Using a window size of 1000*600 for the ease of dp / pixel calculation.
+     */
     private static final int WINDOW_WIDTH = 1000;
     private static final int WINDOW_HEIGHT = 600;
 
@@ -64,7 +68,9 @@ public class DragAndDropDelegateImplUnitTest {
     @Mock
     private DragAndDropPermissions mDragAndDropPermissions;
 
-    /** Helper shadow class to make sure #startDragAndDrop is accepted by Android. */
+    /**
+     * Helper shadow class to make sure #startDragAndDrop is accepted by Android.
+     */
     @Implements(ApiHelperForN.class)
     static class ShadowApiHelperForN {
         static DragShadowBuilder sLastDragShadowBuilder;
@@ -80,14 +86,23 @@ public class DragAndDropDelegateImplUnitTest {
     private Context mContext;
     private DragAndDropDelegateImpl mDragAndDropDelegateImpl;
     private View mContainerView;
+    private DropDataProviderImpl mDropDataProviderImpl;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         mContext = ApplicationProvider.getApplicationContext();
+        mDropDataProviderImpl = new DropDataProviderImpl();
         mDragAndDropDelegateImpl = new DragAndDropDelegateImpl();
+        DropDataContentProvider provider = new DropDataContentProvider();
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.authority = DropDataProviderImpl.FULL_AUTH_URI.getAuthority();
+        provider.attachInfo(mContext, providerInfo);
+        provider.setDropDataProviderImpl(mDropDataProviderImpl);
 
+        ShadowContentResolver.registerProviderInternal(
+                DropDataProviderImpl.FULL_AUTH_URI.getAuthority(), provider);
         mContainerView = new View(mContext);
         View rootView = mContainerView.getRootView();
         rootView.measure(MeasureSpec.makeMeasureSpec(WINDOW_WIDTH, MeasureSpec.EXACTLY),
@@ -97,7 +112,7 @@ public class DragAndDropDelegateImplUnitTest {
 
     @After
     public void tearDown() {
-        DropDataContentProvider.onDragEnd(false);
+        mDropDataProviderImpl.onDragEnd(false);
         UmaRecorderHolder.resetForTesting();
         ShadowApiHelperForN.sLastDragShadowBuilder = null;
     }
@@ -128,6 +143,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    @Config(shadows = {ShadowContentResolver.class})
     public void testStartDragAndDrop_Image() {
         final Bitmap shadowImage = Bitmap.createBitmap(100, 200, Bitmap.Config.ALPHA_8);
 
@@ -143,13 +159,13 @@ public class DragAndDropDelegateImplUnitTest {
                 "Drag shadow height not match. Should do resize for image and add 1dp border.", 122,
                 mDragAndDropDelegateImpl.getDragShadowHeight());
         Assert.assertNotNull("Cached Image bytes should not be null.",
-                DropDataContentProvider.getImageBytesForTesting());
+                mDropDataProviderImpl.getImageBytesForTesting());
         assertDragTypeNotRecorded("Drag didn't end.");
 
         DragEvent dragEnd = mockDragEvent(DragEvent.ACTION_DRAG_ENDED);
         mDragAndDropDelegateImpl.onDrag(mContainerView, dragEnd);
         Assert.assertNull("Cached Image bytes should be cleaned.",
-                DropDataContentProvider.getImageBytesForTesting());
+                mDropDataProviderImpl.getImageBytesForTesting());
         assertDragTypeRecorded(DragTargetType.IMAGE);
         assertDragOutsideWebContentHistogramsRecorded(/*dropResult=*/false);
     }
@@ -237,7 +253,7 @@ public class DragAndDropDelegateImplUnitTest {
         mDragAndDropDelegateImpl.onDrag(mContainerView, dragEndEvent);
 
         Assert.assertNotNull("Cached Image bytes should not be cleaned, drag is handled.",
-                DropDataContentProvider.getImageBytesForTesting());
+                mDropDataProviderImpl.getImageBytesForTesting());
         assertDragTypeRecorded(DragTargetType.IMAGE);
         assertDragOutsideWebContentHistogramsRecorded(/*dropResult=*/true);
     }
@@ -258,7 +274,7 @@ public class DragAndDropDelegateImplUnitTest {
         assertDragTypeNotRecorded("Drag dropped on the same view.");
         assertDropInWebContentHistogramsRecorded();
         Assert.assertNull("Cached Image bytes should be cleaned since drop is not handled.",
-                DropDataContentProvider.getImageBytesForTesting());
+                mDropDataProviderImpl.getImageBytesForTesting());
     }
 
     @Test

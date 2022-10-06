@@ -30,7 +30,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropBrowserDelegate;
 import org.chromium.ui.dragdrop.DragStateTracker;
-import org.chromium.ui.dragdrop.DropDataContentProvider;
+import org.chromium.ui.dragdrop.DropDataProviderImpl;
+import org.chromium.ui.dragdrop.DropDataProviderUtils;
 
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
@@ -57,8 +58,8 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
             int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
-                    DropDataContentProvider.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
-            DropDataContentProvider.setClearCachedDataIntervalMs(delay);
+                    DropDataProviderImpl.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
+            DropDataProviderUtils.setClearCachedDataIntervalMs(delay);
 
             boolean supportDropInChrome = ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_DROP_IN_CHROME, false);
