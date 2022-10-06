@@ -166,7 +166,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    const VulkanImageUsageCache* image_usage_cache,
+    const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
     base::span<const uint8_t> pixel_data,
     bool using_gmb) {
   bool is_external = context_state->support_vulkan_external_object();
@@ -189,16 +189,19 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
   }
 
+  auto it = image_usage_cache.find(vk_format);
+  DCHECK(it != image_usage_cache.end());
+  auto vk_tiling_usage = it->second;
+
   // Requested usage flags must be supported.
-  DCHECK_EQ(vk_usage & image_usage_cache->optimal_tiling_usage[format],
-            vk_usage);
+  DCHECK_EQ(vk_usage & vk_tiling_usage, vk_usage);
 
   // Must request all available image usage flags if aliasing GL texture. This
   // is a spec requirement per EXT_memory_object. However, if
   // ANGLE_memory_object_flags is supported, usage flags can be arbitrary.
   if (is_external && (usage & SHARED_IMAGE_USAGE_GLES2) &&
       !UseMinimalUsageFlags(context_state.get())) {
-    vk_usage |= image_usage_cache->optimal_tiling_usage[format];
+    vk_usage |= vk_tiling_usage;
   }
 
   VkImageCreateFlags vk_flags = 0;
@@ -246,8 +249,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
-    const VulkanImageUsageCache* image_usage_cache) {
+    uint32_t usage) {
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     DLOG(ERROR) << "Invalid image size for format.";
     return nullptr;

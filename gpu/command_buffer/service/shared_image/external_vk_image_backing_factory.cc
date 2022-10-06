@@ -52,9 +52,9 @@ VkImageUsageFlags GetMaximalImageUsageFlags(
   return usage_flags;
 }
 
-VulkanImageUsageCache CreateImageUsageCache(
+base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
     VkPhysicalDevice vk_physical_device) {
-  VulkanImageUsageCache image_usage_cache = {};
+  base::flat_map<VkFormat, VkImageUsageFlags> image_usage_cache;
 
   for (int i = 0; i <= static_cast<int>(viz::RESOURCE_FORMAT_MAX); ++i) {
     viz::ResourceFormat format = static_cast<viz::ResourceFormat>(i);
@@ -65,7 +65,7 @@ VulkanImageUsageCache CreateImageUsageCache(
     VkFormatProperties format_props = {};
     vkGetPhysicalDeviceFormatProperties(vk_physical_device, vk_format,
                                         &format_props);
-    image_usage_cache.optimal_tiling_usage[format] =
+    image_usage_cache[vk_format] =
         GetMaximalImageUsageFlags(format_props.optimalTilingFeatures);
   }
 
@@ -108,7 +108,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   DCHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, &image_usage_cache_,
+      surface_origin, alpha_type, usage, image_usage_cache_,
       base::span<const uint8_t>());
 }
 
@@ -124,7 +124,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     base::span<const uint8_t> pixel_data) {
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, &image_usage_cache_, pixel_data);
+      surface_origin, alpha_type, usage, image_usage_cache_, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -147,8 +147,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   }
   return ExternalVkImageBacking::CreateFromGMB(
       context_state_, command_pool_.get(), mailbox, std::move(handle),
-      buffer_format, size, color_space, surface_origin, alpha_type, usage,
-      &image_usage_cache_);
+      buffer_format, size, color_space, surface_origin, alpha_type, usage);
 }
 
 bool ExternalVkImageBackingFactory::CanImportGpuMemoryBuffer(

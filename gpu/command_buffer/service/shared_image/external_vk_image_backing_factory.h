@@ -85,7 +85,8 @@ class GPU_GLES2_EXPORT ExternalVkImageBackingFactory
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanCommandPool> command_pool_;
 
-  const VulkanImageUsageCache image_usage_cache_;
+  // Map VkImageUsageFlags flags based on VkFormat for VK_IMAGE_TILING_OPTIMAL.
+  base::flat_map<VkFormat, VkImageUsageFlags> image_usage_cache_;
 };
 
 }  // namespace gpu

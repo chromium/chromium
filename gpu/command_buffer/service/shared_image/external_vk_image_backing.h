@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
@@ -27,11 +28,6 @@ namespace gpu {
 class VulkanCommandPool;
 class VulkanImage;
 
-struct VulkanImageUsageCache {
-  // Maximal usage flags for VK_IMAGE_TILING_OPTIMAL each ResourceFormat.
-  VkImageUsageFlags optimal_tiling_usage[viz::RESOURCE_FORMAT_MAX + 1];
-};
-
 class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
  public:
   static std::unique_ptr<ExternalVkImageBacking> Create(
@@ -44,7 +40,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      const VulkanImageUsageCache* image_usage_cache,
+      const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
       base::span<const uint8_t> pixel_data,
       bool using_gmb = false);
 
@@ -58,8 +54,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
-      const VulkanImageUsageCache* image_usage_cache);
+      uint32_t usage);
 
   ExternalVkImageBacking(base::PassKey<ExternalVkImageBacking>,
                          const Mailbox& mailbox,
