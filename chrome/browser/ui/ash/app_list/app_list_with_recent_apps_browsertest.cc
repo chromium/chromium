@@ -13,15 +13,15 @@
 #include "ui/views/view.h"
 
 // The helper class to verify the bubble app list with recent apps shown.
-class BubbleAppListWithRecentAppBrowserTest
+class AppListWithRecentAppBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  BubbleAppListWithRecentAppBrowserTest() = default;
-  BubbleAppListWithRecentAppBrowserTest(
-      const BubbleAppListWithRecentAppBrowserTest&) = delete;
-  BubbleAppListWithRecentAppBrowserTest& operator=(
-      const BubbleAppListWithRecentAppBrowserTest&) = delete;
-  ~BubbleAppListWithRecentAppBrowserTest() override = default;
+  AppListWithRecentAppBrowserTest() = default;
+  AppListWithRecentAppBrowserTest(const AppListWithRecentAppBrowserTest&) =
+      delete;
+  AppListWithRecentAppBrowserTest& operator=(
+      const AppListWithRecentAppBrowserTest&) = delete;
+  ~AppListWithRecentAppBrowserTest() override = default;
 
   // extensions::ExtensionBrowserTest:
   void SetUpOnMainThread() override {
@@ -53,8 +53,7 @@ class BubbleAppListWithRecentAppBrowserTest
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(BubbleAppListWithRecentAppBrowserTest,
-                       MouseClickAtRecentApp) {
+IN_PROC_BROWSER_TEST_F(AppListWithRecentAppBrowserTest, MouseClickAtRecentApp) {
   views::View* recent_app = app_list_test_api_.GetRecentAppAt(0);
   ASSERT_TRUE(recent_app);
   event_generator_->MoveMouseTo(recent_app->GetBoundsInScreen().CenterPoint());
