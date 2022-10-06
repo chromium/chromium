@@ -2172,7 +2172,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 // Flaky on Lsan/Msan, b/250558930.
-#if defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS) || defined(LEAK_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
 #define MAYBE_SystemUILaunchMultipleDeskTemplates \
   DISABLED_SystemUILaunchMultipleDeskTemplates
 #else
