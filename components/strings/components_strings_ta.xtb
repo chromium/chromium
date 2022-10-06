@@ -291,7 +291,7 @@
 <translation id="1641976391427233992">அவுட்புட்டை இவ்வளவு நேரம் வரை தாமதப்படுத்து</translation>
 <translation id="164212631332220697">செக்-அவுட்டின்போது <ph name="CARD_DETAIL" /> கார்டு மூலம் பணம் செலுத்தலாம்.</translation>
 <translation id="1642410292376109062">Google கடவுச்சொல்லை மாற்றுவதற்கான பட்டன். உங்கள் Google கணக்கின் கடவுச்சொல்லை மாற்ற Enter பட்டனை அழுத்துங்கள்</translation>
-<translation id="1644574205037202324">வரலாறு</translation>
+<translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1645368109819982629">ஆதரிக்கப்படாத நெறிமுறை</translation>
 <translation id="1650602712345345441">Chrome அமைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -1187,7 +1187,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{பக்கம் 1}other{பக்கம் {COUNT}}}</translation>
 <translation id="4154664944169082762">விரல் அச்சுகள்</translation>
 <translation id="4159784952369912983">பர்பிள்</translation>
-<translation id="4165986682804962316">தள அமைப்புகள்</translation>
+<translation id="4165986682804962316">இணையதள அமைப்புகள்</translation>
 <translation id="4171400957073367226">தவறான சரிபார்ப்பு கையொப்பம்</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">எப்போதும் காட்டு</translation>

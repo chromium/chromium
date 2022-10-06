@@ -307,6 +307,7 @@
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1699570257714336246">जानकारी छुटेको छ</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">जुमका स्तरहरू</translation>
 <translation id="1706954506755087368">{1,plural, =1{ यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई भोलिबाट मानिन्छ। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईँको जडानमा अवरोध गरिरहेको कारणले यसो भएको हुन सक्छ।}other{ यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई # दिनबाट शुरू हुन्छ भनेर मानिन्छ। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईँको जडानमा अवरोध गरिरहेको कारणले यसो भएको हुन सक्छ।}}</translation>
@@ -550,6 +551,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{एक दिनभन्दा कम समयमै}=1{एक दिनभित्र}other{{NUM_DAYS} दिनभित्र}}</translation>
 <translation id="2359629602545592467">बहु मुद्राहरू</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
+<translation id="2361263712565360498">२७५ x ३९५ मि.मि.</translation>
 <translation id="236340516568226369">आकार बदल्ने टगल मेनु</translation>
 <translation id="2367567093518048410">चरण</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1422,6 +1424,7 @@
 <translation id="4751476147751820511">गति वा प्रकाशसम्बन्धी सेन्सरहरू</translation>
 <translation id="4754461935447132332">असुरक्षित साइटका हकमा अनुमति दिइँदैन</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chromium तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
@@ -2160,6 +2163,7 @@
 <translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="674375294223700098">अज्ञात सर्भर सर्टिफिकेट त्रुटि।</translation>
 <translation id="6744009308914054259">इन्टरनेटको प्रतीक्षा गर्दा गर्दै तपाईं अफलाइन लेखहरू पढ्न डाउनलोडहरू नामक फोल्डरमा जान सक्नुहुन्छ।</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलिकन्फ्रेन्सिङ</translation>
 <translation id="6753269504797312559">नीति मूल्य</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2193,6 +2197,7 @@
 <translation id="6846340164947227603">कुनै भर्चुअल कार्ड नम्बर प्रयोग गर्नुहोस्...</translation>
 <translation id="6852204201400771460">एप पुनः लोड गर्ने हो?</translation>
 <translation id="6857776781123259569">पासवर्डहरू व्यवस्थापन गर्नुहोस्...</translation>
+<translation id="6864189428899665393">२६७x३८९ मि.मि.</translation>
 <translation id="686485648936420384">उपभोक्ता स्रोतसाधन</translation>
 <translation id="6865412394715372076">यो कार्ड यस बखत पुष्टि गर्न सकिँदैन</translation>
 <translation id="6869334554832814367">व्यक्तिगत कर्जा</translation>
@@ -2305,6 +2310,7 @@
 <translation id="7138472120740807366">डेलिभरीको विधि</translation>
 <translation id="7139892792842608322">मुख्य ट्रे</translation>
 <translation id="714064300541049402">सतह २ मा रहेको छविको X सिफ्ट</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">हल्का बैजनी</translation>
 <translation id="7156870133441232244">सर्भरको स्तरोन्नति गरेर TLS १.२ वा त्यसपछिको संस्करण पार्नु पर्छ।</translation>
@@ -2385,6 +2391,7 @@
 <translation id="7363096869660964304">तथापि, तपाईंले गर्नुभएका सबै क्रियाकलाप कसैले देख्न सक्दैन भन्ने हुँदैन। तपाईंले इन्कोग्निटो मोड प्रयोग गर्नुभयो भने तपाईं आफ्नो रोजगारदाता, इन्टरनेट सेवा प्रदायक वा आफूले प्रयोग गर्ने वेबसाइटहरूसँग आफ्नो ब्राउजिङ इतिहास लुकाउन सक्नुहुन्न।</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई ठेगानाहरू थप्न तथा व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="7365849542400970216">तपाईंलाई आफ्नो यन्त्रले के काम गर्छ भन्ने कुरा थाहा छ?</translation>
+<translation id="7366117520888504990">१९८x२७५ मि.मि.</translation>
 <translation id="7366362069757178916">भुक्तानी ह्यान्ड्लरहरू</translation>
 <translation id="7372973238305370288">खोजको परिणाम</translation>
 <translation id="7374461526650987610">प्रोटोकल हेन्डलरहरू</translation>
@@ -2544,6 +2551,7 @@
 <translation id="7687186412095877299">आफ्ना सुरक्षित गरिएका भुक्तानी विधिहरूका सहयोगले भुक्तानी फारमहरू भर्नुहोस्</translation>
 <translation id="7687305263118037187">पुन: प्रयास गर्ने समय समाप्त भयो</translation>
 <translation id="7687451951329798396">अन्य स्रोतहरूमा के भनिएको छ?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पृष्ठको क्रम प्राप्त भयो</translation>
 <translation id="7696089921647603491">क्लासिक रक तथा ओल्डिज</translation>
 <translation id="769721561045429135">यस बेला, तपाईंसँग यस यन्त्रमा मात्र प्रयोग गर्न मिल्ने कार्डहरू छन्। कार्डहरूको समीक्षा गर्न जारी राख्नुहोस् नामक बटनमा क्लिक गर्नुहोस्।</translation>
@@ -2717,6 +2725,7 @@
 <translation id="8202370299023114387">बेमेल</translation>
 <translation id="8210604850413485128">वेब होस्टिङ</translation>
 <translation id="8211406090763984747">जडान सुरक्षित छ</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">साइटहरूले इन्टरनेटको दुनियाँमा तपाईंका क्रियाकलाप ट्र्याक गर्ने कुकीहरू प्रयोग गर्न सक्दैनन्। तर केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="8217748145574471584">मानव स्रोत</translation>
 <translation id="8218327578424803826">तोकिएको स्थान:</translation>
@@ -2929,6 +2938,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Chrome का सेटिङमा गई Chrome अपडेट गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="882338992931677877">म्यानुअल स्लट</translation>
+<translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8834380158646307944">"इन्कोग्निटो विन्डो बन्द गर्नुहोस्" नामक बटन, तपाईं हाल खोलिएका सबै इन्कोग्निटो विन्डो बन्द गर्न चाहनुहुन्छ भने Enter थिच्नुहोस्</translation>
 <translation id="883848425547221593">अन्य बुकमार्कहरू</translation>
 <translation id="884264119367021077">सिपिङ ठेगाना</translation>

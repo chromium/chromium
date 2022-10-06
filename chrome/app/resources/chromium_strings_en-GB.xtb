@@ -13,6 +13,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">When on, Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Memory Saver Made Chromium Faster</translation>
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
 <translation id="1385859895174722837">Google Assistant in Chromium</translation>
 <translation id="1396446129537741364">Chromium is trying to show passwords.</translation>
@@ -211,6 +212,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6055895534982063517">There's a new version of Google Chrome available and it's faster than ever.</translation>
 <translation id="6063093106622310249">&amp;Open in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> has been added to Chromium</translation>
+<translation id="6072463441809498330">Make Chromium Faster</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6096348254544841612">Customise and control Chromium. Update is available.</translation>
 <translation id="6119438414301547735">Allow extension to show access requests in the Chromium toolbar</translation>

@@ -414,6 +414,7 @@
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右側前方連接埠)</translation>
 <translation id="3375634426936648815">已連線</translation>
+<translation id="3378438761594387761">您可在這裡找到最近的下載內容和螢幕截圖</translation>
 <translation id="3378442621503952303">正在連線至設定檔。請等候幾分鐘。</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium 作業系統</translation>
@@ -719,6 +720,7 @@
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式將會在這裡顯示</translation>
 <translation id="5098537242461068432">已經重新開番桌面同視窗</translation>
+<translation id="5104236669533825617">無法建立螢幕截圖工作階段</translation>
 <translation id="5107522548814527560">網絡</translation>
 <translation id="5117590920725113268">顯示下個月</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -764,22 +766,13 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5356963482258194581">在深色和淺色主題背景之間切換。請在桌面上按一下右鍵，並選取「桌布和樣式」。</translation>
+<translation id="536019650977002321">管理員禁止擷取音訊。如需更多資訊，請聯絡管理員。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往此分頁</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>
 <translation id="5393156353051693207">輕觸並按住任何位置即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這位使用者的使用情況和記錄。</translation>
-<translation id="5399673806694250334">狀態列，時間 <ph name="TIME" />，
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />，
-        <ph name="MIC" />，
-        <ph name="CAMERA" />，
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />，
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">快速設定，㩒一下搜尋鍵 + 向左鍵就可以存取通知中心。</translation>
 <translation id="5426063383988017631">閂咗設定選單</translation>
 <translation id="5428899915242071344">開始選取</translation>

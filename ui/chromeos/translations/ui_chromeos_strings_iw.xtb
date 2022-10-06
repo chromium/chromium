@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">מעבר לתצוגת רשימה</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> קבצים נבחרו</translation>
+<translation id="2383454254762599978">העברה לאשפה</translation>
 <translation id="2387458720915042159">‏סוג חיבור לשרת proxy</translation>
 <translation id="2389832672041313158">בורמזית/מיאנמר</translation>
 <translation id="2392369802118427583">הפעלה</translation>
@@ -225,6 +226,7 @@
 <translation id="3016566519832145558">זהירות: הקבצים האלה זמניים, ויכול להיות שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.</translation>
 <translation id="3029114385395636667">‏יש להפעיל את Google Docs Offline כדי ש-Docs,‏ Sheets ו-Slides יהיו זמינים במצב אופליין.</translation>
 <translation id="303198083543495566">גיאוגרפיה</translation>
+<translation id="3044404008258011032">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריטים האלה נמחקה.</translation>
 <translation id="3047197340186497470">‏סינית Dayi</translation>
 <translation id="3067790092342515856">‏קובצי Windows</translation>
 <translation id="3083975830683400843">‏מכשירי Chromebit</translation>
@@ -287,6 +289,7 @@
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
+<translation id="3557414470514932909">הקובץ <ph name="FILE_NAME" /> מועבר לאשפה</translation>
 <translation id="3567221313191587603">בוחרים בקובץ ומפעילים את ההגדרה <ph name="OFFLINE_CHECKBOX_NAME" /> כדי לקבל גישה אופליין לקבצים שלך.</translation>
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3587482841069643663">הכול</translation>
@@ -338,14 +341,17 @@
 <translation id="3975895378829046965">בנגלית פונטית</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4017788180641807848">‏מקלדת Workman באנגלית (ארה"ב)</translation>
+<translation id="4019998208269143058">הצמדה לקבצים המהירים</translation>
 <translation id="4040753847560036377">‏ה-PUK שגוי</translation>
 <translation id="4057991113334098539">מפעיל...</translation>
 <translation id="4092890906744441904">אירית</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
+<translation id="4131235941541910880">אפשר להעביר לאשפה פריטים שאין לך צורך בהם</translation>
 <translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
 <translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="4176286497474237543">לריקון האשפה</translation>
+<translation id="4179621117429069925">הפריט הזה נמצא באשפה</translation>
 <translation id="4186579485882418952">הפעלת מצב אופליין</translation>
 <translation id="4193154014135846272">‏מסמך Google</translation>
 <translation id="4197674956721858839">כיווץ הקבצים שנבחרו</translation>
@@ -375,6 +381,7 @@
 <translation id="4387004326333427325">אישור האימות נדחה מרחוק</translation>
 <translation id="4394214039309501350">קישור חיצוני</translation>
 <translation id="4394980935660306080">מוקדם יותר השבוע</translation>
+<translation id="4398096759193130964">אפשר לשחזר את הפריטים או לגרור אותם לתיקייה חדשה מחוץ לאשפה</translation>
 <translation id="4401287888955153199">חילוץ הכול</translation>
 <translation id="4410695710508688828">פעולת החילוץ נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
@@ -430,6 +437,7 @@
 <translation id="4790766916287588578">‏הינדי עם מקלדת InScript</translation>
 <translation id="4801956050125744859">שמירת שתיהן</translation>
 <translation id="4804827417948292437">אבוקדו</translation>
+<translation id="4805966553127040832">בתהליך שחזור של <ph name="COUNT" /> פריטים</translation>
 <translation id="4823651846660089135">המכשיר מוגדר לקריאה בלבד</translation>
 <translation id="4826849268470072925">‏טמילית ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> פריטים נבחרו</translation>
@@ -438,14 +446,17 @@
 <translation id="485316830061041779">גרמנית</translation>
 <translation id="4867079195717347957">יש ללחוץ כדי למיין את העמודה בסדר יורד.</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> בייטים</translation>
+<translation id="4874569719830985133">מחיקה סופית</translation>
 <translation id="4880214202172289027">מחוון עוצמת קול</translation>
 <translation id="4881695831933465202">פתיחה</translation>
+<translation id="4891091358278567964">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה מחוץ לאשפה. התיקיות המקוריות של הפריטים האלה נמחקו.</translation>
 <translation id="4900532980794411603">‏שיתוף עם Parallels Desktop</translation>
 <translation id="4902546322522096650">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="4906580650526544301">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />,‏ <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, עוצמת האות: %<ph name="SIGNAL_STRENGTH" />‎, סוללת הטלפון: %<ph name="BATTERY_STATUS" />, פרטים</translation>
 <translation id="4935975195727477204">פרח גזניה</translation>
 <translation id="4943368462779413526">פוטבול</translation>
 <translation id="4961158930123534723">‏תיקייה אחת שותפה עם Parallels Desktop</translation>
+<translation id="496656650103537022">הקובץ <ph name="FILE_NAME" /> שוחזר</translation>
 <translation id="4969785127455456148">אלבום</translation>
 <translation id="4973523518332075481">יש להשתמש בשם באורך <ph name="MAX_LENGTH" /> תווים לכל היותר</translation>
 <translation id="4973970068702235170">הכיווץ נכשל, שגיאה לא צפויה: <ph name="ERROR_MESSAGE" /></translation>
@@ -496,6 +507,7 @@
     <ph name="MARKUP_7" />שתף, יצירה ועבודה במשותף<ph name="MARKUP_8" />
     על קבצים עם אנשים נוספים - הכול במקום אחד.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
+<translation id="5278111733643988471">כדי לשחזר את הפריט הזה, גוררים אותו לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריט הזה נמחקה.</translation>
 <translation id="5286194356314741248">הסריקה מתבצעת</translation>
 <translation id="5288441970121584418">המבורגר</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -509,6 +521,7 @@
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
 <translation id="5363339716524495120">שפת הקלט היא סינית</translation>
+<translation id="5364067326287025678">אין פריטים באשפה</translation>
 <translation id="5368191757080475556">‏שיתוף תיקייה עם Linux</translation>
 <translation id="5402367795255837559">ברייל</translation>
 <translation id="5411472733320185105">‏אין להשתמש בהגדרות proxy עבור מארחים ודומיינים אלה:</translation>
@@ -547,6 +560,7 @@
 <translation id="5691596662111998220">אופס, <ph name="FILE_NAME" /> כבר לא קיים.</translation>
 <translation id="5698411045597658393">ביטול הנעילה של <ph name="NETWORK_NAME" /></translation>
 <translation id="5700087501958648444">פרטי האודיו</translation>
+<translation id="5720028165859493293">הקובץ <ph name="FILE_NAME" /> הועבר לאשפה</translation>
 <translation id="5724172041621205163">‏תאילנדית עם מקלדת Pattachote</translation>
 <translation id="5756666464756035725">‏הונגרית - QWERTY</translation>
 <translation id="5763377084591234761">גרמנית (שוויץ)</translation>
@@ -617,6 +631,7 @@
 <translation id="6320212353742551423">קובץ ארכיון מסוג <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">דמות שמנופפת</translation>
 <translation id="6327785803543103246">‏גילוי אוטומטי של שרת proxy באינטרנט</translation>
+<translation id="6337014272874260727">ביטול ההצמדה לקבצים המהירים</translation>
 <translation id="6339145975392024142">‏מקלדת ארה"ב בינלאומית (PC)</translation>
 <translation id="6346310558342052870">גישה מוגבלת</translation>
 <translation id="6356685157277930264">חלון משוב לגבי קבצים</translation>
@@ -657,6 +672,7 @@
 <translation id="6751256176799620176">תיקייה אחת נבחרה</translation>
 <translation id="6755827872271341378">‏מכשיר עם ChromeOS Flex</translation>
 <translation id="6790428901817661496">הפעלה</translation>
+<translation id="6794539005637808366">אפשר לשחזר את הפריט או לגרור אותו לתיקייה חדשה מחוץ לאשפה</translation>
 <translation id="6795884519221689054">פנדה</translation>
 <translation id="6806699711453372963">‏ניהול שיתוף ב-Linux</translation>
 <translation id="6806796368146926706">מקלדת אלפאנומרית עם יפנית</translation>
@@ -693,6 +709,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">שוודית</translation>
 <translation id="6990081529015358884">לא נשאר לך מקום פנוי</translation>
+<translation id="6993826899923627728">הפריטים האלה נמצאים באשפה</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> תיקיות נבחרו</translation>
 <translation id="7008426324576352165">על פי דרישת הארגון שלך, יש צורך בנפח אחסון נוסף כדי להשלים את ההעלאה.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -738,6 +755,7 @@
 <translation id="7408870451288633753">צ'כית</translation>
 <translation id="7417453074306512035">מקלדת אתיופית</translation>
 <translation id="7417705661718309329">‏מפת Google</translation>
+<translation id="7419668828140929293">בתהליך שחזור של הקובץ <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7460898608667578234">אוקראינית</translation>
 <translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
@@ -766,6 +784,7 @@
 <translation id="7655441028674523381">‏גישה פשוטה ל-Google Photos</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663224033570512922">הינדית</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> פריטים הועברו לאשפה</translation>
 <translation id="7693909743393669729">פירמוט של התקן אחסון ימחק את כל הנתונים המאוחסנים בו ויסיר את כל המחיצות הקיימות, כולל מחיצות שאינן גלויות. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7695430100978772476">לא ניתן לפרמט את <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">ריקון האשפה נכשל.</translation>
@@ -775,10 +794,12 @@
 <translation id="7711920809702896782">פרטי התמונה</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7732111077498238432">הרשת כפופה למדיניות</translation>
+<translation id="7736003208887389532">האם למחוק את הקבצים האלה לתמיד?</translation>
 <translation id="7748626145866214022">‏אפשרויות נוספות זמינות בסרגל הפעולות. הקשה על Alt + A תדגיש את סרגל הפעולות.</translation>
 <translation id="7760449188139285140">‏סינית Wubi</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7774365994322694683">ציפור</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> פריטים שוחזרו</translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
@@ -836,6 +857,7 @@
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8250690786522693009">לטינית</translation>
 <translation id="8250920743982581267">מסמכים</translation>
+<translation id="8255595130163158297">כל הפריטים באשפה יימחקו ולא תהיה לך אפשרות לשחזר אותם.</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8261561378965667560">‏סינית Array</translation>
 <translation id="8262872909443689080">מדיניות האדמין</translation>
@@ -912,6 +934,7 @@
 <translation id="8857149712089373752">נפאלית עם מקלדת פונטית</translation>
 <translation id="8860454412039442620">‏גיליון אלקטרוני של Excel</translation>
 <translation id="8866284467018526531">תעתיק ערבית</translation>
+<translation id="8873014196523807561">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה. התיקיות המקוריות של חלק מהפריטים נמחקו.</translation>
 <translation id="8874184842967597500">לא מחובר</translation>
 <translation id="8900820606136623064">הונגרית</translation>
 <translation id="8903931173357132290">בוגר/ת אוניברסיטה</translation>
@@ -957,6 +980,7 @@
 <translation id="947144732524271678">בחרת טווח של <ph name="ENTRY_COUNT" /> פריטים, מ-<ph name="FROM_ENTRY_NAME" /> עד <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">לפי מדיניות האדמין, הפעולות הבאות חסומות:</translation>
 <translation id="965477715979482472">אנגלית (דרום אפריקה)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> פריטים מועברים לאשפה</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>
 <translation id="992401651319295351">נותרו לך עוד <ph name="RETRIES" /> ניסיונות. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>

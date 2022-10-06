@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">緬甸文</translation>
 <translation id="2392369802118427583">啟用</translation>
 <translation id="240770291734945588">可用空間：<ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">登入網絡</translation>
 <translation id="2425665904502185219">總檔案大小</translation>
 <translation id="2428749644083375155">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目複製到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="2448312741937722512">類型</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">無法播放</translation>
 <translation id="383652340667548381">塞爾維亞語</translation>
 <translation id="385051799172605136">返回</translation>
+<translation id="3851491607336266896">已連線，但連接性受限</translation>
 <translation id="3855472144336161447">德文 Neo 2 鍵盤</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3866249974567520381">描述</translation>
@@ -939,6 +941,7 @@
 <translation id="8903931173357132290">畢業生</translation>
 <translation id="8912078710089354287">搖尾巴的狗</translation>
 <translation id="8919081441417203123">丹麥文</translation>
+<translation id="8949925099261528566">已連線，但沒有互聯網</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="8997962250644902079">繁體中文 (拼音)</translation>
 <translation id="8998871447376656508">您的「Google 雲端硬碟」沒有足夠空間，無法完成上載。</translation>

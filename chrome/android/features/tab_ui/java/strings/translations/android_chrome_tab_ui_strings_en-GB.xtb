@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">You'll get an alert when there's a lower price in an open tab</translation>
 <translation id="3328308545011660196">Suggestion: <ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
+<translation id="3499853001094440183">Ungroup tabs</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Collapse <ph name="TABS_COUNT_ONE" /> tab.}other{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="3882834874697329510">To get an alert when there's a lower price in an open tab, turn on notifications in Settings.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(shop rating)</translation>
 <translation id="6333260925957816943">Information about this shop</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Ungroup <ph name="TABS_COUNT_ONE" /> selected tab}other{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="6510648526783655549">Close tab strip</translation>
 <translation id="6549021453810473782">View shop info</translation>
 <translation id="6562820390860419811">Move tab left</translation>

@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Документоо скан хийх</translation>
 <translation id="1309250603447638106">Документийг скан хийхийн тулд шинэчлэлтүүдийг татаж байна</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Хандахын тулд Хайлт + Зүүн сумыг дарна уу.</translation>
+<translation id="1417314334557041815"><ph name="INDEX" /> хуудсыг засах</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />-г салгасан байна.</translation>
 <translation id="1473110567575736769">3 секундийн цаг тоологч</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Бичсэн зүйл алга</translation>
 <translation id="1838104802459806957">Дээш хазайлгах</translation>
+<translation id="1843105061469674856">Нэмэлт хуудас скан хийх</translation>
 <translation id="1851169887664797861">Камерын нэмэлт хяналт боломжтой</translation>
 <translation id="1851616744363735765">ТҮР ЗОГСООСОН</translation>
 <translation id="1862930711583847113"><ph name="FILE" />-г экспорт хийх боломжгүй байна</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Энэ камерын нягтралыг өөрчлөх боломжгүй</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
 <translation id="4281620174117014503">Дундаж нягтрал</translation>
+<translation id="428234092390943511">Хуудасны өнгөц зураг</translation>
 <translation id="4329152592498422850">Дөрвөлжин зураг авахын тулд сэлгэх</translation>
 <translation id="4340659173795395806">Та одоо олон хуудастай PDF үүсгэх боломжтой</translation>
 <translation id="4383571725254449280">Хэвлэх гүйцэтгэлийн логууд</translation>

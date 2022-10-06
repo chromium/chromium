@@ -2412,6 +2412,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3188465121994729530">Moving Average</translation>
 <translation id="3189187154924005138">Large cursor</translation>
 <translation id="3190558889382726167">Password saved</translation>
+<translation id="3192589799003798742">Setting up Steam on Chromebook</translation>
 <translation id="3192947282887913208">Audio Files</translation>
 <translation id="3193695589337931419">System signals utilities</translation>
 <translation id="3194786596445804250">Show details about blocking third-party cookies</translation>
@@ -2551,6 +2552,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3341699307020049241">Incorrect PIN. You have <ph name="RETRIES" /> attempts remaining.</translation>
 <translation id="3341703758641437857">Allow access to file URLs</translation>
 <translation id="3342361181740736773">'<ph name="TRIGGERING_EXTENSION_NAME" />' would like to remove this extension.</translation>
+<translation id="3343977377045378693">Performing setup</translation>
 <translation id="3345135638360864351">Your request to access this site could not be sent to <ph name="NAME" />. Please try again.</translation>
 <translation id="3345634917232014253">Safety check ran a moment ago</translation>
 <translation id="3345886924813989455">No supported browser found</translation>
@@ -2562,6 +2564,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3354768182971982851">Old versions of Chrome apps won't open on Mac devices after December 2022. You can check if there's a new version available.</translation>
 <translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
 <translation id="3355936511340229503">Connection error</translation>
+<translation id="3356036636691722598">Enjoy gaming on your Chromebook</translation>
 <translation id="3356469410714175391">(Virtual card enabled)</translation>
 <translation id="3356580349448036450">Complete</translation>
 <translation id="3359256513598016054">Certificate Policy Constraints</translation>
@@ -3476,6 +3479,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4211904048067111541">Stop using with Android apps</translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
+<translation id="4214192212360095377">Turn Off Now</translation>
 <translation id="4217558091331485702">Scan before opening</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4218081191298393750">Click the speaker icon to mute this tab</translation>
@@ -4378,6 +4382,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5089763948477033443">Side panel resize handle</translation>
 <translation id="5090637338841444533">Not allowed to track your camera position</translation>
 <translation id="5093569275467863761">Incognito back-forward cached subframe: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Starting installation</translation>
 <translation id="5094176498302660097">You can open and edit supported files with this app from the Files app or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Communicate with cooperating native applications</translation>
 <translation id="5097002363526479830">Failed to connect to the network '<ph name="NAME" />': <ph name="DETAILS" /></translation>
@@ -6400,6 +6405,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7014174261166285193">Installation failed.</translation>
 <translation id="7014480873681694324">Remove highlight</translation>
 <translation id="7014741021609395734">Zoom level</translation>
+<translation id="7014961128696979283">Launch Steam</translation>
 <translation id="7015088858756332848">Couldn't launch Steam on Chromebook. Please try again.</translation>
 <translation id="7017004637493394352">Say 'OK Google' again</translation>
 <translation id="7017219178341817193">Add a new page</translation>
@@ -6793,6 +6799,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7423425410216218516">Visibility is on for <ph name="MINUTES" /> minutes</translation>
 <translation id="7423513079490750513">Remove <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> needs permission to run</translation>
+<translation id="7424153922653300265">Energy Saver Turned On</translation>
 <translation id="7424818322350938336">Network added</translation>
 <translation id="7427315069950454694">your memories for today</translation>
 <translation id="7427348830195639090">Background Page: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -8034,6 +8041,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593121833493516339">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Customised Files</translation>
+<translation id="8597404194697561297">Welcome to Steam on Chromebook</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8599681327221583254">One or more policies are not configured correctly. Please contact your administrator</translation>
 <translation id="8599864823732014237">Skip enterprise enrolment?</translation>

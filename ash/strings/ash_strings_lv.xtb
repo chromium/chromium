@@ -771,16 +771,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5393156353051693207">Pieskarieties jebkurā vietā un turiet, lai pārkārtotu lietotnes</translation>
 <translation id="5395308026110844773">Lietotne <ph name="DRAGGED_APP_NAME" /> tiek vilkta <ph name="IN_PLACE_APP" /> lietotnes vietā, atlaidiet, lai izveidotu mapi.</translation>
 <translation id="5397578532367286026">Šī lietotāja datu lietojumu un vēsturi var pārvaldīt pārzinis (<ph name="MANAGER_EMAIL" />) vietnē chrome.com.</translation>
-<translation id="5399673806694250334">Statusa josla, plkst. <ph name="TIME" />.
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />.
-        <ph name="NETWORK" />
-        <ph name="MIC" />.
-        <ph name="CAMERA" />.
-        <ph name="MANAGED" />.
-        <ph name="NOTIFICATION" />.
-        <ph name="IME" />.
-        <ph name="LOCALE" />.</translation>
 <translation id="5400461572260843123">Ātrie iestatījumi: vienlaikus nospiediet meklēšanas taustiņu un kreiso bulttaustiņu, lai atvērtu paziņojumu centru.</translation>
 <translation id="5426063383988017631">Iestatījumu izvēlne aizvērta</translation>
 <translation id="5428899915242071344">Sākt atlasīšanu</translation>

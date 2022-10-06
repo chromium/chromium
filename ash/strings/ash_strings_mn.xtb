@@ -414,6 +414,7 @@
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3371140690572404006">USB-C төхөөрөмж (урд талын портын баруун тал)</translation>
 <translation id="3375634426936648815">Холбогдсон</translation>
+<translation id="3378438761594387761">Та саяхан татаж авсан файл болон дэлгэцээс авсан зургаа эндээс олно</translation>
 <translation id="3378442621503952303">Профайлд холбогдож байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -721,6 +722,7 @@
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
 <translation id="509790653408515442">Та утасныхаа аппыг дамжуулах үед тэдгээр нь энд гарч ирэх болно</translation>
 <translation id="5098537242461068432">Дэлгэц болон цонхнуудыг дахин нээсэн</translation>
+<translation id="5104236669533825617">Дэлгэцийн видео бичлэг үүсгэх боломжгүй</translation>
 <translation id="5107522548814527560">Веб</translation>
 <translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
@@ -766,22 +768,13 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Баруун)</translation>
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5356963482258194581">Бараан болон цайвар загварын хооронд сэлгэнэ үү. Дэлгэц дээр баруун талыг товшиж, Дэлгэцийн зураг &amp; стилийг сонгоно уу.</translation>
+<translation id="536019650977002321">Танай администратор аудио бичихийг зөвшөөрдөггүй. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> таб руу очих</translation>
 <translation id="5379115545237091094">Хэт олон удаа оролдлоо</translation>
 <translation id="5391307769715781764">Хадгалсан дэлгэцээ өөрчлөх үү?</translation>
 <translation id="5393156353051693207">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа удаан дарна уу</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
 <translation id="5397578532367286026">chrome.com дээр (<ph name="MANAGER_EMAIL" />) удирдагч энэ хэрэглэгчийн хэрэглээ болон түүхийг үзэх боломжтой.</translation>
-<translation id="5399673806694250334">Төлөвийн мэдээллийн хэсэг, хугацаа <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />,
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Шуурхай тохиргоо. Мэдэгдлийн төвд хандахын тулд хайх + зүүн сумыг дарна уу.</translation>
 <translation id="5426063383988017631">Тохиргооны цэсийг хаасан</translation>
 <translation id="5428899915242071344">Сонгож эхлэх</translation>

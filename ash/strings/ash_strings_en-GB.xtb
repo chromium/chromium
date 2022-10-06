@@ -159,6 +159,15 @@ Here are some things that you can try to get started.</translation>
 <translation id="1797271123677381264">Forgot password</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1812997170047690955">What's on my screen?</translation>
+<translation id="1823280932251546115">Status tray, time <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> was un-pinned</translation>
 <translation id="1836215606488044471">Assistant (loading...)</translation>
@@ -458,6 +467,8 @@ Here are some things that you can try to get started.</translation>
 <translation id="3600061223661453002">Off</translation>
 <translation id="3604801046548457007">Desk <ph name="DESK_TITILE" /> created</translation>
 <translation id="3606978283550408104">Braille display connected.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Enabling mobile data will enable Bluetooth</translation>
 <translation id="3616883743181209306">Menu moved to the top-right corner of the screen.</translation>
 <translation id="3619536907358025872">Screen capture settings</translation>
@@ -774,16 +785,6 @@ Connect your device to power.</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
-<translation id="5399673806694250334">Status tray, time <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="CHANNEL" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="5400461572260843123">Quick Settings: press search + left to access the notification centre.</translation>
 <translation id="5426063383988017631">Settings menu closed</translation>
 <translation id="5428899915242071344">Start selecting</translation>

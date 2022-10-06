@@ -822,7 +822,7 @@
 <translation id="3157931365184549694">वापस लाएं</translation>
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
-<translation id="3169472444629675720">तलाश करें</translation>
+<translation id="3169472444629675720">डिस्कवर</translation>
 <translation id="3176929007561373547">यह पक्का करने के लिए कि प्रॉक्सी सर्वर काम कर रहा है,
       अपनी प्रॉक्सी सेटिंग जांचें या अपने नेटवर्क एडमिन से संपर्क करें. अगर आपको नहीं लगता       कि आपको किसी प्रॉक्सी सर्वर का उपयोग करना चाहिए:
       <ph name="PLATFORM_TEXT" /></translation>
@@ -1778,7 +1778,7 @@
 <translation id="5635237618724097525">स्मार्टफ़ोन</translation>
 <translation id="5644090287519800334">साइड 1 इमेज X शिफ़्ट</translation>
 <translation id="5645854190134202180">दूसरी शिफ़्ट</translation>
-<translation id="5649053991847567735">अपने आप होने वाले डाउनलोड</translation>
+<translation id="5649053991847567735">अपने-आप होने वाले डाउनलोड</translation>
 <translation id="5653432653077411130">पानी की सप्लाई और ट्रीटमेंट</translation>
 <translation id="5654927323611874862">क्रैश रिपोर्ट का आईडी अपलोड किया गया:</translation>
 <translation id="5659593005791499971">ईमेल</translation>
@@ -1790,7 +1790,7 @@
 <translation id="5684874026226664614">ओह. इस पेज का अनुवाद नहीं किया जा सका.</translation>
 <translation id="5685654322157854305">शिपिंग पता जोड़ें</translation>
 <translation id="5689199277474810259">JSON में एक्सपोर्ट करें</translation>
-<translation id="5689516760719285838">स्थान</translation>
+<translation id="5689516760719285838">जगह की जानकारी</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates का मान सही नहीं है. इसका इस्तेमाल तब तक नहीं किया जाएगा, जब तक कि DnsOverHttpsMode नीति <ph name="SECURE_DNS_MODE_AUTOMATIC" /> या <ph name="SECURE_DNS_MODE_SECURE" /> पर सेट न हो.</translation>
 <translation id="5695542892312572833">क्या आप खरीदारी की पुष्टि करने और उसे पूरा करने के लिए, Windows Hello का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="5701381305118179107">मध्य</translation>
