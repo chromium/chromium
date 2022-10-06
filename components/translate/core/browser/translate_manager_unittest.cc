@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,6 +53,8 @@ namespace {
 const char kInitiationStatusName[] = "Translate.InitiationStatus.v2";
 const char kMenuTranslationIsAvailableName[] =
     "Translate.MenuTranslation.IsAvailable";
+const char kTranslateSourceLanguageName[] = "Translate.SourceLanguage";
+const char kTranslateTargetLanguageName[] = "Translate.TargetLanguage";
 
 // Overrides NetworkChangeNotifier, simulating connection type changes
 // for tests.
@@ -1427,7 +1430,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_AutoTranslate) {
   // update the TranslateManager after a translation is performed.
 }
 
-TEST_F(TranslateManagerTest, ShowTranslateUI) {
+TEST_F(TranslateManagerTest, ShowTranslateUI_NoTranslation) {
   manager_->set_application_locale("en");
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("de", 1.0),
@@ -1455,6 +1458,115 @@ TEST_F(TranslateManagerTest, ShowTranslateUI) {
   // TranslateManager::ShowTranslateUI should only call
   // TranslateClient::ShowTranslateUI (not do translation).
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
+}
+
+TEST_F(TranslateManagerTest, ShowTranslateUI_Translation) {
+  manager_->set_application_locale("en");
+  mock_language_model_.details = {
+      MockLanguageModel::LanguageDetails("de", 1.0),
+  };
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
+      .WillByDefault(Return(true));
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, "en", "de",
+                      TranslateErrors::NONE, false /* triggered_from_menu */))
+      .WillOnce(Return(true));
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  base::HistogramTester histogram_tester;
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  network_notifier_.SimulateOnline();
+
+  translate_manager_->ShowTranslateUI(/* auto_translate= */ true);
+
+  // TranslateManager::ShowTranslateUI should call translation.
+  histogram_tester.ExpectTotalCount(kTranslateSourceLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateSourceLanguageName,
+                                     base::HashMetricName("en"), 1);
+  histogram_tester.ExpectTotalCount(kTranslateTargetLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateTargetLanguageName,
+                                     base::HashMetricName("de"), 1);
+}
+
+TEST_F(TranslateManagerTest,
+       ShowTranslateUI_ExplicitTargetLanguageTranslation) {
+  manager_->set_application_locale("en");
+  mock_language_model_.details = {
+      MockLanguageModel::LanguageDetails("de", 1.0),
+  };
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, "en", "pl",
+                      TranslateErrors::NONE, false /* triggered_from_menu */))
+      .WillOnce(Return(true));
+
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  base::HistogramTester histogram_tester;
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
+  network_notifier_.SimulateOnline();
+
+  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+                                      /* triggered_from_menu= */ false);
+
+  // TranslateManager::ShowTranslateUI should call translation for the
+  // explicit target language.
+  histogram_tester.ExpectTotalCount(kTranslateSourceLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateSourceLanguageName,
+                                     base::HashMetricName("en"), 1);
+  histogram_tester.ExpectTotalCount(kTranslateTargetLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateTargetLanguageName,
+                                     base::HashMetricName("pl"), 1);
+}
+
+TEST_F(TranslateManagerTest, ShowTranslateUI_ExplicitTargetSameAsTarget) {
+  manager_->set_application_locale("en");
+  mock_language_model_.details = {
+      MockLanguageModel::LanguageDetails("pl", 1.0),
+  };
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+  EXPECT_CALL(mock_translate_client_,
+              ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
+      .WillOnce(Return(true));
+
+  translate_manager_ = std::make_unique<TranslateManager>(
+      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  base::HistogramTester histogram_tester;
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
+  network_notifier_.SimulateOnline();
+
+  translate_manager_->ShowTranslateUI("pl", /* auto_translate */ true,
+                                      /* triggered_from_menu= */ false);
+
+  // TranslateManager::ShowTranslateUI should call translation.
+  histogram_tester.ExpectTotalCount(kTranslateSourceLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateSourceLanguageName,
+                                     base::HashMetricName("de"), 1);
+  histogram_tester.ExpectTotalCount(kTranslateTargetLanguageName, 1);
+  histogram_tester.ExpectBucketCount(kTranslateTargetLanguageName,
+                                     base::HashMetricName("pl"), 1);
 }
 
 TEST_F(TranslateManagerTest, GetActiveTranslateMetricsLogger) {
