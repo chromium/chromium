@@ -232,7 +232,7 @@ void HostedAppBrowserController::LoadAppIcon(
                  apps::IconType::kStandard,
                  extension_misc::EXTENSION_ICON_SMALL, allow_placeholder_icon,
                  base::BindOnce(&HostedAppBrowserController::OnLoadIcon,
-                                weak_ptr_factory_.GetWeakPtr()));
+                                weak_ptr_factory_.GetMutableWeakPtr()));
 }
 
 void HostedAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
