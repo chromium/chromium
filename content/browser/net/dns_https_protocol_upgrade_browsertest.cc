@@ -34,8 +34,7 @@ class DohHttpsProtocolUpgradeBrowserTest : public content::ContentBrowserTest {
   DohHttpsProtocolUpgradeBrowserTest() {
     features_.InitAndEnableFeatureWithParameters(
         net::features::kUseDnsHttpsSvcb,
-        {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-         // Disable timeouts.
+        {// Disable timeouts.
          {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
          {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
          {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},

@@ -69,14 +69,8 @@ BASE_FEATURE(kUseDnsHttpsSvcb,
              "UseDnsHttpsSvcb",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kUseDnsHttpsSvcbHttpUpgrade{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbHttpUpgrade", true};
-
 const base::FeatureParam<bool> kUseDnsHttpsSvcbEnforceSecureResponse{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnforceSecureResponse", false};
-
-const base::FeatureParam<bool> kUseDnsHttpsSvcbEnableInsecure{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnableInsecure", true};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbInsecureExtraTimeMax{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimeMax",

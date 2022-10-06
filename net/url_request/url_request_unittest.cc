@@ -1366,10 +1366,6 @@ TEST_F(URLRequestTest, NetworkDelegateProxyError) {
 // Test that when host resolution fails with `ERR_DNS_NAME_HTTPS_ONLY` for
 // "http://" requests, scheme is upgraded to "https://".
 TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgrade) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
@@ -1426,10 +1422,6 @@ TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgrade) {
 
 // Test that DNS-based scheme upgrade supports deferred redirect.
 TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgradeDeferred) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
@@ -1492,10 +1484,6 @@ TEST_F(URLRequestTest, DnsNameHttpsOnlyErrorCausesSchemeUpgradeDeferred) {
 // Test that requests with "ws" scheme are upgraded to "wss" when DNS
 // indicates that the name is HTTPS-only.
 TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
   RegisterDefaultHandlers(&https_server);
@@ -1558,10 +1546,6 @@ TEST_F(URLRequestTest, DnsHttpsRecordPresentCausesWsSchemeUpgrade) {
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 TEST_F(URLRequestTest, DnsHttpsRecordAbsentNoSchemeUpgrade) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   EmbeddedTestServer http_server(EmbeddedTestServer::TYPE_HTTP);
   RegisterDefaultHandlers(&http_server);
   ASSERT_TRUE(http_server.Start());

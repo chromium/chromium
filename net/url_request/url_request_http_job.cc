@@ -1084,7 +1084,6 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   } else if (result == ERR_DNS_NAME_HTTPS_ONLY) {
     // If DNS indicated the name is HTTPS-only, synthesize a redirect to either
     // HTTPS or WSS.
-    DCHECK(features::kUseDnsHttpsSvcbHttpUpgrade.Get());
     DCHECK(!request_->url().SchemeIsCryptographic());
 
     base::Time request_time =

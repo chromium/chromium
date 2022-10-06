@@ -429,9 +429,6 @@ extern const char kDisruptiveNotificationPermissionRevocationDescription[];
 extern const char kDoubleBufferCompositingName[];
 extern const char kDoubleBufferCompositingDescription[];
 
-extern const char kDnsHttpsSvcbName[];
-extern const char kDnsHttpsSvcbDescription[];
-
 extern const char kUseDMSAAForTilesName[];
 extern const char kUseDMSAAForTilesDescription[];
 

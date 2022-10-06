@@ -638,10 +638,6 @@ TEST_F(WebSocketEndToEndTest, HeaderContinuations) {
 // Test that ws->wss scheme upgrade is supported on receiving a DNS HTTPS
 // record.
 TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
-
   SpawnedTestServer wss_server(SpawnedTestServer::TYPE_WSS,
                                SpawnedTestServer::SSLOptions(base::FilePath(
                                    FILE_PATH_LITERAL("test_names.pem"))),

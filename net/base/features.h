@@ -105,20 +105,12 @@ NET_EXPORT base::TimeDelta GetExtraTimeAbsolute();
 // for metrics.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcb);
 
-// Param to control whether or not presence of an HTTPS record for an HTTP
-// request will force an HTTP->HTTPS upgrade redirect.
-NET_EXPORT extern const base::FeatureParam<bool> kUseDnsHttpsSvcbHttpUpgrade;
-
 // Param to control whether or not HostResolver, when using Secure DNS, will
 // fail the entire connection attempt when receiving an inconclusive response to
 // an HTTPS query (anything except transport error, timeout, or SERVFAIL). Used
 // to prevent certain downgrade attacks against ECH behavior.
 NET_EXPORT extern const base::FeatureParam<bool>
     kUseDnsHttpsSvcbEnforceSecureResponse;
-
-// Param to control whether HTTPS queries will be allowed via Insecure DNS
-// (instead of just via Secure DNS).
-NET_EXPORT extern const base::FeatureParam<bool> kUseDnsHttpsSvcbEnableInsecure;
 
 // If we are still waiting for an HTTPS transaction after all the
 // other transactions in an insecure DnsTask have completed, we will compute a

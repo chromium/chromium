@@ -1081,8 +1081,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       return types;
 
     if (types.Has(DnsQueryType::HTTPS)) {
-      if (!secure_ && (!https_svcb_options_.enable_insecure ||
-                       !client_->CanQueryAdditionalTypesViaInsecureDns())) {
+      if (!secure_ && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
         types.Remove(DnsQueryType::HTTPS);
       } else {
         DCHECK(!httpssvc_metrics_);
@@ -1671,38 +1670,13 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   }
 
   bool ShouldTriggerHttpToHttpsUpgrade(const HostCache::Entry& results) {
-    // These values are logged to UMA. Entries should not be renumbered and
-    // numeric values should never be reused. Please keep in sync with
-    // "DNS.HttpUpgradeResult" in src/tools/metrics/histograms/enums.xml.
-    enum class UpgradeResult {
-      kUpgradeTriggered = 0,
-      kNoHttpsRecord = 1,
-      kHttpsScheme = 2,
-      kOtherScheme = 3,
-      kUpgradeDisabled = 4,
-      kMaxValue = kUpgradeDisabled
-    } upgrade_result;
-
-    if (!results.https_record_compatibility() ||
-        base::ranges::none_of(*results.https_record_compatibility(),
-                              base::identity())) {
-      upgrade_result = UpgradeResult::kNoHttpsRecord;
-    } else if (GetScheme(host_) == url::kHttpsScheme ||
-               GetScheme(host_) == url::kWssScheme) {
-      upgrade_result = UpgradeResult::kHttpsScheme;
-    } else if (GetScheme(host_) != url::kHttpScheme &&
-               GetScheme(host_) != url::kWsScheme) {
-      // This is an unusual case because HTTPS would normally not be requested
-      // if the scheme is not http(s):// or ws(s)://.
-      upgrade_result = UpgradeResult::kOtherScheme;
-    } else if (!features::kUseDnsHttpsSvcbHttpUpgrade.Get()) {
-      upgrade_result = UpgradeResult::kUpgradeDisabled;
-    } else {
-      upgrade_result = UpgradeResult::kUpgradeTriggered;
-    }
-
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.HttpUpgrade", upgrade_result);
-    return upgrade_result == UpgradeResult::kUpgradeTriggered;
+    // Upgrade if at least one HTTPS record was compatible, and the host uses an
+    // upgradable scheme.
+    return results.https_record_compatibility() &&
+           base::ranges::any_of(*results.https_record_compatibility(),
+                                base::identity()) &&
+           (GetScheme(host_) == url::kHttpScheme ||
+            GetScheme(host_) == url::kWsScheme);
   }
 
   // Only keep metadata results (from HTTPS records) for appropriate schemes.

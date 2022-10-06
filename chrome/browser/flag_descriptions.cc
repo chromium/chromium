@@ -284,13 +284,6 @@ const char kAndroidPictureInPictureAPIName[] =
 const char kAndroidPictureInPictureAPIDescription[] =
     "Enable Picture-in-Picture Web API for Android";
 
-const char kDnsHttpsSvcbName[] = "Support for HTTPS records in DNS";
-const char kDnsHttpsSvcbDescription[] =
-    "When enabled, Chrome may query for HTTPS records in DNS. If any are "
-    "found, Chrome may upgrade the URL to HTTPS or enable Encrypted "
-    "ClientHello, depending on server support and whether those features are "
-    "enabled.";
-
 const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
 const char kUseDMSAAForTilesDescription[] =
     "Switches skia to use DMSAA instead of MSAA for tile raster";

@@ -846,17 +846,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.DnsTask.HttpUpgrade" enum="DNS.HttpUpgradeResult"
-    expires_after="2023-02-26">
-  <owner>ericorth@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Enumeration of whether or not a DNS-based http-&gt;https upgrade is
-    triggered by HostResolver and the reason why. Recorded for all successfully
-    completed HTTPS record transactions.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsTask.SuccessTime" units="ms"
     expires_after="2023-03-05">
   <owner>ericorth@chromium.org</owner>

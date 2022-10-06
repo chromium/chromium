@@ -5629,8 +5629,7 @@ TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableOnlyDisablesAAAAQuery) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -10804,8 +10803,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonstandardPort) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -10867,8 +10865,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -10926,8 +10923,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -10988,8 +10984,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -11042,8 +11037,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -11102,8 +11096,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -11173,8 +11166,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsQueriedInAddressQueryButNoResults) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -11495,7 +11487,6 @@ TEST_F(
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"},
-       {"UseDnsHttpsSvcbEnableInsecure", "true"},
        // Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -11931,71 +11922,13 @@ TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryForNonHttpScheme) {
 }
 
 TEST_F(HostResolverManagerDnsTest,
-       HttpsInAddressQueryForHttpSchemeWhenUpgradeDisabled) {
-  const char kName[] = "name.test";
-
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "false"},
-       // Disable timeouts.
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestHttpsServiceRecord(kName, /*priority=*/1, /*service_name=*/".",
-                                  /*params=*/{})};
-  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
-                         kName, dns_protocol::kTypeHttps, records)),
-                     /*delay=*/false);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-  DnsConfigOverrides overrides;
-  overrides.secure_dns_mode = SecureDnsMode::kAutomatic;
-  resolver_->SetDnsConfigOverrides(overrides);
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      url::SchemeHostPort(url::kHttpScheme, kName, 80),
-      NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt,
-      resolve_context_.get(), resolve_context_->host_cache()));
-
-  // With the param disabled, expect the HTTPS record to have no effect on
-  // results (except GetExperimentalResultsForTesting()).
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(testing::SizeIs(2)))));
-  EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
-              testing::Pointee(testing::ElementsAre(true)));
-}
-
-TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryForHttpSchemeWhenUpgradeEnabled) {
   const char kName[] = "name.test";
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12046,8 +11979,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12099,8 +12031,7 @@ TEST_F(
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12159,8 +12090,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12210,8 +12140,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQuery) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12261,8 +12190,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQueryForHttpScheme) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12312,8 +12240,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12369,9 +12296,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQueryForHttpScheme) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       {"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12418,8 +12343,7 @@ TEST_F(HostResolverManagerDnsTest, FailedHttpsInInsecureAddressRequestIgnored) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12466,8 +12390,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12514,8 +12437,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12567,8 +12489,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -12608,58 +12529,6 @@ TEST_F(HostResolverManagerDnsTest,
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
               testing::Pointee(testing::IsEmpty()));
-}
-
-TEST_F(HostResolverManagerDnsTest,
-       NoHttpsInInsecureAddressQueryWhenInsecureHttpsDisabled) {
-  const char kName[] = "name.test";
-
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "false"},
-       // Disable timeouts.
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestHttpsServiceRecord(kName, /*priority=*/1, /*service_name=*/".",
-                                  /*params=*/{})};
-  rules.emplace_back(
-      kName, dns_protocol::kTypeA, /*secure=*/false,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-  rules.emplace_back(
-      kName, dns_protocol::kTypeAAAA, /*secure=*/false,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
-      /*delay=*/false);
-  // Should not be queried.
-  rules.emplace_back(
-      kName, dns_protocol::kTypeHttps, /*secure=*/false,
-      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kUnexpected),
-      /*delay=*/false);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      url::SchemeHostPort(url::kHttpsScheme, kName, 443),
-      NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt,
-      resolve_context_.get(), resolve_context_->host_cache()));
-
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(testing::SizeIs(2)))));
-  EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
 // Test that when additional HTTPS timeout Feature params are disabled, the task
@@ -12732,8 +12601,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
        // Set a Secure absolute timeout of 10 minutes via the "min" param.
@@ -12797,8 +12665,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
        // Set a Secure absolute timeout of 10 minutes via the "max" param.
@@ -12862,8 +12729,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
        // Set a Secure relative timeout of 10%.
@@ -12935,8 +12801,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        // Set a Secure max timeout of 30s and a relative timeout of 100%.
@@ -13010,8 +12875,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        // Set a Secure max timeout of 20 minutes and a relative timeout of 10%.
@@ -13083,8 +12947,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        // Set a Secure min timeout of 1 minute and a relative timeout of 10%.
@@ -13156,8 +13019,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Set an Insecure absolute timeout of 10 minutes via the "min" param.
+      {// Set an Insecure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "10m"},
@@ -13218,8 +13080,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Set an Insecure absolute timeout of 10 minutes via the "max" param.
+      {// Set an Insecure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "10m"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -13280,8 +13141,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Set an Insecure relative timeout of 10%.
+      {// Set an Insecure relative timeout of 10%.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "10"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
@@ -13423,8 +13283,7 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       // Set timeouts but also enforce secure responses.
+      {// Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},

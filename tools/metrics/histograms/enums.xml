@@ -26649,15 +26649,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Updated stale entry"/>
 </enum>
 
-<enum name="DNS.HttpUpgradeResult">
-  <int value="0" label="HTTPS record received; upgrade triggered"/>
-  <int value="1" label="No HTTPS record received"/>
-  <int value="2" label="HTTPS record received; no upgrade (already https/wss)"/>
-  <int value="3" label="HTTPS record received; no upgrade (not http(s)/ws(s))"/>
-  <int value="4"
-      label="HTTPS record received; http/ws; no upgrade (Finch-disabled)"/>
-</enum>
-
 <enum name="DNS.StaleHostResolverRequestOutcome">
   <int value="0"
       label="Returned synchronously (cache, hosts, IP literal etc.)"/>

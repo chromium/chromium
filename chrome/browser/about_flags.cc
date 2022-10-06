@@ -2771,18 +2771,6 @@ const FeatureEntry::FeatureVariation kSCTAuditingVariations[] = {
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kUseDnsHttpsSvcbBoth[] = {
-    {"UseDnsHttpsSvcbEnableInsecure", "true"}};
-const FeatureEntry::FeatureParam kUseDnsHttpsSvcbDohOnly[] = {
-    {"UseDnsHttpsSvcbEnableInsecure", "false"}};
-
-const FeatureEntry::FeatureVariation kUseDnsHttpsSvcbVariations[] = {
-    {"for DNS-over-HTTPS and insecure DNS", kUseDnsHttpsSvcbBoth,
-     std::size(kUseDnsHttpsSvcbBoth), nullptr},
-    {"for DNS-over-HTTPS only", kUseDnsHttpsSvcbDohOnly,
-     std::size(kUseDnsHttpsSvcbDohOnly), nullptr},
-};
-
 #if BUILDFLAG(IS_ANDROID)
 // The variations of ContentLanguagesInLanguagePicker.
 const FeatureEntry::FeatureParam
@@ -7142,12 +7130,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsAppNotificationSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSettingsAppNotificationSettings)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    {"dns-https-svcb", flag_descriptions::kDnsHttpsSvcbName,
-     flag_descriptions::kDnsHttpsSvcbDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(net::features::kUseDnsHttpsSvcb,
-                                    kUseDnsHttpsSvcbVariations,
-                                    "UseDnsHttpsSvcb")},
 
     {"encrypted-client-hello", flag_descriptions::kEncryptedClientHelloName,
      flag_descriptions::kEncryptedClientHelloDescription, kOsAll,

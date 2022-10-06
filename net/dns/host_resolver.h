@@ -210,7 +210,6 @@ class NET_EXPORT HostResolver {
     static HttpsSvcbOptions FromFeatures();
 
     bool enable = false;
-    bool enable_insecure = false;
     base::TimeDelta insecure_extra_time_max;
     int insecure_extra_time_percent = 0;
     base::TimeDelta insecure_extra_time_min;

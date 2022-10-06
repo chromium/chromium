@@ -319,8 +319,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
           ->https_svcb_options_for_testing();
   EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcb),
             https_svcb_options.enable);
-  EXPECT_EQ(net::features::kUseDnsHttpsSvcbEnableInsecure.Get(),
-            https_svcb_options.enable_insecure);
   EXPECT_EQ(net::features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get(),
             https_svcb_options.insecure_extra_time_max);
   EXPECT_EQ(net::features::kUseDnsHttpsSvcbInsecureExtraTimePercent.Get(),
@@ -1775,7 +1773,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           "fake agent",
           // JSON encoded experimental options.
           "{\"UseDnsHttpsSvcb\":{\"enable\":true,"
-          "\"enable_insecure\":true,"
           "\"insecure_extra_time_max\":\"1ms\","
           "\"insecure_extra_time_percent\":2,"
           "\"insecure_extra_time_min\":\"3ms\","
@@ -1805,7 +1802,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
           ->GetManagerForTesting()
           ->https_svcb_options_for_testing();
   EXPECT_TRUE(https_svcb_options.enable);
-  EXPECT_TRUE(https_svcb_options.enable_insecure);
   EXPECT_EQ(base::Milliseconds(1), https_svcb_options.insecure_extra_time_max);
   EXPECT_EQ(2, https_svcb_options.insecure_extra_time_percent);
   EXPECT_EQ(base::Milliseconds(3), https_svcb_options.insecure_extra_time_min);

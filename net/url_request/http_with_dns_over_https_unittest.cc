@@ -370,8 +370,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
@@ -419,8 +418,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-       // Disable timeouts.
+      {// Disable timeouts.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
