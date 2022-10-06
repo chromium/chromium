@@ -18,6 +18,7 @@
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,8 +27,8 @@
 namespace {
 
 constexpr CGFloat kDefaultMargin = 16;
-// TODO(crbug.com/1363812): Need to adjust the value.
-constexpr CGFloat kFullAvatarImagerUpperMargin = 40;
+// Top margin for AvatarFullImageView in percentage of the dialog size.
+constexpr CGFloat kAvatarFullImageViewTopMarginPercentage = 0.04;
 constexpr CGFloat kFullAvatarImagerBottomMargin = 5;
 constexpr CGFloat kTitleHorizontalMargin = 18;
 constexpr CGFloat kActionsBottomMargin = 10;
@@ -63,6 +64,9 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 @property(nonatomic, strong) HighlightButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
+
+// Layout constraint for `fullAvatarImageView` top margin.
+@property(nonatomic, strong) NSLayoutConstraint* avatarFullImageViewTopMargin;
 
 @property(nonatomic, strong) UIView* separator;
 @property(nonatomic, assign) CGFloat scrollViewBottomOffsetY;
@@ -105,6 +109,8 @@ constexpr CGFloat kFullAvatarImageSize = 100;
 
   return self;
 }
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -264,10 +270,10 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   ]];
 
   if (self.hasAvatarImage) {
+    self.avatarFullImageViewTopMargin = [self.fullAvatarImageView.topAnchor
+        constraintEqualToAnchor:self.imageView.bottomAnchor];
     [NSLayoutConstraint activateConstraints:@[
-      [self.fullAvatarImageView.topAnchor
-          constraintEqualToAnchor:self.imageView.bottomAnchor
-                         constant:kFullAvatarImagerUpperMargin],
+      self.avatarFullImageViewTopMargin,
       [self.titleLabel.topAnchor
           constraintEqualToAnchor:self.fullAvatarImageView.bottomAnchor
                          constant:kFullAvatarImagerBottomMargin],
@@ -416,6 +422,14 @@ constexpr CGFloat kFullAvatarImageSize = 100;
       };
   [coordinator animateAlongsideTransition:transition completion:nil];
 }
+
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  self.avatarFullImageViewTopMargin.constant = AlignValueToPixel(
+      self.view.bounds.size.height * kAvatarFullImageViewTopMarginPercentage);
+}
+
+#pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
