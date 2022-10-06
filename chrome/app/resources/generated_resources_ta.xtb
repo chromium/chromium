@@ -702,7 +702,7 @@
 <translation id="1642494467033190216">வேறு பிழைத் திருத்த அம்சங்களை இயக்கும் முன், rootfs பாதுகாப்பை அகற்றி, மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1643072738649235303">SHA-1 உடனான X9.62 ECDSA கையொப்பம்</translation>
 <translation id="1643921258693943800">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தைப் பயன்படுத்த புளூடூத், வைஃபை ஆகியவற்றை இயக்கவும்</translation>
-<translation id="1644574205037202324">வரலாறு</translation>
+<translation id="1644574205037202324">இதுவரை பார்த்தவை</translation>
 <translation id="1644852018355792105"><ph name="DEVICE" /> சாதனத்திற்கான புளூடூத் கடவுக்குறியீட்டை டைப் செய்யவும்</translation>
 <translation id="1645004815457365098">அறியப்படாத மூலம்</translation>
 <translation id="1645516838734033527"><ph name="DEVICE_TYPE" />ஐப் பாதுகாப்பாக வைக்க, Smart Lockக்கு உங்கள் மொபைலில் திரைப் பூட்டை இயக்க வேண்டும்.</translation>
@@ -3427,7 +3427,7 @@
 <translation id="4159681666905192102">இது <ph name="CUSTODIAN_EMAIL" /> மற்றும் <ph name="SECOND_CUSTODIAN_EMAIL" /> ஆல் நிர்வகிக்கப்படும் குழந்தைகளுக்கான கணக்காகும்.</translation>
 <translation id="4163560723127662357">அறியப்படாத கீபோர்டு</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> கணக்கு சரியான நிறுவனத்தைச் சார்ந்தது அல்ல. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும். நீங்கள்தான் நிர்வாகி எனில் g.co/ChromeEnterpriseAccount தளத்திற்குச் சென்று உங்கள் நிறுவனத்தை நிர்வகிக்கலாம்</translation>
-<translation id="4165986682804962316">தள அமைப்புகள்</translation>
+<translation id="4165986682804962316">இணையதள அமைப்புகள்</translation>
 <translation id="4167393659000039775">தரவு இழப்பிற்கு Google பொறுப்பாகாது. சான்றளிக்கப்படாத மாடல்களில் <ph name="DEVICE_OS" /> வேலை செய்யாமல் போகலாம். g.co/flex/InstallGuide என்ற தளத்தில் மேலும் அறிக.</translation>
 <translation id="4167686856635546851">வழக்கமாக வீடியோ கேம்கள், வலைப் படிவங்கள் போன்ற ஊடாடக்கூடிய அம்சங்களைக் காட்டுவதற்காக Javascriptடைத் தளங்கள் பயன்படுத்தும்</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> க்கு உரிய சில அமைப்புகள் உங்களுடன் பகிரப்படுகின்றன. பல உள்நுழைவைப் பயன்படுத்தும்போது, இந்த அமைப்புகள் உங்கள் கணக்கை மட்டுமே பாதிக்கும்.</translation>
@@ -8721,7 +8721,7 @@
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> சாதனத்திலிருந்து மெசேஜ்களை அனுப்பலாம் / பெறலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast குறித்த சிக்கலைப் புகாரளி</translation>
 <translation id="967398046773905967">HID சாதனங்களை அணுக எந்தத் தளத்தையும் அனுமதிக்காதே</translation>
-<translation id="967624055006145463">சேமிக்கப்பட்ட தரவின்படி</translation>
+<translation id="967624055006145463">சேமிக்கப்பட்ட தரவு</translation>
 <translation id="96774243435178359">நிர்வகிக்கப்படும் பிரிண்டர்கள்</translation>
 <translation id="968000525894980488">Google Play சேவைகளை இயக்கவும்.</translation>
 <translation id="968037381421390582">“<ph name="SEARCH_TERMS" />” வினவலை ஒட்டி, தேடு</translation>
