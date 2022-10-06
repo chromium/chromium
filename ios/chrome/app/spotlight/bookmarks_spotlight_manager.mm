@@ -8,8 +8,10 @@
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
+#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "base/version.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -26,7 +28,7 @@ namespace {
 const int kMaxInitialIndexSize = 1000;
 
 // Minimum delay between two global indexing of bookmarks.
-const int kDelayBetweenTwoIndexingInSeconds = 7 * 86400;  // One week.
+const base::TimeDelta kDelayBetweenTwoIndexing = base::Days(7);
 
 }  // namespace
 
@@ -230,23 +232,25 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 }
 
 - (BOOL)shouldReindex {
-  NSDate* date = [[NSUserDefaults standardUserDefaults]
-      objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  NSDate* date = base::mac::ObjCCast<NSDate>(
+      [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
   if (!date) {
     return YES;
   }
-  NSDate* expirationDate =
-      [date dateByAddingTimeInterval:kDelayBetweenTwoIndexingInSeconds];
-  if ([expirationDate compare:[NSDate date]] == NSOrderedAscending) {
+  const base::TimeDelta timeSinceLastIndexing =
+      base::Time::Now() - base::Time::FromNSDate(date);
+  if (timeSinceLastIndexing >= kDelayBetweenTwoIndexing) {
     return YES;
   }
-  NSNumber* lastIndexedVersionString = [[NSUserDefaults standardUserDefaults]
-      objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
-  if (!lastIndexedVersionString) {
+  NSNumber* lastIndexedVersion = base::mac::ObjCCast<NSNumber>([userDefaults
+      objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)]);
+  if (!lastIndexedVersion) {
     return YES;
   }
 
-  if ([lastIndexedVersionString integerValue] <
+  if ([lastIndexedVersion integerValue] <
       spotlight::kCurrentSpotlightIndexVersion) {
     return YES;
   }
@@ -328,18 +332,18 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 }
 
 - (void)completedClearAllSpotlightItems {
-  NSDate* startOfReindexing = [NSDate date];
+  const base::Time startOfReindexing = base::Time::Now();
   _nodesIndexed = 0;
   [self refreshNodeInIndex:_bookmarkModel->root_node() initial:YES];
-  NSDate* endOfReindexing = [NSDate date];
-  NSTimeInterval indexingDuration =
-      [endOfReindexing timeIntervalSinceDate:startOfReindexing];
+  const base::Time endOfReindexing = base::Time::Now();
+
   UMA_HISTOGRAM_TIMES("IOS.Spotlight.BookmarksIndexingDuration",
-                      base::Milliseconds(1000 * indexingDuration));
+                      endOfReindexing - startOfReindexing);
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
                             [self pendingLargeIconTasksCount]);
+
   [[NSUserDefaults standardUserDefaults]
-      setObject:endOfReindexing
+      setObject:endOfReindexing.ToNSDate()
          forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
 
   [[NSUserDefaults standardUserDefaults]
