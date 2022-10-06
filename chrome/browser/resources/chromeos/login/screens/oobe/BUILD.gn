@@ -10,7 +10,6 @@ import("../../oobe_auto_imports.gni")
 
 group("polymer3_elements") {
   public_deps = [
-    ":demo_preferences_module",
     ":enterprise_enrollment_module",
     ":packaged_license_module",
     ":quick_start_module",
@@ -22,16 +21,13 @@ group("polymer3_elements") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+    "js_module_root=" + rebase_path("//chrome/browser/resources/gaia_auth_host/", root_build_dir),
+    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
+  ]
   deps = [
     ":auto_enrollment_check",
-    ":demo_preferences.m",
+    ":demo_preferences",
     ":demo_setup",
     ":enable_debugging",
     ":enterprise_enrollment.m",
@@ -59,8 +55,8 @@ js_library("auto_enrollment_check") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("demo_preferences.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_preferences.m.js" ]
+js_library("demo_preferences") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_preferences.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -70,7 +66,7 @@ js_library("demo_preferences.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":demo_preferences_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("demo_setup") {
@@ -227,15 +223,6 @@ js_library("welcome_dialog.m") {
   externs_list = [ "$externs_path/tts.js" ]
 }
 
-polymer_modulizer("demo_preferences") {
-  js_file = "demo_preferences.js"
-  html_file = "demo_preferences.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("enterprise_enrollment") {
   js_file = "enterprise_enrollment.js"
   html_file = "enterprise_enrollment.html"
@@ -294,6 +281,7 @@ html_to_js("web_components") {
   js_files = [
     "auto_enrollment_check.js",
     "demo_setup.js",
+    "demo_preferences.js",
     "enable_debugging.js",
     "hid_detection.js",
     "oobe_network.js",

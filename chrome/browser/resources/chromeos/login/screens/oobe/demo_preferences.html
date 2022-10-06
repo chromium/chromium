@@ -1,111 +1,81 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-dialog-host-styles">
+  cr-input {
+    --cr-input-width: 240px; /*Same width as country selection dropdown.*/
+  }
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/cr_elements/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+  #demoPreferencesDialog .language-selection-entry {
+    border-top: 1px solid var(--cros-color-primary-inverted);
+    min-height: 60px;
+  }
+  #demoPreferencesDialog .language-selection-title {
+    color: var(--cros-text-color-primary);
+    font-size: 13px;
+  }
+  #retailer-id-input-display-text {
+    color: var(--cros-text-color-secondary);
+    display: var(--cr-input-error-display, block);
+    font-size: 10px;
+    height: var(--cr-form-field-label-height);
+    line-height: var(--cr-form-field-label-line-height);
+    margin-inline-start: 55%;
+    visibility: visible;
+    white-space: var(--cr-input-error-white-space);
+  }
+  :host([is_input_invalid_]) #retailer-id-input-display-text {
+    color: var(--cros-textfield-label-color-error);
+  }
 
-<link rel="import" href="../../cr_ui.html">
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/oobe_types.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_back_button.html">
-<link rel="import" href="../../components/buttons/oobe_text_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-
-<dom-module id="demo-preferences-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      :host {
-        --oobe-dialog-list-item-border: 1px solid rgb(235,235,235); /*#EBEBEB*/
-        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
-      }
-
-      cr-input {
-        --cr-input-width: 240px; /*Same width as country selection dropdown.*/
-      }
-
-      #demoPreferencesDialog .language-selection-entry {
-        border-top: var(--oobe-dialog-list-item-border);
-        min-height: 60px;
-      }
-      #demoPreferencesDialog .language-selection-title {
-        color: var(--google-grey-900);
-        font-size: 13px;
-      }
-      #retailer-id-input-display-text {
-        color: var(--cros-text-color-secondary);
-        display: var(--cr-input-error-display, block);
-        font-size: 10px;
-        height: var(--cr-form-field-label-height);
-        line-height: var(--cr-form-field-label-line-height);
-        margin-inline-start: 55%;
-        visibility: visible;
-        white-space: var(--cr-input-error-white-space);
-      }
-      :host([is_input_invalid_]) #retailer-id-input-display-text {
-        color: var(--cros-textfield-label-color-error);
-      }
-
-    </style>
-    <oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
-      <iron-icon slot="icon" icon="oobe-32:gear"></iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
-      </h1>
-      <span inner-h-t-m-l=
-          "[[i18nAdvancedDynamic(locale, 'retailerIdInputPrivacyDisclaimer')]]"
-        slot="subtitle">
-      </span>
-      <div slot="content" class="landscape-header-aligned">
-        <div id="countryDropdownContainer" class="flex layout center horizontal
-            justified language-selection-entry">
-          <div class="language-selection-title layout vertical
-              center-justified">
-            [[i18nDynamic(locale, 'countryDropdownTitle')]]
-          </div>
-          <oobe-i18n-dropdown id="countrySelect" items="[[countries]]"
-              label-for-aria="[[i18nDynamic(locale, 'countryDropdownLabel')]]"
-              on-select-item="onCountrySelected_">
-          </oobe-i18n-dropdown>
-        </div>
-        <div class="flex layout center horizontal
-            justified language-selection-entry">
-          <div class="language-selection-title layout vertical
-              center-justified">
-            <span>[[i18nDynamic(locale, 'retailerIdInputLabel')]]</span>
-          </div>
-          <cr-input class="language-selection-title layout horizontal
-              center-justified"
-              slot="input" id="retailerIdInput"
-              value="{{retailer_id_input_}}"
-              on-keydown="onKeydownRetailerIdInput_"
-              placeholder=
-                  "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]"
-              aria-label=
-                  "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]">
-          </cr-input>
-        </div>
-        <div id="retailer-id-input-display-text">
-          [[getRetailerIdInputDisplayText_(locale, is_input_invalid_)]]
-        </div>
+</style>
+<oobe-adaptive-dialog id="demoPreferencesDialog" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:gear"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
+  </h1>
+  <span inner-h-t-m-l=
+      "[[i18nAdvancedDynamic(locale, 'retailerIdInputPrivacyDisclaimer')]]"
+    slot="subtitle">
+  </span>
+  <div slot="content" class="landscape-header-aligned">
+    <div id="countryDropdownContainer" class="flex layout center horizontal
+        justified language-selection-entry">
+      <div class="language-selection-title layout vertical
+          center-justified">
+        [[i18nDynamic(locale, 'countryDropdownTitle')]]
       </div>
-      <div slot="back-navigation">
-        <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+      <oobe-i18n-dropdown id="countrySelect" items="[[countries]]"
+          label-for-aria="[[i18nDynamic(locale, 'countryDropdownLabel')]]"
+          on-select-item="onCountrySelected_">
+      </oobe-i18n-dropdown>
+    </div>
+    <div class="flex layout center horizontal
+        justified language-selection-entry">
+      <div class="language-selection-title layout vertical
+          center-justified">
+        <span>[[i18nDynamic(locale, 'retailerIdInputLabel')]]</span>
       </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
-            disabled="[[!is_country_selected_]]"
-            text-key="demoPreferencesNextButtonLabel">
-        </oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
-  </template>
-  <script src="demo_preferences.js"></script>
-</dom-module>
+      <cr-input class="language-selection-title layout horizontal
+          center-justified"
+          slot="input" id="retailerIdInput"
+          value="{{retailer_id_input_}}"
+          on-keydown="onKeydownRetailerIdInput_"
+          placeholder=
+              "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]"
+          aria-label=
+              "[[i18nDynamic(locale, 'retailerIdInputPlaceholder')]]">
+      </cr-input>
+    </div>
+    <div id="retailer-id-input-display-text">
+      [[getRetailerIdInputDisplayText_(locale, is_input_invalid_)]]
+    </div>
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="nextButton" inverse on-click="onNextClicked_"
+        disabled="[[!is_country_selected_]]"
+        text-key="demoPreferencesNextButtonLabel">
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>
