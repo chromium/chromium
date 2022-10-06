@@ -86,11 +86,11 @@ TEST_F(WebStateTest, ScriptExecution) {
   // Execute script with callback.
   __block std::unique_ptr<base::Value> execution_result;
   __block bool execution_complete = false;
-  web_state()->ExecuteJavaScript(u"window.foo",
-                                 base::BindOnce(^(const base::Value* value) {
-                                   execution_result = value->CreateDeepCopy();
-                                   execution_complete = true;
-                                 }));
+  web_state()->ExecuteJavaScript(
+      u"window.foo", base::BindOnce(^(const base::Value* value) {
+        execution_result = std::make_unique<base::Value>(value->Clone());
+        execution_complete = true;
+      }));
   WaitForCondition(^{
     return execution_complete;
   });
