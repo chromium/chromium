@@ -86,13 +86,10 @@
         This site is blocked because it may have mature content
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_DEFAULT_SINGLE_PARENT" desc="Message to be shown when a site was blocked due to the default fallback behavior and the child has one parent.">
-        Your parent hasn't approved it yet
+        Your parent hasn't said it's OK yet
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_DEFAULT_MULTI_PARENT" desc="Message to be shown when a site was blocked due to the default fallback behavior and the child has two parents.">
-        Your parents haven't approved it yet
-      </message>
-      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_DEFAULT" desc="Message to be show to a supervised user when a site was blocked due to the default fallback behaviour.">
-        Your manager hasn't approved it yet
+        Your parents haven't said it's OK yet
       </message>
       <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
         It may have mature content
@@ -102,9 +99,6 @@
       </message>
       <message name="IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry and the child has two parents.">
         Your parents can unblock it for you
-      </message>
-      <message name="IDS_SUPERVISED_USER_BLOCK_MESSAGE_MANUAL" desc="Message to be shown to a supervised user when a site is blocked due to a manual blocklist entry">
-        Your manager can unblock it for you
       </message>
       <message name="IDS_SUPERVISED_USER_NOT_SIGNED_IN" desc="Message to be shown to a supervised user who is not signed in to Chrome">
         Please start and sign in to Chrome so that Chrome can check whether you are allowed to access this site.
