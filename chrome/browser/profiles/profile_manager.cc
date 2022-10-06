@@ -2437,10 +2437,15 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   }
 
   base::FilePath path = profile->GetPath();
+  ProfileInfo* info = GetProfileInfoByPath(path);
   if (IsProfileDirectoryMarkedForDeletion(path)) {
     // Do nothing if the profile is already being deleted.
-  } else if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), path)) {
-    // Delete if the profile is an ephemeral profile.
+  } else if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), path) &&
+             info->keep_alives[ProfileKeepAliveOrigin::kProfileCreationFlow] ==
+                 0) {
+    // Delete if the profile is an ephemeral profile and it is not in the
+    // profile creation flow.
+    // TODO(crbug.com/1369535): Delete the profile when there is no keep alive.
     ScheduleEphemeralProfileForDeletion(path);
   } else if (!profile->IsOffTheRecord()) {
     auto* browsing_data_lifetime_manager =
