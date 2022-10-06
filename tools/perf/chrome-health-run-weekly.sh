@@ -3,27 +3,19 @@
 # found in the LICENSE file.
 #!/bin/sh
 
-# BEFORE YOU RUN THIS - In your ~ directory, execute the following. Note - this is named health_chromium so that cd chr<tab> works.
-# mkdir health_chromium
-# cd health_chromium
-# fetch --nohooks chromium
+# Script to run Chrome Health A/A trustworthy experiments
 
-# Script to run weekly A/A tests
+export RELEASE_MILESTONE=$(curl -s https://chromiumdash.appspot.com/fetch_milestone_schedule?offset=-1 | jq '.mstones[].mstone')
+echo "Release Milestone" $RELEASE_MILESTONE
 
-releaseBranchNo=5112 #M104
+export releaseBranchNo=$(curl -s https://chromiumdash.appspot.com/fetch_milestones | jq -r '.[] | select(.milestone | tostring == $ENV.RELEASE_MILESTONE) | .chromium_branch')
+export query=$(echo "https://chromium.googlesource.com/chromium/src.git/+log/refs/branch-heads/${releaseBranchNo}?format=JSON")
+export releaseHash=$(curl -s $query | sed '1d' | jq -r '[.log[] | (select(.message | index("Incrementing VERSION to"))) | .commit][0]')
+echo "Release hash" $releaseHash
 
-cd ~/health_chromium/src
-git fetch
-
-# Current release branch
-git checkout -b branch_$releaseBranchNo branch-heads/$releaseBranchNo
-git checkout -f branch_$releaseBranchNo
-git pull
-headOfRelease=`git whatchanged --grep="Incrementing VERSION" --format="%H" -1 | head -n 1`
-echo $headOfRelease
-
-# M vs. M-1
-for i in {1..200}
+# Tip of branch A/A
+for i in {1..100}
 do
-  ~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$headOfRelease --exp-commit=$headOfRelease --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=speedometer2_pgo --attempts=40;
+  echo $i
+  ~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$releaseHash --exp-commit=$releaseHash --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=speedometer2_pgo --attempts=40;
 done
