@@ -9,8 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/memory/ref_counted.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/protocol/desktop_capturer.h"
 

@@ -25,7 +25,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}  // base
+}  // namespace base
 
 namespace remoting {
 

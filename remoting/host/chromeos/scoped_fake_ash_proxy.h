@@ -74,6 +74,9 @@ class ScopedFakeAshProxy : public AshProxy {
   void SetVideoCapturerReceiver(
       mojo::Receiver<viz::mojom::FrameSinkVideoCapturer>* receiver);
 
+  void RequestSignOut() override;
+  int request_sign_out_count() const;
+
  private:
   display::Display& AddDisplay(display::Display new_display);
 
@@ -84,6 +87,7 @@ class ScopedFakeAshProxy : public AshProxy {
   base::test::TestFuture<ScreenshotRequest> screenshot_request_;
 
   raw_ptr<ash::curtain::SecurityCurtainController> security_curtain_controller_;
+  int request_sign_out_count_ = 0;
 };
 
 }  // namespace remoting::test

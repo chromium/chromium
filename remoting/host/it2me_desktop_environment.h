@@ -16,6 +16,7 @@ namespace remoting {
 
 class HostWindow;
 class LocalInputMonitor;
+class SessionTerminator;
 
 // Same as BasicDesktopEnvironment but also presents the Continue window to
 // the local user.
@@ -53,6 +54,7 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
 
   std::unique_ptr<CurtainMode> curtain_mode_;
+  std::unique_ptr<SessionTerminator> session_terminator_;
 };
 
 // Used to create |It2MeDesktopEnvironment| instances.

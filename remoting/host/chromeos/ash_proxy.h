@@ -52,9 +52,7 @@ class AshProxy {
   virtual ~AshProxy();
 
   virtual DisplayId GetPrimaryDisplayId() const = 0;
-
   virtual const std::vector<display::Display>& GetActiveDisplays() const = 0;
-
   virtual const display::Display* GetDisplayForId(
       DisplayId display_id) const = 0;
 
@@ -76,6 +74,9 @@ class AshProxy {
       DisplayId source_display_id) = 0;
 
   virtual viz::FrameSinkId GetFrameSinkId(DisplayId source_display_id) = 0;
+
+  // Requests signing out all users, ending the current session.
+  virtual void RequestSignOut() = 0;
 };
 
 }  // namespace remoting

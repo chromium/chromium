@@ -5,6 +5,7 @@
 #include "remoting/host/chromeos/ash_proxy.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -111,6 +112,10 @@ class DefaultAshProxy : public AshProxy {
   ash::curtain::SecurityCurtainController& GetSecurityCurtainController()
       override {
     return shell().security_curtain_controller();
+  }
+
+  void RequestSignOut() override {
+    shell().session_controller()->RequestSignOut();
   }
 
  private:

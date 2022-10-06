@@ -145,4 +145,12 @@ ScopedFakeAshProxy::GetSecurityCurtainController() {
   return *security_curtain_controller_;
 }
 
+void ScopedFakeAshProxy::RequestSignOut() {
+  request_sign_out_count_++;
+}
+
+int ScopedFakeAshProxy::request_sign_out_count() const {
+  return request_sign_out_count_;
+}
+
 }  // namespace remoting::test
