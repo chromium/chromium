@@ -21,10 +21,6 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui.h"
@@ -34,9 +30,6 @@
 namespace ash {
 class LoginDisplayHostMojo;
 
-namespace mojom {
-enum class TrayActionState;
-}  // namespace mojom
 }  // namespace ash
 
 namespace chromeos {
