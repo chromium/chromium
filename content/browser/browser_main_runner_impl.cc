@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/time/time.h"
@@ -43,7 +43,10 @@
 namespace content {
 namespace {
 
-base::LazyInstance<base::AtomicFlag>::Leaky g_exited_main_message_loop;
+base::AtomicFlag& GetExitedMainMessageLoopFlag() {
+  static base::NoDestructor<base::AtomicFlag> flag;
+  return *flag;
+}
 
 }  // namespace
 
@@ -179,7 +182,7 @@ void BrowserMainRunnerImpl::Shutdown() {
   {
     // The trace event has to stay between profiler creation and destruction.
     TRACE_EVENT0("shutdown", "BrowserMainRunner");
-    g_exited_main_message_loop.Get().Set();
+    GetExitedMainMessageLoopFlag().Set();
 
     main_loop_->ShutdownThreadsAndCleanUp();
 
@@ -209,8 +212,7 @@ std::unique_ptr<BrowserMainRunner> BrowserMainRunner::Create() {
 
 // static
 bool BrowserMainRunner::ExitedMainMessageLoop() {
-  return g_exited_main_message_loop.IsCreated() &&
-         g_exited_main_message_loop.Get().IsSet();
+  return GetExitedMainMessageLoopFlag().IsSet();
 }
 
 }  // namespace content
