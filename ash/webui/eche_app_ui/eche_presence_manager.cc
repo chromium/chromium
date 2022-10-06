@@ -109,11 +109,9 @@ void EchePresenceManager::StartMonitoring() {
     return;
   }
 
-  // Before we start monitoring we don't know when the device was last seen, so
-  // set it to something far out of the expected time window to start. This will
-  // be properly set once we see the first advertisement, and if one is not seen
-  // before the first check, will return that the devices are out of proximity.
-  device_last_seen_time_ = base::TimeTicks::UnixEpoch();
+  // Assume a successful proximity check at the beginning. It gives us a cushon
+  // in case the first one or two pings get lost.
+  device_last_seen_time_ = base::TimeTicks::Now();
   is_monitoring_ = true;
 
   if (timer_.IsRunning()) {
@@ -139,7 +137,8 @@ void EchePresenceManager::StopMonitoring() {
 }
 
 void EchePresenceManager::OnTimerExpired() {
-  if ((base::TimeTicks::Now() - device_last_seen_time_) > kMaximumLastSeenAge) {
+  if ((base::TimeTicks::Now() - device_last_seen_time_) >=
+      kMaximumLastSeenAge) {
     PA_LOG(INFO) << "Proximity has not been maintained; stopping monitoring";
     StopMonitoring();
   } else {
