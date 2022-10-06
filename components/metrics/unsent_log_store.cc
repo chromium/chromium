@@ -248,12 +248,16 @@ void UnsentLogStore::StageNextLog() {
   CHECK(!list_.empty());
   DCHECK(!has_staged_log());
   staged_log_index_ = list_.size() - 1;
+  NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogStaged,
+                 list_[staged_log_index_]->hash);
   DCHECK(has_staged_log());
 }
 
 void UnsentLogStore::DiscardStagedLog() {
   DCHECK(has_staged_log());
   DCHECK_LT(static_cast<size_t>(staged_log_index_), list_.size());
+  NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded,
+                 list_[staged_log_index_]->hash);
   list_.erase(list_.begin() + staged_log_index_);
   staged_log_index_ = -1;
 }
@@ -264,6 +268,8 @@ void UnsentLogStore::MarkStagedLogAsSent() {
   auto samples_count = list_[staged_log_index_]->log_metadata.samples_count;
   if (samples_count.has_value())
     total_samples_sent_ += samples_count.value();
+  NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogUploaded,
+                 list_[staged_log_index_]->hash);
 }
 
 void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
@@ -286,11 +292,21 @@ void UnsentLogStore::TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) {
     // Hit the caps, we can stop moving the logs.
     if (bytes_used >= min_log_bytes_ &&
         writer.unsent_logs_count() >= min_log_count_) {
+      // The rest of the logs (including the current one) are trimmed.
+      if (overwrite_in_memory_store) {
+        NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>>(
+                            list_.begin(), list_.begin() + i + 1),
+                        MetricsLogsEventManager::LogEvent::kLogTrimmed);
+      }
       break;
     }
     // Omit overly large individual logs.
     if (log_size > max_log_size_) {
       metrics_->RecordDroppedLogSize(log_size);
+      if (overwrite_in_memory_store) {
+        NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogTrimmed,
+                       list_[i]->hash, "Log size too large.");
+      }
       continue;
     }
 
@@ -349,6 +365,7 @@ void UnsentLogStore::StoreLog(const std::string& log_data,
             base::NumberToString(base::Time::Now().ToTimeT()), signing_key_,
             log_metadata);
   list_.emplace_back(std::make_unique<LogInfo>(info));
+  NotifyLogCreated(info);
 }
 
 const std::string& UnsentLogStore::GetLogAtIndex(size_t index) {
@@ -368,6 +385,8 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
   old_log_data.swap(list_[index]->compressed_log_data);
   std::string old_timestamp;
   old_timestamp.swap(list_[index]->timestamp);
+  std::string old_hash;
+  old_hash.swap(list_[index]->hash);
 
   // TODO(rkaplow): Would be a bit simpler if we had a method that would
   // just return a pointer to the logInfo so we could combine the next 3 lines.
@@ -376,10 +395,15 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
             log_metadata);
 
   list_[index] = std::make_unique<LogInfo>(info);
+  NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded, old_hash);
+  NotifyLogCreated(info);
   return old_log_data;
 }
 
 void UnsentLogStore::Purge() {
+  NotifyLogsEvent(list_, MetricsLogsEventManager::LogEvent::kLogDiscarded,
+                  "Purged.");
+
   if (has_staged_log()) {
     DiscardStagedLog();
   }
@@ -397,6 +421,11 @@ void UnsentLogStore::SetLogsEventManager(
 }
 
 void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
+  // The below DCHECK ensures that a log from prefs is not loaded multiple
+  // times, which is important for the semantics of the NotifyLogsCreated() call
+  // below.
+  DCHECK(list_.empty());
+
   if (list_value.empty()) {
     metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::LIST_EMPTY);
     return;
@@ -404,7 +433,6 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 
   const size_t log_count = list_value.size();
 
-  DCHECK(list_.empty());
   list_.resize(log_count);
 
   for (size_t i = 0; i < log_count; ++i) {
@@ -438,6 +466,11 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
 
     list_[i] = std::make_unique<LogInfo>(info);
   }
+
+  // Only notify log observers after loading all logs from pref instead of
+  // notifying as logs are loaded. This is because we may return early and end
+  // up not loading any logs.
+  NotifyLogsCreated(list_);
 
   metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::RECALL_SUCCESS);
 }
@@ -473,6 +506,41 @@ void UnsentLogStore::RecordMetaDataMetrics() {
     metrics_->RecordLastUnsentLogMetadataMetrics(
         unsent_samples_count.value(), sent_samples_count.value(),
         unsent_persisted_size_in_kb.value());
+  }
+}
+
+void UnsentLogStore::NotifyLogCreated(LogInfo& info) {
+  if (!logs_event_manager_)
+    return;
+  logs_event_manager_->NotifyLogCreated(info.hash, info.compressed_log_data,
+                                        info.timestamp);
+}
+
+void UnsentLogStore::NotifyLogsCreated(
+    base::span<std::unique_ptr<LogInfo>> logs) {
+  if (!logs_event_manager_)
+    return;
+  for (const std::unique_ptr<LogInfo>& info : logs) {
+    logs_event_manager_->NotifyLogCreated(info->hash, info->compressed_log_data,
+                                          info->timestamp);
+  }
+}
+
+void UnsentLogStore::NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
+                                    base::StringPiece log_hash,
+                                    base::StringPiece message) {
+  if (!logs_event_manager_)
+    return;
+  logs_event_manager_->NotifyLogEvent(event, log_hash, message);
+}
+
+void UnsentLogStore::NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
+                                     MetricsLogsEventManager::LogEvent event,
+                                     base::StringPiece message) {
+  if (!logs_event_manager_)
+    return;
+  for (const std::unique_ptr<LogInfo>& info : logs) {
+    logs_event_manager_->NotifyLogEvent(event, info->hash, message);
   }
 }
 

@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
@@ -168,6 +169,16 @@ class UnsentLogStore : public LogStore {
   // Records the info in |metadata_pref_name_| as UMA metrics.
   void RecordMetaDataMetrics();
 
+  // Wrapper functions for the notify functions of |logs_event_manager_|.
+  void NotifyLogCreated(LogInfo& info);
+  void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs);
+  void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
+                      base::StringPiece log_hash,
+                      base::StringPiece message = "");
+  void NotifyLogsEvent(base::span<std::unique_ptr<LogInfo>> logs,
+                       MetricsLogsEventManager::LogEvent event,
+                       base::StringPiece message = "");
+
   // An object for recording UMA metrics.
   std::unique_ptr<UnsentLogStoreMetrics> metrics_;
 
@@ -196,7 +207,7 @@ class UnsentLogStore : public LogStore {
   // authentic.
   const std::string signing_key_;
 
-  // Event manager to notify observers of log updates.
+  // Event manager to notify observers of log events.
   raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
   // A list of all of the stored logs, stored with SHA1 hashes to check for

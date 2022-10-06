@@ -255,8 +255,7 @@ class MetricsService : public base::HistogramFlattener {
   // created and is now known by the metrics service. This may occur when
   // closing a log, or when loading a log from persistent storage. Observers are
   // also notified when an event occurs on the log (e.g., log is staged,
-  // uploaded, etc.). See MetricsLogsEventManager::LogUpdateType for more
-  // details.
+  // uploaded, etc.). See MetricsLogsEventManager::LogEvent for more details.
   void AddLogsObserver(MetricsLogsEventManager::Observer* observer);
   void RemoveLogsObserver(MetricsLogsEventManager::Observer* observer);
 

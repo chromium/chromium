@@ -119,7 +119,7 @@ class ReportingService {
   // Largest log size to attempt to retransmit.
   size_t max_retransmit_size_;
 
-  // Event manager to notify observers of log updates.
+  // Event manager to notify observers of log events.
   const raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
   // Indicate whether recording and reporting are currently happening.

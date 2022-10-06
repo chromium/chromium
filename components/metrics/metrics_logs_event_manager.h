@@ -9,9 +9,12 @@
 #include "base/strings/string_piece.h"
 
 namespace metrics {
+
+// TODO(crbug/1363747): Add unit tests for the various calls to the notify
+// functions in ReportingService and UnsentLogStore.
 class MetricsLogsEventManager {
  public:
-  enum class UpdateType {
+  enum class LogEvent {
     // The log was staged.
     kLogStaged,
     // The log was discarded.
@@ -29,9 +32,9 @@ class MetricsLogsEventManager {
     virtual void OnLogCreated(base::StringPiece log_hash,
                               base::StringPiece log_data,
                               base::StringPiece log_timestamp) = 0;
-    virtual void OnLogUpdated(MetricsLogsEventManager::UpdateType update_type,
-                              base::StringPiece log_hash,
-                              base::StringPiece message) = 0;
+    virtual void OnLogEvent(MetricsLogsEventManager::LogEvent event,
+                            base::StringPiece log_hash,
+                            base::StringPiece message) = 0;
 
    protected:
     Observer() = default;
@@ -53,21 +56,21 @@ class MetricsLogsEventManager {
   // from persistent storage. |log_hash| is the SHA1 hash of the log data, used
   // to uniquely identify the log. This hash may be re-used to notify that an
   // event occurred on the log (e.g., the log was trimmed, uploaded, etc.). See
-  // NotifyLogUpdate(). |log_data| is the compressed serialized log protobuf
+  // NotifyLogEvent(). |log_data| is the compressed serialized log protobuf
   // (see UnsentLogStore::LogInfo for more details on the compression).
   // |log_timestamp| is the time at which the log was closed.
   void NotifyLogCreated(base::StringPiece log_hash,
                         base::StringPiece log_data,
                         base::StringPiece log_timestamp);
 
-  // Notifies observers that an event |update_type| occurred on the log
-  // associated with |log_hash|. Optionally, a |message| can be associated with
-  // the update. In particular, for |kLogDiscarded|, |message| is the reason the
-  // log was discarded (e.g., log is ill-formed). For |kLogTrimmed|, |message|
-  // is the reason why the log was trimmed (e.g., log is too large).
-  void NotifyLogUpdate(UpdateType update_type,
-                       base::StringPiece log_hash,
-                       base::StringPiece = "");
+  // Notifies observers that an event |event| occurred on the log associated
+  // with |log_hash|. Optionally, a |message| can be associated with the event.
+  // In particular, for |kLogDiscarded|, |message| is the reason the log was
+  // discarded (e.g., log is ill-formed). For |kLogTrimmed|, |message| is the
+  // reason why the log was trimmed (e.g., log is too large).
+  void NotifyLogEvent(LogEvent event,
+                      base::StringPiece log_hash,
+                      base::StringPiece message = "");
 
  private:
   base::ObserverList<Observer> observers_;

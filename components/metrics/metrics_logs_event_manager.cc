@@ -26,11 +26,11 @@ void MetricsLogsEventManager::NotifyLogCreated(
     observer.OnLogCreated(log_hash, log_data, log_timestamp);
 }
 
-void MetricsLogsEventManager::NotifyLogUpdate(UpdateType update_type,
-                                              base::StringPiece log_hash,
-                                              base::StringPiece message) {
+void MetricsLogsEventManager::NotifyLogEvent(LogEvent event,
+                                             base::StringPiece log_hash,
+                                             base::StringPiece message) {
   for (Observer& observer : observers_)
-    observer.OnLogUpdated(update_type, log_hash, message);
+    observer.OnLogEvent(event, log_hash, message);
 }
 
 }  // namespace metrics

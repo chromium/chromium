@@ -179,6 +179,12 @@ void ReportingService::SendStagedLog() {
                       log_store()->staged_log_hash().size());
   std::string signature;
   base::Base64Encode(log_store()->staged_log_signature(), &signature);
+
+  if (logs_event_manager_) {
+    logs_event_manager_->NotifyLogEvent(
+        MetricsLogsEventManager::LogEvent::kLogUploading,
+        log_store()->staged_log_hash());
+  }
   log_uploader_->UploadLog(log_store()->staged_log(), hash, signature,
                            reporting_info_);
 }
@@ -216,6 +222,15 @@ void ReportingService::OnLogUploadComplete(int response_code,
     } else if (response_code == 400) {
       // Bad syntax.  Retransmission won't work.
       discard_log = true;
+    }
+
+    if (!upload_succeeded && !discard_log && logs_event_manager_) {
+      // The log failed to upload and we did not discard it. We will try to
+      // retransmit.
+      logs_event_manager_->NotifyLogEvent(
+          MetricsLogsEventManager::LogEvent::kLogStaged,
+          log_store()->staged_log_hash(),
+          "Failed to upload. Staged again for retransmission.");
     }
 
     if (upload_succeeded || discard_log) {

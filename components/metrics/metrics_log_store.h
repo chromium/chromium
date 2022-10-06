@@ -133,7 +133,7 @@ class MetricsLogStore : public LogStore {
   // Tracks whether unsent logs (if any) have been loaded from the serializer.
   bool unsent_logs_loaded_;
 
-  // Event manager to notify observers of log updates.
+  // Event manager to notify observers of log events.
   const raw_ptr<MetricsLogsEventManager> logs_event_manager_;
 
   // Logs stored with the INITIAL_STABILITY_LOG type that haven't been sent yet.
