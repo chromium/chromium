@@ -19,6 +19,8 @@
 #error "This file requires ARC support."
 #endif
 
+using breadcrumbs::BreadcrumbManager;
+
 // Test fixture for testing ApplicationBreadcrumbsLogger class.
 class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
  protected:
@@ -37,14 +39,16 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
 
 // Tests logging device orientation.
 TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
-  ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
+  auto events = BreadcrumbManager::GetInstance().GetEvents();
+  ASSERT_EQ(1u, events.size());
+  ASSERT_NE(std::string::npos, events.back().find("Startup"));
 
   [NSNotificationCenter.defaultCenter
       postNotificationName:UIDeviceOrientationDidChangeNotification
                     object:nil];
 
-  const std::list<std::string>& events = logger_->GetEventsForTesting();
-  ASSERT_EQ(2ul, events.size());
+  events = BreadcrumbManager::GetInstance().GetEvents();
+  ASSERT_EQ(2u, events.size());
 
   EXPECT_NE(std::string::npos, events.back().find(kBreadcrumbOrientation))
       << events.back();
@@ -53,5 +57,5 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
   [NSNotificationCenter.defaultCenter
       postNotificationName:UIDeviceOrientationDidChangeNotification
                     object:nil];
-  EXPECT_EQ(2ul, logger_->GetEventsForTesting().size());
+  EXPECT_EQ(2u, BreadcrumbManager::GetInstance().GetEvents().size());
 }

@@ -5,16 +5,13 @@
 #ifndef COMPONENTS_BREADCRUMBS_CORE_APPLICATION_BREADCRUMBS_LOGGER_H_
 #define COMPONENTS_BREADCRUMBS_CORE_APPLICATION_BREADCRUMBS_LOGGER_H_
 
-#include <list>
 #include <memory>
 #include <string>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "components/breadcrumbs/core/breadcrumbs_status.h"
 
 namespace base {
 class TimeTicks;
@@ -40,15 +37,8 @@ class ApplicationBreadcrumbsLogger {
   breadcrumbs::BreadcrumbPersistentStorageManager* GetPersistentStorageManager()
       const;
 
-  // Return the events stored by the application-wide breadcrumb manager.
-  std::list<std::string> GetEventsForTesting();
-
- protected:
-  // Adds an event to the BreadcrumbManager.
-  void AddEvent(const std::string& event);
-
  private:
-  // Callback which processes and logs the user action |action| to the
+  // Callback that processes and logs the user action |action| to the
   // BreadcrumbManager.
   void OnUserAction(const std::string& action, base::TimeTicks action_time);
 

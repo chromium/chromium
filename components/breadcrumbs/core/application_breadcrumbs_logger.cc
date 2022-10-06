@@ -14,6 +14,14 @@
 
 namespace breadcrumbs {
 
+namespace {
+
+void AddEvent(const std::string& event) {
+  breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
+}
+
+}  // namespace
+
 ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
     const base::FilePath& storage_dir,
     base::RepeatingCallback<bool()> is_metrics_enabled_callback)
@@ -40,14 +48,6 @@ ApplicationBreadcrumbsLogger::~ApplicationBreadcrumbsLogger() {
 BreadcrumbPersistentStorageManager*
 ApplicationBreadcrumbsLogger::GetPersistentStorageManager() const {
   return persistent_storage_manager_.get();
-}
-
-std::list<std::string> ApplicationBreadcrumbsLogger::GetEventsForTesting() {
-  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
-}
-
-void ApplicationBreadcrumbsLogger::AddEvent(const std::string& event) {
-  breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
 }
 
 void ApplicationBreadcrumbsLogger::OnUserAction(const std::string& action,

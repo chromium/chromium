@@ -16,12 +16,27 @@
 namespace breadcrumbs {
 
 namespace {
+
 // The particular UserActions used here are not important, but real UserAction
 // names are used to prevent a presubmit warning.
 const char kUserAction1Name[] = "MobileMenuNewTab";
 const char kUserAction2Name[] = "OverscrollActionCloseTab";
 // An "InProductHelp.*" user action.
 const char kInProductHelpUserActionName[] = "InProductHelp.Dismissed";
+
+// Returns a list of breadcrumb events logged so far.
+std::list<std::string> GetEvents() {
+  return breadcrumbs::BreadcrumbManager::GetInstance().GetEvents();
+}
+
+// Returns true if no breadcrumb events except "Startup" have been logged so
+// far.
+bool OnlyStartupEventLogged() {
+  const auto events = GetEvents();
+  return events.size() == 1u &&
+         events.back().find("Startup") != std::string::npos;
+}
+
 }  // namespace
 
 // Test fixture for testing ApplicationBreadcrumbsLogger class.
@@ -49,13 +64,13 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
 // Tests that a recorded UserAction is logged by the
 // ApplicationBreadcrumbsLogger.
 TEST_F(ApplicationBreadcrumbsLoggerTest, UserAction) {
-  ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
+  ASSERT_TRUE(OnlyStartupEventLogged());
 
   base::RecordAction(base::UserMetricsAction(kUserAction1Name));
   base::RecordAction(base::UserMetricsAction(kUserAction2Name));
 
-  std::list<std::string> events = logger_->GetEventsForTesting();
-  ASSERT_EQ(3ul, events.size());
+  auto events = GetEvents();
+  ASSERT_EQ(3u, events.size());
   events.pop_front();
   EXPECT_NE(std::string::npos, events.front().find(kUserAction1Name));
   events.pop_front();
@@ -64,28 +79,23 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, UserAction) {
 
 // Tests that not_user_triggered User Action does not show up in breadcrumbs.
 TEST_F(ApplicationBreadcrumbsLoggerTest, LogNotUserTriggeredAction) {
-  ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
-
+  ASSERT_TRUE(OnlyStartupEventLogged());
   base::RecordAction(base::UserMetricsAction("ActiveTabChanged"));
-
-  EXPECT_EQ(1U, logger_->GetEventsForTesting().size());
+  EXPECT_TRUE(OnlyStartupEventLogged());
 }
 
 // Tests that "InProductHelp" UserActions are not logged by
 // ApplicationBreadcrumbsLogger as they are very noisy.
 TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
-  ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
-
+  ASSERT_TRUE(OnlyStartupEventLogged());
   base::RecordAction(base::UserMetricsAction(kInProductHelpUserActionName));
-
-  const std::list<std::string>& events = logger_->GetEventsForTesting();
-  ASSERT_EQ(1ul, events.size());
+  EXPECT_TRUE(OnlyStartupEventLogged());
 }
 
 // Tests that memory pressure events are logged by ApplicationBreadcrumbsLogger.
 // Test is flaky (https://crbug.com/1305253)
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
-  ASSERT_EQ(1U, logger_->GetEventsForTesting().size());  // startup event
+  ASSERT_TRUE(OnlyStartupEventLogged());
 
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MemoryPressureListener::MemoryPressureLevel::
@@ -95,8 +105,9 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
           MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
 
-  std::list<std::string> events = logger_->GetEventsForTesting();
-  ASSERT_EQ(3ul, events.size());
+  EXPECT_FALSE(OnlyStartupEventLogged());
+  auto events = GetEvents();
+  ASSERT_EQ(3u, events.size());
   // Pop startup.
   events.pop_front();
   EXPECT_NE(std::string::npos, events.front().find("Moderate"));

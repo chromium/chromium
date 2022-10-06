@@ -55,7 +55,7 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
                     event += " #face-down";
                     break;
                 }
-                AddEvent(event);
+                breadcrumbs::BreadcrumbManager::GetInstance().AddEvent(event);
               }];
 }
 
