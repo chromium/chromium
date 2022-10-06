@@ -521,7 +521,7 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, Deletion) {
   provider_->DeleteMatch(provider_->matches()[0]);
 
   // Histogram tracking the synchronous deletion duration should get logged
-  // synchrnously.
+  // synchronously.
   histogram_tester.ExpectTotalCount(
       "Omnibox.LocalHistoryZeroSuggest.SyncDeleteTime", 1);
   histogram_tester.ExpectTotalCount(

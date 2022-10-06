@@ -2739,3 +2739,54 @@ TEST_F(ZeroSuggestProviderTest, TestNoURLResultTypeWithNonEmptyURLInput) {
             omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
                 prefs, std::string()));
 }
+
+TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Disable in-memory ZPS caching.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
+
+  // Set up the pref to cache the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300,)"
+      R"("google:suggestdetail":)"
+      R"([{"du": "https://www.google.com/s1"},)"
+      R"({"du": "https://www.google.com/s2"},)"
+      R"({"du": "https://www.google.com/s3"}]}])");
+
+  PrefService* prefs = client_->GetPrefs();
+  prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
+
+  base::Value::Dict new_dict;
+  new_dict.Set("https://www.google.com", json_response);
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 std::move(new_dict));
+
+  AutocompleteInput input = OnFocusInputForNTP();
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+            provider_->GetResultTypeRunningForTesting());
+
+  // Expect that matches get populated synchronously out of the cache.
+  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+  EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+  EXPECT_EQ(u"search3", provider_->matches()[2].contents);
+
+  // Ensure that both cache prefs start off with non-empty values.
+  ASSERT_FALSE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
+  ASSERT_FALSE(
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
+
+  provider_->DeleteMatch(provider_->matches()[0]);
+
+  // Verify that cache prefs for "ZPS on NTP" and "ZPS on SRP/Web" have both
+  // been cleared.
+  ASSERT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
+  ASSERT_TRUE(
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
+}

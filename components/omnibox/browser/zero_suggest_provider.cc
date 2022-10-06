@@ -528,10 +528,8 @@ void ZeroSuggestProvider::Stop(bool clear_cached_results,
 
 void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
   // Remove the deleted match from the cache, so it is not shown to the user
-  // again. Since we cannot remove just one result, blow away the cache.
-  // Even though we currently have no easy way of checking the request type
-  // after-the-fact, it's safe to always clear the cache even if we are on a
-  // different request type.
+  // again. Since the deleted result might have been surfaced as a suggestion on
+  // both NTP and SRP/Web, blow away the entire cache.
   client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                   std::string());
   client()->GetPrefs()->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
