@@ -2472,17 +2472,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.NumberOfPagesNotFull" units="page(s)"
-    expires_after="2022-10-17">
-  <owner>mmourgos@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    The number of pages that are not full in the top level apps grid of
-    Launcher. This metric is recorded every time the launcher is shown.
-  </summary>
-</histogram>
-
 <histogram
     name="Apps.OpenedAppListSearchResultFromSearchBoxV2.{AnyNonAppBrowserWindowOpenAndNotMinimized}"
     enum="AppListSearchResult" expires_after="M108">

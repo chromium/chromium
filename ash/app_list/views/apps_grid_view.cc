@@ -341,10 +341,6 @@ AppsGridView::~AppsGridView() {
   drag_icon_proxy_.reset();
 }
 
-void AppsGridView::Init() {
-  UpdateBorder();
-}
-
 void AppsGridView::UpdateAppListConfig(const AppListConfig* app_list_config) {
   app_list_config_ = app_list_config;
 
@@ -1069,8 +1065,6 @@ bool AppsGridView::EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event) {
 }
 
 void AppsGridView::Update() {
-  UpdateBorder();
-
   // Abort reorder animation before `view_model_` is cleared.
   MaybeAbortWholeGridAnimation();
 

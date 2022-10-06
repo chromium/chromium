@@ -726,7 +726,6 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   contents_container_->layer()->SetMasksToBounds(true);
   items_grid_view_ = items_grid_view;
 
-  items_grid_view_->Init();
   items_grid_view->SetMaxColumnsAndRows(
       kMaxFolderColumns,
       /*max_rows_on_first_page=*/kMaxPagedFolderRows,
@@ -788,7 +787,6 @@ void AppListFolderView::CreateScrollableAppsGrid() {
           a11y_announcer_, view_delegate_, this, scroll_view_,
           /*folder_controller=*/nullptr, /*keyboard_controller=*/nullptr));
   items_grid_view_ = items_grid_view;
-  items_grid_view->Init();
   items_grid_view->SetMaxColumns(kMaxFolderColumns);
   items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                        kTileSpacingInFolder / 2);

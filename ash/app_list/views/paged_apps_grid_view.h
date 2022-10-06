@@ -106,7 +106,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
   bool IsScrollAxisVertical() const override;
-  void UpdateBorder() override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;
@@ -340,9 +339,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Layer array for apps grid background cards. Used to display the background
   // card during cardified state.
   std::vector<std::unique_ptr<BackgroundCardLayer>> background_cards_;
-
-  // Whether the feature ProductivityLauncher is enabled.
-  const bool is_productivity_launcher_enabled_;
 
   // Maximum number of rows on the first grid page.
   int max_rows_on_first_page_ = 0;

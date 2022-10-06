@@ -316,7 +316,6 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
           /*folder_delegate=*/nullptr,
           /*folder_controller=*/this,
           /*container_delegate=*/this, app_list_keyboard_controller_.get()));
-  apps_grid_view_->Init();
   apps_grid_view_->pagination_model()->AddObserver(this);
   if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->set_margin_for_gradient_mask(kDefaultFadeoutMaskHeight);

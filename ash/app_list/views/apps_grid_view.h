@@ -89,10 +89,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
 
-  // Initializes the class. Calls virtual methods, so its code cannot be in the
-  // constructor.
-  void Init();
-
   // Sets the `AppListConfig` that should be used to configure app list item
   // size within the grid. This will cause all items views to be updated to
   // adhere to new tile and icon dimensions, so it should be used sparingly.
@@ -421,9 +417,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Records the different ways to move an app in app list's apps grid for UMA
   // histograms.
   virtual void RecordAppMovingTypeMetrics(AppListAppMovingType type) = 0;
-
-  // Updates or creates a border for this view.
-  virtual void UpdateBorder() {}
 
   // Starts the "cardified" state if the subclass supports it.
   virtual void MaybeStartCardifiedView() {}
