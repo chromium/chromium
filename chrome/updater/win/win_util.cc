@@ -73,7 +73,7 @@ HResultOr<bool> IsUserRunningSplitToken() {
   bool is_split_token = elevation_type == TokenElevationTypeFull ||
                         elevation_type == TokenElevationTypeLimited;
   DCHECK(is_split_token || elevation_type == TokenElevationTypeDefault);
-  return is_split_token;
+  return base::ok(is_split_token);
 }
 
 HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
@@ -501,7 +501,7 @@ HResultOr<bool> IsTokenAdmin(HANDLE token) {
   BOOL is_member = false;
   if (!::CheckTokenMembership(token, administrators_group, &is_member))
     return base::unexpected(HRESULTFromLastError());
-  return static_cast<bool>(is_member);
+  return base::ok(is_member);
 }
 
 // TODO(crbug.com/1212187): maybe handle filtered tokens.
@@ -524,7 +524,7 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
       is_user_non_elevated_admin = true;
     }
   }
-  return is_user_non_elevated_admin;
+  return base::ok(is_user_non_elevated_admin);
 }
 
 HResultOr<bool> IsCOMCallerAdmin() {
@@ -534,7 +534,7 @@ HResultOr<bool> IsCOMCallerAdmin() {
     HRESULT hr = ::CoImpersonateClient();
     if (hr == RPC_E_CALL_COMPLETE) {
       // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
-      return static_cast<bool>(::IsUserAnAdmin());
+      return base::ok(::IsUserAnAdmin());
     }
 
     if (FAILED(hr)) {
@@ -558,10 +558,8 @@ HResultOr<bool> IsCOMCallerAdmin() {
     HRESULT hr = result.error();
     DCHECK(FAILED(hr));
     LOG(ERROR) << __func__ << ": IsTokenAdmin failed: " << std::hex << hr;
-    return base::unexpected(hr);
   }
-
-  return result.value();
+  return result;
 }
 
 bool IsUACOn() {
@@ -656,7 +654,7 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 
   if (!shell_execute_info.hProcess) {
     VLOG(1) << __func__ << ": Started process, PID unknown";
-    return DWORD{0};
+    return base::ok(0);
   }
 
   const base::Process process(shell_execute_info.hProcess);
@@ -673,7 +671,7 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
   if (!process.WaitForExit(&ret_val))
     return base::unexpected(HRESULTFromLastError());
 
-  return static_cast<DWORD>(ret_val);
+  return base::ok(static_cast<DWORD>(ret_val));
 }
 
 HResultOr<DWORD> RunElevated(const base::FilePath& file_path,

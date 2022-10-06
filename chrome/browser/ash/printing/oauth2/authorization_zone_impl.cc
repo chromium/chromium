@@ -105,7 +105,7 @@ base::expected<std::string, std::string> ExtractParameter(
   if (value.empty()) {
     return base::unexpected(base::StrCat({"parameter '", name, "' is empty"}));
   }
-  return value;
+  return base::ok(std::move(value));
 }
 
 // Calls `callback` with `status` and `data` as parameters. When `status` equals

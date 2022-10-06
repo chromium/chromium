@@ -139,7 +139,7 @@ ErrorOr<std::string> GetQueryParameter<LegacyEnv>(const GURL& url) {
                       "Query GET URL: ",
                       url.spec()}));
   }
-  return q_value;
+  return base::ok(std::move(q_value));
 }
 
 template <>
@@ -155,7 +155,7 @@ ErrorOr<std::string> GetQueryParameter<ApiEnv>(const GURL& url) {
   }
   size_t slash = value.find('/', strlen(kApiServerQueryPath));
   if (slash != std::string::npos) {
-    return value.substr(slash + 1);
+    return base::ok(value.substr(slash + 1));
   } else {
     return base::unexpected(
         base::StrCat({"could not get any value from query path in "
@@ -246,7 +246,7 @@ ErrorOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
         {"could not base64-decode serialized body of a POST request: \"",
          encoded_query.c_str(), "\""}));
   }
-  return query;
+  return base::ok(std::move(query));
 }
 
 // Gets Query request proto content from HTTP POST body.
@@ -460,15 +460,15 @@ ErrorOr<std::string> ReencodeResponseMessage(
     return base::unexpected("Unable to compress the new response.");
   }
 
-  return MakeHTTPTextFromSplit(response_pair.first,
-                               out_compressed_response_body);
+  return base::ok(
+      MakeHTTPTextFromSplit(response_pair.first, out_compressed_response_body));
 }
 
 template <>
 ErrorOr<std::string> ReencodeResponseMessage<ApiEnv>(
     const std::string& compressed_response_text,
     const typename ApiEnv::Query& query) {
-  return compressed_response_text;
+  return base::ok(compressed_response_text);
 }
 
 // Populates |cache_to_fill| with content from |query_node| that contains a

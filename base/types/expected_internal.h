@@ -18,6 +18,9 @@
 // base::expected.
 namespace base {
 
+template <typename T>
+class ok;
+
 template <typename E>
 class unexpected;
 
@@ -25,6 +28,12 @@ template <typename T, typename E, bool = std::is_void_v<T>>
 class expected;
 
 namespace internal {
+
+template <typename T>
+struct IsOk : std::false_type {};
+
+template <typename T>
+struct IsOk<ok<T>> : std::true_type {};
 
 template <typename T>
 struct IsUnexpected : std::false_type {};
@@ -80,12 +89,14 @@ struct IsValidVoidConversion
           std::negation<IsAnyConstructibleOrConvertible<unexpected<E>, ExUG>>> {
 };
 
+// Checks whether expected<T, E> can be constructed from a value of type U.
 template <typename T, typename E, typename U>
 struct IsValidValueConstruction
     : std::conjunction<
           std::is_constructible<T, U>,
           std::negation<std::is_same<remove_cvref_t<U>, absl::in_place_t>>,
           std::negation<std::is_same<remove_cvref_t<U>, expected<T, E>>>,
+          std::negation<IsOk<remove_cvref_t<U>>>,
           std::negation<IsUnexpected<remove_cvref_t<U>>>> {};
 
 template <typename T, typename E, typename UF, typename GF>
@@ -123,6 +134,14 @@ using EnableIfImplicitVoidConversion =
                      int>;
 
 template <typename T, typename U>
+using EnableIfOkValueConstruction = std::enable_if_t<
+    std::conjunction_v<
+        std::negation<std::is_same<remove_cvref_t<U>, ok<T>>>,
+        std::negation<std::is_same<remove_cvref_t<U>, absl::in_place_t>>,
+        std::is_constructible<T, U>>,
+    int>;
+
+template <typename T, typename U>
 using EnableIfUnexpectedValueConstruction = std::enable_if_t<
     std::conjunction_v<
         std::negation<std::is_same<remove_cvref_t<U>, unexpected<T>>>,
@@ -132,24 +151,28 @@ using EnableIfUnexpectedValueConstruction = std::enable_if_t<
 
 template <typename T, typename E, typename U>
 using EnableIfExplicitValueConstruction = std::enable_if_t<
-    std::conjunction_v<IsValidValueConstruction<T, E, U>,
-                       std::negation<std::is_convertible<U, T>>>,
+    std::conjunction_v<
+        IsValidValueConstruction<T, E, U>,
+        std::disjunction<std::negation<std::is_convertible<U, T>>,
+                         std::is_convertible<U, E>>>,
     int>;
 
 template <typename T, typename E, typename U>
-using EnableIfImplicitValueConstruction =
-    std::enable_if_t<std::conjunction_v<IsValidValueConstruction<T, E, U>,
-                                        std::is_convertible<U, T>>,
-                     int>;
+using EnableIfImplicitValueConstruction = std::enable_if_t<
+    std::conjunction_v<
+        IsValidValueConstruction<T, E, U>,
+        std::conjunction<std::is_convertible<U, T>,
+                         std::negation<std::is_convertible<U, E>>>>,
+    int>;
 
 template <typename T, typename U>
-using EnableIfExplicitUnexpectedConstruction = std::enable_if_t<
+using EnableIfExplicitConstruction = std::enable_if_t<
     std::conjunction_v<std::is_constructible<T, U>,
                        std::negation<std::is_convertible<U, T>>>,
     int>;
 
 template <typename T, typename U>
-using EnableIfImplicitUnexpectedConstruction = std::enable_if_t<
+using EnableIfImplicitConstruction = std::enable_if_t<
     std::conjunction_v<std::is_constructible<T, U>, std::is_convertible<U, T>>,
     int>;
 
@@ -157,6 +180,7 @@ template <typename T, typename E, typename U>
 using EnableIfValueAssignment = std::enable_if_t<
     std::conjunction_v<
         std::negation<std::is_same<expected<T, E>, remove_cvref_t<U>>>,
+        std::negation<IsOk<remove_cvref_t<U>>>,
         std::negation<IsUnexpected<remove_cvref_t<U>>>,
         std::is_constructible<T, U>,
         std::is_assignable<T&, U>>,
