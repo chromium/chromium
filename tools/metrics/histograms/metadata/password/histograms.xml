@@ -2746,6 +2746,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.SaveUpdateUIDismissalReasonAndroid{Dialog}"
+    enum="SaveUpdatePasswordMessageDismissReason" expires_after="2023-02-26">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    When Chrome detects an unknown password being entered into a web page, it
+    shows the message asking if user wants to save or update (if there is
+    already some other password saved for the site) the password. This histogram
+    records what user decides to do with the message. Possible outcomes are: to
+    accept Chrome's offer to save/update the password, to dismiss the message,
+    to save/update the password in the edit dialog (which can be navigated from
+    the message), to cancel in the dialog, tell to never save password for the
+    site. Records the user action when the message is dismissed as well as when
+    the dialog opened from the message is dismissed.
+  </summary>
+  <token key="Dialog">
+    <variant name="" summary="Aggregated across all breakdowns"/>
+    <variant name=".Save" summary="Only Save password dialog values"/>
+    <variant name=".Update"
+        summary="Only Update password dialog values (for only 1 password
+                 saved previously per site)"/>
+    <variant name=".UpdateWithUsernameConfirmation"
+        summary="Only Update password dialog values when user must confirm
+                 the username (multiple passwords saved per site)"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordManager.SavingOnUsernameFirstFlow"
     enum="SavingOnUsernameFirstFlow" expires_after="2023-03-19">
   <owner>kazinova@google.com</owner>

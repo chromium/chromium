@@ -5,6 +5,8 @@
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
 
 #include "base/callback.h"
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -19,6 +21,7 @@
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -27,6 +30,50 @@
 #include "url/origin.h"
 
 using password_manager::features::kPasswordEditDialogWithDetails;
+
+namespace {
+// Log the outcome of the save/update password workflow.
+// It differentiates whether the the flow was accepted/cancelled immediately
+// or after calling the password edit dialog.
+void LogSaveUpdatePasswordMessageDismissalReason(
+    SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+        reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveUpdateUIDismissalReasonAndroid", reason);
+}
+
+// Log the outcome of the save password workflow.
+// It differentiates whether the password was saved/canceled immediately or
+// after calling the password edit dialog.
+void LogSavePasswordMessageDismissalReason(
+    SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+        reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Save", reason);
+}
+
+// Log the outcome of the update password workflow.
+// It differentiates whether the password was updated/canceled immediately or
+// after calling the password edit dialog.
+void LogUpdatePasswordMessageDismissalReason(
+    SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+        reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Update", reason);
+}
+
+// Log the outcome of the update password workflow with multiple credentials
+// saved for current site.
+// Canceled in message | confirmed | canceled in dialog
+void LogConfirmUsernameMessageDismissalReason(
+    SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+        reason) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.SaveUpdateUIDismissalReasonAndroid."
+      "UpdateWithUsernameConfirmation",
+      reason);
+}
+}  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
     : SaveUpdatePasswordMessageDelegate(
@@ -355,6 +402,10 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   // Record metrics and cleanup state.
   RecordDismissalReasonMetrics(
       MessageDismissReasonToPasswordManagerUIDismissalReason(dismiss_reason));
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+    RecordSaveUpdateUIDismissalReason(
+        GetSaveUpdatePasswordMessageDismissReason(dismiss_reason));
+  }
   ClearState();
 }
 
@@ -382,11 +433,16 @@ void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
-    bool dialogAccepted) {
-  password_edit_dialog_.reset();
+    bool dialog_accepted) {
   RecordDismissalReasonMetrics(
-      dialogAccepted ? password_manager::metrics_util::CLICKED_ACCEPT
-                     : password_manager::metrics_util::CLICKED_CANCEL);
+      dialog_accepted ? password_manager::metrics_util::CLICKED_ACCEPT
+                      : password_manager::metrics_util::CLICKED_CANCEL);
+  if (base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)) {
+    RecordSaveUpdateUIDismissalReason(
+        GetPasswordEditDialogDismissReason(dialog_accepted));
+  }
+
+  password_edit_dialog_.reset();
   ClearState();
 }
 
@@ -435,6 +491,58 @@ void SaveUpdatePasswordMessageDelegate::RecordDismissalReasonMetrics(
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(ui_dismissal_reason);
   }
+}
+
+void SaveUpdatePasswordMessageDelegate::RecordSaveUpdateUIDismissalReason(
+    SaveUpdatePasswordMessageDismissReason dismiss_reason) {
+  LogSaveUpdatePasswordMessageDismissalReason(dismiss_reason);
+  if (update_password_ && HasMultipleCredentialsStored()) {
+    LogConfirmUsernameMessageDismissalReason(dismiss_reason);
+    return;
+  }
+  if (update_password_) {
+    LogUpdatePasswordMessageDismissalReason(dismiss_reason);
+    return;
+  }
+  LogSavePasswordMessageDismissalReason(dismiss_reason);
+}
+
+SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+SaveUpdatePasswordMessageDelegate::GetPasswordEditDialogDismissReason(
+    bool accepted) {
+  DCHECK(password_edit_dialog_ != nullptr);
+
+  if (update_password_ && HasMultipleCredentialsStored()) {
+    return accepted ? SaveUpdatePasswordMessageDismissReason::
+                          kAcceptInUsernameConfirmDialog
+                    : SaveUpdatePasswordMessageDismissReason::kCancelInDialog;
+  }
+  return accepted ? SaveUpdatePasswordMessageDismissReason::kAcceptInDialog
+                  : SaveUpdatePasswordMessageDismissReason::kCancelInDialog;
+}
+
+SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDismissReason
+SaveUpdatePasswordMessageDelegate::GetSaveUpdatePasswordMessageDismissReason(
+    messages::DismissReason dismiss_reason) {
+  DCHECK(password_edit_dialog_ == nullptr);
+
+  SaveUpdatePasswordMessageDismissReason save_update_dismiss_reason;
+  switch (dismiss_reason) {
+    case messages::DismissReason::PRIMARY_ACTION:
+      save_update_dismiss_reason =
+          SaveUpdatePasswordMessageDismissReason::kAccept;
+      break;
+    // This method is not called when the Edit password button is clicked.
+    case messages::DismissReason::SECONDARY_ACTION:
+      save_update_dismiss_reason =
+          SaveUpdatePasswordMessageDismissReason::kNeverSave;
+      break;
+    default:
+      save_update_dismiss_reason =
+          SaveUpdatePasswordMessageDismissReason::kCancel;
+      break;
+  }
+  return save_update_dismiss_reason;
 }
 
 // static

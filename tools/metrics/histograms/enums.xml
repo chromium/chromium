@@ -86568,6 +86568,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="DONT_REMEMBER_PASSWORD"/>
 </enum>
 
+<enum name="SaveUpdatePasswordMessageDismissReason">
+  <int value="0" label="Clicked 'Save' or 'Update' in the message"/>
+  <int value="1" label="Clicked 'Save' or 'Update' in the edit dialog"/>
+  <int value="2" label="Clicked Accept in username confirmation dialog"/>
+  <int value="3" label="Message dismissed"/>
+  <int value="4"
+      label="Clicked 'Cancel' in the edit dialog or dismissed the dialog"/>
+  <int value="5" label="Clicked 'Never for this site' in the cog menu"/>
+</enum>
+
 <enum name="SavingOnUsernameFirstFlow">
   <int value="0" label="Saved"/>
   <int value="1" label="Saved with edited username"/>

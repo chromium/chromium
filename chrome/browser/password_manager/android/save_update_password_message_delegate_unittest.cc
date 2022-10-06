@@ -53,6 +53,15 @@ constexpr char kSaveUIDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 constexpr char kUpdateUIDismissalReasonHistogramName[] =
     "PasswordManager.UpdateUIDismissalReason";
+constexpr char kSaveUpdatePasswordMessageDismissalReason[] =
+    "PasswordManager.SaveUpdateUIDismissalReasonAndroid";
+constexpr char kSavePasswordMessageDismissalReason[] =
+    "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Save";
+constexpr char kUpdatePasswordMessageDismissalReason[] =
+    "PasswordManager.SaveUpdateUIDismissalReasonAndroid.Update";
+constexpr char kConfirmUsernameMessageDismissalReason[] =
+    "PasswordManager.SaveUpdateUIDismissalReasonAndroid."
+    "UpdateWithUsernameConfirmation";
 }  // namespace
 
 class MockPasswordEditDialog : public PasswordEditDialog {
@@ -682,6 +691,55 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest, TriggerEditDialog_Cancel) {
 }
 
 // Verifies that:
+// 1. Username confirmation dialog is shown after clicking on 'Continue'
+// in the message.
+// 2. Saving the password form is executed after clicking on Update button of
+// the dialog.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       TriggerConfirmUsernameDialog_Accept) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kPasswordEditDialogWithDetails);
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(*mock_dialog, ShowUpdatePasswordDialog);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  TriggerDialogAcceptedCallback(/*username=*/kUsername,
+                                /*password=*/kPassword);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+
+  CommitPasswordFormMetrics();
+  VerifyUkmMetrics(
+      test_ukm_recorder,
+      PasswordFormMetricsRecorder::BubbleDismissalReason::kAccepted);
+  histogram_tester.ExpectUniqueSample(
+      kUpdateUIDismissalReasonHistogramName,
+      password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::
+              kAcceptInUsernameConfirmDialog,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kConfirmUsernameMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::
+              kAcceptInUsernameConfirmDialog,
+      1);
+}
+
+// Verifies that:
 // 1. Save password dialog is shown after clicking on cog menu item
 // "Edit password"in the message.
 // 2. Saving the password form is executed after clicking on Save button of the
@@ -722,6 +780,16 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kSavePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
+      1);
 }
 
 // Verifies that the site is blocklisted after clicking on
@@ -752,6 +820,16 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_NEVER, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kNeverSave,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kSavePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kNeverSave,
+      1);
 }
 
 // Verifies that:
@@ -796,6 +874,16 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kUpdateUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_ACCEPT, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kAcceptInDialog,
+      1);
 }
 
 // Verifies that:
@@ -832,6 +920,16 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       kSaveUIDismissalReasonHistogramName,
       password_manager::metrics_util::CLICKED_CANCEL, 1);
+  histogram_tester.ExpectUniqueSample(
+      kSaveUpdatePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kCancelInDialog,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kSavePasswordMessageDismissalReason,
+      SaveUpdatePasswordMessageDelegate::
+          SaveUpdatePasswordMessageDismissReason::kCancelInDialog,
+      1);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveUpdatePasswordMessageDelegateTest);
