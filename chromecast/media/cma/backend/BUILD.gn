@@ -200,4 +200,10 @@ test("cast_audio_backend_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (use_alsa) {
+    deps += [
+    "//chromecast/media/cma/backend/alsa:unittests",
+    ]
+  }
 }

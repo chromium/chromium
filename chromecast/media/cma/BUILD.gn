@@ -98,14 +98,6 @@ cast_source_set("unittests") {
     ]
   }
 
-  if(use_alsa) {
-    sources += [ "backend/alsa/scoped_alsa_mixer_unittest.cc" ]
-    deps += [
-      "//chromecast/media/cma/backend/alsa:volume_control",
-      "//media:test_support",
-    ]
-  }
-
   if (enable_video_with_mixed_audio) {
     defines = [ "ENABLE_VIDEO_WITH_MIXED_AUDIO" ]
   }
