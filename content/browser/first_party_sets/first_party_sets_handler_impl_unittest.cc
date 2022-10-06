@@ -299,6 +299,42 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
+       ClearSiteDataOnChangedSetsForContext_BeforeSetsReady) {
+  FirstPartySetsHandlerImpl::GetInstance()
+      ->SetEmbedderWillProvidePublicSetsForTesting(true);
+
+  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
+                                                 LocalSetDeclaration());
+
+  const std::string browser_context_id = "profile";
+  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  FirstPartySetsHandlerImpl::GetInstance()
+      ->ClearSiteDataOnChangedSetsForContext(
+          base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
+          net::FirstPartySetsContextConfig(), future.GetCallback());
+
+  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
+      base::Version("0.0.1"),
+      WritePublicSetsFile(
+          R"({"primary": "https://foo.test", )"
+          R"("associatedSites": ["https://associatedsite.test"]})"));
+
+  EXPECT_TRUE(future.Wait());
+
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite associated(GURL("https://associatedsite.test"));
+  EXPECT_THAT(
+      GetPersistedGlobalSetsAndWait(browser_context_id)
+          ->FindEntries({foo, associated}, net::FirstPartySetsContextConfig()),
+      UnorderedElementsAre(
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
+                                            absl::nullopt)),
+          Pair(associated,
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
+                                       absl::nullopt))));
+}
+
+TEST_F(FirstPartySetsHandlerImplEnabledTest,
        GetSetsIfEnabledAndReady_AfterSetsReady) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
