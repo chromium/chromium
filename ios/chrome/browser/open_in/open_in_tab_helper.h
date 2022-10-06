@@ -86,6 +86,12 @@ class OpenInTabHelper : public web::WebStateObserver,
   // the openIn view. `delegate` is not retained by TabHelper.
   void SetDelegate(id<OpenInTabHelperDelegate> delegate);
 
+  // Returns true if the displayed content should be downloaded.
+  static bool ShouldDownload(web::WebState* web_state);
+
+  // Returns the suggested file name of the displayed content.
+  std::u16string GetFileNameSuggestion();
+
  private:
   friend class web::WebStateUserData<OpenInTabHelper>;
 

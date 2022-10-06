@@ -46,7 +46,7 @@
 // the url).
 @property(nonatomic, readonly, assign) BOOL isOriginalTitle;
 // Whether the page is printable or not.
-@property(nonatomic, readonly, assign) BOOL isPagePrintable;
+@property(nonatomic, assign) BOOL isPagePrintable;
 // Whether FindInPage can be enabled for this page.
 @property(nonatomic, readonly, assign) BOOL isPageSearchable;
 // Whether the current tab can be sent via Send-Tab-To-Self.

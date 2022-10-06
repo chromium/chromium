@@ -42,6 +42,7 @@ source_set("commands") {
     "search_image_with_lens_command.h",
     "search_image_with_lens_command.mm",
     "security_alert_commands.h",
+    "share_download_overlay_commands.h",
     "share_highlight_command.h",
     "share_highlight_command.mm",
     "show_signin_command.h",

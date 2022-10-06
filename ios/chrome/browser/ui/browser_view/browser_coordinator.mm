@@ -108,6 +108,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
@@ -1758,10 +1759,12 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 // Installs delegates for each WebState in WebStateList.
 - (void)installDelegatesForAllWebStates {
-  self.openInCoordinator =
-      [[OpenInCoordinator alloc] initWithBaseViewController:self.viewController
-                                                    browser:self.browser];
-  [self.openInCoordinator start];
+  if (!IsOpenInActivitiesInShareButtonEnabled()) {
+    self.openInCoordinator = [[OpenInCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [self.openInCoordinator start];
+  }
 
   for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
     web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);
@@ -1840,9 +1843,11 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 // Uninstalls delegates for each WebState in WebStateList.
 - (void)uninstallDelegatesForAllWebStates {
-  // OpenInCoordinator monitors the webStateList and should be stopped.
-  [self.openInCoordinator stop];
-  self.openInCoordinator = nil;
+  if (!IsOpenInActivitiesInShareButtonEnabled()) {
+    // OpenInCoordinator monitors the webStateList and should be stopped.
+    [self.openInCoordinator stop];
+    self.openInCoordinator = nil;
+  }
 
   for (int i = 0; i < self.browser->GetWebStateList()->count(); i++) {
     web::WebState* webState = self.browser->GetWebStateList()->GetWebStateAt(i);

@@ -25,10 +25,12 @@
 #import "ios/chrome/browser/ui/activity_services/activities/send_tab_to_self_activity.h"
 #import "ios/chrome/browser/ui/activity_services/activity_service_histograms.h"
 #import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_file_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/share_file_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
@@ -171,6 +173,11 @@
   }
 
   return applicationActivities;
+}
+
+- (NSArray<ChromeActivityFileSource*>*)activityItemsForFileData:
+    (ShareFileData*)data {
+  return @[ [[ChromeActivityFileSource alloc] initWithFilePath:data.filePath] ];
 }
 
 - (NSArray<ChromeActivityImageSource*>*)activityItemsForImageData:

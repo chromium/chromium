@@ -11,10 +11,12 @@
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/activity_service_mediator.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
+#import "ios/chrome/browser/ui/activity_services/data/chrome_activity_file_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_image_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_item_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_text_source.h"
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
+#import "ios/chrome/browser/ui/activity_services/data/share_file_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_image_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data_builder.h"
@@ -27,6 +29,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #import "url/gurl.h"
 
@@ -35,6 +38,13 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// MIME type of PDF.
+const char kMimeTypePDF[] = "application/pdf";
+
+}  // namespace
 
 @interface ActivityServiceCoordinator ()
 
@@ -97,6 +107,11 @@
   // Image item
   if (self.params.image) {
     [self shareImage];
+    return;
+  }
+
+  if (self.params.filePath) {
+    [self shareFile];
     return;
   }
 
@@ -167,7 +182,11 @@
                                       activityType:activityType
                                          completed:completed];
 
-    if (completed) {
+    // If it is completed by finishing a scenario or if the view been closed by
+    // the user without selecting a service.
+    BOOL isActivityViewControllerDismissed =
+        completed || (!activityType && !completed);
+    if (isActivityViewControllerDismissed) {
       // Signal the presentation provider that our scenario is over.
       [strongSelf.presentationProvider activityServiceDidEndPresenting];
     }
@@ -227,6 +246,43 @@
   NSArray* activities = [self.mediator applicationActivitiesForImageData:data];
 
   [self shareItems:items activities:activities];
+}
+
+#pragma mark - Private Methods: Share File
+
+// Configures activities and items, and shows an activity view.
+- (void)shareFile {
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  // In some cases it seems that the share sheet is triggered while no tab is
+  // present (probably due to a timing issue).
+  if (!currentWebState)
+    return;
+
+  // Retrieve the current page's URL.
+  __weak __typeof(self) weakSelf = self;
+  activity_services::RetrieveCanonicalUrl(currentWebState, ^(const GURL& url) {
+    ShareToData* URLData = activity_services::ShareToDataForWebState(
+        weakSelf.browser->GetWebStateList()->GetActiveWebState(), url);
+
+    // As giving a PDF file to the UIActivityViewController will add the "Print"
+    // activity from Apple, Chrome's print activity is disabled to avoid
+    // duplicate.
+    BOOL isPDF = currentWebState->GetContentsMimeType() == kMimeTypePDF;
+    if (isPDF) {
+      URLData.isPagePrintable = NO;
+    }
+
+    ShareFileData* fileData =
+        [[ShareFileData alloc] initWithFilePath:self.params.filePath];
+
+    NSArray<ChromeActivityFileSource*>* items =
+        [weakSelf.mediator activityItemsForFileData:fileData];
+    NSArray* activities =
+        [weakSelf.mediator applicationActivitiesForDataItems:@[ URLData ]];
+    [weakSelf shareItems:items activities:activities];
+  });
 }
 
 #pragma mark - Private Methods: Share URL

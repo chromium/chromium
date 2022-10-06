@@ -103,24 +103,10 @@ void OpenInTabHelper::HandleExportableFile() {
   base::UmaHistogramEnumeration("IOS.OpenIn.MimeType", mime_type);
   base::RecordAction(base::UserMetricsAction("IOS.OpenIn.Presented"));
 
-  // Try to generate a filename by first looking at `content_disposition_`, then
-  // at the last component of WebState's last committed URL and if both of these
-  // fail use the default filename "document".
-  std::string content_disposition;
-  if (response_headers_)
-    response_headers_->GetNormalizedHeader("content-disposition",
-                                           &content_disposition);
-  std::string default_file_name =
-      l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
   web::NavigationItem* item =
       web_state_->GetNavigationManager()->GetLastCommittedItem();
   const GURL& last_committed_url = item ? item->GetURL() : GURL::EmptyGURL();
-  std::u16string file_name =
-      net::GetSuggestedFilename(last_committed_url, content_disposition,
-                                "",  // referrer-charset
-                                "",  // suggested-name
-                                web_state_->GetContentsMimeType(),  // mime-type
-                                default_file_name);
+  std::u16string file_name = GetFileNameSuggestion();
   [delegate_ enableOpenInForWebState:web_state_
                      withDocumentURL:last_committed_url
                    suggestedFileName:base::SysUTF16ToNSString(file_name)];
@@ -162,6 +148,48 @@ void OpenInTabHelper::WebStateDestroyed(web::WebState* web_state) {
   // so nothing should be done after that point (this is like "delete this;").
   // Unregistration as an observer happens in the destructor.
   web_state_->RemoveUserData(UserDataKey());
+}
+
+std::u16string OpenInTabHelper::GetFileNameSuggestion() {
+  // Try to generate a filename by first looking at `content_disposition`, then
+  // at the last component of WebState's last committed URL and if both of these
+  // fail use the default filename "document".
+  std::string content_disposition;
+  if (response_headers_)
+    response_headers_->GetNormalizedHeader("content-disposition",
+                                           &content_disposition);
+  std::string default_file_name =
+      l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
+  web::NavigationItem* item =
+      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  const GURL& last_committed_url = item ? item->GetURL() : GURL::EmptyGURL();
+  std::u16string file_name =
+      net::GetSuggestedFilename(last_committed_url, content_disposition,
+                                "",  // referrer-charset
+                                "",  // suggested-name
+                                web_state_->GetContentsMimeType(),  // mime-type
+                                default_file_name);
+  return file_name;
+}
+
+// static
+bool OpenInTabHelper::ShouldDownload(web::WebState* web_state) {
+  if (!web_state) {
+    return false;
+  }
+
+  std::string mime_type = web_state->GetContentsMimeType();
+  return (mime_type == content_type::kMimeTypePDF ||
+          mime_type == content_type::kMimeTypeMicrosoftWord ||
+          mime_type == content_type::kMimeTypeMicrosoftWordOpenXML ||
+          mime_type == content_type::kMimeTypeJPEG ||
+          mime_type == content_type::kMimeTypePNG ||
+          mime_type == content_type::kMimeTypeMicrosoftPowerPoint ||
+          mime_type == content_type::kMimeTypeMicrosoftPowerPointOpenXML ||
+          mime_type == content_type::kMimeTypeRTF ||
+          mime_type == content_type::kMimeTypeSVG ||
+          mime_type == content_type::kMimeTypeMicrosoftExcel ||
+          mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(OpenInTabHelper)

@@ -61,6 +61,9 @@ class GURL;
 // Current sharing scenario.
 @property(nonatomic, readonly, assign) ActivityScenario scenario;
 
+// File to be shared.
+@property(nonatomic, strong) NSURL* filePath;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_ACTIVITY_PARAMS_H_
