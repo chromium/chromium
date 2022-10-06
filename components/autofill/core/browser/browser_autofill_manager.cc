@@ -1121,6 +1121,17 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return true;
   };
 
+  if (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
+      (form_element_was_clicked &&
+       fast_checkout_delegate_->TryToShowFastCheckout(form, field))) {
+    // The Fast Checkout surface is shown, so abort showing regular Autofill UI.
+    // Now the flow is controlled by the `fast_checkout_delegate_` instead
+    // of `external_delegate_`.
+    // In principle, TTF and Fast Checkout triggering surfaces are different and
+    // the two screens should never coincide.
+    return;
+  }
+
   if (ShouldOfferSingleFieldFormFill()) {
     // Suggestions come back asynchronously, so the SingleFieldFormFillRouter
     // will handle sending the results back to the renderer.
@@ -1140,17 +1151,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // Touch To Fill surface is shown, so abort showing regular Autofill UI.
     // Now the flow is controlled by the |touch_to_fill_delegate_| instead
     // of |external_delegate_|.
-    return;
-  }
-
-  if (fast_checkout_delegate_->IsShowingFastCheckoutUI() ||
-      (form_element_was_clicked &&
-       fast_checkout_delegate_->TryToShowFastCheckout(form, field))) {
-    // The Fast Checkout surface is shown, so abort showing regular Autofill UI.
-    // Now the flow is controlled by the `fast_checkout_delegate_` instead
-    // of `external_delegate_`.
-    // In principle, touch_to_fill is prioritized, but the triggering surfaces
-    // are different and the two screens should never coincide.
     return;
   }
 
