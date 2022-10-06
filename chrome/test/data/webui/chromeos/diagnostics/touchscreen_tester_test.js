@@ -32,10 +32,25 @@ export function touchscreenTesterTestSuite() {
 
   test('openIntroDialog', async () => {
     await initializeTouchscreenTester();
-    const introDialog =
-        touchscreenTesterElement.shadowRoot.querySelector('#intro-dialog');
+    const introDialog = touchscreenTesterElement.getDialog('intro-dialog');
     introDialog.showModal();
     await flushTasks();
     assertTrue(introDialog.open);
+  });
+
+  test('openCanvasDialog', async () => {
+    await initializeTouchscreenTester();
+    const introDialog = touchscreenTesterElement.getDialog('intro-dialog');
+    introDialog.showModal();
+    await flushTasks();
+    assertTrue(introDialog.open);
+
+    const getStartedButton = introDialog.querySelector('cr-button');
+    getStartedButton.click();
+    await flushTasks();
+    assertFalse(introDialog.open);
+
+    const canvasDialog = touchscreenTesterElement.getDialog('canvas-dialog');
+    assertTrue(canvasDialog.open);
   });
 }

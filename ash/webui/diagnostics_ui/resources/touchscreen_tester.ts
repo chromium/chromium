@@ -34,6 +34,14 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   showTester(): void {
     this.getDialog('intro-dialog').showModal();
   }
+
+  /**
+   * Handle when get start button is clicked.
+   */
+  private onStartClick(): void {
+    this.getDialog('intro-dialog').close();
+    this.getDialog('canvas-dialog').showModal();
+  }
 }
 
 declare global {
