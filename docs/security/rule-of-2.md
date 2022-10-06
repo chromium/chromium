@@ -83,6 +83,37 @@ and assembly language. Memory-safe languages include Go, Rust, Python, Java,
 JavaScript, Kotlin, and Swift. (Note that the safe subsets of these languages
 are safe by design, but of course implementation quality is a different story.)
 
+#### Unsafe Code in Safe Languages
+
+Some memory-safe languages provide a backdoor to unsafety, such as the `unsafe`
+keyword in Rust. This functions as a separate unsafe language subset inside the
+memory-safe one.
+
+The presence of unsafe code does not negate the memory-safety properties of the
+memory-safe language around it as a whole, but _how_ unsafe code is used is
+critical. Poor use of an unsafe language subset is not meaningfully different
+from any other unsafe implementation language.
+
+In order for a library with unsafe code to be safe for the purposes of the Rule
+of 2, all unsafe usage must be able to be reviewed and verified by humans with
+simple local reasoning. To achieve this, we expect all unsafe usage to be:
+* Small: The minimal possible amount of code to perform the required task
+* Encapsulated: All access to the unsafe code is through a safe API
+* Documented: All preconditions of an unsafe block (e.g. a call to an unsafe
+  function) are spelled out in comments, along with explanations of how they are
+  satisfied.
+
+Because unsafe code reaches outside the normal expectations of a memory-safe
+language, it must follow strict rules to avoid undefined behaviour and
+memory-safety violations, and these are not always easy to verify. A careful
+review by one or more experts in the unsafe language subset is required.
+
+It should be safe to use any code in a memory-safe language in a high-privilege
+context. As such, the requirements on a memory-safe language implementation are
+higher: All code in a memory-safe language must be capable of satisfying the
+Rule of 2 in a high-privilege context (including any unsafe code) in order to be
+used or admitted anywhere in the project.
+
 ### High Privilege
 
 _High privilege_ is a relative term. The very highest-privilege programs are the
@@ -249,11 +280,12 @@ handled according to this rule as well.
 
 Where possible, it's great to use a memory-safe language. Of the currently
 approved set of implementation languages in Chromium, the most likely candidates
-are Java (on Android only) and JavaScript or WebAssembly (although we don't
-currently use them in high-privilege processes like the browser). One can
-imagine Swift on iOS or Kotlin on Android, too, although they are not currently
+are Java (on Android only), Swift (on iOS only), and JavaScript or WebAssembly
+(although we don't currently use them in high-privilege processes like the
+browser). One can imagine Kotlin on Android, too, although it is not currently
 used in Chromium. (Some of us on Security Team aspire to get more of Chromium in
-safer languages, and you may be able to [help with our experiments](rust-toolchain.md).)
+safer languages, and you may be able to [help with our
+experiments](rust-toolchain.md).)
 
 For an example of image processing, we have the pure-Java class
 [BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
@@ -277,7 +309,6 @@ using trustworthy patterns can be used at high privilege to match on
 untrustworthy input strings. This does not automatically turn the matched text
 or captured groups into safe values.
 
-
 ## Safe Types
 
 As discussed above in [Normalization](#normalization), there are some types that
@@ -287,12 +318,12 @@ fundamental for passing data between processes using IPC, tend to have simpler
 grammar or structure, and/or have been audited or fuzzed heavily.
 
 * `GURL` and `url::Origin`
-* `SkBitmap`
-* `SkPixmap`
+* `SkBitmap` (in [N32 format](https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkColorType.h;l=54-58;drc=8d399817282e3c12ed54eb23ec42a5e418298ec6) only)
+* `SkPixmap` (in [N32 format](https://source.chromium.org/chromium/chromium/src/+/main:third_party/skia/include/core/SkColorType.h;l=54-58;drc=8d399817282e3c12ed54eb23ec42a5e418298ec6) only)
 * Protocol buffers (see above; this is not a preferred option and should be
   avoided where possible)
 
-There are also classes in //base that internally hold simple values that
+There are also classes in `//base` that internally hold simple values that
 represent potentially complex data, such as:
 
 * `base::FilePath`
@@ -312,4 +343,3 @@ Additionally, the networking process on Windows is (at present) unsandboxed by
 default, though there is [ongoing
 work](https://bugs.chromium.org/p/chromium/issues/detail?id=841001)
 to change that default.
-
