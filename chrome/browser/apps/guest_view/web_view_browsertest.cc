@@ -2133,6 +2133,12 @@ class WebViewSSLErrorTest : public WebViewTest {
     // A security error within a guest should not cause an interstitial to be
     // shown in the embedder.
     ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+
+    auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+    ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
+    // TODO(1338009): We intend to limit SSL errors to a plain error page
+    // instead of an interstitial.
+    ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
   }
 
   void LoadEmptyGuest() {
@@ -2148,7 +2154,7 @@ class WebViewSSLErrorTest : public WebViewTest {
     ASSERT_TRUE(guest_main_frame->GetProcess()->IsForGuestsOnly());
   }
 
-  // Loads the `guest_url` by settings the `src` of the guest. This helper
+  // Loads the `guest_url` by setting the `src` of the guest. This helper
   // assumes the app is loaded, and assumes the app already has a guest created.
   void SetGuestURL(const GURL& guest_url, bool expect_successful_navigation) {
     auto* embedder_web_contents = GetFirstAppWindowWebContents();
@@ -2198,9 +2204,6 @@ INSTANTIATE_TEST_SUITE_P(WebViewSSLErrorTests,
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowErrorDocForSSLError) {
   SSLTestHelper();
-  ASSERT_TRUE(GetGuestViewManager()
-                  ->GetLastGuestRenderFrameHostCreated()
-                  ->IsErrorDocument());
 }
 
 // Test makes sure that the error document is registered in the
@@ -2237,10 +2240,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageRouteEvents) {
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ErrorPageDetach) {
   SSLTestHelper();
-
-  auto* guest_main_frame =
-      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
-  ASSERT_TRUE(guest_main_frame->IsErrorDocument());
 
   // Navigate to about:blank
   const GURL blank(url::kAboutBlankURL);
