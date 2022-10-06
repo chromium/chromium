@@ -228,17 +228,7 @@ void WaylandToplevelWindow::Restore() {
     return;
   }
 
-  // Unset needs to be used instead of SetWindowState in order to prevent
-  // flickering on restore. This is because exo will emit a configure event
-  // on restore. If exo and ozone have different window states, a flicker
-  // will occur from the rapid switching of states.
-  if (state_ == PlatformWindowState::kFullScreen) {
-    shell_toplevel_->UnSetFullscreen();
-  } else if (state_ == PlatformWindowState::kMaximized) {
-    shell_toplevel_->UnSetMaximized();
-  } else {
-    SetWindowState(PlatformWindowState::kNormal);
-  }
+  SetWindowState(PlatformWindowState::kNormal);
 }
 
 PlatformWindowState WaylandToplevelWindow::GetPlatformWindowState() const {

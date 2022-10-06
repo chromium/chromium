@@ -783,8 +783,6 @@ TEST_P(WaylandWindowTest, Minimize) {
 }
 
 TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
-  uint32_t serial = 0;
-
   // Make sure the window is initialized to normal state from the beginning.
   EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
 
@@ -807,12 +805,7 @@ TEST_P(WaylandWindowTest, SetFullscreenAndRestore) {
   EXPECT_CALL(*GetXdgToplevel(), UnsetFullscreen());
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Restore();
-  states = InitializeWlArrayWithActivatedState();
-  SendConfigureEvent(xdg_surface_, {0, 0}, ++serial, states.get());
-  Sync();
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kNormal);
-  VerifyAndClearExpectations();
-
   // Reinitialize wl_array, which removes previous old states.
   states = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, {0, 0}, 3, states.get());
@@ -1031,7 +1024,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   SendConfigureEvent(xdg_surface_, {0, 0}, ++serial, empty_state.get());
   Sync();
 
-  auto states = MakeStateArray(
+  auto active_maximized = MakeStateArray(
       {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
   EXPECT_CALL(*GetXdgToplevel(), SetMaximized());
   EXPECT_CALL(*xdg_surface_,
@@ -1043,7 +1036,7 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   // State changes are synchronous.
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
   SendConfigureEvent(xdg_surface_, kMaximizedBounds.size(), ++serial,
-                     states.get());
+                     active_maximized.get());
   Sync();
   // Verify that the state has not been changed.
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
@@ -1058,27 +1051,22 @@ TEST_P(WaylandWindowTest, SetMaximizedFullscreenAndRestore) {
   // State changes are synchronous.
   EXPECT_EQ(PlatformWindowState::kFullScreen,
             window_->GetPlatformWindowState());
-  AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN, states.get());
+  AddStateToWlArray(XDG_TOPLEVEL_STATE_FULLSCREEN, active_maximized.get());
   SendConfigureEvent(xdg_surface_, kMaximizedBounds.size(), ++serial,
-                     states.get());
+                     active_maximized.get());
   Sync();
   // Verify that the state has not been changed.
   EXPECT_EQ(PlatformWindowState::kFullScreen,
             window_->GetPlatformWindowState());
   VerifyAndClearExpectations();
 
+  EXPECT_CALL(*xdg_surface_,
+              SetWindowGeometry(gfx::Rect(kNormalBounds.size())));
   EXPECT_CALL(*GetXdgToplevel(), UnsetFullscreen());
+  EXPECT_CALL(delegate_, OnBoundsChanged(Eq(kDefaultBoundsChange)));
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
   window_->Restore();
-  auto active_maximized = MakeStateArray(
-      {XDG_TOPLEVEL_STATE_ACTIVATED, XDG_TOPLEVEL_STATE_MAXIMIZED});
-  SendConfigureEvent(xdg_surface_,
-                     {kMaximizedBounds.width(), kMaximizedBounds.height()},
-                     ++serial, active_maximized.get());
-  Sync();
-  EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
-  VerifyAndClearExpectations();
-
+  EXPECT_EQ(PlatformWindowState::kNormal, window_->GetPlatformWindowState());
   // Reinitialize wl_array, which removes previous old states.
   auto active = InitializeWlArrayWithActivatedState();
   SendConfigureEvent(xdg_surface_, {0, 0}, ++serial, active.get());
