@@ -7,7 +7,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -39,7 +39,7 @@ absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope) {
 }
 
 base::FilePath GetExecutableRelativePath() {
-  return base::FilePath(PRODUCT_FULLNAME_STRING);
+  return base::FilePath(kExecutableName);
 }
 
 }  // namespace updater
