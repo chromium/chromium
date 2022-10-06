@@ -121,7 +121,6 @@
     "chrome/test/data/chrome_test_resources.grd": "Test data",
     "chromecast/app/resources/chromecast_settings.grd": "Not UI strings; localized separately",
     "components/components_locale_settings.grd": "Not UI strings; localized separately",
-    "components/omnibox/resources/omnibox_resources.grd": "Not UI strings; localized separately",
     "tools/grit/grit/testdata/allowlist_resources.grd": "Test data",
     "tools/grit/grit/testdata/allowlist_strings.grd": "Test data",
     "tools/grit/grit/testdata/buildinfo.grd": "Test data",

@@ -33,7 +33,6 @@ source_set("autocomplete") {
     "//components/language/core/browser",
     "//components/omnibox/browser",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
-    "//components/omnibox/resources:omnibox_resources_grit",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",

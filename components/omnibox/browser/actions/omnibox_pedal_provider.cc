@@ -22,9 +22,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
-#include "components/omnibox/resources/grit/omnibox_resources.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 typedef base::StringTokenizerT<std::u16string, std::u16string::const_iterator>

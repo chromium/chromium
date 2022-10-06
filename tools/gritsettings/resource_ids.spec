@@ -727,9 +727,6 @@
   "components/omnibox/resources/omnibox_pedal_synonyms.grd": {
     "messages": [3600],
   },
-  "components/omnibox/resources/omnibox_resources.grd": {
-    "includes": [3620],
-  },
   "components/policy/resources/policy_templates.grd": {
     "structures": [3640],
   },
