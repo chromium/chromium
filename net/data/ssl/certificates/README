@@ -206,9 +206,6 @@ unit tests.
      Certificates for testing EV display (including regression test for
      https://crbug.com/1069113).
 
-- ev-multi-oid.pem :
-     Certificate for testing EV with multiple OIDs. Regression test for crbug.com/705285
-
 ===== From net/data/ssl/scripts/generate-weak-test-chains.sh
 - 2048-rsa-root.pem
 - {768-rsa,1024-rsa,2048-rsa,prime256v1-ecdsa}-intermediate.pem

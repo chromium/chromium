@@ -491,13 +491,18 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
     return;
   }
 
-  scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ev-multi-oid.pem");
-  scoped_refptr<X509Certificate> root =
-      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
-  ASSERT_TRUE(cert);
-  ASSERT_TRUE(root);
-  ScopedTestRoot test_root(root.get());
+  std::unique_ptr<CertBuilder> leaf, root;
+  CertBuilder::CreateSimpleChain(&leaf, &root);
+  ASSERT_TRUE(leaf && root);
+
+  // The policies that target certificate asserts.
+  static const char kOtherTestCertPolicy[] = "2.23.140.1.1";
+  static const char kEVTestCertPolicy[] = "1.2.3.4";
+  // Specify the extraneous policy first, then the actual policy.
+  leaf->SetCertificatePolicies({kOtherTestCertPolicy, kEVTestCertPolicy});
+
+  scoped_refptr<X509Certificate> cert = leaf->GetX509Certificate();
+  ScopedTestRoot test_root(root->GetX509Certificate().get());
 
   // Build a CRLSet that covers the target certificate.
   //
@@ -505,26 +510,23 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
   // so this test does not depend on online revocation checking.
   base::StringPiece spki;
   ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
-      x509_util::CryptoBufferAsStringPiece(root->cert_buffer()), &spki));
+      x509_util::CryptoBufferAsStringPiece(root->GetCertBuffer()), &spki));
   SHA256HashValue spki_sha256;
   crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
   scoped_refptr<CRLSet> crl_set(
       CRLSet::ForTesting(false, &spki_sha256, "", "", {}));
 
-  // The policies that "ev-multi-oid.pem" target certificate asserts.
-  static const char kOtherTestCertPolicy[] = "2.23.140.1.1";
-  static const char kEVTestCertPolicy[] = "1.2.3.4";
   // Consider the root of the test chain a valid EV root for the test policy.
   ScopedTestEVPolicy scoped_test_ev_policy(
       EVRootCAMetadata::GetInstance(),
-      X509Certificate::CalculateFingerprint256(root->cert_buffer()),
+      X509Certificate::CalculateFingerprint256(root->GetCertBuffer()),
       kEVTestCertPolicy);
   ScopedTestEVPolicy scoped_test_other_policy(
       EVRootCAMetadata::GetInstance(), SHA256HashValue(), kOtherTestCertPolicy);
 
   CertVerifyResult verify_result;
   int flags = 0;
-  int error = Verify(cert.get(), "127.0.0.1", flags, crl_set.get(),
+  int error = Verify(cert.get(), "www.example.com", flags, crl_set.get(),
                      CertificateList(), &verify_result);
   EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_EV);

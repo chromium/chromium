@@ -1910,7 +1910,6 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/duplicate_cn_2.p12",
     "data/ssl/certificates/duplicate_cn_2.pem",
     "data/ssl/certificates/eku-test-root.pem",
-    "data/ssl/certificates/ev-multi-oid.pem",
     "data/ssl/certificates/ev_test.pem",
     "data/ssl/certificates/ev_test_state_only.pem",
     "data/ssl/certificates/expired_cert.pem",
