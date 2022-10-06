@@ -1984,6 +1984,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                          std::u16string());
     }
   }
+  // Without this, focus indicators may appear stale (see crbug.com/1369229).
+  popup_view_->UpdatePopupAppearance();
 }
 
 OmniboxPopupSelection OmniboxEditModel::StepPopupSelection(
