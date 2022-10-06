@@ -220,19 +220,19 @@ extern const char kDevOverrideFileName[];
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
 // to complete.
-constexpr base::TimeDelta kWaitForAppInstaller = base::Minutes(15);
+inline constexpr base::TimeDelta kWaitForAppInstaller = base::Minutes(15);
 
 // The default last check period is 4.5 hours.
-constexpr base::TimeDelta kDefaultLastCheckPeriod =
+inline constexpr base::TimeDelta kDefaultLastCheckPeriod =
     base::Hours(4) + base::Minutes(30);
 
 #if BUILDFLAG(IS_WIN)
 // How often the installer progress from registry is sampled. This value may
 // be changed to provide a smoother progress experience (crbug.com/1067475).
-constexpr int kWaitForInstallerProgressSec = 1;
+inline constexpr int kWaitForInstallerProgressSec = 1;
 #elif BUILDFLAG(IS_MAC)
 // How long to wait for launchd changes to be reported by launchctl.
-constexpr int kWaitForLaunchctlUpdateSec = 5;
+inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
@@ -245,119 +245,124 @@ extern const char kUserDefaultsSuiteName[];
 // Specific install errors for the updater are reported in such a way that
 // their range does not conflict with the range of generic errors defined by
 // the |update_client| module.
-constexpr int kCustomInstallErrorBase =
+inline constexpr int kCustomInstallErrorBase =
     static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
 
 // The install directory for the application could not be created.
-constexpr int kErrorCreateAppInstallDirectory = kCustomInstallErrorBase;
+inline constexpr int kErrorCreateAppInstallDirectory = kCustomInstallErrorBase;
 
 // The install params are missing. This usually means that the update
 // response does not include the name of the installer and its command line
 // arguments.
-constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
+inline constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
 
 // The file specified by the manifest |run| attribute could not be found
 // inside the CRX.
-constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
+inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
 
 // Running the application installer failed.
-constexpr int kErrorApplicationInstallerFailed = kCustomInstallErrorBase + 3;
+inline constexpr int kErrorApplicationInstallerFailed =
+    kCustomInstallErrorBase + 3;
 
 // Error codes.
 //
 // The server process may exit with any of these exit codes.
-constexpr int kErrorOk = 0;
+inline constexpr int kErrorOk = 0;
 
 // The server could not acquire the lock needed to run.
-constexpr int kErrorFailedToLockPrefsMutex = 1;
+inline constexpr int kErrorFailedToLockPrefsMutex = 1;
 
 // The server candidate failed to promote itself to active.
-constexpr int kErrorFailedToSwap = 2;
+inline constexpr int kErrorFailedToSwap = 2;
 
-constexpr int kErrorRegistrationFailed = 3;
-constexpr int kErrorPermissionDenied = 4;
-constexpr int kErrorWaitFailedUninstall = 5;
-constexpr int kErrorWaitFailedInstall = 6;
-constexpr int kErrorPathServiceFailed = 7;
-constexpr int kErrorComInitializationFailed = 8;
-constexpr int kErrorUnknownCommandLine = 9;
-constexpr int kErrorNoVersionedDirectory = 11;
-constexpr int kErrorNoBaseDirectory = 12;
-constexpr int kErrorPathTooLong = 13;
-constexpr int kErrorProcessLaunchFailed = 14;
+inline constexpr int kErrorRegistrationFailed = 3;
+inline constexpr int kErrorPermissionDenied = 4;
+inline constexpr int kErrorWaitFailedUninstall = 5;
+inline constexpr int kErrorWaitFailedInstall = 6;
+inline constexpr int kErrorPathServiceFailed = 7;
+inline constexpr int kErrorComInitializationFailed = 8;
+inline constexpr int kErrorUnknownCommandLine = 9;
+inline constexpr int kErrorNoVersionedDirectory = 11;
+inline constexpr int kErrorNoBaseDirectory = 12;
+inline constexpr int kErrorPathTooLong = 13;
+inline constexpr int kErrorProcessLaunchFailed = 14;
 
 // Failed to copy the updater's bundle.
-constexpr int kErrorFailedToCopyBundle = 15;
+inline constexpr int kErrorFailedToCopyBundle = 15;
 
 // Failed to delete the updater's install folder.
-constexpr int kErrorFailedToDeleteFolder = 16;
+inline constexpr int kErrorFailedToDeleteFolder = 16;
 
 // Failed to delete the updater's data folder.
-constexpr int kErrorFailedToDeleteDataFolder = 17;
+inline constexpr int kErrorFailedToDeleteDataFolder = 17;
 
 // Failed to get versioned updater folder path.
-constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
+inline constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
 
 // Failed to get the installed app bundle path.
-constexpr int kErrorFailedToGetAppBundlePath = 19;
+inline constexpr int kErrorFailedToGetAppBundlePath = 19;
 
 // Failed to remove the active(unversioned) update service job from Launchd.
-constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
+inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
 
 // Failed to remove versioned update service job from Launchd.
-constexpr int kErrorFailedToRemoveCandidateUpdateServiceJobFromLaunchd = 21;
+inline constexpr int kErrorFailedToRemoveCandidateUpdateServiceJobFromLaunchd =
+    21;
 
 // Failed to remove versioned update service internal job from Launchd.
-constexpr int kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd = 22;
+inline constexpr int kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd =
+    22;
 
 // Failed to remove versioned wake job from Launchd.
-constexpr int kErrorFailedToRemoveWakeJobFromLaunchd = 23;
+inline constexpr int kErrorFailedToRemoveWakeJobFromLaunchd = 23;
 
 // Failed to create the active(unversioned) update service Launchd plist.
-constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist = 24;
+inline constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist = 24;
 
 // Failed to create the versioned update service Launchd plist.
-constexpr int kErrorFailedToCreateVersionedUpdateServiceLaunchdJobPlist = 25;
+inline constexpr int kErrorFailedToCreateVersionedUpdateServiceLaunchdJobPlist =
+    25;
 
 // Failed to create the versioned update service internal Launchd plist.
-constexpr int kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist = 26;
+inline constexpr int kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist =
+    26;
 
 // Failed to create the versioned wake Launchd plist.
-constexpr int kErrorFailedToCreateWakeLaunchdJobPlist = 27;
+inline constexpr int kErrorFailedToCreateWakeLaunchdJobPlist = 27;
 
 // Failed to start the active(unversioned) update service job.
-constexpr int kErrorFailedToStartLaunchdActiveServiceJob = 28;
+inline constexpr int kErrorFailedToStartLaunchdActiveServiceJob = 28;
 
 // Failed to start the versioned update service job.
-constexpr int kErrorFailedToStartLaunchdVersionedServiceJob = 29;
+inline constexpr int kErrorFailedToStartLaunchdVersionedServiceJob = 29;
 
 // Failed to start the update service internal job.
-constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob = 30;
+inline constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob = 30;
 
 // Failed to start the wake job.
-constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
+inline constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
 
 // Timed out while awaiting launchctl to become aware of the update service
 // internal job.
-constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
+inline constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
 
 // DM registration failure with mandatory enrollment.
-constexpr int kErrorDMRegistrationFailed = 33;
+inline constexpr int kErrorDMRegistrationFailed = 33;
 
-constexpr int kErrorFailedToInstallLegacyUpdater = 34;
+inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
 
-constexpr int kErrorTagParsing = 50;
+inline constexpr int kErrorTagParsing = 50;
 
 // Metainstaller errors.
-constexpr int kErrorCreatingTempDir = 60;
-constexpr int kErrorUnpackingResource = 61;
+inline constexpr int kErrorCreatingTempDir = 60;
+inline constexpr int kErrorUnpackingResource = 61;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
-constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
+inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
 
 // The maximum value allowed for policy UpdatesSuppressedDurationMin.
-constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
+inline constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
 
 extern const char kProxyModeDirect[];
 extern const char kProxyModeAutoDetect[];
@@ -371,38 +376,39 @@ extern const char kDownloadPreferenceCacheable[];
 // file.
 extern const char kUTF8BOM[];
 
-constexpr int kPolicyNotSet = -1;
-constexpr int kPolicyDisabled = 0;
-constexpr int kPolicyEnabled = 1;
-constexpr int kPolicyEnabledMachineOnly = 4;
-constexpr int kPolicyManualUpdatesOnly = 2;
-constexpr int kPolicyAutomaticUpdatesOnly = 3;
-constexpr int kPolicyForceInstallMachine = 5;
-constexpr int kPolicyForceInstallUser = 6;
+inline constexpr int kPolicyNotSet = -1;
+inline constexpr int kPolicyDisabled = 0;
+inline constexpr int kPolicyEnabled = 1;
+inline constexpr int kPolicyEnabledMachineOnly = 4;
+inline constexpr int kPolicyManualUpdatesOnly = 2;
+inline constexpr int kPolicyAutomaticUpdatesOnly = 3;
+inline constexpr int kPolicyForceInstallMachine = 5;
+inline constexpr int kPolicyForceInstallUser = 6;
 
-constexpr bool kInstallPolicyDefault = kPolicyEnabled;
-constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
+inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
+inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
-constexpr int kUninstallPingReasonUninstalled = 0;
-constexpr int kUninstallPingReasonUserNotAnOwner = 1;
+inline constexpr int kUninstallPingReasonUninstalled = 0;
+inline constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 
 // The file downloaded to a temporary location could not be moved.
-constexpr int kErrorFailedToMoveDownloadedFile = 5;
+inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
-constexpr double kInitialDelay = 60;
-constexpr int kServerKeepAliveSeconds = 10;
+inline constexpr double kInitialDelay = 60;
+inline constexpr int kServerKeepAliveSeconds = 10;
 
 // The maximum number of server starts before the updater uninstalls itself
 // while waiting for the first app registration.
-constexpr int kMaxServerStartsBeforeFirstReg = 24;
+inline constexpr int kMaxServerStartsBeforeFirstReg = 24;
 
 // These are GoogleUpdate error codes, which must be retained by this
 // implementation in order to be backward compatible with the existing update
 // client code in Chrome.
-constexpr int GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY = 0x80040812;
-constexpr int GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY = 0x80040813;
-constexpr int GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL = 0x8004081f;
-constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
+inline constexpr int GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY = 0x80040812;
+inline constexpr int GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY = 0x80040813;
+inline constexpr int GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL =
+    0x8004081f;
+inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
 
 }  // namespace updater
 

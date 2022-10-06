@@ -13,8 +13,8 @@
 
 namespace updater {
 
-constexpr int kRegistrationSuccess = 0;
-constexpr int kRegistrationAlreadyRegistered = 1;
+inline constexpr int kRegistrationSuccess = 0;
+inline constexpr int kRegistrationAlreadyRegistered = 1;
 
 struct RegistrationRequest {
   RegistrationRequest();

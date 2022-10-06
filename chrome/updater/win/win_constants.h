@@ -70,7 +70,7 @@ extern const wchar_t kRegValueEnrollmentToken[];
 
 // The name of the policy indicating that enrollment in cloud-based device
 // management is mandatory.
-constexpr wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
+extern const wchar_t kRegValueEnrollmentMandatory[];
 
 // Registry for DM token.
 extern const wchar_t kRegKeyCompanyEnrollment[];
@@ -80,10 +80,10 @@ extern const wchar_t kWindowsServiceName[];
 extern const wchar_t kWindowsInternalServiceName[];
 
 // Windows event name used to signal the legacy GoogleUpdate processes to exit.
-constexpr wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
+extern const wchar_t kShutdownEvent[];
 
 // EXE name for the legacy GoogleUpdate processes.
-constexpr wchar_t kLegacyExeName[] = L"GoogleUpdate.exe";
+extern const wchar_t kLegacyExeName[];
 
 // crbug.com/1259178: there is a race condition on activating the COM service
 // and the service shutdown. The race condition is likely to occur when a new
@@ -93,7 +93,7 @@ constexpr wchar_t kLegacyExeName[] = L"GoogleUpdate.exe";
 // delay before creating coclasses reduces (but it does not eliminate) the
 // probability of running into this race condition, until a better soulution is
 // found.
-constexpr int kCreateUpdaterInstanceDelayMs = 100;
+inline constexpr int kCreateUpdaterInstanceDelayMs = 100;
 
 }  // namespace updater
 

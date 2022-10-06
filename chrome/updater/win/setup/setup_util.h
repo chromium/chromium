@@ -135,7 +135,7 @@ void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal);
 // bug is resolved.
 template <typename T, typename V>
 void MarshalInterface() {
-  constexpr REFIID iid = __uuidof(T);
+  static constexpr REFIID iid = __uuidof(T);
 
   // Create proxy/stubs for the interface.
   // Look up the ProxyStubClsid32.

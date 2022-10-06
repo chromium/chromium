@@ -19,9 +19,9 @@ namespace ui {
 // Finds all the primary windows owned by the given process. A primary window is
 // a top-level, has a system menu, and it is visible.
 // Flags for window requirements.
-constexpr uint32_t kWindowMustBeTopLevel = 0x00000001;
-constexpr uint32_t kWindowMustHaveSysMenu = 0x00000002;
-constexpr uint32_t kWindowMustBeVisible = 0x00000004;
+inline constexpr uint32_t kWindowMustBeTopLevel = 0x00000001;
+inline constexpr uint32_t kWindowMustHaveSysMenu = 0x00000002;
+inline constexpr uint32_t kWindowMustBeVisible = 0x00000004;
 bool FindProcessWindows(uint32_t process_id,
                         uint32_t window_flags,
                         std::vector<HWND>* windows);

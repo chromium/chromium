@@ -36,10 +36,16 @@ const wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
 const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken\\";
 
+const wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
+
 const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";
 const wchar_t kRegValueDmToken[] = L"dmtoken";
 
 const wchar_t kWindowsServiceName[] = L"Service";
 const wchar_t kWindowsInternalServiceName[] = L"InternalService";
+
+const wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
+
+const wchar_t kLegacyExeName[] = L"GoogleUpdate.exe";
 
 }  // namespace updater

@@ -23,7 +23,7 @@ namespace updater {
 namespace ui {
 
 // Used to communicate between InstallStoppedWnd and ProgressWnd.
-constexpr unsigned int WM_INSTALL_STOPPED = WM_APP;
+inline constexpr unsigned int WM_INSTALL_STOPPED = WM_APP;
 
 class ProgressWndEvents : public CompleteWndEvents {
  public:
