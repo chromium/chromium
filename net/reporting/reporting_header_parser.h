@@ -18,7 +18,7 @@
 namespace net {
 
 class IsolationInfo;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ReportingContext;
 
 // Tries to parse a Reporting-Endpoints header. Returns base::nullopt if parsing
@@ -48,12 +48,12 @@ class NET_EXPORT ReportingHeaderParser {
 
   static void ParseReportToHeader(
       ReportingContext* context,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       const base::Value::List& list);
 
   // `isolation_info` here will be stored in the cache, associated with the
-  // `reporting_source`. `network_isolation_key` is the NIK which will be
+  // `reporting_source`. `network_anonymization_key` is the NIK which will be
   // passed in with reports to be queued. This must match the NIK from
   // `isolation_source`, unless it is empty (which will be the case if the
   // kPartitionNelAndReportingByNetworkIsolationKey feature is disabled.)
@@ -61,7 +61,7 @@ class NET_EXPORT ReportingHeaderParser {
       ReportingContext* context,
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
 

@@ -10,7 +10,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_policy.pb.h"
@@ -42,7 +42,7 @@ void FuzzReportingHeaderParser(const std::string& data_json,
   // TODO: consider including proto definition for URL after moving that to
   // testing/libfuzzer/proto and creating a separate converter.
   net::ReportingHeaderParser::ParseReportToHeader(
-      &context, net::NetworkIsolationKey(),
+      &context, net::NetworkAnonymizationKey(),
       url::Origin::Create(GURL("https://origin/")), data_value->GetList());
   if (context.cache()->GetEndpointCount() == 0) {
     return;

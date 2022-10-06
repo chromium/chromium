@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -30,7 +30,7 @@ ReportingData GetReportingData() {
   const url::Origin kOrigin =
       url::Origin::Create(GURL("https://example.test/"));
   const char kGroupName[] = "groupname";
-  const ReportingEndpointGroupKey kGroupKey(NetworkIsolationKey(), kOrigin,
+  const ReportingEndpointGroupKey kGroupKey(NetworkAnonymizationKey(), kOrigin,
                                             kGroupName);
   const ReportingEndpoint kEndpoint(kGroupKey,
                                     {GURL("https://endpoint.test/reports")});

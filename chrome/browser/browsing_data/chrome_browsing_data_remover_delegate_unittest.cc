@@ -148,7 +148,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/http/http_auth.h"
@@ -1002,7 +1002,7 @@ class MockReportingService : public net::ReportingService {
   void QueueReport(
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
@@ -1013,7 +1013,7 @@ class MockReportingService : public net::ReportingService {
 
   void ProcessReportToHeader(
       const url::Origin& origin,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& header_value) override {
     NOTREACHED();
   }
@@ -1091,7 +1091,7 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
 
   // net::NetworkErrorLoggingService implementation:
 
-  void OnHeader(const net::NetworkIsolationKey& network_isolation_key,
+  void OnHeader(const net::NetworkAnonymizationKey& network_anonymization_key,
                 const url::Origin& origin,
                 const net::IPAddress& received_ip_address,
                 const std::string& value) override {
@@ -2836,19 +2836,19 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   const url::SchemeHostPort kSchemeHostPort(GURL("http://host1.com:1"));
   http_auth_cache->Add(kSchemeHostPort, net::HttpAuth::AUTH_SERVER, kTestRealm,
                        net::HttpAuth::AUTH_SCHEME_BASIC,
-                       net::NetworkIsolationKey(), "test challenge",
+                       net::NetworkAnonymizationKey(), "test challenge",
                        net::AuthCredentials(u"foo", u"bar"), "/");
   CHECK(http_auth_cache->Lookup(kSchemeHostPort, net::HttpAuth::AUTH_SERVER,
                                 kTestRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
-                                net::NetworkIsolationKey()));
+                                net::NetworkAnonymizationKey()));
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_PASSWORDS, false);
 
-  EXPECT_EQ(nullptr,
-            http_auth_cache->Lookup(
-                kSchemeHostPort, net::HttpAuth::AUTH_SERVER, kTestRealm,
-                net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey()));
+  EXPECT_EQ(nullptr, http_auth_cache->Lookup(
+                         kSchemeHostPort, net::HttpAuth::AUTH_SERVER,
+                         kTestRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
+                         net::NetworkAnonymizationKey()));
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {

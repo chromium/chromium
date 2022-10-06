@@ -1154,9 +1154,11 @@ void NetworkContext::QueueReport(
         request_context->http_user_agent_settings()->GetUserAgent();
   }
 
-  reporting_service->QueueReport(url, reporting_source, network_isolation_key,
-                                 reported_user_agent, group, type,
-                                 std::move(body), 0 /* depth */);
+  reporting_service->QueueReport(
+      url, reporting_source,
+      net::NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKey(network_isolation_key),
+      reported_user_agent, group, type, std::move(body), 0 /* depth */);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 }
 
@@ -1177,7 +1179,9 @@ void NetworkContext::QueueSignedExchangeReport(
         url_request_context_->http_user_agent_settings()->GetUserAgent();
   }
   net::NetworkErrorLoggingService::SignedExchangeReportDetails details;
-  details.network_isolation_key = network_isolation_key;
+  details.network_anonymization_key = net::NetworkAnonymizationKey::
+      CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+          network_isolation_key);
   details.success = report->success;
   details.type = std::move(report->type);
   details.outer_url = std::move(report->outer_url);

@@ -29,7 +29,7 @@ ReportingCacheImpl::~ReportingCacheImpl() = default;
 
 void ReportingCacheImpl::AddReport(
     const absl::optional<base::UnguessableToken>& reporting_source,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const GURL& url,
     const std::string& user_agent,
     const std::string& group_name,
@@ -50,7 +50,7 @@ void ReportingCacheImpl::AddReport(
   }
 
   auto report = std::make_unique<ReportingReport>(
-      reporting_source, network_isolation_key, url, user_agent, group_name,
+      reporting_source, network_anonymization_key, url, user_agent, group_name,
       type, std::move(body), depth, queued, attempts);
 
   auto inserted = reports_.insert(std::move(report));
@@ -102,8 +102,8 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
   base::Value::List report_list;
   for (const ReportingReport* report : sorted_reports) {
     base::Value::Dict report_dict;
-    report_dict.Set("network_isolation_key",
-                    report->network_isolation_key.ToDebugString());
+    report_dict.Set("network_anonymization_key",
+                    report->network_anonymization_key.ToDebugString());
     report_dict.Set("url", report->url.spec());
     report_dict.Set("group", report->group);
     report_dict.Set("type", report->type);
@@ -364,12 +364,12 @@ bool ReportingCacheImpl::IsReportDoomedForTesting(
 }
 
 void ReportingCacheImpl::OnParsedHeader(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin,
     std::vector<ReportingEndpointGroup> parsed_header) {
   ConsistencyCheckClients();
 
-  Client new_client(network_isolation_key, origin);
+  Client new_client(network_anonymization_key, origin);
   base::Time now = clock().Now();
   new_client.last_used = now;
 
@@ -384,8 +384,8 @@ void ReportingCacheImpl::OnParsedHeader(
 
     // Consistency check: the new client should have the same NIK and origin as
     // all groups parsed from this header.
-    DCHECK(new_group.group_key.network_isolation_key ==
-           new_client.network_isolation_key);
+    DCHECK(new_group.group_key.network_anonymization_key ==
+           new_client.network_anonymization_key);
     DCHECK_EQ(new_group.group_key.origin, new_client.origin);
 
     for (const auto& parsed_endpoint_info : parsed_endpoint_group.endpoints) {
@@ -417,7 +417,7 @@ void ReportingCacheImpl::OnParsedHeader(
 
   // Remove endpoint groups that may have been configured for an existing client
   // for |origin|, but which are not specified in the current header.
-  RemoveEndpointGroupsForClientOtherThan(network_isolation_key, origin,
+  RemoveEndpointGroupsForClientOtherThan(network_anonymization_key, origin,
                                          new_client.endpoint_group_names);
 
   EnforcePerClientAndGlobalEndpointLimits(
@@ -476,10 +476,11 @@ std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
 }
 
 void ReportingCacheImpl::RemoveClient(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin) {
   ConsistencyCheckClients();
-  ClientMap::iterator client_it = FindClientIt(network_isolation_key, origin);
+  ClientMap::iterator client_it =
+      FindClientIt(network_anonymization_key, origin);
   if (client_it == clients_.end())
     return;
   RemoveClientInternal(client_it);
@@ -641,7 +642,8 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
     }
 
     if (!client ||
-        client->network_isolation_key != group_key.network_isolation_key ||
+        client->network_anonymization_key !=
+            group_key.network_anonymization_key ||
         client->origin != group_key.origin) {
       // Store the old client and start a new one.
       if (client) {
@@ -651,7 +653,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
       }
       DCHECK(FindClientIt(group_key) == clients_.end());
       client = absl::make_optional(
-          Client(group_key.network_isolation_key, group_key.origin));
+          Client(group_key.network_anonymization_key, group_key.origin));
     }
     DCHECK(client.has_value());
     client->endpoint_group_names.insert(group_key.group_name);
@@ -664,7 +666,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
   }
 
   if (client) {
-    DCHECK(FindClientIt(client->network_isolation_key, client->origin) ==
+    DCHECK(FindClientIt(client->network_anonymization_key, client->origin) ==
            clients_.end());
     ClientMap::iterator client_it = clients_.insert(
         std::make_pair(client->origin.host(), std::move(*client)));
@@ -715,7 +717,8 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
   // We need to clear out the |reporting_source| field to get a group key which
   // can be compared to any V0 endpoint groups.
   ReportingEndpointGroupKey v0_lookup_group_key(
-      group_key.network_isolation_key, group_key.origin, group_key.group_name);
+      group_key.network_anonymization_key, group_key.origin,
+      group_key.group_name);
 
   // Look for an exact origin match for |origin| and |group|.
   EndpointGroupMap::iterator group_it =
@@ -738,12 +741,12 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
          ++client_it) {
       // Client for a superdomain of |origin|
       const Client& client = client_it->second;
-      if (client.network_isolation_key !=
-          v0_lookup_group_key.network_isolation_key) {
+      if (client.network_anonymization_key !=
+          v0_lookup_group_key.network_anonymization_key) {
         continue;
       }
       ReportingEndpointGroupKey superdomain_lookup_group_key(
-          v0_lookup_group_key.network_isolation_key, client.origin,
+          v0_lookup_group_key.network_anonymization_key, client.origin,
           v0_lookup_group_key.group_name);
       group_it = FindEndpointGroupIt(superdomain_lookup_group_key);
 
@@ -828,13 +831,13 @@ bool ReportingCacheImpl::EndpointGroupExistsForTesting(
 }
 
 bool ReportingCacheImpl::ClientExistsForTesting(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin) const {
   ConsistencyCheckClients();
   for (const auto& domain_and_client : clients_) {
     const Client& client = domain_and_client.second;
     DCHECK_EQ(client.origin.host(), domain_and_client.first);
-    if (client.network_isolation_key == network_isolation_key &&
+    if (client.network_anonymization_key == network_anonymization_key &&
         client.origin == origin) {
       return true;
     }
@@ -862,8 +865,8 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
   DCHECK(!reporting_source.is_empty());
   DCHECK(group_key.IsDocumentEndpoint());
   DCHECK_EQ(reporting_source, group_key.reporting_source.value());
-  DCHECK(group_key.network_isolation_key ==
-         isolation_info.network_isolation_key());
+  DCHECK(group_key.network_anonymization_key ==
+         isolation_info.network_anonymization_key());
 
   ReportingEndpoint::EndpointInfo info;
   info.url = url;
@@ -901,7 +904,7 @@ void ReportingCacheImpl::SetEndpointForTesting(
   ClientMap::iterator client_it = FindClientIt(group_key);
   // If the client doesn't yet exist, add it.
   if (client_it == clients_.end()) {
-    Client new_client(group_key.network_isolation_key, group_key.origin);
+    Client new_client(group_key.network_anonymization_key, group_key.origin);
     std::string domain = group_key.origin.host();
     client_it = clients_.insert(std::make_pair(domain, std::move(new_client)));
   }
@@ -955,7 +958,7 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
   if (!endpoint.group_key.reporting_source.has_value()) {
     return IsolationInfo::CreatePartial(
         IsolationInfo::RequestType::kOther,
-        endpoint.group_key.network_isolation_key);
+        endpoint.group_key.network_anonymization_key);
   }
   const auto it =
       isolation_info_.find(endpoint.group_key.reporting_source.value());
@@ -964,9 +967,9 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
 }
 
 ReportingCacheImpl::Client::Client(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin)
-    : network_isolation_key(network_isolation_key), origin(origin) {}
+    : network_anonymization_key(network_anonymization_key), origin(origin) {}
 
 ReportingCacheImpl::Client::Client(const Client& other) = default;
 
@@ -1005,7 +1008,7 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
 
   size_t total_endpoint_count = 0;
   size_t total_endpoint_group_count = 0;
-  std::set<std::pair<NetworkIsolationKey, url::Origin>>
+  std::set<std::pair<NetworkAnonymizationKey, url::Origin>>
       nik_origin_pairs_in_cache;
 
   for (const auto& domain_and_client : clients_) {
@@ -1015,7 +1018,7 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
     total_endpoint_group_count += ConsistencyCheckClient(domain, client);
 
     auto inserted = nik_origin_pairs_in_cache.insert(
-        std::make_pair(client.network_isolation_key, client.origin));
+        std::make_pair(client.network_anonymization_key, client.origin));
     // We have not seen a duplicate client with the same NIK and origin.
     DCHECK(inserted.second);
   }
@@ -1055,7 +1058,7 @@ size_t ReportingCacheImpl::ConsistencyCheckClient(const std::string& domain,
       // group.
       DCHECK(!key_and_group.first.IsDocumentEndpoint());
       if (key.origin == client.origin &&
-          key.network_isolation_key == client.network_isolation_key &&
+          key.network_anonymization_key == client.network_anonymization_key &&
           key.group_name == group_name) {
         ++endpoint_group_count_in_client;
         ++groups_with_name;
@@ -1133,14 +1136,14 @@ void ReportingCacheImpl::ConsistencyCheckEndpoint(
 }
 
 ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::FindClientIt(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin) {
   // TODO(chlily): Limit the number of clients per domain to prevent an attacker
   // from installing many Reporting policies for different port numbers on the
   // same host.
   const auto domain_range = clients_.equal_range(origin.host());
   for (auto it = domain_range.first; it != domain_range.second; ++it) {
-    if (it->second.network_isolation_key == network_isolation_key &&
+    if (it->second.network_anonymization_key == network_anonymization_key &&
         it->second.origin == origin) {
       return it;
     }
@@ -1150,7 +1153,7 @@ ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::FindClientIt(
 
 ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::FindClientIt(
     const ReportingEndpointGroupKey& group_key) {
-  return FindClientIt(group_key.network_isolation_key, group_key.origin);
+  return FindClientIt(group_key.network_anonymization_key, group_key.origin);
 }
 
 ReportingCacheImpl::EndpointGroupMap::iterator
@@ -1173,7 +1176,7 @@ ReportingCacheImpl::EndpointMap::iterator ReportingCacheImpl::FindEndpointIt(
 ReportingCacheImpl::ClientMap::iterator ReportingCacheImpl::AddOrUpdateClient(
     Client new_client) {
   ClientMap::iterator client_it =
-      FindClientIt(new_client.network_isolation_key, new_client.origin);
+      FindClientIt(new_client.network_anonymization_key, new_client.origin);
 
   // Add a new client for this NIK and origin.
   if (client_it == clients_.end()) {
@@ -1288,10 +1291,11 @@ void ReportingCacheImpl::RemoveEndpointsInGroupOtherThan(
 }
 
 void ReportingCacheImpl::RemoveEndpointGroupsForClientOtherThan(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin,
     const std::set<std::string>& groups_to_keep_names) {
-  ClientMap::iterator client_it = FindClientIt(network_isolation_key, origin);
+  ClientMap::iterator client_it =
+      FindClientIt(network_anonymization_key, origin);
   if (client_it == clients_.end())
     return;
 
@@ -1302,8 +1306,9 @@ void ReportingCacheImpl::RemoveEndpointGroupsForClientOtherThan(
                                                        groups_to_keep_names);
 
   for (const std::string& group_name : groups_to_remove_names) {
-    EndpointGroupMap::iterator group_it = FindEndpointGroupIt(
-        ReportingEndpointGroupKey(network_isolation_key, origin, group_name));
+    EndpointGroupMap::iterator group_it =
+        FindEndpointGroupIt(ReportingEndpointGroupKey(network_anonymization_key,
+                                                      origin, group_name));
     RemoveEndpointGroupInternal(client_it, group_it);
   }
 }
@@ -1414,7 +1419,7 @@ ReportingCacheImpl::RemoveClientInternal(ClientMap::iterator client_it) {
 
   // Erase all groups in this client, and all endpoints in those groups.
   for (const std::string& group_name : client.endpoint_group_names) {
-    ReportingEndpointGroupKey group_key(client.network_isolation_key,
+    ReportingEndpointGroupKey group_key(client.network_anonymization_key,
                                         client.origin, group_name);
     EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
     if (context_->IsClientDataPersisted())
@@ -1475,8 +1480,8 @@ void ReportingCacheImpl::EvictEndpointsFromClient(ClientMap::iterator client_it,
   const Client& client = client_it->second;
   // Cache this value as |client| may be deleted.
   size_t client_endpoint_count = client.endpoint_count;
-  const NetworkIsolationKey& network_isolation_key =
-      client.network_isolation_key;
+  const NetworkAnonymizationKey& network_anonymization_key =
+      client.network_anonymization_key;
   const url::Origin& origin = client.origin;
 
   DCHECK_GE(client_endpoint_count, endpoints_to_evict);
@@ -1502,7 +1507,7 @@ void ReportingCacheImpl::EvictEndpointsFromClient(ClientMap::iterator client_it,
     EndpointGroupMap::iterator stalest_group_it = endpoint_groups_.end();
     size_t stalest_group_endpoint_count = 0;
     for (const std::string& group_name : client.endpoint_group_names) {
-      ReportingEndpointGroupKey group_key(network_isolation_key, origin,
+      ReportingEndpointGroupKey group_key(network_anonymization_key, origin,
                                           group_name);
       EndpointGroupMap::iterator group_it = FindEndpointGroupIt(group_key);
       size_t group_endpoint_count = GetEndpointCountInGroup(group_key);
@@ -1555,7 +1560,7 @@ bool ReportingCacheImpl::RemoveExpiredOrStaleGroups(
 
   for (const std::string& group_name : groups_in_client_names) {
     EndpointGroupMap::iterator group_it = FindEndpointGroupIt(
-        ReportingEndpointGroupKey(client_it->second.network_isolation_key,
+        ReportingEndpointGroupKey(client_it->second.network_anonymization_key,
                                   client_it->second.origin, group_name));
     DCHECK(group_it != endpoint_groups_.end());
     const CachedReportingEndpointGroup& group = group_it->second;
@@ -1594,13 +1599,13 @@ void ReportingCacheImpl::RemoveEndpointItFromIndex(
 
 base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
   base::Value::Dict client_dict;
-  client_dict.Set("network_isolation_key",
-                  client.network_isolation_key.ToDebugString());
+  client_dict.Set("network_anonymization_key",
+                  client.network_anonymization_key.ToDebugString());
   client_dict.Set("origin", client.origin.Serialize());
 
   base::Value::List group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
-    ReportingEndpointGroupKey group_key(client.network_isolation_key,
+    ReportingEndpointGroupKey group_key(client.network_anonymization_key,
                                         client.origin, group_name);
     const CachedReportingEndpointGroup& group = endpoint_groups_.at(group_key);
     group_list.Append(GetEndpointGroupAsValue(group));

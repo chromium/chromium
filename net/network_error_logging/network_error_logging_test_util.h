@@ -30,7 +30,7 @@ class TestNetworkErrorLoggingService : public NetworkErrorLoggingService {
     // addresses in |address_list|.
     bool MatchesAddressList(const AddressList& address_list) const;
 
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     IPAddress received_ip_address;
     std::string value;
@@ -49,7 +49,7 @@ class TestNetworkErrorLoggingService : public NetworkErrorLoggingService {
   const std::vector<RequestDetails>& errors() { return errors_; }
 
   // NetworkErrorLoggingService implementation
-  void OnHeader(const NetworkIsolationKey& network_isolation_key,
+  void OnHeader(const NetworkAnonymizationKey& network_anonymization_key,
                 const url::Origin& origin,
                 const IPAddress& received_ip_address,
                 const std::string& value) override;

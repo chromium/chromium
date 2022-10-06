@@ -18,7 +18,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
@@ -313,14 +313,14 @@ TestReportingService::Report::Report(Report&& other) = default;
 
 TestReportingService::Report::Report(
     const GURL& url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
     std::unique_ptr<const base::Value> body,
     int depth)
     : url(url),
-      network_isolation_key(network_isolation_key),
+      network_anonymization_key(network_anonymization_key),
       user_agent(user_agent),
       group(group),
       type(type),
@@ -336,20 +336,20 @@ TestReportingService::~TestReportingService() = default;
 void TestReportingService::QueueReport(
     const GURL& url,
     const absl::optional<base::UnguessableToken>& reporting_source,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& user_agent,
     const std::string& group,
     const std::string& type,
     base::Value::Dict body,
     int depth) {
   reports_.emplace_back(
-      Report(url, network_isolation_key, user_agent, group, type,
+      Report(url, network_anonymization_key, user_agent, group, type,
              std::make_unique<base::Value>(std::move(body)), depth));
 }
 
 void TestReportingService::ProcessReportToHeader(
     const url::Origin& origin,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& header_value) {
   NOTREACHED();
 }

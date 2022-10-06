@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_report.h"
@@ -31,7 +31,7 @@ class ReportingGarbageCollectorTest : public ReportingTestBase {
 
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
-  const NetworkIsolationKey kNik_;
+  const NetworkAnonymizationKey kNik_;
   const IsolationInfo kIsolationInfo_;
   const GURL kUrl_ = GURL("https://origin/path");
   const std::string kUserAgent_ = "Mozilla/1.0";

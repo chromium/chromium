@@ -2353,8 +2353,8 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
 
   GURL domain("http://google.com");
   network_context->url_request_context()->reporting_service()->QueueReport(
-      domain, absl::nullopt, net::NetworkIsolationKey(), "Mozilla/1.0", "group",
-      "type", base::Value::Dict(), 0);
+      domain, absl::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
+      "group", "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
   reporting_cache->GetReports(&reports);
@@ -2382,11 +2382,11 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
       network_context->url_request_context()->reporting_service();
   GURL url1("http://google.com");
   reporting_service->QueueReport(url1, absl::nullopt,
-                                 net::NetworkIsolationKey(), "Mozilla/1.0",
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
   GURL url2("http://chromium.org");
   reporting_service->QueueReport(url2, absl::nullopt,
-                                 net::NetworkIsolationKey(), "Mozilla/1.0",
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
@@ -2421,11 +2421,11 @@ TEST_F(NetworkContextTest,
       network_context->url_request_context()->reporting_service();
   GURL url1("http://192.168.0.1");
   reporting_service->QueueReport(url1, absl::nullopt,
-                                 net::NetworkIsolationKey(), "Mozilla/1.0",
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
   GURL url2("http://192.168.0.2");
   reporting_service->QueueReport(url2, absl::nullopt,
-                                 net::NetworkIsolationKey(), "Mozilla/1.0",
+                                 net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
 
   std::vector<const net::ReportingReport*> reports;
@@ -2494,7 +2494,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheClients) {
 
   GURL domain("https://google.com");
   net::ReportingEndpointGroupKey group_key(
-      net::NetworkIsolationKey(), url::Origin::Create(domain), "group");
+      net::NetworkAnonymizationKey(), url::Origin::Create(domain), "group");
   reporting_cache->SetEndpointForTesting(
       group_key, domain, net::OriginSubdomains::DEFAULT, base::Time::Max(),
       1 /* priority */, 1 /* weight */);
@@ -2520,13 +2520,13 @@ TEST_F(NetworkContextTest, ClearReportingCacheClientsWithFilter) {
 
   GURL domain1("https://google.com");
   net::ReportingEndpointGroupKey group_key1(
-      net::NetworkIsolationKey(), url::Origin::Create(domain1), "group");
+      net::NetworkAnonymizationKey(), url::Origin::Create(domain1), "group");
   reporting_cache->SetEndpointForTesting(
       group_key1, domain1, net::OriginSubdomains::DEFAULT, base::Time::Max(),
       1 /* priority */, 1 /* weight */);
   GURL domain2("https://chromium.org");
   net::ReportingEndpointGroupKey group_key2(
-      net::NetworkIsolationKey(), url::Origin::Create(domain2), "group");
+      net::NetworkAnonymizationKey(), url::Origin::Create(domain2), "group");
   reporting_cache->SetEndpointForTesting(
       group_key2, domain2, net::OriginSubdomains::DEFAULT, base::Time::Max(),
       1 /* priority */, 1 /* weight */);
@@ -2592,7 +2592,7 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLogging) {
   ASSERT_TRUE(logging_service);
 
   GURL domain("https://google.com");
-  logging_service->OnHeader(net::NetworkIsolationKey(),
+  logging_service->OnHeader(net::NetworkAnonymizationKey(),
                             url::Origin::Create(domain),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
@@ -2618,12 +2618,12 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
   ASSERT_TRUE(logging_service);
 
   GURL domain1("https://google.com");
-  logging_service->OnHeader(net::NetworkIsolationKey(),
+  logging_service->OnHeader(net::NetworkAnonymizationKey(),
                             url::Origin::Create(domain1),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
   GURL domain2("https://chromium.org");
-  logging_service->OnHeader(net::NetworkIsolationKey(),
+  logging_service->OnHeader(net::NetworkAnonymizationKey(),
                             url::Origin::Create(domain2),
                             net::IPAddress(192, 168, 0, 1),
                             "{\"report_to\":\"group\",\"max_age\":86400}");
@@ -2645,7 +2645,7 @@ TEST_F(NetworkContextTest, ClearNetworkErrorLoggingWithFilter) {
   EXPECT_THAT(
       policy_keys,
       testing::ElementsAre(net::NetworkErrorLoggingService::NelPolicyKey(
-          net::NetworkIsolationKey(), url::Origin::Create(domain2))));
+          net::NetworkAnonymizationKey(), url::Origin::Create(domain2))));
 }
 
 TEST_F(NetworkContextTest, ClearEmptyNetworkErrorLogging) {
