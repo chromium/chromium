@@ -2286,23 +2286,23 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_CANCEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that cancels removing the device.">
     Cancel
   </message>
-  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_REMOVE" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that removes the device.">
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_REMOVE" desc="Bluetooth saved devices subpage > Remove device dialog: Label for button that removes the device." meaning="the title and the button are meant to match. “Remove” means to move or take content/data down so that it's no longer visible in the user interface (but it may still exist in the system, as opposed to 'deleting' or 'uninstalling'">
     Remove
   </message>
-  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for dialog that removes the device.">
+  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for dialog that removes the device." meaning="question to prompt users if they want to remove [device name] from their [email address]. The user then confirms removing the device name or cancels to not remove the device name">
     Remove <ph name="DEVICE">$1<ex>Beats</ex></ph> from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>?
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_CANCEL" desc="Bluetooth device details page > Forget device dialog: Label for button that cancels forgetting the device.">
     Cancel
   </message>
-  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_FORGET" desc="Bluetooth device details page > Forget device dialog: Label for button that forgets the device.">
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_FORGET" desc="Bluetooth device details page > Forget device dialog: Label for button that forgets the device." meaning="The 'forget' buttons means 'forgetting the device,' the 'forget' button is a confirmation for the user to unpair and remove the device from their account">
     Forget
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_LABEL" desc="Bluetooth device details page > Forget device dialog: Label for dialog that forgets the device.">
     <ph name="DEVICE">$1<ex>Beats</ex></ph> will be removed from this Chromebook and won’t be saved to <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>.
   </message>
-  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device.">
-    Forget device
+  <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device." meaning="'Forget this device' means the device will be unpaired and removed from the account">
+    Forget this device?
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
     Connect to Bluetooth device

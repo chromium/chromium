@@ -3347,8 +3347,8 @@ Connect your device to power.
       <message name="IDS_FAST_PAIR_SAVE_BUTTON" desc="Message on button to tell users to save Fast Pair device to the user's Google account.">
         Save
       </message>
-      <message name="IDS_FAST_PAIR_LEARN_MORE_BUTTON" desc="Message on button to tell users to learn more about saving their Fast Pair device to the user's Google account.">
-        Learn More
+      <message name="IDS_FAST_PAIR_LEARN_MORE_BUTTON" meaning="button that links users to a help center support article" desc="Message on button to tell users to learn more about saving their Fast Pair device to the user's Google account.">
+        Learn more
       </message>
       <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE" desc="Notification title shown when a there is a device discovered with Fast Pair.">
         Connect your <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
