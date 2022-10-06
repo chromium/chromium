@@ -29,6 +29,8 @@ html {
 
   --google-green-50-rgb: 230, 244, 234;  /* #e6f4ea */
   --google-green-50: rgb(var(--google-green-50-rgb));
+  --google-green-200-rgb: 168, 218, 181; /* #a8dab5 */
+  --google-green-200: rgb(var(--google-green-200-rgb));
   --google-green-300-rgb: 129, 201, 149;  /* #81c995 */
   --google-green-300: rgb(var(--google-green-300-rgb));
   --google-green-400-rgb: 91, 185, 116;  /* #5bb974 */
@@ -39,6 +41,10 @@ html {
   --google-green-600: rgb(var(--google-green-600-rgb));
   --google-green-700-rgb: 24, 128, 56;  /* #188038 */
   --google-green-700: rgb(var(--google-green-700-rgb));
+  --google-green-800-rgb: 19, 115, 51; /* #137333 */
+  --google-green-800: rgb(var(--google-green-800-rgb));
+  --google-green-900-rgb: 13, 101, 45; /* #0d652d */
+  --google-green-900: rgb(var(--google-green-900-rgb));
 
   --google-grey-50-rgb: 248, 249, 250;  /* #f8f9fa */
   --google-grey-50: rgb(var(--google-grey-50-rgb));

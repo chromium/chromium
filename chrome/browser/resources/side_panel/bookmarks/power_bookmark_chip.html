@@ -1,6 +1,14 @@
 <style>
   :host {
     --power-bookmark-chip-background: var(--google-grey-100);
+    --power-bookmark-chip-icon-color: var(--cr-secondary-text-color);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --power-bookmark-chip-background: var(--google-grey-800);
+      --power-bookmark-chip-icon-color: var(--google-grey-100);
+    }
   }
 
   :host ::slotted(.icon) {
@@ -8,7 +16,7 @@
     -webkit-mask-image: var(--power-bookmark-chip-icon-image);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: var(--power-bookmark-chip-icon-size);
-    background-color: var(--cr-secondary-text-color);
+    background-color: var(--power-bookmark-chip-icon-color);
     height: var(--power-bookmark-chip-icon-size);
     width: var(--power-bookmark-chip-icon-size);
   }

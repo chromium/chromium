@@ -258,6 +258,14 @@ export class BookmarksListElement extends PolymerElement {
   }
 
   /**
+   * Whether the given price-tracked bookmark should display as if discounted.
+   */
+  private showDiscountedPrice_(): boolean {
+    // TODO: Incorporate actual price tracking data here
+    return true;
+  }
+
+  /**
    * Finds the node within the nested array of folders and returns the path to
    * the node in the tree.
    */
