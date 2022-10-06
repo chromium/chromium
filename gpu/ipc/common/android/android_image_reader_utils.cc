@@ -4,11 +4,7 @@
 
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
 
-#include <android/native_window_jni.h>
-
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
-#include "ui/gl/gl_fence_egl.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 
 namespace gpu {
 
@@ -80,43 +76,6 @@ bool InsertEglFenceAndWait(base::ScopedFD acquire_fence_fd) {
 
   // Make the server wait and not the client.
   egl_fence->ServerWait();
-  return true;
-}
-
-bool CreateAndBindEglImage(const AImage* image,
-                           GLuint texture_id,
-                           base::android::AndroidImageReader* loader) {
-  // Get the hardware buffer from the image.
-  AHardwareBuffer* buffer = nullptr;
-  DCHECK(image);
-  if (loader->AImage_getHardwareBuffer(image, &buffer) != AMEDIA_OK) {
-    LOG(ERROR) << "hardware buffer is null";
-    return false;
-  }
-
-  // Create a egl image from the hardware buffer. Get the image size to create
-  // egl image.
-  int32_t image_height = 0, image_width = 0;
-  if (loader->AImage_getWidth(image, &image_width) != AMEDIA_OK) {
-    LOG(ERROR) << "image width is null OR image has been deleted";
-    return false;
-  }
-  if (loader->AImage_getHeight(image, &image_height) != AMEDIA_OK) {
-    LOG(ERROR) << "image height is null OR image has been deleted";
-    return false;
-  }
-  gfx::Size image_size(image_width, image_height);
-  auto egl_image = base::MakeRefCounted<gl::GLImageAHardwareBuffer>(image_size);
-  if (!egl_image->Initialize(buffer, false)) {
-    LOG(ERROR) << "Failed to create EGL image ";
-    return false;
-  }
-
-  // Now bind this egl image to the texture target GL_TEXTURE_EXTERNAL_OES. Note
-  // that once the egl image is bound, it can be destroyed safely without
-  // affecting the rendering using this texture image.
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id);
-  egl_image->BindTexImage(GL_TEXTURE_EXTERNAL_OES);
   return true;
 }
 

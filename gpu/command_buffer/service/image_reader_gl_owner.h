@@ -79,15 +79,11 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
     ~ScopedCurrentImageRef();
     AImage* image() const { return image_; }
     base::ScopedFD GetReadyFence() const;
-    void EnsureBound(GLuint service_id);
 
    private:
     ImageReaderGLOwner* texture_owner_;
     AImage* image_;
     base::ScopedFD ready_fence_;
-
-    // Set to true if the current image is bound to |texture_id_|.
-    bool image_bound_ = false;
   };
 
   ImageReaderGLOwner(std::unique_ptr<gles2::AbstractTexture> texture,

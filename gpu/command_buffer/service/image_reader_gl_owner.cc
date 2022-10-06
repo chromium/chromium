@@ -322,9 +322,11 @@ void ImageReaderGLOwner::UpdateTexImage() {
 }
 
 void ImageReaderGLOwner::EnsureTexImageBound(GLuint service_id) {
-  base::AutoLock auto_lock(lock_);
-  if (current_image_ref_)
-    current_image_ref_->EnsureBound(service_id);
+  // This method is supposed to be called only if the TextureOwner instance
+  // binds the texture on update, which ImageReaderGLOwner does not. If this
+  // method *is* ever called on this class it will not work as the caller is
+  // expecting; hence CHECK to ensure that any such instances are caught.
+  CHECK(false);
 }
 
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
@@ -553,42 +555,12 @@ ImageReaderGLOwner::ScopedCurrentImageRef::ScopedCurrentImageRef(
 
 ImageReaderGLOwner::ScopedCurrentImageRef::~ScopedCurrentImageRef() {
   texture_owner_->lock_.AssertAcquired();
-  base::ScopedFD release_fence;
-  // If there is no |image_reader_|, we are in tear down so no fence is
-  // required.
-  if (image_bound_ && texture_owner_->image_reader_)
-    release_fence = CreateEglFenceAndExportFd();
-  else
-    release_fence = std::move(ready_fence_);
-  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(release_fence));
+  texture_owner_->ReleaseRefOnImageLocked(image_, std::move(ready_fence_));
 }
 
 base::ScopedFD ImageReaderGLOwner::ScopedCurrentImageRef::GetReadyFence()
     const {
   return base::ScopedFD(HANDLE_EINTR(dup(ready_fence_.get())));
-}
-
-void ImageReaderGLOwner::ScopedCurrentImageRef::EnsureBound(GLuint service_id) {
-  // Same |image_| can be bound multiple times to different |service_id|. So
-  // even if |image_bound_| is true, it might not be for current |service_id|.
-  // Hence we still need to create and bind egl image to the |service_id|.
-  // Also continue to wait on the fence even if it was waited upon during
-  // previous EnsureBound() calls on same image since this call could be on a
-  // different context. Insert an EGL fence and make server wait for image to be
-  // available.
-  if (!InsertEglFenceAndWait(GetReadyFence()))
-    return;
-
-  // CreateAndBindEglImage will bind texture with service_id to current unit. We
-  // never should alter gl binding without updating state tracking, which we
-  // can't do here, so restore previous after we done.
-  ScopedRestoreTextureBinding scoped_restore_texture;
-
-  // Create EGL image from the AImage and bind it to the texture.
-  if (!CreateAndBindEglImage(image_, service_id, &texture_owner_->loader_))
-    return;
-
-  image_bound_ = true;
 }
 
 }  // namespace gpu
