@@ -44,6 +44,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
@@ -794,8 +795,10 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   DCHECK_NE(active_desk_, target_desk);
 
   // An active window might be an always-on-top or pip which doesn't belong to
-  // the active desk, and hence cannot be removed.
-  if (!base::Contains(active_desk_->windows(), window))
+  // the active desk, and cannot be removed. Except floated window, which is
+  // handled by `FloatController::OnMovingFloatedWindowToDesk`.
+  const bool is_floated = WindowState::Get(window)->IsFloated();
+  if (!base::Contains(active_desk_->windows(), window) && !is_floated)
     return false;
 
   const bool visible_on_all_desks =
@@ -840,8 +843,15 @@ bool DesksController::MoveWindowFromActiveDeskTo(
     }
   }
 
-  active_desk_->MoveWindowToDesk(window, target_desk, target_root,
-                                 /*unminimize=*/true);
+  // Floated window doesn't belong to the desk container, float controller
+  // handles its desk-window relationship.
+  if (is_floated) {
+    Shell::Get()->float_controller()->OnMovingFloatedWindowToDesk(
+        window, target_desk, target_root);
+  } else {
+    active_desk_->MoveWindowToDesk(window, target_desk, target_root,
+                                   /*unminimize=*/true);
+  }
 
   MaybeUpdateShelfItems(/*windows_on_inactive_desk=*/{window},
                         /*windows_on_active_desk=*/{});

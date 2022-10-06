@@ -25,6 +25,7 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
@@ -75,7 +76,7 @@ void UpdateWindowBoundsForTablet(aura::Window* window) {
       window_state, WindowState::BoundsChangeAnimationType::kAnimate);
 }
 
-// Shows the given floated window.
+// Hides the given floated window.
 void HideFloatedWindow(aura::Window* floated_window) {
   // Disable the window animation here, because during desk deactivation we
   // are taking a screenshot of the desk (used for desk switch animations.)
@@ -86,7 +87,7 @@ void HideFloatedWindow(aura::Window* floated_window) {
   floated_window->Hide();
 }
 
-// Hides the given floated window.
+// Shows the given floated window.
 void ShowFloatedWindow(aura::Window* floated_window) {
   DCHECK(floated_window);
   ScopedAnimationDisabler disabler(floated_window);
@@ -521,6 +522,31 @@ void FloatController::OnMovingAllWindowsOutToDesk(Desk* original_desk,
   }
 }
 
+void FloatController::OnMovingFloatedWindowToDesk(aura::Window* floated_window,
+                                                  Desk* target_desk,
+                                                  aura::Window* target_root) {
+  auto* target_desk_floated_window = FindFloatedWindowOfDesk(target_desk);
+  aura::Window* root = floated_window->GetRootWindow();
+  if (target_desk_floated_window) {
+    // Unfloat the floated window at `target_desk`.
+    ResetFloatedWindow(target_desk_floated_window);
+  }
+  auto* float_info = MaybeGetFloatedWindowInfo(floated_window);
+  DCHECK(float_info);
+  float_info->set_desk(target_desk);
+  if (root != target_root) {
+    // If `floated_window_` is dragged to a desk on a different display, we
+    // also need to move it to the target display.
+    window_util::MoveWindowToDisplay(floated_window,
+                                     display::Screen::GetScreen()
+                                         ->GetDisplayNearestWindow(target_root)
+                                         .id());
+  }
+
+  // Hide `floated_window` since it's been moved to an inactive desk.
+  HideFloatedWindow(floated_window);
+}
+
 void FloatController::OnTabletModeStarting() {
   DCHECK(!floated_window_info_map_.empty());
   // Temporary vector here to avoid mutating the map while iterating it.
@@ -686,6 +712,8 @@ void FloatController::UnfloatImpl(aura::Window* window) {
   // active desk container from float container.
   WindowState::Get(window)->SetPreAddedToWorkspaceWindowBounds(
       window->bounds());
+  // Floated window have been hidden on purpose on the inactive desk.
+  ShowFloatedWindow(window);
   // Re-parent window to the "parent" desk's desk container.
   floated_window_info->desk()
       ->GetDeskContainerForRoot(window->GetRootWindow())

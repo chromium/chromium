@@ -94,6 +94,18 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // `target_desk` has a floated window.
   void OnMovingAllWindowsOutToDesk(Desk* original_desk, Desk* target_desk);
 
+  // Called when moving the `floated_window` to `target_desk`. This function
+  // takes care of floated window since it doesn't belong to the desk container.
+  // Note: Unlike `OnMovingAllWindowsOutToDesk` above, if `target_desk` has a
+  // floated window, it will be unfloated, while `floated_window` remains
+  // floated.
+  // Note: When dragging `floated_window` to a different display, we need to map
+  // `floated_window` to the desk container with same ID on target display's
+  // root.
+  void OnMovingFloatedWindowToDesk(aura::Window* floated_window,
+                                   Desk* target_desk,
+                                   aura::Window* target_root);
+
   // TabletModeObserver:
   void OnTabletModeStarting() override;
   void OnTabletModeEnding() override;

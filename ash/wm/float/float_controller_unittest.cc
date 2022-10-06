@@ -17,10 +17,14 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/cursor_manager_chromeos.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -410,6 +414,103 @@ TEST_F(WindowFloatTest, FloatWindowWithMRUWindowList) {
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   EXPECT_TRUE(base::Contains(all_desks_mru_list, window_1.get()));
   EXPECT_TRUE(base::Contains(all_desks_mru_list, window_2.get()));
+}
+
+// Test moving floating window between desks.
+TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesks) {
+  auto* desks_controller = DesksController::Get();
+  // Float `window_1` at `desk_1`.
+  auto* desk_1 = desks_controller->desks()[0].get();
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
+  // Verify `window_1` belongs to `desk_1`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_1);
+  NewDesk();
+  auto* desk_2 = desks_controller->desks()[1].get();
+  // Move to `desk_2`.
+  ActivateDesk(desk_2);
+  // Float `window_2` at `desk_2`.
+  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
+  // Move back to `desk_1`.
+  ActivateDesk(desk_1);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  auto* overview_session = overview_controller->overview_session();
+  // The window should exist on the grid of the first display.
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window_1.get());
+  auto* grid =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(1u, grid->size());
+  // Get position of `desk_2`'s desk mini view on the secondary display.
+  const auto* desks_bar_view = grid->desks_bar_view();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
+  gfx::Point desk_2_mini_view_center =
+      desk_2_mini_view->GetBoundsInScreen().CenterPoint();
+
+  // On overview, drag and drop floated `window_1` to `desk_2`.
+  DragItemToPoint(overview_item, desk_2_mini_view_center, GetEventGenerator(),
+                  /*by_touch_gestures=*/false,
+                  /*drop=*/true);
+
+  // Verify `window_1` belongs to `desk_2`.
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_2);
+  // Verify `window_2` is unfloated.
+  ASSERT_FALSE(WindowState::Get(window_2.get())->IsFloated());
+}
+
+// Test drag floating window between desks on different displays.
+TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesksOnDifferentDisplay) {
+  UpdateDisplay("1000x400,1000+0-1000x400");
+  auto* desks_controller = DesksController::Get();
+  // Float `window_1` at `desk_1`.
+  auto* desk_1 = desks_controller->desks()[0].get();
+  std::unique_ptr<aura::Window> window_1(CreateFloatedWindow());
+  // Verify `window_1` belongs to `desk_1`.
+  auto* float_controller = Shell::Get()->float_controller();
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_1);
+  // Create `desk_2`.
+  NewDesk();
+  auto* desk_2 = desks_controller->desks()[1].get();
+  // Move to `desk_2`.
+  ActivateDesk(desk_2);
+  // Float `window_2` at `desk_2`.
+  std::unique_ptr<aura::Window> window_2(CreateFloatedWindow());
+  // Move back to `desk_1`.
+  ActivateDesk(desk_1);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  EnterOverview();
+  auto* overview_session = overview_controller->overview_session();
+  // Get root for displays.
+  auto roots = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, roots.size());
+  aura::Window* primary_root = roots[0];
+  aura::Window* secondary_root = roots[1];
+  // The window should exist on the grid of the first display.
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window_1.get());
+  auto* grid1 = overview_session->GetGridWithRootWindow(primary_root);
+  auto* grid2 = overview_session->GetGridWithRootWindow(secondary_root);
+  EXPECT_EQ(1u, grid1->size());
+  EXPECT_EQ(grid1, overview_item->overview_grid());
+  EXPECT_EQ(0u, grid2->size());
+
+  // Get position of `desk_2`'s desk mini view on the secondary display.
+  const auto* desks_bar_view = grid2->desks_bar_view();
+  auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
+  gfx::Point desk_2_mini_view_center =
+      desk_2_mini_view->GetBoundsInScreen().CenterPoint();
+
+  // On overview, drag and drop floated `window_1` to `desk_2` on display 2.
+  DragItemToPoint(overview_item, desk_2_mini_view_center, GetEventGenerator(),
+                  /*by_touch_gestures=*/false,
+                  /*drop=*/true);
+  // Verify `window_2` is unfloated.
+  ASSERT_FALSE(WindowState::Get(window_2.get())->IsFloated());
+  // Verify `window_1` belongs to `desk_2`.
+  ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_2);
+  // Verify `window_1` belongs to display 2.
+  EXPECT_TRUE(secondary_root->Contains(window_1.get()));
 }
 
 class TabletWindowFloatTest : public WindowFloatTest {
