@@ -134,7 +134,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
-    "//components/autofill_assistant/browser/public:unit_test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/leak_detection:test_support",
     "//components/password_manager/core/common",

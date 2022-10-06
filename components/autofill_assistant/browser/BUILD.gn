@@ -409,7 +409,7 @@ static_library("browser") {
   ]
 }
 
-static_library("unit_test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
     "actions/mock_action_delegate.cc",
@@ -440,6 +440,8 @@ static_library("unit_test_support") {
     "mock_execution_delegate.h",
     "mock_personal_data_manager.cc",
     "mock_personal_data_manager.h",
+    "mock_script_executor_delegate.cc",
+    "mock_script_executor_delegate.h",
     "mock_ui_controller_observer.cc",
     "mock_ui_controller_observer.h",
     "mock_user_model.cc",
@@ -450,26 +452,48 @@ static_library("unit_test_support") {
     "service/mock_service.h",
     "web/fake_element_store.cc",
     "web/fake_element_store.h",
+    "web/mock_autofill_assistant_agent.cc",
+    "web/mock_autofill_assistant_agent.h",
     "web/mock_web_controller.cc",
     "web/mock_web_controller.h",
   ]
 
-  deps = [
+  public_deps = [
     ":browser",
     ":proto",
+    "devtools:devtools",
+    "devtools:gen_devtools_client_api",
+    "public",
+    "public:password_change",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
-    "//components/autofill_assistant/browser/public:password_change",
-    "//components/autofill_assistant/browser/public:public",
+    "//components/autofill_assistant/content/common",
+    "//components/autofill_assistant/content/common:mojo_interfaces",
     "//components/autofill_assistant/core/public:public",
     "//components/consent_auditor",
     "//components/consent_auditor:test_support",
     "//components/password_manager/core/browser:browser",
     "//components/signin/public/identity_manager:test_support",
     "//components/version_info",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+static_library("browser_test_support") {
+  testonly = true
+  sources = [
+    "base_browsertest.cc",
+    "base_browsertest.h",
+  ]
+
+  deps = [
+    "//content/test:browsertest_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
   ]
 }
 
@@ -617,7 +641,7 @@ source_set("unit_tests") {
     ":browser",
     ":proto",
     ":test_proto",
-    ":unit_test_support",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
@@ -682,7 +706,7 @@ if (is_android) {
     template = "java_templates/IntentStrings.java.tmpl"
   }
 
-  static_library("test_support") {
+  static_library("android_test_support") {
     testonly = true
     sources = [
       "java_tts_controller.cc",
