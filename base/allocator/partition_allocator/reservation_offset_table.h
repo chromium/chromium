@@ -81,7 +81,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
   static_assert(kReservationOffsetTableLength < kOffsetTagNormalBuckets,
                 "Offsets should be smaller than kOffsetTagNormalBuckets.");
 
-  static struct _ReservationOffsetTable {
+  static PA_CONSTINIT struct _ReservationOffsetTable {
     // The number of table elements is less than MAX_UINT16, so the element type
     // can be uint16_t.
     static_assert(
