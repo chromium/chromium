@@ -5818,6 +5818,49 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
             second_error_instance->GetStoragePartitionConfig());
 }
 
+// Ensure that the browser doesn't crash when a subframe in a <webview> is
+// navigated to an unknown scheme.  This used to be the case due to a mismatch
+// between the error page's SiteInstance and the origin to commit as calculated
+// in NavigationRequest.  See https://crbug.com/1366450.
+IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+  ASSERT_TRUE(GetGuestRenderFrameHost());
+
+  scoped_refptr<content::SiteInstance> first_instance =
+      GetGuestRenderFrameHost()->GetSiteInstance();
+  EXPECT_TRUE(first_instance->IsGuest());
+
+  // Navigate <webview> to a page with an iframe.
+  const GURL first_url =
+      embedded_test_server()->GetURL("a.test", "/iframe.html");
+  {
+    content::TestFrameNavigationObserver load_observer(
+        GetGuestRenderFrameHost());
+    EXPECT_TRUE(ExecuteScript(GetGuestRenderFrameHost(),
+                              "location.href = '" + first_url.spec() + "';"));
+    load_observer.Wait();
+    EXPECT_TRUE(load_observer.last_navigation_succeeded());
+  }
+
+  // At this point, the guest's iframe should already be loaded.  Navigate
+  // it to an unknown scheme, which will result in an error. This shouldn't
+  // crash the browser.
+  content::RenderFrameHost* guest_subframe =
+      ChildFrameAt(GetGuestRenderFrameHost(), 0);
+  const GURL error_url = GURL("unknownscheme:foo");
+  {
+    content::TestFrameNavigationObserver load_observer(guest_subframe);
+    EXPECT_TRUE(ExecuteScript(guest_subframe,
+                              "location.href = '" + error_url.spec() + "';"));
+    load_observer.Wait();
+    EXPECT_FALSE(load_observer.last_navigation_succeeded());
+    EXPECT_TRUE(ChildFrameAt(GetGuestRenderFrameHost(), 0)->IsErrorDocument());
+  }
+}
+
 // Checks that a main frame navigation in a <webview> can swap
 // BrowsingInstances while staying in the same StoragePartition.
 IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
