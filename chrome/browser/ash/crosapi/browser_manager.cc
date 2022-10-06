@@ -619,9 +619,10 @@ void BrowserManager::Shutdown() {
     // Synchronously post a shutdown blocking task that waits for lacros-chrome
     // to cleanly exit. Terminate() will eventually result in a callback into
     // OnMojoDisconnected(), however this resolves asynchronously and there is a
-    // risk that ash exits before this is called. The 3s timeout aligns with the
-    // timeout set by session_manager.
-    HandleLacrosChromeTermination(base::Seconds(3));
+    // risk that ash exits before this is called.
+    // The 2.5s wait for a successful lacros exit stays below the 3s timeout
+    // after which ash is forcefully terminated by the session_manager.
+    HandleLacrosChromeTermination(base::Milliseconds(2500));
   }
 }
 
