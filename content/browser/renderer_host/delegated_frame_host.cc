@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/delegated_frame_host.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
@@ -470,8 +470,7 @@ void DelegatedFrameHost::ContinueDelegatedFrameEviction() {
   // during navigation, construction, destruction, or in unit tests).
   if (!surface_ids.empty()) {
     DCHECK(!GetCurrentSurfaceId().is_valid() ||
-           std::find(surface_ids.begin(), surface_ids.end(),
-                     GetCurrentSurfaceId()) != surface_ids.end());
+           base::Contains(surface_ids, GetCurrentSurfaceId()));
     DCHECK(host_frame_sink_manager_);
     host_frame_sink_manager_->EvictSurfaces(surface_ids);
   }

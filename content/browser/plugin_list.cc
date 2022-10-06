@@ -6,12 +6,11 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -283,8 +282,8 @@ bool PluginList::GetPluginInfoArray(
 void PluginList::RemoveExtraPluginPathLocked(
     const base::FilePath& plugin_path) {
   lock_.AssertAcquired();
-  std::vector<base::FilePath>::iterator it = std::find(
-      extra_plugin_paths_.begin(), extra_plugin_paths_.end(), plugin_path);
+  std::vector<base::FilePath>::iterator it =
+      base::ranges::find(extra_plugin_paths_, plugin_path);
   if (it != extra_plugin_paths_.end())
     extra_plugin_paths_.erase(it);
 }

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -876,12 +877,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       target->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   EXPECT_EQ(2u, control_list.size());
 
-  auto find_radio1 =
-      std::find(control_list.cbegin(), control_list.cend(), radio1->GetId());
-  auto find_radio2 =
-      std::find(control_list.cbegin(), control_list.cend(), radio2->GetId());
-  EXPECT_NE(find_radio1, control_list.cend());
-  EXPECT_NE(find_radio2, control_list.cend());
+  EXPECT_TRUE(base::Contains(control_list, radio1->GetId()));
+  EXPECT_TRUE(base::Contains(control_list, radio2->GetId()));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {

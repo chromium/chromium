@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include <Cocoa/Cocoa.h>
+
+#include <algorithm>
+
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"

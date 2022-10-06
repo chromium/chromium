@@ -4,7 +4,6 @@
 
 #include "content/browser/site_per_process_browsertest.h"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
@@ -15,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -466,13 +466,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#unloading-documents
   //
   // In process B:
-  auto B1 = std::find(messages.begin(), messages.end(), "B1");
-  auto B2 = std::find(messages.begin(), messages.end(), "B2");
+  auto B1 = base::ranges::find(messages, "B1");
+  auto B2 = base::ranges::find(messages, "B2");
   EXPECT_LT(B1, B2);
 
   // In process C:
-  auto C2 = std::find(messages.begin(), messages.end(), "C2");
-  auto C3 = std::find(messages.begin(), messages.end(), "C3");
+  auto C2 = base::ranges::find(messages, "C2");
+  auto C3 = base::ranges::find(messages, "C3");
   EXPECT_LT(C2, C3);
 
   // Make sure the processes are deleted at some point.
@@ -556,10 +556,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, Unload_ABAB) {
   EXPECT_FALSE(dom_message_queue.PopMessage(&message));
 
   EXPECT_THAT(messages, WhenSorted(ElementsAre("A1", "A2", "B1", "B2")));
-  auto A1 = std::find(messages.begin(), messages.end(), "A1");
-  auto A2 = std::find(messages.begin(), messages.end(), "A2");
-  auto B1 = std::find(messages.begin(), messages.end(), "B1");
-  auto B2 = std::find(messages.begin(), messages.end(), "B2");
+  auto A1 = base::ranges::find(messages, "A1");
+  auto A2 = base::ranges::find(messages, "A2");
+  auto B1 = base::ranges::find(messages, "B1");
+  auto B2 = base::ranges::find(messages, "B2");
   EXPECT_LT(A1, A2);
   EXPECT_LT(B1, B2);
 

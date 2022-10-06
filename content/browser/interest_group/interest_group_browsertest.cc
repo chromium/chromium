@@ -8149,9 +8149,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         same_origin_iframe_in_cross_origin_iframe};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    if (std::find(std::begin(execution_targets_with_message),
-                  std::end(execution_targets_with_message), execution_target) !=
-        std::end(execution_targets_with_message)) {
+    if (base::Contains(execution_targets_with_message, execution_target)) {
       EXPECT_EQ(WarningPermissionsPolicy("join-ad-interest-group",
                                          "joinAdInterestGroup"),
                 console_observer.GetMessageAt(0));

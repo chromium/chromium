@@ -4,7 +4,6 @@
 
 #include "content/browser/media/active_media_session_controller.h"
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -65,7 +64,7 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
         MediaSessionActionToKeyCode(action);
     if (!action_key_code.has_value())
       continue;
-    if (std::find(actions.begin(), actions.end(), action) == actions.end())
+    if (!base::Contains(actions, action))
       media_keys_listener_manager->StopWatchingMediaKey(*action_key_code, this);
   }
 

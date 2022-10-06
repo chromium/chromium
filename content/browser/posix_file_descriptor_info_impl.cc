@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 
 namespace content {
 
@@ -73,8 +74,7 @@ base::ScopedFD PosixFileDescriptorInfoImpl::ReleaseFD(base::PlatformFile file) {
   DCHECK(OwnsFD(file));
 
   base::ScopedFD fd;
-  auto found =
-      std::find(owned_descriptors_.begin(), owned_descriptors_.end(), file);
+  auto found = base::ranges::find(owned_descriptors_, file);
 
   std::swap(*found, fd);
   owned_descriptors_.erase(found);

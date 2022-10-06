@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
@@ -281,12 +282,8 @@ TEST_F(DWriteFontProxyImplUnitTest, FallbackFamily) {
         "Times New Roman", fallback_request.language_tag, codepoint,
         &fallback_family_and_style);
 
-    auto find_result_it =
-        std::find(fallback_request.fallback_fonts.begin(),
-                  fallback_request.fallback_fonts.end(),
-                  fallback_family_and_style->fallback_family_name);
-
-    EXPECT_TRUE(find_result_it != fallback_request.fallback_fonts.end())
+    EXPECT_TRUE(base::Contains(fallback_request.fallback_fonts,
+                               fallback_family_and_style->fallback_family_name))
         << "Did not find expected fallback font for language: "
         << fallback_request.language_tag << ", codepoint U+" << std::hex
         << codepoint << " DWrite returned font name: \""
