@@ -13,11 +13,16 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -52,7 +57,9 @@ const ash::DeviceState* GetCurrentlyActiveDeviceState(Profile* profile) {
 AshSignalsDecorator::AshSignalsDecorator(
     policy::BrowserPolicyConnectorAsh* browser_policy_connector,
     Profile* profile)
-    : browser_policy_connector_(browser_policy_connector), profile_(profile) {
+    : browser_policy_connector_(browser_policy_connector),
+      profile_(profile),
+      attributes_(std::make_unique<policy::DeviceAttributesImpl>()) {
   DCHECK(browser_policy_connector_);
   DCHECK(profile_);
 }
@@ -67,6 +74,14 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
               browser_policy_connector_->GetEnterpriseDomainManager());
   signals.Set(device_signals::names::kAllowScreenLock,
               profile_->GetPrefs()->GetBoolean(ash::prefs::kAllowScreenLock));
+  signals.Set(device_signals::names::kSerialNumber,
+              attributes_->GetDeviceSerialNumber());
+  signals.Set(device_signals::names::kDeviceHostName,
+              ash::NetworkHandler::Get()->network_state_handler()->hostname());
+  // On ChromeOS the disk is always encrypted. See (b/249756773) for more
+  // information.
+  signals.Set(device_signals::names::kDiskEncrypted,
+              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
 
   const ash::DeviceState* device_state =
       GetCurrentlyActiveDeviceState(profile_);
@@ -112,6 +127,15 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
     case Result::Tag::kErrorMessage:
       break;
     case Result::Tag::kNetworkDetails:
+      absl::optional<std::string> mac_address =
+          result->get_network_details()->mac_address;
+      if (mac_address.has_value()) {
+        // `get_network_details()->mac_address` returns a std::string. On other
+        // platforms (Windows, Linux and Mac) there can be multiple mac
+        // addresses.
+        signals.Set(device_signals::names::kMacAddresses,
+                    ToListValue({mac_address.value()}));
+      }
       absl::optional<net::IPAddress> ipv4_address =
           result->get_network_details()->ipv4_address;
       absl::optional<net::IPAddress> ipv6_address =

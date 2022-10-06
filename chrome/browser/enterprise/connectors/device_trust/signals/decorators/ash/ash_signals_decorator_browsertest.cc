@@ -12,12 +12,15 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,13 +42,22 @@ constexpr char kFakeAffilationID[] = "fake_affiliation_id";
 
 constexpr char kFakeImei[] = "fake_imei";
 constexpr char kFakeMeid[] = "fake_meid";
-constexpr char kMacAddress[] = "0123456789AB";
+constexpr char kMacAddress[] = "00:00:00:00:00:00";
 constexpr char kIpv4Address[] = "192.168.0.42";
 constexpr char kIpv6Address[] = "fe80::1262:d0ff:fef5:e8a9";
 constexpr char kWifiDevicePath[] = "/device/stub_wifi";
 constexpr char kWifiServicePath[] = "/service/stub_wifi";
 constexpr char kWifiIPConfigV4Path[] = "/ipconfig/stub_wifi-ipv4";
 constexpr char kWifiIPConfigV6Path[] = "/ipconfig/stub_wifi-ipv6";
+
+constexpr char kFakeSerialNumber[] = "fake_serial_number";
+constexpr char kFakeDeviceHostName[] = "fake_device_host_name";
+
+base::Value::List GetExpectedMacAddresses() {
+  base::Value::List mac_addresses;
+  mac_addresses.Append(kMacAddress);
+  return mac_addresses;
+}
 
 void SetupFakeNetwork() {
   ash::ShillDeviceClient::TestInterface* shill_device_client =
@@ -139,15 +151,24 @@ class AshSignalsDecoratorBrowserTest
   std::unique_ptr<TestingProfile> testing_profile_;
   TestingPrefServiceSimple prefs_;
   policy::BrowserPolicyConnectorAsh* connector_;
+
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
                        TestStaticPolicySignals) {
   device_policy()->policy_data().set_managed_by(kFakeEnrollmentDomain);
-  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   testing_profile()->GetPrefs()->SetBoolean(ash::prefs::kAllowScreenLock,
                                             false);
+  // Set fake serial number.
+  fake_statistics_provider_.SetMachineStatistic(
+      chromeos::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+  // Set fake device hostname.
+  ash::NetworkHandler::Get()->network_state_handler()->SetHostname(
+      kFakeDeviceHostName);
+
+  policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
   base::RunLoop run_loop;
   AshSignalsDecorator decorator(connector_, testing_profile());
@@ -158,6 +179,21 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
 
   EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceEnrollmentDomain),
             kFakeEnrollmentDomain);
+
+  const auto* serial_number =
+      signals.FindString(device_signals::names::kSerialNumber);
+  ASSERT_TRUE(serial_number);
+  EXPECT_EQ(*serial_number, kFakeSerialNumber);
+
+  const auto* device_host_name =
+      signals.FindString(device_signals::names::kDeviceHostName);
+  ASSERT_TRUE(device_host_name);
+  EXPECT_EQ(*device_host_name, kFakeDeviceHostName);
+
+  auto disk_encrypted = signals.FindInt(device_signals::names::kDiskEncrypted);
+  ASSERT_TRUE(disk_encrypted);
+  EXPECT_EQ(disk_encrypted.value(),
+            static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
 }
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
@@ -186,6 +222,11 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
 
   EXPECT_EQ(*signals.FindString(device_signals::names::kIpAddress),
             kIpv6Address);
+
+  const auto* mac_addresses =
+      signals.FindList(device_signals::names::kMacAddresses);
+  ASSERT_TRUE(mac_addresses);
+  EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
 
   base::Value::List* imei_list = signals.FindList(device_signals::names::kImei);
   EXPECT_EQ(imei_list->size(), 1u);
