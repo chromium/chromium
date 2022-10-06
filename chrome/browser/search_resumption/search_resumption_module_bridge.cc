@@ -45,7 +45,7 @@ void SearchResumptionModuleBridge::FetchSuggestions(
   start_suggest_service_->FetchSuggestions(
       args,
       base::BindOnce(&SearchResumptionModuleBridge::OnSuggestionsReceived,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetMutableWeakPtr()),
       true /* fetch_from_server */);
 }
 
