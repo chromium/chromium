@@ -8680,17 +8680,12 @@
             ],
             "experiments": [
                 {
-                    "name": "DrDc",
+                    "name": "DrDc_vulkan",
                     "params": {
-                        "BlockListByDevice": "amber|chopin|secret|a03|SO-51B",
-                        "BlockListByModel": "21081111RG|21061110AG|M2101K7BG|SM-A035F|SO-51B"
+                        "BlockListByDevice": "amber|chopin|secret|a03|SO-51B|on7xelte|j7xelte|F41B|doha|HWYAL|a20s|begonia|b2q|t2s|channel|galahad|rk322x_box|a32|ellis|dandelion|tonga|RMX3231"
                     },
                     "enable_features": [
-                        "EnableDrDc",
                         "EnableDrDcVulkan"
-                    ],
-                    "disable_features": [
-                        "RawDraw"
                     ]
                 }
             ]
