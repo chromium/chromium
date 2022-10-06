@@ -309,7 +309,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
           return HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver()
               .Run(rewritten_file_path, size, dark_background, is_folder);
         },
-        weak_factory_.GetWeakPtr());
+        weak_factory_.GetMutableWeakPtr());
   }
 
   // Returns the text to display for the underlying download.
