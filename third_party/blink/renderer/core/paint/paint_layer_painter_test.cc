@@ -775,7 +775,8 @@ TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
     GraphicsContext context(controller);
     PaintLayerPainter(stacking).Paint(context);
   }
-  UpdateAllLifecyclePhasesForTest();
+  if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
+    UpdateAllLifecyclePhasesForTest();
   // Should restore the original status after OverridingCullRectScope.
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(stacking).Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(absolute).Rect());

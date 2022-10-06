@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/paint/box_reflection_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
@@ -2766,6 +2767,13 @@ void PaintLayer::DirtyStackingContextZOrderLists() {
     stacking_context->StackingNode()->DirtyZOrderLists();
 
   MarkAncestorChainForFlagsUpdate();
+}
+
+void PaintLayer::SetPreviousPaintResult(PaintResult result) {
+  if (CullRectUpdater::IsOverridingCullRects())
+    return;
+  previous_paint_result_ = static_cast<unsigned>(result);
+  DCHECK(previous_paint_result_ == static_cast<unsigned>(result));
 }
 
 void PaintLayer::Trace(Visitor* visitor) const {

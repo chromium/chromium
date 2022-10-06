@@ -23,7 +23,11 @@ namespace blink {
 
 namespace {
 
-bool g_is_overriding_cull_rects = false;
+using FragmentCullRects = OverriddenCullRectScope::FragmentCullRects;
+// This is set to non-null when we are updating overridden cull rects for
+// special painting. The current cull rects will be saved during the update,
+// and will be restored when we exit the OverriddenCullRectScope.
+Vector<FragmentCullRects>* g_original_cull_rects = nullptr;
 
 void SetLayerNeedsRepaintOnCullRectChange(PaintLayer& layer) {
   if (layer.PreviousPaintResult() == kMayBeClippedByCullRect ||
@@ -38,8 +42,13 @@ void SetFragmentCullRect(PaintLayer& layer,
   if (cull_rect == fragment.GetCullRect())
     return;
 
+  if (g_original_cull_rects) {
+    g_original_cull_rects->emplace_back(fragment);
+  } else {
+    SetLayerNeedsRepaintOnCullRectChange(layer);
+  }
+
   fragment.SetCullRect(cull_rect);
-  SetLayerNeedsRepaintOnCullRectChange(layer);
 }
 
 // Returns true if the contents cull rect changed.
@@ -49,8 +58,16 @@ bool SetFragmentContentsCullRect(PaintLayer& layer,
   if (contents_cull_rect == fragment.GetContentsCullRect())
     return false;
 
+  if (g_original_cull_rects) {
+    if (g_original_cull_rects->empty() ||
+        g_original_cull_rects->back().fragment != &fragment) {
+      g_original_cull_rects->emplace_back(fragment);
+    }
+  } else {
+    SetLayerNeedsRepaintOnCullRectChange(layer);
+  }
+
   fragment.SetContentsCullRect(contents_cull_rect);
-  SetLayerNeedsRepaintOnCullRectChange(layer);
   return true;
 }
 
@@ -171,12 +188,12 @@ CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
       starting_layer.GetLayoutObject().GetDocument());
 }
 
-void CullRectUpdater::Update() {
+void CullRectUpdater::Update(const CullRect& input_cull_rect) {
   TRACE_EVENT0("blink,benchmark", "CullRectUpdate");
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
 
   DCHECK(starting_layer_.IsRootLayer());
-  UpdateInternal(CullRect::Infinite());
+  UpdateInternal(input_cull_rect);
 #if DCHECK_IS_ON()
   if (VLOG_IS_ON(2)) {
     VLOG(2) << "PaintLayer tree after cull rect update:";
@@ -257,16 +274,18 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
        layer.HasFixedPositionDescendant());
   if (should_traverse_children) {
     context.current.container = &layer;
-    if (object.CanContainAbsolutePositionObjects())
+    // We pretend the starting layer can contain all descendants.
+    if (&layer == &starting_layer_ ||
+        object.CanContainAbsolutePositionObjects()) {
       context.absolute = context.current;
-    if (object.CanContainFixedPositionObjects())
+    }
+    if (&layer == &starting_layer_ || object.CanContainFixedPositionObjects()) {
       context.fixed = context.current;
+    }
     UpdateForDescendants(context, layer);
   }
 
-  if (g_is_overriding_cull_rects)
-    layer.SetNeedsCullRectUpdate();
-  else
+  if (!g_original_cull_rects)
     layer.ClearNeedsCullRectUpdate();
 }
 
@@ -529,11 +548,21 @@ void CullRectUpdater::PaintPropertiesChanged(
   }
 }
 
+bool CullRectUpdater::IsOverridingCullRects() {
+  return !!g_original_cull_rects;
+}
+
+FragmentCullRects::FragmentCullRects(FragmentData& fragment)
+    : fragment(&fragment),
+      cull_rect(fragment.GetCullRect()),
+      contents_cull_rect(fragment.GetContentsCullRect()) {}
+
 OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
                                                  const CullRect& cull_rect) {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
-  if (starting_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
+  if (starting_layer.IsRootLayer() &&
+      starting_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
       !starting_layer.NeedsCullRectUpdate() &&
       !starting_layer.DescendantNeedsCullRectUpdate() &&
       cull_rect ==
@@ -542,18 +571,23 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
     return;
   }
 
-  DCHECK(!g_is_overriding_cull_rects);
-  g_is_overriding_cull_rects = true;
-
-  starting_layer.SetNeedsCullRectUpdate();
+  DCHECK(!g_original_cull_rects);
+  g_original_cull_rects = &original_cull_rects_;
   CullRectUpdater(starting_layer).UpdateInternal(cull_rect);
 }
 
 OverriddenCullRectScope::~OverriddenCullRectScope() {
   if (!RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled())
     return;
+  if (!g_original_cull_rects)
+    return;
 
-  g_is_overriding_cull_rects = false;
+  DCHECK_EQ(g_original_cull_rects, &original_cull_rects_);
+  g_original_cull_rects = nullptr;
+  for (FragmentCullRects& cull_rects : original_cull_rects_) {
+    cull_rects.fragment->SetCullRect(cull_rects.cull_rect);
+    cull_rects.fragment->SetContentsCullRect(cull_rects.contents_cull_rect);
+  }
 }
 
 }  // namespace blink

@@ -577,10 +577,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintResult PreviousPaintResult() const {
     return static_cast<PaintResult>(previous_paint_result_);
   }
-  void SetPreviousPaintResult(PaintResult result) {
-    previous_paint_result_ = static_cast<unsigned>(result);
-    DCHECK(previous_paint_result_ == static_cast<unsigned>(result));
-  }
+  void SetPreviousPaintResult(PaintResult result);
 
   // Used to skip PaintPhaseDescendantOutlinesOnly for layers that have never
   // had descendant outlines.  The flag is set during paint invalidation on a
