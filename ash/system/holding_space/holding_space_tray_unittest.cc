@@ -61,6 +61,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -150,6 +151,16 @@ void RightClick(const views::View* view, int flags = ui::EF_NONE) {
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.set_flags(flags);
   event_generator.ClickRightButton();
+}
+
+void GestureScrollBy(const views::View* view, int offset_x, int offset_y) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  gfx::Point start(view->GetBoundsInScreen().CenterPoint()), end(start);
+  end.Offset(offset_x, offset_y);
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.GestureScrollSequence(start, end,
+                                        /*duration=*/base::Milliseconds(100),
+                                        /*steps=*/10);
 }
 
 void GestureTap(const views::View* view) {
@@ -2163,6 +2174,72 @@ TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
 
   // Clean up.
   UnregisterModelForUser(kSecondaryUserId);
+}
+
+// Verifies that the holding space bubble supports scrolling of pinned files.
+TEST_F(HoldingSpaceTrayTest, SupportsScrollingOfPinnedFiles) {
+  StartSession();
+
+  // Show the holding space bubble.
+  test_api()->Show();
+  views::View* const pinned_files_bubble = test_api()->GetPinnedFilesBubble();
+  ASSERT_TRUE(pinned_files_bubble);
+
+  // Add batches of pinned files to holding space until the pinned files
+  // bubble stops growing. Once the pinned files bubble has stopped growing, it
+  // should be scrollable.
+  for (size_t batch = 0u;; ++batch) {
+    const int previous_height(pinned_files_bubble->height());
+
+    for (size_t i = 0; i < 25u; ++i) {
+      AddItem(HoldingSpaceItem::Type::kPinnedFile,
+              base::FilePath(base::UnguessableToken().ToString()));
+    }
+
+    if (pinned_files_bubble->height() == previous_height)
+      break;
+
+    // Fail the test if the pinned files bubble does not overflow within a
+    // reasonable number of batches.
+    if (batch > 4u)
+      GTEST_FAIL() << "Failed to overflow the pinned files bubble.";
+  }
+
+  // Add a suggested file so that the suggestions section will also be shown.
+  AddItem(HoldingSpaceItem::Type::kLocalSuggestion,
+          base::FilePath(base::UnguessableToken().ToString()));
+
+  views::test::RunScheduledLayout(pinned_files_bubble->GetWidget());
+
+  // Verify that the `pinned_files section` is completely contained within the
+  // `pinned_files_bubble`.
+  const auto* pinned_files_section =
+      pinned_files_bubble->GetViewByID(kHoldingSpacePinnedFilesSectionId);
+  ASSERT_TRUE(pinned_files_section);
+  EXPECT_TRUE(pinned_files_bubble->GetContentsBounds().Contains(
+      pinned_files_section->bounds()));
+
+  // Verify that the `suggestions_section` is completely contained within the
+  // `pinned_files_bubble`.
+  const auto* suggestions_section =
+      pinned_files_bubble->GetViewByID(kHoldingSpaceSuggestionsSectionId);
+  ASSERT_TRUE(suggestions_section);
+  EXPECT_TRUE(pinned_files_bubble->GetContentsBounds().Contains(
+      suggestions_section->bounds()));
+
+  // Verify that the `suggestions_section` appears below the
+  // `pinned_files_section`.
+  EXPECT_LT(pinned_files_section->bounds().bottom(),
+            suggestions_section->bounds().y());
+
+  // Cache the chips that were added to the pinned files bubble.
+  const std::vector<views::View*> chips = test_api()->GetPinnedFileChips();
+  ASSERT_GT(chips.size(), 0u);
+
+  // Attempt to scroll the pinned files bubble and verify scroll success.
+  const int previous_y = chips[0]->GetBoundsInScreen().y();
+  GestureScrollBy(chips[0], /*offset_x=*/0, /*offset_y=*/-100);
+  EXPECT_LT(chips[0]->GetBoundsInScreen().y(), previous_y);
 }
 
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;
