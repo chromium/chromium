@@ -264,10 +264,11 @@ enum OverlayType { kOverlayResizer, kOverlayScrollbars };
 
 class ReorderOverlayOverflowControlsTest
     : public testing::WithParamInterface<OverlayType>,
-      public RenderingTest {
+      public PaintControllerPaintTestBase {
  public:
   ReorderOverlayOverflowControlsTest()
-      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+      : PaintControllerPaintTestBase(
+            MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
   ~ReorderOverlayOverflowControlsTest() override {
     // Must destruct all objects before toggling back feature flags.
     WebHeap::CollectAllGarbageForTesting();
@@ -287,11 +288,6 @@ class ReorderOverlayOverflowControlsTest
     GetDocument().getElementById(id)->setAttribute(html_names::kStyleAttr,
                                                    "overflow: visible");
     UpdateAllLifecyclePhasesForTest();
-  }
-
-  void SetUp() override {
-    EnableCompositing();
-    RenderingTest::SetUp();
   }
 };
 
@@ -860,6 +856,49 @@ TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveScrollableArea) {
   EXPECT_FALSE(parent->GetScrollableArea());
   EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
   EXPECT_FALSE(LayersPaintingOverlayOverflowControlsAfter(child));
+}
+
+TEST_P(ReorderOverlayOverflowControlsTest, AddRemoveStackedChild) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #parent {
+        position: relative;
+        width: 100px;
+        height: 100px;
+      }
+      #child {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        display: none;
+      }
+    </style>
+    <div id='parent'>
+      <div id='child'></div>
+    </div>
+  )HTML");
+
+  InitOverflowStyle("parent");
+  auto* parent = GetPaintLayerByElementId("parent");
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+
+  auto* child_element = GetDocument().getElementById("child");
+  child_element->setAttribute(html_names::kStyleAttr, "display: block");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_THAT(LayersPaintingOverlayOverflowControlsAfter(
+                  GetPaintLayerByElementId("child")),
+              Pointee(ElementsAre(parent)));
+  EXPECT_TRUE(parent->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(parent->SelfNeedsRepaint());
+
+  child_element->setAttribute(html_names::kStyleAttr, "");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(parent->NeedsReorderOverlayOverflowControls());
+  EXPECT_TRUE(parent->SelfNeedsRepaint());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(parent->SelfNeedsRepaint());
 }
 
 TEST_P(PaintLayerTest, SubsequenceCachingStackedLayers) {

@@ -776,9 +776,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // PaintLayerPaintOrderIterator.
   PaintLayerStackingNode* StackingNode() const { return stacking_node_; }
 
-  void SetNeedsReorderOverlayOverflowControls(bool b) {
-    needs_reorder_overlay_overflow_controls_ = b;
-  }
+  void SetNeedsReorderOverlayOverflowControls(bool);
 
   bool ComputeHasFilterThatMovesPixels() const;
 

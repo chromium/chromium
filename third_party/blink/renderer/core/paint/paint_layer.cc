@@ -2603,6 +2603,13 @@ PaintLayerResourceInfo& PaintLayer::EnsureResourceInfo() {
   return *rare_data.resource_info;
 }
 
+void PaintLayer::SetNeedsReorderOverlayOverflowControls(bool b) {
+  if (b != needs_reorder_overlay_overflow_controls_) {
+    SetNeedsRepaint();
+    needs_reorder_overlay_overflow_controls_ = b;
+  }
+}
+
 gfx::RectF PaintLayer::MapRectForFilter(const gfx::RectF& rect) const {
   if (!HasFilterThatMovesPixels())
     return rect;
