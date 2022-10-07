@@ -598,7 +598,11 @@ String GPUCanvasContext::getPreferredFormat(ExecutionContext* execution_context,
       "Calling getPreferredFormat() on a GPUCanvasContext is deprecated and "
       "will soon be removed. Call navigator.gpu.getPreferredCanvasFormat() "
       "instead, which no longer requires an adapter.");
+#if BUILDFLAG(IS_ANDROID)
+  return "rgba8unorm";
+#else
   return "bgra8unorm";
+#endif
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
