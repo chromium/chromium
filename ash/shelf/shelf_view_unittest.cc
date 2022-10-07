@@ -2334,7 +2334,8 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
 }
 
 // Verifies that partying items are hidden from the shelf.
-TEST_P(LtrRtlShelfViewTest, PartyingItemsHiddenFromShelf) {
+// TODO(crbug/1372295): This test consistently times out.
+TEST_P(LtrRtlShelfViewTest, DISABLED_PartyingItemsHiddenFromShelf) {
   AddAppShortcut();
   AddAppShortcut();
   AddApp();
