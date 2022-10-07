@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/input_method_test_interface_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
@@ -290,6 +292,14 @@ void TestControllerAsh::PinOrUnpinItemInShelf(
     ash::ShelfModel::Get()->UnpinAppWithID(item_id);
   }
   std::move(callback).Run(/*success=*/true);
+}
+
+void TestControllerAsh::ReinitializeAppService(
+    ReinitializeAppServiceCallback callback) {
+  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
+  apps::AppServiceProxyFactory::GetForProfile(profile)->ReinitializeForTesting(
+      profile);
+  std::move(callback).Run();
 }
 
 void TestControllerAsh::SelectItemInShelf(const std::string& item_id,

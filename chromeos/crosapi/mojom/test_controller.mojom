@@ -138,8 +138,8 @@ interface InputMethodTestInterface {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 20
-// Next method id: 31
+// Next version: 21
+// Next method id: 32
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -310,4 +310,8 @@ interface TestController {
   // Launches an app from the Launcher grid.
   [MinVersion=19]
   LaunchAppFromAppList@30(string app_id);
+
+  // Clear App Service state, including from any previously installed apps.
+  [MinVersion=20]
+  ReinitializeAppService@31() => ();
 };

@@ -61,6 +61,7 @@ class TestControllerAsh : public mojom::TestController,
   void PinOrUnpinItemInShelf(const std::string& item_id,
                              bool pin,
                              PinOrUnpinItemInShelfCallback cb) override;
+  void ReinitializeAppService(ReinitializeAppServiceCallback callback) override;
   void SelectContextMenuForShelfItem(
       const std::string& item_id,
       uint32_t index,
