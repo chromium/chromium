@@ -467,12 +467,6 @@ struct Intent {
   map<string, string>? extras; // Optional string extras.
 };
 
-// Represents a group of |app_ids| that is no longer preferred app of their
-// corresponding |intent_filters|.
-struct ReplacedAppPreferences {
-  map<string, array<IntentFilter>> replaced_preference;
-};
-
 // Represents changes which have been made to the preferred apps list, both
 // adding new filters and removing existing filters.
 struct PreferredAppChanges {
