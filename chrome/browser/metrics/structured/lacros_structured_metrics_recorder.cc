@@ -10,7 +10,6 @@
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

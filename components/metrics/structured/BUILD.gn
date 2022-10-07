@@ -74,8 +74,6 @@ proto_library("storage") {
 # Sources used by all static libraries in this BUILD file.
 source_set("common") {
   sources = [
-    "event_base.cc",
-    "event_base.h",
     "histogram_util.cc",
     "histogram_util.h",
     "recorder.cc",
@@ -209,7 +207,6 @@ static_library("neutrino_logging_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "event_base_unittest.cc",
     "external_metrics_unittest.cc",
     "key_data_unittest.cc",
     "persistent_proto_unittest.cc",
