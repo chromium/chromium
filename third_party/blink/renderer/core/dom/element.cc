@@ -4024,7 +4024,16 @@ StyleRecalcChange Element::RecalcStyle(
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
     // and which element the ::first-letter inherits style from.
-    if (!child_change.ReattachLayoutTree() && !ChildNeedsReattachLayoutTree()) {
+    if (child_change.ReattachLayoutTree()) {
+      // Make sure we reach this element during reattachment. There are cases
+      // where we compute and store the styles for a subtree but stop attaching
+      // layout objects at an element that does not allow child boxes. Marking
+      // dirty for re-attachment means we AttachLayoutTree() will still traverse
+      // down to all elements with a ComputedStyle which clears the
+      // NeedsStyleRecalc() flag.
+      if (PseudoElement* first_letter = GetPseudoElement(kPseudoIdFirstLetter))
+        first_letter->SetNeedsReattachLayoutTree();
+    } else if (!ChildNeedsReattachLayoutTree()) {
       UpdateFirstLetterPseudoElement(StyleUpdatePhase::kRecalc,
                                      child_recalc_context);
     }
