@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -914,11 +915,12 @@ public class AppMenuPropertiesDelegateUnitTest {
                                .withShowAddToHomeScreen()
                                .withAutoDarkEnabled());
 
-        doReturn(true).when(mIncognitoReauthControllerMock).isIncognitoReauthPending();
+        doReturn(true).when(mIncognitoReauthControllerMock).isReauthPageShowing();
+        doReturn(mIncognitoTabModel).when(mTabModelSelector).getCurrentModel();
 
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        verify(mIncognitoReauthControllerMock, times(1)).isIncognitoReauthPending();
+        verify(mIncognitoReauthControllerMock, times(1)).isReauthPageShowing();
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
         assertFalse(item.isEnabled());
@@ -926,17 +928,17 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @SmallTest
-    public void testNewIncognitoTabOption_WithReauthIsNotInProgress() {
+    public void testNewIncognitoTabOption_FromRegularMode_WithReauthNotInProgress() {
         setUpMocksForPageMenu();
         setMenuOptions(new MenuOptions()
                                .withShowTranslate()
                                .withShowAddToHomeScreen()
                                .withAutoDarkEnabled());
-        doReturn(false).when(mIncognitoReauthControllerMock).isIncognitoReauthPending();
 
+        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         Menu menu = createTestMenu();
         mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-        verify(mIncognitoReauthControllerMock, times(1)).isIncognitoReauthPending();
+        verifyZeroInteractions(mIncognitoReauthControllerMock);
 
         MenuItem item = menu.findItem(R.id.new_incognito_tab_menu_id);
         assertTrue(item.isEnabled());

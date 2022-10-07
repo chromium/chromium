@@ -619,15 +619,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
 
             if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {
-                // Disable new incognito tab when a re-authentication might be pending.
-                boolean isIncognitoReauthPending = (mIncognitoReauthController != null)
-                        && mIncognitoReauthController.isIncognitoReauthPending();
-
                 // Disable new incognito tab when it is blocked (e.g. by a policy).
                 // findItem(...).setEnabled(...)" is not enough here, because of the inflated
                 // main_menu.xml contains multiple items with the same id in different groups
                 // e.g.: menu_new_incognito_tab.
-                item.setEnabled(isIncognitoEnabled() && !isIncognitoReauthPending);
+                // Disable new incognito tab when a re-authentication might be showing.
+                item.setEnabled(isIncognitoEnabled() && !isIncognitoReauthShowing);
             }
 
             if (item.getItemId() == R.id.divider_line_id) {
