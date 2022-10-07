@@ -61,10 +61,6 @@ const char kOsFirewall[] = "osFirewall";
 // Name of the signal for getting information about the IMEI.
 const char kImei[] = "imei";
 
-// Name of the signal for getting information about the ip address on the
-// device.
-const char kIpAddress[] = "ipAddress";
-
 // MAC addresses of the device.
 const char kMacAddresses[] = "macAddresses";
 

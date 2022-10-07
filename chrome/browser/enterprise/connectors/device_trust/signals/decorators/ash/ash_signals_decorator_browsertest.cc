@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -43,12 +42,8 @@ constexpr char kFakeAffilationID[] = "fake_affiliation_id";
 constexpr char kFakeImei[] = "fake_imei";
 constexpr char kFakeMeid[] = "fake_meid";
 constexpr char kMacAddress[] = "00:00:00:00:00:00";
-constexpr char kIpv4Address[] = "192.168.0.42";
-constexpr char kIpv6Address[] = "fe80::1262:d0ff:fef5:e8a9";
 constexpr char kWifiDevicePath[] = "/device/stub_wifi";
 constexpr char kWifiServicePath[] = "/service/stub_wifi";
-constexpr char kWifiIPConfigV4Path[] = "/ipconfig/stub_wifi-ipv4";
-constexpr char kWifiIPConfigV6Path[] = "/ipconfig/stub_wifi-ipv6";
 
 constexpr char kFakeSerialNumber[] = "fake_serial_number";
 constexpr char kFakeDeviceHostName[] = "fake_device_host_name";
@@ -62,8 +57,6 @@ base::Value::List GetExpectedMacAddresses() {
 void SetupFakeNetwork() {
   ash::ShillDeviceClient::TestInterface* shill_device_client =
       ash::ShillDeviceClient::Get()->GetTestInterface();
-  ash::ShillIPConfigClient::TestInterface* shill_ipconfig_client =
-      ash::ShillIPConfigClient::Get()->GetTestInterface();
   ash::ShillServiceClient::TestInterface* shill_service_client =
       ash::ShillServiceClient::Get()->GetTestInterface();
   ash::ShillProfileClient::TestInterface* shill_profile_client =
@@ -76,7 +69,7 @@ void SetupFakeNetwork() {
                                  "stub_wifi_device");
   shill_device_client->SetDeviceProperty(
       kWifiDevicePath, shill::kAddressProperty, base::Value(kMacAddress),
-      /* notify_changed= */ false);
+      /*notify_changed=*/false);
 
   shill_device_client->SetDeviceProperty(kWifiDevicePath, shill::kMeidProperty,
                                          base::Value(kFakeMeid),
@@ -85,32 +78,9 @@ void SetupFakeNetwork() {
                                          base::Value(kFakeImei),
                                          /*notify_changed=*/false);
 
-  base::DictionaryValue ipconfig_v4_dictionary;
-  ipconfig_v4_dictionary.SetKey(shill::kAddressProperty,
-                                base::Value(kIpv4Address));
-  ipconfig_v4_dictionary.SetKey(shill::kMethodProperty,
-                                base::Value(shill::kTypeIPv4));
-  shill_ipconfig_client->AddIPConfig(kWifiIPConfigV4Path,
-                                     ipconfig_v4_dictionary);
-
-  base::DictionaryValue ipconfig_v6_dictionary;
-  ipconfig_v6_dictionary.SetKey(shill::kAddressProperty,
-                                base::Value(kIpv6Address));
-  ipconfig_v6_dictionary.SetKey(shill::kMethodProperty,
-                                base::Value(shill::kTypeIPv6));
-  shill_ipconfig_client->AddIPConfig(kWifiIPConfigV6Path,
-                                     ipconfig_v6_dictionary);
-
-  base::ListValue ip_configs;
-  ip_configs.Append(kWifiIPConfigV4Path);
-  ip_configs.Append(kWifiIPConfigV6Path);
-  shill_device_client->SetDeviceProperty(kWifiDevicePath,
-                                         shill::kIPConfigsProperty, ip_configs,
-                                         /*notify_changed=*/false);
-
   shill_service_client->AddService(kWifiServicePath, "wifi_guid",
                                    "wifi_network_name", shill::kTypeWifi,
-                                   shill::kStateIdle, /* visible= */ true);
+                                   shill::kStateIdle, /*visible=*/true);
   shill_service_client->SetServiceProperty(
       kWifiServicePath, shill::kConnectableProperty, base::Value(true));
 
@@ -219,9 +189,6 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   decorator.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
-
-  EXPECT_EQ(*signals.FindString(device_signals::names::kIpAddress),
-            kIpv6Address);
 
   const auto* mac_addresses =
       signals.FindList(device_signals::names::kMacAddresses);

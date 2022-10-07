@@ -136,17 +136,6 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
         signals.Set(device_signals::names::kMacAddresses,
                     ToListValue({mac_address.value()}));
       }
-      absl::optional<net::IPAddress> ipv4_address =
-          result->get_network_details()->ipv4_address;
-      absl::optional<net::IPAddress> ipv6_address =
-          result->get_network_details()->ipv6_address;
-      if (ipv6_address.has_value()) {
-        signals.Set(device_signals::names::kIpAddress,
-                    ipv6_address.value().ToString());
-      } else if (ipv4_address.has_value()) {
-        signals.Set(device_signals::names::kIpAddress,
-                    ipv4_address.value().ToString());
-      }
   }
 
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);

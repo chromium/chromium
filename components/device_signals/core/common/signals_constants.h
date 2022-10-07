@@ -25,7 +25,6 @@ extern const char kDisplayName[];
 extern const char kDeviceEnrollmentDomain[];
 extern const char kOsFirewall[];
 extern const char kImei[];
-extern const char kIpAddress[];
 extern const char kMacAddresses[];
 extern const char kMeid[];
 extern const char kOs[];
