@@ -37,9 +37,9 @@ INSTANTIATE_TEST_SUITE_P(RTL, ScrollableShelfViewPixelRTLTest, testing::Bool());
 
 // Verifies the scrollable shelf under overflow.
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentScreenshot(
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GetParam() ? "overflow_rtl" : "overflow",
-      AshPixelDiffTestHelper::UiComponent::kShelfWidget));
+      GetPrimaryShelf()->GetWindow()));
 }
 
 class ScrollableShelfViewWithGuestModePixelTest

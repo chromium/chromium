@@ -8,6 +8,10 @@
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "ui/base/test/skia_gold_matching_algorithm.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/view.h"
@@ -60,10 +64,31 @@ bool ViewSkiaGoldPixelDiff::CompareNativeWindowScreenshot(
 
   gfx::Image image;
   bool ret = GrabWindowSnapshotInternal(window, snapshot_bounds, &image);
-  if (!ret) {
-    LOG(ERROR) << "Grab screenshot failed.";
+  if (!ret)
     return false;
-  }
+
+  return SkiaGoldPixelDiff::CompareScreenshot(screenshot_name,
+                                              *image.ToSkBitmap(), algorithm);
+}
+
+bool ViewSkiaGoldPixelDiff::CompareNativeWindowScreenshotInRects(
+    const std::string& screenshot_name,
+    gfx::NativeWindow window,
+    const gfx::Rect& snapshot_bounds,
+    const ui::test::SkiaGoldMatchingAlgorithm* algorithm,
+    const std::vector<gfx::Rect>& regions_of_interest) const {
+  DCHECK(Initialized()) << "Initialize the class before using this method.";
+  CHECK(!algorithm || algorithm->GetCommandLineSwitchName() != "sobel");
+
+  gfx::Image image;
+  bool ret = GrabWindowSnapshotInternal(window, snapshot_bounds, &image);
+  if (!ret)
+    return false;
+
+  // Only keep the pixels within `regions_of_interest` so that the differences
+  // outside of `regions_of_interest` are ignored.
+  KeepPixelsInRects(regions_of_interest, &image);
+
   return SkiaGoldPixelDiff::CompareScreenshot(screenshot_name,
                                               *image.ToSkBitmap(), algorithm);
 }
@@ -81,7 +106,38 @@ bool ViewSkiaGoldPixelDiff::GrabWindowSnapshotInternal(
       window, snapshot_bounds,
       base::BindOnce(&SnapshotCallback, &run_loop, image));
   run_loop.Run();
-  return !image->IsEmpty();
+
+  const bool success = !image->IsEmpty();
+  if (!success)
+    LOG(ERROR) << "Grab screenshot failed.";
+  return success;
+}
+
+void ViewSkiaGoldPixelDiff::KeepPixelsInRects(
+    const std::vector<gfx::Rect>& rects,
+    gfx::Image* image) const {
+  // `rects` should not be empty.
+  CHECK(!rects.empty());
+
+  // Create a bitmap with the same size as `image`. NOTE: `image` is immutable.
+  // Therefore, we have to create a new bitmap.
+  SkBitmap bitmap;
+  bitmap.allocPixels(image->ToSkBitmap()->info());
+  bitmap.eraseColor(SK_ColorTRANSPARENT);
+
+  // Allow `canvas` to draw on `bitmap`.
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
+
+  // Only copy the pixels within `rects`.
+  SkPaint paint;
+  for (const auto& rect : rects) {
+    canvas.drawImageRect(image->ToSkBitmap()->asImage(),
+                         gfx::RectToSkRect(rect), gfx::RectToSkRect(rect),
+                         SkSamplingOptions(), &paint,
+                         SkCanvas::kStrict_SrcRectConstraint);
+  }
+
+  *image = gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
 }  // namespace views

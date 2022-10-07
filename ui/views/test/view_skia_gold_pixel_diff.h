@@ -6,8 +6,8 @@
 #define UI_VIEWS_TEST_VIEW_SKIA_GOLD_PIXEL_DIFF_H_
 
 #include <string>
+#include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -16,12 +16,10 @@ class Rect;
 class Image;
 }  // namespace gfx
 
-namespace ui {
-namespace test {
+namespace ui::test {
 class SkiaGoldMatchingAlgorithm;
 class SkiaGoldPixelDiff;
-}  // namespace test
-}  // namespace ui
+}  // namespace ui::test
 
 namespace views {
 class View;
@@ -51,6 +49,8 @@ class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
   // E.g. 'ToolbarTest_BackButtonHover'. Here `screenshot_prefix` is passed as
   // an argument during initialization.
   // `view` is the view you want to take screenshot.
+  // `algorithm` specifies how two images are matched. Use the exact match as
+  // default. Read the comment of `SkiaGoldMatchingAlgorithm` to learn more.
   bool CompareViewScreenshot(
       const std::string& screenshot_name,
       views::View* view,
@@ -65,12 +65,33 @@ class ViewSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
       const gfx::Rect& snapshot_bounds,
       const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
 
+  // Similar to `CompareNativeWindowScreenshot()` but with the difference that
+  // only the pixel differences within `regions_of_interest` should affect the
+  // comparison result. Each rect in `regions_of_interest` is in pixel
+  // coordinates. NOTE:
+  // 1. If `algorithm` is `FuzzySkiaGoldMatchingAlgorithm`, the total amount of
+  // different pixels across `regions_of_interest` is compared with the
+  // threshold carried by `algorithm`.
+  // 2. `algorithm` cannot be `SobelSkiaGoldMatchingAlgorithm` because the
+  // border of an image with `regions_of_interest` is ambiguous.
+  bool CompareNativeWindowScreenshotInRects(
+      const std::string& screenshot_name,
+      gfx::NativeWindow window,
+      const gfx::Rect& snapshot_bounds,
+      const ui::test::SkiaGoldMatchingAlgorithm* algorithm,
+      const std::vector<gfx::Rect>& regions_of_interest) const;
+
  protected:
   // Takes a screenshot of `window` within the specified area and stores the
   // screenshot in `image`. Returns true if succeeding.
   virtual bool GrabWindowSnapshotInternal(gfx::NativeWindow window,
                                           const gfx::Rect& snapshot_bounds,
                                           gfx::Image* image) const;
+
+ private:
+  // Updates `image` so that only the pixels within `rects` are kept.
+  void KeepPixelsInRects(const std::vector<gfx::Rect>& rects,
+                         gfx::Image* image) const;
 };
 
 }  // namespace views

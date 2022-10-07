@@ -3483,6 +3483,8 @@ static_library("test_support") {
     "system/tray/system_nudge_label.h",
     "test/ash_pixel_diff_test_helper.cc",
     "test/ash_pixel_diff_test_helper.h",
+    "test/ash_pixel_diff_util.cc",
+    "test/ash_pixel_diff_util.h",
     "utility/haptics_tracking_test_input_controller.cc",
     "utility/haptics_tracking_test_input_controller.h",
 

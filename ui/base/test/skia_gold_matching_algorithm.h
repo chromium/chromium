@@ -46,7 +46,6 @@ class SkiaGoldMatchingAlgorithm {
   // Append the algorithm parameter to |cmd|.
   virtual void AppendAlgorithmToCmdline(base::CommandLine& cmd) const;
 
- protected:
   // The algorithm name for commandline.
   virtual std::string GetCommandLineSwitchName() const = 0;
 };
