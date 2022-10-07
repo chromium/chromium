@@ -39,19 +39,19 @@ class Elevator
           IElevatorChromeDev,
           IElevatorChromeCanary> {
  public:
-  const HRESULT kErrorCouldNotObtainCallingProcess =
+  static constexpr HRESULT kErrorCouldNotObtainCallingProcess =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA001);
-  const HRESULT kErrorCouldNotGenerateValidationData =
+  static constexpr HRESULT kErrorCouldNotGenerateValidationData =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA002);
-  const HRESULT kErrorCouldNotDecryptWithUserContext =
+  static constexpr HRESULT kErrorCouldNotDecryptWithUserContext =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA003);
-  const HRESULT kErrorCouldNotDecryptWithSystemContext =
+  static constexpr HRESULT kErrorCouldNotDecryptWithSystemContext =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA004);
-  const HRESULT kErrorCouldNotEncryptWithUserContext =
+  static constexpr HRESULT kErrorCouldNotEncryptWithUserContext =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA005);
-  const HRESULT kErrorCouldNotEncryptWithSystemContext =
+  static constexpr HRESULT kErrorCouldNotEncryptWithSystemContext =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA006);
-  const HRESULT kValidationDidNotPass =
+  static constexpr HRESULT kValidationDidNotPass =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA007);
 
   Elevator() = default;
