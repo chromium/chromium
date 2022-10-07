@@ -173,6 +173,14 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
     type = fallback_type;
   } else {
     type = ConvertFactorTypeFromProto(proto.type());
+    // TODO(b/243808147): Remove this hack after fixing cryptohome to return
+    // `AUTH_FACTOR_TYPE_UNSPECIFIED` for legacy kiosk keysets.
+    if (fallback_type == cryptohome::AuthFactorType::kKiosk &&
+        type != cryptohome::AuthFactorType::kKiosk) {
+      LOG(WARNING) << "Fixup kiosk key type for " << proto.label() << " "
+                   << proto.type();
+      type = cryptohome::AuthFactorType::kKiosk;
+    }
   }
   AuthFactorRef ref(type, KeyLabel{proto.label()});
   AuthFactorCommonMetadata common_metadata;
