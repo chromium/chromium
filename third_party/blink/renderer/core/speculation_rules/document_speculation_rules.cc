@@ -9,10 +9,11 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -125,8 +126,11 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
   if (has_pending_update_)
     return;
 
+  auto* execution_context = GetSupplementable()->GetExecutionContext();
+  if (!execution_context)
+    return;
   has_pending_update_ = true;
-  Microtask::EnqueueMicrotask(
+  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
                     WrapWeakPersistent(this)));
 }

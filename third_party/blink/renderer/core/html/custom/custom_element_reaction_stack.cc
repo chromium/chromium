@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -93,7 +95,7 @@ void CustomElementReactionStack::EnqueueToBackupQueue(
 
   // If the processing the backup element queue is not set:
   if (!backup_queue_ || backup_queue_->empty()) {
-    Microtask::EnqueueMicrotask(
+    element.GetDocument().GetAgent()->event_loop()->EnqueueMicrotask(
         WTF::BindOnce(&CustomElementReactionStack::InvokeBackupQueue,
                       Persistent<CustomElementReactionStack>(this)));
   }

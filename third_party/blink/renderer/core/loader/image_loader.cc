@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -57,7 +58,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
@@ -421,7 +422,8 @@ inline void ImageLoader::EnqueueImageLoadingMicroTask(
     network::mojom::ReferrerPolicy referrer_policy) {
   auto task = std::make_unique<Task>(this, update_behavior, referrer_policy);
   pending_task_ = task->GetWeakPtr();
-  Microtask::EnqueueMicrotask(WTF::BindOnce(&Task::Run, std::move(task)));
+  element_->GetDocument().GetAgent()->event_loop()->EnqueueMicrotask(
+      WTF::BindOnce(&Task::Run, std::move(task)));
   delay_until_do_update_from_element_ =
       std::make_unique<IncrementLoadEventDelayCount>(element_->GetDocument());
 }
@@ -924,23 +926,24 @@ bool ImageLoader::GetImageAnimationPolicy(
 
 ScriptPromise ImageLoader::Decode(ScriptState* script_state,
                                   ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   // It's possible that |script_state|'s context isn't valid, which means we
   // should immediately reject the request. This is possible in situations like
   // the document that created this image was already destroyed (like an img
   // that comes from iframe.contentDocument.createElement("img") and the iframe
   // is destroyed).
-  if (!script_state->ContextIsValid()) {
+  if (!script_state->ContextIsValid() || !execution_context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
                                       "The source image cannot be decoded.");
     return ScriptPromise();
   }
 
-  UseCounter::Count(GetElement()->GetDocument(), WebFeature::kImageDecodeAPI);
+  UseCounter::Count(execution_context, WebFeature::kImageDecodeAPI);
 
   auto* request = MakeGarbageCollected<DecodeRequest>(
       this, MakeGarbageCollected<ScriptPromiseResolver>(script_state));
-  Microtask::EnqueueMicrotask(WTF::BindOnce(&DecodeRequest::ProcessForTask,
-                                            WrapWeakPersistent(request)));
+  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+      &DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
   decode_requests_.push_back(request);
   return request->promise();
 }

@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -27,7 +28,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/stub_speculation_host.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -665,17 +666,19 @@ TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
       InsertSpeculationRules(page_holder.GetDocument(),
                              R"({"prefetch": [
              {"source": "list", "urls": ["https://example.com/bar"]}]})");
-  Microtask::PerformCheckpoint(MainThreadIsolate());
+  scoped_refptr<scheduler::EventLoop> event_loop =
+      frame.DomWindow()->GetAgent()->event_loop();
+  event_loop->PerformMicrotaskCheckpoint();
 
   // Second simulated task removes the rule sets, then adds another one in a
   // microtask which is queued later than any queued during the removal.
   to_remove->remove();
-  Microtask::EnqueueMicrotask(base::BindLambdaForTesting([&] {
+  event_loop->EnqueueMicrotask(base::BindLambdaForTesting([&] {
     InsertSpeculationRules(page_holder.GetDocument(),
                            R"({"prefetch": [
            {"source": "list", "urls": ["https://example.com/baz"]}]})");
   }));
-  Microtask::PerformCheckpoint(MainThreadIsolate());
+  event_loop->PerformMicrotaskCheckpoint();
 
   run_loop.Run();
   broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});

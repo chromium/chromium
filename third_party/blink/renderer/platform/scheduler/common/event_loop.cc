@@ -30,9 +30,15 @@ EventLoop::~EventLoop() {
 void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
   pending_microtasks_.push_back(std::move(task));
   if (microtask_queue_) {
+    // Since the microtask queue won't outlive this object we do not need
+    // to increment a ref count.
     microtask_queue_->EnqueueMicrotask(isolate_,
                                        &EventLoop::RunPendingMicrotask, this);
   } else {
+    // Since we are handing out a ptr to this object to an object that can
+    // outlive this object increment the ref count. It will be decremented after
+    // the task runs. See `RunPendingMicrotask` for the decrement.
+    AddRef();
     isolate_->EnqueueMicrotask(&EventLoop::RunPendingMicrotask, this);
   }
 }
@@ -93,6 +99,11 @@ void EventLoop::RunPendingMicrotask(void* data) {
   base::OnceClosure task = std::move(self->pending_microtasks_.front());
   self->pending_microtasks_.pop_front();
   std::move(task).Run();
+
+  // If we had incremented the ref count decrement it. See `EnqueueMicrotask`.
+  if (!self->microtask_queue_) {
+    self->Release();
+  }
 }
 
 }  // namespace scheduler
