@@ -262,9 +262,18 @@ void ViewPainter::PaintRootElementGroup(
                                 (frame_view.BaseBackgroundColor().Alpha() > 0);
   Color base_background_color =
       paints_base_background ? frame_view.BaseBackgroundColor() : Color();
+  if (document.Printing() && base_background_color == Color::kWhite) {
+    // Leave a transparent background, assuming the paper or the PDF viewer
+    // background is white by default. This allows further customization of the
+    // background, e.g. in the case of https://crbug.com/498892.
+    base_background_color = Color();
+    paints_base_background = false;
+  }
+
   Color root_element_background_color =
       layout_view_.StyleRef().VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
+
   const LayoutObject* root_object =
       document.documentElement() ? document.documentElement()->GetLayoutObject()
                                  : nullptr;
@@ -348,8 +357,7 @@ void ViewPainter::PaintRootElementGroup(
     should_draw_background_in_separate_buffer = true;
   } else {
     // If the root background color is opaque, isolation group can be skipped
-    // because the canvas
-    // will be cleared by root background color.
+    // because the canvas will be cleared by root background color.
     if (!root_element_background_color.HasAlpha())
       should_draw_background_in_separate_buffer = false;
 

@@ -1036,4 +1036,43 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   EXPECT_EQ(target->OffsetWidth(), 800);
 }
 
+TEST_P(PrintContextTest,
+       TransparentRootBackgroundWithShouldPrintBackgroundDisabled) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("");
+
+  GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(0);
+  PrintSinglePage(canvas);
+}
+
+TEST_P(PrintContextTest,
+       TransparentRootBackgroundWithShouldPrintBackgroundEnabled) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("");
+
+  GetDocument().GetSettings()->SetShouldPrintBackgrounds(true);
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(0);
+  PrintSinglePage(canvas);
+}
+
+TEST_P(PrintContextTest, WhiteRootBackgroundWithShouldPrintBackgroundDisabled) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("<style>body { background: white; }</style>");
+
+  GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(0);
+  PrintSinglePage(canvas);
+}
+
+TEST_P(PrintContextTest, WhiteRootBackgroundWithShouldPrintBackgroundEnabled) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("<style>body { background: white; }</style>");
+
+  GetDocument().GetSettings()->SetShouldPrintBackgrounds(true);
+  // We should paint the specified white background.
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(1);
+  PrintSinglePage(canvas);
+}
+
 }  // namespace blink
