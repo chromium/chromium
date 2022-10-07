@@ -29,8 +29,8 @@ using testing::HasSubstr;
 TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
   for (bool pcscan_enabled : {false, true}) {
     test::ScopedFeatureList pcscan_scope;
-    std::vector<Feature> empty_list = {};
-    std::vector<Feature> pcscan_list = {
+    std::vector<test::FeatureRef> empty_list = {};
+    std::vector<test::FeatureRef> pcscan_list = {
         features::kPartitionAllocPCScanBrowserOnly};
     pcscan_scope.InitWithFeatures(pcscan_enabled ? pcscan_list : empty_list,
                                   pcscan_enabled ? empty_list : pcscan_list);

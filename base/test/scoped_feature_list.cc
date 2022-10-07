@@ -418,6 +418,7 @@ void ScopedFeatureList::InitWithFeatures(
   InitWithFeaturesImpl(enabled_features, {}, disabled_features);
 }
 
+#if !BUILDFLAG(IS_LINUX)
 void ScopedFeatureList::InitWithFeatures(
     const std::vector<Feature>& enabled_features,
     const std::vector<Feature>& disabled_features) {
@@ -437,6 +438,7 @@ void ScopedFeatureList::InitWithFeatures(
                                                     disabled_features.end());
   InitWithFeaturesImpl(enabled_features_as_refs, {}, disabled_features_as_refs);
 }
+#endif
 
 void ScopedFeatureList::InitAndEnableFeature(const Feature& feature) {
   InitWithFeaturesImpl({feature}, {}, {});
@@ -509,6 +511,7 @@ void ScopedFeatureList::InitWithFeaturesAndParameters(
   InitWithFeaturesImpl({}, enabled_features, disabled_features);
 }
 
+#if !BUILDFLAG(IS_LINUX)
 void ScopedFeatureList::InitWithFeaturesAndParameters(
     const std::vector<FeatureAndParams>& enabled_features,
     const std::vector<Feature>& disabled_features) {
@@ -524,6 +527,7 @@ void ScopedFeatureList::InitWithFeaturesAndParameters(
                                                     disabled_features.end());
   InitWithFeaturesImpl({}, enabled_features, disabled_features_as_refs);
 }
+#endif
 
 void ScopedFeatureList::InitWithMergedFeatures(
     Features&& merged_features,

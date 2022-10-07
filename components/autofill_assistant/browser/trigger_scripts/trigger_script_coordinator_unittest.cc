@@ -57,7 +57,7 @@ using ::testing::ValuesIn;
 using ::testing::WithArg;
 
 std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList(
-    base::Feature feature,
+    const base::Feature& feature,
     bool feature_enabled) {
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list->InitWithFeatureState(feature, feature_enabled);

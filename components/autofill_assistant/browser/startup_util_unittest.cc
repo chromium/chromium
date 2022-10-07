@@ -4,7 +4,7 @@
 
 #include "components/autofill_assistant/browser/startup_util.h"
 
-#include <array>
+#include <iterator>
 #include <memory>
 #include <ostream>
 
@@ -59,7 +59,7 @@ struct TestFeatureConfig {
 };
 
 // Shorthand for the full set of relevant features.
-const std::array<base::Feature, 5> kFullFeatureSet = {
+const base::test::FeatureRef kFullFeatureSet[] = {
     kAutofillAssistant, kAutofillAssistantProactiveHelp,
     kAutofillAssistantChromeEntry, kAutofillAssistantLoadDFMForTriggerScripts,
     kAutofillAssistantGetTriggerScriptsByHashPrefix};
@@ -101,7 +101,7 @@ const TestFeatureConfig kTestFeatureConfigs[] = {
     {{kAutofillAssistant, kAutofillAssistantChromeEntry,
       kAutofillAssistantProactiveHelp}},
     // All features are enabled.
-    {{kFullFeatureSet.begin(), kFullFeatureSet.end()}}};
+    {{std::begin(kFullFeatureSet), std::end(kFullFeatureSet)}}};
 
 // Custom output operator overloads to provide human-readable test outputs.
 std::ostream& operator<<(std::ostream& out,
@@ -153,7 +153,7 @@ class StartupUtilParametrizedTest
     StartupUtilTest::SetUp();
     std::vector<base::test::FeatureRef> disabled_features;
     for (const auto& feature : kFullFeatureSet) {
-      if (!IsFeatureEnabled(feature)) {
+      if (!IsFeatureEnabled(*feature)) {
         disabled_features.emplace_back(feature);
       }
     }
