@@ -330,52 +330,23 @@ HacksAndPatchesCommon() {
   # Remove an unnecessary dependency on qtchooser.
   rm "${INSTALL_ROOT}/usr/lib/${arch}-${os}/qt-default/qtchooser/default.conf"
 
-  # Unversion libdbus and libxkbcommon symbols.  This is required because
-  # libdbus-1-3 and libxkbcommon0 switched from unversioned symbols to versioned
-  # ones, and we must still support distros using the unversioned library.  This
-  # hack can be removed once support for Ubuntu Trusty and Debian Jessie are
-  # dropped.
-  ${strip} -R .gnu.version_d -R .gnu.version \
-    "${INSTALL_ROOT}/lib/${arch}-${os}/libdbus-1.so.3"
-  cp "${SCRIPT_DIR}/libdbus-1-3-symbols" \
-    "${INSTALL_ROOT}/debian/libdbus-1-3/DEBIAN/symbols"
-
-  ${strip} -R .gnu.version_d -R .gnu.version \
-    "${INSTALL_ROOT}/usr/lib/${arch}-${os}/libxkbcommon.so.0.0.0"
-  cp "${SCRIPT_DIR}/libxkbcommon0-symbols" \
-    "${INSTALL_ROOT}/debian/libxkbcommon0/DEBIAN/symbols"
-
   # libxcomposite1 is missing a symbols file.
   cp "${SCRIPT_DIR}/libxcomposite1-symbols" \
     "${INSTALL_ROOT}/debian/libxcomposite1/DEBIAN/symbols"
 
-  # Shared objects depending on libdbus-1.so.3 have unsatisfied undefined
-  # versioned symbols. To avoid LLD --no-allow-shlib-undefined errors, rewrite
-  # DT_NEEDED entries from libdbus-1.so.3 to a different string. LLD will
-  # suppress --no-allow-shlib-undefined diagnostics for such shared objects.
-  set +e
-  for f in "${INSTALL_ROOT}/lib/${arch}-${os}"/*.so \
-           "${INSTALL_ROOT}/usr/lib/${arch}-${os}"/*.so; do
-    echo "$f" | grep -q 'libdbus-1.so$' && continue
-    # In a dependent shared object, the only occurrence of "libdbus-1.so.3" is
-    # the string referenced by the DT_NEEDED entry.
-    offset=$(LANG=C grep -abo libdbus-1.so.3 "$f")
-    [ -n "$offset" ] || continue
-    echo -n 'libdbus-1.so.0' | dd of="$f" conv=notrunc bs=1 \
-      seek="$(echo -n "$offset" | cut -d : -f 1)" status=none
-  done
-  set -e
+  # __GLIBC_MINOR__ is used as a feature test macro.  Replace it with the
+  # earliest supported version of glibc (2.26, obtained from the oldest glibc
+  # version in //chrome/installer/linux/debian/dist_packag_versions.json and
+  # //chrome/installer/linux/rpm/dist_package_provides.json).
+  local usr_include="${INSTALL_ROOT}/usr/include"
+  local features_h="${usr_include}/features.h"
+  sed -i 's|\(#define\s\+__GLIBC_MINOR__\)|\1 26 //|' "${features_h}"
 
   # fcntl64() was introduced in glibc 2.28.  Make sure to use fcntl() instead.
   local fcntl_h="${INSTALL_ROOT}/usr/include/fcntl.h"
   sed -i '{N; s/#ifndef __USE_FILE_OFFSET64\(\nextern int fcntl\)/#if 1\1/}' \
       "${fcntl_h}"
 
-  # __GLIBC_MINOR__ is used as a feature test macro.  Replace it with the
-  # earliest supported version of glibc (2.17, https://crbug.com/376567).
-  local usr_include="${INSTALL_ROOT}/usr/include"
-  local features_h="${usr_include}/features.h"
-  sed -i 's|\(#define\s\+__GLIBC_MINOR__\)|\1 17 //|' "${features_h}"
   # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
   local cppconfig_h="${usr_include}/${arch}-${os}/c++/10/bits/c++config.h"
   sed -i 's|\(#define\s\+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT\)|// \1|' \
