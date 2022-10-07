@@ -26,9 +26,9 @@ virtual void DissociateMailboxForPresent(GLuint device_id,
                                          GLuint device_generation,
                                          GLuint texture_id,
                                          GLuint texture_generation) = 0;
-virtual void SetExecutionContextToken(uint32_t type,
-                                      uint32_t high_high,
-                                      uint32_t high_low,
-                                      uint32_t low_high,
-                                      uint32_t low_low) = 0;
+virtual void SetWebGPUExecutionContextToken(uint32_t type,
+                                            uint32_t high_high,
+                                            uint32_t high_low,
+                                            uint32_t low_high,
+                                            uint32_t low_low) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_

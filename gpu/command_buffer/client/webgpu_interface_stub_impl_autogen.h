@@ -26,9 +26,10 @@ void WebGPUInterfaceStub::DissociateMailboxForPresent(
     GLuint /* device_generation */,
     GLuint /* texture_id */,
     GLuint /* texture_generation */) {}
-void WebGPUInterfaceStub::SetExecutionContextToken(uint32_t /* type */,
-                                                   uint32_t /* high_high */,
-                                                   uint32_t /* high_low */,
-                                                   uint32_t /* low_high */,
-                                                   uint32_t /* low_low */) {}
+void WebGPUInterfaceStub::SetWebGPUExecutionContextToken(
+    uint32_t /* type */,
+    uint32_t /* high_high */,
+    uint32_t /* high_low */,
+    uint32_t /* low_high */,
+    uint32_t /* low_low */) {}
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_STUB_IMPL_AUTOGEN_H_

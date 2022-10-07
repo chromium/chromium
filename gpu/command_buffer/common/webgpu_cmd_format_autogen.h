@@ -223,9 +223,9 @@ static_assert(
     offsetof(DissociateMailboxForPresent, texture_generation) == 16,
     "offset of DissociateMailboxForPresent texture_generation should be 16");
 
-struct SetExecutionContextToken {
-  typedef SetExecutionContextToken ValueType;
-  static const CommandId kCmdId = kSetExecutionContextToken;
+struct SetWebGPUExecutionContextToken {
+  typedef SetWebGPUExecutionContextToken ValueType;
+  static const CommandId kCmdId = kSetWebGPUExecutionContextToken;
   static const cmd::ArgFlags kArgFlags = cmd::kFixed;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
 
@@ -267,19 +267,19 @@ struct SetExecutionContextToken {
   uint32_t low_low;
 };
 
-static_assert(sizeof(SetExecutionContextToken) == 24,
-              "size of SetExecutionContextToken should be 24");
-static_assert(offsetof(SetExecutionContextToken, header) == 0,
-              "offset of SetExecutionContextToken header should be 0");
-static_assert(offsetof(SetExecutionContextToken, type) == 4,
-              "offset of SetExecutionContextToken type should be 4");
-static_assert(offsetof(SetExecutionContextToken, high_high) == 8,
-              "offset of SetExecutionContextToken high_high should be 8");
-static_assert(offsetof(SetExecutionContextToken, high_low) == 12,
-              "offset of SetExecutionContextToken high_low should be 12");
-static_assert(offsetof(SetExecutionContextToken, low_high) == 16,
-              "offset of SetExecutionContextToken low_high should be 16");
-static_assert(offsetof(SetExecutionContextToken, low_low) == 20,
-              "offset of SetExecutionContextToken low_low should be 20");
+static_assert(sizeof(SetWebGPUExecutionContextToken) == 24,
+              "size of SetWebGPUExecutionContextToken should be 24");
+static_assert(offsetof(SetWebGPUExecutionContextToken, header) == 0,
+              "offset of SetWebGPUExecutionContextToken header should be 0");
+static_assert(offsetof(SetWebGPUExecutionContextToken, type) == 4,
+              "offset of SetWebGPUExecutionContextToken type should be 4");
+static_assert(offsetof(SetWebGPUExecutionContextToken, high_high) == 8,
+              "offset of SetWebGPUExecutionContextToken high_high should be 8");
+static_assert(offsetof(SetWebGPUExecutionContextToken, high_low) == 12,
+              "offset of SetWebGPUExecutionContextToken high_low should be 12");
+static_assert(offsetof(SetWebGPUExecutionContextToken, low_high) == 16,
+              "offset of SetWebGPUExecutionContextToken low_high should be 16");
+static_assert(offsetof(SetWebGPUExecutionContextToken, low_low) == 20,
+              "offset of SetWebGPUExecutionContextToken low_low should be 20");
 
 #endif  // GPU_COMMAND_BUFFER_COMMON_WEBGPU_CMD_FORMAT_AUTOGEN_H_

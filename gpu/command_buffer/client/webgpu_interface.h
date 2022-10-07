@@ -90,11 +90,13 @@ class WebGPUInterface : public InterfaceBase {
                      WEBGPU_MAILBOX_NONE, mailbox);
   }
 
-  void SetExecutionContextToken(const blink::ExecutionContextToken& token) {
+  void SetWebGPUExecutionContextToken(
+      const blink::WebGPUExecutionContextToken& token) {
     uint64_t high = token.value().GetHighForSerialization();
     uint64_t low = token.value().GetLowForSerialization();
-    SetExecutionContextToken(token.variant_index(), high >> 32,
-                             high & 0xFFFFFFFF, low >> 32, low & 0xFFFFFFFF);
+    SetWebGPUExecutionContextToken(token.variant_index(), high >> 32,
+                                   high & 0xFFFFFFFF, low >> 32,
+                                   low & 0xFFFFFFFF);
   }
 };
 

@@ -431,7 +431,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::vector<std::string> force_enabled_toggles_;
   std::vector<std::string> force_disabled_toggles_;
   bool allow_unsafe_apis_;
-  blink::ExecutionContextToken execution_context_token_;
+  blink::WebGPUExecutionContextToken execution_context_token_;
 
   std::unique_ptr<dawn::wire::WireServer> wire_server_;
   std::unique_ptr<DawnServiceSerializer> wire_serializer_;
@@ -1832,33 +1832,26 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
   return error::kNoError;
 }
 
-error::Error WebGPUDecoderImpl::HandleSetExecutionContextToken(
+error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
-  const volatile webgpu::cmds::SetExecutionContextToken& c =
-      *static_cast<const volatile webgpu::cmds::SetExecutionContextToken*>(
-          cmd_data);
+  const volatile webgpu::cmds::SetWebGPUExecutionContextToken& c = *static_cast<
+      const volatile webgpu::cmds::SetWebGPUExecutionContextToken*>(cmd_data);
   uint32_t type(c.type);
   uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
   base::UnguessableToken token = base::UnguessableToken::Deserialize(high, low);
   switch (type) {
-    // TODO(dawn:549) LocalFrameToken is a temp solution for initial testing.
-    // It will not be used in the final product because it can produce
-    // known races. The use of LocalFrameToken should only be enabled through
-    // --enable-unsafe-webgpu for now for testing. Once DocumentToken is ready,
-    // this should be migrated before enabling by default.
-    case blink::ExecutionContextToken::Base::template TypeIndex<
-        blink::LocalFrameToken>::kValue: {
-      DCHECK(enable_unsafe_webgpu_);
+    case blink::WebGPUExecutionContextToken::Base::template TypeIndex<
+        blink::DocumentToken>::kValue: {
       execution_context_token_ =
-          blink::ExecutionContextToken(blink::LocalFrameToken(token));
+          blink::WebGPUExecutionContextToken(blink::DocumentToken(token));
       break;
     }
-    case blink::ExecutionContextToken::Base::template TypeIndex<
+    case blink::WebGPUExecutionContextToken::Base::template TypeIndex<
         blink::DedicatedWorkerToken>::kValue: {
-      execution_context_token_ =
-          blink::ExecutionContextToken(blink::DedicatedWorkerToken(token));
+      execution_context_token_ = blink::WebGPUExecutionContextToken(
+          blink::DedicatedWorkerToken(token));
       break;
     }
     default:

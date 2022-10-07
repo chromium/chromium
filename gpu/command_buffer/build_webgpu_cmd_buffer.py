@@ -78,7 +78,7 @@ _FUNCTION_INFO = {
     'impl_func': False,
     'internal': True,
   },
-  'SetExecutionContextToken': {
+  'SetWebGPUExecutionContextToken': {
     'impl_func': False,
     'client_test': False,
   },

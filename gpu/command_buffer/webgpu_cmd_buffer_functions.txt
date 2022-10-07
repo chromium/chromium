@@ -11,7 +11,6 @@ GL_APICALL void GL_APIENTRY wgAssociateMailbox (GLuint device_id, GLuint device_
 GL_APICALL void GL_APIENTRY wgDissociateMailbox (GLuint texture_id, GLuint texture_generation);
 GL_APICALL void GL_APIENTRY wgDissociateMailboxForPresent (GLuint device_id, GLuint device_generation, GLuint texture_id, GLuint texture_generation);
 
-// The ExecutionContext tokens are represented by two 64 bit uints, but the
-// the generator currently only supports 32 bit members so we break the token
-// into 4 parts.
-GL_APICALL void GL_APIENTRY wgSetExecutionContextToken (uint32_t type, uint32_t high_high, uint32_t high_low, uint32_t low_high, uint32_t low_low);
+// The WebGPUExecutionContextTokens are represented by two 64 bit uints, but the
+// generator only supports 32 bit members so we break the token into 4 parts.
+GL_APICALL void GL_APIENTRY wgSetWebGPUExecutionContextToken (uint32_t type, uint32_t high_high, uint32_t high_low, uint32_t low_high, uint32_t low_low);

@@ -139,6 +139,29 @@ WGPURequestAdapterOptions AsDawnType(
   return dawn_options;
 }
 
+// Returns the execution context token given the context. Currently returning
+// the WebGPU specific execution context token.
+// TODO(dawn:549) Might be able to use ExecutionContextToken instead of WebGPU
+//     specific execution context token if/when DocumentToken becomes a part of
+//     ExecutionContextToken.
+WebGPUExecutionContextToken GetExecutionContextToken(
+    const ExecutionContext* execution_context) {
+  auto execution_context_token = execution_context->GetExecutionContextToken();
+
+  // TODO(dawn:549) Implement passing real DocumentToken when ready.
+  // WebGPU only supports 2 types of context tokens, DocumentTokens and
+  // DedicatedWorkerTokens. We are currently passing a placeholder
+  // DocumentToken (by default construction), and a real DedicatedWorkerToken.
+  // The token is sent to the GPU process so that it can be cross-referenced
+  // against the browser process to get an isolation key for caching purposes.
+  WebGPUExecutionContextToken webgpu_execution_context_token;
+  if (execution_context_token.Is<DedicatedWorkerToken>()) {
+    webgpu_execution_context_token =
+        execution_context_token.GetAs<DedicatedWorkerToken>();
+  }
+  return webgpu_execution_context_token;
+}
+
 }  // anonymous namespace
 
 // static
@@ -281,11 +304,8 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
       resolver->Resolve(v8::Null(script_state->GetIsolate()));
       return promise;
     } else {
-      // Get an identifying token from the execution context to be sent to the
-      // GPU process so that it can be cross-referenced against the browser
-      // process to get an isolation key for caching purposes.
-      context_provider->WebGPUInterface()->SetExecutionContextToken(
-          execution_context->GetExecutionContextToken());
+      context_provider->WebGPUInterface()->SetWebGPUExecutionContextToken(
+          GetExecutionContextToken(execution_context));
 
       // Make a new DawnControlClientHolder with the context provider we just
       // made and set the lost context callback
