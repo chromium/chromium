@@ -249,6 +249,7 @@ robolectric_binary("cast_shell_junit_tests") {
     "//chromecast/base:base_java",
     "//chromecast/base:cast_base_test_utils_java",
     "//content/public/android:content_java",
+    "//testing/android/junit:junit_test_support",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
     "//third_party/hamcrest:hamcrest_java",
   ]

@@ -63,7 +63,10 @@ public final class JunitTestMain {
 
     private static Class<?> classOrNull(String className) {
         try {
-            return Class.forName(className);
+            // Do not initialize classes (clinit) yet, Android methods are all
+            // stubs until robolectric loads the real implementations.
+            return Class.forName(
+                    className, /*initialize*/ false, JunitTestMain.class.getClassLoader());
         } catch (ClassNotFoundException e) {
             System.err.println("Class not found: " + className);
         } catch (NoClassDefFoundError e) {
@@ -104,4 +107,3 @@ public final class JunitTestMain {
         System.exit(core.run(testRequest).wasSuccessful() ? 0 : 1);
     }
 }
-

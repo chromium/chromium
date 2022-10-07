@@ -4,7 +4,6 @@
 
 package org.chromium.testing.local;
 
-import android.app.ApplicationPackageManager;
 import android.content.ComponentName;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -18,7 +17,7 @@ import org.robolectric.shadows.ShadowApplicationPackageManager;
  * Uses {@link PackageManager#getPackageInfo()} to retrieve ActivityInfo. This enables registering
  * activities via {@link ShadowPackageManager#addPackage()}.
  */
-@Implements(ApplicationPackageManager.class)
+@Implements(className = "android.app.ApplicationPackageManager")
 public class CustomShadowApplicationPackageManager extends ShadowApplicationPackageManager {
     @Implementation
     @Override

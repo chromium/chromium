@@ -941,6 +941,13 @@ if (current_toolchain == default_toolchain) {
   }
 
   robolectric_binary("chrome_junit_tests") {
+    # Needed by androidx.test.core.app.ActivityScenario
+    android_manifest = "//chrome/android/junit/AndroidManifest.xml"
+
+    data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
+
+    package_name = chrome_public_manifest_package
+
     # From java_sources.gni.
     sources = chrome_junit_test_java_sources
 
@@ -949,9 +956,6 @@ if (current_toolchain == default_toolchain) {
       "//content",
       "//mojo/public/mojom/base",
     ]
-
-    # Needed by androidx.test.core.app.ActivityScenario
-    android_manifest = "//chrome/android/junit/AndroidManifest.xml"
 
     deps = [
       ":base_module_java",
@@ -974,6 +978,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android:usage_stats_proto_java",
       "//chrome/android/features/android_library_factory:junit_tests",
       "//chrome/android/features/keyboard_accessory:internal_java",
+      "//chrome/android/features/start_surface:java_resources",
       "//chrome/android/features/start_surface:public_java",
       "//chrome/android/features/tab_ui:java",
       "//chrome/android/features/tab_ui:tab_suggestions_java",
@@ -1125,6 +1130,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/display_cutout/android:java",
       "//components/browser_ui/media/android:java",
+      "//components/browser_ui/media/android:java_resources",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/share/android:java",
@@ -1246,10 +1252,6 @@ if (current_toolchain == default_toolchain) {
     ]
 
     deps += chrome_junit_test_java_deps
-
-    data_deps = [ "//testing/buildbot/filters:chrome_junit_tests_filters" ]
-
-    package_name = chrome_public_manifest_package
   }
 
   generate_jni("chrome_test_util_jni_headers") {

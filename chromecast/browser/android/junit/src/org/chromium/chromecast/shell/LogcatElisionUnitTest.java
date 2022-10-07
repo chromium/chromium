@@ -8,12 +8,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+
+import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * junit tests for {@link LogcatExtractor}.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(LocalRobolectricTestRunner.class)
 public class LogcatElisionUnitTest {
     private static final int MAX_LINES = 5;
 

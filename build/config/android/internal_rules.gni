@@ -4039,19 +4039,13 @@ if (enable_java_templates) {
           "//third_party/jdk:java_data",
         ]
         if (_is_robolectric) {
-          # An uninstrumented robolectric platform .jar is needed by the test
-          # runner to provide a copy of org.json - we could pull from maven
-          # instead if we wanted. TODO(crbug.com/1351430)
-          # Additionally, we provide an sdk jar, since whenever we start using a
-          # new Android SDK, robolectric doesn't support it, and they often take
-          # a few months to support it. This causes issues when mocking classes
-          # that reference new SDK classes, so providing our normal SDK will
-          # allow these classes to resolve. For an example, see
-          # crbug.com/1350963.
-          extra_classpath_jars = [
-            _robolectric_jar_path,
-            android_sdk_jar,
-          ]
+          # For robolectric tests, we also add the normal sdk jar to the
+          # classpath since whenever we start using a new Android SDK,
+          # robolectric doesn't support it, and they often take a few months to
+          # support it. This causes issues when mocking classes that reference
+          # new SDK classes, so providing our normal SDK will allow these
+          # classes to resolve. For an example, see crbug.com/1350963.
+          extra_classpath_jars = [ android_sdk_jar ]
         }
       }
     }

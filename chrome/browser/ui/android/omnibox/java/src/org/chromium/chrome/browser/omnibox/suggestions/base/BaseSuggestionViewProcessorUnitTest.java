@@ -21,13 +21,13 @@ import android.text.style.StyleSpan;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Tests for {@link BaseSuggestionViewProcessor}.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(LocalRobolectricTestRunner.class)
 public class BaseSuggestionViewProcessorUnitTest {
     private static final int FAKE_STRING_LENGTH = 10;
 

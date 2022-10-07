@@ -19,17 +19,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests parts of the ContextualSearchContext class.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchContextTest {
     private static final int INVALID = ContextualSearchContext.INVALID_OFFSET;
     private static final String UTF_8 = "UTF-8";
