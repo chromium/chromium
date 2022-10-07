@@ -52,6 +52,36 @@ void Recorder::Record(EventBase&& event) {
   }
 }
 
+void Recorder::RecordEvent(Event&& event) {
+  // All calls to StructuredMetricsProvider (the observer) must be on the UI
+  // sequence, so re-call Record if needed. If a UI task runner hasn't been set
+  // yet, ignore this Record.
+  if (!ui_task_runner_) {
+    LogInternalError(StructuredMetricsError::kUninitializedClient);
+    return;
+  }
+
+  if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
+    ui_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Recorder::RecordEvent,
+                                  base::Unretained(this), std::move(event)));
+    return;
+  }
+
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  // Make a copy of an event that all observers can share.
+  const auto event_clone = event.Clone();
+  for (auto& observer : observers_)
+    observer.OnEventRecord(event_clone);
+
+  if (observers_.empty()) {
+    // Other values of EventRecordingState are recorded in
+    // StructuredMetricsProvider::OnRecord.
+    LogEventRecordingState(EventRecordingState::kProviderMissing);
+  }
+}
+
 void Recorder::ProfileAdded(const base::FilePath& profile_path) {
   // All calls to the StructuredMetricsProvider (the observer) must be on the UI
   // sequence.

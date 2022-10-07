@@ -61,6 +61,8 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
       return;
     event_delegate_.Run(event);
   }
+  // TODO(crbug/1350322): Implement this when doing test migration.
+  void OnEventRecord(const Event& event) override {}
   // Tests do not care about these.
   void OnProfileAdded(const base::FilePath& profile_path) override {}
   void OnReportingStateChanged(bool enabled) override {}

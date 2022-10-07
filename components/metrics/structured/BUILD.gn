@@ -29,6 +29,7 @@ static_library("structured") {
   deps = [
     ":storage",
     ":structured_events",
+    ":structured_metrics_validator",
     "//base",
     "//components/metrics",
     "//components/metrics/structured/mojom",

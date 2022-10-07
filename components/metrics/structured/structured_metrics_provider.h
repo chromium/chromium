@@ -5,17 +5,17 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_PROVIDER_H_
 
+#include <deque>
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
+#include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/key_data.h"
 #include "components/metrics/structured/recorder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {
 namespace structured {
@@ -89,6 +89,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // Recorder::RecorderImpl:
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
+  // TODO(crbug/1350322): A refactor migrating away from EventBase is in
+  // progress. Remove references to EventBase later.
+  void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
   void OnSystemProfileInitialized() override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
@@ -108,10 +111,14 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void SetDeviceKeyDataPathForTest(const base::FilePath& path);
 
   // Records events before |init_state_| is kInitialized.
-  void RecordEventBeforeInitialization(const EventBase& event);
+  void RecordEventBaseBeforeInitialization(const EventBase& event);
+  void RecordEventBeforeInitialization(const Event& event);
 
   // Hashes data from |event| to be persisted to disk and eventually sent.
   void RecordEventFromEventBase(const EventBase& event);
+
+  // Records |event| to persistent disk to be eventually sent.
+  void RecordEvent(const Event& event);
 
   // Hashes events and persists the events to disk. Should be called once |this|
   // has been initialized.
@@ -183,7 +190,10 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   std::unique_ptr<PersistentProto<EventsProto>> events_;
 
   // Store for events that were recorded before user/device keys are loaded.
-  std::vector<EventBase> unhashed_events_;
+  std::vector<EventBase> unhashed_events_base_;
+
+  // Store for events that were recorded before user/device keys are loaded.
+  std::deque<Event> unhashed_events_;
 
   // Storage for all event's keys, and hashing logic for values. This stores
   // keys on disk. |profile_key_data_| stores keys for per-profile projects,

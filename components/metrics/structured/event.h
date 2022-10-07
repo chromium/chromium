@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/metrics/structured/enums.h"
 
 // Builder classes for sending events are generated in
 // //components/metrics/structured/structured_events.h based on XML
@@ -64,6 +65,8 @@ class Event {
 
   virtual bool IsCrOSEvent() const;
 
+  Event Clone() const;
+
   // Records |this|. Once this method is called, |this| will be unsafe to
   // access.
   void Record();
@@ -85,6 +88,9 @@ class Event {
   std::string project_name_;
   std::string event_name_;
   std::map<std::string, MetricValue> metric_values_;
+
+  // Explicitly set the system uptime.
+  void SetRecordedTimeSinceBoot(base::TimeDelta recorded_time_since_boot);
 
   // System uptime for which the event was recorded.
   base::TimeDelta recorded_time_since_boot_;

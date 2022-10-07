@@ -53,8 +53,19 @@ bool Event::IsCrOSEvent() const {
   return false;
 }
 
+Event Event::Clone() const {
+  auto clone = Event(project_name_, event_name_);
+  for (const auto& metric : metric_values()) {
+    const Event::MetricValue& metric_value = metric.second;
+    clone.AddMetric(metric.first, metric_value.type,
+                    metric_value.value.Clone());
+  }
+  clone.SetRecordedTimeSinceBoot(recorded_time_since_boot_);
+
+  return clone;
+}
+
 void Event::Record() {
-  recorded_time_since_boot_ = base::SysInfo::Uptime();
   StructuredMetricsClient::Get()->Record(std::move(*this));
 }
 
@@ -105,6 +116,10 @@ bool Event::AddMetric(const std::string& metric_name,
   auto pair =
       metric_values_.emplace(metric_name, MetricValue(type, std::move(value)));
   return pair.second;
+}
+
+void Event::SetRecordedTimeSinceBoot(base::TimeDelta recorded_time_since_boot) {
+  recorded_time_since_boot_ = recorded_time_since_boot;
 }
 
 }  // namespace metrics::structured

@@ -44,6 +44,8 @@ class Recorder {
    public:
     // Called on a call to Record.
     virtual void OnRecord(const EventBase& event) = 0;
+    // Called on a call to Record.
+    virtual void OnEventRecord(const Event& event) = 0;
     // Called on a call to ProfileAdded.
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
     // Called on a call to OnReportingStateChanged.
@@ -62,6 +64,13 @@ class Recorder {
   // This signals to StructuredMetricsProvider that the event should be
   // recorded.
   void Record(EventBase&& event);
+
+  // This signals to StructuredMetricsProvider that the event should be
+  // recorded.
+  //
+  // TODO(crbug/1350322): A refactor migrating away from EventBase is in
+  // progress. Remove references to EventBase later.
+  void RecordEvent(Event&& event);
 
   // Notifies the StructuredMetricsProvider that a profile has been added with
   // path |profile_path|. The first call to ProfileAdded initializes the
