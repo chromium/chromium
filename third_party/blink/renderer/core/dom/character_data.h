@@ -78,6 +78,17 @@ class CORE_EXPORT CharacterData : public Node {
            type == kCreateProcessingInstruction || type == kCreateEditingText);
   }
 
+  CharacterData(TreeScope& tree_scope, String&& text, ConstructionType type)
+      : Node(&tree_scope, type), data_(std::move(text)) {
+    DCHECK(type == kCreateComment || type == kCreateText ||
+           type == kCreateCdataSection ||
+           type == kCreateProcessingInstruction || type == kCreateEditingText);
+    DCHECK(absl::holds_alternative<String>(data_));
+    if (absl::get<String>(data_).IsNull()) {
+      data_ = g_empty_string;
+    }
+  }
+
   void SetDataWithoutUpdate(const String& data) {
     DCHECK(!data.IsNull());
     data_ = data;

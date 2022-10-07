@@ -311,6 +311,9 @@ class HTMLConstructionSite final {
     }
 
     void Discard() {
+      if (IsEmpty())
+        return;
+
       PendingText discarded_text;
       Swap(discarded_text);
     }

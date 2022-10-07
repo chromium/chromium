@@ -49,6 +49,10 @@ Text* Text::Create(Document& document, const String& data) {
   return MakeGarbageCollected<Text>(document, data, kCreateText);
 }
 
+Text* Text::Create(Document& document, String&& data) {
+  return MakeGarbageCollected<Text>(document, std::move(data), kCreateText);
+}
+
 Text* Text::CreateEditingText(Document& document, const String& data) {
   return MakeGarbageCollected<Text>(document, data, kCreateEditingText);
 }

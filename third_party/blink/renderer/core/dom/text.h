@@ -42,10 +42,14 @@ class CORE_EXPORT Text : public CharacterData {
   static const unsigned kDefaultLengthLimit = 1 << 16;
 
   static Text* Create(Document&, const String&);
+  static Text* Create(Document&, String&&);
   static Text* CreateEditingText(Document&, const String&);
 
   Text(TreeScope& tree_scope, const String& data, ConstructionType type)
       : CharacterData(tree_scope, data, type) {}
+
+  Text(TreeScope& tree_scope, String&& data, ConstructionType type)
+      : CharacterData(tree_scope, std::move(data), type) {}
 
   LayoutText* GetLayoutObject() const;
 

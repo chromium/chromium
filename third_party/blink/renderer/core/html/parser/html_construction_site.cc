@@ -103,13 +103,26 @@ static bool HasImpliedEndTag(const HTMLStackItem* item) {
 }
 
 static bool ShouldUseLengthLimit(const ContainerNode& node) {
-  return !IsA<HTMLScriptElement>(node) && !IsA<HTMLStyleElement>(node) &&
-         !IsA<SVGScriptElement>(node);
+  if (auto* html_element = DynamicTo<HTMLElement>(&node)) {
+    return !html_element->HasTagName(html_names::kScriptTag) &&
+           !html_element->HasTagName(html_names::kStyleTag);
+  }
+  return !IsA<SVGScriptElement>(node);
 }
 
-static unsigned TextLengthLimitForContainer(const ContainerNode& node) {
-  return ShouldUseLengthLimit(node) ? Text::kDefaultLengthLimit
-                                    : std::numeric_limits<unsigned>::max();
+static unsigned NextTextBreakPositionForContainer(
+    const ContainerNode& node,
+    unsigned current_position,
+    unsigned string_length,
+    absl::optional<unsigned>& length_limit) {
+  if (string_length < Text::kDefaultLengthLimit)
+    return string_length;
+  if (!length_limit) {
+    length_limit = ShouldUseLengthLimit(node)
+                       ? Text::kDefaultLengthLimit
+                       : std::numeric_limits<unsigned>::max();
+  }
+  return std::min(current_position + *length_limit, string_length);
 }
 
 static inline bool IsAllWhitespace(const String& string) {
@@ -149,6 +162,13 @@ static inline void ExecuteInsertTask(HTMLConstructionSiteTask& task) {
   }
 }
 
+static inline unsigned TextFitsInContainer(const ContainerNode& node,
+                                           unsigned length) {
+  // Common case is all text fits in the default text limit. Only lookup length
+  // limit when necessary as it is costly.
+  return length < Text::kDefaultLengthLimit || !ShouldUseLengthLimit(node);
+}
+
 static inline void ExecuteInsertTextTask(HTMLConstructionSiteTask& task) {
   DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kInsertText);
 
@@ -158,8 +178,8 @@ static inline void ExecuteInsertTextTask(HTMLConstructionSiteTask& task) {
   Node* previous_child = task.next_child ? task.next_child->previousSibling()
                                          : task.parent->lastChild();
   if (auto* previous_text = DynamicTo<Text>(previous_child)) {
-    unsigned length_limit = TextLengthLimitForContainer(*task.parent);
-    if (previous_text->length() + new_text->length() < length_limit) {
+    if (TextFitsInContainer(*task.parent,
+                            previous_text->length() + new_text->length())) {
       previous_text->ParserAppendData(new_text->data());
       return;
     }
@@ -248,16 +268,6 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   return 0;
 }
 
-static String AtomizeIfAllWhitespace(const String& string,
-                                     WhitespaceMode whitespace_mode) {
-  // Strings composed entirely of whitespace are likely to be repeated. Turn
-  // them into AtomicString so we share a single string for each.
-  if (whitespace_mode == kAllWhitespace ||
-      (whitespace_mode == kWhitespaceUnknown && IsAllWhitespace(string)))
-    return AtomicString(string).GetString();
-  return string;
-}
-
 void HTMLConstructionSite::FlushPendingText() {
   if (pending_text_.IsEmpty())
     return;
@@ -271,13 +281,17 @@ void HTMLConstructionSite::FlushPendingText() {
   // Splitting text nodes into smaller chunks contradicts HTML5 spec, but is
   // necessary for performance, see:
   // https://bugs.webkit.org/show_bug.cgi?id=55898
-  unsigned length_limit = TextLengthLimitForContainer(*pending_text.parent);
+
+  // Lazily determine the line limit as it's non-trivial, and in the typical
+  // case not necessary. Note that this is faster than using a ternary operator
+  // to determine limit.
+  absl::optional<unsigned> length_limit;
 
   unsigned current_position = 0;
   const StringBuilder& string = pending_text.string_builder;
   while (current_position < string.length()) {
-    unsigned proposed_break_index =
-        std::min(current_position + length_limit, string.length());
+    unsigned proposed_break_index = NextTextBreakPositionForContainer(
+        *pending_text.parent, current_position, string.length(), length_limit);
     unsigned break_index =
         FindBreakIndexBetween(string, current_position, proposed_break_index);
     DCHECK_LE(break_index, string.length());
@@ -288,17 +302,23 @@ void HTMLConstructionSite::FlushPendingText() {
     }
     String substring =
         string.Substring(current_position, break_index - current_position);
-    substring = AtomizeIfAllWhitespace(substring, pending_text.whitespace_mode);
-
-    HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kInsertText);
-    task.parent = pending_text.parent;
-    task.next_child = pending_text.next_child;
-    task.child = Text::Create(task.parent->GetDocument(), substring);
-    QueueTask(task);
+    // Strings composed entirely of whitespace are likely to be repeated. Turn
+    // them into AtomicString so we share a single string for each.
+    if (pending_text.whitespace_mode == kAllWhitespace ||
+        (pending_text.whitespace_mode == kWhitespaceUnknown &&
+         IsAllWhitespace(substring))) {
+      substring = AtomicString(substring).GetString();
+    }
 
     DCHECK_GT(break_index, current_position);
     DCHECK_EQ(break_index - current_position, substring.length());
-    DCHECK_EQ(To<Text>(task.child.Get())->length(), substring.length());
+    HTMLConstructionSiteTask task(HTMLConstructionSiteTask::kInsertText);
+    task.parent = pending_text.parent;
+    task.next_child = pending_text.next_child;
+    task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
+    QueueTask(task);
+    DCHECK_EQ(To<Text>(task.child.Get())->length(),
+              break_index - current_position);
     current_position = break_index;
   }
 }
