@@ -486,23 +486,22 @@ void DanglingRawPtrReleasedCrash(uintptr_t id) {
   // allowed. In particular, symbolizing and printing the StackTraces may
   // allocate memory.
   debug::StackTrace stack_trace_release;
+  debug::TaskTrace task_trace_release;
   absl::optional<debug::StackTrace> stack_trace_free = TakeStackTrace(id);
 
   if (stack_trace_free) {
-    LOG(ERROR) << StringPrintf(
-        "Detected dangling raw_ptr with id=0x%016" PRIxPTR
-        ":\n\n"
-        "The memory was freed at:\n%s\n"
-        "The dangling raw_ptr was released at:\n%s",
-        id, stack_trace_free->ToString().c_str(),
-        stack_trace_release.ToString().c_str());
+    LOG(ERROR) << "Detected dangling raw_ptr with id="
+               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
+               << "The memory was freed at:\n"
+               << *stack_trace_free << "\n"
+               << "The dangling raw_ptr was released at:\n"
+               << stack_trace_release << task_trace_release;
   } else {
-    LOG(ERROR) << StringPrintf(
-        "Detected dangling raw_ptr with id=0x%016" PRIxPTR
-        ":\n\n"
-        "It was not recorded where the memory was freed.\n\n"
-        "The dangling raw_ptr was released at:\n%s",
-        id, stack_trace_release.ToString().c_str());
+    LOG(ERROR) << "Detected dangling raw_ptr with id="
+               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
+               << "It was not recorded where the memory was freed.\n\n"
+               << "The dangling raw_ptr was released at:\n"
+               << stack_trace_release << task_trace_release;
   }
   IMMEDIATE_CRASH();
 }
@@ -555,17 +554,9 @@ void UnretainedDanglingRawPtrDetectedDumpWithoutCrashing(uintptr_t id) {
 void UnretainedDanglingRawPtrDetectedCrash(uintptr_t id) {
   debug::TaskTrace task_trace;
   debug::StackTrace stack_trace;
-  if (!task_trace.empty()) {
-    LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
-               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
-               << task_trace << ":\n Stack trace:\n"
-               << stack_trace;
-  } else {
-    LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
-               << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
-               << "Stack trace:\n"
-               << stack_trace;
-  }
+  LOG(ERROR) << "Detected dangling raw_ptr in unretained with id="
+             << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
+             << task_trace << stack_trace;
   IMMEDIATE_CRASH();
 }
 
