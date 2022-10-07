@@ -390,8 +390,8 @@ CreateAndValidateSharedImageRepresentations::
 }
 
 // High bit depth rendering is not supported on Android.
-const auto kSharedImageFormats = ::testing::Values(
-    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888));
+const auto kSharedImageFormats =
+    ::testing::Values(viz::SharedImageFormat::kRGBA_8888);
 
 std::string TestParamToString(
     const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&

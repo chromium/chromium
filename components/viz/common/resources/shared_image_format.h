@@ -68,6 +68,8 @@ class SharedImageFormat {
    */
   enum class ChannelFormat : uint8_t { k8, k10, k16, k16F };
 
+  static const SharedImageFormat kRGBA_8888;
+
   SharedImageFormat() = default;
   static constexpr SharedImageFormat SinglePlane(
       ResourceFormat resource_format) {
@@ -181,6 +183,9 @@ class SharedImageFormat {
 };
 
 static_assert(sizeof(SharedImageFormat) <= 8);
+
+constexpr SharedImageFormat SharedImageFormat::kRGBA_8888 =
+    SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888);
 
 }  // namespace viz
 

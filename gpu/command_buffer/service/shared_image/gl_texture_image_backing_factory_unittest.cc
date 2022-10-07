@@ -203,8 +203,7 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
 // Ensures that GLTextureImageBacking registers it's estimated size
 // with memory tracker.
 TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();

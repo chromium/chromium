@@ -150,8 +150,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Basic) {
   }
 
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  viz::SharedImageFormat format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -235,8 +234,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -317,8 +315,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -392,8 +389,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -517,8 +513,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -613,8 +608,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   // Create a mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;

@@ -3075,8 +3075,7 @@ TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidTexture) {
 TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
@@ -3139,8 +3138,7 @@ TEST_P(GLES2DecoderTest,
   // Try to create a mailbox with kNewClientId.
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
@@ -3165,8 +3163,7 @@ TEST_P(GLES2DecoderTest,
 TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCRHOMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
@@ -3228,8 +3225,7 @@ TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   // Create a shared image.
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::GenerateForSharedImage();
-  auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  auto format = viz::SharedImageFormat::kRGBA_8888;
   auto shared_image_backing = std::make_unique<TestImageBacking>(
       mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, 0, 0, kNewServiceId);

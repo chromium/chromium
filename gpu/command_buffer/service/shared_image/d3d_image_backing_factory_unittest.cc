@@ -537,8 +537,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =
@@ -624,8 +623,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
@@ -696,8 +694,7 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -824,8 +821,7 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -923,8 +919,7 @@ TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
 
   // Create a mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =
@@ -1102,8 +1097,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -1234,8 +1228,7 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format =
-      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
+  const auto format = viz::SharedImageFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
