@@ -5220,6 +5220,9 @@ crbug.com/1365858 http/tests/devtools/console/console-format-es6.js [ Failure Pa
 crbug.com/1365858 http/tests/devtools/console/console-functions.js [ Failure Pass ]
 crbug.com/1365858 http/tests/devtools/sources/debugger/properties-special.js [ Failure Pass ]
 
+# Temporarily disabled to land the V8 CL https://crrev.com/c/3929037
+crbug.com/1371072 http/tests/devtools/tracing/timeline-js/timeline-microtasks.js [ Failure Pass ]
+
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pass ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
 
