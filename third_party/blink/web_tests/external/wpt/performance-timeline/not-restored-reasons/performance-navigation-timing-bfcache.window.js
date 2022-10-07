@@ -1,9 +1,9 @@
 // META: title=RemoteContextHelper navigation using BFCache
+// META: script=./test-helper.js
 // META: script=/common/dispatcher/dispatcher.js
 // META: script=/common/get-host-info.sub.js
 // META: script=/common/utils.js
 // META: script=/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
-// META: script=/html/browsers/browsing-the-web/remote-context-helper-tests/resources/test-helper.js
 
 'use strict';
 
@@ -14,16 +14,19 @@ promise_test(async t => {
   // Open a window with noopener so that BFCache will work.
   const rc1 = await rcHelper.addWindow(
       /*config=*/ null, /*options=*/ {features: 'noopener'});
+  prepareForBFCache(rc1);
 
   // Navigate away.
   const rc2 = await rc1.navigateToNew();
 
   // Navigate back.
   await rc2.historyBack();
+  assert_implements_bfcache(rc1);
 
   // Verify that no reasons are recorded for successful restore.
   assert_true(await rc1.executeScript(() => {
-    let reasons = performance.getEntriesByType('navigation')[0].notRestoredReasons;
+    let reasons =
+        performance.getEntriesByType('navigation')[0].notRestoredReasons;
     return reasons == null;
   }));
 });

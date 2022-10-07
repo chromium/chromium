@@ -2587,15 +2587,6 @@ void WebViewImpl::DispatchPagehide(
 }
 
 void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
-  // Reset NotRestoredReasons for successful back/forward cache restore here,
-  // so that we set a new value for NotRestoredReasons every time main-frame
-  // history navigation is completed. For history navigation that is not
-  // restored from back/forward cache, we set a new value in
-  // |CommitNavigationWithParams()|.
-  if (MainFrame()->IsWebLocalFrame() && MainFrame()->IsOutermostMainFrame()) {
-    MainFrame()->ToWebLocalFrame()->SetNotRestoredReasons(nullptr);
-  }
-
   for (Frame* frame = GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
