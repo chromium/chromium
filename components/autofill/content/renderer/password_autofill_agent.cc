@@ -388,15 +388,21 @@ bool FieldHasUsernameAutocompleteAttribute(const FormFieldData& field) {
          std::string::npos;
 }
 
-// Whether any of the fields in |form| is a password or username field.
-bool FormHasPasswordOrUsernameField(const FormData& form) {
-  for (const auto& field : form.fields) {
-    if (field.IsPasswordInputElement() ||
-        FieldHasUsernameAutocompleteAttribute(field)) {
-      return true;
-    }
-  }
-  return false;
+// Whether field has an autocomplete="webauthn" attribute.
+bool FieldHasWebAuthnAutocompleteAttribute(const FormFieldData& field) {
+  return field.autocomplete_attribute.find(
+             password_manager::constants::kAutocompleteWebAuthn) !=
+         std::string::npos;
+}
+
+// Whether any of the fields in |form| suggest the need to autofill credentials.
+bool IsCredentialForm(const FormData& form) {
+  return std::any_of(form.fields.begin(), form.fields.end(),
+                     [](const auto& field) {
+                       return field.IsPasswordInputElement() ||
+                              FieldHasUsernameAutocompleteAttribute(field) ||
+                              FieldHasWebAuthnAutocompleteAttribute(field);
+                     });
 }
 
 void AnnotateFieldWithParsingResult(WebDocument doc,
@@ -1287,7 +1293,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
     }
 
     std::unique_ptr<FormData> form_data(GetFormDataFromWebForm(form));
-    if (!form_data || !FormHasPasswordOrUsernameField(*form_data))
+    if (!form_data || !IsCredentialForm(*form_data))
       continue;
 
     if (logger)
@@ -1327,7 +1333,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
 
   if (add_unowned_inputs) {
     std::unique_ptr<FormData> form_data(GetFormDataFromUnownedInputElements());
-    if (form_data && FormHasPasswordOrUsernameField(*form_data)) {
+    if (form_data && IsCredentialForm(*form_data)) {
       if (logger) {
         logger->LogFormData(Logger::STRING_FORM_IS_PASSWORD, *form_data);
       }
@@ -1774,7 +1780,7 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
   if (!form_data)
     return;
 
-  if (!FormHasPasswordOrUsernameField(*form_data))
+  if (!IsCredentialForm(*form_data))
     return;
 
   GetPasswordManagerDriver().InformAboutUserInput(*form_data);

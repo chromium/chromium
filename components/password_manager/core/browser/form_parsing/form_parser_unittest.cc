@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -51,7 +50,9 @@ enum class ElementRole {
   USERNAME,
   CURRENT_PASSWORD,
   NEW_PASSWORD,
-  CONFIRMATION_PASSWORD
+  CONFIRMATION_PASSWORD,
+  // Used for fields tagged only for webauthn autocomplete.
+  WEBAUTHN,
 };
 
 // Expected FormFieldData are constructed based on these descriptions.
@@ -125,10 +126,12 @@ struct ParseResultIds {
   autofill::FieldRendererId password_id;
   autofill::FieldRendererId new_password_id;
   autofill::FieldRendererId confirmation_password_id;
+  std::vector<autofill::FieldRendererId> webauthn_ids;
 
   bool IsEmpty() const {
     return username_id.is_null() && password_id.is_null() &&
-           new_password_id.is_null() && confirmation_password_id.is_null();
+           new_password_id.is_null() && confirmation_password_id.is_null() &&
+           webauthn_ids.empty();
   }
 };
 
@@ -144,6 +147,9 @@ void UpdateResultWithIdByRole(ParseResultIds* result,
     case ElementRole::USERNAME:
       DCHECK(result->username_id.is_null());
       result->username_id = id;
+      break;
+    case ElementRole::WEBAUTHN:
+      result->webauthn_ids.push_back(id);
       break;
     case ElementRole::CURRENT_PASSWORD:
       DCHECK(result->password_id.is_null());
@@ -2924,6 +2930,27 @@ TEST(FormParserTest, AcceptsWebAuthnCredentials) {
                    .value = u"luma",
                    .name = u"password",
                    .form_control_type = "password"},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
+// Tests that if there is a single field marked as autofill="webauthn" then the
+// form is parsed and the `accepts_webauthn_credentials` flag is set.
+// Regression test for crbug.com/1366006.
+TEST(FormParserTest, SingleFieldAcceptsWebAuthnCredentials) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Single field tagged with autofill=\"webauthn\"",
+          .fields =
+              {
+                  {.role_filling = ElementRole::WEBAUTHN,
+                   .autocomplete_attribute = "webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = "text"},
               },
           .accepts_webauthn_credentials = true,
       },
