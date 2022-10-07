@@ -43,6 +43,10 @@ perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
   }
 }
 
+int64_t TaskAttributionIdToInt(absl::optional<TaskAttributionId> id) {
+  return id ? static_cast<int64_t>(id.value().value()) : -1;
+}
+
 }  // namespace
 
 TaskAttributionTrackerImpl::TaskAttributionTrackerImpl()
@@ -206,15 +210,10 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
         data->set_type(ToProtoEnum(type));
         data->set_scope_task_id(scope_task_id_.value());
         data->set_running_task_id_to_be_restored(
-            running_task_id_to_be_restored_
-                ? running_task_id_to_be_restored_.value().value()
-                : -1);
+            TaskAttributionIdToInt(running_task_id_to_be_restored_));
         data->set_continuation_task_id_to_be_restored(
-            continuation_task_id_to_be_restored_
-                ? continuation_task_id_to_be_restored_.value().value()
-                : -1);
-        data->set_parent_task_id(parent_task_id ? parent_task_id.value().value()
-                                                : -1);
+            TaskAttributionIdToInt(continuation_task_id_to_be_restored_));
+        data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
       });
 }
 
