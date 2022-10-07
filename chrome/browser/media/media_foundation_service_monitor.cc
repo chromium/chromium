@@ -44,9 +44,12 @@ constexpr int kCrash = 1;
 // for now but may need them in the future when we refine the algorithm.
 constexpr int kMaxNumberOfDisabledTimesInPref = 3;
 
-// Number of days to keep disabling hardware secure decryption after it's
-// disabled previously because of errors.
-constexpr int kDaysDisablingExtended = 7;
+// Minimum and maximum number of days to keep disabling hardware secure
+// decryption after it's disabled because of prior errors.
+constexpr base::TimeDelta kMinDisablingDuration = base::Days(30);
+constexpr base::TimeDelta kMaxDisablingDuration = base::Days(180);
+static_assert(kMinDisablingDuration >= base::Days(1));
+static_assert(kMaxDisablingDuration >= kMinDisablingDuration);
 
 // Gets the list of disabled times from "Local State".
 std::vector<base::Time> GetDisabledTimesPref() {
@@ -96,18 +99,62 @@ void MediaFoundationServiceMonitor::RegisterPrefs(
 }
 
 // static
-// TODO(crbug.com/1296219): Refine this disabling algorithm.
+base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
+    std::vector<base::Time> disabled_times) {
+  // No disabled time. No need to disable the feature.
+  if (disabled_times.empty())
+    return base::Time::Min();
+
+  // The disabled times should be sorted already. But since they are from the
+  // local state, sort it again just in case.
+  std::sort(disabled_times.begin(), disabled_times.end(), std::greater<>());
+
+  base::Time last_disabled_time = disabled_times[0];
+
+  // One disabled time will disable the feature for `kDaysDisablingExtended`.
+  base::TimeDelta disabling_duration = kMinDisablingDuration;
+
+  // A previous disabled time will cause longer disabling time since the
+  // probability of failure is much higher.
+  if (disabled_times.size() > 1) {
+    base::Time prev_disabled_time = disabled_times[1];
+
+    // Normally the gap should always be greater than kMinDisablingDuration,
+    // but there could be exceptions, e.g. when a user manipulates local state
+    // directly, or enabling/disabling the fallback manually.
+    // Take a max to normalize it and also avoid divided by zero issue.
+    auto gap = std::max(last_disabled_time - prev_disabled_time,
+                        kMinDisablingDuration);
+
+    // This is a heuristic algorithm to determine how long we should keep
+    // disabling the feature after the `last_disabled_time`, given it was
+    // disabled previously at `prev_disabled_time` as well. The closer they are
+    // (i.e. the smaller `gap` is), the chance that errors will happen again
+    // becomes larger. Two extreme cases:
+    // - `gap` is kMinDisablingDuration, meaning the feature was disabled again
+    // right after it's re-enabled (after the previous disabling). In this case,
+    // disable it for kMaxDisablingCoefficient * kMinDisablingDuration.
+    // - `gap` is infinity, which should be equivalent to the case where
+    // `prev_disabled_time` doesn't exist. In this case, disable it for
+    // `kMinDisablingDuration`.
+    // We construct a reciprocal function to satisfy the above properties.
+    disabling_duration =
+        ((kMaxDisablingDuration - kMinDisablingDuration) / gap + 1) *
+        kMinDisablingDuration;
+  }
+
+  return last_disabled_time + disabling_duration;
+}
+
+// static
 bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::vector<base::Time> disabled_times = GetDisabledTimesPref();
-  base::Time current_time = base::Time::Now();
-  for (const auto& disabled_time : disabled_times) {
-    if (current_time - disabled_time < base::Days(kDaysDisablingExtended))
-      return true;
-  }
-  return false;
+  auto earliest_enable_time = GetEarliestEnableTime(GetDisabledTimesPref());
+  DVLOG(1) << __func__ << "earliest_enable_time =" << earliest_enable_time;
+
+  return base::Time::Now() < earliest_enable_time;
 }
 
 // static
