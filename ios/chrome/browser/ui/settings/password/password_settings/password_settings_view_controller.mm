@@ -243,11 +243,11 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       break;
     }
     case ItemTypeOnDeviceEncryptionSetUp: {
-      // TODO(crbug.com/1335156): Trigger setup.
+      [self.presentationDelegate showOnDeviceEncryptionSetUp];
       break;
     }
     case ItemTypeOnDeviceEncryptionOptedInLearnMore: {
-      // TODO(crbug.com/1335156): Open appropriate URL.
+      [self.presentationDelegate showOnDeviceEncryptionHelp];
       break;
     }
     case ItemTypeOnDeviceEncryptionOptedInDescription:

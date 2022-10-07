@@ -27,6 +27,13 @@
 // menu item, requesting information about the state and usage of this feature.
 - (void)showPasswordsInOtherAppsScreen;
 
+// Method invoked when the user has requested to set up on-device encryption.
+- (void)showOnDeviceEncryptionSetUp;
+
+// Method invoked when the user has tapped "Learn More" about on-device
+// encryption.
+- (void)showOnDeviceEncryptionHelp;
+
 @end
 
 // ViewController used to present settings and infrequently-used actions
