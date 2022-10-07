@@ -5063,6 +5063,9 @@ New install
       <message name="IDS_ASH_STATUS_TRAY_SHELF_PARTY_OFF_SUBLABEL" desc="The sub label text shown under the tray menu button when Shelf Party mode is off.">
         Off
       </message>
+      <message name="IDS_ASH_SHELF_ALL_PINNED_ITEMS_ARE_PARTYING" desc="The message that is displayed on the shelf when all pinned items are in Shelf Party (and therefore not shown on the shelf).">
+        All pinned items are partying
+      </message>
 
       <!-- Firmware UI notifications -->
       <message name="IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_AVAILABLE_TITLE" desc="Notification title to indicate to users that firmware updates are available.">

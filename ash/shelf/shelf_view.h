@@ -125,7 +125,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
 
   // Returns the size occupied by |count| app buttons. |button_size| indicates
   // the size of each app button.
-  static int GetSizeOfAppButtons(int count, int button_size);
+  int GetSizeOfAppButtons(int count, int button_size);
 
   // Initializes shelf view elements.
   void Init(views::FocusSearch* focus_search);
@@ -556,6 +556,17 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // this function causes the items that were partying to reappear on the shelf.
   void HandleShelfParty();
 
+  // Updates the visibility, position, and transform of
+  // `all_pinned_items_are_partying_label_`.
+  void UpdateAllPinnedItemsArePartyingLabel();
+
+  // Returns true if `all_pinned_items_are_partying_label_` should be visible.
+  bool ShouldShowAllPinnedItemsArePartyingLabel() const;
+
+  // Returns the space occupied by `all_pinned_items_are_partying_label_`,
+  // including the gap between that label and the first item, in DIPs.
+  int AllPinnedItemsArePartyingLabelSpace() const;
+
   // Removes and reset |current_ghost_view| and |last_ghost_view|.
   void RemoveGhostView();
 
@@ -685,6 +696,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // A view used to make accessibility announcements (changes in the shelf's
   // alignment or auto-hide state).
   views::View* announcement_view_ = nullptr;  // Owned by ShelfView
+
+  // A view used to indicate that all pinned items are partying.
+  views::View* all_pinned_items_are_partying_label_ =
+      nullptr;  // Owned by ShelfView
 
   // For dragging: -1 if scrolling back, 1 if scrolling forward, 0 if neither.
   int drag_scroll_dir_ = 0;
