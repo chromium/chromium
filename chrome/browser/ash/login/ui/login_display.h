@@ -5,14 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_H_
 
-#include "base/callback.h"
-#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 
@@ -28,9 +22,6 @@ class LoginDisplay {
     // Used for known users only.
     virtual void Login(const UserContext& user_context,
                        const SigninSpecifics& specifics) = 0;
-
-    // Returns true if sign in is in progress.
-    virtual bool IsSigninInProgress() const = 0;
 
     // Called when the user requests kiosk enable screen.
     virtual void OnStartKioskEnableScreen() = 0;
@@ -59,18 +50,9 @@ class LoginDisplay {
   Delegate* delegate() { return delegate_; }
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
-  bool is_signin_completed() const { return is_signin_completed_; }
-  void set_signin_completed(bool value) { is_signin_completed_ = value; }
-
  protected:
   // Login UI delegate (controller).
   Delegate* delegate_ = nullptr;
-
-  // True if signin for user has completed.
-  // TODO(nkostylev): Find a better place to store this state
-  // in redesigned login stack.
-  // Login stack (and this object) will be recreated for next user sign in.
-  bool is_signin_completed_ = false;
 };
 
 }  // namespace ash

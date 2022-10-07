@@ -36,22 +36,6 @@ namespace chromeos {
 
 class GaiaScreenHandler;
 
-// An interface for SigninScreenHandler to call WebUILoginDisplay.
-class SigninScreenHandlerDelegate {
- public:
-  // --------------- Sign in/out methods.
-  // Returns true if sign in is in progress.
-  virtual bool IsSigninInProgress() const = 0;
-
-  // --------------- Rest of the methods.
-
-  // Whether user sign in has completed.
-  virtual bool IsUserSigninCompleted() const = 0;
-
- protected:
-  virtual ~SigninScreenHandlerDelegate() = default;
-};
-
 // A class that handles the WebUI hooks in sign-in screen in OobeUI and
 // LoginDisplay.
 class SigninScreenHandler
@@ -71,10 +55,6 @@ class SigninScreenHandler
 
   // Shows the sign in screen.
   void Show();
-
-  // Sets delegate to be used by the handler. It is guaranteed that valid
-  // delegate is set before Show() method will be called.
-  void SetDelegate(SigninScreenHandlerDelegate* delegate);
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
@@ -130,9 +110,6 @@ class SigninScreenHandler
   // GAIA.
   void OnErrorScreenHide();
 
-  // A delegate that glues this handler with backend LoginDisplay.
-  SigninScreenHandlerDelegate* delegate_ = nullptr;
-
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
@@ -182,7 +159,6 @@ class SigninScreenHandler
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
 using ::chromeos::SigninScreenHandler;
-using ::chromeos::SigninScreenHandlerDelegate;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SIGNIN_SCREEN_HANDLER_H_

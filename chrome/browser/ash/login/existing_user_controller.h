@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/login/auth/login_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -33,7 +31,6 @@
 #include "content/public/browser/notification_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
-#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -99,7 +96,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   std::u16string GetConnectedNetworkName() const;
 
   // LoginDisplay::Delegate: implementation
-  bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
   void OnStartKioskEnableScreen() override;
@@ -113,6 +109,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
   bool IsUserAllowlisted(
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type);
+
+  // This is virtual to be mocked in unit tests.
+  virtual bool IsSigninInProgress() const;
+  bool IsUserSigninCompleted() const;
 
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override;
@@ -354,6 +354,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // Whether login attempt is running.
   bool is_login_in_progress_ = false;
+
+  // Whether user signin is completed.
+  bool is_signin_completed_ = false;
 
   // True if password has been changed for user who is completing sign in.
   // Set in OnLoginSuccess. Before that use LoginPerformer::password_changed().

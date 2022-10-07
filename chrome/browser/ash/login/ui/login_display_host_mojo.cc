@@ -168,7 +168,6 @@ LoginDisplayHostMojo::~LoginDisplayHostMojo() {
   GetLoginScreenCertProviderService()
       ->pin_dialog_manager()
       ->RemovePinDialogHost(&security_token_pin_dialog_host_login_impl_);
-  dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
   StopObservingOobeUI();
   dialog_->Close();
 }
@@ -415,8 +414,9 @@ void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
   // on camera timeout during SAML login.
   // TODO(crbug.com/1283052): simplify the logic here.
 
-  const bool no_users =
-      !login_display_->IsSigninInProgress() && !has_user_pods_;
+  const bool no_users = GetExistingUserController() &&
+                        !GetExistingUserController()->IsSigninInProgress() &&
+                        !has_user_pods_;
   if (no_users && !saml_page_closed) {
     return;
   }
@@ -693,8 +693,6 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
     return;
 
   dialog_ = new OobeUIDialogDelegate(weak_factory_.GetWeakPtr());
-  dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(
-      login_display_.get());
 
   views::View* web_dialog_view = dialog_->GetWebDialogView();
   scoped_observation_.Observe(web_dialog_view);

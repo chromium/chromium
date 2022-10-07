@@ -559,10 +559,6 @@ std::u16string ExistingUserController::GetConnectedNetworkName() const {
   return network_state_helper_->GetCurrentNetworkName();
 }
 
-bool ExistingUserController::IsSigninInProgress() const {
-  return is_login_in_progress_;
-}
-
 void ExistingUserController::Login(const UserContext& user_context,
                                    const SigninSpecifics& specifics) {
   if (is_login_in_progress_) {
@@ -715,6 +711,14 @@ bool ExistingUserController::IsUserAllowlisted(
                                            &wildcard_match, user_type);
 }
 
+bool ExistingUserController::IsSigninInProgress() const {
+  return is_login_in_progress_;
+}
+
+bool ExistingUserController::IsUserSigninCompleted() const {
+  return is_signin_completed_;
+}
+
 void ExistingUserController::LocalStateChanged(
     user_manager::UserManager* user_manager) {
   DeviceSettingsChanged();
@@ -837,7 +841,7 @@ void ExistingUserController::OnAuthFailure(const AuthFailure& failure) {
 
 void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
   is_login_in_progress_ = false;
-  GetLoginDisplay()->set_signin_completed(true);
+  is_signin_completed_ = true;
 
   // Login performer will be gone so cache this value to use
   // once profile is loaded.
@@ -1157,8 +1161,7 @@ void ExistingUserController::PolicyLoadFailed() {
 void ExistingUserController::DeviceSettingsChanged() {
   // If login was already completed, we should avoid any signin screen
   // transitions, see http://crbug.com/461604 for example.
-  if (!profile_prepared_ && GetLoginDisplay() &&
-      !GetLoginDisplay()->is_signin_completed()) {
+  if (!profile_prepared_ && !is_signin_completed_) {
     // Signed settings or user list changed. Notify views and update them.
     const user_manager::UserList& users =
         UserAddingScreen::Get()->IsRunning()

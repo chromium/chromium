@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -105,12 +106,8 @@ void SigninScreenHandler::RegisterMessages() {
 }
 
 void SigninScreenHandler::Show() {
-  CHECK(delegate_);
+  CHECK(ash::ExistingUserController::current_controller());
   histogram_helper_->OnScreenShow();
-}
-
-void SigninScreenHandler::SetDelegate(SigninScreenHandlerDelegate* delegate) {
-  delegate_ = delegate;
 }
 
 void SigninScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
@@ -134,10 +131,13 @@ void SigninScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
                                               bool force_update) {
   // Do nothing once user has signed in or sign in is in progress.
   // TODO(antrim): We will end up here when processing network state
-  // notification but no ShowSigninScreen() was called so delegate_ will be
-  // nullptr. Network state processing logic does not belong here.
-  if (delegate_ &&
-      (delegate_->IsUserSigninCompleted() || delegate_->IsSigninInProgress())) {
+  // notification but no ShowSigninScreen() was called so ExistingUserController
+  // will be nullptr. Network state processing logic does not belong here.
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
+  if (existing_user_controller &&
+      (existing_user_controller->IsUserSigninCompleted() ||
+       existing_user_controller->IsSigninInProgress())) {
     return;
   }
 

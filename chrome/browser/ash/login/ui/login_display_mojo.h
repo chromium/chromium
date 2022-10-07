@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -17,7 +16,6 @@ class LoginDisplayHostMojo;
 // screen.
 // TODO(estade): rename to LoginDisplayAsh.
 class LoginDisplayMojo : public LoginDisplay,
-                         public SigninScreenHandlerDelegate,
                          public user_manager::UserManager::Observer {
  public:
   explicit LoginDisplayMojo(LoginDisplayHostMojo* host);
@@ -35,9 +33,6 @@ class LoginDisplayMojo : public LoginDisplay,
   void Init(const user_manager::UserList& filtered_users,
             bool show_guest) override;
   void SetUIEnabled(bool is_enabled) override;
-
-  bool IsSigninInProgress() const override;
-  bool IsUserSigninCompleted() const override;
 
   // user_manager::UserManager::Observer:
   void OnUserImageChanged(const user_manager::User& user) override;

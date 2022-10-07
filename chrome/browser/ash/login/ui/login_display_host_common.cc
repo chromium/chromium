@@ -632,7 +632,7 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
     const AccountId& prefilled_account) {
   if (prefilled_account.is_valid()) {
     LoadWallpaper(prefilled_account);
-    if (GetLoginDisplay()->delegate()->IsSigninInProgress()) {
+    if (GetExistingUserController()->IsSigninInProgress()) {
       return;
     }
   } else {

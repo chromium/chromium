@@ -69,7 +69,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -439,9 +439,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
       metrics::structured::NeutrinoDevicesLocation::
           kLoginDisplayHostWebUIDestructor);
 
-  if (GetOobeUI())
-    GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
-
   SessionManagerClient::Get()->RemoveObserver(this);
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
 
@@ -594,7 +591,6 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   CHECK(login_display_);
 
   // Legacy calls, will go away soon.
-  GetOobeUI()->signin_screen_handler()->SetDelegate(login_display_.get());
   GetOobeUI()->signin_screen_handler()->Show();
 
   ShowGaiaDialogCommon(EmptyAccountId());
@@ -916,7 +912,6 @@ void LoginDisplayHostWebUI::ResetLoginView() {
 
   OobeUI* oobe_ui = login_view_->GetOobeUI();
   if (oobe_ui) {
-    oobe_ui->signin_screen_handler()->SetDelegate(nullptr);
     oobe_ui->RemoveObserver(this);
   }
 
