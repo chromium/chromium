@@ -151,8 +151,14 @@ class SecurePaymentConfirmationCreationTest
   std::unique_ptr<autofill::EventWaiter<Event>> event_waiter_;
 };
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SuccessfulEnrollment DISABLED_SuccessfulEnrollment
+#else
+#define MAYBE_SuccessfulEnrollment SuccessfulEnrollment
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       SuccessfulEnrollment) {
+                       MAYBE_SuccessfulEnrollment) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -169,7 +175,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, CredentialType) {
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CredentialType DISABLED_CredentialType
+#else
+#define MAYBE_CredentialType CredentialType
+#endif
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
+                       MAYBE_CredentialType) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -180,8 +193,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest, CredentialType) {
                                          GetDefaultIconURL())));
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreatePaymentCredential DISABLED_CreatePaymentCredential
+#else
+#define MAYBE_CreatePaymentCredential CreatePaymentCredential
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       CreatePaymentCredential) {
+                       MAYBE_CreatePaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -226,8 +245,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationDisableDebugTest,
                                          GetDefaultIconURL())));
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LookupPaymentCredential DISABLED_LookupPaymentCredential
+#else
+#define MAYBE_LookupPaymentCredential LookupPaymentCredential
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       LookupPaymentCredential) {
+                       MAYBE_LookupPaymentCredential) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   std::string credentialIdentifier =
@@ -259,8 +284,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PaymentExtension DISABLED_PaymentExtension
+#else
+#define MAYBE_PaymentExtension PaymentExtension
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       PaymentExtension) {
+                       MAYBE_PaymentExtension) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -313,8 +344,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
           .ExtractString());
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  DISABLED_ConfirmPaymentInCrossOriginIframe
+#else
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  ConfirmPaymentInCrossOriginIframe
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       ConfirmPaymentInCrossOriginIframe) {
+                       MAYBE_ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -386,8 +425,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeName \
+  DISABLED_ConfirmPaymentInCrossOriginIframeWithPayeeName
+#else
+#define MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeName \
+  ConfirmPaymentInCrossOriginIframeWithPayeeName
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       ConfirmPaymentInCrossOriginIframeWithPayeeName) {
+                       MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeName) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -435,9 +482,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin \
+  DISABLED_ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin
+#else
+#define MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin \
+  ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin
+#endif
 IN_PROC_BROWSER_TEST_F(
     SecurePaymentConfirmationCreationTest,
-    ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin) {
+    MAYBE_ConfirmPaymentInCrossOriginIframeWithPayeeNameAndOrigin) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -486,8 +541,14 @@ IN_PROC_BROWSER_TEST_F(
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChallengeIsReturned DISABLED_ChallengeIsReturned
+#else
+#define MAYBE_ChallengeIsReturned ChallengeIsReturned
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       ChallengeIsReturned) {
+                       MAYBE_ChallengeIsReturned) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -541,8 +602,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserVerificationFails DISABLED_UserVerificationFails
+#else
+#define MAYBE_UserVerificationFails UserVerificationFails
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       UserVerificationFails) {
+                       MAYBE_UserVerificationFails) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   std::string credentialIdentifier =
@@ -573,8 +640,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreatePaymentCredentialTwice DISABLED_CreatePaymentCredentialTwice
+#else
+#define MAYBE_CreatePaymentCredentialTwice CreatePaymentCredentialTwice
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       CreatePaymentCredentialTwice) {
+                       MAYBE_CreatePaymentCredentialTwice) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -598,8 +671,16 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WebContentsClosedDuringEnrollmentOSPrompt \
+  DISABLED_WebContentsClosedDuringEnrollmentOSPrompt
+#else
+#define MAYBE_WebContentsClosedDuringEnrollmentOSPrompt \
+  WebContentsClosedDuringEnrollmentOSPrompt
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       WebContentsClosedDuringEnrollmentOSPrompt) {
+                       MAYBE_WebContentsClosedDuringEnrollmentOSPrompt) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true, /*should_hang=*/true);
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
@@ -622,8 +703,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserVerificationSucceeds DISABLED_UserVerificationSucceeds
+#else
+#define MAYBE_UserVerificationSucceeds UserVerificationSucceeds
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       UserVerificationSucceeds) {
+                       MAYBE_UserVerificationSucceeds) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
 
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
@@ -662,8 +749,14 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
 }
 
 // Test allowing a failed icon download with iconMustBeShown option
+// TODO(crbug.com/1372198)  Re-enable tests once fixed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IconMustBeShownFalse DISABLED_IconMustBeShownFalse
+#else
+#define MAYBE_IconMustBeShownFalse IconMustBeShownFalse
+#endif
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       IconMustBeShownFalse) {
+                       MAYBE_IconMustBeShownFalse) {
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   test_controller()->SetHasAuthenticator(true);
   confirm_payment_ = true;
