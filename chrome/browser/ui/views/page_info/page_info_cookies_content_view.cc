@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
@@ -315,6 +316,11 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
     fps_button_->SetSubtitleText(fps_button_subtitle);
   } else if (fps_button_) {
     fps_button_->SetVisible(false);
+  }
+  if (!fps_histogram_recorded_) {
+    fps_histogram_recorded_ = true;
+    base::UmaHistogramBoolean("Security.PageInfo.Cookies.HasFPSInfo",
+                              is_fps_allowed);
   }
 }
 

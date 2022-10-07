@@ -7,6 +7,7 @@ package org.chromium.components.page_info;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -105,10 +106,11 @@ public class PageInfoCookiesController
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
         }
-        if (mWebsite.getFPSCookieInfo() != null) {
-            mSubPage.maybeShowFPSInfo(
-                    mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
-        }
+
+        boolean isFPSInfoShown = mSubPage.maybeShowFPSInfo(
+                mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
+        RecordHistogram.recordBooleanHistogram(
+                "Security.PageInfo.Cookies.HasFPSInfo", isFPSInfoShown);
     }
 
     private void onCheckedChangedCallback(boolean state) {

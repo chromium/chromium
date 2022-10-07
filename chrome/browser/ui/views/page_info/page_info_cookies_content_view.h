@@ -93,6 +93,11 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The button that displays First-Party-Set information with a link to
   // 'All sites' settings page.
   raw_ptr<PageInfoHoverButton> fps_button_ = nullptr;
+
+  // Used to keep track if it's the first time for this instance recording the
+  // FPS info histogram. Needed to not record the histogram each time page info
+  // status changed.
+  bool fps_histogram_recorded_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_

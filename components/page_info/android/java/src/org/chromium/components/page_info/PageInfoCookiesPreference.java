@@ -163,9 +163,16 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         updateCookieDeleteButton();
     }
 
-    public void maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
+    /**
+     * Returns a boolean indicating if the FPS info has been shown or not.
+     *
+     * @param fpsInfo First Party Sets info to show.
+     * @param currentOrigin PageInfo current origin.
+     * @return a boolean indicating if the FPS info has been shown or not.
+     */
+    public boolean maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
         if (fpsInfo == null) {
-            return;
+            return false;
         }
 
         assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
@@ -184,6 +191,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                 return getSiteSettingsDelegate().isPartOfManagedFirstPartySet(currentOrigin);
             }
         });
+
+        return true;
     }
 
     private void updateCookieDeleteButton() {
