@@ -69,7 +69,7 @@ class LogManagerTest : public testing::Test {
   testing::StrictMock<MockLogReceiver> receiver_;
   LogRouter router_;
   testing::StrictMock<MockNotifiedObject> notified_object_;
-  std::unique_ptr<LogManager> manager_;
+  std::unique_ptr<RoutingLogManager> manager_;
 };
 
 TEST_F(LogManagerTest, LogTextMessageNoReceiver) {

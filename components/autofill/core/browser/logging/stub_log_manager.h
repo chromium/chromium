@@ -10,7 +10,7 @@
 namespace autofill {
 
 // Use this in tests only, to provide a no-op implementation of LogManager.
-class StubLogManager : public LogManager {
+class StubLogManager : public RoutingLogManager {
  public:
   StubLogManager() = default;
 

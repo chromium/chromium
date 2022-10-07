@@ -11,19 +11,20 @@ namespace autofill {
 
 namespace {
 
-class LogManagerImpl : public LogManager {
+class RoutingLogManagerImpl : public RoutingLogManager {
  public:
-  LogManagerImpl(LogRouter* log_router,
-                 base::RepeatingClosure notification_callback);
+  RoutingLogManagerImpl(LogRouter* log_router,
+                        base::RepeatingClosure notification_callback);
 
-  LogManagerImpl(const LogManagerImpl&) = delete;
-  LogManagerImpl& operator=(const LogManagerImpl&) = delete;
+  RoutingLogManagerImpl(const RoutingLogManagerImpl&) = delete;
+  RoutingLogManagerImpl& operator=(const RoutingLogManagerImpl&) = delete;
 
-  ~LogManagerImpl() override;
+  ~RoutingLogManagerImpl() override;
 
-  // LogManager
+  // RoutingLogManager
   void OnLogRouterAvailabilityChanged(bool router_can_be_used) override;
   void SetSuspended(bool suspended) override;
+  // LogManager
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
   void ProcessLog(base::Value::Dict node,
@@ -42,18 +43,20 @@ class LogManagerImpl : public LogManager {
   base::RepeatingClosure notification_callback_;
 };
 
-LogManagerImpl::LogManagerImpl(LogRouter* log_router,
-                               base::RepeatingClosure notification_callback)
+RoutingLogManagerImpl::RoutingLogManagerImpl(
+    LogRouter* log_router,
+    base::RepeatingClosure notification_callback)
     : log_router_(log_router),
       can_use_log_router_(log_router_ && log_router_->RegisterManager(this)),
       notification_callback_(std::move(notification_callback)) {}
 
-LogManagerImpl::~LogManagerImpl() {
+RoutingLogManagerImpl::~RoutingLogManagerImpl() {
   if (log_router_)
     log_router_->UnregisterManager(this);
 }
 
-void LogManagerImpl::OnLogRouterAvailabilityChanged(bool router_can_be_used) {
+void RoutingLogManagerImpl::OnLogRouterAvailabilityChanged(
+    bool router_can_be_used) {
   DCHECK(log_router_);  // |log_router_| should be calling this method.
   if (can_use_log_router_ == router_can_be_used)
     return;
@@ -66,7 +69,7 @@ void LogManagerImpl::OnLogRouterAvailabilityChanged(bool router_can_be_used) {
   }
 }
 
-void LogManagerImpl::SetSuspended(bool suspended) {
+void RoutingLogManagerImpl::SetSuspended(bool suspended) {
   if (suspended == is_suspended_)
     return;
   is_suspended_ = suspended;
@@ -77,27 +80,27 @@ void LogManagerImpl::SetSuspended(bool suspended) {
   }
 }
 
-bool LogManagerImpl::IsLoggingActive() const {
+bool RoutingLogManagerImpl::IsLoggingActive() const {
   return can_use_log_router_ && !is_suspended_;
 }
 
-LogBufferSubmitter LogManagerImpl::Log() {
+LogBufferSubmitter RoutingLogManagerImpl::Log() {
   return LogBufferSubmitter(this);
 }
 
-void LogManagerImpl::ProcessLog(base::Value::Dict node,
-                                base::PassKey<LogBufferSubmitter>) {
+void RoutingLogManagerImpl::ProcessLog(base::Value::Dict node,
+                                       base::PassKey<LogBufferSubmitter>) {
   log_router_->ProcessLog(std::move(node));
 }
 
 }  // namespace
 
 // static
-std::unique_ptr<LogManager> LogManager::Create(
+std::unique_ptr<RoutingLogManager> LogManager::Create(
     LogRouter* log_router,
     base::RepeatingClosure notification_callback) {
-  return std::make_unique<LogManagerImpl>(log_router,
-                                          std::move(notification_callback));
+  return std::make_unique<RoutingLogManagerImpl>(
+      log_router, std::move(notification_callback));
 }
 
 }  // namespace autofill

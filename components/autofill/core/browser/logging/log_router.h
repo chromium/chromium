@@ -14,7 +14,7 @@
 
 namespace autofill {
 
-class LogManager;
+class RoutingLogManager;
 class LogReceiver;
 
 // The router stands between LogManager and LogReceiver instances. Both managers
@@ -45,9 +45,9 @@ class LogRouter : public KeyedService {
   // The managers must register to be notified about whether there are some
   // receivers or not. RegisterManager adds |manager| to the right observer list
   // and returns true iff there are some receivers registered.
-  bool RegisterManager(LogManager* manager);
+  bool RegisterManager(RoutingLogManager* manager);
   // Remove |manager| from the observers list.
-  void UnregisterManager(LogManager* manager);
+  void UnregisterManager(RoutingLogManager* manager);
 
   // The receivers must register to get updates with new logs in the future.
   void RegisterReceiver(LogReceiver* receiver);
@@ -58,7 +58,7 @@ class LogRouter : public KeyedService {
   // Observer lists for managers and receivers. The |true| in the template
   // specialisation means that they will check that all observers were removed
   // on destruction.
-  base::ObserverList<LogManager, true>::Unchecked managers_;
+  base::ObserverList<RoutingLogManager, true>::Unchecked managers_;
   base::ObserverList<LogReceiver, true>::Unchecked receivers_;
 };
 

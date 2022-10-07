@@ -41,13 +41,13 @@ void LogRouter::ProcessLog(const base::Value::Dict& node) {
     receiver.LogEntry(node);
 }
 
-bool LogRouter::RegisterManager(LogManager* manager) {
+bool LogRouter::RegisterManager(RoutingLogManager* manager) {
   DCHECK(manager);
   managers_.AddObserver(manager);
   return !receivers_.empty();
 }
 
-void LogRouter::UnregisterManager(LogManager* manager) {
+void LogRouter::UnregisterManager(RoutingLogManager* manager) {
   DCHECK(managers_.HasObserver(manager));
   managers_.RemoveObserver(manager);
 }
@@ -55,7 +55,7 @@ void LogRouter::UnregisterManager(LogManager* manager) {
 void LogRouter::RegisterReceiver(LogReceiver* receiver) {
   DCHECK(receiver);
   if (receivers_.empty()) {
-    for (LogManager& manager : managers_)
+    for (RoutingLogManager& manager : managers_)
       manager.OnLogRouterAvailabilityChanged(true);
   }
   receivers_.AddObserver(receiver);
@@ -65,7 +65,7 @@ void LogRouter::UnregisterReceiver(LogReceiver* receiver) {
   DCHECK(receivers_.HasObserver(receiver));
   receivers_.RemoveObserver(receiver);
   if (receivers_.empty()) {
-    for (LogManager& manager : managers_)
+    for (RoutingLogManager& manager : managers_)
       manager.OnLogRouterAvailabilityChanged(false);
   }
 }

@@ -21,6 +21,7 @@ class Value;
 namespace autofill {
 
 class LogRouter;
+class RoutingLogManager;
 
 // This interface is used by the password management code to receive and display
 // logs about progress of actions like saving a password.
@@ -29,12 +30,28 @@ class LogManager {
   // Returns the production code implementation of LogManager. If |log_router|
   // is null, the manager will do nothing. |notification_callback| will be
   // called every time the activity status of logging changes.
-  static std::unique_ptr<LogManager> Create(
+  static std::unique_ptr<RoutingLogManager> Create(
       LogRouter* log_router,
       base::RepeatingClosure notification_callback);
 
   virtual ~LogManager() = default;
 
+  // Returns true if logs recorded via LogTextMessage will be displayed, and
+  // false otherwise.
+  virtual bool IsLoggingActive() const = 0;
+
+  // This is the preferred way to submitting log entries.
+  virtual LogBufferSubmitter Log() = 0;
+
+  // Emits the log entry.
+  virtual void ProcessLog(base::Value::Dict node,
+                          base::PassKey<LogBufferSubmitter>) = 0;
+};
+
+// This LogManager subclass can be connected to a LogRouter, which in turn
+// passes logs to LogReceivers.
+class RoutingLogManager : public LogManager {
+ public:
   // This method is called by a LogRouter, after the LogManager registers with
   // one. If |router_can_be_used| is true, logs can be sent to LogRouter after
   // the return from OnLogRouterAvailabilityChanged and will reach at least one
@@ -45,17 +62,6 @@ class LogManager {
   // The owner of the LogManager can call this to start or end suspending the
   // logging, by setting |suspended| to true or false, respectively.
   virtual void SetSuspended(bool suspended) = 0;
-
-  // Returns true if logs recorded will be displayed, and false otherwise.
-  virtual bool IsLoggingActive() const = 0;
-
-  // This is the preferred way to submitting log entries.
-  virtual LogBufferSubmitter Log() = 0;
-
-  // Emits the log entry. This is only supposed to be called by the RAII type
-  // LogBufferSubmitter when it submits its buffer on destruction.
-  virtual void ProcessLog(base::Value::Dict node,
-                          base::PassKey<LogBufferSubmitter>) = 0;
 };
 
 inline LogBuffer::IsActive IsLoggingActive(LogManager* log_manager) {

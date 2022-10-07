@@ -68,6 +68,9 @@ class PasswordGenerationPopupControllerImpl;
 class Profile;
 
 namespace autofill {
+class LogManager;
+class RoutingLogManager;
+
 namespace password_generation {
 struct PasswordGenerationUIData;
 }  // namespace password_generation
@@ -443,7 +446,7 @@ class ChromePasswordManagerClient
   const password_manager::SyncCredentialsFilter credentials_filter_;
 #endif
 
-  std::unique_ptr<autofill::LogManager> log_manager_;
+  std::unique_ptr<autofill::RoutingLogManager> log_manager_;
 
   // Recorder of metrics that is associated with the last committed navigation
   // of the WebContents owning this ChromePasswordManagerClient. May be unset at
