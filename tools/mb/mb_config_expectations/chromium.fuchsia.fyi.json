@@ -79,6 +79,7 @@
   "fuchsia-x64-chrome-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "fuchsia_browser_type": "chrome",
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",

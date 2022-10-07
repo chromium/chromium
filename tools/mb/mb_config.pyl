@@ -278,7 +278,7 @@
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
       'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver',
-      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script',
+      'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome',
       'fuchsia-x64-rel': 'release_bot_fuchsia',
     },
 
@@ -1143,7 +1143,7 @@
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia-x64-cast': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
-      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script',
+      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
@@ -3477,6 +3477,10 @@
       'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'fuchsia_cfv2_script',
     ],
 
+    'release_bot_fuchsia_cfv2_script_chrome': [
+      'release_bot', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
+    ],
+
     'release_bot_mac_strip_minimal_symbols': [
       'release_bot', 'mac_strip', 'minimal_symbols',
     ],
@@ -3618,8 +3622,8 @@
       'release_trybot', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
-    'release_trybot_fuchsia_cfv2_script': [
-      'release_trybot', 'fuchsia', 'fuchsia_cfv2_script',
+    'release_trybot_fuchsia_cfv2_script_chrome': [
+      'release_trybot', 'fuchsia', 'fuchsia_cfv2_script', 'fuchsia_chrome',
     ],
 
     'release_trybot_minimal_symbols_reclient': [

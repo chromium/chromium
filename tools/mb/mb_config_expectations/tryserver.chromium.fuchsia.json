@@ -121,6 +121,7 @@
   "fuchsia-x64-chrome-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "fuchsia_browser_type": "chrome",
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
