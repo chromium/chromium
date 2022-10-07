@@ -3115,11 +3115,11 @@ TEST_P(OverviewSessionTest, FadeIn) {
 // Tests exiting the overview session using kFadeOutExit type.
 TEST_P(OverviewSessionTest, FadeOutExit) {
   EnterTabletMode();
-  // Create a test window.
-  std::unique_ptr<views::Widget> test_widget(CreateTestWidget());
+  std::unique_ptr<aura::Window> test_window(CreateAppWindow());
+
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
-  EXPECT_FALSE(test_widget->IsMinimized());
+  EXPECT_FALSE(WindowState::Get(test_window.get())->IsMinimized());
 
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3129,7 +3129,7 @@ TEST_P(OverviewSessionTest, FadeOutExit) {
   // that NON_ZERO_DURATION animation duration scale, it should be safe to
   // dereference the widget pointer immediately (synchronously) after the
   // session ends.
-  OverviewItem* item = GetOverviewItemForWindow(test_widget->GetNativeWindow());
+  OverviewItem* item = GetOverviewItemForWindow(test_window.get());
   views::Widget* grid_item_widget = item->item_widget();
   gfx::Rect item_bounds = grid_item_widget->GetWindowBoundsInScreen();
 
@@ -3137,7 +3137,7 @@ TEST_P(OverviewSessionTest, FadeOutExit) {
   ASSERT_FALSE(InOverviewSession());
 
   // The test window should be minimized as overview fade out exit starts.
-  EXPECT_TRUE(test_widget->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(test_window.get())->IsMinimized());
 
   // Verify that the item widget's transform is not animated as part of the
   // animation, and that item widget bounds are not changed after minimizing the

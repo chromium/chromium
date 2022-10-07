@@ -269,12 +269,19 @@ void MinimizeAndHideWithoutAnimation(
     // minimization. We minimize ARC windows first so they receive occlusion
     // updates before losing focus from being hidden. See crbug.com/910304.
     // TODO(oshima): Investigate better way to handle ARC apps immediately.
-    WindowState::Get(window)->Minimize();
+
+    // Suspect some callsites may use this on a window without a window state
+    // (`aura::client::WINDOW_TYPE_CONTROL`) or windows that cannot be
+    // minimized. See https://crbug.com/1200596.
+    auto* window_state = WindowState::Get(window);
+    if (window_state && window_state->CanMinimize())
+      window_state->Minimize();
 
     window->Hide();
   }
+
   if (windows.size()) {
-    // Disable the animations using |disable|. However, doing so will skip
+    // Disabling the animations using `ScopedAnimationDisabler` will skip
     // detaching the resources associated with the layer. So we have to trick
     // the compositor into releasing the resources.
     // crbug.com/924802.
