@@ -10,7 +10,6 @@
 #include <set>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_service.pb.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -41,7 +41,7 @@ struct SharedPathInfo {
 // Handles sharing and unsharing paths from the Chrome OS host to guest VMs via
 // seneschal.
 class GuestOsSharePath : public KeyedService,
-                         public ash::VmShutdownObserver,
+                         public ash::ConciergeClient::VmObserver,
                          public file_manager::VolumeManagerObserver,
                          public drivefs::DriveFsHostObserver {
  public:
@@ -121,8 +121,9 @@ class GuestOsSharePath : public KeyedService,
   // Returns true if |path| or a parent is shared with |vm_name|.
   bool IsPathShared(const std::string& vm_name, base::FilePath path) const;
 
-  // ash::VmShutdownObserver
-  void OnVmShutdown(const std::string& vm_name) override;
+  // ash::ConciergeClient::VmObserver
+  void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
+  void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 
   // file_manager::VolumeManagerObserver
   void OnVolumeMounted(ash::MountError error_code,

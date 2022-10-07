@@ -54,10 +54,6 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   // Runs `callback` when the OnContainerStarted signal arrives for the guest
   // with the given `id`. To cancel the callback (e.g. upon timeout) destroy the
   // returned subscription.
-  // TODO(b/231390254): If Chrome crashes while a container is running then
-  // we'll never get another OnContainerStarted message, which means
-  // RunOnceContainerStarted hangs forever. We need to list running containers
-  // and adopt them, the same as we do for VMs.
   base::CallbackListSubscription RunOnceContainerStarted(
       const GuestId& id,
       base::OnceCallback<void(GuestInfo)> callback);
@@ -72,6 +68,11 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   // isn't recognised e.g. it's not running. If you just want to check if a
   // guest is running or not and don't need the info, use `IsRunning` instead
   absl::optional<GuestInfo> GetInfo(const GuestId& id);
+
+  // Returns information about a running VM. Returns nullopt if the VM
+  // isn't recognised e.g. it's not running.
+  absl::optional<vm_tools::concierge::VmInfo> GetVmInfo(
+      const std::string& vm_name);
 
   // Returns true if a guest is running, false otherwise.
   bool IsRunning(const GuestId& id);

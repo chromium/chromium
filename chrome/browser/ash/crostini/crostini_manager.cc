@@ -2559,9 +2559,6 @@ void CrostiniManager::OnStartTremplin(std::string vm_name,
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
       vm_name, base::FilePath(file_manager::util::kSystemFontsPath),
       /*persist=*/false, base::DoNothing());
-  // Share folders from Downloads, etc with VM.
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePersistedPaths(
-      vm_name, base::DoNothing());
 
   // Run the original callback.
   std::move(callback).Run(/*success=*/true);

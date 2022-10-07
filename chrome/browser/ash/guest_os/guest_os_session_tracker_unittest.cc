@@ -257,6 +257,22 @@ TEST_F(GuestOsSessionTrackerTest, RunOnContainerShutdown) {
   EXPECT_TRUE(called);
 }
 
+TEST_F(GuestOsSessionTrackerTest, RunOnLxdStopping) {
+  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
+  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
+  GuestId id{VmType::TERMINA, "vm_name", "penguin"};
+  bool called = false;
+  auto _ = tracker_.RunOnShutdown(
+      id, base::BindLambdaForTesting([&called]() { called = true; }));
+  vm_tools::cicerone::LxdContainerStoppingSignal signal;
+  signal.set_vm_name(id.vm_name);
+  signal.set_container_name(id.container_name);
+  signal.set_owner_id(OwnerId());
+  signal.set_status(vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED);
+  FakeCiceroneClient()->NotifyLxdContainerStopping(signal);
+  EXPECT_TRUE(called);
+}
+
 TEST_F(GuestOsSessionTrackerTest, RunOnVmShutdown) {
   FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
   FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
@@ -266,6 +282,23 @@ TEST_F(GuestOsSessionTrackerTest, RunOnVmShutdown) {
       id, base::BindLambdaForTesting([&called]() { called = true; }));
   FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
   EXPECT_TRUE(called);
+}
+
+TEST_F(GuestOsSessionTrackerTest, GetVmInfo) {
+  ASSERT_EQ(absl::nullopt, tracker_.GetVmInfo(vm_started_signal_.name()));
+
+  FakeConciergeClient()->NotifyVmStarted(vm_started_signal_);
+  ASSERT_NE(absl::nullopt, tracker_.GetVmInfo(vm_started_signal_.name()));
+
+  FakeCiceroneClient()->NotifyContainerStarted(container_started_signal_);
+  ASSERT_NE(absl::nullopt, tracker_.GetVmInfo(vm_started_signal_.name()));
+
+  FakeCiceroneClient()->NotifyContainerShutdownSignal(
+      container_shutdown_signal_);
+  ASSERT_NE(absl::nullopt, tracker_.GetVmInfo(vm_started_signal_.name()));
+
+  FakeConciergeClient()->NotifyVmStopped(vm_shutdown_signal_);
+  ASSERT_EQ(absl::nullopt, tracker_.GetVmInfo(vm_started_signal_.name()));
 }
 
 }  // namespace guest_os

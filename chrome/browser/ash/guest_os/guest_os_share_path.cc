@@ -6,18 +6,21 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
-#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -25,6 +28,7 @@
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -185,8 +189,7 @@ GuestOsSharePath::GuestOsSharePath(Profile* profile)
       file_watcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
       seneschal_callback_(base::BindRepeating(LogErrorResult)) {
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-  crostini_manager->AddVmShutdownObserver(this);
+  ash::ConciergeClient::Get()->AddVmObserver(this);
 
   if (auto* vmgr = file_manager::VolumeManager::Get(profile_)) {
     vmgr->AddObserver(this);
@@ -206,8 +209,7 @@ GuestOsSharePath::~GuestOsSharePath() = default;
 
 void GuestOsSharePath::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-  crostini_manager->RemoveVmShutdownObserver(this);
+  ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
   for (auto& shared_path : shared_paths_) {
     if (shared_path.second.watcher) {
@@ -392,9 +394,13 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
   // PluginVm before sharing, we can detect that the VM is not started
   // if handle == 0.
   if (vm_name == plugin_vm::kPluginVmName) {
-    request.set_handle(
-        plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
-            ->seneschal_server_handle());
+    auto info =
+        GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
+    if (info) {
+      request.set_handle(info->seneschal_server_handle());
+    } else {
+      LOG(WARNING) << "Trying to share with pluginvm when it's not running";
+    }
   } else if (vm_name == arc::kArcVmName) {
     const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
     if (!vm_info) {
@@ -437,15 +443,13 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
 
   // Return success if VM is not currently running.
   if (vm_name == plugin_vm::kPluginVmName) {
-    if (plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
-            ->vm_state() !=
-        vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING) {
+    auto vm_info =
+        GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
+    if (!vm_info) {
       std::move(callback).Run(true, "PluginVm not running");
       return;
     }
-    request.set_handle(
-        plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
-            ->seneschal_server_handle());
+    request.set_handle(vm_info->seneschal_server_handle());
   } else if (vm_name == arc::kArcVmName) {
     const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
     if (!vm_info) {
@@ -627,10 +631,29 @@ bool GuestOsSharePath::IsPathShared(const std::string& vm_name,
   }
 }
 
-void GuestOsSharePath::OnVmShutdown(const std::string& vm_name) {
+void GuestOsSharePath::OnVmStarted(
+    const vm_tools::concierge::VmStartedSignal& signal) {
+  // SharePersistedPaths fetches the seneschal handle from other services which
+  // also observe OnVmStarted. So we `PostTask` instead of running
+  // synchronously to give them a chance to update first.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &GuestOsSharePath::SharePersistedPaths,
+          weak_ptr_factory_.GetWeakPtr(), signal.name(),
+          base::BindOnce([](bool success, const std::string& failure_reason) {
+            if (!success) {
+              LOG(ERROR) << "Error sharing persistent paths: "
+                         << failure_reason;
+            }
+          })));
+}
+
+void GuestOsSharePath::OnVmStopped(
+    const vm_tools::concierge::VmStoppedSignal& signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (auto it = shared_paths_.begin(); it != shared_paths_.end();) {
-    if (RemoveSharedPathInfo(it->second, vm_name)) {
+    if (RemoveSharedPathInfo(it->second, signal.name())) {
       shared_paths_.erase(it++);
     } else {
       ++it;

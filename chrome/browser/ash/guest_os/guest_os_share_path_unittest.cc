@@ -1107,7 +1107,7 @@ TEST_F(GuestOsSharePathTest, IsPathShared) {
   vm_tools::concierge::VmStoppedSignal signal;
   signal.set_name(crostini::kCrostiniDefaultVmName);
   signal.set_owner_id("test");
-  crostini::CrostiniManager::GetForProfile(profile())->OnVmStopped(signal);
+  fake_concierge_client_->NotifyVmStopped(signal);
   EXPECT_FALSE(guest_os_share_path_->IsPathShared(
       crostini::kCrostiniDefaultVmName, shared_path_));
 }

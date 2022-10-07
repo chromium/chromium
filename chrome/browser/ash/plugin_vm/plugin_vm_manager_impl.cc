@@ -357,7 +357,6 @@ void PluginVmManagerImpl::OnVmStateChanged(
   // When the VM_STATE_RUNNING signal is received:
   // 1) Call Concierge::GetVmInfo to get seneschal server handle.
   // 2) Ensure default shared path exists.
-  // 3) Share paths with PluginVm
   if (vm_state_ == vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING) {
     // If the VM was just created via VMC (instead of the installer), this flag
     // will not yet be set. Setting it here allows us to avoid showing the
@@ -611,12 +610,10 @@ void PluginVmManagerImpl::OnGetVmInfoForSharing(
   }
   seneschal_server_handle_ = reply->vm_info().seneschal_server_handle();
 
-  // Create and share default folder, and other persisted shares.
+  // Create and share default folder.
   EnsureDefaultSharedDirExists(
       profile_, base::BindOnce(&PluginVmManagerImpl::OnDefaultSharedDirExists,
                                weak_ptr_factory_.GetWeakPtr()));
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePersistedPaths(
-      kPluginVmName, base::DoNothing());
 }
 
 void PluginVmManagerImpl::OnDefaultSharedDirExists(const base::FilePath& dir,
