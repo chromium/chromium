@@ -236,10 +236,8 @@ void MediaControlInputElement::MaybeRecordInteracted() {
     return;
 
   if (!display_recorded_) {
-    // The only valid reason to not have the display recorded at this point is
-    // if it wasn't allowed. Regardless, the display will now be recorded.
-    DCHECK(!ShouldRecordDisplayStates(MediaElement()));
     RecordCTREvent(CTREvent::kDisplayed);
+    display_recorded_ = true;
   }
 
   RecordCTREvent(CTREvent::kInteracted);
