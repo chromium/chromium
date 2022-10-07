@@ -22,6 +22,10 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -47,8 +51,6 @@ namespace chromeos::settings {
 
 class Hierarchy;
 class OsSettingsSections;
-class SearchHandler;
-class SearchTagRegistry;
 class SettingsUserActionTracker;
 
 // Manager for the Chrome OS settings page. This class is implemented as a

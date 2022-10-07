@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.settings.mojom;
+module ash.settings.mojom;
 
 import "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom";
 import "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom";
@@ -49,9 +49,9 @@ enum ParentResultBehavior {
 // Identifier for the result; each result describes one section, subpage, or
 // setting.
 union SearchResultIdentifier {
-  Section section;
-  Subpage subpage;
-  Setting setting;
+  chromeos.settings.mojom.Section section;
+  chromeos.settings.mojom.Subpage subpage;
+  chromeos.settings.mojom.Setting setting;
 };
 
 // Search result metadata.

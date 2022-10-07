@@ -9,8 +9,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
@@ -172,5 +171,4 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestBlurAndFocus) {
       /*count=*/1);
 }
 
-}  // namespace settings.
-}  // namespace chromeos.
+}  // namespace ash::settings

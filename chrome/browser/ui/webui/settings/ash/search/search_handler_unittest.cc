@@ -18,8 +18,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+namespace mojom {
+using ::chromeos::settings::mojom::kPrintingDetailsSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
+}  // namespace mojom
+
 namespace {
 
 class FakeObserver : public mojom::SearchResultsObserver {
@@ -307,5 +314,4 @@ TEST_F(SearchHandlerTest, CompareSearchResults) {
             SearchHandler::CompareSearchResults(a, b));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

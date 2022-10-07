@@ -23,4 +23,9 @@ class FakeOsSettingsSections : public OsSettingsSections {
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::FakeOsSettingsSections;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAKE_OS_SETTINGS_SECTIONS_H_

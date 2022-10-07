@@ -1049,12 +1049,11 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::settings::mojom::UserActionRecorder,
+      ash::settings::mojom::UserActionRecorder,
       chromeos::settings::OSSettingsUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<
-      chromeos::settings::mojom::SearchHandler,
-      chromeos::settings::OSSettingsUI>(map);
+  RegisterWebUIControllerInterfaceBinder<ash::settings::mojom::SearchHandler,
+                                         chromeos::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::personalization_app::mojom::SearchHandler,

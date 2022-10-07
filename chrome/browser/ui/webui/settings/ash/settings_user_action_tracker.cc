@@ -15,6 +15,11 @@
 namespace chromeos {
 namespace settings {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::UserActionRecorder;
+}
+
 SettingsUserActionTracker::SettingsUserActionTracker(
     Hierarchy* hierarchy,
     OsSettingsSections* sections)
@@ -73,7 +78,7 @@ void SettingsUserActionTracker::RecordSettingChange() {
 
 void SettingsUserActionTracker::RecordSettingChangeWithDetails(
     mojom::Setting setting,
-    mojom::SettingChangeValuePtr value) {
+    ash::settings::mojom::SettingChangeValuePtr value) {
   per_session_tracker_->RecordSettingChange();
 
   // Get the primary section location of the changed setting and log the metric.

@@ -14,6 +14,11 @@
 
 namespace chromeos::settings {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SearchResultIcon;
+}
+
 PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,

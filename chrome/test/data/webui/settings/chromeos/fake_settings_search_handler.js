@@ -8,19 +8,19 @@
 /**
  * Fake implementation of chromeos.settings.mojom.SettingsSearchHandlerRemote.
  *
- * @implements {chromeos.settings.mojom.SearchHandlerInterface}
+ * @implements {ash.settings.mojom.SearchHandlerInterface}
  */
 export class FakeSettingsSearchHandler {
   constructor() {
-    /** @private {!Array<chromeos.settings.mojom.SearchResult>} */
+    /** @private {!Array<ash.settings.mojom.SearchResult>} */
     this.fakeResults_ = [];
 
-    /** @private {!chromeos.settings.mojom.SearchResultsObserverInterface} */
+    /** @private {!ash.settings.mojom.SearchResultsObserverInterface} */
     this.observer_;
   }
 
   /**
-   * @param {!Array<chromeos.settings.mojom.SearchResult>} results Fake
+   * @param {!Array<ash.settings.mojom.SearchResult>} results Fake
    *     results that will be returned when Search() is called.
    */
   setFakeResults(results) {

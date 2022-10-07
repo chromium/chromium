@@ -4,13 +4,13 @@
 
 /**
  * @fileoverview Fake implementation of
- * chromeos.settings.mojom.UserActionRecorderRemote for testing.
+ * ash.settings.mojom.UserActionRecorderRemote for testing.
  */
 
 /**
- * Fake implementation of chromeos.settings.mojom.UserActionRecorderRemote.
+ * Fake implementation of ash.settings.mojom.UserActionRecorderRemote.
  *
- * @implements {chromeos.settings.mojom.UserActionRecorderInterface}
+ * @implements {ash.settings.mojom.UserActionRecorderInterface}
  */
 export class FakeUserActionRecorder {
   constructor() {

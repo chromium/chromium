@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.settings.mojom;
+module ash.settings.mojom;
 
 import "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom";
 
@@ -40,5 +40,6 @@ interface UserActionRecorder {
   // setting was changed to. |value| can be null when the corresponding
   // setting doesn't actually change a value, such as the open wallpaper
   // setting.
-  RecordSettingChangeWithDetails(Setting setting, SettingChangeValue? value);
+  RecordSettingChangeWithDetails(chromeos.settings.mojom.Setting setting,
+                                 SettingChangeValue? value);
 };

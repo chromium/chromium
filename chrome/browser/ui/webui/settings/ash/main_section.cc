@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -40,6 +41,12 @@
 
 namespace chromeos {
 namespace settings {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SearchResultIcon;
+}
+
 namespace {
 
 void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {

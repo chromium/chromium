@@ -14,13 +14,9 @@
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating this file to ns ash.
-namespace local_search_service = ::ash::local_search_service;
 
 std::vector<int> GetMessageIds(const SearchConcept* search_concept) {
   // Start with only the canonical ID.
@@ -216,5 +212,4 @@ void SearchTagRegistry::NotifyRegistryDeleted(uint32_t num_deleted) {
   NotifyRegistryUpdated();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

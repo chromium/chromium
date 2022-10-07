@@ -26,8 +26,8 @@ class FakeHierarchy : public Hierarchy {
       int name_message_id,
       mojom::Section section,
       mojom::Subpage subpage,
-      mojom::SearchResultIcon icon,
-      mojom::SearchResultDefaultRank default_rank,
+      ash::settings::mojom::SearchResultIcon icon,
+      ash::settings::mojom::SearchResultDefaultRank default_rank,
       const std::string& url_path_with_parameters,
       absl::optional<mojom::Subpage> parent_subpage = absl::nullopt);
   void AddSettingMetadata(
@@ -39,12 +39,17 @@ class FakeHierarchy : public Hierarchy {
   // Hierarchy:
   std::string ModifySearchResultUrl(
       mojom::Section section,
-      mojom::SearchResultType type,
+      ash::settings::mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 };
 
 }  // namespace settings
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::FakeHierarchy;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAKE_HIERARCHY_H_

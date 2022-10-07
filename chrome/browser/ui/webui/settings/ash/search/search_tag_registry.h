@@ -17,9 +17,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace settings {
+namespace ash::settings {
 
 struct SearchConcept;
 
@@ -87,14 +85,14 @@ class SearchTagRegistry {
   void AddSearchTags(const std::vector<const SearchConcept*>& search_tags);
   void RemoveSearchTags(const std::vector<const SearchConcept*>& search_tags);
 
-  std::vector<ash::local_search_service::Data> ConceptVectorToDataVector(
+  std::vector<local_search_service::Data> ConceptVectorToDataVector(
       const std::vector<const SearchConcept*>& search_tags);
   void NotifyRegistryUpdated();
   void NotifyRegistryAdded();
   void NotifyRegistryDeleted(uint32_t /*num_deleted*/);
 
   // Index used by the LocalSearchService for string matching.
-  mojo::Remote<ash::local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   // In-memory cache of all results which have been added to the
   // LocalSearchService. Contents are kept in sync with |index_remote_|.
@@ -105,7 +103,11 @@ class SearchTagRegistry {
   base::WeakPtrFactory<SearchTagRegistry> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::SearchTagRegistry;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_TAG_REGISTRY_H_

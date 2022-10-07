@@ -11,8 +11,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Represents a potential search result. In this context, "concept" refers to
 // the fact that this search result represents an idea which may be described
@@ -65,7 +64,11 @@ struct SearchConcept {
   int alt_tag_ids[kMaxAltTagsPerConcept] = {kAltTagEnd};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::SearchConcept;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_CONCEPT_H_

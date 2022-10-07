@@ -7,6 +7,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/extension_registry.h"
@@ -20,8 +22,6 @@ class WebUIDataSource;
 
 namespace chromeos {
 namespace settings {
-
-class SearchTagRegistry;
 
 // Provides UI strings and search tags for Accessibility settings.
 class AccessibilitySection : public OsSettingsSection,
@@ -39,7 +39,7 @@ class AccessibilitySection : public OsSettingsSection,
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;
-  mojom::SearchResultIcon GetSectionIcon() const override;
+  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;

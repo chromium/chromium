@@ -13,13 +13,15 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+namespace mojom {
+using ::chromeos::settings::mojom::kPrintingDetailsSubpagePath;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
+}  // namespace mojom
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove after migrating this file to ns ash.
-namespace local_search_service = ::ash::local_search_service;
 
 class FakeObserver : public SearchTagRegistry::Observer {
  public:
@@ -154,5 +156,4 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
   ASSERT_FALSE(add_printer_concept);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

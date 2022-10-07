@@ -43,7 +43,7 @@ class OsSettingsSections {
  public:
   OsSettingsSections(
       Profile* profile,
-      SearchTagRegistry* search_tag_registry,
+      ash::settings::SearchTagRegistry* search_tag_registry,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       phonehub::PhoneHubManager* phone_hub_manager,
       syncer::SyncService* sync_service,
@@ -75,5 +75,10 @@ class OsSettingsSections {
 
 }  // namespace settings
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::OsSettingsSections;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_SECTIONS_H_

@@ -55,7 +55,8 @@ class Hierarchy {
     // tag as the search result text. |relevance_score| must be passed by the
     // client, since this result is being created manually instead of via query
     // matching.
-    mojom::SearchResultPtr ToSearchResult(double relevance_score) const;
+    ash::settings::mojom::SearchResultPtr ToSearchResult(
+        double relevance_score) const;
 
    private:
     mojom::Section section_;
@@ -67,8 +68,8 @@ class Hierarchy {
     SubpageMetadata(int name_message_id,
                     mojom::Section section,
                     mojom::Subpage subpage,
-                    mojom::SearchResultIcon icon,
-                    mojom::SearchResultDefaultRank default_rank,
+                    ash::settings::mojom::SearchResultIcon icon,
+                    ash::settings::mojom::SearchResultDefaultRank default_rank,
                     const std::string& url_path_with_parameters,
                     const Hierarchy* hierarchy);
     ~SubpageMetadata();
@@ -83,7 +84,8 @@ class Hierarchy {
     // tag as the search result text. |relevance_score| must be passed by the
     // client, since this result is being created manually instead of via query
     // matching.
-    mojom::SearchResultPtr ToSearchResult(double relevance_score) const;
+    ash::settings::mojom::SearchResultPtr ToSearchResult(
+        double relevance_score) const;
 
    private:
     mojom::Subpage subpage_;
@@ -93,10 +95,10 @@ class Hierarchy {
     int name_message_id_;
 
     // Icon used for this subpage.
-    mojom::SearchResultIcon icon_;
+    ash::settings::mojom::SearchResultIcon icon_;
 
     // Default rank; used to order returned results.
-    mojom::SearchResultDefaultRank default_rank_;
+    ash::settings::mojom::SearchResultDefaultRank default_rank_;
 
     // Static URL path, which may need to be modified via
     // |modify_url_callback_|.
@@ -158,7 +160,7 @@ class Hierarchy {
 
   virtual std::string ModifySearchResultUrl(
       mojom::Section section,
-      mojom::SearchResultType type,
+      ash::settings::mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const;
 
@@ -167,5 +169,10 @@ class Hierarchy {
 
 }  // namespace settings
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::Hierarchy;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_HIERARCHY_H_

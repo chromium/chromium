@@ -23,7 +23,8 @@ class OsSettingsSections;
 // Records user actions within Settings. Utilizes a per session tracker that
 // measures the user's effort required to change a setting. Eventually uses
 // a per section tracker to record metrics in each section.
-class SettingsUserActionTracker : public mojom::UserActionRecorder {
+class SettingsUserActionTracker
+    : public ash::settings::mojom::UserActionRecorder {
  public:
   SettingsUserActionTracker(Hierarchy* hierarchy, OsSettingsSections* sections);
   SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
@@ -32,7 +33,8 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   ~SettingsUserActionTracker() override;
 
   void BindInterface(
-      mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver);
+      mojo::PendingReceiver<ash::settings::mojom::UserActionRecorder>
+          pending_receiver);
 
  private:
   // For unit tests.
@@ -60,7 +62,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   void RecordSettingChange() override;
   void RecordSettingChangeWithDetails(
       mojom::Setting setting,
-      mojom::SettingChangeValuePtr value) override;
+      ash::settings::mojom::SettingChangeValuePtr value) override;
 
   void EndCurrentSession();
   void OnBindingDisconnected();
@@ -69,7 +71,7 @@ class SettingsUserActionTracker : public mojom::UserActionRecorder {
   OsSettingsSections* sections_;
 
   std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
-  mojo::Receiver<mojom::UserActionRecorder> receiver_{this};
+  mojo::Receiver<ash::settings::mojom::UserActionRecorder> receiver_{this};
 };
 
 }  // namespace settings

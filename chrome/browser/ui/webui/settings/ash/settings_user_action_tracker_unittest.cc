@@ -17,6 +17,11 @@
 namespace chromeos {
 namespace settings {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SettingChangeValue;
+}
+
 class SettingsUserActionTrackerTest : public testing::Test {
  protected:
   SettingsUserActionTrackerTest()

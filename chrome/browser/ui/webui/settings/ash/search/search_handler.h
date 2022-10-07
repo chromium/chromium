@@ -8,6 +8,10 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -19,12 +23,8 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash::settings {
 
-namespace settings {
-
-class Hierarchy;
-class OsSettingsSections;
 struct SearchConcept;
 
 // Handles search queries for Chrome OS settings. Search() is expected to be
@@ -85,20 +85,20 @@ class SearchHandler : public mojom::SearchHandler,
   std::vector<mojom::SearchResultPtr>::iterator AddSectionResultIfPossible(
       const std::vector<mojom::SearchResultPtr>::iterator& position,
       const mojom::SearchResultPtr& child_result,
-      mojom::Section section,
+      chromeos::settings::mojom::Section section,
       std::vector<mojom::SearchResultPtr>* results) const;
 
   std::vector<mojom::SearchResultPtr>::iterator AddSubpageResultIfPossible(
       const std::vector<mojom::SearchResultPtr>::iterator& position,
       const mojom::SearchResultPtr& child_result,
-      mojom::Subpage subpage,
+      chromeos::settings::mojom::Subpage subpage,
       double relevance_score,
       std::vector<mojom::SearchResultPtr>* results) const;
 
   mojom::SearchResultPtr ResultToSearchResult(
       const local_search_service::Result& result) const;
   std::string GetModifiedUrl(const SearchConcept& search_concept,
-                             mojom::Section section) const;
+                             chromeos::settings::mojom::Section section) const;
 
   // Returns true if |first| should be ranked before |second|.
   static bool CompareSearchResults(const mojom::SearchResultPtr& first,
@@ -107,7 +107,7 @@ class SearchHandler : public mojom::SearchHandler,
   SearchTagRegistry* search_tag_registry_;
   OsSettingsSections* sections_;
   Hierarchy* hierarchy_;
-  mojo::Remote<ash::local_search_service::mojom::Index> index_remote_;
+  mojo::Remote<local_search_service::mojom::Index> index_remote_;
 
   // Note: Expected to have multiple clients, so ReceiverSet/RemoteSet are used.
   mojo::ReceiverSet<mojom::SearchHandler> receivers_;
@@ -116,7 +116,11 @@ class SearchHandler : public mojom::SearchHandler,
   base::WeakPtrFactory<SearchHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::SearchHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_SEARCH_HANDLER_H_

@@ -12,6 +12,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -27,8 +29,6 @@ class WebUIDataSource;
 
 namespace chromeos {
 namespace settings {
-
-class SearchTagRegistry;
 
 // Provides UI strings and search tags for Device settings.
 class DeviceSection : public OsSettingsSection,
@@ -49,7 +49,7 @@ class DeviceSection : public OsSettingsSection,
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;
-  mojom::SearchResultIcon GetSectionIcon() const override;
+  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;

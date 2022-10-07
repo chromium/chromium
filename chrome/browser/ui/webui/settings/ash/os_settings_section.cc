@@ -8,11 +8,21 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace settings {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SearchResult;
+using ::ash::settings::mojom::SearchResultDefaultRank;
+using ::ash::settings::mojom::SearchResultIdentifier;
+using ::ash::settings::mojom::SearchResultPtr;
+using ::ash::settings::mojom::SearchResultType;
+}  // namespace mojom
 
 // static
 constexpr const char OsSettingsSection::kSettingIdUrlParam[];

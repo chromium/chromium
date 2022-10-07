@@ -62,6 +62,12 @@ class AppManagementDelegate : public AppManagementPageHandler::Delegate {
 namespace chromeos {
 namespace settings {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SearchHandler;
+using ::ash::settings::mojom::UserActionRecorder;
+}  // namespace mojom
+
 // static
 void OSSettingsUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {

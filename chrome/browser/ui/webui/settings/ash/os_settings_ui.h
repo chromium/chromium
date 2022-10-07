@@ -27,16 +27,16 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
+namespace ash::settings::mojom {
+class SearchHandler;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace chromeos {
 namespace settings {
-
-namespace mojom {
-class SearchHandler;
-}  // namespace mojom
 
 // The WebUI handler for chrome://os-settings.
 class OSSettingsUI : public ui::MojoWebUIController {
@@ -74,11 +74,13 @@ class OSSettingsUI : public ui::MojoWebUIController {
 
   // Instantiates implementor of the mojom::UserActionRecorder mojo interface
   // passing the pending receiver that will be internally bound.
-  void BindInterface(mojo::PendingReceiver<mojom::UserActionRecorder> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<ash::settings::mojom::UserActionRecorder> receiver);
 
   // Instantiates implementor of the mojom::SearchHandler mojo interface
   // passing the pending receiver that will be internally bound.
-  void BindInterface(mojo::PendingReceiver<mojom::SearchHandler> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<ash::settings::mojom::SearchHandler> receiver);
 
   // Instantiates implementor of the personalization app mojom::SearchHandler
   // mojo interface passing the pending receiver that will be internally bound.
@@ -130,7 +132,8 @@ class OSSettingsUI : public ui::MojoWebUIController {
 
   WebuiLoadTimer webui_load_timer_;
 
-  std::unique_ptr<mojom::UserActionRecorder> user_action_recorder_;
+  std::unique_ptr<ash::settings::mojom::UserActionRecorder>
+      user_action_recorder_;
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
 

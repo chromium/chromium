@@ -20,11 +20,14 @@
 
 class Profile;
 
+namespace ash::settings {
+class SearchHandler;
+}
+
 namespace chromeos {
 namespace settings {
 class Hierarchy;
 class OsSettingsManager;
-class SearchHandler;
 }  // namespace settings
 }  // namespace chromeos
 
@@ -38,7 +41,7 @@ namespace app_list {
 class OsSettingsResult : public ChromeSearchResult {
  public:
   OsSettingsResult(Profile* profile,
-                   const chromeos::settings::mojom::SearchResultPtr& result,
+                   const ash::settings::mojom::SearchResultPtr& result,
                    double relevance_score,
                    const gfx::ImageSkia& icon,
                    const std::u16string& query);
@@ -57,10 +60,9 @@ class OsSettingsResult : public ChromeSearchResult {
 
 // Provider results for OS settings based on a search query. No results are
 // provided for zero-state.
-class OsSettingsProvider
-    : public SearchProvider,
-      public apps::AppRegistryCache::Observer,
-      public chromeos::settings::mojom::SearchResultsObserver {
+class OsSettingsProvider : public SearchProvider,
+                           public apps::AppRegistryCache::Observer,
+                           public ash::settings::mojom::SearchResultsObserver {
  public:
   explicit OsSettingsProvider(Profile* profile);
   ~OsSettingsProvider() override;
@@ -85,7 +87,7 @@ class OsSettingsProvider
   void OnSearchReturned(
       const std::u16string& query,
       const base::TimeTicks& start_time,
-      std::vector<chromeos::settings::mojom::SearchResultPtr> results);
+      std::vector<ash::settings::mojom::SearchResultPtr> results);
 
   // Given a vector of results from the SearchHandler, filters them down to a
   // display-ready vector. It:
@@ -104,9 +106,9 @@ class OsSettingsProvider
   //
   // So simply iterating down the vector while being careful about duplicates
   // and checking for alternate matches is enough.
-  std::vector<chromeos::settings::mojom::SearchResultPtr> FilterResults(
+  std::vector<ash::settings::mojom::SearchResultPtr> FilterResults(
       const std::u16string& query,
-      const std::vector<chromeos::settings::mojom::SearchResultPtr>& results,
+      const std::vector<ash::settings::mojom::SearchResultPtr>& results,
       const chromeos::settings::Hierarchy* hierarchy);
 
   void OnLoadIcon(apps::IconValuePtr icon_value);
@@ -120,14 +122,14 @@ class OsSettingsProvider
 
   Profile* const profile_;
   chromeos::settings::OsSettingsManager* const settings_manager_;
-  chromeos::settings::SearchHandler* search_handler_;
+  ash::settings::SearchHandler* search_handler_;
   const chromeos::settings::Hierarchy* hierarchy_;
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last query. It is reset when view is closed.
   std::u16string last_query_;
-  mojo::Receiver<chromeos::settings::mojom::SearchResultsObserver>
+  mojo::Receiver<ash::settings::mojom::SearchResultsObserver>
       search_results_observer_receiver_{this};
 
   base::WeakPtrFactory<OsSettingsProvider> weak_factory_{this};

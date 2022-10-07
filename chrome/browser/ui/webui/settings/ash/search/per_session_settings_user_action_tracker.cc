@@ -6,8 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -120,5 +119,4 @@ void PerSessionSettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
   num_searches_since_start_time_ = 0u;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

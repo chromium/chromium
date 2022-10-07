@@ -9,8 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Records user actions which measure the effort required to change a setting.
 // This class is only meant to track actions from an individual settings
@@ -61,7 +60,11 @@ class PerSessionSettingsUserActionTracker {
   base::TimeTicks last_blur_timestamp_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PerSessionSettingsUserActionTracker;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_

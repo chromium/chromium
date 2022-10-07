@@ -8,6 +8,8 @@
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
 namespace content {
@@ -16,8 +18,6 @@ class WebUIDataSource;
 
 namespace chromeos {
 namespace settings {
-
-class SearchTagRegistry;
 
 // Provides UI strings and search tags for Search & Assistant settings. Search
 // tags for Assistant settings are added/removed depending on whether the
@@ -35,7 +35,7 @@ class SearchSection : public OsSettingsSection,
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;
-  mojom::SearchResultIcon GetSectionIcon() const override;
+  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;

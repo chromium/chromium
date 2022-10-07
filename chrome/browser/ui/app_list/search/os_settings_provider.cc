@@ -30,8 +30,8 @@
 namespace app_list {
 namespace {
 
-using SettingsResultPtr = chromeos::settings::mojom::SearchResultPtr;
-using SettingsResultType = chromeos::settings::mojom::SearchResultType;
+using SettingsResultPtr = ::ash::settings::mojom::SearchResultPtr;
+using SettingsResultType = ::ash::settings::mojom::SearchResultType;
 using Setting = chromeos::settings::mojom::Setting;
 using Subpage = chromeos::settings::mojom::Subpage;
 using Section = chromeos::settings::mojom::Section;
@@ -111,12 +111,11 @@ bool ContainsBetterAncestor(Setting setting,
 
 }  // namespace
 
-OsSettingsResult::OsSettingsResult(
-    Profile* profile,
-    const chromeos::settings::mojom::SearchResultPtr& result,
-    const double relevance_score,
-    const gfx::ImageSkia& icon,
-    const std::u16string& query)
+OsSettingsResult::OsSettingsResult(Profile* profile,
+                                   const SettingsResultPtr& result,
+                                   const double relevance_score,
+                                   const gfx::ImageSkia& icon,
+                                   const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   set_id(kOsSettingsResultPrefix + url_path_);
   SetCategory(Category::kSettings);
@@ -237,8 +236,7 @@ void OsSettingsProvider::Start(const std::u16string& query) {
   weak_factory_.InvalidateWeakPtrs();
   search_handler_->Search(
       query, kNumRequestedResults,
-      chromeos::settings::mojom::ParentResultBehavior::
-          kDoNotIncludeParentResults,
+      ash::settings::mojom::ParentResultBehavior::kDoNotIncludeParentResults,
       base::BindOnce(&OsSettingsProvider::OnSearchReturned,
                      weak_factory_.GetWeakPtr(), query, start_time));
 }
@@ -250,7 +248,7 @@ void OsSettingsProvider::ViewClosing() {
 void OsSettingsProvider::OnSearchReturned(
     const std::u16string& query,
     const base::TimeTicks& start_time,
-    std::vector<chromeos::settings::mojom::SearchResultPtr> sorted_results) {
+    std::vector<SettingsResultPtr> sorted_results) {
   DCHECK_LE(sorted_results.size(), kNumRequestedResults);
 
   SearchProvider::Results search_results;
@@ -315,10 +313,9 @@ void OsSettingsProvider::OnSearchResultsChanged() {
   Start(last_query_);
 }
 
-std::vector<chromeos::settings::mojom::SearchResultPtr>
-OsSettingsProvider::FilterResults(
+std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
     const std::u16string& query,
-    const std::vector<chromeos::settings::mojom::SearchResultPtr>& results,
+    const std::vector<SettingsResultPtr>& results,
     const chromeos::settings::Hierarchy* hierarchy) {
   base::flat_set<std::string> seen_urls;
   base::flat_map<Subpage, double> seen_subpages;

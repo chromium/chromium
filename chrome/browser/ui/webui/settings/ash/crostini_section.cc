@@ -34,6 +34,14 @@
 
 namespace chromeos {
 namespace settings {
+
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom {
+using ::ash::settings::mojom::SearchResultDefaultRank;
+using ::ash::settings::mojom::SearchResultIcon;
+using ::ash::settings::mojom::SearchResultType;
+}  // namespace mojom
+
 namespace {
 
 const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {

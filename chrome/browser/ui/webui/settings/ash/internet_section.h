@@ -10,6 +10,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -24,8 +26,6 @@ class WebUIDataSource;
 namespace chromeos {
 namespace settings {
 
-class SearchTagRegistry;
-
 class InternetSection : public OsSettingsSection,
                         public network_config::CrosNetworkConfigObserver {
  public:
@@ -38,12 +38,12 @@ class InternetSection : public OsSettingsSection,
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
   mojom::Section GetSection() const override;
-  mojom::SearchResultIcon GetSectionIcon() const override;
+  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
   std::string ModifySearchResultUrl(
-      mojom::SearchResultType type,
+      ash::settings::mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 

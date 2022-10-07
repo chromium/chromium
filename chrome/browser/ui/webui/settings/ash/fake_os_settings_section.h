@@ -38,7 +38,7 @@ class FakeOsSettingsSection : public OsSettingsSection {
   mojom::Section GetSection() const override;
 
   // These functions return arbitrary dummy values.
-  mojom::SearchResultIcon GetSectionIcon() const override;
+  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
   bool LogMetric(mojom::Setting setting, base::Value& value) const override;
 
@@ -46,7 +46,7 @@ class FakeOsSettingsSection : public OsSettingsSection {
   // the URL is "networkDetails" and the section is mojom::Section::kNetwork,
   // the returned URL is "Section::kNetwork::networkDetails".
   std::string ModifySearchResultUrl(
-      mojom::SearchResultType type,
+      ash::settings::mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 
