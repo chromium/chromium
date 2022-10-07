@@ -48,8 +48,10 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
  private:
   class ChildBubbleContainer;
 
-  // Return the maximum height available for the holding space bubble.
-  int CalculateMaxHeight() const;
+  // Return the maximum height available for the top-level holding space bubble
+  // and child bubble container respectively.
+  int CalculateTopLevelBubbleMaxHeight() const;
+  int CalculateChildBubbleContainerMaxHeight() const;
 
   void UpdateBubbleBounds();
 
@@ -71,7 +73,8 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   HoldingSpaceViewDelegate delegate_{this};
 
   // Views owned by view hierarchy.
-  ChildBubbleContainer* child_bubble_container_;
+  views::View* header_ = nullptr;
+  ChildBubbleContainer* child_bubble_container_ = nullptr;
   std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;

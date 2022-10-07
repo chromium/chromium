@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
@@ -13,6 +14,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/pinned_files_bubble.h"
@@ -25,6 +27,7 @@
 #include "base/containers/adapters.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -355,11 +358,31 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.translucent = features::IsHoldingSpaceRefreshEnabled();
   init_params.transparent = !features::IsHoldingSpaceRefreshEnabled();
 
-  // Create and customize bubble view.
+  // Create top-level bubble.
   TrayBubbleView* bubble_view = new TrayBubbleView(init_params);
+
+  // Add header.
+  if (features::IsHoldingSpaceRefreshEnabled()) {
+    bubble_view->AddChildView(
+        views::Builder<views::Label>(
+            bubble_utils::CreateLabel(
+                bubble_utils::LabelStyle::kHeader,
+                l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)))
+            .CopyAddressTo(&header_)
+            .SetID(kHoldingSpaceHeaderLabelId)
+            .SetBorder(views::CreateEmptyBorder(
+                gfx::Insets::TLBR(kHoldingSpaceChildBubbleChildSpacing,
+                                  kHoldingSpaceChildBubbleChildSpacing, 0,
+                                  kHoldingSpaceChildBubbleChildSpacing)))
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .Build());
+  }
+
+  // Add height restricted container for child bubbles.
   child_bubble_container_ =
       bubble_view->AddChildView(std::make_unique<ChildBubbleContainer>());
-  child_bubble_container_->SetMaxHeight(CalculateMaxHeight());
+  child_bubble_container_->SetMaxHeight(
+      CalculateChildBubbleContainerMaxHeight());
 
   // Add pinned files child bubble.
   child_bubbles_.push_back(child_bubble_container_->AddChildView(
@@ -430,7 +453,7 @@ HoldingSpaceTrayBubble::GetHoldingSpaceItemViews() {
   return views;
 }
 
-int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
+int HoldingSpaceTrayBubble::CalculateTopLevelBubbleMaxHeight() const {
   const WorkAreaInsets* work_area = WorkAreaInsets::ForWindow(
       holding_space_tray_->shelf()->GetWindow()->GetRootWindow());
 
@@ -448,8 +471,14 @@ int HoldingSpaceTrayBubble::CalculateMaxHeight() const {
   return free_space_height_above_anchor - bubble_vertical_margin;
 }
 
+int HoldingSpaceTrayBubble::CalculateChildBubbleContainerMaxHeight() const {
+  return CalculateTopLevelBubbleMaxHeight() -
+         (header_ ? header_->GetHeightForWidth(kHoldingSpaceBubbleWidth) : 0u);
+}
+
 void HoldingSpaceTrayBubble::UpdateBubbleBounds() {
-  child_bubble_container_->SetMaxHeight(CalculateMaxHeight());
+  child_bubble_container_->SetMaxHeight(
+      CalculateChildBubbleContainerMaxHeight());
   bubble_wrapper_->bubble_view()->ChangeAnchorRect(
       holding_space_tray_->shelf()->GetSystemTrayAnchorRect());
 }

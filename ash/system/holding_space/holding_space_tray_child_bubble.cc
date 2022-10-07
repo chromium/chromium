@@ -150,6 +150,10 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetOpacity(0.f);
 
+  // Child bubbles should mask child layers to bounds so as not to paint over
+  // other child bubbles in the event of overflow.
+  layer()->SetMasksToBounds(true);
+
   if (!features::IsHoldingSpaceRefreshEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetIsFastRoundedCorner(true);

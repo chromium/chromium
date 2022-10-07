@@ -253,18 +253,23 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*refresh_enabled=*/testing::Bool());
 
 TEST_P(HoldingSpaceTrayChildBubbleRefreshTest, HasExpectedBubbleTreatment) {
+  // Child bubbles should mask child layers to bounds so as not to paint over
+  // other child bubbles in the event of overflow.
+  auto* layer = child_bubble()->layer();
+  ASSERT_TRUE(layer);
+  EXPECT_TRUE(layer->GetMasksToBounds());
+
   if (features::IsHoldingSpaceRefreshEnabled()) {
     // Background.
     EXPECT_FALSE(child_bubble()->GetBackground());
-    EXPECT_EQ(child_bubble()->layer()->background_blur(), 0.f);
+    EXPECT_EQ(layer->background_blur(), 0.f);
 
     // Border.
     EXPECT_FALSE(child_bubble()->GetBorder());
 
     // Corner radius.
-    EXPECT_FALSE(child_bubble()->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(child_bubble()->layer()->rounded_corner_radii(),
-              gfx::RoundedCornersF(0.f));
+    EXPECT_FALSE(layer->is_fast_rounded_corner());
+    EXPECT_EQ(layer->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
   } else {
     // Background.
     auto* background = child_bubble()->GetBackground();
@@ -272,15 +277,14 @@ TEST_P(HoldingSpaceTrayChildBubbleRefreshTest, HasExpectedBubbleTreatment) {
     EXPECT_EQ(background->get_color(),
               AshColorProvider::Get()->GetBaseLayerColor(
                   AshColorProvider::BaseLayerType::kTransparent80));
-    EXPECT_EQ(child_bubble()->layer()->background_blur(),
-              ColorProvider::kBackgroundBlurSigma);
+    EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
 
     // Border.
     EXPECT_TRUE(child_bubble()->GetBorder());
 
     // Corner radius.
-    EXPECT_TRUE(child_bubble()->layer()->is_fast_rounded_corner());
-    EXPECT_EQ(child_bubble()->layer()->rounded_corner_radii(),
+    EXPECT_TRUE(layer->is_fast_rounded_corner());
+    EXPECT_EQ(layer->rounded_corner_radii(),
               gfx::RoundedCornersF(kBubbleCornerRadius));
   }
 }

@@ -62,6 +62,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/drag_utils.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -3707,6 +3708,12 @@ TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
     EXPECT_TRUE(bubble->layer()->is_fast_rounded_corner());
     EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
               gfx::RoundedCornersF(kBubbleCornerRadius));
+
+    // Header.
+    auto* header = bubble->GetViewByID(kHoldingSpaceHeaderLabelId);
+    ASSERT_TRUE(header);
+    EXPECT_EQ(views::AsViewClass<views::Label>(header)->GetText(),
+              u"Quick files");
   } else {
     // Background.
     auto* background = bubble->GetBackground();
@@ -3721,6 +3728,9 @@ TEST_P(HoldingSpaceTrayRefreshTest, HasExpectedBubbleTreatment) {
     EXPECT_FALSE(bubble->layer()->is_fast_rounded_corner());
     EXPECT_EQ(bubble->layer()->rounded_corner_radii(),
               gfx::RoundedCornersF(0.f));
+
+    // Header.
+    EXPECT_FALSE(bubble->GetViewByID(kHoldingSpaceHeaderLabelId));
   }
 }
 
@@ -3789,8 +3799,15 @@ TEST_P(HoldingSpaceTrayRefreshTest, PaintsSeparatorBetweenBubbles) {
   ASSERT_TRUE(recent_files_bubble);
   const int separator_midpoint_x = std::round(bubble->width() / 2.f);
   const int separator_midpoint_y = gfx::Tween::LinearIntValueBetween(
-      0.5f, pinned_files_bubble->bounds().bottom(),
-      recent_files_bubble->bounds().y());
+      0.5f,
+      views::View::ConvertRectToTarget(
+          /*source=*/pinned_files_bubble, /*target=*/bubble,
+          gfx::RectF(pinned_files_bubble->GetLocalBounds()))
+          .bottom(),
+      views::View::ConvertRectToTarget(
+          /*source=*/recent_files_bubble, /*target=*/bubble,
+          gfx::RectF(recent_files_bubble->GetLocalBounds()))
+          .y());
 
   // Cache the `actual_color` of the pixel at the midpoint of where a separator
   // would appear as well as the `expected_color` given feature flag state.
