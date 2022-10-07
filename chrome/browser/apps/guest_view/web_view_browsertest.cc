@@ -5080,8 +5080,6 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
       GetGuestViewManager()->WaitForSingleGuestViewCreated();
   ASSERT_TRUE(attached_guest_view);
 
-  auto* attached_guest_rfh =
-      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   auto* find_helper =
       find_in_page::FindTabHelper::FromWebContents(embedder_web_contents);
 
@@ -5095,6 +5093,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
         ASSERT_TRUE(guest_view);
         ASSERT_FALSE(guest_view->attached());
 
+        auto* attached_guest_rfh = attached_guest_view->GetGuestMainFrame();
         auto* unattached_guest_rfh = guest_view->GetGuestMainFrame();
         EXPECT_NE(unattached_guest_rfh, attached_guest_rfh);
         find_helper->StartFinding(u"doesn't matter", true, true, false);
