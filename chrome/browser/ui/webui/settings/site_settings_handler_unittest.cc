@@ -3228,16 +3228,17 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
   // list.
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  GURL hosts[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
-                  GURL("https://www.example.com/")};
+  GURL urls[] = {GURL("https://google.com:443"),
+                 GURL("https://www.youtube.com:443"),
+                 GURL("https://www.example.com:443")};
 
-  map->SetContentSettingDefaultScope(hosts[0], GURL(),
+  map->SetContentSettingDefaultScope(urls[0], GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(hosts[1], GURL(),
+  map->SetContentSettingDefaultScope(urls[1], GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(hosts[2], GURL(),
+  map->SetContentSettingDefaultScope(urls[2], GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
 
@@ -3253,37 +3254,37 @@ TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
       site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
 
   // Set a host to have minimum engagement. This should be in review list.
-  RecordNotification(notification_engagement_service, hosts[0], 1);
+  RecordNotification(notification_engagement_service, urls[0], 1);
   site_engagement::SiteEngagementScore score =
-      site_engagement_service->CreateEngagementScore(hosts[0]);
+      site_engagement_service->CreateEngagementScore(urls[0]);
   score.Reset(0.5, GetReferenceTime());
   score.Commit();
   EXPECT_EQ(blink::mojom::EngagementLevel::MINIMAL,
-            site_engagement_service->GetEngagementLevel(hosts[0]));
+            site_engagement_service->GetEngagementLevel(urls[0]));
 
   // Set a host to have large number of notifications, but low engagement. This
   // should be in review list.
-  RecordNotification(notification_engagement_service, hosts[1], 4);
-  site_engagement_service->AddPointsForTesting(hosts[1], 1.0);
+  RecordNotification(notification_engagement_service, urls[1], 4);
+  site_engagement_service->AddPointsForTesting(urls[1], 1.0);
   EXPECT_EQ(blink::mojom::EngagementLevel::LOW,
-            site_engagement_service->GetEngagementLevel(hosts[1]));
+            site_engagement_service->GetEngagementLevel(urls[1]));
 
   // Set a host to have medium engagement and high notification count. This
   // should not be in review list.
-  RecordNotification(notification_engagement_service, hosts[2], 4);
-  site_engagement_service->AddPointsForTesting(hosts[2], 50.0);
+  RecordNotification(notification_engagement_service, urls[2], 4);
+  site_engagement_service->AddPointsForTesting(urls[2], 50.0);
   EXPECT_EQ(blink::mojom::EngagementLevel::MEDIUM,
-            site_engagement_service->GetEngagementLevel(hosts[2]));
+            site_engagement_service->GetEngagementLevel(urls[2]));
 
   const auto& notification_permissions =
       handler()->PopulateNotificationPermissionReviewData();
   // Check there are 2 notification permissions in the list.
   EXPECT_EQ(2UL, notification_permissions.size());
   // Check minimal engagement item is in the list.
-  EXPECT_EQ("https://google.com",
+  EXPECT_EQ("https://google.com:443",
             *notification_permissions[0].FindStringKey(site_settings::kOrigin));
   // Check low engagement item is in the list.
-  EXPECT_EQ("https://www.youtube.com",
+  EXPECT_EQ("https://www.youtube.com:443",
             *notification_permissions[1].FindStringKey(site_settings::kOrigin));
 }
 }  // namespace settings

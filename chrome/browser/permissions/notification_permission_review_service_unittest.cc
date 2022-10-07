@@ -14,7 +14,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace permissions {
 
@@ -32,12 +31,12 @@ TEST_F(NotificationPermissionReviewServiceTest,
        IgnoreOriginForNotificationPermissionReview) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  GURL hosts[] = {GURL("https://google.com/"),
-                  GURL("https://www.youtube.com/")};
-  map->SetContentSettingDefaultScope(hosts[0], GURL(),
+  std::string urls[] = {"https://google.com:443",
+                        "https://www.youtube.com:443"};
+  map->SetContentSettingDefaultScope(GURL(urls[0]), GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(hosts[1], GURL(),
+  map->SetContentSettingDefaultScope(GURL(urls[1]), GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
 
@@ -48,28 +47,30 @@ TEST_F(NotificationPermissionReviewServiceTest,
 
   // Add notification permission to block list and check if it will be not be
   // shown on the list.
-  service->AddOriginToNotificationPermissionReviewBlocklist(
-      url::Origin::Create(hosts[0]));
+  service->AddPatternToNotificationPermissionReviewBlocklist(
+      ContentSettingsPattern::FromString(urls[0]),
+      ContentSettingsPattern::Wildcard());
   notification_permissions = service->GetNotificationSiteListForReview();
   EXPECT_EQ(1UL, notification_permissions.size());
-  EXPECT_EQ(notification_permissions[0].origin.GetURL(), hosts[1]);
+  EXPECT_EQ(notification_permissions[0].primary_pattern,
+            ContentSettingsPattern::FromString(urls[1]));
 }
 
 // TODO(crbug.com/1363714): Move this test to ContentSettingsPatternTest.
 TEST_F(NotificationPermissionReviewServiceTest, SingleOriginTest) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  const std::string url_1 = "http://[*].example1.com";
-  const std::string url_2 = "http://example2.com";
-  map->SetContentSettingDefaultScope(GURL(url_1), GURL(),
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(GURL(url_2), GURL(),
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     CONTENT_SETTING_ALLOW);
+  auto pattern_1 =
+      ContentSettingsPattern::FromString("https://[*.]example1.com:443");
+  auto pattern_2 =
+      ContentSettingsPattern::FromString("https://example2.com:443");
+  map->SetContentSettingCustomScope(
+      pattern_1, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+  map->SetContentSettingCustomScope(
+      pattern_2, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
 
-  auto pattern_1 = ContentSettingsPattern::FromString(url_1);
-  auto pattern_2 = ContentSettingsPattern::FromString(url_2);
   // Assert wildcard in primary pattern returns false on single origin check.
   EXPECT_EQ(false, content_settings::PatternAppliesToSingleOrigin(
                        pattern_1, ContentSettingsPattern::Wildcard()));
@@ -83,31 +84,31 @@ TEST_F(NotificationPermissionReviewServiceTest, SingleOriginTest) {
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
   auto notification_permissions = service->GetNotificationSiteListForReview();
   EXPECT_EQ(1UL, notification_permissions.size());
-  EXPECT_EQ(GURL(url_2), notification_permissions[0].origin.GetURL());
+  EXPECT_EQ(pattern_2, notification_permissions[0].primary_pattern);
 }
 
 TEST_F(NotificationPermissionReviewServiceTest,
        ShowOnlyGrantedNotificationPermissions) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  GURL hosts[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
-                  GURL("https://www.example.com/")};
-  map->SetContentSettingDefaultScope(hosts[0], GURL(),
+  GURL urls[] = {GURL("https://google.com/"), GURL("https://www.youtube.com/"),
+                 GURL("https://www.example.com/")};
+  map->SetContentSettingDefaultScope(urls[0], GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
-  map->SetContentSettingDefaultScope(hosts[1], GURL(),
+  map->SetContentSettingDefaultScope(urls[1], GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_BLOCK);
-  map->SetContentSettingDefaultScope(hosts[2], GURL(),
-                                     ContentSettingsType::NOTIFICATIONS,
-                                     CONTENT_SETTING_ASK);
+  map->SetContentSettingDefaultScope(
+      urls[2], GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ASK);
 
   // Assert the review list only has the URL with granted permission.
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
   auto notification_permissions = service->GetNotificationSiteListForReview();
   EXPECT_EQ(1UL, notification_permissions.size());
-  EXPECT_EQ(notification_permissions[0].origin.GetURL(), hosts[0]);
+  EXPECT_EQ(GURL(notification_permissions[0].primary_pattern.ToString()),
+            urls[0]);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

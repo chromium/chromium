@@ -10,15 +10,17 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/origin.h"
 
 namespace permissions {
 
 struct NotificationPermissions {
-  url::Origin origin;
+  ContentSettingsPattern primary_pattern;
+  ContentSettingsPattern secondary_pattern;
   int notification_count;
 
-  NotificationPermissions(const url::Origin& origin, int notification_count);
+  NotificationPermissions(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          int notification_count);
   ~NotificationPermissions();
 };
 
@@ -42,11 +44,12 @@ class NotificationPermissionsReviewService : public KeyedService {
   // Returns a list containing the sites that send a lot of notifications.
   std::vector<NotificationPermissions> GetNotificationSiteListForReview();
 
-  // Add given origin to the blocklist for review notification permissions
-  // feature. The origins in blocklist will not be suggested to be reviewed to
+  // Add given pattern pair to the blocklist for review notification permissions
+  // feature. The patterns in blocklist will not be suggested to be reviewed to
   // user again.
-  void AddOriginToNotificationPermissionReviewBlocklist(
-      const url::Origin& origin);
+  void AddPatternToNotificationPermissionReviewBlocklist(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
 
  private:
   // Used to update the notification permissions per URL.

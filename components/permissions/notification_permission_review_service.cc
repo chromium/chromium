@@ -86,9 +86,13 @@ GetNotificationCountMapPerPatternPair(
 
 }  // namespace
 
-NotificationPermissions::NotificationPermissions(const url::Origin& origin,
-                                                 int notification_count)
-    : origin(origin), notification_count(notification_count) {}
+NotificationPermissions::NotificationPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    int notification_count)
+    : primary_pattern(primary_pattern),
+      secondary_pattern(secondary_pattern),
+      notification_count(notification_count) {}
 NotificationPermissions::~NotificationPermissions() = default;
 
 NotificationPermissionsReviewService::NotificationPermissionsReviewService(
@@ -136,21 +140,22 @@ NotificationPermissionsReviewService::GetNotificationSiteListForReview() {
       continue;
 
     int notification_count = notification_count_map[pair];
-    auto origin = url::Origin::Create(GURL(item.primary_pattern.ToString()));
-    notification_permissions_list.emplace_back(origin, notification_count);
+    notification_permissions_list.emplace_back(
+        item.primary_pattern, item.secondary_pattern, notification_count);
   }
 
   return notification_permissions_list;
 }
 
 void NotificationPermissionsReviewService::
-    AddOriginToNotificationPermissionReviewBlocklist(
-        const url::Origin& origin) {
+    AddPatternToNotificationPermissionReviewBlocklist(
+        const ContentSettingsPattern& primary_pattern,
+        const ContentSettingsPattern& secondary_pattern) {
   base::Value::Dict permission_dict;
   permission_dict.Set(kExcludedKey, base::Value(true));
 
-  hcsm_->SetWebsiteSettingDefaultScope(
-      origin.GetURL(), GURL(),
+  hcsm_->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW,
       base::Value(std::move(permission_dict)));
 }

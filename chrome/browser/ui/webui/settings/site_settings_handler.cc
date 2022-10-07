@@ -1595,12 +1595,13 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
 void SiteSettingsHandler::HandleIgnoreOriginForNotificationPermissionReview(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  const std::string& origin = args[0].GetString();
+  const ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString(args[0].GetString());
 
   auto* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  service->AddOriginToNotificationPermissionReviewBlocklist(
-      url::Origin::Create(GURL(origin)));
+  service->AddPatternToNotificationPermissionReviewBlocklist(
+      primary_pattern, ContentSettingsPattern::Wildcard());
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());
@@ -2076,15 +2077,21 @@ SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
 
   base::Value::List result;
   for (const auto& notification_permission : notification_permissions) {
+    // Converting primary pattern to GURL should always be valid, since
+    // Notification Permission Review list only contains single origins. Those
+    // are filtered in
+    // NotificationPermissionsReviewService::GetNotificationSiteListForReview.
+    GURL url = GURL(notification_permission.primary_pattern.ToString());
+    DCHECK(url.is_valid());
     if (!ShouldAddToNotificationPermissionReviewList(
-            engagement_service, notification_permission.origin.GetURL(),
+            engagement_service, url,
             notification_permission.notification_count)) {
       continue;
     }
 
     base::Value::Dict permission;
     permission.Set(site_settings::kOrigin,
-                   notification_permission.origin.Serialize());
+                   notification_permission.primary_pattern.ToString());
 
     std::string notification_info_string =
         base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
