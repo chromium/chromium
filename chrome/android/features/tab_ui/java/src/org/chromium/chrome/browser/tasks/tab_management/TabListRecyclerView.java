@@ -151,8 +151,6 @@ class TabListRecyclerView
     // It is null when gts-tab animation is disabled or switching from Start surface to GTS.
     @Nullable
     private RecyclerView.ItemAnimator mOriginalAnimator;
-    /** The default item animator provided by the recycler view. */
-    private final RecyclerView.ItemAnimator mDefaultItemAnimator = getItemAnimator();
 
     /**
      * Basic constructor to use during inflation from xml.
@@ -455,16 +453,6 @@ class TabListRecyclerView
             mDynamicView.dropCachedBitmap();
             unregisterDynamicView();
         }
-    }
-
-    /**
-     * A method to enable or disable the item animation. If enabled, it uses the default item
-     * animator provided by the {@link RecyclerView}.
-     *
-     * @param shouldEnableItemAnimation True, if item animation should be enabled false, otherwise.
-     */
-    void toggleItemAnimation(boolean shouldEnableItemAnimation) {
-        setItemAnimator(shouldEnableItemAnimation ? mDefaultItemAnimator : null);
     }
 
     private void endAllAnimations() {
