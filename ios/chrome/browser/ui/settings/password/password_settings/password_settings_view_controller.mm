@@ -541,6 +541,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 // state of `isSavePasswordEnabled`.
 - (void)updateSavePasswordsSwitch {
   self.savePasswordsItem.on = self.isSavePasswordsEnabled;
+
+  if (self.modelLoadStatus != ModelLoadComplete) {
+    return;
+  }
   [self reconfigureCellsForItems:@[ self.savePasswordsItem ]];
 }
 
@@ -552,6 +556,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
         _passwordsInOtherAppsEnabled.value()
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+
+    if (self.modelLoadStatus != ModelLoadComplete) {
+      return;
+    }
     [self reloadCellsForItems:@[ self.passwordsInOtherAppsItem ]
              withRowAnimation:UITableViewRowAnimationNone];
   }
