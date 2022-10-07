@@ -4836,6 +4836,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS Flex device and component serial numbers.
           </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION" desc="Permission string for accessing network information.">
+            Read ChromeOS Flex network information.
+          </message>
         </if>
         <if expr="not reven">
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_DIAGNOSTICS" desc="Permission string for chrome.os.diagnostcs API.">
@@ -4846,6 +4849,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER" desc="Permission string for serial number permission.">
             Read ChromeOS device and component serial numbers.
+          </message>
+          <message name="IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION" desc="Permission string for accessing network information.">
+            Read ChromeOS network information.
           </message>
         </if>
       </if>

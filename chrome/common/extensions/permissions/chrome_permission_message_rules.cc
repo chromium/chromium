@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_signals/core/common/signals_features.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::APIPermissionID;
@@ -751,7 +752,9 @@ ChromePermissionMessageRule::GetAllRules() {
       {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_SERIAL_NUMBER,
        {APIPermissionID::kChromeOSTelemetrySerialNumber},
        {}},
-  };
+      {IDS_EXTENSION_PROMPT_WARNING_CHROMEOS_TELEMETRY_NETWORK_INFORMATION,
+       {APIPermissionID::kChromeOSTelemetryNetworkInformation},
+       {}}};
 
   return std::vector<ChromePermissionMessageRule>(
       std::make_move_iterator(std::begin(rules_arr)),

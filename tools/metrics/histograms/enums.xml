@@ -36329,6 +36329,7 @@ Called by update_extension_permission.py.-->
   <int value="241" label="kSidePanel"/>
   <int value="242" label="kDownloadsUi"/>
   <int value="243" label="kWebRequestAuthProvider"/>
+  <int value="244" label="kChromeOSTelemetryNetworkInformation"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

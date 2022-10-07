@@ -63,7 +63,8 @@ std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
         "permissions": [
           "os.diagnostics",
           "os.telemetry",
-          "os.telemetry.serial_number"
+          "os.telemetry.serial_number",
+          "os.telemetry.network_info"
         ],
         "externally_connectable": {
           "matches": [

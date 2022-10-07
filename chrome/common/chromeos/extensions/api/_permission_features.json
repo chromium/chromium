@@ -27,5 +27,11 @@
     "extension_types": [
       "chromeos_system_extension"
     ]
+  },
+  "os.telemetry.network_info": {
+    "channel": "stable",
+    "extension_types": [
+      "chromeos_system_extension"
+    ]
   }
 }

@@ -39,6 +39,8 @@ const std::u16string kTelemetryPermissionMessage =
     u"Read ChromeOS device information and device data.";
 const std::u16string kTelemetrySerialNumberPermissionMessage =
     u"Read ChromeOS device and component serial numbers.";
+const std::u16string kTelemetryNetworkInformationPermissionMessage =
+    u"Read ChromeOS network information.";
 
 }  // namespace
 
@@ -174,6 +176,28 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetrySerialNumber) {
   ASSERT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(kTelemetrySerialNumberPermissionMessage, active_permissions()[0]);
+}
+
+TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryNetworkInformation) {
+  CreateAndInstallExtensionWithPermissions(
+      extensions::ListBuilder().Build(),
+      extensions::ListBuilder().Append("os.telemetry.network_info").Build());
+
+  ASSERT_EQ(1U, optional_permissions().size());
+  EXPECT_EQ(kTelemetryNetworkInformationPermissionMessage,
+            optional_permissions()[0]);
+  ASSERT_EQ(1U, GetInactiveOptionalPermissionMessages().size());
+  EXPECT_EQ(kTelemetryNetworkInformationPermissionMessage,
+            GetInactiveOptionalPermissionMessages()[0]);
+  ASSERT_EQ(0U, required_permissions().size());
+  ASSERT_EQ(0U, active_permissions().size());
+
+  GrantOptionalPermissions();
+
+  ASSERT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
+  ASSERT_EQ(1U, active_permissions().size());
+  EXPECT_EQ(kTelemetryNetworkInformationPermissionMessage,
+            active_permissions()[0]);
 }
 
 }  // namespace chromeos

@@ -26,7 +26,8 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kChromeOSTelemetry, "os.telemetry"},
     {APIPermissionID::kChromeOSTelemetrySerialNumber,
      "os.telemetry.serial_number"},
-};
+    {APIPermissionID::kChromeOSTelemetryNetworkInformation,
+     "os.telemetry.network_info"}};
 
 }  // namespace
 

@@ -6,7 +6,8 @@
   "permissions": [
     "os.diagnostics",
     "os.telemetry",
-    "os.telemetry.serial_number"
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
   ],
   "chromeos_system_extension": {},
   "externally_connectable": {
