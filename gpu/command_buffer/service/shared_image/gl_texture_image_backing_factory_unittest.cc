@@ -579,7 +579,7 @@ const auto kSharedImageFormats = ::testing::Values(
 
 std::string TestParamToString(
     const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
-  return viz::ResourceFormatToString(param_info.param);
+  return param_info.param.ToString();
 }
 
 INSTANTIATE_TEST_SUITE_P(

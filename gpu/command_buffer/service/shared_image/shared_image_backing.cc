@@ -129,7 +129,7 @@ void SharedImageBacking::OnMemoryDump(
 
   dump->AddString("type", "", GetName());
   dump->AddString("dimensions", "", size().ToString());
-  dump->AddString("format", "", viz::ResourceFormatToString(format()));
+  dump->AddString("format", "", format().ToString());
   dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
 
   // Add ownership edge to `client_guid` which expresses shared ownership with

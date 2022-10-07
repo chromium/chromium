@@ -105,6 +105,8 @@ class SharedImageFormat {
   // export to the display compositor.
   bool IsBitmapFormatSupported() const;
 
+  const char* ToString() const;
+
   bool operator==(const SharedImageFormat& o) const {
     if (plane_type_ != o.plane_type())
       return false;

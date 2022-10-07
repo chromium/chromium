@@ -547,7 +547,7 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
 
   // Check if the format is supported by AHardwareBuffer.
   if (!format_info.ahb_supported) {
-    LOG(ERROR) << "viz::ResourceFormat " << viz::ResourceFormatToString(format)
+    LOG(ERROR) << "viz::ResourceFormat " << format.ToString()
                << " not supported by AHardwareBuffer";
     return false;
   }
@@ -568,7 +568,7 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
     // Check if the GL texture can be created from AHB with this format.
     if (!format_info.gl_supported) {
       LOG(ERROR)
-          << "viz::ResourceFormat " << viz::ResourceFormatToString(format)
+          << "viz::ResourceFormat " << format.ToString()
           << " can not be used to create a GL texture from AHardwareBuffer.";
       return false;
     }

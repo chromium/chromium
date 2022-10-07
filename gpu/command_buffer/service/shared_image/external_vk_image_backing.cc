@@ -656,8 +656,7 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
       auto gl_format = gl_format_info.gl_format;
       auto gl_type = gl_format_info.gl_type;
       if (gl_format == GL_ZERO || gl_type == GL_ZERO)
-        LOG(FATAL) << "Not support format: "
-                   << viz::ResourceFormatToString(format());
+        LOG(FATAL) << "Not support format: " << format().ToString();
       api->glTexImage2DFn(GL_TEXTURE_2D, 0, gl_format, size().width(),
                           size().height(), 0, gl_format, gl_type, nullptr);
     }
@@ -1038,8 +1037,7 @@ void ExternalVkImageBacking::CopyPixelsFromGLTextureToVkImage() {
   auto bytes_per_pixel = gl_format_info.bytes_per_pixel;
 
   if (gl_format == GL_ZERO) {
-    NOTREACHED() << "Not supported resource format="
-                 << viz::ResourceFormatToString(format());
+    NOTREACHED() << "Not supported resource format=" << format().ToString();
     return;
   }
 
@@ -1098,8 +1096,7 @@ void ExternalVkImageBacking::CopyPixelsFromVkImageToGLTexture() {
   auto bytes_per_pixel = gl_format_info.bytes_per_pixel;
 
   if (gl_format == GL_ZERO) {
-    NOTREACHED() << "Not supported resource format="
-                 << viz::ResourceFormatToString(format());
+    NOTREACHED() << "Not supported resource format=" << format().ToString();
     return;
   }
 
@@ -1151,8 +1148,7 @@ void ExternalVkImageBacking::UploadToGLTexture(const SkPixmap& pixmap) {
   auto bytes_per_pixel = gl_format_info.bytes_per_pixel;
 
   if (gl_format == GL_ZERO) {
-    NOTREACHED() << "Not supported resource format="
-                 << viz::ResourceFormatToString(format());
+    NOTREACHED() << "Not supported resource format=" << format().ToString();
     return;
   }
 

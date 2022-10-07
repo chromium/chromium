@@ -563,14 +563,13 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
   const viz::SharedImageFormat viz_si_format = format();
   const WGPUTextureFormat wgpu_format = viz::ToWGPUFormat(viz_si_format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
-    LOG(ERROR) << "Unsupported viz format found: "
-               << viz::ResourceFormatToString(viz_si_format);
+    LOG(ERROR) << "Unsupported viz format found: " << viz_si_format.ToString();
     return nullptr;
   }
   const WGPUTextureUsageFlags usage = GetAllowedDawnUsages(wgpu_format);
   if (usage == WGPUTextureUsage_None) {
     LOG(ERROR) << "WGPUTextureUsage is unknown for viz format: "
-               << viz::ResourceFormatToString(viz_si_format);
+               << viz_si_format.ToString();
     return nullptr;
   }
 

@@ -305,7 +305,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   DVLOG(1) << "CreateSharedImage[" << backing->GetName()
            << "] size=" << size.ToString()
            << " usage=" << CreateLabelForSharedImageUsage(usage)
-           << " resource_format=" << viz::ResourceFormatToString(format);
+           << " resource_format=" << format.ToString();
   return RegisterBacking(std::move(backing));
 }
 
@@ -334,7 +334,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
-             << " resource_format=" << viz::ResourceFormatToString(format);
+             << " resource_format=" << format.ToString();
 
     backing->OnWriteSucceeded();
   }
@@ -574,7 +574,7 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
 
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
              << CreateLabelForSharedImageUsage(usage)
-             << ", format: " << viz::ResourceFormatToString(format)
+             << ", format: " << format.ToString()
              << ", share_between_threads: " << share_between_threads
              << ", gmb_type: " << GmbTypeToString(gmb_type);
   return nullptr;
