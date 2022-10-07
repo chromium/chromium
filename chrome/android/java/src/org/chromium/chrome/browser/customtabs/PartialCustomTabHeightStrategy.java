@@ -47,7 +47,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
@@ -171,10 +170,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // Y offset when a dragging gesture starts.
     private int mDraggingStartY;
     private float mOffsetY;
-
-    // Method to invoke to animate the tab. Animates by altering top y position by default,
-    // but using height for the close animation.
-    private Consumer<Integer> mTabAnimator = this::updateWindowPos;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -402,7 +397,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     @Override
     public void onAnimationUpdate(ValueAnimator valueAnimator) {
         int value = (int) valueAnimator.getAnimatedValue();
-        mTabAnimator.accept(value);
+        updateWindowPos(value);
     }
 
     private void roundCorners(
@@ -668,13 +663,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (isSpinnerVisible()) {
             centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
         }
-    }
-
-    private void updateWindowHeight(int height) {
-        Window window = mActivity.getWindow();
-        WindowManager.LayoutParams attrs = window.getAttributes();
-        attrs.height = height;
-        window.setAttributes(attrs);
     }
 
     private boolean isSpinnerVisible() {
@@ -991,21 +979,16 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (mFinishRunnable != null) return;
 
         mFinishRunnable = finishRunnable;
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (attrs.gravity == Gravity.BOTTOM) {
-            // Animate height for the tab at rest.
-            mTabAnimator = this::updateWindowHeight;
-            mAnimator.setIntValues(attrs.height, 0);
-        } else {
-            if (isFullHeight()) {
-                attrs.gravity = Gravity.BOTTOM;
-                mActivity.getWindow().setAttributes(attrs);
-                mTabAnimator = this::updateWindowHeight;
-                mAnimator.setIntValues(mDisplayHeight - mNavbarHeight, 0);
-            } else {
-                mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
-            }
+        Window window = mActivity.getWindow();
+        WindowManager.LayoutParams attrs = window.getAttributes();
+        if (attrs.gravity == Gravity.BOTTOM || isFullHeight()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            attrs.y = isFullHeight() ? getFullyExpandedY()
+                                     : mDisplayHeight - attrs.height - mNavbarHeight;
+            attrs.gravity = Gravity.TOP; // NO_GRAVITY doesn't work here.
+            window.setAttributes(attrs);
         }
+        mAnimator.setIntValues(attrs.y, mDisplayHeight - mNavbarHeight);
         mAnimator.setDuration(
                 mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         mAnimator.setInterpolator(new AccelerateInterpolator());
