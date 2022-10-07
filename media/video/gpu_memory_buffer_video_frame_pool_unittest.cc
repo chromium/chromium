@@ -771,13 +771,14 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
   RunUntilIdle();
 
   EXPECT_NE(software_frame.get(), frame.get());
-#if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(PIXEL_FORMAT_RGBAF16, frame->format());
-#else
   EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
-#endif
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(2u, frame->NumTextures());
+  EXPECT_EQ(2u, sii_->shared_image_count());
+#else
   EXPECT_EQ(1u, frame->NumTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
+#endif
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
   EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
@@ -810,13 +811,14 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
-#if BUILDFLAG(IS_MAC)
-    EXPECT_EQ(PIXEL_FORMAT_RGBAF16, frame->format());
-#else
     EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
-#endif
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(2u, frame->NumTextures());
+    EXPECT_EQ(2u, sii_->shared_image_count());
+#else
     EXPECT_EQ(1u, frame->NumTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
+#endif
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
 
     EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());

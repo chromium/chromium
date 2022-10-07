@@ -235,11 +235,6 @@ bool GLImageIOSurface::Initialize(IOSurfaceRef io_surface,
   format_ = format;
   io_surface_.reset(io_surface, base::scoped_policy::RETAIN);
   io_surface_id_ = io_surface_id;
-
-  // YUV_420_BIPLANAR and P010 are not supported by BindTexImage. A separate
-  // GLImage must be created for each of their planes.
-  DCHECK_NE(format_, BufferFormat::YUV_420_BIPLANAR);
-  DCHECK_NE(format_, BufferFormat::P010);
   io_surface_plane_ = io_surface_plane;
   return true;
 }

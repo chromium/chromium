@@ -68,6 +68,16 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
 
 GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
+#if BUILDFLAG(IS_MAC)
+  // On macOS each plane of a YUV GpuMemoryBuffer must be sampled separately.
+  switch (format) {
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::P010:
+      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
+    default:
+      return plane == gfx::BufferPlane::DEFAULT;
+  }
+#else
   switch (format) {
     case gfx::BufferFormat::YVU_420:
       return plane == gfx::BufferPlane::DEFAULT ||
@@ -79,6 +89,7 @@ GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
     default:
       return plane == gfx::BufferPlane::DEFAULT;
   }
+#endif
   NOTREACHED();
   return false;
 }
@@ -96,7 +107,6 @@ gfx::BufferFormat GetPlaneBufferFormat(gfx::BufferPlane plane,
       if (format == gfx::BufferFormat::P010) {
         return gfx::BufferFormat::R_16;
       }
-      NOTREACHED();
       break;
     case gfx::BufferPlane::UV:
       if (format == gfx::BufferFormat::YUV_420_BIPLANAR)

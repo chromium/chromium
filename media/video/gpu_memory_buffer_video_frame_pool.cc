@@ -387,7 +387,8 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
 // GpuMemoryBuffer can be mapped to several SharedImages (one for each plane).
 size_t NumSharedImages(GpuVideoAcceleratorFactories::OutputFormat format) {
   if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
       return 2;
     }
   }
@@ -401,7 +402,8 @@ size_t GpuMemoryBufferPlaneResourceIndexForPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
   if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
       return 0;
     }
   }
@@ -414,7 +416,8 @@ gfx::BufferPlane GetSharedImageBufferPlane(
     GpuVideoAcceleratorFactories::OutputFormat format,
     size_t plane) {
   if (GpuMemoryBufferVideoFramePool::MultiPlaneVideoSharedImagesEnabled()) {
-    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB) {
+    if (format == GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB ||
+        format == GpuVideoAcceleratorFactories::OutputFormat::P010) {
       switch (plane) {
         case 0:
           return gfx::BufferPlane::Y;
@@ -1205,13 +1208,6 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     mailbox_holders[plane].sync_token = sync_token;
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1155760): Until individual planes can be bound as
-  // their own textures, P010 buffers are copied to F16 textures for sampling.
-  if (frame_format == PIXEL_FORMAT_P016LE)
-    frame_format = PIXEL_FORMAT_RGBAF16;
-#endif
 
   // Create the VideoFrame backed by native textures.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
