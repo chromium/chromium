@@ -54,6 +54,7 @@ struct InterceptedRequestInfo {
   protocol::Maybe<bool> is_download;
   protocol::Maybe<protocol::String> redirect_url;
   protocol::Maybe<protocol::String> renderer_request_id;
+  protocol::Maybe<protocol::String> redirected_request_id;
 };
 
 class DevToolsURLLoaderInterceptor {

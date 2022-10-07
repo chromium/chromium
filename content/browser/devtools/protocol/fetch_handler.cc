@@ -447,7 +447,8 @@ void FetchHandler::RequestIntercepted(
       info->frame_id.ToString(),
       NetworkHandler::ResourceTypeToString(info->resource_type),
       std::move(error_reason), std::move(status_code), std::move(status_text),
-      std::move(response_headers), std::move(info->renderer_request_id));
+      std::move(response_headers), std::move(info->renderer_request_id),
+      std::move(info->redirected_request_id));
 }
 
 }  // namespace protocol

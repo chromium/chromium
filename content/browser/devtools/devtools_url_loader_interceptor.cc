@@ -422,6 +422,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   bool tainted_origin_ = false;
   bool fetch_cors_flag_ = false;
   std::string current_id_;
+  std::string redirected_request_id_;
 
   std::unique_ptr<BodyReader> body_reader_;
   std::unique_ptr<ResponseMetadata> response_metadata_;
@@ -1321,6 +1322,9 @@ std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
 
   if (head && head->headers)
     result->response_headers = head->headers;
+  if (!redirected_request_id_.empty())
+    result->redirected_request_id = redirected_request_id_;
+
   return result;
 }
 
@@ -1441,6 +1445,7 @@ void InterceptionJob::FollowRedirect(
   url_chain_.push_back(create_loader_params_->request.url);
 
   if (interceptor_) {
+    redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
     // compatibilty with URLRequestJob-based interception implementation.
     interceptor_->RemoveJob(current_id_);
