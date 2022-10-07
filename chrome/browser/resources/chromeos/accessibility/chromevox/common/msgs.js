@@ -8,8 +8,6 @@
  */
 
 export class Msgs {
-  constructor() {}
-
   /**
    * Return the current locale.
    * @return {string} The locale.

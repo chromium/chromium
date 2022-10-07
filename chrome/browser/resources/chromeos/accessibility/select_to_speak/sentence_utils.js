@@ -12,8 +12,6 @@ const RoleType = chrome.automation.RoleType;
  * Utilities for processing sentences within strings and node groups.
  */
 export class SentenceUtils {
-  constructor() {}
-
   /**
    * Gets the sentence start from the current position. When |direction| is set
    * to forward, this function will incrementally go over each nodeGroupItem in

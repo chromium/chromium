@@ -60,8 +60,6 @@ export class OutputSpeechProperties {
  * Custom actions performed while rendering an output string.
  */
 export class OutputAction {
-  constructor() {}
-
   run() {}
 }
 

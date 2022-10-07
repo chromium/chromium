@@ -13,8 +13,6 @@ const AutomationNode = chrome.automation.AutomationNode;
  * @interface
  */
 export class ISearchHandler {
-  constructor() {}
-
   /**
    * Called when there are no remaining nodes in the document matching
    * search.

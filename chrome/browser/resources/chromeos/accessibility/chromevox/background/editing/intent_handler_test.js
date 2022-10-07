@@ -82,8 +82,6 @@ AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
 AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   let calls = [];
   const fakeLine = new (class {
-    constructor() {}
-
     createWordRange(...args) {
       calls.push(['createWordRange', ...args]);
       return {};

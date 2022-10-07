@@ -7,8 +7,6 @@ import {PrefsManager} from './prefs_manager.js';
 // Utilities for UMA metrics.
 
 export class MetricsUtils {
-  constructor() {}
-
   /**
    * Records a cancel event if speech was in progress.
    */

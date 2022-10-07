@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 class DocUtils {
-  constructor() {}
-
   /**
    * Creates a data url for a document.
    * @param {string} doc Snippet

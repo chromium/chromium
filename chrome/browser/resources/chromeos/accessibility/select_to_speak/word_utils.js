@@ -7,8 +7,6 @@ import {ParagraphUtils} from './paragraph_utils.js';
 // Utilities for processing words within strings and nodes.
 
 export class WordUtils {
-  constructor() {}
-
   /**
    * Searches through text starting at an index to find the next word's
    * start boundary.

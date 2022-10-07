@@ -49,8 +49,6 @@ const DEFAULT_BACKGROUND_SHADING_COLOR = '#0006';
  * @interface
  */
 export class SelectToSpeakUiListener {
-  constructor() {}
-
   /** User requests navigation to next paragraph. */
   onNextParagraphRequested() {}
 

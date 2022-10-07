@@ -105,8 +105,6 @@ const nodeNameContainedInStaticTextChildren = function(node) {
 };
 
 export class AutomationPredicate {
-  constructor() {}
-
   /**
    * Constructs a predicate given a list of roles.
    * @param {!Array<Role>} roles

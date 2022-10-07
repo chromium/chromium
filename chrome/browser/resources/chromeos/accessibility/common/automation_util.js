@@ -14,8 +14,6 @@ const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 
 export class AutomationUtil {
-  constructor() {}
-
   /**
    * Find a node in subtree of |cur| satisfying |pred| using pre-order
    * traversal.

@@ -7,8 +7,6 @@
  */
 
 export class StringUtil {
-  constructor() {}
-
   /**
    * Returns the length of the longest common prefix of two strings.
    * @param {string} first The first string.

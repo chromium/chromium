@@ -25,8 +25,6 @@ let ParagraphPred;
  * which handle lower-level calculation.
  */
 export class NodeNavigationUtils {
-  constructor() {}
-
   /**
    * Finds the nodes for the next text block in the given direction. This
    * function is based on |NodeUtils.getNextParagraph| but provides additional

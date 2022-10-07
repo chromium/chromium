@@ -72,8 +72,6 @@ export const EarconDescription = {
 
 
 export class AbstractEarcons {
-  constructor() {}
-
   /**
    * Plays the specified earcon sound.
    * @param {Earcon} earcon An earcon identifier.

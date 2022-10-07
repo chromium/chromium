@@ -10,8 +10,6 @@
 
 /** @interface */
 export class BluetoothBrailleDisplayListener {
-  constructor() {}
-
   /**
    * @param {!Array<chrome.bluetooth.Device>} displays
    */

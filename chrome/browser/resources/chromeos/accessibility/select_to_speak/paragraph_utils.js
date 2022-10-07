@@ -8,8 +8,6 @@ var AutomationNode = chrome.automation.AutomationNode;
 var RoleType = chrome.automation.RoleType;
 
 export class ParagraphUtils {
-  constructor() {}
-
   /**
    * @param {!AutomationNode} node
    * @return {boolean} Whether the given node is a paragraph.
