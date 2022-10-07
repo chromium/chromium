@@ -14,7 +14,8 @@ async function main() {
 
   /**
    * @param {string} path
-   * @param {{create: boolean, exclusive: boolean}} options
+   * @param {{create: (boolean|undefined), exclusive: (boolean|undefined)}}
+   *     options
    * @returns {!Promise<!FileEntry>}
    */
   const getFileEntry = (path, options) => {

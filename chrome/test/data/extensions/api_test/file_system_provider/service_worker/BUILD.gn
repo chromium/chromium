@@ -6,13 +6,18 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   deps = [ ":service_worker" ]
-  closure_flags =
-      strict_error_checking_closure_args + [ "language_in=ECMASCRIPT_2020" ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=../../chrome/test/data/extensions/",
+                    "browser_resolver_prefix_replacements=/_test_resources/=./",
+                  ]
 }
 
 # Group for type checking.
 js_library("service_worker") {
   sources = [
+    "copy_entry/sw.js",
+    "copy_entry/test.js",
     "helpers.js",
     "provider.js",
     "read_file/sw.js",
