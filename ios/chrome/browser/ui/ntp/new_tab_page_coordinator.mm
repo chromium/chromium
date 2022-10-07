@@ -222,12 +222,14 @@ const base::Feature kEnableCheckForNewFollowContent{
 @property(nonatomic, strong)
     FeedTopSectionCoordinator* feedTopSectionCoordinator;
 
+// Currently selected feed. Redefined to readwrite.
+@property(nonatomic, assign, readwrite) FeedType selectedFeed;
+
 @end
 
 @implementation NewTabPageCoordinator
 
 // Synthesize NewTabPageConfiguring properties.
-@synthesize selectedFeed = _selectedFeed;
 @synthesize shouldScrollIntoFeed = _shouldScrollIntoFeed;
 @synthesize baseViewController = _baseViewController;
 
@@ -641,14 +643,6 @@ const base::Feature kEnableCheckForNewFollowContent{
   }
 }
 
-- (void)selectFeedType:(FeedType)feedType {
-  if (!self.ntpViewController.viewDidAppear) {
-    self.selectedFeed = feedType;
-    return;
-  }
-  [self handleFeedSelected:feedType];
-}
-
 - (void)ntpDidChangeVisibility:(BOOL)visible {
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible && self.started) {
@@ -892,6 +886,17 @@ const base::Feature kEnableCheckForNewFollowContent{
 
 - (void)handleFeedTopSectionClosed {
   [self.ntpViewController updateScrollPositionForFeedTopSectionClosed];
+}
+
+#pragma mark - NewTabPageConfiguring
+
+- (void)selectFeedType:(FeedType)feedType {
+  if (!self.ntpViewController.viewDidAppear ||
+      ![self isFollowingFeedAvailable]) {
+    self.selectedFeed = feedType;
+    return;
+  }
+  [self handleFeedSelected:feedType];
 }
 
 #pragma mark - AppStateObserver
