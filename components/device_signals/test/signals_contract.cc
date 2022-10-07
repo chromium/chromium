@@ -132,6 +132,14 @@ GetSignalsContract() {
   // locations.
   contract[names::kDeviceEnrollmentDomain] =
       base::BindRepeating(VerifyIsString, names::kDeviceEnrollmentDomain);
+  contract[names::kDiskEncrypted] =
+      base::BindRepeating(VerifyIsSettingInteger, names::kDiskEncrypted);
+  contract[names::kSerialNumber] =
+      base::BindRepeating(VerifyIsString, names::kSerialNumber);
+  contract[names::kDeviceHostName] =
+      base::BindRepeating(VerifyIsString, names::kDeviceHostName);
+  contract[names::kMacAddresses] = base::BindRepeating(
+      VerifyIsStringArray, names::kMacAddresses, /*enforce_value=*/false);
 
 #if BUILDFLAG(IS_WIN)
   contract[names::kChromeCleanupEnabled] =
@@ -155,16 +163,8 @@ GetSignalsContract() {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  contract[names::kSerialNumber] =
-      base::BindRepeating(VerifyIsString, names::kSerialNumber);
   contract[names::kScreenLockSecured] =
       base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
-  contract[names::kDiskEncrypted] =
-      base::BindRepeating(VerifyIsSettingInteger, names::kDiskEncrypted);
-  contract[names::kDeviceHostName] =
-      base::BindRepeating(VerifyIsString, names::kDeviceHostName);
-  contract[names::kMacAddresses] = base::BindRepeating(
-      VerifyIsStringArray, names::kMacAddresses, /*enforce_value=*/true);
 
   contract[names::kAllowScreenLock] =
       base::BindRepeating(VerifyUnset, names::kAllowScreenLock);
@@ -175,16 +175,8 @@ GetSignalsContract() {
   contract[names::kAllowScreenLock] =
       base::BindRepeating(VerifyIsBoolean, names::kAllowScreenLock);
 
-  contract[names::kSerialNumber] =
-      base::BindRepeating(VerifyUnset, names::kSerialNumber);
   contract[names::kScreenLockSecured] =
       base::BindRepeating(VerifyUnset, names::kScreenLockSecured);
-  contract[names::kDiskEncrypted] =
-      base::BindRepeating(VerifyUnset, names::kDiskEncrypted);
-  contract[names::kDeviceHostName] =
-      base::BindRepeating(VerifyUnset, names::kDeviceHostName);
-  contract[names::kMacAddresses] =
-      base::BindRepeating(VerifyUnset, names::kMacAddresses);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return contract;

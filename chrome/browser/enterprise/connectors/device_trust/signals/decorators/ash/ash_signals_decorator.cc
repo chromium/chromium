@@ -122,6 +122,7 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
     base::TimeTicks start_time,
     base::OnceClosure done_closure,
     crosapi::mojom::GetNetworkDetailsResultPtr result) {
+  std::vector<std::string> mac_addresses;
   using Result = crosapi::mojom::GetNetworkDetailsResult;
   switch (result->which()) {
     case Result::Tag::kErrorMessage:
@@ -129,14 +130,18 @@ void AshSignalsDecorator::OnNetworkInfoRetrieved(
     case Result::Tag::kNetworkDetails:
       absl::optional<std::string> mac_address =
           result->get_network_details()->mac_address;
-      if (mac_address.has_value()) {
-        // `get_network_details()->mac_address` returns a std::string. On other
-        // platforms (Windows, Linux and Mac) there can be multiple mac
-        // addresses.
-        signals.Set(device_signals::names::kMacAddresses,
-                    ToListValue({mac_address.value()}));
+
+      // `get_network_details()->mac_address` returns a std::string. On other
+      // platforms (Windows, Linux and Mac) there can be multiple mac
+      // addresses.
+      if (mac_address) {
+        mac_addresses.push_back(mac_address.value());
       }
   }
+
+  // The mac addresses signal must always have a value, which can be an empty
+  // array.
+  signals.Set(device_signals::names::kMacAddresses, ToListValue(mac_addresses));
 
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
