@@ -330,6 +330,9 @@ class ManagePasswordsUIController
           password_manager::MovePasswordToAccountStoreHelper>>::iterator
           done_helper_it);
 
+  // Cancels current authentication and releases |biometric_authenticator_|.
+  void CancelAnyOngoingBiometricAuth();
+
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
 

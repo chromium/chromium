@@ -163,14 +163,20 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
     return are_passwords_revealed_in_opened_bubble_;
   }
 
-  MOCK_METHOD1(CreateAccountChooser,
-               AccountChooserPrompt*(CredentialManagerDialogController*));
-  MOCK_METHOD1(CreateAutoSigninPrompt,
-               AutoSigninFirstRunPrompt*(CredentialManagerDialogController*));
-  MOCK_METHOD1(CreateCredentialLeakPrompt,
-               CredentialLeakPrompt*(CredentialLeakDialogController*));
-  MOCK_CONST_METHOD0(HasBrowserWindow, bool());
-  MOCK_METHOD0(OnUpdateBubbleAndIconVisibility, void());
+  MOCK_METHOD(AccountChooserPrompt*,
+              CreateAccountChooser,
+              (CredentialManagerDialogController*),
+              (override));
+  MOCK_METHOD(AutoSigninFirstRunPrompt*,
+              CreateAutoSigninPrompt,
+              (CredentialManagerDialogController*),
+              (override));
+  MOCK_METHOD(CredentialLeakPrompt*,
+              CreateCredentialLeakPrompt,
+              (CredentialLeakDialogController*),
+              (override));
+  MOCK_METHOD(bool, HasBrowserWindow, (), (override, const));
+  MOCK_METHOD(void, OnUpdateBubbleAndIconVisibility, (), ());
 
  private:
   void UpdateBubbleAndIconVisibility() override;
@@ -1889,6 +1895,33 @@ TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       AuthenticateWithMessageTwiceCancelsFirstCall) {
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+
+  EXPECT_CALL(*mock_authenticator.get(), Cancel);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+}
+
+TEST_F(ManagePasswordsUIControllerTest, AuthenticationCancledOnPageChange) {
+  base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
+  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  client().SetAuthenticator(mock_authenticator);
+  EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
+  controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
+
+  EXPECT_CALL(*mock_authenticator.get(), Cancel);
+
+  static_cast<content::WebContentsObserver*>(controller())
+      ->PrimaryPageChanged(controller()->GetWebContents()->GetPrimaryPage());
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

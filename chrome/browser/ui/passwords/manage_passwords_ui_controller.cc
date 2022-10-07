@@ -735,6 +735,7 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
       base::BindOnce(&ManagePasswordsUIController::OnReauthCompleted,
                      weak_ptr_factory_.GetWeakPtr());
 
+  CancelAnyOngoingBiometricAuth();
   biometric_authenticator_ =
       passwords_data_.client()->GetBiometricAuthenticator();
   biometric_authenticator_->AuthenticateWithMessage(
@@ -828,6 +829,8 @@ bool ManagePasswordsUIController::HasBrowserWindow() const {
 }
 
 void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
+  CancelAnyOngoingBiometricAuth();
+
   // Keep the state if the bubble is currently open or the fallback for saving
   // should be still available.
   if (IsShowingBubble() || save_fallback_timer_.IsRunning()) {
@@ -1028,6 +1031,14 @@ void ManagePasswordsUIController::
 }
 
 void ManagePasswordsUIController::OnReauthCompleted() {
+  biometric_authenticator_.reset();
+}
+
+void ManagePasswordsUIController::CancelAnyOngoingBiometricAuth() {
+  if (!biometric_authenticator_)
+    return;
+  biometric_authenticator_->Cancel(
+      device_reauth::BiometricAuthRequester::kTouchToFill);
   biometric_authenticator_.reset();
 }
 
