@@ -459,6 +459,10 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
+  'cros_components_revision': 'a0979aacb8744f42ed7abd966a6b0ac7578a73e9',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling feed
+  # and whatever else without interference from each other.
   'resultdb_version': 'git_revision:6cc18e2763e180929d70c786b419c1f8e6bcc66c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
@@ -1470,6 +1474,9 @@ deps = {
 
   'src/third_party/ukey2/src':
     Var('chromium_git') + '/external/github.com/google/ukey2.git' + '@' + Var('ukey2_revision'),
+
+  'src/third_party/cros_components':
+    Var('chromium_git') + '/external/google3/cros_components.git' + '@' + Var('cros_components_revision'),
 
   # Userspace interface to kernel DRM services.
   'src/third_party/libdrm/src': {
