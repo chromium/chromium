@@ -124,12 +124,13 @@ def start_system_log(log_manager: LogManager,
             symbolize_cmd.extend(['--ids-txt', symbol_path])
         log_manager.add_log_process(
             run_continuous_ffx_command(symbolize_cmd,
+                                       target_id,
                                        stdin=log_proc.stdout,
                                        stdout=system_log,
                                        stderr=subprocess.STDOUT))
     else:
         log_manager.add_log_process(
-            run_continuous_ffx_command(log_cmd, stdout=system_log))
+            run_continuous_ffx_command(log_cmd, target_id, stdout=system_log))
 
 
 def main():
