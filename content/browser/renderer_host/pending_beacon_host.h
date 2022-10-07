@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,18 +53,23 @@ class PendingBeaconService;
 //       according to individual PendingBeacon's backgroundTimeout property.
 //    C. When the individual PendingBeacon's timer of timeout property expires.
 //
-// 2. From browser. PendingBeaconHost can trigger the sending of beacons:
+// 2. From browser. PendingBeaconHost can trigger the sending of beacons by
+//    itself:
 //    A. When the associated document is discarded or deleted, PendingBeaconHost
 //       sends out all queued beacons from its destructor.
-//    B. TODO(crbug.com/1293679): When the associated document's renderer
-//       process crashes, PendingBeaconHost sends out all queued beacon after
-//       being notified by RenderProcessHostDestroyed.
+//    B. When the associated document's renderer process crashes,
+//       RenderFrameHost becomes non-live and its DocumentUserData won't be
+//       cleared immediately, i.e. `DeleteForCurrentDocument()` and destructor
+//       won't be called, so queued beacons won't be sent there.
+//       Instead, PendingBeaconHost sends them out on being notified by
+//       `RenderProcessExited()`.
 //    C. When the associated document enters `pagehide` state, i.e. the user has
 //       navigated away from the document, PendingBeaconHost sends out all
 //       queued beacons.
 class CONTENT_EXPORT PendingBeaconHost
     : public blink::mojom::PendingBeaconHost,
-      public DocumentUserData<PendingBeaconHost> {
+      public DocumentUserData<PendingBeaconHost>,
+      public RenderProcessHostObserver {
  public:
   ~PendingBeaconHost() override;
   PendingBeaconHost(const PendingBeaconHost&) = delete;
@@ -94,6 +100,13 @@ class CONTENT_EXPORT PendingBeaconHost
   //
   // https://github.com/WICG/unload-beacon/issues/30
   void SendAllOnNavigation();
+
+  // `RenderProcessHostObserver` implementation.
+  // Sends out all queued beacons when renderer process crashes or exits.
+  // See `PendingBeaconHost` 2-B for more details.
+  void RenderProcessExited(RenderProcessHost*,
+                           const ChildProcessTerminationInfo&) override;
+  void RenderProcessHostDestroyed(RenderProcessHost*) override;
 
  private:
   friend class DocumentUserData<PendingBeaconHost>;

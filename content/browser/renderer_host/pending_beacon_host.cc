@@ -11,10 +11,10 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -56,6 +56,8 @@ PendingBeaconHost::PendingBeaconHost(
       service_(service) {
   DCHECK(shared_url_factory_);
   DCHECK(service_);
+
+  render_frame_host().GetProcess()->AddObserver(this);
 }
 
 void PendingBeaconHost::CreateBeacon(
@@ -69,6 +71,11 @@ void PendingBeaconHost::CreateBeacon(
 
 PendingBeaconHost::~PendingBeaconHost() {
   // The blink::Document is about to destroy.
+  if (IsInObserverList()) {
+    render_frame_host().GetProcess()->RemoveObserver(this);
+  }
+  CHECK(!IsInObserverList());
+
   // Checks if it has Background Sync granted before sending out the rest of
   // beacons.
   // https://github.com/WICG/unload-beacon#privacy
@@ -134,6 +141,17 @@ void PendingBeaconHost::SendAllOnNavigation() {
 
   // Now all beacons are gone.
   // The renderer-side beacons should update their pending states by themselves.
+}
+
+void PendingBeaconHost::RenderProcessExited(
+    RenderProcessHost*,
+    const ChildProcessTerminationInfo&) {
+  std::vector<std::unique_ptr<Beacon>> to_send;
+  to_send.swap(beacons_);
+  Send(to_send);
+}
+void PendingBeaconHost::RenderProcessHostDestroyed(RenderProcessHost*) {
+  render_frame_host().GetProcess()->RemoveObserver(this);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PendingBeaconHost);

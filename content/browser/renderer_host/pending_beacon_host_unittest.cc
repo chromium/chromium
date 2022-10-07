@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/pending_beacon_service.h"
+#include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -291,6 +292,20 @@ TEST_P(PendingBeaconHostTest, SendOnNavigation) {
 
   // Simulates sends on pagehide.
   host()->SendAllOnNavigation();
+
+  ExpectTotalNetworkRequests(FROM_HERE, total);
+}
+
+TEST_P(PendingBeaconHostTest, SendOnProcessExit) {
+  const std::string method = GetParam();
+  const size_t total = 5;
+
+  // Creates 5 beacons on the page.
+  auto beacons = CreateBeacons(total, method);
+
+  // Simulates sending on process exits.
+  ChildProcessTerminationInfo termination_info;
+  host()->RenderProcessExited(main_rfh()->GetProcess(), termination_info);
 
   ExpectTotalNetworkRequests(FROM_HERE, total);
 }
