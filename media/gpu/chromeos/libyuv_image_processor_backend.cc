@@ -423,8 +423,20 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 
       case PIXEL_FORMAT_NV12:
         // MM21 mode.
-        if (input_config_.fourcc == Fourcc(Fourcc::MM21))
-          return LIBYUV_FUNC(MM21ToNV12, Y_UV_DATA(input), Y_UV_DATA_W(output));
+        if (input_config_.fourcc == Fourcc(Fourcc::MM21)) {
+          // The X and Y of the input rectangle seem to have a more complicated
+          // relationship with the channel offsets. This is what we have managed
+          // to figure out. (b/248991039)
+          const int luma_offset =
+              input->visible_rect().x() * (input->visible_rect().y() - 1);
+          const int chroma_offset = luma_offset / 2 - input->visible_rect().y();
+          return libyuv::MM21ToNV12(
+              input->visible_data(VideoFrame::kYPlane) + luma_offset,
+              input->stride(VideoFrame::kYPlane),
+              input->visible_data(VideoFrame::kUVPlane) + chroma_offset,
+              input->stride(VideoFrame::kUVPlane), Y_UV_DATA_W(output),
+              output->visible_rect().width(), output->visible_rect().height());
+        }
 
         // Rotation mode.
         if (relative_rotation_ != VIDEO_ROTATION_0) {
