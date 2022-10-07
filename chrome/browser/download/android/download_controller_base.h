@@ -37,7 +37,7 @@ struct DownloadInfo {
                const std::string& original_mime_type,
                const std::string& user_agent,
                const std::string& cookie,
-               const std::string& referer);
+               const GURL& referer);
   ~DownloadInfo();
 
   // The URL from which we are downloading. This is the final URL after any
@@ -49,7 +49,7 @@ struct DownloadInfo {
   std::string original_mime_type;
   std::string user_agent;
   std::string cookie;
-  std::string referer;
+  GURL referer;
 };
 
 // Interface to request GET downloads and send notifications for POST

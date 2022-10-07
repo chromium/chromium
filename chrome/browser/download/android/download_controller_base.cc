@@ -32,7 +32,7 @@ DownloadInfo::DownloadInfo(const GURL& url,
                            const std::string& original_mime_type,
                            const std::string& user_agent,
                            const std::string& cookie,
-                           const std::string& referer)
+                           const GURL& referer)
     : url(url),
       original_url(original_url),
       content_disposition(content_disposition),
