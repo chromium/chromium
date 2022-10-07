@@ -33,8 +33,7 @@
   },
   {
     "name": "highdpi",
-    "args": ["--force-device-scale-factor=1.5"],
-    "smoke_file": "SmokeTests/highdpi"
+    "args": ["--force-device-scale-factor=1.5"]
   },
   {
     "name": "skia-vulkan-swiftshader",

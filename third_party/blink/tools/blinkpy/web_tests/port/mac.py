@@ -112,15 +112,11 @@ class MacPort(base.Port):
 
     def default_smoke_test_only(self):
         # only run platform specific tests on older mac versions
-        if self._version in {'mac10.13', 'mac10.14'}:
-            return True
-        return super().default_smoke_test_only()
+        return self._version in {'mac10.13', 'mac10.14'}
 
     def path_to_smoke_tests_file(self):
-        if self._version in {'mac10.13', 'mac10.14'}:
-            return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
-                                         'Mac.txt')
-        return super().path_to_smoke_tests_file()
+        return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
+                                     'Mac.txt')
 
     def _path_to_driver(self, target=None):
         return self._build_path_with_target(target,
