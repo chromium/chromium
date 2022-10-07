@@ -43,6 +43,35 @@ enum class UnifiedPasswordManagerActiveStatus {
   kMaxValue = kInactiveUnenrolledDueToErrors
 };
 
+// This enum is used in the JobReturnHandler for tracking the store operation
+// that started the job so that the correct operation can be retried when the
+// job encountered an error.
+enum class PasswordStoreOperation {
+  // Operations that are safe to retry because they are non-modifying and not
+  // visible to the user.
+  kGetAllLoginsAsync = 0,
+  kGetAutofillableLoginsAsync = 1,
+
+  // Operation is only used from the migration and should not be retried.
+  kGetAllLoginsForAccountAsync = 2,
+
+  // Operation that is non-modifying, but not safe to retry because it is
+  // user-visible.
+  kFillMatchingLoginsAsync = 3,
+
+  // Operations that are not safe to retry because they are modifying.
+  kAddLoginAsync = 4,
+  kUpdateLoginAsync = 5,
+  kRemoveLoginForAccount = 6,
+  kRemoveLoginAsync = 7,
+  kRemoveLoginsByURLAndTimeAsync = 8,
+  kRemoveLoginsCreatedBetweenAsync = 9,
+  kDisableAutoSignInForOriginsAsync = 10,
+  kClearAllLocalPasswords = 11,
+
+  kMaxValue = kClearAllLocalPasswords
+};
+
 // Android-specific password store backend that delegates every request to
 // Google Mobile Service.
 // It uses a `PasswordStoreAndroidBackendBridge` to send API requests for each
@@ -69,18 +98,28 @@ class PasswordStoreAndroidBackend
 
   class ClearAllLocalPasswordsMetricRecorder;
 
-  // Wraps the handler for an asynchronous job (if successful) and invokes the
-  // supplied metrics recorded upon completion. An object of this type shall be
-  // created and stored in |request_for_job_| once an asynchronous begins, and
-  // destroyed once the job is finished.
+  // Wraps the handler for an asynchronous job (if successful or scheduled to be
+  // retried) and invokes the supplied metrics recorded upon completion. An
+  // object of this type shall be created and stored in |request_for_job_| once
+  // an asynchronous task begins, and destroyed once the job is finished.
+  // The handler stores an |operation| which determines whether the method
+  // matching the |operation| can be retried due to an error. The operations are
+  // retried with exponential backoff. The |delay| with which the job was
+  // started is stored in the handler so that the next retry of the job can
+  // increase the |delay|. NOTE: Currently only retries for operations which
+  // match 1-to-1 to methods are supported.
   class JobReturnHandler {
    public:
     using ErrorReply = base::OnceClosure;
 
     JobReturnHandler(LoginsOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder,
+                     base::TimeDelta delay,
+                     PasswordStoreOperation operation);
     JobReturnHandler(PasswordChangesOrErrorReply callback,
-                     PasswordStoreBackendMetricsRecorder metrics_recorder);
+                     PasswordStoreBackendMetricsRecorder metrics_recorder,
+                     base::TimeDelta delay,
+                     PasswordStoreOperation operation);
     JobReturnHandler(JobReturnHandler&&);
     JobReturnHandler& operator=(JobReturnHandler&&) = delete;
     ~JobReturnHandler();
@@ -98,10 +137,15 @@ class PasswordStoreAndroidBackend
     void RecordMetrics(absl::optional<AndroidBackendError> error) const;
     base::TimeDelta GetElapsedTimeSinceStart() const;
 
+    base::TimeDelta GetDelay();
+    PasswordStoreOperation GetOperation();
+
    private:
     absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
+    base::TimeDelta delay_;
+    PasswordStoreOperation operation_;
   };
 
   using JobId = PasswordStoreAndroidBackendBridge::JobId;
@@ -149,6 +193,43 @@ class PasswordStoreAndroidBackend
   void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
+  // Internal method used for implementing the GetAutofillableLoginsAsync method
+  // from the PasswordStoreBackend interface. |operation| is the
+  // PasswordStoreOperation that invoked this method and |delay| is the amount
+  // of time by which the call to this method was delayed. Calls
+  // GetAutofillableLogins from the PasswordStoreAndroidBackendBridge.
+  void GetAutofillableLoginsAsyncInternal(LoginsOrErrorReply callback,
+                                          PasswordStoreOperation operation,
+                                          base::TimeDelta delay);
+
+  // Internal method used for implementing the methods from the
+  // PasswordStoreBackend interface. |operation| is the PasswordStoreOperation
+  // that invoked this method and |delay| is the amount of time by which the
+  // call to this method was delayed. Returns the complete list of PasswordForms
+  // (regardless of their blocklist status) for |account| with a |delay|.
+  void GetAllLoginsForAccountInternal(
+      PasswordStoreAndroidBackendBridge::Account account,
+      LoginsOrErrorReply callback,
+      PasswordStoreOperation operation,
+      base::TimeDelta delay);
+
+  // Removes |form| from |account|.
+  // |operation| is the PasswordStoreOperation  that invoked this method and
+  // |delay| is the amount of time by which the call to this method was delayed.
+  void RemoveLoginForAccountInternal(
+      const PasswordForm& form,
+      PasswordStoreAndroidBackendBridge::Account account,
+      PasswordChangesOrErrorReply callback,
+      PasswordStoreOperation operation,
+      base::TimeDelta delay);
+
+  // Implements the retry mechanism for the operations that are safe to retry.
+  // The given |delay| comes from the previous attempt to run the operation.
+  // The delay before the next retry will be double the value of |delay|,
+  // except for the first retry that has a delay of 1 second.
+  void RetryOperation(base::OnceCallback<void(base::TimeDelta)> callback,
+                      base::TimeDelta delay);
+
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
                             std::vector<PasswordForm> passwords) override;
@@ -158,21 +239,35 @@ class PasswordStoreAndroidBackend
                AndroidBackendError error) override;
 
   template <typename Callback>
-  void QueueNewJob(JobId job_id, Callback callback, MetricInfix metric_infix);
+  // Calling this method can be delayed in the case when a retry is scheduled.
+  // Since the retry logic implements exponential backoff the duration of the
+  // |delay| is passed to QueueNewJob from its caller such that the |delay| can
+  // be stored in the JobReturnHandler and retrievable from it. QueueNewJob
+  // doesn't introduce any delay.
+  void QueueNewJob(JobId job_id,
+                   Callback callback,
+                   MetricInfix metric_infix,
+                   PasswordStoreOperation operation,
+                   base::TimeDelta delay);
   absl::optional<JobReturnHandler> GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
   void GetLoginsAsync(const PasswordFormDigest& form,
                       bool include_psl,
-                      LoginsOrErrorReply callback);
+                      LoginsOrErrorReply callback,
+                      PasswordStoreOperation operation);
 
   // Filters |logins| created between |delete_begin| and |delete_end| time
   // that match |url_filer| and asynchronously removes them.
+  // |operation| is the PasswordStoreOperation  that invoked this method and
+  // |delay| is the amount of time by which the call to this method was delayed.
   void FilterAndRemoveLogins(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       PasswordChangesOrErrorReply reply,
+      PasswordStoreOperation operation,
+      base::TimeDelta delay,
       LoginsResultOrError result);
 
   // Filters logins that match |origin_filer| and asynchronously disables
