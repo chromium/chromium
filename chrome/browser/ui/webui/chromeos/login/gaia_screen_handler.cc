@@ -228,14 +228,14 @@ std::string GetChromeType() {
   }
 }
 
-void UpdateAuthParams(base::Value* params) {
+void UpdateAuthParams(base::Value::Dict& params) {
   CrosSettings* cros_settings = CrosSettings::Get();
   bool allow_new_user = true;
   cros_settings->GetBoolean(kAccountsPrefAllowNewUser, &allow_new_user);
 
   // nosignup flow if new users are not allowed.
   if (!allow_new_user)
-    params->SetStringKey("flow", "nosignup");
+    params.Set("flow", "nosignup");
 }
 
 bool ShouldCheckUserTypeBeforeAllowing() {
@@ -275,25 +275,22 @@ PinDialogManager* GetLoginScreenPinDialogManager() {
   return certificate_provider_service->pin_dialog_manager();
 }
 
-base::Value MakeSecurityTokenPinDialogParameters(
+base::Value::Dict MakeSecurityTokenPinDialogParameters(
     bool enable_user_input,
     security_token_pin::ErrorLabel error_label,
     int attempts_left) {
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
 
-  params.SetBoolKey("enableUserInput", enable_user_input);
-  params.SetBoolKey("hasError",
-                    error_label != security_token_pin::ErrorLabel::kNone);
-  params.SetStringKey(
-      "formattedError",
-      GenerateErrorMessage(error_label, attempts_left, enable_user_input));
+  params.Set("enableUserInput", enable_user_input);
+  params.Set("hasError", error_label != security_token_pin::ErrorLabel::kNone);
+  params.Set("formattedError", GenerateErrorMessage(error_label, attempts_left,
+                                                    enable_user_input));
   if (attempts_left == -1) {
-    params.SetStringKey("formattedAttemptsLeft", std::u16string());
+    params.Set("formattedAttemptsLeft", std::u16string());
   } else {
-    params.SetStringKey(
-        "formattedAttemptsLeft",
-        GenerateErrorMessage(security_token_pin::ErrorLabel::kNone,
-                             attempts_left, true));
+    params.Set("formattedAttemptsLeft",
+               GenerateErrorMessage(security_token_pin::ErrorLabel::kNone,
+                                    attempts_left, true));
   }
   return params;
 }
@@ -407,27 +404,27 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     const std::string& partition_name,
     const std::string* platform_version,
     const bool* collect_stats_consent) {
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
 
   // TODO(https://crbug.com/1338102): Looks like `forceReload` isn't used
   //                                  anywhere further. Remove?
-  params.SetBoolKey("forceReload", context.force_reload);
-  params.SetStringKey("gaiaId", context.gaia_id);
-  params.SetBoolKey("readOnlyEmail", true);
-  params.SetStringKey("email", context.email);
+  params.Set("forceReload", context.force_reload);
+  params.Set("gaiaId", context.gaia_id);
+  params.Set("readOnlyEmail", true);
+  params.Set("email", context.email);
 
-  UpdateAuthParams(&params);
+  UpdateAuthParams(params);
 
   screen_mode_ = GetGaiaScreenMode(context.email);
-  params.SetIntKey("screenMode", screen_mode_);
+  params.Set("screenMode", screen_mode_);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
-    params.SetStringKey("hl", app_locale);
+    params.Set("hl", app_locale);
 
   std::string realm(GetRealm());
   if (!realm.empty()) {
-    params.SetStringKey("realm", realm);
+    params.Set("realm", realm);
   }
 
   const std::string enterprise_enrollment_domain(
@@ -436,22 +433,20 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const std::string sso_profile(GetSSOProfile());
 
   if (!enterprise_enrollment_domain.empty()) {
-    params.SetStringKey("enterpriseEnrollmentDomain",
-                        enterprise_enrollment_domain);
+    params.Set("enterpriseEnrollmentDomain", enterprise_enrollment_domain);
   }
   if (!sso_profile.empty()) {
-    params.SetStringKey("ssoProfile", sso_profile);
+    params.Set("ssoProfile", sso_profile);
   }
   if (!enterprise_domain_manager.empty()) {
-    params.SetStringKey("enterpriseDomainManager", enterprise_domain_manager);
+    params.Set("enterpriseDomainManager", enterprise_domain_manager);
   }
-  params.SetBoolKey("enterpriseManagedDevice",
-                    g_browser_process->platform_part()
-                        ->browser_policy_connector_ash()
-                        ->IsDeviceEnterpriseManaged());
+  params.Set("enterpriseManagedDevice", g_browser_process->platform_part()
+                                            ->browser_policy_connector_ash()
+                                            ->IsDeviceEnterpriseManaged());
   const AccountId& owner_account_id =
       user_manager::UserManager::Get()->GetOwnerAccountId();
-  params.SetBoolKey("hasDeviceOwner", owner_account_id.is_valid());
+  params.Set("hasDeviceOwner", owner_account_id.is_valid());
   if (owner_account_id.is_valid() &&
       !::features::IsParentAccessCodeForOnlineLoginEnabled()) {
     // Some Autotest policy tests appear to wipe the user list in Local State
@@ -460,50 +455,47 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         user_manager::UserManager::Get()->FindUser(owner_account_id);
     if (owner_user &&
         owner_user->GetType() == user_manager::UserType::USER_TYPE_CHILD) {
-      params.SetStringKey("obfuscatedOwnerId", owner_account_id.GetGaiaId());
+      params.Set("obfuscatedOwnerId", owner_account_id.GetGaiaId());
     }
   }
 
-  params.SetStringKey("chromeType", GetChromeType());
-  params.SetStringKey("clientId",
-                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetStringKey("clientVersion", version_info::GetVersionNumber());
+  params.Set("chromeType", GetChromeType());
+  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.Set("clientVersion", version_info::GetVersionNumber());
   if (!platform_version->empty())
-    params.SetStringKey("platformVersion", *platform_version);
+    params.Set("platformVersion", *platform_version);
   // Extended stable channel is not supported on Chrome OS Ash.
-  params.SetStringKey("releaseChannel", chrome::GetChannelName(
-                                            chrome::WithExtendedStable(false)));
-  params.SetStringKey("endpointGen", kEndpointGen);
+  params.Set("releaseChannel",
+             chrome::GetChannelName(chrome::WithExtendedStable(false)));
+  params.Set("endpointGen", kEndpointGen);
 
   std::string email_domain;
   if (CrosSettings::Get()->GetString(kAccountsPrefLoginScreenDomainAutoComplete,
                                      &email_domain) &&
       !email_domain.empty()) {
-    params.SetStringKey("emailDomain", email_domain);
+    params.Set("emailDomain", email_domain);
   }
 
-  params.SetStringKey("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
   switch (gaia_path_) {
     case GaiaPath::kDefault:
       // Use the default gaia signin path embedded/setup/v2/chromeos which is
       // set in authenticator.js
       break;
     case GaiaPath::kChildSignup:
-      params.SetStringKey("gaiaPath",
-                          GaiaUrls::GetInstance()
-                              ->embedded_setup_chromeos_kid_signup_url()
-                              .path()
-                              .substr(1));
+      params.Set("gaiaPath", GaiaUrls::GetInstance()
+                                 ->embedded_setup_chromeos_kid_signup_url()
+                                 .path()
+                                 .substr(1));
       break;
     case GaiaPath::kChildSignin:
-      params.SetStringKey("gaiaPath",
-                          GaiaUrls::GetInstance()
-                              ->embedded_setup_chromeos_kid_signin_url()
-                              .path()
-                              .substr(1));
+      params.Set("gaiaPath", GaiaUrls::GetInstance()
+                                 ->embedded_setup_chromeos_kid_signin_url()
+                                 .path()
+                                 .substr(1));
       break;
     case GaiaPath::kReauth:
-      params.SetStringKey(
+      params.Set(
           "gaiaPath",
           GaiaUrls::GetInstance()->embedded_reauth_chromeos_url().path().substr(
               1));
@@ -513,25 +505,24 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   // We only send `chromeos_board` Gaia URL parameter if user has opted into
   // sending device statistics.
   if (*collect_stats_consent)
-    params.SetStringKey("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
+    params.Set("lsbReleaseBoard", base::SysInfo::GetLsbReleaseBoard());
 
-  params.SetStringKey("webviewPartitionName", partition_name);
+  params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.SetBoolKey("extractSamlPasswordAttributes",
-                    login::ExtractSamlPasswordAttributesEnabled());
+  params.Set("extractSamlPasswordAttributes",
+             login::ExtractSamlPasswordAttributesEnabled());
 
   if (public_saml_url_fetcher_) {
-    params.SetBoolKey("startsOnSamlPage", true);
+    params.Set("startsOnSamlPage", true);
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kPublicAccountsSamlAclUrl));
     std::string saml_acl_url =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kPublicAccountsSamlAclUrl);
-    params.SetStringKey("samlAclUrl", saml_acl_url);
+    params.Set("samlAclUrl", saml_acl_url);
     if (public_saml_url_fetcher_->FetchSucceeded()) {
-      params.SetStringKey("frameUrl",
-                          public_saml_url_fetcher_->GetRedirectUrl());
+      params.Set("frameUrl", public_saml_url_fetcher_->GetRedirectUrl());
     } else {
       LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
           SigninError::kFailedToFetchSamlRedirect, /*details=*/std::string());
@@ -550,8 +541,8 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     // Enable the new endpoint for supervised account for now. We might expand
     // it to other account type in the future.
     if (is_child_account) {
-      params.SetBoolKey("isSupervisedUser", is_child_account);
-      params.SetBoolKey(
+      params.Set("isSupervisedUser", is_child_account);
+      params.Set(
           "isDeviceOwner",
           account_id == user_manager::UserManager::Get()->GetOwnerAccountId());
     }
@@ -559,15 +550,15 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   if (ash::features::IsCryptohomeRecoveryFlowEnabled() &&
       !gaia_reauth_request_token_.empty()) {
-    params.SetStringKey("rart", gaia_reauth_request_token_);
+    params.Set("rart", gaia_reauth_request_token_);
   }
 
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->IsManagedPreference(
           ash::prefs::kUrlParameterToAutofillSAMLUsername)) {
-    params.SetStringKey("urlParameterToAutofillSAMLUsername",
-                        local_state->GetString(
-                            ash::prefs::kUrlParameterToAutofillSAMLUsername));
+    params.Set("urlParameterToAutofillSAMLUsername",
+               local_state->GetString(
+                   ash::prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
   was_security_token_pin_canceled_ = false;
@@ -1324,15 +1315,15 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
 }
 
 void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
-  base::DictionaryValue params;
-  params.SetBoolKey("enterpriseManaged", g_browser_process->platform_part()
-                                             ->browser_policy_connector_ash()
-                                             ->IsDeviceEnterpriseManaged());
+  base::Value::Dict params;
+  params.Set("enterpriseManaged", g_browser_process->platform_part()
+                                      ->browser_policy_connector_ash()
+                                      ->IsDeviceEnterpriseManaged());
 
   bool family_link_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
                                   &family_link_allowed);
-  params.SetBoolKey("familyLinkAllowed", family_link_allowed);
+  params.Set("familyLinkAllowed", family_link_allowed);
 
   CallExternalAPI("showAllowlistCheckFailedError", std::move(params));
 }
