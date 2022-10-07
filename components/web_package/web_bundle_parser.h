@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
-#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,14 +28,8 @@ class WebBundleParser : public mojom::WebBundleParser {
   class SharedBundleDataSource
       : public base::RefCounted<SharedBundleDataSource> {
    public:
-    class Observer {
+    class Observer : public base::CheckedObserver {
      public:
-      Observer() = default;
-
-      Observer(const Observer&) = delete;
-      Observer& operator=(const Observer&) = delete;
-
-      virtual ~Observer() = default;
       virtual void OnDisconnect() = 0;
     };
 
@@ -65,7 +59,7 @@ class WebBundleParser : public mojom::WebBundleParser {
     void OnDisconnect();
 
     mojo::Remote<mojom::BundleDataSource> data_source_;
-    base::flat_set<Observer*> observers_;
+    base::ObserverList<Observer> observers_;
   };
 
  private:

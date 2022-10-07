@@ -1142,15 +1142,12 @@ WebBundleParser::SharedBundleDataSource::SharedBundleDataSource(
 }
 
 void WebBundleParser::SharedBundleDataSource::AddObserver(Observer* observer) {
-  DCHECK(observers_.end() == observers_.find(observer));
-  observers_.insert(observer);
+  observers_.AddObserver(observer);
 }
 
 void WebBundleParser::SharedBundleDataSource::RemoveObserver(
     Observer* observer) {
-  auto it = observers_.find(observer);
-  DCHECK(observers_.end() != it);
-  observers_.erase(it);
+  observers_.RemoveObserver(observer);
 }
 
 WebBundleParser::SharedBundleDataSource::~SharedBundleDataSource() = default;
@@ -1159,8 +1156,8 @@ void WebBundleParser::SharedBundleDataSource::OnDisconnect() {
   // |observer->OnDisconnect()| below may remove the last external reference to
   // |this|.
   scoped_refptr<SharedBundleDataSource> keep_alive(this);
-  for (auto* observer : observers_)
-    observer->OnDisconnect();
+  for (Observer& observer : observers_)
+    observer.OnDisconnect();
 }
 
 void WebBundleParser::SharedBundleDataSource::Read(
