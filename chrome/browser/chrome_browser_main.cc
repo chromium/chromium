@@ -504,7 +504,8 @@ bool ShouldInstallSodaDuringPostProfileInit(
 // ChromeBrowserMainParts::ProfileInitManager ----------------------------------
 
 // Runs `CallPostProfileInit()` on all existing and future profiles, the
-// initial profile is processed first.
+// initial profile is processed first. The initial profile is nullptr when the
+// profile picker is shown.
 class ChromeBrowserMainParts::ProfileInitManager
     : public ProfileManagerObserver {
  public:
@@ -530,7 +531,9 @@ ChromeBrowserMainParts::ProfileInitManager::ProfileInitManager(
     ChromeBrowserMainParts* browser_main,
     Profile* initial_profile)
     : browser_main_(browser_main) {
-  browser_main_->CallPostProfileInit(initial_profile);
+  // `initial_profile` is null when the profile picker is shown.
+  if (initial_profile)
+    browser_main_->CallPostProfileInit(initial_profile);
 
   if (base::FeatureList::IsEnabled(features::kObserverBasedPostProfileInit)) {
     // Run `CallPostProfileInit()` on the other existing and future profiles.
@@ -1586,7 +1589,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   StartupProfileInfo profile_info = CreateInitialProfile(
       /*cur_dir=*/base::FilePath(), *base::CommandLine::ForCurrentProcess());
 
-  Profile* profile = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
 
@@ -1639,6 +1641,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 
+  // `profile` may be nullptr if the profile picker is shown.
+  Profile* profile = profile_info.profile;
   // Call `PostProfileInit()`and set it up for profiles created later.
   profile_init_manager_ = std::make_unique<ProfileInitManager>(this, profile);
 
@@ -1647,7 +1651,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // and preferences have been registered since some of the import code depends
   // on preferences.
   if (first_run::IsChromeFirstRun()) {
-    first_run::AutoImport(profile, master_prefs_->import_bookmarks_path);
+    // `profile` may be nullptr even on first run, for example when the
+    // "BrowserSignin" policy is set to "Force". If so, skip the auto import.
+    if (profile) {
+      first_run::AutoImport(profile, master_prefs_->import_bookmarks_path);
+    }
 
     // Note: This can pop-up the first run consent dialog on Linux & Mac.
     first_run::DoPostImportTasks(master_prefs_->make_chrome_default_for_user);
@@ -1739,11 +1747,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     variations_service->PerformPreMainMessageLoopStartup();
 
 #if BUILDFLAG(IS_ANDROID)
+  // The profile picker is never shown on Android.
   DCHECK_EQ(profile_info.mode, StartupProfileMode::kBrowserWindow);
+  DCHECK(profile);
   // Just initialize the policy prefs service here. Variations seed fetching
   // will be initialized when the app enters foreground mode.
   variations_service->set_policy_pref_service(profile->GetPrefs());
-
 #else
   // We are in regular browser boot sequence. Open initial tabs and enter the
   // main message loop.

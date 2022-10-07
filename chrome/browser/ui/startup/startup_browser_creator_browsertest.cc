@@ -4024,6 +4024,12 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, TestSetup) {
   } else {
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   }
+
+  // No Guest profile was created.
+  for (const Profile* profile :
+       g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    EXPECT_FALSE(profile->IsGuestSession());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

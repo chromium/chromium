@@ -103,11 +103,8 @@ const MultiProfileStartupTestParam kTestParams[] = {
           {HasBaseName(kOtherProfileDirPath), false}}},
     {.should_enable_profile_observer = true,
      .should_show_profile_picker = true,
-     // TODO(https://crbug.com/1150326): The first call with guest profile
-     // should be skipped.
      .expected_post_profile_init_call_args = {
-         {Property(&Profile::IsGuestSession, true), true},
-         {HasBaseName(chrome::kInitialProfile), false},
+         {HasBaseName(chrome::kInitialProfile), true},
          {HasBaseName(kOtherProfileDirPath), false}}}};
 
 // Creates a new profile to be picked up on the actual test.
