@@ -572,8 +572,8 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
                   frame_header.buffer_removal_time);
   v4l2_frame_params.refresh_frame_flags = frame_header.refresh_frame_flags;
 
-  // TODO(b/248602457): enable code for |reference_frame_index| after
-  // frame_number() is implemented for |ref_frames|.
+  // TODO(b/248602457): Enable code for |order_hints| setup
+  // after |ref_order_hint| maintenance is implemented.
 
   // These params looks duplicated with |ref_frame_idx|, but they are required
   // and used when |frame_refs_short_signaling| is set according to the AV1
@@ -583,8 +583,13 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   v4l2_frame_params.gold_frame_idx =
       frame_header.reference_frame_index[libgav1::kReferenceFrameGolden];
 
-  // TODO(b/248602457): enable code for |reference_frame_index| after
-  // frame_number() is implemented for |ref_frames|.
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
+    const auto* v4l2_ref_pic =
+        static_cast<const V4L2AV1Picture*>(ref_frames[i].get());
+
+    v4l2_frame_params.reference_frame_ts[i] =
+        v4l2_ref_pic->dec_surface()->GetReferenceID();
+  }
 
   static_assert(std::size(decltype(v4l2_frame_params.ref_frame_idx){}) ==
                     libgav1::kNumInterReferenceFrameTypes,
