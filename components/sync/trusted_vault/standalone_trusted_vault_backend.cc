@@ -662,6 +662,10 @@ bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
   return pending_trusted_recovery_method_.has_value();
 }
 
+bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottledForTesting() {
+  return AreConnectionRequestsThrottled();
+}
+
 absl::optional<TrustedVaultDeviceRegistrationStateForUMA>
 StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // TODO(crbug.com/1102340): in case of transient failure this function is
@@ -906,7 +910,6 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     case TrustedVaultDownloadKeysStatus::kMembershipNotFound:
     case TrustedVaultDownloadKeysStatus::kMembershipCorrupted:
     case TrustedVaultDownloadKeysStatus::kMembershipEmpty:
-    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
     case TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed: {
       // Unable to download new keys due to known protocol errors. The only way
       // to go out of these states is to receive new vault keys through external
@@ -920,6 +923,13 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       WriteToDisk(data_, file_path_);
       break;
     }
+    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
+      // The registration itself exists, but there's no additional keys to
+      // download. This is bad because key download attempts are triggered for
+      // the case where local keys have been marked as stale, which means the
+      // user is likely in an unrecoverable state.
+      RecordFailedConnectionRequestForThrottling();
+      break;
     case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
       // Request wasn't sent to the server, so there is no need for throttling.
       break;

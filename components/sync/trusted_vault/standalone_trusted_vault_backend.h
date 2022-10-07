@@ -134,6 +134,8 @@ class StandaloneTrustedVaultBackend
 
   bool HasPendingTrustedRecoveryMethodForTesting() const;
 
+  bool AreConnectionRequestsThrottledForTesting();
+
  private:
   friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
 

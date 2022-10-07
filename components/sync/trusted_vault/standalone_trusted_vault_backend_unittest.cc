@@ -1170,6 +1170,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       "Sync.TrustedVaultDownloadKeysStatus",
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kOtherError,
       /*expected_bucket_count=*/1);
+  EXPECT_TRUE(backend()->AreConnectionRequestsThrottledForTesting());
 
   download_keys_callback = TrustedVaultConnection::DownloadNewKeysCallback();
   EXPECT_CALL(*connection(), DownloadNewKeys).Times(0);
@@ -1180,10 +1181,61 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Advance time to pass the throttling duration and trigger another attempt.
   clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
+  EXPECT_FALSE(backend()->AreConnectionRequestsThrottledForTesting());
 
   EXPECT_CALL(*connection(), DownloadNewKeys);
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
   EXPECT_FALSE(download_keys_callback.is_null());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldThrottleIfDownloadingReturnedNoNewKeys) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  std::vector<uint8_t> private_device_key_material =
+      StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                          kInitialLastKeyVersion, account_info);
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadNewKeys)
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              const absl::optional<TrustedVaultKeyAndVersion>&,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), DownloadNewKeys);
+
+  // FetchKeys() should trigger keys downloading.
+  backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());
+  ASSERT_FALSE(download_keys_callback.is_null());
+  Mock::VerifyAndClearExpectations(connection());
+
+  // Mimic the server having no new keys.
+  base::HistogramTester histogram_tester;
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kNoNewKeys,
+           /*keys=*/std::vector<std::vector<uint8_t>>(),
+           /*last_key_version=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
+      /*expected_bucket_count=*/1);
+
+  EXPECT_TRUE(backend()->AreConnectionRequestsThrottledForTesting());
+
+  // Registration should remain intact.
+  EXPECT_TRUE(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered());
 }
 
 // Tests silent device registration (when no vault keys available yet). After
