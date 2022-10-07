@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRIVACY_BUDGET_INSPECTABLE_IDENTIFIABILITY_STUDY_STATE_H_
 
 #include "base/containers/flat_set.h"
+#include "chrome/browser/privacy_budget/identifiability_study_group_settings.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/representative_surface_set.h"
 #include "chrome/browser/privacy_budget/surface_set_valuation.h"
@@ -32,7 +33,9 @@ class InspectableIdentifiabilityStudyState : public IdentifiabilityStudyState {
   }
   int active_surface_budget() const { return active_surface_budget_; }
   int selected_block_offset() const { return selected_block_offset_; }
-  bool IsUsingAssignedBlockSampling() const;
+  const IdentifiabilityStudyGroupSettings& group_settings() const {
+    return settings_;
+  }
 
   void SelectAllOffsetsForTesting();
 

@@ -92,8 +92,12 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyBlockedTypes;
 extern const base::FeatureParam<int> kIdentifiabilityStudyExpectedSurfaceCount;
 
 // Surface types allowed in the random assignment. If the parameter is empty or
-// invalid all types can be sampled. This does not have any effect on meta
-// surfaces (type 7), which are sampled in any case.
+// invalid all types can be sampled.
+
+// This does not have any effect on meta surfaces (type 7), nor on reserved
+// surfaces (type 0), which are sampled in any case. In particular, enabling
+// random sampling and setting this parameter to "0" is a valid way to only
+// enable the meta surfaces experiment.
 //
 // Parameter name: "AllowedRandomTypes"
 // Parameter type: Comma separated list of decimal integers, each of which
