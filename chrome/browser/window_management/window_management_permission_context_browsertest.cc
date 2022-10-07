@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,7 +11,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -44,19 +42,14 @@ constexpr char kCheckPermission[] = R"(
   })();
 )";
 
-// Tests of WindowPlacementPermissionContext behavior.
-class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
+// Tests of WindowManagementPermissionContext behavior.
+class WindowManagementPermissionContextTest : public InProcessBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "WindowPlacement");
-  }
-
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Window placement features are only available on secure contexts, and so
+    // Window management features are only available on secure contexts, and so
     // we need to create an HTTPS test server here to serve those pages rather
     // than using the default embedded_test_server().
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
@@ -92,13 +85,13 @@ class WindowPlacementPermissionContextTest : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
-class MultiscreenWindowPlacementPermissionContextTest
-    : public WindowPlacementPermissionContextTest {
+class MultiscreenWindowManagementPermissionContextTest
+    : public WindowManagementPermissionContextTest {
  public:
   void SetScreenInstance() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Use the default, see SetUpOnMainThread.
-    WindowPlacementPermissionContextTest::SetScreenInstance();
+    WindowManagementPermissionContextTest::SetScreenInstance();
 #else
     screen_override_.emplace(&screen_);
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
@@ -118,7 +111,7 @@ class MultiscreenWindowPlacementPermissionContextTest
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 #endif
 
-    WindowPlacementPermissionContextTest::SetUpOnMainThread();
+    WindowManagementPermissionContextTest::SetUpOnMainThread();
   }
 
  private:
@@ -127,7 +120,7 @@ class MultiscreenWindowPlacementPermissionContextTest
 };
 
 // Tests gesture requirements (a gesture is only needed to prompt the user).
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest, GestureToPrompt) {
   const GURL url(https_test_server()->GetURL("a.test", "/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -170,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
 #define MAYBE_DismissAndDeny DismissAndDeny
 #endif
 // Tests user activation after dimissing and denying the permission request.
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
                        MAYBE_DismissAndDeny) {
   const GURL url(https_test_server()->GetURL("a.test", "/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -199,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
 }
 
 // Tests user activation after accepting the permission request.
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, Accept) {
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest, Accept) {
   const GURL url(https_test_server()->GetURL("a.test", "/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -217,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, Accept) {
   EXPECT_TRUE(tab->GetPrimaryMainFrame()->HasTransientUserActivation());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
                        IFrameSameOriginAllow) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -242,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
   EXPECT_TRUE(child->GetMainFrame()->HasTransientUserActivation());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
                        IFrameCrossOriginDeny) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -259,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(tab);
 
-  // PermissionRequestManager will accept any window placement permission
+  // PermissionRequestManager will accept any window management permission
   // dialogs that appear. However, the window-placement permission is not
   // explicitly allowed on the iframe, so requests made by the child frame will
   // be automatically denied before a prompt might be issued.
@@ -270,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+IN_PROC_BROWSER_TEST_F(WindowManagementPermissionContextTest,
                        IFrameCrossOriginExplicitAllow) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -310,8 +303,8 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
 #if !BUILDFLAG(IS_WIN)
 
 // Verify that window.screen.isExtended returns true in a same-origin
-// iframe without the window placement permission policy allowed.
-IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+// iframe without the window management permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowManagementPermissionContextTest,
                        IsExtendedSameOriginAllow) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -327,8 +320,8 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
 }
 
 // Verify that window.screen.isExtended returns false in a cross-origin
-// iframe without the window placement permission policy allowed.
-IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+// iframe without the window management permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowManagementPermissionContextTest,
                        IsExtendedCrossOriginDeny) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -347,8 +340,8 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
 }
 
 // Verify that window.screen.isExtended returns true in a cross-origin
-// iframe with the window placement permission policy allowed.
-IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
+// iframe with the window management permission policy allowed.
+IN_PROC_BROWSER_TEST_F(MultiscreenWindowManagementPermissionContextTest,
                        IsExtendedCrossOriginAllow) {
   const GURL url(https_test_server()->GetURL("a.test", "/iframe.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

@@ -2317,9 +2317,9 @@ if (!is_android) {
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
-      "../browser/window_placement/screen_details_browsertest.cc",
-      "../browser/window_placement/window_placement_browsertest.cc",
-      "../browser/window_placement/window_placement_permission_context_browsertest.cc",
+      "../browser/window_management/screen_details_browsertest.cc",
+      "../browser/window_management/window_management_browsertest.cc",
+      "../browser/window_management/window_management_permission_context_browsertest.cc",
       "../common/time_format_browsertest.cc",
       "../renderer/accessibility/read_anything_app_controller_browsertest.cc",
       "../renderer/autofill/autofill_renderer_browsertest.cc",
@@ -10034,7 +10034,7 @@ if (!is_android) {
     }
 
     if (enable_print_preview) {
-      sources += [ "../browser/window_placement/window_placement_printing_interactive_uitest.cc" ]
+      sources += [ "../browser/window_management/window_management_printing_interactive_uitest.cc" ]
     }
 
     # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing

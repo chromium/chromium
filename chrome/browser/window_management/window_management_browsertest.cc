@@ -38,7 +38,7 @@ class WindowPlacementTest : public InProcessBrowserTest {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
 
-    // Window placement features are only available on secure contexts, and so
+    // Window management features are only available on secure contexts, and so
     // we need to create an HTTPS test server here to serve those pages rather
     // than using the default https_test_server_.
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(

@@ -23,7 +23,7 @@
 #include "ui/display/test/display_manager_test_api.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class WindowPlacementTest : public InProcessBrowserTest {
+class WindowManagementTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -35,7 +35,7 @@ class WindowPlacementTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Window placement features are only available on secure contexts.
+    // Window management features are only available on secure contexts.
     https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_test_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
@@ -69,7 +69,7 @@ class WindowPlacementTest : public InProcessBrowserTest {
 // Test that screen change events occurring while an event handler is running
 // a nested event loop (i.e. via window.print()) do not cause a crash.
 // Regression test for crbug.com/1273841
-IN_PROC_BROWSER_TEST_F(WindowPlacementTest,
+IN_PROC_BROWSER_TEST_F(WindowManagementTest,
                        MAYBE_NoCrashOnEventsDuringHandlerPrint) {
   // Update the display configuration to mock display changes.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
