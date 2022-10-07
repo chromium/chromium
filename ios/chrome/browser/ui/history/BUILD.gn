@@ -32,7 +32,6 @@ source_set("history") {
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
   frameworks = [
