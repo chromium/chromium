@@ -202,7 +202,7 @@ export class PDFViewerPPElement extends PDFViewerBaseElement {
           this.inPrintPreviewMode_ = true;
           this.isUserInitiatedEvent = false;
           this.forceFit(FittingType.FIT_TO_PAGE);
-          this.updateViewportFit(FittingType.FIT_TO_PAGE);
+          this.viewport.setFittingType(FittingType.FIT_TO_PAGE);
           this.isUserInitiatedEvent = true;
         }
 

@@ -318,6 +318,25 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testSetFittingType() {
+    const viewport = getZoomableViewport(
+        new MockElement(400, 500, null), new MockSizer(), 0, 1);
+
+    viewport.setFittingType(FittingType.FIT_TO_PAGE);
+    chrome.test.assertEq(FittingType.FIT_TO_PAGE, viewport.fittingType);
+
+    viewport.setFittingType(FittingType.FIT_TO_WIDTH);
+    chrome.test.assertEq(FittingType.FIT_TO_WIDTH, viewport.fittingType);
+
+    viewport.setFittingType(FittingType.FIT_TO_HEIGHT);
+    chrome.test.assertEq(FittingType.FIT_TO_HEIGHT, viewport.fittingType);
+
+    viewport.setFittingType(FittingType.NONE);
+    chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
+
+    chrome.test.succeed();
+  },
+
   function testFitToWidth() {
     const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();

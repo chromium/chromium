@@ -868,6 +868,25 @@ export class Viewport implements ViewportInterface {
     return Math.max(zoom, 0);
   }
 
+  setFittingType(fittingType: FittingType) {
+    switch (fittingType) {
+      case FittingType.FIT_TO_PAGE:
+        this.fitToPage();
+        return;
+      case FittingType.FIT_TO_WIDTH:
+        this.fitToWidth();
+        return;
+      case FittingType.FIT_TO_HEIGHT:
+        this.fitToHeight();
+        return;
+      case FittingType.NONE:
+        this.fittingType_ = fittingType;
+        return;
+      default:
+        assertNotReached('Invalid fittingType');
+    }
+  }
+
   /** Zoom the viewport so that the page width consumes the entire viewport. */
   fitToWidth() {
     this.mightZoom_(() => {

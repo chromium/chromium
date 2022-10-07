@@ -422,31 +422,33 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
    * @param params The open params passed in the URL.
    */
   private handleURLParams_(params: OpenPdfParams) {
+    assert(this.viewport_);
+
     if (params.zoom) {
-      this.viewport_!.setZoom(params.zoom);
+      this.viewport_.setZoom(params.zoom);
     }
 
     if (params.position) {
-      this.viewport_!.goToPageAndXY(
+      this.viewport_.goToPageAndXY(
           params.page ? params.page : 0, params.position.x, params.position.y);
     } else if (params.page) {
-      this.viewport_!.goToPage(params.page);
+      this.viewport_.goToPage(params.page);
     }
 
     if (params.view) {
       this.isUserInitiatedEvent = false;
-      this.updateViewportFit(params.view);
+      this.viewport_.setFittingType(params.view);
       this.forceFit(params.view);
       if (params.viewPosition) {
         const zoomedPositionShift =
-            params.viewPosition * this.viewport_!.getZoom();
-        const currentViewportPosition = this.viewport_!.position;
+            params.viewPosition * this.viewport_.getZoom();
+        const currentViewportPosition = this.viewport_.position;
         if (params.view === FittingType.FIT_TO_WIDTH) {
           currentViewportPosition.y += zoomedPositionShift;
         } else if (params.view === FittingType.FIT_TO_HEIGHT) {
           currentViewportPosition.x += zoomedPositionShift;
         }
-        this.viewport_!.setPosition(currentViewportPosition);
+        this.viewport_.setPosition(currentViewportPosition);
       }
       this.isUserInitiatedEvent = true;
     }
@@ -494,19 +496,9 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
     }
   }
 
-  protected updateViewportFit(fittingType: FittingType) {
-    if (fittingType === FittingType.FIT_TO_PAGE) {
-      this.viewport_!.fitToPage();
-    } else if (fittingType === FittingType.FIT_TO_WIDTH) {
-      this.viewport_!.fitToWidth();
-    } else if (fittingType === FittingType.FIT_TO_HEIGHT) {
-      this.viewport_!.fitToHeight();
-    }
-  }
-
   /** Requests to change the viewport fitting type. */
   protected onFitToChanged(e: CustomEvent<FittingType>) {
-    this.updateViewportFit(e.detail);
+    this.viewport_!.setFittingType(e.detail);
     recordFitTo(e.detail);
   }
 
