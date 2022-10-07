@@ -122,75 +122,6 @@
       },
     },
 
-    # List gtests with ci_only set to True so that they run on the CI of
-    # android-marshmallow-arm64-rel but not the mirrored CQ.
-    # Includes the following compound test suites:
-    # * android_modern_smoke_tests
-    # * android_smoke_tests
-    # * chromium_gtests_for_devices_with_graphical_output
-    # * chrome_public_tests
-    # * linux_flavor_specific_chromium_gtests
-    'android_marshmallow_device_ci_only_gtests': {
-      'cc_unittests': {
-        'ci_only': True,
-      },
-      'chrome_modern_public_bundle_smoke_test': {
-        'ci_only': True,
-      },
-      'chrome_public_smoke_test': {
-        'ci_only': True,
-      },
-      'chrome_public_test_apk': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,
-        },
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'chrome_public_unit_test_apk': {
-        'ci_only': True,
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'device_unittests': {
-        'ci_only': True,
-      },
-      'display_unittests': {
-        'ci_only': True,
-      },
-      'gfx_unittests': {
-        'ci_only': True,
-      },
-      'sandbox_linux_unittests': {
-        'ci_only': True,
-      },
-      'unit_tests': {
-        'ci_only': True,
-        'android_swarming': {
-          'shards': 2,
-        },
-      },
-      'viz_unittests': {
-        'ci_only': True,
-      },
-    },
-
-    # List gtests that are part of other composition test suites.
-    # MM emulator CQ builder currently has limited capacity so some composition
-    # test suites cannot be fullly enabled at once.
-    'android_marshmallow_emulator_limited_capacity_gtests': {
-      # Tests from chromium_gtests
-      'webkit_unit_tests':{
-        'test': 'blink_unittests',
-          'android_swarming': {
-            'shards': 6,
-          },
-      },
-    },
-
     'android_modern_smoke_tests': {
       'chrome_modern_public_bundle_smoke_test': {},
     },
@@ -1550,16 +1481,6 @@
         },
         'resultdb': {
           'enable': True,
-        },
-      },
-    },
-
-    # TODO(crbug.com/1255748): Remove after chromium_gtests are enabled on
-    # android_marshmallow_emulator_gtests
-    'components_capacity_tests': {
-      'components_unittests': {
-        'android_swarming': {
-          'shards': 6,
         },
       },
     },
@@ -5282,54 +5203,6 @@
       'android_trichrome_smoke_tests',
     ],
 
-    # List gtests that run on android-marshmallow-arm64-rel builder.
-    # TODO(crbug.com/1127110): Use android_marshmallow_gtests when
-    # android-marshmallow-x86-rel is not mirrored to CQ.
-    'android_marshmallow_device_gtests': [
-      'android_marshmallow_device_ci_only_gtests',
-
-      # TODO(crbug.com/1127110): Remove once webview_instrumentation_test_apk
-      # and content_shell_test_apk are enabled on android-marshmallow-x86-rel
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-
-      'chromium_gtests',
-      'vr_android_specific_chromium_tests',
-      'vr_platform_specific_chromium_gtests',
-    ],
-
-    # List gtests that run on android-marshmallow-x86-rel builder.
-    # Test suites will be gradually moved from
-    # android_marshmallow_emulator_non_cq_gtests
-    # to this one, when there are more GCE capacity.
-    'android_marshmallow_emulator_gtests': [
-      'android_emulator_specific_chrome_public_tests',
-      # TODO(crbug.com/1127110): Deprecate this when all the test suites below
-      # it are re-enabled.
-      'android_marshmallow_emulator_limited_capacity_gtests',
-
-      'android_modern_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'android_wpr_record_replay_tests',
-      #'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      # TODO(crbug.com/1255748): Remove components_capacity_tests when
-      # chromium_gtests are enabled in this suite.
-      'components_capacity_tests',
-      'linux_flavor_specific_chromium_gtests',
-    ],
-
-    # Note that tests here are gradually moved to
-    # android_marshmallow_emulator_gtests (crbug.com/1127110)
-    #
-    # The diff between android_marshmallow_device_gtests and
-    # (android_marshmallow_emulator_non_cq_gtests +
-    # android_marshmallow_emulator_gtests)
-    # is android_wpr_record_replay_tests
-    'android_marshmallow_emulator_non_cq_gtests': [
-      'chromium_gtests',
-    ],
-
     'android_marshmallow_gtests': [
       'android_modern_smoke_tests',
       'android_smoke_tests',
@@ -6157,19 +6030,13 @@
       'gpu_fyi_vulkan_swiftshader_gtests',
     ],
 
-    'marshmallow_nougat_pie_isolated_scripts_with_proguard': [
-      'android_isolated_scripts',
-      'components_perftests_isolated_scripts',
-      'telemetry_android_minidump_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts_android',
-    ],
-
-    'marshmallow_pie_isolated_scripts': [
-      'android_isolated_scripts',
-      'components_perftests_isolated_scripts',
-      'telemetry_android_minidump_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts_android',
-    ],
+    # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
+    #'marshmallow_nougat_pie_isolated_scripts_with_proguard': [
+    #  'android_isolated_scripts',
+    #  'components_perftests_isolated_scripts',
+    #  'telemetry_android_minidump_unittests_isolated_scripts',
+    #  'telemetry_perf_unittests_isolated_scripts_android',
+    #],
 
     'monochrome_public_apk_checker_isolated_script_and_sizes': [
       'chrome_sizes_android',

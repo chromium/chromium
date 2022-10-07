@@ -977,56 +977,6 @@
           'gtest_tests': 'cronet_gtests',
         },
       },
-      'android-marshmallow-arm64-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'bullhead',
-          'isolate_profile_data',
-          'marshmallow',
-        ],
-        'additional_compile_targets': [
-          'cronet_test_instrumentation_apk',
-          'chrome_nocompile_tests',
-          'monochrome_static_initializers',
-        ],
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_device_gtests',
-          'junit_tests': 'chromium_junit_tests',
-          'isolated_scripts': 'marshmallow_pie_isolated_scripts',
-          'scripts': 'chromium_android_scripts',
-        },
-        'os_type': 'android',
-      },
-      'android-marshmallow-x86-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'marshmallow-x86-emulator',
-          'emulator-4-cores',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_emulator_gtests',
-          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
-          'scripts': 'chromium_android_scripts',
-        },
-      },
-      'android-marshmallow-x86-rel-non-cq': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow-x86-emulator',
-          'emulator-4-cores',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_emulator_non_cq_gtests',
-          'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
-        }
-      },
       'android-nougat-x86-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -1035,6 +985,10 @@
           'emulator-4-cores',
           'linux-bionic',
           'x86-64',
+        ],
+        'additional_compile_targets': [
+          'cronet_test_instrumentation_apk',
+          'chrome_nocompile_tests',
         ],
         'os_type': 'android',
         'test_suites': {
