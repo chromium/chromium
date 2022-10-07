@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/skia/include/core/SkColor.h"
