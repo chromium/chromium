@@ -2665,7 +2665,7 @@
           ],
         },
         'test_suites': {
-          # TODO(crbug.com/1302427): Only run the gpu_telemetry_tests that do
+          # TODO(crbug.com/1372204): Only run the gpu_telemetry_tests that do
           # not run on CI or another FYI bot. Ideally, they would all run there.
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_chrome_large_gtests',
@@ -3258,9 +3258,10 @@
           ],
         },
         'test_suites': {
-          # TODO(chonggu): Consider running all telemetry tests.
+          # TODO(crbug.com/1372220): Consider running all telemetry tests.
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
-          # TODO(chonggu): Consider running more gtests here, ideally "fuchsia_gtests".
+          # TODO(crbug.com/1372220): Consider running more gtests here, Ideally
+          # "fuchsia_gtests".
           'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },

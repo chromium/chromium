@@ -1976,7 +1976,7 @@
           'shards': 40,
         },
       },
-      # TODO(crbug.com/1071095): Move to one of the fuchsia_common_gtests* sets.
+      # TODO(crbug.com/1371630): Move to one of the fuchsia_common_gtests* sets.
       'content_browsertests': {
         'args': [
           '--',

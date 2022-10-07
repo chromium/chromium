@@ -92,7 +92,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            # TODO(crbug.com/1370134): Move to "fuchsia ci|arm64" once green.
+            # TODO(crbug.com/1372224): Move to "fuchsia ci|arm64" once green.
             category = "fyi|arm64",
             short_name = "chrome",
         ),
@@ -329,7 +329,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            # TODO(crbug.com/1370134): Move to "fuchsia ci|x64" once green.
+            # TODO(crbug.com/1372224): Move to "fuchsia ci|x64" once green.
             category = "fyi|x64",
             short_name = "chrome",
         ),
