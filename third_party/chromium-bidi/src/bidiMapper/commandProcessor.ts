@@ -173,6 +173,7 @@ export class CommandProcessor {
 
       const response = {
         id: command.id,
+        ...(command.channel !== undefined ? { channel: command.channel } : {}),
         ...result,
       };
 

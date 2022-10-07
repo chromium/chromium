@@ -25,7 +25,6 @@ import { ITransport } from '../utils/transport';
 
 import { log } from '../utils/log';
 import { EventManager } from './domains/events/EventManager';
-import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { BrowsingContextStorage } from './domains/context/browsingContextStorage';
 
 const logSystem = log('system');

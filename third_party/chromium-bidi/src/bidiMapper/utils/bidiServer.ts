@@ -43,6 +43,7 @@ export declare interface BidiServer {
     event: U,
     listener: (params: BidiServerEvents[U]) => void
   ): this;
+
   emit<U extends keyof BidiServerEvents>(
     event: U,
     params: BidiServerEvents[U]
@@ -53,7 +54,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
   constructor(private _transport: ITransport) {
     super();
 
-    this._transport.setOnMessage(this._onBidiMessage);
+    this._transport.setOnMessage(this.#onBidiMessage);
   }
 
   /**
@@ -69,25 +70,25 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     this._transport.close();
   }
 
-  private _onBidiMessage = async (messageStr: string) => {
+  #onBidiMessage = async (messageStr: string) => {
     logBidi('received < ' + messageStr);
 
     let messageObj;
     try {
-      messageObj = this._parseBidiMessage(messageStr);
+      messageObj = this.#parseBidiMessage(messageStr);
     } catch (e: any) {
-      this._respondWithError(messageStr, 'invalid argument', e.message);
+      this.#respondWithError(messageStr, 'invalid argument', e.message);
       return;
     }
     this.emit('message', messageObj);
   };
 
-  private _respondWithError(
+  #respondWithError(
     plainCommandData: string,
     errorCode: string,
     errorMessage: string
   ) {
-    const errorResponse = this._getErrorResponse(
+    const errorResponse = this.#getErrorResponse(
       plainCommandData,
       errorCode,
       errorMessage
@@ -95,7 +96,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     this.sendMessage(errorResponse);
   }
 
-  private _getJsonType(value: any) {
+  #getJsonType(value: any) {
     if (value === null) {
       return 'null';
     }
@@ -105,7 +106,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     return typeof value;
   }
 
-  private _getErrorResponse(
+  #getErrorResponse(
     messageStr: string,
     errorCode: string,
     errorMessage: string
@@ -115,7 +116,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     let messageId = undefined;
     try {
       const messageObj = JSON.parse(messageStr);
-      if (this._getJsonType(messageObj) === 'object' && 'id' in messageObj) {
+      if (this.#getJsonType(messageObj) === 'object' && 'id' in messageObj) {
         messageId = messageObj.id;
       }
     } catch {}
@@ -128,7 +129,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     };
   }
 
-  private _parseBidiMessage(messageStr: string): Message.RawCommandRequest {
+  #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
     let messageObj: any;
     try {
       messageObj = JSON.parse(messageStr);
@@ -136,31 +137,38 @@ export class BidiServer extends EventEmitter implements IBidiServer {
       throw new Error('Cannot parse data as JSON');
     }
 
-    const parsedType = this._getJsonType(messageObj);
+    const parsedType = this.#getJsonType(messageObj);
     if (parsedType !== 'object') {
       throw new Error(`Expected JSON object but got ${parsedType}`);
     }
 
     // Extract amd validate id, method and params.
-    const { id, method, params } = messageObj;
+    const { id, method, params, channel } = messageObj;
 
-    const idType = this._getJsonType(id);
+    const idType = this.#getJsonType(id);
     if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
       // TODO: should uint64_t be the upper limit?
       // https://tools.ietf.org/html/rfc7049#section-2.1
       throw new Error(`Expected unsigned integer but got ${idType}`);
     }
 
-    const methodType = this._getJsonType(method);
+    const methodType = this.#getJsonType(method);
     if (methodType !== 'string') {
       throw new Error(`Expected string method but got ${methodType}`);
     }
 
-    const paramsType = this._getJsonType(params);
+    const paramsType = this.#getJsonType(params);
     if (paramsType !== 'object') {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
-    return { id, method, params };
+    if (channel !== undefined) {
+      const channelType = this.#getJsonType(channel);
+      if (channelType !== 'string') {
+        throw new Error(`Expected string channel but got ${channelType}`);
+      }
+    }
+
+    return { id, method, params, channel };
   }
 }

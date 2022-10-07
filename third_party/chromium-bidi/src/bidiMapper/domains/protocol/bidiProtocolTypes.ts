@@ -35,6 +35,7 @@ export namespace Message {
     id: number;
     method: string;
     params: object;
+    channel?: string;
   };
 
   export type CommandRequest = { id: number } & (
