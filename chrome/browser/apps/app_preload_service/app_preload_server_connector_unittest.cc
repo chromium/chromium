@@ -45,6 +45,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLogin) {
   device_info.user_type = "unmanaged";
   device_info.version_info.ash_chrome = "10.10.10";
   device_info.version_info.platform = "12345.0.0";
+  device_info.locale = "en-US";
 
   std::string method;
   std::string method_override_header;
@@ -70,7 +71,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLogin) {
   EXPECT_EQ(body,
             "{\"board\":\"brya\",\"chrome_os_version\":{\"ash_chrome\":\"10.10."
             "10\",\"platform\":\"12345.0.0\"},\"language\":\"en-US\",\"model\":"
-            "\"taniks\",\"sku_id\":\"temporary\"}");
+            "\"taniks\"}");
 }
 
 }  // namespace apps

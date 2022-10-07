@@ -43,6 +43,9 @@ struct DeviceInfo {
 
   // The version info of the device.
   VersionInfo version_info;
+
+  // The locale chosen by the user.
+  std::string locale;
 };
 
 // This class is a helper interface to get info about the device the code is

@@ -9,9 +9,17 @@
 #include "base/callback.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+
+static constexpr char kTestLocale[] = "test_locale";
+
+}  // namespace
 
 namespace apps {
 
@@ -25,12 +33,15 @@ class DeviceInfoManagerTest : public testing::Test {
     ASSERT_FALSE(device_info.user_type.empty());
     ASSERT_FALSE(device_info.version_info.ash_chrome.empty());
     ASSERT_FALSE(device_info.version_info.platform.empty());
+    ASSERT_EQ(device_info.locale, kTestLocale);
     std::move(on_complete).Run();
   }
 
  protected:
   DeviceInfoManagerTest() {
     device_info_manager_ = std::make_unique<DeviceInfoManager>(&profile_);
+    PrefService* prefs = profile_.GetPrefs();
+    prefs->SetString(language::prefs::kApplicationLocale, kTestLocale);
   }
 
  private:

@@ -47,10 +47,7 @@ std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
   base::Value::Dict request;
   request.Set("board", info.board);
   request.Set("model", info.model);
-
-  // TODO(b/249427934): Temporary test data.
-  request.Set("language", "en-US");
-  request.Set("sku_id", "temporary");
+  request.Set("language", info.locale);
 
   base::Value::Dict versions;
   versions.Set("ash_chrome", info.version_info.ash_chrome);

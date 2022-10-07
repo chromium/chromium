@@ -8,7 +8,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/apps/user_type_filter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/version/version_loader.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 
 namespace apps {
@@ -45,6 +48,11 @@ void DeviceInfoManager::GetDeviceInfo(
   device_info.version_info.ash_chrome = version_info::GetVersionNumber();
   device_info.user_type = apps::DetermineUserType(profile_);
 
+  // Locale
+  PrefService* prefs = profile_->GetPrefs();
+  DCHECK(prefs);
+  device_info.locale = prefs->GetString(language::prefs::kApplicationLocale);
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&chromeos::version_loader::GetVersion,
@@ -78,6 +86,7 @@ std::ostream& operator<<(std::ostream& os, const DeviceInfo& device_info) {
   os << "- Board: " << device_info.board << std::endl;
   os << "- Model: " << device_info.model << std::endl;
   os << "- User Type: " << device_info.user_type << std::endl;
+  os << "- Locale: " << device_info.locale << std::endl;
   os << device_info.version_info;
   return os;
 }
