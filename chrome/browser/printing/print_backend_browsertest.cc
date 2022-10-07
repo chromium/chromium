@@ -128,11 +128,6 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
   }
 
-  void LaunchUninitialized() {
-    print_backend_service_ =
-        PrintBackendServiceTestImpl::LaunchUninitialized(remote_);
-  }
-
   // Initialize and load the backend service with some test print drivers.
   void LaunchService() {
     print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(

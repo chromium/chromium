@@ -103,8 +103,6 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       bool sandboxed);
 
  private:
-  friend class PrintBackendBrowserTest;
-
   // Launch the service in-process for testing without initializing backend.
   static std::unique_ptr<PrintBackendServiceTestImpl> LaunchUninitialized(
       mojo::Remote<mojom::PrintBackendService>& remote);
