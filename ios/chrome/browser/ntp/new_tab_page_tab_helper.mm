@@ -63,7 +63,6 @@ void NewTabPageTabHelper::SetDelegate(
   active_ = IsNTPURL(web_state_->GetVisibleURL());
   if (active_) {
     UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
-    [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
   }
 }
 
