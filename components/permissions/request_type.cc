@@ -106,7 +106,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return kUsbSecurityKeyIcon;
     case RequestType::kStorageAccess:
       return vector_icons::kCookieIcon;
-    case RequestType::kWindowPlacement:
+    case RequestType::kWindowManagement:
       return vector_icons::kSelectWindowIcon;
   }
   NOTREACHED();
@@ -183,7 +183,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kVrSession;
 #if !BUILDFLAG(IS_ANDROID)
     case ContentSettingsType::WINDOW_MANAGEMENT:
-      return RequestType::kWindowPlacement;
+      return RequestType::kWindowManagement;
 #endif
     default:
       return absl::nullopt;
@@ -246,7 +246,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kVrSession:
       return ContentSettingsType::VR;
 #if !BUILDFLAG(IS_ANDROID)
-    case RequestType::kWindowPlacement:
+    case RequestType::kWindowManagement:
       return ContentSettingsType::WINDOW_MANAGEMENT;
 #endif
     default:
@@ -340,7 +340,7 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kVrSession:
       return "vr_session";
 #if !BUILDFLAG(IS_ANDROID)
-    case permissions::RequestType::kWindowPlacement:
+    case permissions::RequestType::kWindowManagement:
       return "window_placement";
 #endif
   }

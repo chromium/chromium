@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/permissions/contexts/window_placement_permission_context.h"
+#include "components/permissions/contexts/window_management_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
@@ -12,17 +12,18 @@
 
 namespace permissions {
 
-WindowPlacementPermissionContext::WindowPlacementPermissionContext(
+WindowManagementPermissionContext::WindowManagementPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::WINDOW_MANAGEMENT,
           blink::mojom::PermissionsPolicyFeature::kWindowPlacement) {}
 
-WindowPlacementPermissionContext::~WindowPlacementPermissionContext() = default;
+WindowManagementPermissionContext::~WindowManagementPermissionContext() =
+    default;
 
 #if BUILDFLAG(IS_ANDROID)
-ContentSetting WindowPlacementPermissionContext::GetPermissionStatusInternal(
+ContentSetting WindowManagementPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
@@ -32,11 +33,11 @@ ContentSetting WindowPlacementPermissionContext::GetPermissionStatusInternal(
 }
 #endif  // IS_ANDROID
 
-bool WindowPlacementPermissionContext::IsRestrictedToSecureOrigins() const {
+bool WindowManagementPermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }
 
-void WindowPlacementPermissionContext::UserMadePermissionDecision(
+void WindowManagementPermissionContext::UserMadePermissionDecision(
     const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,

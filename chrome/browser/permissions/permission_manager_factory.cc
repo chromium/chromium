@@ -28,7 +28,7 @@
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
-#include "components/permissions/contexts/window_placement_permission_context.h"
+#include "components/permissions/contexts/window_management_permission_context.h"
 #include "components/permissions/permission_manager.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -135,7 +135,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // TODO(crbug.com/897300): Still in development for Android so we don't
   // support it on WebLayer yet.
   permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
-      std::make_unique<permissions::WindowPlacementPermissionContext>(profile);
+      std::make_unique<permissions::WindowManagementPermissionContext>(profile);
 
   return permission_contexts;
 }

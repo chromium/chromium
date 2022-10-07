@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
-#define COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_MANAGEMENT_PERMISSION_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_MANAGEMENT_PERMISSION_CONTEXT_H_
 
 #include "build/build_config.h"
 #include "components/permissions/permission_context_base.h"
 
 namespace permissions {
 
-class WindowPlacementPermissionContext : public PermissionContextBase {
+class WindowManagementPermissionContext : public PermissionContextBase {
  public:
-  explicit WindowPlacementPermissionContext(
+  explicit WindowManagementPermissionContext(
       content::BrowserContext* browser_context);
-  ~WindowPlacementPermissionContext() override;
+  ~WindowManagementPermissionContext() override;
 
-  WindowPlacementPermissionContext(const WindowPlacementPermissionContext&) =
+  WindowManagementPermissionContext(const WindowManagementPermissionContext&) =
       delete;
-  WindowPlacementPermissionContext& operator=(
-      const WindowPlacementPermissionContext&) = delete;
+  WindowManagementPermissionContext& operator=(
+      const WindowManagementPermissionContext&) = delete;
 
  protected:
   // PermissionContextBase:
@@ -38,4 +38,4 @@ class WindowPlacementPermissionContext : public PermissionContextBase {
 
 }  // namespace permissions
 
-#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_MANAGEMENT_PERMISSION_CONTEXT_H_

@@ -226,7 +226,7 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kVrSession:
       message_id = IDS_VR_PERMISSION_FRAGMENT;
       break;
-    case RequestType::kWindowPlacement:
+    case RequestType::kWindowManagement:
       message_id = IDS_WINDOW_MANAGEMENT_PERMISSION_FRAGMENT;
       break;
   }

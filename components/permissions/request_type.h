@@ -53,8 +53,8 @@ enum class RequestType {
 #endif
   kVrSession,
 #if !BUILDFLAG(IS_ANDROID)
-  kWindowPlacement,
-  kMaxValue = kWindowPlacement
+  kWindowManagement,
+  kMaxValue = kWindowManagement
 #else
   kMaxValue = kVrSession
 #endif

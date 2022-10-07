@@ -106,8 +106,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
     case RequestType::kVrSession:
       return RequestTypeForUma::PERMISSION_VR;
 #if !BUILDFLAG(IS_ANDROID)
-    case RequestType::kWindowPlacement:
-      return RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT;
+    case RequestType::kWindowManagement:
+      return RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT;
 #endif
   }
 }
@@ -152,7 +152,7 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "StorageAccess";
     case RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
-    case RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT:
+    case RequestTypeForUma::PERMISSION_WINDOW_MANAGEMENT:
       return "WindowPlacement";
     case RequestTypeForUma::PERMISSION_LOCAL_FONTS:
       return "LocalFonts";
