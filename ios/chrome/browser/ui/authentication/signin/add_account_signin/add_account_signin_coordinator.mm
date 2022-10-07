@@ -154,8 +154,8 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountSigninManagerFinishedWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                                               identity:
-                                                   (ChromeIdentity*)identity {
+                                               identity:(id<SystemIdentity>)
+                                                            identity {
   if (!self.addAccountSigninManager) {
     // The AddAccountSigninManager callback might be called after the
     // interrupt method. If this is the case, the AddAccountSigninCoordinator
@@ -190,7 +190,7 @@ using signin_metrics::PromoAction;
 // Continues the sign-in workflow according to the sign-in intent
 - (void)continueAddAccountFlowWithSigninResult:
             (SigninCoordinatorResult)signinResult
-                                      identity:(ChromeIdentity*)identity {
+                                      identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
     case AddAccountSigninIntentReauthPrimaryAccount: {
       [self presentUserConsentWithIdentity:identity];
@@ -231,7 +231,7 @@ using signin_metrics::PromoAction;
 
 // Runs callback completion on finishing the add account flow.
 - (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult
-                              identity:(ChromeIdentity*)identity {
+                              identity:(id<SystemIdentity>)identity {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.userSigninCoordinator);
   // `identity` is set, only and only if the sign-in is successful.
@@ -244,7 +244,7 @@ using signin_metrics::PromoAction;
 }
 
 // Presents the user consent screen with `identity` pre-selected.
-- (void)presentUserConsentWithIdentity:(ChromeIdentity*)identity {
+- (void)presentUserConsentWithIdentity:(id<SystemIdentity>)identity {
   // The UserSigninViewController is presented on top of the currently displayed
   // view controller.
   self.userSigninCoordinator = [SigninCoordinator

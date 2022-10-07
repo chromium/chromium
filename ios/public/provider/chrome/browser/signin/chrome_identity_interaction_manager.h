@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 
-@class ChromeIdentity;
+@protocol SystemIdentity;
 
 // Error domain for Chrome identity errors.
 extern NSString* kChromeIdentityErrorDomain;
@@ -21,7 +21,7 @@ typedef enum {
 // Callback for the signin operation methods.
 // * `identity` is the identity that was added/reauthenticated.
 // * `error` is nil unless there was an error during the operation.
-typedef void (^SigninCompletionCallback)(ChromeIdentity* identity,
+typedef void (^SigninCompletionCallback)(id<SystemIdentity> identity,
                                          NSError* error);
 
 // ChromeIdentityInteractionManager abstracts the interaction to add identities

@@ -13,7 +13,7 @@
 
 // Identity that will be returned by the add account method if the dialog is
 // closed successfully.
-@property(nonatomic, strong, class) ChromeIdentity* identity;
+@property(nonatomic, strong, class) id<SystemIdentity> identity;
 
 // YES if the fake add account view is presented.
 @property(nonatomic, assign, readonly) BOOL viewControllerPresented;

@@ -94,16 +94,20 @@
 
 @end
 
-@implementation FakeChromeIdentityInteractionManager
+namespace {
 
-static ChromeIdentity* _identity = nil;
+id<SystemIdentity> gFakeChromeIdentityInteractionManagerIdentity = nil;
 
-+ (void)setIdentity:(ChromeIdentity*)identity {
-  _identity = identity;
 }
 
-+ (ChromeIdentity*)identity {
-  return _identity;
+@implementation FakeChromeIdentityInteractionManager
+
++ (void)setIdentity:(id<SystemIdentity>)identity {
+  gFakeChromeIdentityInteractionManagerIdentity = identity;
+}
+
++ (id<SystemIdentity>)identity {
+  return gFakeChromeIdentityInteractionManagerIdentity;
 }
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
@@ -182,7 +186,7 @@ static ChromeIdentity* _identity = nil;
 - (void)runCompletionCallbackWithError:(NSError*)error
                             completion:(ProceduralBlock)completion {
   self.addAccountViewController = nil;
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       error ? nil : FakeChromeIdentityInteractionManager.identity;
   // Reset the identity for the next usage.
   FakeChromeIdentityInteractionManager.identity = nil;

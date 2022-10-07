@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
-@class ChromeIdentity;
 @class ChromeIdentityInteractionManager;
 class PrefService;
+@protocol SystemIdentity;
 
 namespace signin {
 class IdentityManager;
@@ -32,7 +32,7 @@ class IdentityManager;
 - (void)addAccountSigninManagerFinishedWithSigninResult:
             (SigninCoordinatorResult)signinResult
                                                identity:
-                                                   (ChromeIdentity*)identity;
+                                                   (id<SystemIdentity>)identity;
 
 @end
 
