@@ -155,7 +155,8 @@ TEST_F(ExternalVkImageBackingFactoryTest, DawnWrite_SkiaVulkanRead) {
   }
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =
@@ -279,7 +280,8 @@ TEST_F(ExternalVkImageBackingFactoryTest, SkiaVulkanWrite_DawnRead) {
   }
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =

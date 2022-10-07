@@ -537,7 +537,8 @@ TEST_F(D3DImageBackingFactoryTest, GL_SkiaGL) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =
@@ -623,7 +624,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a backing using mailbox.
   const auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
@@ -694,7 +696,8 @@ TEST_F(D3DImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -821,7 +824,8 @@ TEST_F(D3DImageBackingFactoryTest, UnclearDawn_SkiaFails) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -919,7 +923,8 @@ TEST_F(D3DImageBackingFactoryTest, SkiaAccessFirstFails) {
 
   // Create a mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage =
@@ -954,7 +959,9 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
     return;
 
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = gfx::BufferFormat::RGBA_8888;
+  const auto buffer_format = gfx::BufferFormat::RGBA_8888;
+  const auto format = viz::SharedImageFormat::SinglePlane(
+      viz::GetResourceFormat(buffer_format));
   const gfx::Size size(1, 1);
   const auto plane = gfx::BufferPlane::DEFAULT;
   const auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -965,8 +972,8 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   const SkAlphaType alpha_type = kPremul_SkAlphaType;
 
   EXPECT_TRUE(shared_image_factory_->IsSupported(
-      usage, viz::GetResourceFormat(format), size, /*thread_safe=*/false,
-      gfx::DXGI_SHARED_HANDLE, GrContextType::kGL, /*pixel_data=*/{}));
+      usage, format, size, /*thread_safe=*/false, gfx::DXGI_SHARED_HANDLE,
+      GrContextType::kGL, /*pixel_data=*/{}));
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
       shared_image_factory_->GetDeviceForTesting();
@@ -1007,11 +1014,11 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   auto dup_handle = gpu_memory_buffer_handle.Clone();
 
   auto backing = shared_image_factory_->CreateSharedImage(
-      mailbox, 0, std::move(gpu_memory_buffer_handle), format, plane,
+      mailbox, 0, std::move(gpu_memory_buffer_handle), buffer_format, plane,
       surface_handle, size, color_space, surface_origin, alpha_type, usage);
   ASSERT_NE(backing, nullptr);
 
-  EXPECT_EQ(backing->format(), viz::RGBA_8888);
+  EXPECT_EQ(backing->format(), format);
   EXPECT_EQ(backing->size(), size);
   EXPECT_EQ(backing->color_space(), color_space);
   EXPECT_EQ(backing->surface_origin(), surface_origin);
@@ -1028,11 +1035,11 @@ void D3DImageBackingFactoryTest::RunCreateSharedImageFromHandleTest(
   // shared handle state and texture with the first backing.
   auto dup_mailbox = Mailbox::GenerateForSharedImage();
   auto dup_backing = shared_image_factory_->CreateSharedImage(
-      dup_mailbox, 0, std::move(dup_handle), format, plane, surface_handle,
-      size, color_space, surface_origin, alpha_type, usage);
+      dup_mailbox, 0, std::move(dup_handle), buffer_format, plane,
+      surface_handle, size, color_space, surface_origin, alpha_type, usage);
   ASSERT_NE(dup_backing, nullptr);
 
-  EXPECT_EQ(dup_backing->format(), viz::RGBA_8888);
+  EXPECT_EQ(dup_backing->format(), format);
   EXPECT_EQ(dup_backing->size(), size);
   EXPECT_EQ(dup_backing->color_space(), color_space);
   EXPECT_EQ(dup_backing->surface_origin(), surface_origin);
@@ -1095,7 +1102,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -1226,7 +1234,8 @@ TEST_F(D3DImageBackingFactoryTest, Dawn_HasLastRef) {
 
   // Create a backing using mailbox.
   auto mailbox = Mailbox::GenerateForSharedImage();
-  const auto format = viz::ResourceFormat::RGBA_8888;
+  const auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 |
@@ -1419,7 +1428,8 @@ D3DImageBackingFactoryTest::CreateVideoImages(const gfx::Size& size,
 
     EXPECT_EQ(backing->mailbox(), mailboxes[i]);
     EXPECT_EQ(backing->size(), plane_sizes[i]);
-    EXPECT_EQ(backing->format(), plane_formats[i]);
+    EXPECT_EQ(backing->format(),
+              viz::SharedImageFormat::SinglePlane(plane_formats[i]));
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);
@@ -1732,7 +1742,8 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
 
     EXPECT_EQ(backing->mailbox(), mailboxes[i]);
     EXPECT_EQ(backing->size(), plane_sizes[i]);
-    EXPECT_EQ(backing->format(), plane_formats[i]);
+    EXPECT_EQ(backing->format(),
+              viz::SharedImageFormat::SinglePlane(plane_formats[i]));
     EXPECT_EQ(backing->color_space(), gfx::ColorSpace());
     EXPECT_EQ(backing->surface_origin(), kTopLeft_GrSurfaceOrigin);
     EXPECT_EQ(backing->alpha_type(), kPremul_SkAlphaType);

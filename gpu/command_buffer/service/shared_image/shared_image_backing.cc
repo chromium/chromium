@@ -59,7 +59,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
 }  // namespace
 
 SharedImageBacking::SharedImageBacking(const Mailbox& mailbox,
-                                       viz::ResourceFormat format,
+                                       viz::SharedImageFormat format,
                                        const gfx::Size& size,
                                        const gfx::ColorSpace& color_space,
                                        GrSurfaceOrigin surface_origin,
@@ -92,7 +92,7 @@ void SharedImageBacking::OnContextLost() {
 SkImageInfo SharedImageBacking::AsSkImageInfo() const {
   return SkImageInfo::Make(size_.width(), size_.height(),
                            viz::ResourceFormatToClosestSkColorType(
-                               /*gpu_compositing=*/true, format_),
+                               /*gpu_compositing=*/true, format()),
                            alpha_type_, color_space_.ToSkColorSpace());
 }
 
@@ -307,7 +307,7 @@ base::Lock* SharedImageBacking::AutoLock::InitializeLock(
 
 ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,

@@ -127,7 +127,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
  public:
   AHardwareBufferImageBacking(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -248,7 +248,7 @@ class OverlayAHBImageRepresentation : public OverlayImageRepresentation {
 
 AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -542,12 +542,12 @@ AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
 bool AHardwareBufferImageBackingFactory::ValidateUsage(
     uint32_t usage,
     const gfx::Size& size,
-    viz::ResourceFormat format) const {
-  const FormatInfo& format_info = format_info_[format];
+    viz::SharedImageFormat format) const {
+  const FormatInfo& format_info = GetFormatInfo(format);
 
   // Check if the format is supported by AHardwareBuffer.
   if (!format_info.ahb_supported) {
-    LOG(ERROR) << "viz::ResourceFormat " << format
+    LOG(ERROR) << "viz::ResourceFormat " << viz::ResourceFormatToString(format)
                << " not supported by AHardwareBuffer";
     return false;
   }
@@ -568,7 +568,7 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
     // Check if the GL texture can be created from AHB with this format.
     if (!format_info.gl_supported) {
       LOG(ERROR)
-          << "viz::ResourceFormat " << format
+          << "viz::ResourceFormat " << viz::ResourceFormatToString(format)
           << " can not be used to create a GL texture from AHardwareBuffer.";
       return false;
     }
@@ -592,7 +592,7 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
 std::unique_ptr<SharedImageBacking>
 AHardwareBufferImageBackingFactory::MakeBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -601,7 +601,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
-  DCHECK(format != viz::ETC1);
+  DCHECK(!viz::IsResourceFormatCompressed(format));
 
   if (!ValidateUsage(usage, size, format)) {
     return nullptr;
@@ -614,7 +614,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     return nullptr;
   }
 
-  const FormatInfo& format_info = format_info_[format];
+  const FormatInfo& format_info = GetFormatInfo(format);
 
   // Setup AHardwareBuffer.
   AHardwareBuffer* buffer = nullptr;
@@ -699,7 +699,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
 std::unique_ptr<SharedImageBacking>
 AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -714,7 +714,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 AHardwareBufferImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -732,7 +732,7 @@ bool AHardwareBufferImageBackingFactory::CanImportGpuMemoryBuffer(
 
 bool AHardwareBufferImageBackingFactory::IsSupported(
     uint32_t usage,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
@@ -756,11 +756,9 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 }
 
 bool AHardwareBufferImageBackingFactory::IsFormatSupported(
-    viz::ResourceFormat format) {
-  DCHECK_GE(format, 0);
-  DCHECK_LE(format, viz::RESOURCE_FORMAT_MAX);
-
-  return format_info_[format].ahb_supported;
+    viz::SharedImageFormat format) {
+  const FormatInfo& format_info = GetFormatInfo(format);
+  return format_info.ahb_supported;
 }
 
 AHardwareBufferImageBackingFactory::FormatInfo::FormatInfo() = default;
@@ -789,22 +787,21 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  auto resource_format = viz::GetResourceFormat(buffer_format);
-
-  if (!ValidateUsage(usage, size, resource_format)) {
+  auto si_format = viz::SharedImageFormat::SinglePlane(
+      viz::GetResourceFormat(buffer_format));
+  if (!ValidateUsage(usage, size, si_format)) {
     return nullptr;
   }
 
   size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, resource_format,
-                                            &estimated_size)) {
+  if (!viz::ResourceSizes::MaybeSizeInBytes(size, si_format, &estimated_size)) {
     LOG(ERROR) << "Failed to calculate SharedImage size";
     return nullptr;
   }
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
-      mailbox, resource_format, size, color_space, surface_origin, alpha_type,
-      usage, std::move(handle.android_hardware_buffer), estimated_size, false,
+      mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle.android_hardware_buffer), estimated_size, false,
       base::ScopedFD(), dawn_procs_);
 
   backing->SetCleared();

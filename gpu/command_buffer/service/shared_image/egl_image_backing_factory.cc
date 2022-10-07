@@ -38,7 +38,7 @@ EGLImageBackingFactory::~EGLImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -52,7 +52,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -80,7 +80,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
 }
 
 bool EGLImageBackingFactory::IsSupported(uint32_t usage,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          const gfx::Size& size,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
@@ -109,13 +109,13 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-  return CanCreateSharedImage(size, pixel_data, format_info_[format],
+  return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
                               GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -133,7 +133,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
 
   return std::make_unique<EGLImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      estimated_size, format_info_[format], workarounds_, use_passthrough_,
+      estimated_size, GetFormatInfo(format), workarounds_, use_passthrough_,
       pixel_data);
 }
 

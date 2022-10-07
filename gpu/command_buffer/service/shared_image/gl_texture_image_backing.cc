@@ -69,7 +69,7 @@ namespace {
 using InitializeGLTextureParams =
     GLTextureImageBackingHelper::InitializeGLTextureParams;
 
-int BytesPerPixel(viz::ResourceFormat format) {
+int BytesPerPixel(viz::SharedImageFormat format) {
   int bits = viz::BitsPerPixel(format);
   DCHECK_GE(bits, 8);
   return bits / 8;
@@ -91,8 +91,9 @@ bool SupportsUnpackSubimage() {
 // GLTextureImageBacking
 
 bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
-    viz::ResourceFormat format) {
-  switch (format) {
+    viz::SharedImageFormat format) {
+  auto resource_format = format.resource_format();
+  switch (resource_format) {
     case viz::ResourceFormat::RGBA_8888:
     case viz::ResourceFormat::RGBA_4444:
     case viz::ResourceFormat::BGRA_8888:
@@ -120,7 +121,7 @@ bool GLTextureImageBacking::SupportsPixelUploadWithFormat(
 }
 
 GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
-                                             viz::ResourceFormat format,
+                                             viz::SharedImageFormat format,
                                              const gfx::Size& size,
                                              const gfx::ColorSpace& color_space,
                                              GrSurfaceOrigin surface_origin,
@@ -224,13 +225,14 @@ bool GLTextureImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
 
   GLuint gl_unpack_row_length = 0;
   std::vector<uint8_t> repacked_data;
-  if (format() == viz::BGRX_8888 || format() == viz::RGBX_8888) {
+  auto resource_format = format().resource_format();
+  if (resource_format == viz::BGRX_8888 || resource_format == viz::RGBX_8888) {
     DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
 
     // BGRX and RGBX data is uploaded as GL_RGB. Repack from 4 to 3 bytes per
     // pixel.
     repacked_data =
-        RepackPixelDataAsRgb(size(), pixmap, format() == viz::BGRX_8888);
+        RepackPixelDataAsRgb(size(), pixmap, resource_format == viz::BGRX_8888);
   } else if (pixmap_stride > expected_stride) {
     if (SupportsUnpackSubimage()) {
       // Use GL_UNPACK_ROW_LENGTH to skip data past end of each row on upload.
@@ -311,7 +313,7 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
   if (!cached_promise_texture_) {
     GrBackendTexture backend_texture;
     GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                        GetGLServiceId(), format(),
+                        GetGLServiceId(), format().resource_format(),
                         context_state->gr_context()->threadSafeProxy(),
                         &backend_texture);
     cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);

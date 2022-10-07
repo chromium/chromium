@@ -83,7 +83,7 @@ class MockProgressReporter : public gl::ProgressReporter {
 };
 
 class GLImageBackingFactoryTestBase
-    : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
+    : public testing::TestWithParam<std::tuple<bool, viz::SharedImageFormat>> {
  public:
   explicit GLImageBackingFactoryTestBase(bool is_thread_safe)
       : shared_image_manager_(
@@ -122,15 +122,16 @@ class GLImageBackingFactoryTestBase
   }
 
   bool can_create_scanout_or_gmb_shared_image(
-      viz::ResourceFormat format) const {
-    if (format == viz::ResourceFormat::BGRA_1010102)
+      viz::SharedImageFormat format) const {
+    auto resource_format = format.resource_format();
+    if (resource_format == viz::ResourceFormat::BGRA_1010102)
       return supports_ar30_;
-    else if (format == viz::ResourceFormat::RGBA_1010102)
+    else if (resource_format == viz::ResourceFormat::RGBA_1010102)
       return supports_ab30_;
     return true;
   }
 
-  viz::ResourceFormat get_format() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
 
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
@@ -269,10 +270,11 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
     // Create a R-8 image texture, and check that the internal_format is that
     // of the image (GL_RGBA for TextureImageFactory). This only matters for
     // the validating decoder.
+    auto red_format =
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8);
     backing = backing_factory_->CreateSharedImage(
-        mailbox, viz::ResourceFormat::RED_8, gpu::kNullSurfaceHandle, size,
-        color_space, surface_origin, alpha_type, usage,
-        false /* is_thread_safe */);
+        mailbox, red_format, gpu::kNullSurfaceHandle, size, color_space,
+        surface_origin, alpha_type, usage, false /* is_thread_safe */);
     EXPECT_TRUE(backing);
     shared_image = shared_image_manager_->Register(std::move(backing),
                                                    memory_type_tracker_.get());
@@ -294,9 +296,10 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
 TEST_P(GLImageBackingFactoryTest, InitialData) {
   // TODO(andrescj): these loop over the formats can be replaced by test
   // parameters.
-  for (auto format :
+  for (auto resource_format :
        {viz::ResourceFormat::RGBA_8888, viz::ResourceFormat::BGRA_1010102,
         viz::ResourceFormat::RGBA_1010102}) {
+    auto format = viz::SharedImageFormat::SinglePlane(resource_format);
     const bool should_succeed = can_create_scanout_or_gmb_shared_image(format);
     if (should_succeed)
       EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
@@ -431,7 +434,8 @@ TEST_P(GLImageBackingFactoryTest, InitialDataWrongSize) {
 
 TEST_P(GLImageBackingFactoryTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::YUV_420_BIPLANAR;
+  auto format = viz::SharedImageFormat::SinglePlane(
+      viz::ResourceFormat::YUV_420_BIPLANAR);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -510,7 +514,8 @@ TEST_P(GLImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   const gles2::Validators* validators = feature_info->validators();
 
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = static_cast<viz::ResourceFormat>(i);
+    auto format = viz::SharedImageFormat::SinglePlane(
+        static_cast<viz::ResourceFormat>(i));
     if (!viz::GLSupportsFormat(format) ||
         viz::IsResourceFormatCompressed(format))
       continue;
@@ -702,20 +707,21 @@ TEST_P(GLImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-const auto kResourceFormats =
-    ::testing::Values(viz::ResourceFormat::RGBA_8888,
-                      viz::ResourceFormat::BGRA_1010102,
-                      viz::ResourceFormat::RGBA_1010102);
+const auto kSharedImageFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102));
 #else
 // High bit depth rendering is not supported on Android.
-const auto kResourceFormats = ::testing::Values(viz::ResourceFormat::RGBA_8888);
+const auto kSharedImageFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888));
 #endif
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::ResourceFormat>>&
+    const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&
         param_info) {
   const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::ResourceFormat format = std::get<1>(param_info.param);
+  const viz::SharedImageFormat format = std::get<1>(param_info.param);
   return base::StringPrintf(
       "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
       gfx::BufferFormatToString(viz::BufferFormat(format)));
@@ -724,12 +730,12 @@ std::string TestParamToString(
 INSTANTIATE_TEST_SUITE_P(Service,
                          GLImageBackingFactoryTest,
                          ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
+                                            kSharedImageFormats),
                          TestParamToString);
 INSTANTIATE_TEST_SUITE_P(Service,
                          GLImageBackingFactoryWithGMBTest,
                          ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
+                                            kSharedImageFormats),
                          TestParamToString);
 
 }  // anonymous namespace

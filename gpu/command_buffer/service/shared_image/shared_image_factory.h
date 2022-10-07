@@ -130,7 +130,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   SharedImageBackingFactory* GetFactoryByUsage(
       uint32_t usage,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       base::span<const uint8_t> pixel_data,
       gfx::GpuMemoryBufferType gmb_type);

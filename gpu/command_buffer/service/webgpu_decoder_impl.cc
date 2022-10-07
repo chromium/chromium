@@ -473,7 +473,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
            const DawnProcTable& procs,
            WGPUDevice device,
            WGPUTextureUsage usage) {
-      viz::ResourceFormat format = representation->format();
+      viz::ResourceFormat format = (representation->format()).resource_format();
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
       switch (format) {
@@ -573,7 +573,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       DCHECK(texture_);
     }
 
-    bool ComputeStagingBufferParams(viz::ResourceFormat format,
+    bool ComputeStagingBufferParams(viz::SharedImageFormat format,
                                     const gfx::Size& size,
                                     uint32_t* bytes_per_row,
                                     size_t* buffer_size) const {

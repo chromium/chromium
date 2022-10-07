@@ -40,7 +40,7 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
     const gfx::Size& size,
-    viz::ResourceFormat format) {
+    viz::SharedImageFormat format) {
   TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
   base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
   MTLPixelFormat mtl_pixel_format =
@@ -218,7 +218,7 @@ IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
 #if BUILDFLAG(USE_DAWN)
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
   // regarding RGBA versus BGRA.
-  viz::ResourceFormat actual_format = backing->format();
+  viz::ResourceFormat actual_format = (backing->format()).resource_format();
   if (actual_format == viz::RGBA_8888)
     actual_format = viz::BGRA_8888;
 

@@ -47,7 +47,7 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -57,7 +57,7 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -77,7 +77,7 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage) override;
   bool IsSupported(uint32_t usage,
-                   viz::ResourceFormat format,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
@@ -85,25 +85,6 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
 
  private:
-  scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
-                                         gfx::GpuMemoryBufferHandle handle,
-                                         gfx::BufferFormat format,
-                                         const gfx::ColorSpace& color_space,
-                                         gfx::BufferPlane plane,
-                                         SurfaceHandle surface_handle,
-                                         const gfx::Size& size);
-
-  std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      base::span<const uint8_t> pixel_data);
-
   struct BufferFormatInfo {
     // Whether to allow SHARED_IMAGE_USAGE_SCANOUT.
     bool allow_scanout = false;
@@ -114,6 +95,30 @@ class GPU_GLES2_EXPORT GLImageBackingFactory
     // BufferFormat for scanout images.
     gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
   };
+
+  scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
+                                         gfx::GpuMemoryBufferHandle handle,
+                                         gfx::BufferFormat format,
+                                         const gfx::ColorSpace& color_space,
+                                         gfx::BufferPlane plane,
+                                         SurfaceHandle surface_handle,
+                                         const gfx::Size& size);
+
+  std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      SurfaceHandle surface_handle,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::span<const uint8_t> pixel_data);
+
+  // WARNING: Format must be single plane.
+  const BufferFormatInfo& GetBufferFormatInfo(viz::SharedImageFormat format) {
+    return buffer_format_info_[format.resource_format()];
+  }
 
   // Factory used to generate GLImages for SCANOUT backings.
   const raw_ptr<ImageFactory> image_factory_ = nullptr;

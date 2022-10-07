@@ -47,7 +47,7 @@ GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -64,7 +64,7 @@ GLTextureImageBackingFactory::CreateSharedImage(
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -99,7 +99,7 @@ GLTextureImageBackingFactory::CreateSharedImageForTest(
     GLenum target,
     GLuint service_id,
     bool is_cleared,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     uint32_t usage) {
   auto result = std::make_unique<GLTextureImageBacking>(
@@ -117,7 +117,7 @@ GLTextureImageBackingFactory::CreateSharedImageForTest(
 
 bool GLTextureImageBackingFactory::IsSupported(
     uint32_t usage,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
@@ -173,14 +173,14 @@ bool GLTextureImageBackingFactory::IsSupported(
 #endif
   }
 
-  return CanCreateSharedImage(size, pixel_data, format_info_[format],
+  return CanCreateSharedImage(size, pixel_data, GetFormatInfo(format),
                               GL_TEXTURE_2D);
 }
 
 std::unique_ptr<SharedImageBacking>
 GLTextureImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -188,7 +188,7 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  const FormatInfo& format_info = format_info_[format];
+  const FormatInfo& format_info = GetFormatInfo(format);
   GLenum target = GL_TEXTURE_2D;
 
   const bool for_framebuffer_attachment =

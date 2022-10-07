@@ -123,7 +123,7 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 AngleVulkanImageBacking::AngleVulkanImageBacking(
     const raw_ptr<SharedContextState>& context_state,
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -187,7 +187,7 @@ bool AngleVulkanImageBacking::Initialize(
   if (usage() & kUsageNeedsColorAttachment) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-    if (format() == viz::ETC1) {
+    if (viz::IsResourceFormatCompressed(format())) {
       DLOG(ERROR) << "ETC1 format cannot be used as color attachment.";
       return false;
     }

@@ -183,7 +183,7 @@ class GPU_GLES2_EXPORT GLImageBacking
   GLImageBacking(
       scoped_refptr<gl::GLImage> image,
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

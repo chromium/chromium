@@ -48,7 +48,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
   // plane (Y/0 or UV/1) in NV12/P010 video textures.
   static std::unique_ptr<D3DImageBacking> Create(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -148,7 +148,7 @@ class GPU_GLES2_EXPORT D3DImageBacking
  private:
   D3DImageBacking(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

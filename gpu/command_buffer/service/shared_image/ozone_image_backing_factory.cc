@@ -63,7 +63,7 @@ OzoneImageBackingFactory::~OzoneImageBackingFactory() = default;
 std::unique_ptr<OzoneImageBacking>
 OzoneImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -100,7 +100,7 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -116,7 +116,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -170,9 +170,10 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   const viz::ResourceFormat plane_format =
       viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format));
   auto backing = std::make_unique<OzoneImageBacking>(
-      mailbox, plane_format, plane, plane_size, color_space, surface_origin,
-      alpha_type, usage, shared_context_state_.get(), std::move(pixmap),
-      dawn_procs_, workarounds_, use_passthrough_);
+      mailbox, viz::SharedImageFormat::SinglePlane(plane_format), plane,
+      plane_size, color_space, surface_origin, alpha_type, usage,
+      shared_context_state_.get(), std::move(pixmap), dawn_procs_, workarounds_,
+      use_passthrough_);
   backing->SetCleared();
 
   return backing;
@@ -180,7 +181,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
 
 bool OzoneImageBackingFactory::IsSupported(
     uint32_t usage,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,

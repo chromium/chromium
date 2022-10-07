@@ -286,15 +286,14 @@ SharedImageFactory::~SharedImageFactory() {
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
-                                           viz::SharedImageFormat si_format,
+                                           viz::SharedImageFormat format,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
                                            uint32_t usage) {
-  DCHECK(si_format.is_single_plane());
-  auto format = si_format.resource_format();
+  DCHECK(format.is_single_plane());
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory)
@@ -311,15 +310,14 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
 }
 
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
-                                           viz::SharedImageFormat si_format,
+                                           viz::SharedImageFormat format,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            base::span<const uint8_t> data) {
-  DCHECK(si_format.is_single_plane());
-  auto format = si_format.resource_format();
+  DCHECK(format.is_single_plane());
   SharedImageBackingFactory* factory = nullptr;
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
@@ -354,11 +352,12 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            GrSurfaceOrigin surface_origin,
                                            SkAlphaType alpha_type,
                                            uint32_t usage) {
-  auto resource_format = viz::GetResourceFormat(format);
+  auto si_format =
+      viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(format));
   gfx::GpuMemoryBufferType gmb_type = handle.type;
 
   bool use_compound = false;
-  auto* factory = GetFactoryByUsage(usage, resource_format, size,
+  auto* factory = GetFactoryByUsage(usage, si_format, size,
                                     /*pixel_data=*/{}, gmb_type);
 
   if (!factory && gmb_type == gfx::SHARED_MEMORY_BUFFER) {
@@ -366,7 +365,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     // another GPU backing type to satisfy requirements.
     use_compound = true;
     factory = GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
-                                resource_format, size,
+                                si_format, size,
                                 /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   }
 
@@ -558,7 +557,7 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
 
 SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
     uint32_t usage,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     base::span<const uint8_t> pixel_data,
     gfx::GpuMemoryBufferType gmb_type) {
@@ -574,7 +573,8 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   }
 
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
-             << CreateLabelForSharedImageUsage(usage) << ", format: " << format
+             << CreateLabelForSharedImageUsage(usage)
+             << ", format: " << viz::ResourceFormatToString(format)
              << ", share_between_threads: " << share_between_threads
              << ", gmb_type: " << GmbTypeToString(gmb_type);
   return nullptr;

@@ -154,7 +154,7 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
 }  // namespace
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
-                                   viz::ResourceFormat format,
+                                   viz::SharedImageFormat format,
                                    const gfx::Size& size,
                                    const gfx::ColorSpace& color_space,
                                    GrSurfaceOrigin surface_origin,
@@ -188,7 +188,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 }
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
-                                   viz::ResourceFormat format,
+                                   viz::SharedImageFormat format,
                                    const gfx::Size& size,
                                    const gfx::ColorSpace& color_space,
                                    GrSurfaceOrigin surface_origin,

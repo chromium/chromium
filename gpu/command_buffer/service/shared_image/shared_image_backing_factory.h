@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -33,7 +33,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
 
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -43,7 +43,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
       bool is_thread_safe) = 0;
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -65,7 +65,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
 
   // Returns true if the factory is supported
   virtual bool IsSupported(uint32_t usage,
-                           viz::ResourceFormat format,
+                           viz::SharedImageFormat format,
                            const gfx::Size& size,
                            bool thread_safe,
                            gfx::GpuMemoryBufferType gmb_type,

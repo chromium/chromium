@@ -93,7 +93,7 @@ GLImageBackingFactory::~GLImageBackingFactory() = default;
 
 std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -109,7 +109,7 @@ std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -201,8 +201,10 @@ std::unique_ptr<SharedImageBacking> GLImageBackingFactory::CreateSharedImage(
   params.is_cleared = true;
   params.framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
+
+  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
   return std::make_unique<GLImageBacking>(
-      image, mailbox, plane_format, plane_size, color_space, surface_origin,
+      image, mailbox, si_format, plane_size, color_space, surface_origin,
       alpha_type, usage, params, use_passthrough_);
 }
 
@@ -223,7 +225,7 @@ scoped_refptr<gl::GLImage> GLImageBackingFactory::MakeGLImage(
 }
 
 bool GLImageBackingFactory::IsSupported(uint32_t usage,
-                                        viz::ResourceFormat format,
+                                        viz::SharedImageFormat format,
                                         const gfx::Size& size,
                                         bool thread_safe,
                                         gfx::GpuMemoryBufferType gmb_type,
@@ -283,7 +285,7 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
 std::unique_ptr<SharedImageBacking>
 GLImageBackingFactory::CreateSharedImageInternal(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -291,8 +293,8 @@ GLImageBackingFactory::CreateSharedImageInternal(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  const FormatInfo& format_info = format_info_[format];
-  const BufferFormatInfo& buffer_format_info = buffer_format_info_[format];
+  const FormatInfo& format_info = GetFormatInfo(format);
+  const BufferFormatInfo& buffer_format_info = GetBufferFormatInfo(format);
   GLenum target = buffer_format_info.target_for_scanout;
 
   if (!buffer_format_info.allow_scanout) {

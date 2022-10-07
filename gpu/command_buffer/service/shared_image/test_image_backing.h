@@ -16,7 +16,7 @@ class TestImageBacking : public SharedImageBacking {
  public:
   // Constructor which uses a dummy GL texture ID for the backing.
   TestImageBacking(const Mailbox& mailbox,
-                   viz::ResourceFormat format,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    const gfx::ColorSpace& color_space,
                    GrSurfaceOrigin surface_origin,
@@ -25,7 +25,7 @@ class TestImageBacking : public SharedImageBacking {
                    size_t estimated_size);
   // Constructor which uses a provided GL texture ID for the backing.
   TestImageBacking(const Mailbox& mailbox,
-                   viz::ResourceFormat format,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    const gfx::ColorSpace& color_space,
                    GrSurfaceOrigin surface_origin,

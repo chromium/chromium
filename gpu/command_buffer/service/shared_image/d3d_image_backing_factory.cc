@@ -54,7 +54,8 @@ bool ClearBackBuffer(Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
 
 // Only RGBA formats supported by CreateSharedImage.
 absl::optional<DXGI_FORMAT> GetSupportedRGBAFormat(
-    viz::ResourceFormat viz_resource_format) {
+    viz::SharedImageFormat viz_si_format) {
+  auto viz_resource_format = viz_si_format.resource_format();
   switch (viz_resource_format) {
     case viz::RGBA_F16:
       return DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -308,7 +309,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
@@ -331,6 +332,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
   // SHARED_IMAGE_USAGE_CPU_UPLOAD is set for shared memory GMBs.
   const bool is_shm_gmb = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
+  const auto resource_format = format.resource_format();
 
   D3D11_TEXTURE2D_DESC desc;
   desc.Width = size.width();
@@ -344,7 +346,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
   // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
   if ((usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) &&
-      (format == viz::RGBA_8888 || format == viz::RGBA_F16)) {
+      (resource_format == viz::RGBA_8888 || resource_format == viz::RGBA_F16)) {
     desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
   }
   if (is_shm_gmb) {
@@ -405,7 +407,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
 std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -451,6 +453,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   const gfx::Size plane_size = GetPlaneSize(plane, size);
   const viz::ResourceFormat plane_format =
       viz::GetResourceFormat(GetPlaneBufferFormat(plane, format));
+  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
   // TODO(sunnyps): Use GL_TEXTURE_2D for all cases since it's allowed by ANGLE.
   const GLenum texture_target = plane == gfx::BufferPlane::DEFAULT
                                     ? GL_TEXTURE_2D
@@ -458,9 +461,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
 
   auto backing = D3DImageBacking::Create(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, std::move(d3d11_texture),
-      std::move(dxgi_shared_handle_state), texture_target, /*array_slice=*/0u,
+      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
+      usage, std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
+      texture_target, /*array_slice=*/0u,
       /*plane_index=*/plane_index);
   if (backing)
     backing->SetCleared();
@@ -487,7 +490,7 @@ bool D3DImageBackingFactory::UseMapOnDefaultTextures() {
 }
 
 bool D3DImageBackingFactory::IsSupported(uint32_t usage,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          const gfx::Size& size,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
@@ -505,7 +508,7 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
     if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
       // Only allow single NV12 shared memory GMBs for now. This excludes
       // dual shared memory GMBs used by software video decoder.
-      if (format != viz::YUV_420_BIPLANAR)
+      if (format.resource_format() != viz::YUV_420_BIPLANAR)
         return false;
     } else {
       if (!GetSupportedRGBAFormat(format))

@@ -119,14 +119,15 @@ class GLTextureImageBackingFactoryTestBase : public testing::Test {
            gles2::PassthroughCommandDecoderSupported();
   }
 
-  bool IsFormatSupport(viz::ResourceFormat format) const {
-    if (format == viz::ResourceFormat::RED_8 ||
-        format == viz::ResourceFormat::RG_88) {
+  bool IsFormatSupport(viz::SharedImageFormat format) const {
+    auto resource_format = format.resource_format();
+    if (resource_format == viz::ResourceFormat::RED_8 ||
+        resource_format == viz::ResourceFormat::RG_88) {
       return supports_r_rg_;
-    } else if (format == viz::ResourceFormat::BGRA_1010102 ||
-               format == viz::ResourceFormat::RGBA_1010102) {
+    } else if (resource_format == viz::ResourceFormat::BGRA_1010102 ||
+               resource_format == viz::ResourceFormat::RGBA_1010102) {
       return supports_ar30_ || supports_ab30_;
-    } else if (format == viz::ResourceFormat::ETC1) {
+    } else if (resource_format == viz::ResourceFormat::ETC1) {
       return supports_etc1_;
     }
     return true;
@@ -160,23 +161,24 @@ class GLTextureImageBackingFactoryTest
   }
 };
 
-// ResourceFormat parameterized tests.
+// SharedImageFormat parameterized tests.
 class GLTextureImageBackingFactoryWithFormatTest
     : public GLTextureImageBackingFactoryTest,
-      public testing::WithParamInterface<viz::ResourceFormat> {
+      public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
-  viz::ResourceFormat get_format() { return GetParam(); }
+  viz::SharedImageFormat get_format() { return GetParam(); }
 };
 
-// ResourceFormat parameterized tests for initial data upload. Only a subset
+// SharedImageFormat parameterized tests for initial data upload. Only a subset
 // of formats support upload.
 using GLTextureImageBackingFactoryInitialDataTest =
     GLTextureImageBackingFactoryWithFormatTest;
 
-// ResourceFormat parameterized tests with a factory that supports pixel upload.
+// SharedImageFormat parameterized tests with a factory that supports pixel
+// upload.
 class GLTextureImageBackingFactoryWithUploadTest
     : public GLTextureImageBackingFactoryTestBase,
-      public testing::WithParamInterface<viz::ResourceFormat> {
+      public testing::WithParamInterface<viz::SharedImageFormat> {
  public:
   GLTextureImageBackingFactoryWithUploadTest()
       : GLTextureImageBackingFactoryTestBase(false) {}
@@ -184,11 +186,12 @@ class GLTextureImageBackingFactoryWithUploadTest
     GpuDriverBugWorkarounds workarounds;
     SetUpBase(workarounds, /*for_cpu_upload_usage=*/true);
   }
-  viz::ResourceFormat get_format() { return GetParam(); }
+  viz::SharedImageFormat get_format() { return GetParam(); }
 };
 
 TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
-  auto format = viz::ResourceFormat::YUV_420_BIPLANAR;
+  auto format = viz::SharedImageFormat::SinglePlane(
+      viz::ResourceFormat::YUV_420_BIPLANAR);
   gfx::Size size(256, 256);
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
   bool supported =
@@ -200,7 +203,8 @@ TEST_F(GLTextureImageBackingFactoryTest, InvalidFormat) {
 // Ensures that GLTextureImageBacking registers it's estimated size
 // with memory tracker.
 TEST_F(GLTextureImageBackingFactoryTest, EstimatedSize) {
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
@@ -241,7 +245,8 @@ TEST_F(GLTextureImageBackingFactoryTest, TexImageTexStorageEquivalence) {
   const gles2::Validators* validators = feature_info->validators();
 
   for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = static_cast<viz::ResourceFormat>(i);
+    auto format = viz::SharedImageFormat::SinglePlane(
+        static_cast<viz::ResourceFormat>(i));
     if (!viz::GLSupportsFormat(format) ||
         viz::IsResourceFormatCompressed(format))
       continue;
@@ -298,7 +303,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
     GTEST_SKIP();
   }
 
-  viz::ResourceFormat format = get_format();
+  viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
   }
@@ -378,8 +383,11 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
   // allow Chrome to do something that Skia doesn't support.
-  if ((format != viz::ResourceFormat::BGRA_1010102 || supports_ar30_) &&
-      (format != viz::ResourceFormat::RGBA_1010102 || supports_ab30_)) {
+  auto resource_format = format.resource_format();
+  if ((resource_format != viz::ResourceFormat::BGRA_1010102 ||
+       supports_ar30_) &&
+      (resource_format != viz::ResourceFormat::RGBA_1010102 ||
+       supports_ab30_)) {
     ASSERT_TRUE(scoped_write_access);
     auto* surface = scoped_write_access->surface();
     ASSERT_TRUE(surface);
@@ -408,7 +416,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
 }
 
 TEST_P(GLTextureImageBackingFactoryWithFormatTest, InvalidSize) {
-  viz::ResourceFormat format = get_format();
+  viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
   }
@@ -428,7 +436,7 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, InvalidSize) {
 }
 
 TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
-  viz::ResourceFormat format = get_format();
+  viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
   }
@@ -487,7 +495,7 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialData) {
 }
 
 TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
-  viz::ResourceFormat format = get_format();
+  viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
   }
@@ -498,18 +506,20 @@ TEST_P(GLTextureImageBackingFactoryInitialDataTest, InitialDataWrongSize) {
       viz::ResourceSizes::CheckedSizeInBytes<size_t>(size, format);
   std::vector<uint8_t> initial_data_small(required_size / 2);
   std::vector<uint8_t> initial_data_large(required_size * 2);
-  bool supported = backing_factory_->IsSupported(
-      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-      GrContextType::kGL, initial_data_small);
+  bool supported =
+      backing_factory_->IsSupported(usage, format, size,
+                                    /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+                                    GrContextType::kGL, initial_data_small);
   EXPECT_FALSE(supported);
-  supported = backing_factory_->IsSupported(
-      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
-      GrContextType::kGL, initial_data_large);
+  supported =
+      backing_factory_->IsSupported(usage, format, size,
+                                    /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+                                    GrContextType::kGL, initial_data_large);
   EXPECT_FALSE(supported);
 }
 
 TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
-  viz::ResourceFormat format = get_format();
+  viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
   }
@@ -556,42 +566,44 @@ TEST_P(GLTextureImageBackingFactoryWithUploadTest, UploadFromMemory) {
   EXPECT_TRUE(backing->UploadFromMemory(larger_bitmap.pixmap()));
 }
 
-const auto kResourceFormats =
-    ::testing::Values(viz::ResourceFormat::RGBA_8888,
-                      viz::ResourceFormat::BGRA_8888,
-                      viz::ResourceFormat::RGBA_4444,
-                      viz::ResourceFormat::RED_8,
-                      viz::ResourceFormat::RG_88,
-                      viz::ResourceFormat::BGRA_1010102,
-                      viz::ResourceFormat::RGBA_1010102,
-                      viz::ResourceFormat::RGBX_8888,
-                      viz::ResourceFormat::BGRX_8888);
+const auto kSharedImageFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBX_8888),
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRX_8888));
 
 std::string TestParamToString(
-    const testing::TestParamInfo<viz::ResourceFormat>& param_info) {
+    const testing::TestParamInfo<viz::SharedImageFormat>& param_info) {
   return viz::ResourceFormatToString(param_info.param);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         GLTextureImageBackingFactoryInitialDataTest,
-                         ::testing::Values(viz::ResourceFormat::ETC1,
-                                           viz::ResourceFormat::RGBA_8888,
-                                           viz::ResourceFormat::BGRA_8888,
-                                           viz::ResourceFormat::RGBA_4444,
-                                           viz::ResourceFormat::RED_8,
-                                           viz::ResourceFormat::RG_88,
-                                           viz::ResourceFormat::BGRA_1010102,
-                                           viz::ResourceFormat::RGBA_1010102),
-                         TestParamToString);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GLTextureImageBackingFactoryInitialDataTest,
+    ::testing::Values(
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::ETC1),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_8888),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_4444),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RED_8),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RG_88),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::BGRA_1010102),
+        viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_1010102)),
+    TestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithFormatTest,
-                         kResourceFormats,
+                         kSharedImageFormats,
                          TestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(,
                          GLTextureImageBackingFactoryWithUploadTest,
-                         kResourceFormats,
+                         kSharedImageFormats,
                          TestParamToString);
 
 }  // anonymous namespace

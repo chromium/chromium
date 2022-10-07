@@ -22,7 +22,8 @@ namespace {
 
 std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -40,7 +41,8 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -112,7 +114,8 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -144,7 +147,8 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto tracker2 = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
@@ -214,7 +218,8 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
       &memory_tracker2, memory_tracker2.task_runner());
 
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::RGBA_8888;
+  auto format =
+      viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888);
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;

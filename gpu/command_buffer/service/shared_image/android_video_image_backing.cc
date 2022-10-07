@@ -30,7 +30,7 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
     bool is_thread_safe)
     : AndroidImageBacking(
           mailbox,
-          viz::RGBA_8888,
+          viz::SharedImageFormat::SinglePlane(viz::RGBA_8888),
           size,
           color_space,
           surface_origin,

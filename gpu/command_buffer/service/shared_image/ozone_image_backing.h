@@ -39,7 +39,7 @@ class OzoneImageBacking final : public ClearTrackingSharedImageBacking {
  public:
   OzoneImageBacking(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferPlane plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,

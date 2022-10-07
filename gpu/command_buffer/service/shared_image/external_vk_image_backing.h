@@ -34,7 +34,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       scoped_refptr<SharedContextState> context_state,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -58,7 +58,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
 
   ExternalVkImageBacking(base::PassKey<ExternalVkImageBacking>,
                          const Mailbox& mailbox,
-                         viz::ResourceFormat format,
+                         viz::SharedImageFormat format,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,

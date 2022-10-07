@@ -74,7 +74,7 @@ void CreateSharedContext(const GpuDriverBugWorkarounds& workarounds,
 }
 
 class EGLImageBackingFactoryThreadSafeTest
-    : public testing::TestWithParam<std::tuple<bool, viz::ResourceFormat>> {
+    : public testing::TestWithParam<std::tuple<bool, viz::SharedImageFormat>> {
  public:
   EGLImageBackingFactoryThreadSafeTest()
       : shared_image_manager_(std::make_unique<SharedImageManager>(true)) {}
@@ -116,7 +116,7 @@ class EGLImageBackingFactoryThreadSafeTest
            gles2::PassthroughCommandDecoderSupported();
   }
 
-  viz::ResourceFormat get_format() { return std::get<1>(GetParam()); }
+  viz::SharedImageFormat get_format() { return std::get<1>(GetParam()); }
 
  protected:
   scoped_refptr<gl::GLSurface> surface_;
@@ -139,7 +139,7 @@ class CreateAndValidateSharedImageRepresentations {
  public:
   CreateAndValidateSharedImageRepresentations(
       EGLImageBackingFactory* backing_factory,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       bool is_thread_safe,
       gles2::MailboxManagerImpl* mailbox_manager,
       SharedImageManager* shared_image_manager,
@@ -259,7 +259,7 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
 CreateAndValidateSharedImageRepresentations::
     CreateAndValidateSharedImageRepresentations(
         EGLImageBackingFactory* backing_factory,
-        viz::ResourceFormat format,
+        viz::SharedImageFormat format,
         bool is_thread_safe,
         gles2::MailboxManagerImpl* mailbox_manager,
         SharedImageManager* shared_image_manager,
@@ -302,8 +302,9 @@ CreateAndValidateSharedImageRepresentations::
       context_state->feature_info()->feature_flags().chromium_image_ar30;
   const bool supports_ab30 =
       context_state->feature_info()->feature_flags().chromium_image_ab30;
-  if ((format == viz::ResourceFormat::BGRA_1010102 ||
-       format == viz::ResourceFormat::RGBA_1010102) &&
+  const auto resource_format = format.resource_format();
+  if ((resource_format == viz::ResourceFormat::BGRA_1010102 ||
+       resource_format == viz::ResourceFormat::RGBA_1010102) &&
       !supports_ar30 && !supports_ab30) {
     EXPECT_FALSE(backing_);
     return;
@@ -351,8 +352,8 @@ CreateAndValidateSharedImageRepresentations::
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
   // allow Chrome to do something that Skia doesn't support.
-  if ((format != viz::ResourceFormat::BGRA_1010102 || supports_ar30) &&
-      (format != viz::ResourceFormat::RGBA_1010102 || supports_ab30)) {
+  if ((resource_format != viz::ResourceFormat::BGRA_1010102 || supports_ar30) &&
+      (resource_format != viz::ResourceFormat::RGBA_1010102 || supports_ab30)) {
     EXPECT_TRUE(scoped_write_access);
     if (!scoped_write_access)
       return;
@@ -389,13 +390,14 @@ CreateAndValidateSharedImageRepresentations::
 }
 
 // High bit depth rendering is not supported on Android.
-const auto kResourceFormats = ::testing::Values(viz::ResourceFormat::RGBA_8888);
+const auto kSharedImageFormats = ::testing::Values(
+    viz::SharedImageFormat::SinglePlane(viz::ResourceFormat::RGBA_8888));
 
 std::string TestParamToString(
-    const testing::TestParamInfo<std::tuple<bool, viz::ResourceFormat>>&
+    const testing::TestParamInfo<std::tuple<bool, viz::SharedImageFormat>>&
         param_info) {
   const bool allow_passthrough = std::get<0>(param_info.param);
-  const viz::ResourceFormat format = std::get<1>(param_info.param);
+  const viz::SharedImageFormat format = std::get<1>(param_info.param);
   return base::StringPrintf(
       "%s_%s", (allow_passthrough ? "AllowPassthrough" : "DisallowPassthrough"),
       gfx::BufferFormatToString(viz::BufferFormat(format)));
@@ -404,7 +406,7 @@ std::string TestParamToString(
 INSTANTIATE_TEST_SUITE_P(Service,
                          EGLImageBackingFactoryThreadSafeTest,
                          ::testing::Combine(::testing::Bool(),
-                                            kResourceFormats),
+                                            kSharedImageFormats),
                          TestParamToString);
 
 }  // anonymous namespace

@@ -240,7 +240,7 @@ std::unique_ptr<OverlayImageRepresentation> OzoneImageBacking::ProduceOverlay(
 
 OzoneImageBacking::OzoneImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,

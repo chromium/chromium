@@ -2229,9 +2229,10 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       }
 
       auto shared_image = std::make_unique<gpu::GLImageBacking>(
-          gl_image, mailbox, viz_resource_format, plane_size, color_space,
-          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
-          gl_params, gl_client_.is_passthrough);
+          gl_image, mailbox,
+          viz::SharedImageFormat::SinglePlane(viz_resource_format), plane_size,
+          color_space, kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+          shared_image_usage, gl_params, gl_client_.is_passthrough);
 
       const bool success = shared_image_stub->factory()->RegisterBacking(
           std::move(shared_image));

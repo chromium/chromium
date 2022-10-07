@@ -17,6 +17,7 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -80,7 +81,7 @@ enum class SharedImageBackingType {
 class GPU_GLES2_EXPORT SharedImageBacking {
  public:
   SharedImageBacking(const Mailbox& mailbox,
-                     viz::ResourceFormat format,
+                     viz::SharedImageFormat format,
                      const gfx::Size& size,
                      const gfx::ColorSpace& color_space,
                      GrSurfaceOrigin surface_origin,
@@ -91,7 +92,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   virtual ~SharedImageBacking();
 
-  viz::ResourceFormat format() const { return format_; }
+  viz::SharedImageFormat format() const { return format_; }
   const gfx::Size& size() const { return size_; }
   const gfx::ColorSpace& color_space() const { return color_space_; }
   GrSurfaceOrigin surface_origin() const { return surface_origin_; }
@@ -283,7 +284,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   };
 
   const Mailbox mailbox_;
-  const viz::ResourceFormat format_;
+  const viz::SharedImageFormat format_;
   const gfx::Size size_;
   const gfx::ColorSpace color_space_;
   const GrSurfaceOrigin surface_origin_;
@@ -317,7 +318,7 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
     : public SharedImageBacking {
  public:
   ClearTrackingSharedImageBacking(const Mailbox& mailbox,
-                                  viz::ResourceFormat format,
+                                  viz::SharedImageFormat format,
                                   const gfx::Size& size,
                                   const gfx::ColorSpace& color_space,
                                   GrSurfaceOrigin surface_origin,

@@ -164,7 +164,7 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,
     SharedContextState* context_state,
     const gfx::Size& size,
-    const viz::ResourceFormat& format,
+    const viz::SharedImageFormat& format,
     uint32_t queue_family_index) {
   DCHECK(context_state);
   DCHECK(context_state->GrContextIsVulkan());

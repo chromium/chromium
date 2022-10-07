@@ -57,7 +57,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
 
   CompoundImageBacking(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

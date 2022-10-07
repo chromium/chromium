@@ -44,7 +44,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -54,7 +54,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -74,32 +74,15 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage) override;
   bool IsSupported(uint32_t usage,
-                   viz::ResourceFormat format,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
-  bool IsFormatSupported(viz::ResourceFormat format);
+  bool IsFormatSupported(viz::SharedImageFormat format);
 
  private:
-  bool ValidateUsage(uint32_t usage,
-                     const gfx::Size& size,
-                     viz::ResourceFormat format) const;
-
-  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
-
-  std::unique_ptr<SharedImageBacking> MakeBacking(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      bool is_thread_safe,
-      base::span<const uint8_t> pixel_data);
-
   struct FormatInfo {
     FormatInfo();
     ~FormatInfo();
@@ -116,6 +99,28 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     GLenum gl_format = 0;
     GLenum gl_type = 0;
   };
+
+  bool ValidateUsage(uint32_t usage,
+                     const gfx::Size& size,
+                     viz::SharedImageFormat format) const;
+
+  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
+
+  std::unique_ptr<SharedImageBacking> MakeBacking(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      bool is_thread_safe,
+      base::span<const uint8_t> pixel_data);
+
+  // WARNING: Format must be single plane.
+  const FormatInfo& GetFormatInfo(viz::SharedImageFormat format) const {
+    return format_info_[format.resource_format()];
+  }
 
   FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
 

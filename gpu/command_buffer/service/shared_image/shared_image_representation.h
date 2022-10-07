@@ -81,7 +81,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
                             MemoryTypeTracker* tracker);
   virtual ~SharedImageRepresentation();
 
-  viz::ResourceFormat format() const { return backing_->format(); }
+  viz::SharedImageFormat format() const { return backing_->format(); }
   const gfx::Size& size() const { return backing_->size(); }
   const gfx::ColorSpace& color_space() const { return backing_->color_space(); }
   GrSurfaceOrigin surface_origin() const { return backing_->surface_origin(); }

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
 
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
@@ -76,7 +76,7 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,
     SharedContextState* context_state,
     const gfx::Size& size,
-    const viz::ResourceFormat& format,
+    const viz::SharedImageFormat& format,
     uint32_t queue_family_index);
 
 }  // namespace gpu

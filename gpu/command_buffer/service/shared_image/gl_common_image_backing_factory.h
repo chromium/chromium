@@ -67,6 +67,11 @@ class GPU_GLES2_EXPORT GLCommonImageBackingFactory
                               gl::ProgressReporter* progress_reporter);
   ~GLCommonImageBackingFactory() override;
 
+  // WARNING: Format must be single plane.
+  const FormatInfo& GetFormatInfo(viz::SharedImageFormat format) {
+    return format_info_[format.resource_format()];
+  }
+
   bool CanCreateSharedImage(const gfx::Size& size,
                             base::span<const uint8_t> pixel_data,
                             const FormatInfo& format_info,

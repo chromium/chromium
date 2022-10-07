@@ -63,25 +63,31 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   }
 }
 
-viz::ResourceFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
+viz::SharedImageFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
   DCHECK_LT(plane, NumPlanes(dxgi_format));
+  viz::ResourceFormat format;
   switch (dxgi_format) {
     // TODO(crbug.com/1011555): P010 formats are not fully supported by Skia.
     // Treat them the same as NV12 for the time being.
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
       // Y plane is accessed as R8 and UV plane is accessed as RG88 in D3D.
-      return plane == 0 ? viz::RED_8 : viz::RG_88;
+      format = plane == 0 ? viz::RED_8 : viz::RG_88;
+      break;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return viz::BGRA_8888;
+      format = viz::BGRA_8888;
+      break;
     case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return viz::RGBA_1010102;
+      format = viz::RGBA_1010102;
+      break;
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return viz::RGBA_F16;
+      format = viz::RGBA_F16;
+      break;
     default:
       NOTREACHED();
-      return viz::BGRA_8888;
+      format = viz::BGRA_8888;
   }
+  return viz::SharedImageFormat::SinglePlane(format);
 }
 
 gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
@@ -104,7 +110,7 @@ gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
 }
 
 scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
@@ -163,7 +169,7 @@ void CopyPlane(const uint8_t* source_memory,
                size_t source_stride,
                uint8_t* dest_memory,
                size_t dest_stride,
-               viz::ResourceFormat format,
+               viz::SharedImageFormat format,
                const gfx::Size& size) {
   int row_bytes = size.width() * viz::BitsPerPixel(format) / 8;
   libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
@@ -184,15 +190,16 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
     bool is_back_buffer) {
-  auto gl_texture =
-      CreateGLTexture(format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
-                      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
+  auto gl_texture = CreateGLTexture(
+      si_format, size, color_space, d3d11_texture, GL_TEXTURE_2D,
+      /*array_slice=*/0u, /*plane_index=*/0u, swap_chain);
   if (!gl_texture) {
     LOG(ERROR) << "Failed to create GL texture";
     return nullptr;
   }
   return base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
       std::move(d3d11_texture), std::move(gl_texture),
       /*dxgi_shared_handle_state=*/nullptr, GL_TEXTURE_2D, /*array_slice=*/0u,
       /*plane_index=*/0u, std::move(swap_chain), is_back_buffer));
@@ -201,7 +208,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -249,9 +256,10 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromGLTexture(
     uint32_t usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<gles2::TexturePassthrough> gl_texture) {
-  return base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture)));
+  return base::WrapUnique(
+      new D3DImageBacking(mailbox, viz::SharedImageFormat::SinglePlane(format),
+                          size, color_space, surface_origin, alpha_type, usage,
+                          std::move(d3d11_texture), std::move(gl_texture)));
 }
 
 // static
@@ -322,7 +330,7 @@ D3DImageBacking::CreateFromVideoTexture(
 
 D3DImageBacking::D3DImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -552,16 +560,17 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
         device);
   }
 #endif
-  const viz::ResourceFormat viz_resource_format = format();
-  const WGPUTextureFormat wgpu_format = viz::ToWGPUFormat(viz_resource_format);
+  const viz::SharedImageFormat viz_si_format = format();
+  const WGPUTextureFormat wgpu_format = viz::ToWGPUFormat(viz_si_format);
   if (wgpu_format == WGPUTextureFormat_Undefined) {
-    LOG(ERROR) << "Unsupported viz format found: " << viz_resource_format;
+    LOG(ERROR) << "Unsupported viz format found: "
+               << viz::ResourceFormatToString(viz_si_format);
     return nullptr;
   }
   const WGPUTextureUsageFlags usage = GetAllowedDawnUsages(wgpu_format);
   if (usage == WGPUTextureUsage_None) {
     LOG(ERROR) << "WGPUTextureUsage is unknown for viz format: "
-               << viz_resource_format;
+               << viz::ResourceFormatToString(viz_si_format);
     return nullptr;
   }
 

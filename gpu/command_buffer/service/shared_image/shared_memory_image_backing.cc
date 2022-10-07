@@ -30,6 +30,7 @@
 
 namespace gpu {
 namespace {
+
 class MemoryImageRepresentationImpl : public MemoryImageRepresentation {
  public:
   MemoryImageRepresentationImpl(SharedImageManager* manager,
@@ -186,7 +187,7 @@ void SharedMemoryImageBacking::OnMemoryDump(
 
 SharedMemoryImageBacking::SharedMemoryImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,

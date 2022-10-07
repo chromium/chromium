@@ -177,14 +177,14 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
 
 EGLImageBacking::EGLImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
     size_t estimated_size,
-    const GLCommonImageBackingFactory::FormatInfo format_info,
+    const GLCommonImageBackingFactory::FormatInfo& format_info,
     const GpuDriverBugWorkarounds& workarounds,
     bool use_passthrough,
     base::span<const uint8_t> pixel_data)

@@ -308,20 +308,22 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     return nullptr;
   }
 
+  auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
+
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
+      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
+      SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
   shm_backing->SetNotRefCounted();
 
   return std::make_unique<CompoundImageBacking>(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, surface_handle, allow_shm_overlays,
-      std::move(shm_backing), gpu_backing_factory->GetWeakPtr());
+      mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
+      usage, surface_handle, allow_shm_overlays, std::move(shm_backing),
+      gpu_backing_factory->GetWeakPtr());
 }
 
 CompoundImageBacking::CompoundImageBacking(
     const Mailbox& mailbox,
-    viz::ResourceFormat format,
+    viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,

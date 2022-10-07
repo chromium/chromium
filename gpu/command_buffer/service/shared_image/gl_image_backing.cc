@@ -308,8 +308,9 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
   InitializeGLTextureParams params;
   params.target = texture_target;
 
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   auto shared_image = std::make_unique<GLImageBacking>(
-      std::move(image), mailbox, format, size, color_space, surface_origin,
+      std::move(image), mailbox, si_format, size, color_space, surface_origin,
       alpha_type, usage, params, true);
 
   shared_image->passthrough_texture_ = std::move(wrapped_gl_texture);
@@ -322,7 +323,7 @@ std::unique_ptr<GLImageBacking> GLImageBacking::CreateFromGLTexture(
 
 GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
                                const Mailbox& mailbox,
-                               viz::ResourceFormat format,
+                               viz::SharedImageFormat format,
                                const gfx::Size& size,
                                const gfx::ColorSpace& color_space,
                                GrSurfaceOrigin surface_origin,
@@ -563,7 +564,7 @@ std::unique_ptr<SkiaImageRepresentation> GLImageBacking::ProduceSkia(
     } else {
       GrBackendTexture backend_texture;
       GetGrBackendTexture(context_state->feature_info(), GetGLTarget(), size(),
-                          GetGLServiceId(), format(),
+                          GetGLServiceId(), format().resource_format(),
                           context_state->gr_context()->threadSafeProxy(),
                           &backend_texture);
       cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);

@@ -19,7 +19,7 @@ class RawDrawImageBackingFactory : public SharedImageBackingFactory {
   // SharedImageBackingFactory implementation:
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -29,7 +29,7 @@ class RawDrawImageBackingFactory : public SharedImageBackingFactory {
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -49,7 +49,7 @@ class RawDrawImageBackingFactory : public SharedImageBackingFactory {
       SkAlphaType alpha_type,
       uint32_t usage) override;
   bool IsSupported(uint32_t usage,
-                   viz::ResourceFormat format,
+                   viz::SharedImageFormat format,
                    const gfx::Size& size,
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,

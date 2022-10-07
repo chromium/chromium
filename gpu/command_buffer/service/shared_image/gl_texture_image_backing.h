@@ -18,10 +18,10 @@ namespace gpu {
 // backed by a GLImage.
 class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  static bool SupportsPixelUploadWithFormat(viz::ResourceFormat format);
+  static bool SupportsPixelUploadWithFormat(viz::SharedImageFormat format);
 
   GLTextureImageBacking(const Mailbox& mailbox,
-                        viz::ResourceFormat format,
+                        viz::SharedImageFormat format,
                         const gfx::Size& size,
                         const gfx::ColorSpace& color_space,
                         GrSurfaceOrigin surface_origin,

@@ -103,11 +103,9 @@ GLTextureImageBackingHelper::ProduceDawnCommon(SharedImageFactory* factory,
   }
 
   Mailbox dst_mailbox = Mailbox::GenerateForSharedImage();
-  viz::SharedImageFormat si_format =
-      viz::SharedImageFormat::SinglePlane(backing->format());
 
   bool success = factory->CreateSharedImage(
-      dst_mailbox, si_format, backing->size(), backing->color_space(),
+      dst_mailbox, backing->format(), backing->size(), backing->color_space(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, gpu::kNullSurfaceHandle,
       backing->usage() | SHARED_IMAGE_USAGE_WEBGPU);
   if (!success) {
