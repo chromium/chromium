@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.quick_pair.mojom;
+
+import "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Interface for Quick Pair related services. Lives in a sandboxed utility
+// process which is launched by Ash.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface QuickPairService {
+  // Initializes and connects everything needed to start the service.
+  Connect(pending_receiver<FastPairDataParser> fast_pair_data_parser);
+};

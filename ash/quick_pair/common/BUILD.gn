@@ -41,9 +41,9 @@ component("common") {
 
   deps = [
     "//ash/constants:constants",
-    "//ash/services/quick_pair/public/mojom",
     "//base",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/services/quick_pair/public/mojom",
     "//components/prefs",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
@@ -65,8 +65,8 @@ static_library("test_support") {
 
   deps = [
     ":common",
-    "//ash/services/quick_pair/public/mojom",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/mojom",
     "//components/image_fetcher/core",
     "//services/network/public/cpp",
     "//testing/gtest",

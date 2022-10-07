@@ -11,9 +11,9 @@
 
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
-#include "ash/services/quick_pair/fast_pair_decryption.h"
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/services/quick_pair/fast_pair_decryption.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"

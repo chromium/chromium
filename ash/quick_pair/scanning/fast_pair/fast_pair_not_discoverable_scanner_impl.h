@@ -11,12 +11,12 @@
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
 
 namespace device {
 class BluetoothAdapter;

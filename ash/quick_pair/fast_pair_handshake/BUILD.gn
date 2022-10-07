@@ -33,9 +33,9 @@ source_set("fast_pair_handshake") {
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/quick_pair/repository",
-    "//ash/services/quick_pair",
-    "//ash/services/quick_pair/public/cpp",
     "//base",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair/public/cpp",
     "//crypto:crypto",
     "//device/bluetooth",
     "//third_party/protobuf:protobuf_lite",
@@ -60,9 +60,9 @@ static_library("test_support") {
 
   deps = [
     "//ash/quick_pair/common",
-    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair/public/cpp",
     "//device/bluetooth",
     "//testing/gtest",
   ]
@@ -83,11 +83,11 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/repository:test_support",
-    "//ash/services/quick_pair",
-    "//ash/services/quick_pair:test_support",
-    "//ash/services/quick_pair/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair:test_support",
+    "//chromeos/ash/services/quick_pair/public/cpp",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
     "//testing/gtest",
@@ -100,7 +100,7 @@ fuzzer_test("fast_pair_encryption_fuzzer") {
     ":fast_pair_handshake",
     "//ash:test_support",
     "//ash/quick_pair/common",
-    "//ash/services/quick_pair",
     "//base",
+    "//chromeos/ash/services/quick_pair",
   ]
 }

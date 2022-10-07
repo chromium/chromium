@@ -10,9 +10,9 @@
 
 #include <array>
 
-#include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
-#include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "base/callback.h"
+#include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
+#include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 inline constexpr int kBlockSizeBytes = 16;

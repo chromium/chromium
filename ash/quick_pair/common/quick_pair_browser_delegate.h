@@ -5,9 +5,9 @@
 #ifndef ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 #define ASH_QUICK_PAIR_COMMON_QUICK_PAIR_BROWSER_DELEGATE_H_
 
-#include "ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/services/quick_pair/public/mojom/quick_pair_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class PrefService;

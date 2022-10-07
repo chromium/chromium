@@ -14,10 +14,10 @@
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/services/quick_pair/quick_pair_process.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 
 namespace ash {
 namespace quick_pair {

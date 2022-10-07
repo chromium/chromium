@@ -13,9 +13,9 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
 
 namespace ash {
 namespace quick_pair {
