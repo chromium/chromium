@@ -15,7 +15,21 @@ enum class CardUnmaskChallengeOptionType {
   kUnknownType = 0,
   // SMS OTP authentication.
   kSmsOtp = 1,
-  kMaxValue = kSmsOtp,
+  // CVC authentication.
+  kCvc = 2,
+  kMaxValue = kCvc,
+};
+
+// Indicates the position of the CVC, for example the front or back of the
+// user's card.
+enum class CvcPosition {
+  // Default value, should never be used.
+  kUnknown = 0,
+  // The CVC is on the front of the user's card.
+  kFrontOfCard = 1,
+  // The CVC is on the front of the user's card.
+  kBackOfCard = 2,
+  kMaxValue = kBackOfCard,
 };
 
 // The struct used by Autofill components to represent a card unmask challenge
@@ -32,8 +46,11 @@ struct CardUnmaskChallengeOption {
   // option, such as the masked phone number that will receive an SMS, etc.
   std::u16string challenge_info = std::u16string();
 
-  // The predetermined length of the OTP value.
-  size_t otp_length = 0U;
+  // The predetermined length of the input of the challenge.
+  size_t challenge_input_length = 0U;
+
+  // The position of the CVC. Only present if `type` is `kCvc`.
+  CvcPosition cvc_position = CvcPosition::kUnknown;
 };
 
 }  // namespace autofill

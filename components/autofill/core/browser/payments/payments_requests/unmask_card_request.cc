@@ -32,36 +32,98 @@ const char kUnmaskCardRequestFormatWithOtp[] =
     "&s7e_263_otp=%s";
 
 constexpr size_t kDefaultOtpLength = 6U;
+constexpr size_t kDefaultCvcLength = 3U;
+
+// Parses the `defined_challenge_option` as an SMS OTP challenge option, and
+// sets the appropriate fields in `parsed_challenge_option`.
+void ParseAsSmsOtpChallengeOption(
+    const base::Value* defined_challenge_option,
+    CardUnmaskChallengeOption* parsed_challenge_option) {
+  parsed_challenge_option->type = CardUnmaskChallengeOptionType::kSmsOtp;
+  const auto* challenge_id =
+      defined_challenge_option->FindStringKey("challenge_id");
+  DCHECK(challenge_id);
+  parsed_challenge_option->id = *challenge_id;
+
+  // For SMS OTP challenge, masked phone number is the challenge_info for
+  // display.
+  const auto* masked_phone_number =
+      defined_challenge_option->FindStringKey("masked_phone_number");
+  DCHECK(masked_phone_number);
+  parsed_challenge_option->challenge_info =
+      base::UTF8ToUTF16(*masked_phone_number);
+
+  // Get the OTP length for this challenge. This will be displayed to the user
+  // in the OTP input dialog so that the user knows how many digits the OTP
+  // should be.
+  absl::optional<int> otp_length =
+      defined_challenge_option->FindIntKey("otp_length");
+  parsed_challenge_option->challenge_input_length =
+      otp_length ? *otp_length : kDefaultOtpLength;
+}
+
+// Parses the `defined_challenge_option` as a CVC challenge option, and sets the
+// appropriate fields in `parsed_challenge_option`.
+void ParseAsCvcChallengeOption(
+    const base::Value* defined_challenge_option,
+    CardUnmaskChallengeOption* parsed_challenge_option) {
+  parsed_challenge_option->type = CardUnmaskChallengeOptionType::kCvc;
+
+  // Get the challenge id, which is the unique identifier of this challenge
+  // option. The payments server will need this challenge id to know which
+  // challenge option was selected.
+  const auto* challenge_id =
+      defined_challenge_option->FindStringKey("challenge_id");
+  DCHECK(challenge_id);
+  parsed_challenge_option->id = *challenge_id;
+
+  // Get the length of the CVC on the card. In most cases this is 3 digits,
+  // but it is possible for this to be 4 digits, for example in the case of
+  // the Card Identification Number on the front of an American Express card.
+  absl::optional<int> cvc_length =
+      defined_challenge_option->FindIntKey("cvc_length");
+  parsed_challenge_option->challenge_input_length =
+      cvc_length ? *cvc_length : kDefaultCvcLength;
+
+  // Get the position of the CVC on the card. In most cases it will be on the
+  // back of the card, but it is possible for it to be on the front, for
+  // example in the case of the Card Identification Number on the front of an
+  // American Express card.
+  const auto* cvc_position =
+      defined_challenge_option->FindStringKey("cvc_position");
+  parsed_challenge_option->cvc_position =
+      cvc_position && (*cvc_position == "CVC_POSITION_FRONT")
+          ? CvcPosition::kFrontOfCard
+          : CvcPosition::kBackOfCard;
+}
 
 CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
     const base::Value& challenge_option) {
-  CardUnmaskChallengeOption card_unmask_challenge_option;
+  const base::Value* defined_challenge_option;
+  CardUnmaskChallengeOption parsed_challenge_option;
 
-  // Check if it's SMS OTP challenge option.
-  const base::Value* sms_challenge_option = challenge_option.FindKeyOfType(
-      "sms_otp_challenge_option", base::Value::Type::DICTIONARY);
-  if (sms_challenge_option) {
-    card_unmask_challenge_option.type = CardUnmaskChallengeOptionType::kSmsOtp;
-    const auto* challenge_id =
-        sms_challenge_option->FindStringKey("challenge_id");
-    DCHECK(challenge_id);
-    card_unmask_challenge_option.id = *challenge_id;
-    // For SMS OTP challenge, masked phone number is the challenge_info for
-    // display.
-    const auto* masked_phone_number =
-        sms_challenge_option->FindStringKey("masked_phone_number");
-    DCHECK(masked_phone_number);
-    card_unmask_challenge_option.challenge_info =
-        base::UTF8ToUTF16(*masked_phone_number);
-    absl::optional<int> otp_length =
-        sms_challenge_option->FindIntKey("otp_length");
-    if (otp_length.has_value())
-      card_unmask_challenge_option.otp_length = *otp_length;
-    else
-      card_unmask_challenge_option.otp_length = kDefaultOtpLength;
+  // Check if it's an SMS OTP challenge option, and if it is, set
+  // `defined_challenge_option` to the defined challenge option found, parse the
+  // challenge option, and return it.
+  if ((defined_challenge_option = challenge_option.FindKeyOfType(
+           "sms_otp_challenge_option", base::Value::Type::DICTIONARY))) {
+    ParseAsSmsOtpChallengeOption(defined_challenge_option,
+                                 &parsed_challenge_option);
+  }
+  // Check if it's a CVC challenge option, and if it is, set
+  // `defined_challenge_option` to the defined challenge option found, parse the
+  // challenge option, and return it.
+  else if (base::FeatureList::IsEnabled(
+               features::kAutofillEnableCvcForVcnYellowPath) &&
+           (defined_challenge_option = challenge_option.FindKeyOfType(
+                "cvc_challenge_option", base::Value::Type::DICTIONARY))) {
+    ParseAsCvcChallengeOption(defined_challenge_option,
+                              &parsed_challenge_option);
   }
 
-  return card_unmask_challenge_option;
+  // If it is not a challenge option type that we can parse, return an empty
+  // challenge option.
+  return parsed_challenge_option;
 }
 }  // namespace
 

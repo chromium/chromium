@@ -207,7 +207,8 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
   }
 
   autofill_client_->ShowCardUnmaskOtpInputDialog(
-      selected_challenge_option_.otp_length, weak_ptr_factory_.GetWeakPtr());
+      selected_challenge_option_.challenge_input_length,
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
