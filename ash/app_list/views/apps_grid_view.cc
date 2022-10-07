@@ -86,8 +86,8 @@ constexpr int kFolderItemReparentDelay = 50;
 // Maximum vertical and horizontal spacing between tiles.
 constexpr int kMaximumTileSpacing = 96;
 
-// Maximum horizontal spacing between tiles for productivity launcher.
-constexpr int kMaximumHorizontalTileSpacingForProductivityLauncher = 128;
+// Maximum horizontal spacing between tiles.
+constexpr int kMaximumHorizontalTileSpacing = 128;
 
 // The ratio of the slide offset to the tile size.
 constexpr float kFadeAnimationOffsetRatio = 0.25f;
@@ -283,16 +283,14 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(kItemBoundsAnimationDuration);
-  if (features::IsProductivityLauncherEnabled()) {
-    bounds_animator_->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
+  bounds_animator_->set_tween_type(gfx::Tween::ACCEL_40_DECEL_100_3);
 
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
 
-    // Override the a11y name of top level apps grid.
-    if (!folder_delegate) {
-      GetViewAccessibility().OverrideName(
-          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_GRID_A11Y_NAME));
-    }
+  // Override the a11y name of top level apps grid.
+  if (!folder_delegate) {
+    GetViewAccessibility().OverrideName(
+        l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APPS_GRID_A11Y_NAME));
   }
 
   if (!IsTabletMode()) {
@@ -376,13 +374,8 @@ gfx::Size AppsGridView::GetMinimumTileGridSize(int cols,
 gfx::Size AppsGridView::GetMaximumTileGridSize(int cols,
                                                int rows_per_page) const {
   const gfx::Size tile_size = GetTileViewSize();
-  const int max_horizontal_spacing =
-      features::IsProductivityLauncherEnabled()
-          ? kMaximumHorizontalTileSpacingForProductivityLauncher
-          : kMaximumTileSpacing;
-
   return gfx::Size(
-      tile_size.width() * cols + max_horizontal_spacing * (cols - 1),
+      tile_size.width() * cols + kMaximumHorizontalTileSpacing * (cols - 1),
       tile_size.height() * rows_per_page +
           kMaximumTileSpacing * (rows_per_page - 1));
 }
@@ -684,7 +677,7 @@ void AppsGridView::EndDrag(bool cancel) {
         if (MoveItemToFolder(drag_item_, drop_target_, kMoveByDragIntoFolder,
                              &target_folder_id, &is_new_folder)) {
           MaybeCreateFolderDroppingAccessibilityEvent();
-          if (is_new_folder && features::IsProductivityLauncherEnabled()) {
+          if (is_new_folder) {
             folder_to_open_after_drag_icon_animation_ = target_folder_id;
             SetOpenFolderInfo(target_folder_id, drop_target_,
                               reorder_placeholder_);
@@ -1043,12 +1036,10 @@ void AppsGridView::ViewHierarchyChanged(
     if (drag_view_ == details.child)
       drag_view_ = nullptr;
 
-    if (features::IsProductivityLauncherEnabled()) {
-      if (current_ghost_view_ == details.child)
-        current_ghost_view_ = nullptr;
-      if (last_ghost_view_ == details.child)
-        last_ghost_view_ = nullptr;
-    }
+    if (current_ghost_view_ == details.child)
+      current_ghost_view_ = nullptr;
+    if (last_ghost_view_ == details.child)
+      last_ghost_view_ = nullptr;
 
     if (reordering_folder_view_ && *reordering_folder_view_ == details.child)
       reordering_folder_view_.reset();
@@ -1141,7 +1132,6 @@ AppListItemView* AppsGridView::MaybeSwapPlaceholderAsset(size_t index) {
   const bool is_syncing =
       model_ && model_->status() == AppListModelStatus::kStatusSyncing;
   const bool should_animate_placeholder_swap =
-      ash::features::IsProductivityLauncherEnabled() &&
       pulsing_blocks_model_.view_size() > 0 && is_syncing &&
       placeholder_in_view_index;
 
@@ -1732,7 +1722,7 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
         moving_view_title, target_view_title, target_view_is_folder);
     AppListItemView* folder_view = GetItemViewForItem(folder_id);
     if (folder_view) {
-      if (is_new_folder && features::IsProductivityLauncherEnabled()) {
+      if (is_new_folder) {
         SetOpenFolderInfo(folder_id, target_index, source_index);
         ShowFolderForView(folder_view, /*new_folder=*/true);
       } else {
@@ -1891,7 +1881,7 @@ void AppsGridView::EndDragFromReparentItemInRootLevel(
         // If move to folder created a folder, layout the grid to ensure the
         // created folder's bounds are correct.
         Layout();
-        if (is_new_folder && features::IsProductivityLauncherEnabled()) {
+        if (is_new_folder) {
           folder_to_open_after_drag_icon_animation_ = target_folder_id;
           SetOpenFolderInfo(target_folder_id, drop_target_,
                             reorder_placeholder_);
@@ -2902,9 +2892,6 @@ int AppsGridView::GetNumberOfItemsOnPage(int page) const {
   if (page < 0 || page >= GetTotalPages())
     return 0;
 
-  if (!folder_delegate_ && !features::IsProductivityLauncherEnabled())
-    return view_structure_.items_on_page(page);
-
   // We are guaranteed not on the last page, so the page must be full.
   if (page < GetTotalPages() - 1)
     return TilesPerPage(page);
@@ -2978,8 +2965,6 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
 }
 
 void AppsGridView::CreateGhostImageView() {
-  if (!features::IsProductivityLauncherEnabled())
-    return;
   if (!drag_item_)
     return;
 
@@ -3023,9 +3008,6 @@ void AppsGridView::CreateGhostImageView() {
 }
 
 void AppsGridView::BeginHideCurrentGhostImageView() {
-  if (!features::IsProductivityLauncherEnabled())
-    return;
-
   current_ghost_location_ = GridIndex();
 
   if (current_ghost_view_)
