@@ -24,6 +24,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -98,6 +100,12 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
     waiter.WaitIfNeededAndGet();
   }
 
+  views::InkDropState GetInkDropState() {
+    return views::InkDrop::Get(GetPageActionIconView())
+        ->GetInkDrop()
+        ->GetTargetInkDropState();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -149,4 +157,40 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
   EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
   EXPECT_NE(icon->GetBubble(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
+                       ShowAndHideInkDropWithPromo) {
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  auto* const promo_controller = GetFeaturePromoController();
+
+  EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+
+  SetTabDiscardState(true);
+  PageActionIconView* icon = GetPageActionIconView();
+  EXPECT_TRUE(icon->GetVisible());
+
+  WaitForIPHToShow();
+
+  EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+
+  EXPECT_EQ(GetInkDropState(), views::InkDropState::ACTIVATED);
+
+  auto* promo_bubble = promo_controller->promo_bubble_for_testing()
+                           ->AsA<user_education::HelpBubbleViews>()
+                           ->bubble_view();
+
+  views::test::WidgetDestroyedWaiter waiter(promo_bubble->GetWidget());
+  auto* default_action_button = promo_bubble->GetDefaultButtonForTesting();
+  PressButton(default_action_button);
+  waiter.Wait();
+
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
+      feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+
+  views::InkDropState current_state = GetInkDropState();
+  EXPECT_TRUE(current_state == views::InkDropState::HIDDEN ||
+              current_state == views::InkDropState::DEACTIVATED);
 }

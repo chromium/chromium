@@ -156,13 +156,20 @@ void HighEfficiencyChipView::MaybeShowIPH() {
   if (browser_->window() != nullptr) {
     bool const promo_shown = browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHHighEfficiencyInfoModeFeature, {},
-        base::BindOnce(&HighEfficiencyChipView::UnpauseAnimation,
+        base::BindOnce(&HighEfficiencyChipView::OnIPHClosed,
                        weak_ptr_factory_.GetWeakPtr()));
     // While the IPH is showing, pause the animation of the chip so it doesn't
     // animate closed.
-    if (promo_shown)
+    if (promo_shown) {
       PauseAnimation();
+      SetHighlighted(true);
+    }
   }
+}
+
+void HighEfficiencyChipView::OnIPHClosed() {
+  SetHighlighted(false);
+  UnpauseAnimation();
 }
 
 void HighEfficiencyChipView::OnPrefChanged() {

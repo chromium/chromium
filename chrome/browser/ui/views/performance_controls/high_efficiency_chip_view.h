@@ -47,6 +47,7 @@ class HighEfficiencyChipView : public PageActionIconView,
   bool is_high_efficiency_mode_enabled_ = false;
 
   void MaybeShowIPH();
+  void OnIPHClosed();
 
   // Callback for the registrar. Checks whether high efficiency mode is
   // currently enabled.
