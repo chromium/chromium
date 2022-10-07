@@ -26,10 +26,10 @@ def pave(image_dir: str, target_id: Optional[str])\
 
     pave_command = [
         os.path.join(image_dir, 'pave.sh'), '--authorized-keys',
-        os.path.expanduser('~/.ssh/fuchsia_authorized_keys')
+        os.path.expanduser('~/.ssh/fuchsia_authorized_keys'), '-1'
     ]
     if target_id:
-        pave_command.extend(['-n', target_id, '-1'])
+        pave_command.extend(['-n', target_id])
     return subprocess.run(pave_command, check=True, text=True, timeout=300)
 
 
