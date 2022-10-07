@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/string_matching/prefix_matcher_new.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
 
 #include <cstddef>
 #include <queue>
@@ -24,8 +24,6 @@ MatchInfo::MatchInfo() = default;
 MatchInfo::~MatchInfo() = default;
 }  // namespace
 
-// TODO(crbug.com/1336160): Replace PrefixMatcher with PrefixMatcherNew
-//
 // PrefixMatcher:
 //
 // The factors below are applied when the current char of query matches
@@ -53,12 +51,12 @@ MatchInfo::~MatchInfo() = default;
 //
 // kNoMatchScore is a relevance score that represents no match.
 
-PrefixMatcherNew::PrefixMatcherNew(const TokenizedString& query,
-                                   const TokenizedString& text)
+PrefixMatcher::PrefixMatcher(const TokenizedString& query,
+                             const TokenizedString& text)
     : query_(query), text_(text) {}
-PrefixMatcherNew::~PrefixMatcherNew() = default;
+PrefixMatcher::~PrefixMatcher() = default;
 
-bool PrefixMatcherNew::Match() {
+bool PrefixMatcher::Match() {
   MatchInfo sentence_match_info;
   SentencePrefixMatch(sentence_match_info);
   MatchInfo token_match_info;
@@ -73,7 +71,7 @@ bool PrefixMatcherNew::Match() {
   return relevance_ > 0.0;
 }
 
-void PrefixMatcherNew::SentencePrefixMatch(MatchInfo& sentence_match_info) {
+void PrefixMatcher::SentencePrefixMatch(MatchInfo& sentence_match_info) {
   // Since we are concatenating the tokens, we do not have whitespace
   // separation, and so we have to be careful with index calculation later on.
   std::u16string query_sentence = base::StrCat(query_.tokens());
@@ -133,7 +131,7 @@ void PrefixMatcherNew::SentencePrefixMatch(MatchInfo& sentence_match_info) {
   }
 }
 
-void PrefixMatcherNew::TokenPrefixMatch(MatchInfo& token_match_info) {
+void PrefixMatcher::TokenPrefixMatch(MatchInfo& token_match_info) {
   const size_t num_query_token = query_.tokens().size();
   const size_t num_text_token = text_.tokens().size();
 
@@ -189,10 +187,9 @@ void PrefixMatcherNew::TokenPrefixMatch(MatchInfo& token_match_info) {
   token_match_info.relevance = kNoMatchScore;
 }
 
-void PrefixMatcherNew::UpdateInfoForTokenPrefixMatch(
-    size_t query_pos,
-    size_t text_pos,
-    MatchInfo& token_match_info) {
+void PrefixMatcher::UpdateInfoForTokenPrefixMatch(size_t query_pos,
+                                                  size_t text_pos,
+                                                  MatchInfo& token_match_info) {
   const size_t hit_start_pos = text_.mappings()[text_pos].start();
   const size_t hit_end_pos =
       text_.mappings()[text_pos].start() + query_.tokens()[query_pos].size();

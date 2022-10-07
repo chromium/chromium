@@ -10,7 +10,7 @@
 
 #include "base/i18n/string_search.h"
 #include "base/strings/string_util.h"
-#include "chromeos/ash/components/string_matching/prefix_matcher_new.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
 
 namespace ash::string_matching {
 
@@ -46,7 +46,7 @@ double TokenizedStringMatch::Calculate(const TokenizedString& query,
     return true;
   }
 
-  PrefixMatcherNew matcher(query, text);
+  PrefixMatcher matcher(query, text);
   if (matcher.Match()) {
     relevance_ = matcher.relevance();
     hits_.assign(matcher.hits().begin(), matcher.hits().end());

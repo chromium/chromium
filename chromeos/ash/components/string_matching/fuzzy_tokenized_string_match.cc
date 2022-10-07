@@ -17,7 +17,7 @@
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/string_matching/acronym_matcher.h"
 #include "chromeos/ash/components/string_matching/diacritic_utils.h"
-#include "chromeos/ash/components/string_matching/prefix_matcher_new.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher.h"
 #include "chromeos/ash/components/string_matching/sequence_matcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -209,7 +209,7 @@ double FuzzyTokenizedStringMatch::WeightedRatio(const TokenizedString& query,
 double FuzzyTokenizedStringMatch::PrefixMatcher(const TokenizedString& query,
                                                 const TokenizedString& text,
                                                 bool use_acronym_matcher) {
-  string_matching::PrefixMatcherNew match(query, text);
+  string_matching::PrefixMatcher match(query, text);
   match.Match();
   double relevance = 0.0;
 

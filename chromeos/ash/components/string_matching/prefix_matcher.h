@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_NEW_H_
-#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_NEW_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
+#define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
 
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "ui/gfx/range/range.h"
@@ -46,15 +46,15 @@ struct MatchInfo {
 
 // PrefixMatcher matches the chars of a given query as prefix of tokens in
 // a given text. We give some specific scoring examples in the .cc file.
-class PrefixMatcherNew {
+class PrefixMatcher {
  public:
   typedef std::vector<gfx::Range> Hits;
 
-  PrefixMatcherNew(const TokenizedString& query, const TokenizedString& text);
-  ~PrefixMatcherNew();
+  PrefixMatcher(const TokenizedString& query, const TokenizedString& text);
+  ~PrefixMatcher();
 
-  PrefixMatcherNew(const PrefixMatcherNew&) = delete;
-  PrefixMatcherNew& operator=(const PrefixMatcherNew&) = delete;
+  PrefixMatcher(const PrefixMatcher&) = delete;
+  PrefixMatcher& operator=(const PrefixMatcher&) = delete;
 
   // Return true if we found either sentence prefix matching or token prefix
   // matching. If no full match is found, return false.
@@ -117,4 +117,4 @@ class PrefixMatcherNew {
 
 }  // namespace ash::string_matching
 
-#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_NEW_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_H_
