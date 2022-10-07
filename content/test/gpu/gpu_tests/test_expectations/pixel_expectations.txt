@@ -9,7 +9,8 @@
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv
+#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
@@ -458,6 +459,16 @@ crbug.com/1372173 [ fuchsia ] Pixel_MediaRecorderFrom2DCanvas [ Failure ]
 crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
 crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
 crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+
+# Currently expected to fail on non-rooted devices since minidump collection
+# does not work yet, meaning that we can't verify that we crashed exactly once
+# as expected.
+crbug.com/1358240 [ android android-sm-a135m ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/1358240 [ android android-sm-a235m ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+
+crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
+crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
+crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

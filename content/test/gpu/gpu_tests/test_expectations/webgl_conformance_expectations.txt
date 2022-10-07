@@ -9,7 +9,8 @@
 #         win win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
-#             android-pixel-6 android-shield-android-tv
+#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-sm-a235m
 #         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
@@ -212,6 +213,16 @@ crbug.com/1080377 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compres
 # GPU supports ES 3.2, but supporting draw_buffers on WebGL 1.0/ ES 2.0 requires
 # a significant amount of emulation.
 crbug.com/1080411 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_draw_buffers [ Skip ]
+
+# Extensions not available on Samsung A13s
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_EXT_shader_texture_lod [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_float_linear [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_OES_texture_half_float_linear [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_WEBGL_color_buffer_float [ Skip ]
+crbug.com/1372155 [ android android-sm-a135m arm ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
@@ -748,6 +759,15 @@ crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+
+# Samsung failures
+crbug.com/1372155 [ android android-sm-a135m ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
+crbug.com/1372155 [ android android-sm-a135m ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/context-lost-restored-worker.html [ Failure ]
+crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
+crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
 ############
 # ChromeOS #

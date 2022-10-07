@@ -26,6 +26,16 @@
       {
         "device_type": "Pixel 6",
         "scale_factor": 1.10375
+      },
+      {
+        "comment": "Samsung A13",
+        "device_type": "SM-A135M",
+        "scale_factor": 1.1025
+      },
+      {
+        "comment": "Samsung A23",
+        "device_type": "SM-A235M",
+        "scale_factor": 1.1025
       }
     ]
   },
