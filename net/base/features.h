@@ -477,6 +477,8 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShouldKillSessionOnAcceptChMalformed);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kCaseInsensitiveCookiePrefix);
 
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
