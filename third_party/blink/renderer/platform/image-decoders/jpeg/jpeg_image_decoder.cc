@@ -307,8 +307,7 @@ static gfx::Size ExtractDensityCorrectedSize(
 }
 
 static void ReadExifDirectory(JOCTET* dir_start,
-                              JOCTET* tiff_start,
-                              JOCTET* root_dir_start,
+                              JOCTET* data_start,
                               JOCTET* data_end,
                               bool is_big_endian,
                               DecodedImageMetaData& metadata,
@@ -347,9 +346,9 @@ static void ReadExifDirectory(JOCTET* dir_start,
     // EXIF stores the value with an offset if it's bigger than 4 bytes, e.g. for rational values.
     if (type == kUnsignedRationalType) {
       value_ptr =
-          ReadPointerOffset(value_ptr, tiff_start, data_end, is_big_endian);
+          ReadPointerOffset(value_ptr, data_start, data_end, is_big_endian);
       // Make sure offset points to a valid location.
-      if (!value_ptr || value_ptr < ifd || value_ptr > data_end - 16)
+      if (!value_ptr || value_ptr > data_end - 16)
         continue;
     }
 
@@ -406,12 +405,12 @@ static void ReadExifDirectory(JOCTET* dir_start,
 
       case ExifTags::kExifOffsetTag:
         if (type == kUnsignedLongType && count == 1 && is_root) {
-          JOCTET* subdir = ReadPointerOffset(value_ptr, root_dir_start,
-                                             data_end, is_big_endian);
+          JOCTET* subdir =
+              ReadPointerOffset(value_ptr, data_start, data_end, is_big_endian);
 
           if (subdir) {
-            ReadExifDirectory(subdir, tiff_start, root_dir_start, data_end,
-                              is_big_endian, metadata, false);
+            ReadExifDirectory(subdir, data_start, data_end, is_big_endian,
+                              metadata, false);
           }
         }
         break;
@@ -440,11 +439,10 @@ static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData
     // When touching this code, it's useful to look at the tiff spec:
     // http://partners.adobe.com/public/developer/en/tiff/TIFF6.pdf
     JOCTET* data_end = marker->data + marker->data_length;
-    JOCTET* root_start = marker->data + kOffsetToTiffData;
-    JOCTET* tiff_start = marker->data + ifd_offset - 2;
-    JOCTET* ifd0 = root_start + ifd_offset;
+    JOCTET* data_start = marker->data + kOffsetToTiffData;
+    JOCTET* ifd0 = data_start + ifd_offset;
 
-    ReadExifDirectory(ifd0, tiff_start, root_start, data_end, is_big_endian, metadata);
+    ReadExifDirectory(ifd0, data_start, data_end, is_big_endian, metadata);
   }
 }
 

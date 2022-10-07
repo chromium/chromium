@@ -275,6 +275,24 @@ TEST(JPEGImageDecoderTest, manyProgressiveScans) {
   EXPECT_TRUE(test_decoder->Failed());
 }
 
+// Decode a JPEG with EXIF data that defines a density corrected size. The EXIF
+// data has the initial IFD at the end of the data blob, and out-of-line data
+// defined just after the header.
+// The order of the EXIF data is:
+//   <header> <out-of-line data> <Exif IFD> <0th IFD>
+TEST(JPEGImageDecoderTest, exifWithInitialIfdLast) {
+  scoped_refptr<SharedBuffer> test_data =
+      ReadFile(kDecodersTestingDir, "green-exif-ifd-last.jpg");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_EQ(1u, test_decoder->FrameCount());
+  ASSERT_TRUE(test_decoder->DecodeFrameBufferAtIndex(0));
+  EXPECT_EQ(test_decoder->Orientation(), ImageOrientationEnum::kOriginTopRight);
+  EXPECT_EQ(test_decoder->DensityCorrectedSize(), gfx::Size(32, 32));
+}
+
 TEST(JPEGImageDecoderTest, SupportedSizesSquare) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
   scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
