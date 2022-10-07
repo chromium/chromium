@@ -41,8 +41,7 @@ class CrashReporterBreadcrumbObserver : public BreadcrumbManagerObserver {
   ~CrashReporterBreadcrumbObserver() override;
 
   // BreadcrumbObserver:
-  void EventAdded(BreadcrumbManager* manager,
-                  const std::string& event) override;
+  void EventAdded(const std::string& event) override;
 
   // Updates the breadcrumbs stored in the crash log.
   void UpdateBreadcrumbEventsCrashKey();

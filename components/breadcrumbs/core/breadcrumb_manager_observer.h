@@ -19,15 +19,13 @@ class BreadcrumbManagerObserver : public base::CheckedObserver {
   BreadcrumbManagerObserver& operator=(const BreadcrumbManagerObserver&) =
       delete;
 
-  // Called when a new |event| has been added to |manager|. Similar to
-  // |BreadcrumbManager::GetEvents|, |event| will have the timestamp at which it
-  // was logged prepended to the string which was passed to
-  // |BreadcrumbManager::AddEvent|.
-  virtual void EventAdded(BreadcrumbManager* manager,
-                          const std::string& event) {}
+  // Called when a new `event` has been added to the BreadcrumbManager. Similar
+  // to `BreadcrumbManager::GetEvents()`, `event` has the timestamp when it was
+  // logged prepended to the string passed to `BreadcrumbManager::AddEvent()`.
+  virtual void EventAdded(const std::string& event) {}
 
   // Called when old events have been removed.
-  virtual void OldEventsRemoved(BreadcrumbManager* manager) {}
+  virtual void OldEventsRemoved() {}
 
  protected:
   BreadcrumbManagerObserver();

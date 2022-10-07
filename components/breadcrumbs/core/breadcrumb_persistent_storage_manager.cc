@@ -250,8 +250,7 @@ void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   pending_breadcrumbs_.clear();
 }
 
-void BreadcrumbPersistentStorageManager::EventAdded(BreadcrumbManager* manager,
-                                                    const std::string& event) {
+void BreadcrumbPersistentStorageManager::EventAdded(const std::string& event) {
   pending_breadcrumbs_ += event + kEventSeparator;
   WriteEvents();
 }
@@ -316,8 +315,7 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
   ++write_counter_;
 }
 
-void BreadcrumbPersistentStorageManager::OldEventsRemoved(
-    BreadcrumbManager* manager) {
+void BreadcrumbPersistentStorageManager::OldEventsRemoved() {
   RewriteAllExistingBreadcrumbs();
 }
 

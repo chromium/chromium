@@ -76,7 +76,7 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
   event_buckets_.back().events.push_back(event_log);
 
   for (auto& observer : observers_) {
-    observer.EventAdded(this, event_log);
+    observer.EventAdded(event_log);
   }
 
   DropOldEvents();
@@ -114,7 +114,7 @@ void BreadcrumbManager::DropOldEvents() {
 
   if (old_buckets_dropped) {
     for (auto& observer : observers_) {
-      observer.OldEventsRemoved(this);
+      observer.OldEventsRemoved();
     }
   }
 }
