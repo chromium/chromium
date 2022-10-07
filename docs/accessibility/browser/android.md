@@ -410,7 +410,7 @@ is great for tracking down flakiness. It is also possible to use a local reposit
 to test directly on the build bots, which is great when a test works locally but flakes
 or fails during builds. Let's look at some basic examples.
 
-First ensure that you have followed the basic [Android setup](https://chromium.googlesource.com/chromium/src/+/master/docs/android_build_instructions.md) guides and can
+First ensure that you have followed the basic [Android setup](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md) guides and can
 successfully build the code. You should not proceed further until you can
 successfully run the command:
 

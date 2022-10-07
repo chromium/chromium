@@ -126,7 +126,7 @@ of modifying it can only be seen after taking a picture.
 Image Capture web tests are located in [web_tests/imagecapture],
 [web_tests/fast/imagecapture] and [web_tests/external/mediacapture-image].
 
-[web_tests/imagecapture]: https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/web_tests/imagecapture
-[web_tests/fast/imagecapture]: https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/web_tests/fast/imagecapture/
-[web_tests/external/mediacapture-image]: https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/web_tests/external/wpt/mediacapture-image/
+[web_tests/imagecapture]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/imagecapture
+[web_tests/fast/imagecapture]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/fast/imagecapture/
+[web_tests/external/mediacapture-image]: https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/web_tests/external/wpt/mediacapture-image/
 

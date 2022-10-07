@@ -62,7 +62,7 @@ class ComputedStyle;
 // PaintLayerStackingNode represents a stacked element which is either a
 // stacking context or a positioned element.
 // See
-// https://chromium.googlesource.com/chromium/src.git/+/master/third_party/blink/renderer/core/paint/README.md
+// https://chromium.googlesource.com/chromium/src.git/+/main/third_party/blink/renderer/core/paint/README.md
 // for more details of stacked elements.
 //
 // Stacked elements are the basis for the CSS painting algorithm. The paint

@@ -2,7 +2,7 @@
 # adding new libraries. Be sure to follow the instructions for adding
 # new third party libraries.
 #
-# https://chromium.googlesource.com/chromium/src.git/+/master/docs/adding_to_third_party.md
+# https://chromium.googlesource.com/chromium/src.git/+/main/docs/adding_to_third_party.md
 #
 # For changes to existing code that has no OWNER file, simply TBR= one of
 # people below in addition to getting an appropriate code review. Generally

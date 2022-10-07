@@ -147,7 +147,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
           access_token) {
     DCHECK(
-        callback);  // https://chromium.googlesource.com/chromium/src/+/master/docs/callback.md#creating-a-callback-that-does-nothing
+        callback);  // https://chromium.googlesource.com/chromium/src/+/main/docs/callback.md#creating-a-callback-that-does-nothing
 
     if (!access_token.has_value()) {
       std::move(callback).Run(KidsExternalFetcherStatus::GoogleServiceAuthError(

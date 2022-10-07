@@ -59,7 +59,7 @@ static constexpr char kExtensionWakeupFileContent[] = "";
 //
 // DEFAULT_UDD (default user data directory) is documented here:
 //
-//   https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md#default-location
+//   https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md#default-location
 //
 // Note that the default UDD is always used, and UDD overrides from browser
 // launch args or env vars are ignored so the path is more discoverable by the

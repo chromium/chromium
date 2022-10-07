@@ -92,7 +92,7 @@ As of Q3 2022, `wptrunner` runs on a handful of experimental FYI CI builders
 Each of these builders has an opt-in trybot mirror with the same name.
 To run one of these builders against a CL, click "Choose Tryjobs" in Gerrit,
 then search for the builder name.
-A [`Cq-Include-Trybots:`](https://chromium.googlesource.com/chromium/src/+/master/docs/contributing.md#cl-footer-reference)
+A [`Cq-Include-Trybots:`](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md#cl-footer-reference)
 footer in the CL description can add a `wptrunner` builder to the default CQ
 builder set.
 Results for the bots use the existing layout test

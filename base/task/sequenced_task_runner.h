@@ -277,7 +277,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // directly instead of going through this API.
   //
   // See
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks.md#Posting-to-the-Current-Virtual_Thread
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md#Posting-to-the-Current-Virtual_Thread
   // for details
   [[nodiscard]] static const scoped_refptr<SequencedTaskRunner>&
   GetCurrentDefault();

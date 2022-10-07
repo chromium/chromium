@@ -123,7 +123,7 @@ segments of the full [version number][chrome-versions] are the same. To look at
 current and previous version numbers for all platforms and channels, see the
 [Chromium Release Dashboard][rel-dash].
 
-[release-cycle]: https://chromium.googlesource.com/chromium/src/+/master/docs/process/release_cycle.md
+[release-cycle]: https://chromium.googlesource.com/chromium/src/+/main/docs/process/release_cycle.md
 [ent-rel-notes]: https://support.google.com/chrome/a/answer/7679408
 [update-strategy]: https://support.google.com/chrome/a/answer/9982578
 [ent-support]: https://chromeenterprise.google/browser/support/

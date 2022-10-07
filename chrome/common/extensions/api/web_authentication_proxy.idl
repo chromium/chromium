@@ -49,7 +49,7 @@ namespace webAuthenticationProxy {
     // extension's ID in a directory named
     // `WebAuthenticationProxyRemoteSessionStateChange` inside the [default
     // user data
-    // directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md#default-location).
+    // directory](https://chromium.googlesource.com/chromium/src/+/main/docs/user_data_dir.md#default-location).
     //
     // The contents of the file should be empty. I.e., it is not necessary to
     // change the contents of the file in order to trigger this event.

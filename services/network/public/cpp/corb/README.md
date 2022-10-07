@@ -16,7 +16,7 @@ for many website-initiated fetches. However, in some contexts, the same origin
 policy does not apply. For example, a page may load images from other origins.
 The specification refers to these as requests with a ["no-cors" request mode](https://fetch.spec.whatwg.org/#concept-request-mode).
 
-Meanwhile, the ["Spectre" family of attacks](https://chromium.googlesource.com/chromium/src/+/master/docs/security/side-channel-threat-model.md)
+Meanwhile, the ["Spectre" family of attacks](https://chromium.googlesource.com/chromium/src/+/main/docs/security/side-channel-threat-model.md)
 allow a website to read memory within an operating system process.
 (Caveats apply and it's more complicated that that; but that's the gist.)
 
@@ -31,7 +31,7 @@ because "Spectre" allows access to memory within the process, an attacking
 page might get its contents after all.
 
 Additionally, CORB/ORB serve as a "defense in depth" measure: They help
-to improve [isolation](https://chromium.googlesource.com/chromium/src/+/master/docs/process_model_and_site_isolation.md) between origins and thus make it
+to improve [isolation](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md) between origins and thus make it
 harder [to exploit a compromised renderer](https://chromium.googlesource.com/chromium/src/+/main/docs/security/compromised-renderers.md).
 
 ## Security Properties
@@ -75,7 +75,7 @@ issue "no-cors" requests. In addition to MIME type checks, it also employs
 The full details are more complicated. Here, we'll skip over details of
 sniffing, error handling, and partial content responses (HTTP 206 responses).
 Additional details can be found
-[here](https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md) and [here](https://www.chromium.org/Home/chromium-security/corb-for-developers/).
+[here](https://chromium.googlesource.com/chromium/src/+/main/services/network/cross_origin_read_blocking_explainer.md) and [here](https://www.chromium.org/Home/chromium-security/corb-for-developers/).
 
 Note that this is a partial mismatch for our security requirements: Instead
 of requiring positive evidence for the intended format, we instead picked a
@@ -109,9 +109,9 @@ from ORB as proposed:
   and some XML MIME types.
 - It does not implement the JavaScript parsing steps. Instead it
   re-uses several sniffers from CORB:
-  [HTML](https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md#protecting-html),
-  [XML](https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md#protecting-xml), and
-  [JSON and "XSSI-defeating prefixes"](https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md#protecting-json).
+  [HTML](https://chromium.googlesource.com/chromium/src/+/main/services/network/cross_origin_read_blocking_explainer.md#protecting-html),
+  [XML](https://chromium.googlesource.com/chromium/src/+/main/services/network/cross_origin_read_blocking_explainer.md#protecting-xml), and
+  [JSON and "XSSI-defeating prefixes"](https://chromium.googlesource.com/chromium/src/+/main/services/network/cross_origin_read_blocking_explainer.md#protecting-json).
 - It will accept any response for which these heuristics do not deliver a
   verdict.
 - CORB error handling is re-used: If a response is blocked, an empty response

@@ -47,7 +47,7 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
   // DCHECKs if the current thread isn't servicing a SingleThreadTaskRunner.
   //
   // See
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/threading_and_tasks.md#Posting-to-the-Current-Virtual_Thread
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md#Posting-to-the-Current-Virtual_Thread
   // for details
 
   [[nodiscard]] static const scoped_refptr<SingleThreadTaskRunner>&

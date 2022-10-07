@@ -1670,7 +1670,7 @@ ScriptPromise CredentialsContainer::create(
               "default algorithm identifiers: ES256 and RS256. This can "
               "result in registration failures on incompatible "
               "authenticators. See "
-              "https://chromium.googlesource.com/chromium/src/+/master/"
+              "https://chromium.googlesource.com/chromium/src/+/main/"
               "content/browser/webauth/pub_key_cred_params.md for details"));
     }
   }
