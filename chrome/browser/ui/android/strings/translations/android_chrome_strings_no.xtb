@@ -310,7 +310,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="271033894570825754">Ny</translation>
 <translation id="2711073837061989559">Prøveprosjekter</translation>
-<translation id="2718352093833049315">Bare når Wi-Fi er på</translation>
+<translation id="2718352093833049315">Bare når Wifi er på</translation>
 <translation id="2718846868787000099">For å kunne vise innhold på språkene du foretrekker, kan nettstedene du besøker, se preferansene dine</translation>
 <translation id="2722945394406572875">Privacy Sandbox-forespørselen er lukket</translation>
 <translation id="2723001399770238859">lyd</translation>
@@ -418,7 +418,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3237433641417325993">Rull ned for å se foreslåtte artikler</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
-<translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til Wi-Fi</translation>
+<translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til wifi</translation>
 <translation id="3254409185687681395">Legg til bokmerke for denne siden</translation>
 <translation id="3259831549858767975">Gjør alt på siden mindre</translation>
 <translation id="3264124641674805320">Slik laster du ned innhold til senere</translation>
@@ -626,7 +626,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
-<translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
+<translation id="4504667196171871375">Via Wifi og mobildata</translation>
 <translation id="4508528996305412043">Feedkortmenyen er åpnet</translation>
 <translation id="4508642716788467538">Velg språk</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{for # dag siden}other{for # dager siden}}</translation>
@@ -946,7 +946,7 @@ Utprøving av Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjenge
 <translation id="6192907950379606605">Få bildebeskrivelser</translation>
 <translation id="6196315980958524839">Passord lagres i Google Passordlagring på denne enheten</translation>
 <translation id="620197886010707372">Vil du åpne appen for <ph name="APPNAME" /> med Google Play?</translation>
-<translation id="6203593061661911168">Nedlastingen starter når du er tilkoblet Wi-Fi</translation>
+<translation id="6203593061661911168">Nedlastingen starter når du er tilkoblet wifi</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6221633008163990886">Lås opp for å eksportere passordene dine</translation>
@@ -1024,7 +1024,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="TAB_TITLE" /> og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="6560414384669816528">Søk med Sogou</translation>
 <translation id="656065428026159829">Se mer</translation>
-<translation id="6565959834589222080">Wi-Fi brukes når det er tilgjengelig</translation>
+<translation id="6565959834589222080">Wifi brukes når det er tilgjengelig</translation>
 <translation id="6569373978618239158">Nå ser du artikler fra <ph name="SITE_NAME" /> når du åpner nye faner. Nettstedene du følger, lagres i Google-kontoen din. Du kan administrere dem i innstillingene for Discover.</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
 <translation id="6573431926118603307">Faner du har åpnet i Chrome på de andre enhetene dine, vises her.</translation>
