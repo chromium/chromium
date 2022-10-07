@@ -143,12 +143,6 @@ class TailoredSecurityService : public KeyedService {
   // callback.
   virtual void MaybeNotifySyncUser(bool is_enabled, base::Time previous_update);
 
-  // Needs to be overridden by subclass to show sync notification. Sends a
-  // trigger to tell system to show sync notification which is a visual message
-  // prompt which informs user of their sync status between Account-level
-  // Enhanced Safe Browsing and Chrome-level Enhanced Safe Browsing.
-  virtual void ShowSyncNotification(bool is_enabled) = 0;
-
   PrefService* prefs() { return prefs_; }
 
   raw_ptr<signin::IdentityManager> identity_manager() {

@@ -46,6 +46,7 @@ source_set("unit_tests") {
     ":tailored_security",
     "//base/test:test_support",
     "//components/safe_browsing/core/browser/tailored_security_service",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/browser_state:test_support",

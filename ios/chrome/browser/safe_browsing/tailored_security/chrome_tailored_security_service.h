@@ -27,16 +27,9 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   ~ChromeTailoredSecurityService() override;
 
  protected:
-  void ShowSyncNotification(bool is_enabled) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
-  // Handles any additional actions when notification sent from
-  // ShowSyncNotification() is dismissed. This happens when the user uses a
-  // slide gesture or presses a button to visually remove the message from the
-  // screen.
-  void MessageDismissed();
-
   ChromeBrowserState* browser_state_;
 };
 

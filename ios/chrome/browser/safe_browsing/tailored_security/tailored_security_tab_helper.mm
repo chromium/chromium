@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_tab_helper.h"
 
+#import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
+#import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -68,6 +71,33 @@ void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(
 void TailoredSecurityTabHelper::OnTailoredSecurityServiceDestroyed() {
   service_->RemoveObserver(this);
   service_ = nullptr;
+}
+
+void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
+    bool is_enabled) {
+  if (!web_state_) {
+    if (is_enabled) {
+      // Record BrowserState/WebContents not being available.
+      safe_browsing::RecordEnabledNotificationResult(
+          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
+    }
+    return;
+  }
+
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  SetSafeBrowsingState(
+      browser_state->GetPrefs(),
+      is_enabled ? safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION
+                 : safe_browsing::SafeBrowsingState::STANDARD_PROTECTION,
+      /*is_esb_enabled_in_sync=*/is_enabled);
+
+  // TODO(crbug.com/1353363): Send output to create InfoBar message.
+
+  if (is_enabled) {
+    safe_browsing::RecordEnabledNotificationResult(
+        TailoredSecurityNotificationResult::kShown);
+  }
 }
 
 #pragma mark - web::WebStateObserver

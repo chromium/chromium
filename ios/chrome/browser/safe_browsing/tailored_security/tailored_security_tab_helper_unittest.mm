@@ -6,6 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -34,7 +35,6 @@ class MockTailoredSecurityService : public TailoredSecurityService {
   MOCK_METHOD2(MaybeNotifySyncUser, void(bool, base::Time));
   MOCK_METHOD0(GetURLLoaderFactory,
                scoped_refptr<network::SharedURLLoaderFactory>());
-  MOCK_METHOD1(ShowSyncNotification, void(bool));
 };
 
 // Starts and finishes a mock navigation successfully.
@@ -97,6 +97,21 @@ TEST_F(TailoredSecurityTabHelperTest, QueryRequestOnNavigation) {
 
   EXPECT_CALL(mock_service, RemoveQueryRequest());
   PerformFakeNavigation("https://example.com", &web_state_);
+}
+
+// Tests how the tab helper responds an observer call.
+TEST_F(TailoredSecurityTabHelperTest, SyncNotificationCalled) {
+  MockTailoredSecurityService mock_service;
+  TailoredSecurityTabHelper::CreateForWebState(&web_state_, &mock_service);
+  TailoredSecurityTabHelper* tab_helper =
+      TailoredSecurityTabHelper::FromWebState(&web_state_);
+
+  // When a sync notification request is sent and the user is synced, the
+  // SafeBrowsingState should automatically change to Enhanced Protection.
+  tab_helper->OnSyncNotificationMessageRequest(/*is_enabled*/ true);
+  EXPECT_TRUE(
+      safe_browsing::GetSafeBrowsingState(*chrome_browser_state_->GetPrefs()) ==
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
 }
 
 }  // namespace safe_browsing

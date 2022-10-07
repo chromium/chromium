@@ -9,13 +9,16 @@
 
 namespace safe_browsing {
 
-// Observes TailoredSecurityService bit.
+// Observes TailoredSecurityService bit and handles notification calls.
 class TailoredSecurityServiceObserver {
  public:
   // Called when the Tailored Security bit changed to |enabled|, and provides
   // the last time it was changed (not including the current update).
   virtual void OnTailoredSecurityBitChanged(bool enabled,
                                             base::Time previous_update) {}
+
+  // Called when sync notification message needs to be shown.
+  virtual void OnSyncNotificationMessageRequest(bool is_enabled) {}
 
   // Called when the service is being destroyed.
   virtual void OnTailoredSecurityServiceDestroyed() {}

@@ -412,13 +412,17 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
   }
 
   if (is_enabled && !IsEnhancedProtectionEnabled(*prefs())) {
-    ShowSyncNotification(true);
+    for (auto& observer : observer_list_) {
+      observer.OnSyncNotificationMessageRequest(true);
+    }
   }
 
   if (!is_enabled && IsEnhancedProtectionEnabled(*prefs()) &&
       prefs()->GetBoolean(
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
-    ShowSyncNotification(false);
+    for (auto& observer : observer_list_) {
+      observer.OnSyncNotificationMessageRequest(false);
+    }
   }
 }
 

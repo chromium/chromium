@@ -54,11 +54,16 @@ content::WebContents* GetWebContentsForProfile(Profile* profile) {
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(Profile* profile)
     : TailoredSecurityService(IdentityManagerFactory::GetForProfile(profile),
                               profile->GetPrefs()),
-      profile_(profile) {}
+      profile_(profile) {
+  AddObserver(this);
+}
 
-ChromeTailoredSecurityService::~ChromeTailoredSecurityService() = default;
+ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
+  RemoveObserver(this);
+}
 
-void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
+void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
+    bool is_enabled) {
 #if BUILDFLAG(IS_ANDROID)
   content::WebContents* web_contents = GetWebContentsForProfile(profile_);
   if (!web_contents) {
