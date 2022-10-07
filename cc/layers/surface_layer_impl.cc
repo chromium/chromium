@@ -50,8 +50,13 @@ SurfaceLayerImpl::SurfaceLayerImpl(
           std::move(update_submission_state_callback)) {}
 
 SurfaceLayerImpl::~SurfaceLayerImpl() {
-  if (update_submission_state_callback_)
-    update_submission_state_callback_.Run(false, nullptr);
+  // Do not call `update_submission_state_callback_` here.  There is only very
+  // loose synchronization between when a layer gets a new impl layer and when
+  // the old layer is destroyed.  For example, when a layer is moved to a new
+  // tree, the old tree's impl layer might be destroyed after drawing has
+  // started in the new tree with a new impl layer.  In that case, we'd be
+  // clobbering the visibility state.  Instead, trust that SurfaceLayer has done
+  // the right thing already.
 }
 
 std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(

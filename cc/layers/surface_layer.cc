@@ -154,6 +154,13 @@ void SurfaceLayer::SetLayerTreeHost(LayerTreeHost* host) {
   if (layer_tree_host() == host) {
     return;
   }
+
+  // Any time we change trees, start out as "not visible".  If drawing starts,
+  // then the impl layer can call it again with correct visibility.
+  auto callback = update_submission_state_callback_.Read(*this);
+  if (callback)
+    callback.Run(false, nullptr);
+
   if (layer_tree_host() && surface_range_.Read(*this).IsValid())
     layer_tree_host()->RemoveSurfaceRange(surface_range_.Read(*this));
 
