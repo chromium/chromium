@@ -26,7 +26,7 @@
 
 namespace net {
 class NetLog;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }
 
 namespace network {
@@ -84,11 +84,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
   // If |local_address.port()| is nonzero and not in the valid range,
   // initialization will fail.
   // |network_isolation_key| specifies the network stack cache shard to used.
-  virtual void Init(const net::IPEndPoint& local_address,
-                    uint16_t min_port,
-                    uint16_t max_port,
-                    const P2PHostAndIPEndPoint& remote_address,
-                    const net::NetworkIsolationKey& network_isolation_key) = 0;
+  virtual void Init(
+      const net::IPEndPoint& local_address,
+      uint16_t min_port,
+      uint16_t max_port,
+      const P2PHostAndIPEndPoint& remote_address,
+      const net::NetworkAnonymizationKey& network_isolation_key) = 0;
 
   mojo::PendingRemote<mojom::P2PSocketClient> ReleaseClientForTesting();
   mojo::PendingReceiver<mojom::P2PSocket> ReleaseReceiverForTesting();

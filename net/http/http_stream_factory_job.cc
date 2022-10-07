@@ -333,7 +333,7 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
   bool require_dns_https_alpn = (job_type_ == DNS_ALPN_H3);
   return quic_request_.CanUseExistingSession(
       origin_url_, request_info_.privacy_mode, request_info_.socket_tag,
-      request_info_.network_isolation_key, request_info_.secure_dns_policy,
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       require_dns_https_alpn, destination_);
 }
 
@@ -936,10 +936,10 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
 
   int rv = quic_request_.Request(
       std::move(destination), quic_version_, request_info_.privacy_mode,
-      priority_, request_info_.socket_tag, request_info_.network_isolation_key,
-      request_info_.secure_dns_policy, proxy_info_.is_direct(),
-      require_dns_https_alpn, ssl_config->GetCertVerifyFlags(), url, net_log_,
-      &net_error_details_,
+      priority_, request_info_.socket_tag,
+      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
+      proxy_info_.is_direct(), require_dns_https_alpn,
+      ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

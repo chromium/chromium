@@ -1045,7 +1045,7 @@ int QuicStreamRequest::Request(
     PrivacyMode privacy_mode,
     RequestPriority priority,
     const SocketTag& socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool use_dns_aliases,
     bool require_dns_https_alpn,
@@ -1065,12 +1065,9 @@ int QuicStreamRequest::Request(
   failed_on_default_network_callback_ =
       std::move(failed_on_default_network_callback);
 
-  session_key_ =
-      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     NetworkAnonymizationKey::
-                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                             network_isolation_key),
-                     secure_dns_policy, require_dns_https_alpn);
+  session_key_ = QuicSessionKey(HostPortPair::FromURL(url), privacy_mode,
+                                socket_tag, network_anonymization_key,
+                                secure_dns_policy, require_dns_https_alpn);
 
   int rv = factory_->Create(session_key_, std::move(destination), quic_version,
                             priority, use_dns_aliases, cert_verify_flags, url,
@@ -1146,16 +1143,14 @@ bool QuicStreamRequest::CanUseExistingSession(
     const GURL& url,
     PrivacyMode privacy_mode,
     const SocketTag& socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn,
     const url::SchemeHostPort& destination) const {
   return factory_->CanUseExistingSession(
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     NetworkAnonymizationKey::
-                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                             network_isolation_key),
-                     secure_dns_policy, require_dns_https_alpn),
+                     network_anonymization_key, secure_dns_policy,
+                     require_dns_https_alpn),
       destination);
 }
 
@@ -1220,7 +1215,7 @@ QuicStreamFactory::QuicStreamFactory(
       default_network_(handles::kInvalidNetworkHandle),
       connectivity_monitor_(default_network_),
       ssl_config_service_(ssl_config_service),
-      use_network_isolation_key_for_crypto_configs_(
+      use_network_anonymization_key_for_crypto_configs_(
           base::FeatureList::IsEnabled(
               features::kPartitionHttpServerPropertiesByNetworkIsolationKey)) {
   DCHECK(transport_security_state_);
@@ -2209,21 +2204,22 @@ void QuicStreamFactory::UnmapSessionFromSessionAliases(
 
 std::unique_ptr<QuicStreamFactory::CryptoClientConfigHandle>
 QuicStreamFactory::CreateCryptoConfigHandle(
-    const NetworkIsolationKey& network_isolation_key) {
-  NetworkIsolationKey actual_network_isolation_key =
-      use_network_isolation_key_for_crypto_configs_ ? network_isolation_key
-                                                    : NetworkIsolationKey();
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  NetworkAnonymizationKey actual_network_anonymization_key =
+      use_network_anonymization_key_for_crypto_configs_
+          ? network_anonymization_key
+          : NetworkAnonymizationKey();
 
   // If there's a matching entry in |active_crypto_config_map_|, create a
   // CryptoClientConfigHandle for it.
   auto map_iterator =
-      active_crypto_config_map_.find(actual_network_isolation_key);
+      active_crypto_config_map_.find(actual_network_anonymization_key);
   if (map_iterator != active_crypto_config_map_.end()) {
     DCHECK_GT(map_iterator->second->num_refs(), 0);
 
     // If there's an active matching crypto config, there shouldn't also be an
     // inactive matching crypto config.
-    DCHECK(recent_crypto_config_map_.Peek(actual_network_isolation_key) ==
+    DCHECK(recent_crypto_config_map_.Peek(actual_network_anonymization_key) ==
            recent_crypto_config_map_.end());
 
     return std::make_unique<CryptoClientConfigHandle>(map_iterator);
@@ -2232,12 +2228,12 @@ QuicStreamFactory::CreateCryptoConfigHandle(
   // If there's a matching entry in |recent_crypto_config_map_|, move it to
   // |active_crypto_config_map_| and create a CryptoClientConfigHandle for it.
   auto mru_iterator =
-      recent_crypto_config_map_.Peek(actual_network_isolation_key);
+      recent_crypto_config_map_.Peek(actual_network_anonymization_key);
   if (mru_iterator != recent_crypto_config_map_.end()) {
     DCHECK_EQ(mru_iterator->second->num_refs(), 0);
 
     map_iterator = active_crypto_config_map_
-                       .emplace(std::make_pair(actual_network_isolation_key,
+                       .emplace(std::make_pair(actual_network_anonymization_key,
                                                std::move(mru_iterator->second)))
                        .first;
     recent_crypto_config_map_.Erase(mru_iterator);
@@ -2252,7 +2248,7 @@ QuicStreamFactory::CreateCryptoConfigHandle(
               cert_verifier_, ct_policy_enforcer_, transport_security_state_,
               sct_auditing_delegate_,
               HostsFromOrigins(params_.origins_to_force_quic_on),
-              actual_network_isolation_key),
+              actual_network_anonymization_key),
           std::make_unique<quic::QuicClientSessionCache>(), this);
 
   quic::QuicCryptoClientConfig* crypto_config = crypto_config_owner->config();
@@ -2277,7 +2273,7 @@ QuicStreamFactory::CreateCryptoConfigHandle(
   }
 
   map_iterator = active_crypto_config_map_
-                     .emplace(std::make_pair(actual_network_isolation_key,
+                     .emplace(std::make_pair(actual_network_anonymization_key,
                                              std::move(crypto_config_owner)))
                      .first;
   return std::make_unique<CryptoClientConfigHandle>(map_iterator);
@@ -2302,24 +2298,25 @@ void QuicStreamFactory::CollectDataOnPlatformNotification(
 
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicStreamFactory::GetCryptoConfigForTesting(
-    const NetworkIsolationKey& network_isolation_key) {
-  return CreateCryptoConfigHandle(network_isolation_key);
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return CreateCryptoConfigHandle(network_anonymization_key);
 }
 
 bool QuicStreamFactory::CryptoConfigCacheIsEmptyForTesting(
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   quic::QuicCryptoClientConfig::CachedState* cached = nullptr;
-  NetworkIsolationKey actual_network_isolation_key =
-      use_network_isolation_key_for_crypto_configs_ ? network_isolation_key
-                                                    : NetworkIsolationKey();
+  NetworkAnonymizationKey actual_network_anonymization_key =
+      use_network_anonymization_key_for_crypto_configs_
+          ? network_anonymization_key
+          : NetworkAnonymizationKey();
   auto map_iterator =
-      active_crypto_config_map_.find(actual_network_isolation_key);
+      active_crypto_config_map_.find(actual_network_anonymization_key);
   if (map_iterator != active_crypto_config_map_.end()) {
     cached = map_iterator->second->config()->LookupOrCreate(server_id);
   } else {
     auto mru_iterator =
-        recent_crypto_config_map_.Peek(actual_network_isolation_key);
+        recent_crypto_config_map_.Peek(actual_network_anonymization_key);
     if (mru_iterator != recent_crypto_config_map_.end()) {
       cached = mru_iterator->second->config()->LookupOrCreate(server_id);
     }

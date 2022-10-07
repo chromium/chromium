@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -24,7 +24,7 @@
 
 namespace net {
 
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
 class ProxyServer;
 struct SSLConfig;
@@ -73,7 +73,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const OnHostResolutionCallback& resolution_callback,
       RequestPriority request_priority,
       SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
@@ -92,7 +92,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const OnHostResolutionCallback& resolution_callback,
       RequestPriority request_priority,
       SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
@@ -109,7 +109,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const OnHostResolutionCallback& resolution_callback,
       RequestPriority request_priority,
       SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const;
@@ -119,12 +119,12 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<SSLConnectJob::Factory> ssl_connect_job_factory_;
   std::unique_ptr<TransportConnectJob::Factory> transport_connect_job_factory_;
 
-  // Use a single NetworkIsolationKey for looking up proxy hostnames. Proxies
-  // are typically used across sites, but cached proxy IP addresses don't
-  // really expose useful information to destination sites, and not caching
-  // them has a performance cost.
-  net::NetworkIsolationKey proxy_dns_network_isolation_key_ =
-      net::NetworkIsolationKey::CreateTransient();
+  // Use a single NetworkAnonymizationKey for looking up proxy hostnames.
+  // Proxies are typically used across sites, but cached proxy IP addresses
+  // don't really expose useful information to destination sites, and not
+  // caching them has a performance cost.
+  net::NetworkAnonymizationKey proxy_dns_network_anonymization_key_ =
+      net::NetworkAnonymizationKey::CreateTransient();
 };
 
 }  // namespace net

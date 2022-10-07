@@ -1060,14 +1060,14 @@ TEST_F(HttpServerPropertiesManagerTest, BadLastLocalAddressWhenQuicWorked) {
     alternative_service_list.Append(std::move(alternative_service_dict));
     server_dict.Set("alternative_service", std::move(alternative_service_list));
     server_dict.Set("server", StringPrintf("https://www.google.com:%d", i));
-    server_dict.Set("isolation", base::Value(base::Value::Type::LIST));
+    server_dict.Set("anonymization", base::Value(base::Value::Type::LIST));
     servers_list.Append(std::move(server_dict));
   }
 
   // Set the server preference for http://mail.google.com server.
   base::Value::Dict server_dict2;
   server_dict2.Set("server", "https://mail.google.com");
-  server_dict2.Set("isolation", base::Value(base::Value::Type::LIST));
+  server_dict2.Set("anonymization", base::Value(base::Value::Type::LIST));
   servers_list.Append(std::move(server_dict2));
 
   base::Value http_server_properties_dict = DictWithVersion();
@@ -1222,12 +1222,12 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
   const char expected_json[] =
       "{"
       "\"broken_alternative_services\":"
-      "[{\"broken_count\":1,\"host\":\"www.google.com\",\"isolation\":[],"
+      "[{\"anonymization\":[],\"broken_count\":1,\"host\":\"www.google.com\","
       "\"port\":1234,\"protocol_str\":\"h2\"},"
-      "{\"broken_count\":1,\"host\":\"foo.google.com\",\"isolation\":[],"
+      "{\"anonymization\":[],\"broken_count\":1,\"host\":\"foo.google.com\","
       "\"port\":444,\"protocol_str\":\"h2\"}],"
       "\"quic_servers\":"
-      "[{\"isolation\":[],"
+      "[{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
@@ -1236,12 +1236,12 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
       "\"protocol_str\":\"h2\"},"
       "{\"advertised_alpns\":[],\"expiration\":\"13758804000000000\","
       "\"host\":\"www.google.com\",\"port\":1234,\"protocol_str\":\"h2\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"server\":\"https://www.google.com:80\"},"
       "{\"alternative_service\":[{\"advertised_alpns\":[],"
       "\"expiration\":\"9223372036854775807\",\"host\":\"foo.google.com\","
       "\"port\":444,\"protocol_str\":\"h2\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"network_stats\":{\"srtt\":42},"
       "\"server\":\"https://mail.google.com:80\","
       "\"supports_spdy\":true}],"
@@ -1385,7 +1385,7 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
   EXPECT_EQ("https://www.example.com", *server_str);
 
   const base::Value* network_anonymization_key_value =
-      server_pref_dict.GetDict().Find("isolation");
+      server_pref_dict.GetDict().Find("anonymization");
   ASSERT_TRUE(network_anonymization_key_value);
   ASSERT_EQ(base::Value::Type::LIST, network_anonymization_key_value->type());
   EXPECT_TRUE(network_anonymization_key_value->GetList().empty());
@@ -1529,7 +1529,7 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
   // Verify preferences with correct advertised version field.
   const char expected_json[] =
       "{\"quic_servers\":["
-      "{\"isolation\":[],"
+      "{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
@@ -1539,13 +1539,13 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
       "\"port\":443,\"protocol_str\":\"quic\"},{\"advertised_alpns\":[],"
       "\"expiration\":\"13758804000000000\",\"host\":\"www.google.com\","
       "\"port\":1234,\"protocol_str\":\"h2\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"server\":\"https://www.google.com:80\"},"
       "{\"alternative_service\":[{"
       "\"advertised_alpns\":[\"h3\"],"
       "\"expiration\":\"9223372036854775807\","
       "\"host\":\"foo.google.com\",\"port\":444,\"protocol_str\":\"quic\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"network_stats\":{\"srtt\":42},"
       "\"server\":\"https://mail.google.com:80\"}],"
       "\"supports_quic\":{"
@@ -1650,7 +1650,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Verify preferences with correct advertised version field.
   const char expected_json[] =
       "{\"quic_servers\":"
-      "[{\"isolation\":[],"
+      "[{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
@@ -1658,7 +1658,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"advertised_alpns\":[\"h3\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"server\":\"https://www.google.com:80\"}],"
       "\"supports_quic\":"
       "{\"address\":\"127.0.0.1\",\"used_quic\":true},\"version\":5}";
@@ -1691,7 +1691,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Verify preferences updated with new advertised versions.
   const char expected_json_updated[] =
       "{\"quic_servers\":"
-      "[{\"isolation\":[],"
+      "[{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
@@ -1699,7 +1699,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q043\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"server\":\"https://www.google.com:80\"}],"
       "\"supports_quic\":"
       "{\"address\":\"127.0.0.1\",\"used_quic\":true},\"version\":5}";
@@ -1727,7 +1727,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Verify preferences updated with new advertised versions.
   const char expected_json_updated2[] =
       "{\"quic_servers\":"
-      "[{\"isolation\":[],"
+      "[{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
@@ -1735,7 +1735,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "[{\"advertised_alpns\":[\"h3-Q043\",\"h3-Q046\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"server\":\"https://www.google.com:80\"}],"
       "\"supports_quic\":"
       "{\"address\":\"127.0.0.1\",\"used_quic\":true},\"version\":5}";
@@ -1776,24 +1776,24 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
       "{\"broken_until\":\"" +
       expiration_str +
       "\","
-      "\"host\":\"www.google.com\",\"isolation\":[],"
+      "\"host\":\"www.google.com\",\"anonymization\":[],"
       "\"port\":1234,\"protocol_str\":\"h2\"},"
       "{\"broken_count\":2,\"broken_until\":\"" +
       expiration_str +
       "\","
-      "\"host\":\"cached_broken\",\"isolation\":[],"
+      "\"host\":\"cached_broken\",\"anonymization\":[],"
       "\"port\":443,\"protocol_str\":\"quic\"},"
       "{\"broken_count\":3,"
-      "\"host\":\"cached_rbroken\",\"isolation\":[],"
+      "\"host\":\"cached_rbroken\",\"anonymization\":[],"
       "\"port\":443,\"protocol_str\":\"quic\"}],"
       "\"quic_servers\":["
-      "{\"isolation\":[],"
+      "{\"anonymization\":[],"
       "\"server_id\":\"https://mail.google.com:80\","
       "\"server_info\":\"quic_server_info1\"}"
       "],"
       "\"servers\":["
       "{\"server\":\"https://www.google.com:80\","
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"alternative_service\":["
       "{\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"h2\"},"
@@ -1802,7 +1802,7 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
       "]"
       "},"
       "{\"server\":\"https://mail.google.com:80\","
-      "\"isolation\":[],"
+      "\"anonymization\":[],"
       "\"alternative_service\":["
       "{\"expiration\":\"9223372036854775807\",\"host\":\"foo.google.com\","
       "\"port\":444,\"protocol_str\":\"h2\"}"
@@ -2062,7 +2062,7 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
   base::JSONWriter::Write(saved_value, &preferences_json);
   EXPECT_EQ(
       "{\"servers\":["
-      "{\"isolation\":[],"
+      "{\"anonymization\":[],"
       "\"server\":\"https://foo.test\","
       "\"supports_spdy\":true}],"
       "\"version\":5}",
@@ -2186,7 +2186,7 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
       } else if (save_network_anonymization_key_mode ==
                  load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
-        // the network isolation keys should match.
+        // the network anonymization keys should match.
         ASSERT_EQ(1u, server_info_map2->size());
         const HttpServerProperties::ServerInfoMapKey& server_info_key2 =
             server_info_map2->begin()->first;
@@ -2579,7 +2579,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       } else if (save_network_anonymization_key_mode ==
                  load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
-        // the network isolation keys should match.
+        // the network anonymization keys should match.
         EXPECT_TRUE(properties->IsAlternativeServiceBroken(
             kAlternativeService1, kNetworkAnonymizationKey1));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
@@ -2834,7 +2834,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       } else if (save_network_anonymization_key_mode ==
                  load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
-        // the network isolation keys should match.
+        // the network anonymization keys should match.
         EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
                                         kServer1, kNetworkAnonymizationKey1));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(

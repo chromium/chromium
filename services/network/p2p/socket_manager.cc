@@ -380,7 +380,9 @@ void P2PSocketManager::CreateSocket(
   // Init() may call SocketManager::DestroySocket(), so it must be called after
   // adding the socket to |sockets_|.
   socket_ptr->Init(local_address, port_range.min_port, port_range.max_port,
-                   remote_address, network_isolation_key_);
+                   remote_address,
+                   net::NetworkAnonymizationKey::CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                       network_isolation_key_));
 }
 
 void P2PSocketManager::StartRtpDump(bool incoming, bool outgoing) {

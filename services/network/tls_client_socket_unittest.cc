@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/socket/server_socket.h"
@@ -180,7 +180,7 @@ class TLSClientSocketTestBase {
     base::RunLoop run_loop;
     int net_error = net::ERR_FAILED;
     proxy_resolving_factory_->CreateProxyResolvingSocket(
-        url, net::NetworkIsolationKey(), nullptr /* options */,
+        url, net::NetworkAnonymizationKey(), nullptr /* options */,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(receiver), mojo::NullRemote() /* observer */,
         base::BindLambdaForTesting(

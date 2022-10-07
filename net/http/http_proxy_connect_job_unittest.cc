@@ -145,7 +145,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
         CreateHttpProxyParams(secure_dns_policy),
         CreateHttpsProxyParams(secure_dns_policy), false /* is_quic */,
         HostPortPair(kEndpointHost, tunnel ? 443 : 80), tunnel,
-        TRAFFIC_ANNOTATION_FOR_TESTS, NetworkIsolationKey());
+        TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey());
   }
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForHttpRequest(
@@ -945,7 +945,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
   auto http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
       nullptr /* tcp_params */, std::move(ssl_params), false /* is_quic */,
       HostPortPair(kEndpointHost, 443),
-      /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS, NetworkIsolationKey());
+      /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey());
 
   std::unique_ptr<ConnectJob> connect_job = CreateConnectJob(
       std::move(http_proxy_params), &test_delegate, DEFAULT_PRIORITY);

@@ -16,7 +16,7 @@
 #include "services/network/tls_socket_factory.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class URLRequestContext;
 }  // namespace net
 
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketFactoryMojo
   // mojom::ProxyResolvingSocketFactory implementation.
   void CreateProxyResolvingSocket(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojom::ProxyResolvingSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,

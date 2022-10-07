@@ -106,7 +106,7 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // by the time this method is called, calling this will prevent it from ever
   // being invoked, as this method will overwrite any previous preferences.
   //
-  // Entries associated with NetworkIsolationKeys for opaque origins are not
+  // Entries associated with NetworkAnonymizationKeys for opaque origins are not
   // written to disk.
   void WriteToPrefs(
       const HttpServerProperties::ServerInfoMap& server_info_map,

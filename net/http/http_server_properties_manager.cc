@@ -42,7 +42,7 @@ const int kMaxBrokenAlternativeServicesToPersist = 200;
 
 const char kServerKey[] = "server";
 const char kQuicServerIdKey[] = "server_id";
-const char kNetworkIsolationKey[] = "isolation";
+const char kNetworkAnonymizationKey[] = "anonymization";
 const char kVersionKey[] = "version";
 const char kServersKey[] = "servers";
 const char kSupportsSpdyKey[] = "supports_spdy";
@@ -116,18 +116,19 @@ void AddAlternativeServiceFieldsToDictionaryValue(
   dict.Set(kProtocolKey, NextProtoToString(alternative_service.protocol));
 }
 
-// Fails in the case of NetworkIsolationKeys that can't be persisted to disk,
-// like unique origins.
+// Fails in the case of NetworkAnonymizationKeys that can't be persisted to
+// disk, like unique origins.
 bool TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
     const BrokenAlternativeService& broken_alt_service,
     base::Value::Dict& dict) {
   base::Value network_anonymization_key_value;
-  if (!broken_alt_service.network_isolation_key.ToValue(
+  if (!broken_alt_service.network_anonymization_key.ToValue(
           &network_anonymization_key_value)) {
     return false;
   }
 
-  dict.Set(kNetworkIsolationKey, std::move(network_anonymization_key_value));
+  dict.Set(kNetworkAnonymizationKey,
+           std::move(network_anonymization_key_value));
   AddAlternativeServiceFieldsToDictionaryValue(
       broken_alt_service.alternative_service, dict);
   return true;
@@ -153,7 +154,7 @@ std::string QuicServerIdToString(const quic::QuicServerId& server_id) {
 
 // Takes in a base::Value::Dict, and whether NetworkIsolationKeys are enabled
 // for HttpServerProperties, and extracts the NetworkAnonymizationKey stored
-// with the |kNetworkIsolationKey| in the dictionary, and writes it to
+// with the |kNetworkAnonymizationKey| in the dictionary, and writes it to
 // |out_network_anonymization_key|. Returns false if unable to load a
 // NetworkAnonymizationKey, or the NetworkAnonymizationKey is non-empty, but
 // |use_network_anonymization_key| is false.
@@ -162,7 +163,7 @@ bool GetNetworkIsolationKeyFromDict(
     bool use_network_anonymization_key,
     NetworkAnonymizationKey* out_network_anonymization_key) {
   const base::Value* network_anonymization_key_value =
-      dict.Find(kNetworkIsolationKey);
+      dict.Find(kNetworkAnonymizationKey);
   NetworkAnonymizationKey network_anonymization_key;
   if (!network_anonymization_key_value ||
       !NetworkAnonymizationKey::FromValue(*network_anonymization_key_value,
@@ -748,7 +749,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
     if (server_dict.empty())
       continue;
     server_dict.Set(kServerKey, key.server.Serialize());
-    server_dict.Set(kNetworkIsolationKey,
+    server_dict.Set(kNetworkAnonymizationKey,
                     std::move(network_anonymization_key_value));
     servers_list.Append(std::move(server_dict));
   }
@@ -854,7 +855,7 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
     base::Value::Dict quic_server_pref_dict;
     quic_server_pref_dict.Set(kQuicServerIdKey,
                               QuicServerIdToString(key.server_id));
-    quic_server_pref_dict.Set(kNetworkIsolationKey,
+    quic_server_pref_dict.Set(kNetworkAnonymizationKey,
                               std::move(network_anonymization_key_value));
     quic_server_pref_dict.Set(kServerInfoKey, server_info);
 
@@ -932,8 +933,8 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
     }
   }
 
-  // This can happen if all the entries are for NetworkIsolationKeys for opaque
-  // origins, which isn't exactly common, but can theoretically happen.
+  // This can happen if all the entries are for NetworkAnonymizationKeys for
+  // opaque origins, which isn't exactly common, but can theoretically happen.
   if (json_list.empty())
     return;
 

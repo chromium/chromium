@@ -103,7 +103,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         direct_transport_socket_params_(
             base::MakeRefCounted<TransportSocketParams>(
                 url::SchemeHostPort(url::kHttpsScheme, "host", 443),
-                NetworkIsolationKey(),
+                NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow,
                 OnHostResolutionCallback(),
                 /*supported_alpns=*/
@@ -111,7 +111,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         proxy_transport_socket_params_(
             base::MakeRefCounted<TransportSocketParams>(
                 HostPortPair("proxy", 443),
-                NetworkIsolationKey(),
+                NetworkAnonymizationKey(),
                 SecureDnsPolicy::kAllow,
                 OnHostResolutionCallback(),
                 /*supported_alpns=*/base::flat_set<std::string>({}))),
@@ -119,7 +119,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             proxy_transport_socket_params_,
             true,
             HostPortPair("sockshost", 443),
-            NetworkIsolationKey(),
+            NetworkAnonymizationKey(),
             TRAFFIC_ANNOTATION_FOR_TESTS)),
         http_proxy_socket_params_(base::MakeRefCounted<HttpProxySocketParams>(
             proxy_transport_socket_params_,
@@ -128,7 +128,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             HostPortPair("host", 80),
             /*tunnel=*/true,
             TRAFFIC_ANNOTATION_FOR_TESTS,
-            NetworkIsolationKey())),
+            NetworkAnonymizationKey())),
         common_connect_job_params_(session_->CreateCommonConnectJobParams()) {}
 
   ~SSLConnectJobTest() override = default;
@@ -157,7 +157,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
         url::SchemeHostPort(GURL("http://proxy:443/")), HttpAuth::AUTH_PROXY,
-        "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+        "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
@@ -447,7 +447,7 @@ TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
     direct_transport_socket_params_ =
         base::MakeRefCounted<TransportSocketParams>(
             url::SchemeHostPort(url::kHttpsScheme, "host", 443),
-            NetworkIsolationKey(), secure_dns_policy,
+            NetworkAnonymizationKey(), secure_dns_policy,
             OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
     auto common_connect_job_params = session_->CreateCommonConnectJobParams();

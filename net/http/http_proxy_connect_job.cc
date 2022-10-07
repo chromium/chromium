@@ -130,13 +130,13 @@ HttpProxySocketParams::HttpProxySocketParams(
     const HostPortPair& endpoint,
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
-    const NetworkIsolationKey& network_isolation_key)
+    const NetworkAnonymizationKey& network_anonymization_key)
     : transport_params_(std::move(transport_params)),
       ssl_params_(std::move(ssl_params)),
       is_quic_(is_quic),
       endpoint_(endpoint),
       tunnel_(tunnel),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       traffic_annotation_(traffic_annotation) {
   // This is either a connection to an HTTP proxy or an SSL/QUIC proxy.
   DCHECK(transport_params_ || ssl_params_);
@@ -194,7 +194,7 @@ HttpProxyConnectJob::HttpProxyConnectJob(
                     HttpAuth::AUTH_PROXY,
                     GURL((params_->ssl_params() ? "https://" : "http://") +
                          GetDestination().ToString()),
-                    params_->network_isolation_key(),
+                    params_->network_anonymization_key(),
                     common_connect_job_params->http_auth_cache,
                     common_connect_job_params->http_auth_handler_factory,
                     host_resolver())
@@ -655,7 +655,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
       url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
                           proxy_server.port()),
       quic_version, ssl_params->privacy_mode(), kH2QuicTunnelPriority,
-      socket_tag(), params_->network_isolation_key(),
+      socket_tag(), params_->network_anonymization_key(),
       ssl_params->GetDirectConnectionParams()->secure_dns_policy(),
       /*use_dns_aliases=*/false, /*require_dns_https_alpn=*/false,
       ssl_params->ssl_config().GetCertVerifyFlags(),
@@ -814,8 +814,7 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   return SpdySessionKey(
       GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kTrue, socket_tag(),
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          params_->network_isolation_key()),
+      params_->network_anonymization_key(),
       params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());
 }
 

@@ -31,7 +31,6 @@
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -554,7 +553,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
       const OnHostResolutionCallback& resolution_callback,
       RequestPriority request_priority,
       SocketTag socket_tag,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       const CommonConnectJobParams* common_connect_job_params,
       ConnectJob::Delegate* delegate) const override {
@@ -5741,7 +5740,7 @@ class ClientSocketPoolBaseRefreshTest
 
   static ClientSocketPool::GroupId GetGroupIdInPartition() {
     // Note this GroupId will match GetGroupId() unless
-    // kPartitionConnectionsByNetworkIsolationKey is enabled.
+    // kPartitionConnectionsByNetworkAnonymizationKey is enabled.
     const SchemefulSite kSite(GURL("https://b/"));
     const NetworkAnonymizationKey kNetworkAnonymizationKey(
         kSite, kSite, /*is_cross_site=*/false);

@@ -203,7 +203,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJob) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -224,7 +224,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -247,7 +247,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -276,7 +276,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -302,7 +302,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJob) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -329,7 +329,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -357,7 +357,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttps) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -392,7 +392,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpProxyConnectJobForHttpsWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -425,7 +425,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJob) {
       /*ssl_config_for_proxy=*/&ssl_config,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -458,7 +458,7 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsProxyConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/&ssl_config,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -490,7 +490,7 @@ TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJob) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -515,7 +515,7 @@ TEST_F(ConnectJobFactoryTest, CreateSocksProxyConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params_, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -544,7 +544,7 @@ TEST_F(ConnectJobFactoryTest, CreateWebsocketConnectJob) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 
@@ -570,7 +570,7 @@ TEST_F(ConnectJobFactoryTest, CreateWebsocketConnectJobWithoutScheme) {
       /*ssl_config_for_proxy=*/nullptr,
       /*force_tunnel=*/false, PrivacyMode::PRIVACY_MODE_DISABLED,
       OnHostResolutionCallback(), DEFAULT_PRIORITY, SocketTag(),
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       &common_connect_job_params, &delegate_);
   EXPECT_EQ(GetCreationCount(), 1u);
 

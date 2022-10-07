@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_auth.h"
@@ -43,13 +43,14 @@ class QuicStreamRequest;
 class NET_EXPORT_PRIVATE HttpProxySocketParams
     : public base::RefCounted<HttpProxySocketParams> {
  public:
-  HttpProxySocketParams(scoped_refptr<TransportSocketParams> transport_params,
-                        scoped_refptr<SSLSocketParams> ssl_params,
-                        bool is_quic,
-                        const HostPortPair& endpoint,
-                        bool tunnel,
-                        const NetworkTrafficAnnotationTag traffic_annotation,
-                        const NetworkIsolationKey& network_isolation_key);
+  HttpProxySocketParams(
+      scoped_refptr<TransportSocketParams> transport_params,
+      scoped_refptr<SSLSocketParams> ssl_params,
+      bool is_quic,
+      const HostPortPair& endpoint,
+      bool tunnel,
+      const NetworkTrafficAnnotationTag traffic_annotation,
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   HttpProxySocketParams(const HttpProxySocketParams&) = delete;
   HttpProxySocketParams& operator=(const HttpProxySocketParams&) = delete;
@@ -63,8 +64,8 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   bool is_quic() const { return is_quic_; }
   const HostPortPair& endpoint() const { return endpoint_; }
   bool tunnel() const { return tunnel_; }
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
   const NetworkTrafficAnnotationTag traffic_annotation() const {
     return traffic_annotation_;
@@ -79,7 +80,7 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   bool is_quic_;
   const HostPortPair endpoint_;
   const bool tunnel_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
   const NetworkTrafficAnnotationTag traffic_annotation_;
 };
 

@@ -17,7 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -33,7 +33,7 @@ class ConnectJobFactory;
 class HttpAuthController;
 class HttpResponseInfo;
 class HttpNetworkSession;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ProxyResolutionRequest;
 }  // namespace net
 
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
       net::HttpNetworkSession* network_session,
       const net::CommonConnectJobParams* common_connect_job_params,
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool use_tls,
       const net::ConnectJobFactory* connect_job_factory);
 
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocket
   std::unique_ptr<net::ProxyResolutionRequest> proxy_resolve_request_;
   net::ProxyInfo proxy_info_;
   const GURL url_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   const bool use_tls_;
 
   net::NetLogWithSource net_log_;
