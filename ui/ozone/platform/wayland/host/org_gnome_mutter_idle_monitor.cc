@@ -63,7 +63,7 @@ absl::optional<base::TimeDelta> OrgGnomeMutterIdleMonitor::GetIdleTime() const {
         dbus_proxy->CallMethod(
             &name_has_owner_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
             base::BindOnce(&OrgGnomeMutterIdleMonitor::OnServiceHasOwner,
-                           weak_factory_.GetWeakPtr()));
+                           weak_factory_.GetMutableWeakPtr()));
       }
       return base::Seconds(0);
 

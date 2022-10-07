@@ -107,8 +107,8 @@ void XdgActivation::Activate(wl_surface* surface) const {
       connection_->serial_tracker().GetSerial(
           {wl::SerialType::kTouchPress, wl::SerialType::kMousePress,
            wl::SerialType::kMouseEnter, wl::SerialType::kKeyPress}),
-      base::BindOnce(&XdgActivation::OnActivateDone, weak_factory_.GetWeakPtr(),
-                     surface));
+      base::BindOnce(&XdgActivation::OnActivateDone,
+                     weak_factory_.GetMutableWeakPtr(), surface));
 }
 
 void XdgActivation::OnActivateDone(wl_surface* surface, std::string token) {
