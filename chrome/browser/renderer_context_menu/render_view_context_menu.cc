@@ -1379,15 +1379,15 @@ const Extension* RenderViewContextMenu::GetExtension() const {
       ->GetExtensionForWebContents(source_web_contents_);
 }
 
-std::u16string RenderViewContextMenu::GetTargetLanguageDisplayName() const {
-  std::unique_ptr<translate::TranslatePrefs> prefs(
-      ChromeTranslateClient::CreateTranslatePrefs(GetPrefs(browser_context_)));
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(browser_context_)
-          ->GetPrimaryModel();
-  std::string locale = translate::TranslateManager::GetTargetLanguage(
-      prefs.get(), language_model);
-  return l10n_util::GetDisplayNameForLocale(locale, locale, true);
+std::u16string RenderViewContextMenu::GetTargetLanguageDisplayName(
+    bool is_full_page_translation) const {
+  std::string source;
+  std::string target;
+
+  ChromeTranslateClient::FromWebContents(embedder_web_contents_)
+      ->GetTranslateLanguages(embedder_web_contents_, &source, &target,
+                              is_full_page_translation);
+  return l10n_util::GetDisplayNameForLocale(target, target, true);
 }
 
 void RenderViewContextMenu::AppendDeveloperItems() {
@@ -1824,8 +1824,9 @@ void RenderViewContextMenu::AppendPageItems() {
   if (canTranslate) {
     menu_model_.AddItem(
         IDC_CONTENT_CONTEXT_TRANSLATE,
-        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_TRANSLATE,
-                                   GetTargetLanguageDisplayName()));
+        l10n_util::GetStringFUTF16(
+            IDS_CONTENT_CONTEXT_TRANSLATE,
+            GetTargetLanguageDisplayName(/*is_full_page_translation=*/true)));
   }
 }
 
@@ -1886,8 +1887,9 @@ void RenderViewContextMenu::AppendPrintItem() {
 void RenderViewContextMenu::AppendPartialTranslateItem() {
   menu_model_.AddItem(
       IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
-      l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
-                                 GetTargetLanguageDisplayName()));
+      l10n_util::GetStringFUTF16(
+          IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+          GetTargetLanguageDisplayName(/*is_full_page_translation=*/false)));
 }
 
 void RenderViewContextMenu::AppendMediaRouterItem() {
@@ -3793,12 +3795,16 @@ void RenderViewContextMenu::ExecTranslate() {
 void RenderViewContextMenu::ExecPartialTranslate() {
   std::string source_language;
   std::string target_language;
+
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(embedder_web_contents_);
-  chrome_translate_client->GetTranslateLanguagesForDisplay(
-      embedder_web_contents_, &source_language, &target_language);
-  GetBrowser()->window()->StartPartialTranslate(
-      source_language, target_language, params_.selection_text);
+  if (chrome_translate_client) {
+    chrome_translate_client->GetTranslateLanguages(
+        embedder_web_contents_, &source_language, &target_language,
+        /*for_display=*/false);
+    GetBrowser()->window()->StartPartialTranslate(
+        source_language, target_language, params_.selection_text);
+  }
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {

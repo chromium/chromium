@@ -187,6 +187,13 @@ void PartialTranslateBubbleModelImpl::Translate(
   translate_request_started_time_ = base::TimeTicks::Now();
 
   RecordHistogramsOnPartialTranslateStart();
+
+  translate::TranslateManager* translate_manager =
+      ChromeTranslateClient::GetManagerFromWebContents(web_contents);
+  translate_manager->translate_client()
+      ->GetTranslatePrefs()
+      ->SetRecentTargetLanguage(GetTargetLanguageCode());
+
   // Cancels any ongoing requests.
   partial_translate_manager_->StartPartialTranslate(
       web_contents, request,
@@ -201,9 +208,6 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
     content::WebContents* web_contents) {
   translate::TranslateManager* translate_manager =
       ChromeTranslateClient::GetManagerFromWebContents(web_contents);
-  translate_manager->translate_client()
-      ->GetTranslatePrefs()
-      ->SetRecentTargetLanguage(GetTargetLanguageCode());
   translate_manager->ShowTranslateUI(GetTargetLanguageCode(), true);
 }
 

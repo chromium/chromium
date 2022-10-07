@@ -125,16 +125,16 @@ class TranslateManager {
   // Maybe initiates translation when Autofill Assistant has finished.
   void OnAutofillAssistantFinished();
 
-  // Show the translation UI. If |auto_translate| is true the page gets
-  // translated to the target language.
-  void ShowTranslateUI(bool auto_translate = false,
-                       bool triggered_from_menu = false);
-
   // Show the translation UI with the target language enforced to |target_lang|.
   // If |auto_translate| is true the page gets translated to the target
   // language.
   void ShowTranslateUI(const std::string& target_lang,
                        bool auto_translate = false,
+                       bool triggered_from_menu = false);
+
+  // Show the translation UI. If |auto_translate| is true the page gets
+  // translated to the target language.
+  void ShowTranslateUI(bool auto_translate = false,
                        bool triggered_from_menu = false);
 
   // Returns true iff the current page could be manually translated.

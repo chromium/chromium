@@ -1259,8 +1259,8 @@ void Translate(Browser* browser) {
 
   std::string source_language;
   std::string target_language;
-  chrome_translate_client->GetTranslateLanguagesForDisplay(
-      web_contents, &source_language, &target_language);
+  chrome_translate_client->GetTranslateLanguages(web_contents, &source_language,
+                                                 &target_language);
 
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
   if (chrome_translate_client) {

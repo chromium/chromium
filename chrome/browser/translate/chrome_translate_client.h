@@ -82,12 +82,13 @@ class ChromeTranslateClient
       content::WebContents* web_contents);
 
   // Gets |source| and |target| languages. |source| is the original source
-  // language of a page, |target| is either the current page language if a page
-  // was translated, or the output of the |TranslateManager::GetTargetLanguage|
-  // otherwise.
-  void GetTranslateLanguagesForDisplay(content::WebContents* web_contents,
-                                       std::string* source,
-                                       std::string* target);
+  // language of a page. |target| is |TranslateManager::GetTargetLanguage|,
+  // or, if |for_display| is true and the page was translated - the current page
+  // language.
+  void GetTranslateLanguages(content::WebContents* web_contents,
+                             std::string* source,
+                             std::string* target,
+                             bool for_display = true);
 
   // Gets the associated TranslateManager.
   translate::TranslateManager* GetTranslateManager();

@@ -212,7 +212,12 @@ class RenderViewContextMenu
 
   // Queries the Translate service to obtain the user's Translate target
   // language and returns the language name in its same locale.
-  std::u16string GetTargetLanguageDisplayName() const;
+  // On an already translated page, full page translation uses the current page
+  // language as the target language while partial translation uses the last
+  // used target language. |is_full_page_translation| controls the desired
+  // outcome.
+  std::u16string GetTargetLanguageDisplayName(
+      bool is_full_page_translation) const;
 
   bool IsInProgressiveWebApp() const;
 

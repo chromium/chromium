@@ -196,10 +196,11 @@ translate::TranslateManager* ChromeTranslateClient::GetManagerFromWebContents(
   return chrome_translate_client->GetTranslateManager();
 }
 
-void ChromeTranslateClient::GetTranslateLanguagesForDisplay(
+void ChromeTranslateClient::GetTranslateLanguages(
     content::WebContents* web_contents,
     std::string* source,
-    std::string* target) {
+    std::string* target,
+    bool for_display) {
   DCHECK(source != nullptr);
   DCHECK(target != nullptr);
 
@@ -210,10 +211,17 @@ void ChromeTranslateClient::GetTranslateLanguagesForDisplay(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefs(profile->GetPrefs());
-  *target = translate_manager_->GetTargetLanguageForDisplay(
-      translate_prefs.get(), LanguageModelManagerFactory::GetInstance()
-                                 ->GetForBrowserContext(profile)
-                                 ->GetPrimaryModel());
+  if (for_display) {
+    *target = translate_manager_->GetTargetLanguageForDisplay(
+        translate_prefs.get(), LanguageModelManagerFactory::GetInstance()
+                                   ->GetForBrowserContext(profile)
+                                   ->GetPrimaryModel());
+  } else {
+    *target = translate_manager_->GetTargetLanguage(
+        translate_prefs.get(), LanguageModelManagerFactory::GetInstance()
+                                   ->GetForBrowserContext(profile)
+                                   ->GetPrimaryModel());
+  }
 }
 
 translate::TranslateManager* ChromeTranslateClient::GetTranslateManager() {
