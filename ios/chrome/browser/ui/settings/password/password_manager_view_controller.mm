@@ -1225,6 +1225,12 @@ bool ShouldShowSettingsUI() {
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
+  // This is needed to remove the transparency of the navigation bar at scroll
+  // edge in iOS 15+ to prevent the following UITableViewRowAnimationTop
+  // animations from being visible through the navigation bar.
+  self.navigationController.navigationBar.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+
   _shouldUpdateAfterSearchControllerDismissed = YES;
   [self showScrim];
   // Remove save passwords switch section, password check section and
@@ -1256,6 +1262,10 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)willDismissSearchController:(UISearchController*)searchController {
+  // This is needed to restore the transparency of the navigation bar at scroll
+  // edge in iOS 15+.
+  self.navigationController.navigationBar.backgroundColor = nil;
+
   // No need to restore UI if the Password Manager is being dismissed or if a
   // previous call to `willDismissSearchController` already restored the UI.
   if (self.navigationController.isBeingDismissed ||
