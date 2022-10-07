@@ -58,7 +58,7 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   ~FileSystemAccessFileWriterImpl() override;
 
   const storage::FileSystemURL& swap_url() const { return swap_url_; }
-  const base::WeakPtr<FileSystemAccessFileWriterImpl> weak_ptr() const {
+  base::WeakPtr<FileSystemAccessFileWriterImpl> weak_ptr() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_factory_.GetWeakPtr();
   }
