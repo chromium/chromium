@@ -103,6 +103,13 @@ class BASE_EXPORT CPU final {
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
+  // Memory protection key support for user-mode pages
+  bool has_pku() const { return has_pku_; }
+#else
+  constexpr bool has_pku() const { return false; }
+#endif
+
+#if defined(ARCH_CPU_X86_FAMILY)
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
 #endif
   const std::string& cpu_brand() const { return cpu_brand_; }
@@ -192,6 +199,9 @@ class BASE_EXPORT CPU final {
 #if defined(ARCH_CPU_ARM_FAMILY)
   bool has_mte_ = false;  // Armv8.5-A MTE (Memory Taggging Extension)
   bool has_bti_ = false;  // Armv8.5-A BTI (Branch Target Identification)
+#endif
+#if defined(ARCH_CPU_X86_FAMILY)
+  bool has_pku_ = false;
 #endif
   bool has_non_stop_time_stamp_counter_ = false;
   bool is_running_in_vm_ = false;

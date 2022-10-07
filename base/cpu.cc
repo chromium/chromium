@@ -300,6 +300,8 @@ void CPU::Initialize(bool require_branding) {
     has_aesni_ = (cpu_info[2] & 0x02000000) != 0;
     has_fma3_ = (cpu_info[2] & 0x00001000) != 0;
     has_avx2_ = has_avx_ && (cpu_info7[1] & 0x00000020) != 0;
+
+    has_pku_ = (cpu_info7[2] & 0x00000008) != 0;
   }
 
   // Get the brand string of the cpu.
