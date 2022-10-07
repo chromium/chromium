@@ -55,7 +55,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, copy) NSString* primaryActionString;
-@property(nonatomic, copy) NSMutableArray<NSString*>* instructionSteps;
+@property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 @property(nonatomic, assign) BOOL hasPrimaryAction;
 
 // The navigation bar at the top of the view.
@@ -69,7 +69,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
                          title:(NSString*)title
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
-              instructionSteps:(NSMutableArray<NSString*>*)instructionSteps
+              instructionSteps:(NSArray<NSString*>*)instructionSteps
               hasPrimaryAction:(BOOL)hasPrimaryAction {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {

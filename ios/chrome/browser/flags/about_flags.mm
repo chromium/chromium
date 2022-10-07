@@ -209,6 +209,14 @@ const FeatureEntry::FeatureVariation kOmniboxMaxURLMatchesVariations[] = {
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kWhatsNewModuleLayout[] = {
+    {kWhatsNewModuleBasedLayoutParam, "true"}};
+
+const FeatureEntry::FeatureVariation kWhatsNewLayoutVariations[] = {
+    {"Display module layout", kWhatsNewModuleLayout,
+     std::size(kWhatsNewModuleLayout), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kAutofillUseMobileLabelDisambiguationShowAll[] = {
         {autofill::features::kAutofillUseMobileLabelDisambiguationParameterName,
@@ -1215,7 +1223,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     "EnableOpenInDownload")},
     {"whats-new-ios", flag_descriptions::kWhatsNewIOSName,
      flag_descriptions::kWhatsNewIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kWhatsNewIOS)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kWhatsNewIOS,
+                                    kWhatsNewLayoutVariations,
+                                    "WhatsNewLayoutVariations")},
     {"ios-autofill-branding", flag_descriptions::kAutofillBrandingIOSName,
      flag_descriptions::kAutofillBrandingIOSDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillBrandingIOS,

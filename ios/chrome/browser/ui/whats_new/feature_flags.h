@@ -10,4 +10,8 @@
 // Feature to enable What's New feature.
 BASE_DECLARE_FEATURE(kWhatsNewIOS);
 
+extern const char kWhatsNewModuleBasedLayoutParam[];
+
+bool IsWhatsNewModuleBasedLayout();
+
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_FEATURE_FLAGS_H_

@@ -17,7 +17,7 @@
                          title:(NSString*)title
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
-              instructionSteps:(NSMutableArray<NSString*>*)instructionSteps
+              instructionSteps:(NSArray<NSString*>*)instructionSteps
               hasPrimaryAction:(BOOL)hasPrimaryAction NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

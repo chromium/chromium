@@ -11,7 +11,6 @@
 // to communicate with `WhatsNewMediator`.
 @protocol WhatsNewPrimaryActionHandler
 
-// Invoked when the action button is tapped.
 // Invoked when a user interacts with the primary button for a specific
 // `WhatsNewEntryId`.
 - (void)didTapActionButton:(WhatsNewItem*)item;

@@ -43,7 +43,7 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>ellipsis</string>
-            <key>icon_background_color</key>
+            <key>IconBackgroundColor</key>
             <string>blue</string>
             <key>IsSymbol</key>
             <true/>
@@ -70,8 +70,8 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>square.and.arrow.up</string>
-            <key>icon_background_color</key>
-            <string>Pink</string>
+            <key>IconBackgroundColor</key>
+            <string>pink</string>
             <key>IsSymbol</key>
             <true/>
             <key>InstructionSteps</key>
@@ -98,7 +98,7 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>password_key</string>
-            <key>icon_background_color</key>
+            <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
             <false/>
@@ -129,7 +129,7 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>fullcolor_branding_icon</string>
-            <key>icon_background_color</key>
+            <key>IconBackgroundColor</key>
             <string>white</string>
             <key>IsSymbol</key>
             <false/>
@@ -157,7 +157,7 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>password_key</string>
-            <key>icon_background_color</key>
+            <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
             <false/>
@@ -184,7 +184,7 @@
             <string>default_browser_screen_banner</string>
             <key>IconImageName</key>
             <string>pencil.and.ellipsis.rectangle</string>
-            <key>icon_background_color</key>
+            <key>IconBackgroundColor</key>
             <string>blue</string>
             <key>IsSymbol</key>
             <true/>

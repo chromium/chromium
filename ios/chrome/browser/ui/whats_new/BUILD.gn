@@ -11,13 +11,17 @@ source_set("whats_new") {
     "whats_new_detail_view_controller.mm",
     "whats_new_mediator.h",
     "whats_new_mediator.mm",
+    "whats_new_mediator_consumer.h",
     "whats_new_primary_action_handler.h",
+    "whats_new_table_view_action_handler.h",
     "whats_new_table_view_controller.h",
     "whats_new_table_view_controller.mm",
   ]
   deps = [
+    ":feature_flags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
@@ -27,6 +31,7 @@ source_set("whats_new") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//ui/strings",
   ]
   frameworks = [ "UIKit.framework" ]
 }

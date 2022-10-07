@@ -34315,6 +34315,52 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WhatsNew.AddPasswordManually">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user opened Add Password Manually in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.Autofill">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Autofill in What's New.</description>
+</action>
+
+<action name="WhatsNew.NewOverflowMenu">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened New Overflow Menu in What's New.</description>
+</action>
+
+<action name="WhatsNew.PasswordsInOtherApps">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user opened Passwords In Other Apps in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.SearchTabs">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Search Tabs in What's New.</description>
+</action>
+
+<action name="WhatsNew.SharedHighlighting">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Shared Highlighting in What's New.</description>
+</action>
+
+<action name="WhatsNew.UseChromeByDefault">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Chrome By Default in What's New.</description>
+</action>
+
 <action name="Win10WelcomePage_SetAsDefaultBrowser">
   <owner>pmonette@chromium.org</owner>
   <description>
