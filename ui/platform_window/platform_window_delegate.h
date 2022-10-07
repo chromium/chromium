@@ -101,15 +101,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnWindowTiledStateChanged(WindowTiledEdges new_tiled_edges);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(ffred): We should just add kImmersiveFullscreen as a state. However,
-  // that will require more refactoring in other places to understand that
-  // kImmersiveFullscreen is a fullscreen status.
-  // Sets the immersive mode for the window. This will only have an effect on
-  // ChromeOS platforms.
-  virtual void OnImmersiveModeChanged(bool immersive) {}
-#endif
-
   virtual void OnLostCapture() = 0;
 
   virtual void OnAcceleratedWidgetAvailable(gfx::AcceleratedWidget widget) = 0;

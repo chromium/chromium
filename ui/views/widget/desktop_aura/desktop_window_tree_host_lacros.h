@@ -62,7 +62,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
   void OnWindowStateChanged(
       ui::PlatformWindowState old_window_show_state,
       ui::PlatformWindowState new_window_show_state) override;
-  void OnImmersiveModeChanged(bool enabled) override;
 
   // DesktopWindowTreeHostPlatform overrides:
   void AddAdditionalInitProperties(

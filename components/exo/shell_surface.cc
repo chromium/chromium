@@ -402,11 +402,6 @@ gfx::Point ShellSurface::GetSurfaceOrigin() const {
   }
 }
 
-void ShellSurface::SetUseImmersiveForFullscreen(bool value) {
-  ShellSurfaceBase::SetUseImmersiveForFullscreen(value);
-  Configure();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 

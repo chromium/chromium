@@ -90,20 +90,6 @@ void SetZOrder(struct wl_client* client,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void Activate(struct wl_client* client, struct wl_resource* resource) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void Dectivate(struct wl_client* client, struct wl_resource* resource) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-void SetFullscreenMode(struct wl_client* client,
-                       struct wl_resource* resource,
-                       uint32_t mode) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 }  // namespace
 
 TestZAuraToplevel::TestZAuraToplevel(wl_resource* resource)
@@ -126,9 +112,6 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &UnSetFloat,
     &SetZOrder,
     &SetOrigin,
-    &Activate,
-    &Dectivate,
-    &SetFullscreenMode,
 };
 
 }  // namespace wl

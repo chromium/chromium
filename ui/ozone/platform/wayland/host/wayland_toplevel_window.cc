@@ -414,13 +414,6 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   } else {
     state_ = PlatformWindowState::kNormal;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (shell_toplevel_ && shell_toplevel()->SupportsTopLevelImmersiveStatus() &&
-      is_immersive_fullscreen_ != window_states.is_immersive_fullscreen) {
-    is_immersive_fullscreen_ = window_states.is_immersive_fullscreen;
-    delegate()->OnImmersiveModeChanged(is_immersive_fullscreen_);
-  }
-#endif
 
   const bool did_send_delegate_notification =
       !!requested_window_show_state_count_;
@@ -695,21 +688,12 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
-  if (shell_toplevel_ && shell_toplevel_->SupportsTopLevelImmersiveStatus()) {
-    shell_toplevel_->SetUseImmersiveMode(status);
-  } else if (aura_surface_ &&
-             zaura_surface_get_version(aura_surface_.get()) >=
-                 ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION) {
+  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                           ZAURA_SURFACE_SET_FULLSCREEN_MODE_SINCE_VERSION) {
     auto mode = status ? ZAURA_SURFACE_FULLSCREEN_MODE_IMMERSIVE
                        : ZAURA_SURFACE_FULLSCREEN_MODE_PLAIN;
     zaura_surface_set_fullscreen_mode(aura_surface_.get(), mode);
-    // TODO(ffred): the deprecated immersive mode flow used to transition
-    // immediately after sending the request to exo. This is needed to
-    // maintain backwards compatibility. Remove once we have rolled past the
-    // supported skew.
-    delegate()->OnImmersiveModeChanged(status);
   } else {
     // TODO(https://crbug.com/1113900): Implement AuraShell support for
     // non-browser windows and replace this if-else clause by a DCHECK.
@@ -717,7 +701,6 @@ void WaylandToplevelWindow::SetImmersiveFullscreenStatus(bool status) {
         << "Implement AuraShell support for non-browser windows.";
   }
 }
-#endif
 
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
@@ -960,10 +943,7 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
                                  this);
     }
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     SetImmersiveFullscreenStatus(false);
-#endif
 
     // We pass the value of `z_order_` to the `shell_toplevel_` here in order to
     // set the initial z order of the window.

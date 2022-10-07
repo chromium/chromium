@@ -160,21 +160,6 @@ void XDGToplevelWrapperImpl::SetFullscreen() {
   xdg_toplevel_set_fullscreen(xdg_toplevel_.get(), nullptr);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void XDGToplevelWrapperImpl::SetUseImmersiveMode(bool immersive) {
-  if (SupportsTopLevelImmersiveStatus()) {
-    auto mode = immersive ? ZAURA_TOPLEVEL_FULLSCREEN_MODE_IMMERSIVE
-                          : ZAURA_TOPLEVEL_FULLSCREEN_MODE_PLAIN;
-    zaura_toplevel_set_fullscreen_mode(aura_toplevel_.get(), mode);
-  }
-}
-
-bool XDGToplevelWrapperImpl::SupportsTopLevelImmersiveStatus() const {
-  return aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                               ZAURA_TOPLEVEL_SET_FULLSCREEN_MODE_SINCE_VERSION;
-}
-#endif
-
 void XDGToplevelWrapperImpl::UnSetFullscreen() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_unset_fullscreen(xdg_toplevel_.get());
@@ -301,23 +286,20 @@ void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
 
-  surface->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height, {
-    .is_maximized =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
-    .is_fullscreen =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    .is_immersive_fullscreen =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_IMMERSIVE),
-#endif
-    .is_activated =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
-    .is_snapped_primary =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
-    .is_snapped_secondary =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
-    .is_floated = CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED)
-  });
+  surface->wayland_window_->HandleAuraToplevelConfigure(
+      x, y, width, height,
+      {.is_maximized =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
+       .is_fullscreen =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
+       .is_activated =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
+       .is_snapped_primary =
+           CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
+       .is_snapped_secondary = CheckIfWlArrayHasValue(
+           states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
+       .is_floated =
+           CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED)});
 }
 
 // static

@@ -91,12 +91,6 @@ void ZXDGToplevelV6WrapperImpl::UnSetFullscreen() {
   zxdg_toplevel_v6_unset_fullscreen(zxdg_toplevel_v6_.get());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ZXDGToplevelV6WrapperImpl::SupportsTopLevelImmersiveStatus() const {
-  return false;
-}
-#endif
-
 void ZXDGToplevelV6WrapperImpl::SetMinimized() {
   DCHECK(zxdg_toplevel_v6_);
   zxdg_toplevel_v6_set_minimized(zxdg_toplevel_v6_.get());

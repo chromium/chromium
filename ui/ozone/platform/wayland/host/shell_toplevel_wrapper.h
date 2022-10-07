@@ -59,15 +59,6 @@ class ShellToplevelWrapper {
   // Unsets a native window from fullscreen state.
   virtual void UnSetFullscreen() = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sets a native window's immersive mode.
-  virtual void SetUseImmersiveMode(bool immersive) = 0;
-
-  // Whether the shell supports top level immersive status. The deprecated
-  // immersive status used to be set on the surface level.
-  virtual bool SupportsTopLevelImmersiveStatus() const = 0;
-#endif
-
   // Sets a native window to minimized state.
   virtual void SetMinimized() = 0;
 

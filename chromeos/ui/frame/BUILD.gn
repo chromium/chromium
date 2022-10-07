@@ -69,7 +69,6 @@ source_set("frame") {
     "//skia",
     "//ui/aura",
     "//ui/base",
-    "//ui/platform_window",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
     "//ui/views/window/vector_icons",

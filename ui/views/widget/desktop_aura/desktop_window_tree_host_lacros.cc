@@ -18,7 +18,6 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
 #include "ui/views/views_delegate.h"
-#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
 #include "ui/views/widget/widget.h"
 
@@ -104,12 +103,6 @@ void DesktopWindowTreeHostLacros::OnWindowStateChanged(
   GetContentWindow()->SetProperty(
       chromeos::kWindowStateTypeKey,
       ToChromeosWindowStateType(new_window_show_state));
-}
-
-void DesktopWindowTreeHostLacros::OnImmersiveModeChanged(bool enabled) {
-  // Keep in sync with ImmersiveFullscreenController::Enable for widget. See
-  // comment there for details.
-  GetContentWindow()->SetProperty(chromeos::kImmersiveIsActive, enabled);
 }
 
 void DesktopWindowTreeHostLacros::AddAdditionalInitProperties(

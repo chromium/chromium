@@ -33,10 +33,6 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void UnSetMaximized() override;
   void SetFullscreen() override;
   void UnSetFullscreen() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetUseImmersiveMode(bool mode) override {}
-  bool SupportsTopLevelImmersiveStatus() const override;
-#endif
   void SetMinimized() override;
   void SurfaceMove(WaylandConnection* connection) override;
   void SurfaceResize(WaylandConnection* connection, uint32_t hittest) override;

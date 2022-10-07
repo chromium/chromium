@@ -71,8 +71,6 @@ class ImmersiveModeControllerChromeos
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  void EnableForWidget(views::Widget* widget, bool enabled);
-
   chromeos::ImmersiveFullscreenController controller_;
 
   raw_ptr<BrowserView> browser_view_ = nullptr;
