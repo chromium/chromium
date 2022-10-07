@@ -318,13 +318,22 @@ TEST(WeakPtrTest, DerivedTargetWithNestedBase) {
 }
 
 TEST(WeakPtrTest, DerivedTargetMultipleInheritance) {
-  DerivedTargetMultipleInheritance d;
-  Target& b = d;
-  EXPECT_NE(static_cast<void*>(&d), static_cast<void*>(&b));
-  const WeakPtr<Target> pb = AsWeakPtr(&b);
-  EXPECT_EQ(pb.get(), &b);
-  const WeakPtr<DerivedTargetMultipleInheritance> pd = AsWeakPtr(&d);
-  EXPECT_EQ(pd.get(), &d);
+  DerivedTargetMultipleInheritance derived_target;
+  Target& target = derived_target;
+  EXPECT_NE(static_cast<void*>(&derived_target), static_cast<void*>(&target));
+
+  WeakPtr<Target> target_weak_ptr = AsWeakPtr(&target);
+  EXPECT_EQ(target_weak_ptr.get(), &target);
+
+  WeakPtr<DerivedTargetMultipleInheritance> derived_target_weak_ptr =
+      AsWeakPtr(&derived_target);
+  EXPECT_EQ(derived_target_weak_ptr.get(), &derived_target);
+
+  target_weak_ptr = derived_target_weak_ptr;
+  EXPECT_EQ(target_weak_ptr.get(), &target);
+
+  target_weak_ptr = std::move(derived_target_weak_ptr);
+  EXPECT_EQ(target_weak_ptr.get(), &target);
 }
 
 TEST(WeakPtrFactoryTest, BooleanTesting) {
@@ -689,8 +698,13 @@ TEST(WeakPtrTest, NonOwnerThreadCanDeleteWeakPtr) {
 
 TEST(WeakPtrTest, ConstUpCast) {
   Target target;
-  // WeakPtrs can upcast to const T from a non-const T.
+
+  // WeakPtrs can upcast from non-const T to const T.
   WeakPtr<const Target> const_weak_ptr = target.AsWeakPtr();
+
+  // WeakPtrs don't enable conversion from const T to nonconst T.
+  static_assert(
+      !std::is_constructible_v<WeakPtr<Target>, WeakPtr<const Target>>);
 }
 
 TEST(WeakPtrTest, GetMutableWeakPtr) {
