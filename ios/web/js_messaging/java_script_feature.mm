@@ -160,7 +160,7 @@ JavaScriptFeature::GetScriptMessageHandler() const {
   }
 
   return base::BindRepeating(&JavaScriptFeature::ScriptMessageReceived,
-                             weak_factory_.GetWeakPtr());
+                             weak_factory_.GetMutableWeakPtr());
 }
 
 void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
