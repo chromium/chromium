@@ -149,7 +149,7 @@ dependencies {
 
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
-    compile 'org.checkerframework:checker-compat-qual:2.5.3'
+    compile 'org.checkerframework:checker-compat-qual:2.5.5'
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
@@ -179,7 +179,7 @@ dependencies {
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
+    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
 
     androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
     // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
