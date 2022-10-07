@@ -21,13 +21,16 @@
   }
 
   :host([shown-middle-slot-promo-id_]) #promoAndDismissContainer {
-    padding-inline-end: 12px;
+    padding-inline-end: 0;
+    padding-inline-start: 2px;
   }
 
   #promoContainer {
     align-items: center;
     display: flex;
-    overflow: hidden;
+    overflow-x: clip;
+    padding-inline-end: 2px;
+    padding-inline-start: 2px;
   }
 
   a {
@@ -62,7 +65,8 @@
   #dismissPromoButton {
     --cr-icon-button-icon-size: 14px;
     --cr-icon-button-size: 20px;
-    margin-inline-start: 10px;
+    margin-inline-end: 4px;
+    margin-inline-start: 8px;
   }
 
   #promoContainer > :last-child {
