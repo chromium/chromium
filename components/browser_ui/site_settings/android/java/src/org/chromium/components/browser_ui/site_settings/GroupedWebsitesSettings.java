@@ -114,7 +114,13 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
                     getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                 @Override
                 public boolean isPreferenceControlledByPolicy(Preference preference) {
-                    return getSiteSettingsDelegate().isFirstPartySetsDataAccessManaged();
+                    for (var site : mSiteGroup.getWebsites()) {
+                        if (getSiteSettingsDelegate().isPartOfManagedFirstPartySet(
+                                    site.getAddress().getOrigin())) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             });
         }

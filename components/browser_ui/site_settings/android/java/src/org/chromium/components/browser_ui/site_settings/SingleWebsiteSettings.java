@@ -845,7 +845,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                 @Override
                 public boolean isPreferenceControlledByPolicy(Preference preference) {
-                    return getSiteSettingsDelegate().isFirstPartySetsDataAccessManaged();
+                    return getSiteSettingsDelegate().isPartOfManagedFirstPartySet(
+                            mSite.getAddress().getOrigin());
                 }
             });
         }
