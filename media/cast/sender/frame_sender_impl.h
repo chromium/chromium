@@ -36,7 +36,7 @@ class FrameSenderImpl : public FrameSender {
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay) override;
   base::TimeDelta GetTargetPlayoutDelay() const override;
   bool NeedsKeyFrame() const override;
-  void EnqueueFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame) override;
+  bool EnqueueFrame(std::unique_ptr<SenderEncodedFrame> encoded_frame) override;
   bool ShouldDropNextFrame(base::TimeDelta frame_duration) const override;
   RtpTimeTicks GetRecordedRtpTimestamp(FrameId frame_id) const override;
   int GetUnacknowledgedFrameCount() const override;

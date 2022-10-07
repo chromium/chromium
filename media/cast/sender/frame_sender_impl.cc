@@ -304,7 +304,7 @@ base::TimeDelta FrameSenderImpl::GetAllowedInFlightMediaDuration() const {
   return target_playout_delay_ + (current_round_trip_time_ / 2);
 }
 
-void FrameSenderImpl::EnqueueFrame(
+bool FrameSenderImpl::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
@@ -401,6 +401,7 @@ void FrameSenderImpl::EnqueueFrame(
       "cast.stream", name, TRACE_ID_WITH_SCOPE(name, frame_id.lower_32_bits()),
       "rtp_timestamp", encoded_frame->rtp_timestamp.lower_32_bits());
   transport_sender_->InsertFrame(config_.sender_ssrc, *encoded_frame);
+  return true;
 }
 
 void FrameSenderImpl::OnReceivedCastFeedback(

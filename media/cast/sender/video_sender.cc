@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/encoding/video_encoder.h"
 #include "media/cast/net/cast_transport_config.h"
@@ -375,7 +376,19 @@ void VideoSender::OnEncodedVideoFrame(
       feedback_cb_.Run(feedback);
   }
 
-  frame_sender_->EnqueueFrame(std::move(encoded_frame));
+  const RtpTimeTicks rtp_timestamp = encoded_frame->rtp_timestamp;
+  if (!frame_sender_->EnqueueFrame(std::move(encoded_frame))) {
+    // Since we have dropped an already encoded frame, which is much worse than
+    // dropping a raw frame above, we need to flush the encoder and emit a new
+    // keyframe.
+    video_encoder_->EmitFrames();
+    video_encoder_->GenerateKeyFrame();
+
+    TRACE_EVENT_INSTANT2("cast.stream", "Video Frame Drop (already encoded)",
+                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
+                         rtp_timestamp.lower_32_bits(), "reason",
+                         "openscreen sender did not accept the frame");
+  }
 }
 
 }  // namespace media::cast

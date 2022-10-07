@@ -12,8 +12,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
+#include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "media/cast/sender/openscreen_frame_sender.h"
@@ -196,16 +198,24 @@ void RemotingSender::TrySendFrame() {
 
   // Ensure each successive frame's RTP timestamp is unique, but otherwise just
   // base it on the reference time.
-  remoting_frame->rtp_timestamp =
+  const media::cast::RtpTimeTicks rtp_timestamp =
       last_frame_rtp_timestamp +
       std::max(media::cast::RtpTimeDelta::FromTicks(1),
                ToRtpTimeDelta(
                    remoting_frame->reference_time - last_frame_reference_time,
                    media::cast::kRemotingRtpTimebase));
+  remoting_frame->rtp_timestamp = rtp_timestamp;
   remoting_frame->data.swap(next_frame_data_);
 
-  frame_sender_->EnqueueFrame(std::move(remoting_frame));
-  next_frame_id_++;
+  if (frame_sender_->EnqueueFrame(std::move(remoting_frame))) {
+    // Only increment if we successfully enqueued.
+    next_frame_id_++;
+  } else {
+    TRACE_EVENT_INSTANT2("cast.stream", "Remoting Frame Drop",
+                         TRACE_EVENT_SCOPE_THREAD, "rtp_timestamp",
+                         rtp_timestamp.lower_32_bits(), "reason",
+                         "openscreen sender did not accept the frame");
+  }
   OnInputTaskComplete();
 }
 
