@@ -50,6 +50,7 @@ class ParentAccessUIHandlerImpl
       const std::string& encoded_parent_access_callback_proto,
       OnParentAccessCallbackReceivedCallback callback) override;
   void GetParentAccessParams(GetParentAccessParamsCallback callback) override;
+  void OnParentApproved(OnParentApprovedCallback callback) override;
 
   // Returns nullptr if the parent was not verified.
   const kids::platform::parentaccess::client::proto::ParentAccessToken*

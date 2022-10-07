@@ -67,6 +67,15 @@ ParentAccessDialog::CloneParentAccessParams() {
   return parent_access_params_->Clone();
 }
 
+void ParentAccessDialog::SetResultAndClose(
+    std::unique_ptr<ParentAccessDialog::Result> result) {
+  DCHECK(!result_);
+  result_ = std::move(result);
+  // This will trigger dialog destruction, which will in turn result in the
+  // callback being called.
+  Close();
+}
+
 parent_access_ui::mojom::ParentAccessParams*
 ParentAccessDialog::GetParentAccessParamsForTest() {
   return parent_access_params_.get();
@@ -81,11 +90,10 @@ ParentAccessDialog::ParentAccessDialog(
       callback_(std::move(callback)) {}
 
 ParentAccessDialog::~ParentAccessDialog() {
-  auto result = std::make_unique<ParentAccessDialog::Result>();
-  // TODO(b/241166361) Return correct ParentAccessDialog::Result based
-  // on result of the flow.
-  result->status = ParentAccessDialog::Result::Status::kCancelled;
-  std::move(callback_).Run(std::move(result));
+  std::move(callback_).Run(
+      result_ ? std::move(result_)
+              /* default status is kCancelled */
+              : std::make_unique<ParentAccessDialog::Result>());
 }
 
 }  // namespace chromeos

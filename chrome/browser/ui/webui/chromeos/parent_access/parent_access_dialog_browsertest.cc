@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
 
 #include "ash/shell.h"
@@ -19,6 +21,14 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
+
+namespace {
+bool DialogResultsEqual(const chromeos::ParentAccessDialog::Result& first,
+                        const chromeos::ParentAccessDialog::Result& second) {
+  return first.status == second.status &&
+         first.parent_access_token == second.parent_access_token;
+}
+}  // namespace
 
 namespace chromeos {
 
@@ -73,6 +83,46 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 
   run_loop.Run();
+}
+
+// Verify that the dialog is shown and correctly configured.
+IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
+  base::RunLoop run_loop;
+
+  auto expected_result = std::make_unique<
+      chromeos::ParentAccessDialog::ParentAccessDialog::Result>();
+  expected_result->status =
+      chromeos::ParentAccessDialog::Result::Status::kApproved;
+  expected_result->parent_access_token = "TEST_TOKEN";
+
+  // Create the callback.
+  ParentAccessDialog::ParentAccessDialogCallback callback = base::BindOnce(
+      [](base::OnceClosure closure,
+         const chromeos::ParentAccessDialog::Result* expected_result,
+         std::unique_ptr<
+             chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
+          -> void {
+        EXPECT_TRUE(DialogResultsEqual(*result, *expected_result));
+        std::move(closure).Run();
+      },
+      run_loop.QuitClosure(), expected_result.get());
+
+  // Show the dialog.
+  ParentAccessDialog::Show(
+      parent_access_ui::mojom::ParentAccessParams::New(
+          parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
+          parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
+              parent_access_ui::mojom::WebApprovalsParams::New())),
+      std::move(callback));
+
+  // Set the result.
+  ParentAccessDialog::GetInstance()->SetResultAndClose(
+      std::move(expected_result));
+
+  run_loop.Run();
+
+  // The dialog instance should be gone after SetResult() is called.
+  EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,

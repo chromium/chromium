@@ -60,6 +60,10 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   // is made, instead of transferring ownership to the caller.
   parent_access_ui::mojom::ParentAccessParamsPtr CloneParentAccessParams();
 
+  // Used by the ParentAccessUI to set the result of the Parent Access
+  // request and close the dialog.
+  void SetResultAndClose(std::unique_ptr<ParentAccessDialog::Result> result);
+
   parent_access_ui::mojom::ParentAccessParams* GetParentAccessParamsForTest();
 
  protected:
@@ -71,6 +75,9 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
  private:
   parent_access_ui::mojom::ParentAccessParamsPtr parent_access_params_;
   ParentAccessDialogCallback callback_;
+
+  // The Parent Access result.  Set by the ParentAccessUI
+  std::unique_ptr<Result> result_;
 };
 
 }  // namespace chromeos

@@ -80,6 +80,16 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
   return;
 }
 
+void ParentAccessUIHandlerImpl::OnParentApproved(
+    OnParentApprovedCallback callback) {
+  DCHECK(parent_access_token_);
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kApproved;
+  result->parent_access_token = parent_access_token_->token();
+  ParentAccessDialog::GetInstance()->SetResultAndClose(std::move(result));
+  std::move(callback).Run();
+}
+
 const kids::platform::parentaccess::client::proto::ParentAccessToken*
 ParentAccessUIHandlerImpl::GetParentAccessTokenForTest() {
   return parent_access_token_.get();
@@ -112,8 +122,6 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
     std::move(callback).Run(std::move(message));
     return;
   }
-
-  //  TODO(b/200587178): Communicate parsed callback to ChromeOS caller.
 
   switch (parent_access_callback.callback_case()) {
     case kids::platform::parentaccess::client::proto::ParentAccessCallback::

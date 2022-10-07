@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
@@ -9,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
@@ -131,21 +133,6 @@ MATCHER_P(EqualsProto,
 // Verifies that the ParentVerified status is handled correctly.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        ParentVerifiedParsed) {
-  // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
-
-  // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
-
-  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
-
-  ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
-      GetParentAccessUI()->GetHandlerForTest());
-
-  // Make sure the handler isn't null.
-  ASSERT_NE(handler, nullptr);
-
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -158,6 +145,31 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
       pat->mutable_expire_time();
   expire_time->set_seconds(123456);
   expire_time->set_nanos(567890);
+
+  // Show the parent access dialog.
+  base::RunLoop show_dialog_run_loop;
+  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+      GetParamsForWebApprovals(),
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
+              -> void {
+            // The dialog result should contain the test token.
+            EXPECT_EQ("TEST_TOKEN", result->parent_access_token);
+            std::move(quit_closure).Run();
+          },
+          show_dialog_run_loop.QuitClosure()));
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
+
+  ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
+      GetParentAccessUI()->GetHandlerForTest());
+
+  // Make sure the handler isn't null.
+  ASSERT_NE(handler, nullptr);
 
   // Encode the proto in base64.
   std::string encoded_parent_access_callback;
@@ -183,6 +195,23 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 
   // Verify the Parent Access Token was stored.
   EXPECT_THAT(*pat, EqualsProto(*(handler->GetParentAccessTokenForTest())));
+
+  // Send the OnParentApproved event.
+  base::RunLoop parent_approved_run_loop;
+  handler->OnParentApproved(base::BindOnce(
+      [](base::OnceClosure quit_closure) -> void {
+        std::move(quit_closure).Run();
+      },
+      parent_approved_run_loop.QuitClosure()));
+
+  parent_approved_run_loop.Run();
+
+  // Wait for the "Show Dialog" callback to complete, which wil test for the
+  // expected result to be shown.
+  show_dialog_run_loop.Run();
+
+  // The dialog should have been closed
+  EXPECT_EQ(nullptr, ParentAccessDialog::GetInstance());
 }
 
 // Verifies that the ConsentDeclined status is ignored.
