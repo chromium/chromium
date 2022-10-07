@@ -10,15 +10,12 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
-#include "content/browser/first_party_sets/first_party_sets_site_data_remover.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
@@ -32,30 +29,6 @@ namespace {
 
 constexpr base::FilePath::CharType kFirstPartySetsDatabase[] =
     FILE_PATH_LITERAL("first_party_sets.db");
-
-using ClearSiteDataOutcomeType =
-    FirstPartySetsHandlerImpl::ClearSiteDataOutcomeType;
-
-// `failed_data_types` is a bitmask used to indicate data types from
-// BrowsingDataRemover::DataType enum that were failed to remove.
-ClearSiteDataOutcomeType ComputeClearSiteDataOutcome(
-    uint64_t failed_data_types) {
-  ClearSiteDataOutcomeType outcome = ClearSiteDataOutcomeType::kSuccess;
-  if (failed_data_types & BrowsingDataRemover::DATA_TYPE_COOKIES) {
-    outcome = ClearSiteDataOutcomeType::kCookieFailed;
-  }
-  if (failed_data_types & BrowsingDataRemover::DATA_TYPE_DOM_STORAGE) {
-    outcome = outcome == ClearSiteDataOutcomeType::kCookieFailed
-                  ? ClearSiteDataOutcomeType::kCookieAndStorageFailed
-                  : ClearSiteDataOutcomeType::kStorageFailed;
-  }
-  return outcome;
-}
-
-void RecordClearSiteDataOutcome(ClearSiteDataOutcomeType outcome) {
-  base::UmaHistogramEnumeration(
-      "FirstPartySets.Initialization.ClearSiteDataOutcomeType", outcome);
-}
 
 }  // namespace
 
@@ -307,81 +280,14 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   DCHECK(!browser_context_id.empty());
   DCHECK(enabled_);
 
-  if (db_helper_.is_null()) {
-    VLOG(1) << "Invalid First-Party Sets database. Failed to clear site data "
-               "for browser_context_id="
-            << browser_context_id;
-    std::move(callback).Run(std::move(context_config));
-    return;
+  if (!db_helper_.is_null()) {
+    // TODO(crbug.com/1219656): Call site state clearing.
+    // TODO(https://crbug.com/1219656): don't invoke `callback` until site state
+    // clearing is complete.
+    db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
+        .WithArgs(browser_context_id, version_, global_sets_->Clone(),
+                  context_config.Clone());
   }
-  // Extract the callback into a variable and pass it into DB async call args,
-  // to prevent the case that `context_config` gets used after it's moved. This
-  // is because C++ does not have a defined evaluation order for function
-  // parameters.
-  base::OnceCallback<void(const std::vector<net::SchemefulSite>&)>
-      on_get_sites_to_clear = base::BindOnce(
-          &FirstPartySetsHandlerImpl::OnGetSitesToClear,
-          // base::Unretained(this) is safe here because this
-          // is a static singleton.
-          base::Unretained(this), browser_context_getter, browser_context_id,
-          context_config.Clone(), std::move(callback));
-
-  db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
-                     UpdateAndGetSitesToClearForContext)
-      .WithArgs(browser_context_id, global_sets_->Clone(),
-                std::move(context_config))
-      .Then(std::move(on_get_sites_to_clear));
-}
-
-void FirstPartySetsHandlerImpl::OnGetSitesToClear(
-    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-    const std::string& browser_context_id,
-    net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
-    const std::vector<net::SchemefulSite>& sites_to_clear) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  BrowserContext* browser_context = browser_context_getter.Run();
-  if (!browser_context) {
-    DVLOG(1) << "Invalid Browser Context. Failed to clear site data for "
-                "browser_context_id="
-             << browser_context_id;
-
-    std::move(callback).Run(std::move(context_config));
-    return;
-  }
-
-  FirstPartySetsSiteDataRemover::RemoveSiteData(
-      *browser_context->GetBrowsingDataRemover(), sites_to_clear,
-      base::BindOnce(
-          &FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext,
-          // base::Unretained(this) is safe here because
-          // this is a static singleton.
-          base::Unretained(this), browser_context_id, std::move(context_config),
-          std::move(callback)));
-}
-
-void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
-    const std::string& browser_context_id,
-    net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
-    uint64_t failed_data_types) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!db_helper_.is_null());
-
-  ClearSiteDataOutcomeType outcome =
-      ComputeClearSiteDataOutcome(failed_data_types);
-  RecordClearSiteDataOutcome(outcome);
-  if (outcome == ClearSiteDataOutcomeType::kSuccess) {
-    db_helper_
-        .AsyncCall(
-            &FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext)
-        .WithArgs(browser_context_id);
-  }
-  db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
-      .WithArgs(browser_context_id, version_, global_sets_->Clone(),
-                context_config.Clone());
   std::move(callback).Run(std::move(context_config));
 }
 

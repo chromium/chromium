@@ -12,15 +12,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -49,9 +46,6 @@ using ParseWarningType = FirstPartySetsHandler::ParseWarningType;
 const char* kAdditionsField = "additions";
 const char* kPrimaryField = "primary";
 const char* kCctldsField = "ccTLDs";
-
-const char* kFirstPartySetsClearSiteDataOutcomeHistogram =
-    "FirstPartySets.Initialization.ClearSiteDataOutcomeType";
 
 BrowserContext* FakeBrowserContextGetter() {
   return nullptr;
@@ -188,12 +182,9 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     FirstPartySetsHandlerImpl::GetInstance()->ResetForTesting();
   }
 
-  BrowserContext* context() { return &context_; }
-
  protected:
   base::ScopedTempDir scoped_dir_;
-  BrowserTaskEnvironment env_;
-  TestBrowserContext context_;
+  base::test::TaskEnvironment env_;
 };
 
 class FirstPartySetsHandlerImplEnabledTest
@@ -227,7 +218,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest, EmptyDBPath) {
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_Successful) {
-  base::HistogramTester histogram;
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
 
@@ -251,13 +241,11 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                   Pair(associated, net::FirstPartySetEntry(
                                        foo, net::SiteType::kAssociated, 0))));
 
-  // Should not yet be recorded.
-  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
   base::RunLoop run_loop;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
-          base::BindLambdaForTesting([&]() { return context(); }),
-          browser_context_id, net::FirstPartySetsContextConfig(),
+          base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
+          net::FirstPartySetsContextConfig(),
           base::BindLambdaForTesting(
               [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
   run_loop.Run();
@@ -271,15 +259,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
                                        absl::nullopt))));
-
-  histogram.ExpectUniqueSample(
-      kFirstPartySetsClearSiteDataOutcomeHistogram,
-      FirstPartySetsHandlerImpl::ClearSiteDataOutcomeType::kSuccess, 1);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
        ClearSiteDataOnChangedSetsForContext_EmptyDBPath) {
-  base::HistogramTester histogram;
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite associated(GURL("https://associatedsite.test"));
 
@@ -313,8 +296,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   run_loop.Run();
 
   EXPECT_EQ(GetPersistedGlobalSetsAndWait(browser_context_id), absl::nullopt);
-  // Should not be recorded.
-  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,
@@ -329,9 +310,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
-          base::BindLambdaForTesting([&]() { return context(); }),
-          browser_context_id, net::FirstPartySetsContextConfig(),
-          future.GetCallback());
+          base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
+          net::FirstPartySetsContextConfig(), future.GetCallback());
 
   FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
       base::Version("0.0.1"),
