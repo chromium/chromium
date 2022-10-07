@@ -645,6 +645,14 @@ void FileSystemAccessFileHandleImpl::DidCopySwapFile(
           auto_close));
 }
 
+void FileSystemAccessFileHandleImpl::GetUniqueId(GetUniqueIdCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto id = manager()->GetUniqueId(*this);
+  DCHECK(id.is_valid());
+  std::move(callback).Run(id.AsLowercaseString());
+}
+
 base::WeakPtr<FileSystemAccessHandleBase>
 FileSystemAccessFileHandleImpl::AsWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

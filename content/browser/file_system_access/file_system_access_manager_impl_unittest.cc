@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -18,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -1563,6 +1565,46 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_InvalidStartInID) {
       std::move(common_file_picker_options), base::DoNothing());
   EXPECT_EQ("Invalid starting directory ID in browser",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(FileSystemAccessManagerImplTest, GetUniqueId) {
+  const base::FilePath kTestPath(dir_.GetPath().AppendASCII("foo"));
+  auto default_bucket = CreateSandboxFileSystemAndGetDefaultBucket();
+
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      kTestPath);
+
+  auto test_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary, kTestPath);
+  test_url.SetBucket(default_bucket);
+
+  FileSystemAccessFileHandleImpl file(manager_.get(), kBindingContext, test_url,
+                                      {ask_grant_, ask_grant_});
+  auto file_id = manager_->GetUniqueId(file);
+  // Ensure a valid ID is provided.
+  EXPECT_TRUE(file_id.is_valid());
+
+  // Create a dir handle to the same path. The ID should be different than the
+  // ID for the file.
+  FileSystemAccessDirectoryHandleImpl dir(manager_.get(), kBindingContext,
+                                          test_url, {ask_grant_, ask_grant_});
+  auto dir_id = manager_->GetUniqueId(dir);
+  EXPECT_TRUE(dir_id.is_valid());
+  EXPECT_NE(file_id, dir_id);
+
+  // Create a file handle to another path. The ID should be different from
+  // either of the other IDs.
+  auto other_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      kTestPath.AppendASCII("bar"));
+  other_url.SetBucket(default_bucket);
+  FileSystemAccessFileHandleImpl other_file(
+      manager_.get(), kBindingContext, other_url, {ask_grant_, ask_grant_});
+  auto other_id = manager_->GetUniqueId(other_file);
+  EXPECT_TRUE(other_id.is_valid());
+  EXPECT_NE(other_id, file_id);
+  EXPECT_NE(other_id, dir_id);
 }
 
 }  // namespace content

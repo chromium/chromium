@@ -4,9 +4,8 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include "base/guid.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/strings/escape.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -574,6 +573,15 @@ FileSystemAccessEntryPtr FileSystemAccessDirectoryHandleImpl::CreateEntry(
       FileSystemAccessHandle::NewFile(
           manager()->CreateFileHandle(context(), url, handle_state())),
       basename);
+}
+
+void FileSystemAccessDirectoryHandleImpl::GetUniqueId(
+    GetUniqueIdCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::GUID id = manager()->GetUniqueId(*this);
+  DCHECK(id.is_valid());
+  std::move(callback).Run(id.AsLowercaseString());
 }
 
 base::WeakPtr<FileSystemAccessHandleBase>

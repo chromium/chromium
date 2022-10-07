@@ -47,4 +47,9 @@ enum FileSystemHandleKind {
 
     [CallWith=ScriptState, Measure]
     Promise<boolean> isSameEntry(FileSystemHandle other);
+
+    [
+        CallWith=ScriptState,
+        RuntimeEnabled=FileSystemAccessAPIExperimental
+    ] Promise<USVString> getUniqueId();
 };

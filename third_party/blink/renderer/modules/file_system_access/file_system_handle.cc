@@ -200,6 +200,21 @@ ScriptPromise FileSystemHandle::isSameEntry(ScriptState* script_state,
   return result;
 }
 
+ScriptPromise FileSystemHandle::getUniqueId(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise result = resolver->Promise();
+
+  GetUniqueIdImpl(WTF::BindOnce(
+      [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+         const WTF::String& id) {
+        // Keep `this` alive so the handle will not be garbage-collected
+        // before the promise is resolved.
+        resolver->Resolve(std::move(id));
+      },
+      WrapPersistent(this), WrapPersistent(resolver)));
+  return result;
+}
+
 void FileSystemHandle::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

@@ -102,4 +102,8 @@ interface FileSystemAccessDirectoryHandle {
   // a reference to this directory to other methods, for example to copy or move
   // the directory, or when transferring the handle over postMessage.
   Transfer(pending_receiver<FileSystemAccessTransferToken> token);
+
+  // Returns a uniquely identifying string for the handle.
+  // `id` must be in GUID version 4 format.
+  GetUniqueId() => (string id);
 };

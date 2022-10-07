@@ -248,4 +248,13 @@ void FileSystemFileHandle::IsSameEntryImpl(
   mojo_ptr_->IsSameEntry(std::move(other), std::move(callback));
 }
 
+void FileSystemFileHandle::GetUniqueIdImpl(
+    base::OnceCallback<void(const WTF::String&)> callback) {
+  if (!mojo_ptr_.is_bound()) {
+    std::move(callback).Run("");
+    return;
+  }
+  mojo_ptr_->GetUniqueId(std::move(callback));
+}
+
 }  // namespace blink

@@ -64,6 +64,7 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void Transfer(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
+  void GetUniqueId(GetUniqueIdCallback callback) override;
 
   void set_max_swap_files_for_testing(int max) { max_swap_files_ = max; }
   storage::FileSystemURL get_swap_url_for_testing(

@@ -14,13 +14,10 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/guid.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/escape.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -37,6 +34,7 @@
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_writer_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -45,6 +43,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "crypto/secure_hash.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/filename_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -54,7 +53,6 @@
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "storage/common/file_system/file_system_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
@@ -1522,6 +1520,42 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForPath(
     }
   }
   return SharedHandleState(std::move(read_grant), std::move(write_grant));
+}
+
+base::GUID FileSystemAccessManagerImpl::GetUniqueId(
+    const FileSystemAccessFileHandleImpl& file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(https://crbug.com/1342961): This is a temporary hack to put something
+  // that works behind a flag. Persist handle IDs such that they're stable
+  // across browsing sessions.
+
+  auto it = file_ids_.find(file.url());
+  if (it != file_ids_.end()) {
+    return it->second;
+  }
+
+  // Generate and store a new guid for this file.
+  auto guid = base::GUID::GenerateRandomV4();
+  file_ids_[file.url()] = guid;
+  return guid;
+}
+
+base::GUID FileSystemAccessManagerImpl::GetUniqueId(
+    const FileSystemAccessDirectoryHandleImpl& directory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // TODO(https://crbug.com/1342961): This is a temporary hack to put something
+  // that works behind a flag. Persist handle IDs such that they're stable
+  // across browsing sessions.
+
+  auto it = directory_ids_.find(directory.url());
+  if (it != directory_ids_.end()) {
+    return it->second;
+  }
+
+  // Generate and store a new guid for this directory.
+  auto guid = base::GUID::GenerateRandomV4();
+  directory_ids_[directory.url()] = guid;
+  return guid;
 }
 
 void FileSystemAccessManagerImpl::CleanupAccessHandleCapacityAllocation(

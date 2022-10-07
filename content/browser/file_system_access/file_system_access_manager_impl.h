@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
+#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
@@ -17,15 +18,12 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "components/download/public/common/quarantine_connection.h"
-#include "components/services/storage/public/cpp/buckets/bucket_info.h"
-#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/browser/file_system_access/file_system_chooser.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
@@ -54,12 +52,12 @@ class FileSystemContext;
 }  // namespace storage
 
 namespace content {
-class FileSystemAccessFileHandleImpl;
-class FileSystemAccessDirectoryHandleImpl;
-class FileSystemAccessTransferTokenImpl;
-class FileSystemAccessDataTransferTokenImpl;
-class FileSystemAccessFileWriterImpl;
 class FileSystemAccessAccessHandleHostImpl;
+class FileSystemAccessDataTransferTokenImpl;
+class FileSystemAccessDirectoryHandleImpl;
+class FileSystemAccessFileHandleImpl;
+class FileSystemAccessFileWriterImpl;
+class FileSystemAccessTransferTokenImpl;
 class StoragePartitionImpl;
 
 // This is the browser side implementation of the
@@ -310,6 +308,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const blink::StorageKey& storage_key,
       FileSystemAccessPermissionContext::HandleType handle_type,
       FileSystemAccessPermissionContext::UserAction user_action);
+
+  // Return a stable unique ID of the FileSystemHandle in GUID version 4 format.
+  base::GUID GetUniqueId(const FileSystemAccessFileHandleImpl& file);
+  base::GUID GetUniqueId(const FileSystemAccessDirectoryHandleImpl& directory);
 
   // Creates a FileSystemURL which corresponds to a FilePath and Origin.
   storage::FileSystemURL CreateFileSystemURLFromPath(
@@ -573,6 +575,18 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   std::map<base::UnguessableToken,
            std::unique_ptr<FileSystemAccessDataTransferTokenImpl>>
       data_transfer_tokens_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // TODO(https://crbug.com/1342961): This is a temporary hack to put something
+  // that works behind a flag. Persist handle IDs such that they're stable
+  // across browsing sessions.
+  std::map<storage::FileSystemURL,
+           base::GUID,
+           storage::FileSystemURL::Comparator>
+      file_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<storage::FileSystemURL,
+           base::GUID,
+           storage::FileSystemURL::Comparator>
+      directory_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   absl::optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -485,6 +485,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter kind
 [Worker]     getter name
 [Worker]     method constructor
+[Worker]     method getUniqueId
 [Worker]     method isSameEntry
 [Worker]     method move
 [Worker]     method queryPermission
