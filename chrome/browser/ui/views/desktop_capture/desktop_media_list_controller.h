@@ -119,7 +119,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Returns a WeakPtr to the current DesktopMediaListController. Note that the
   // weak pointer must only be used on the UI thread.
-  base::WeakPtr<DesktopMediaListController> GetWeakPtr() const;
+  base::WeakPtr<DesktopMediaListController> GetWeakPtr();
 
  private:
   friend class DesktopMediaPickerViewsTestApi;

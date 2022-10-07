@@ -170,7 +170,7 @@ void DesktopMediaListController::SetPreviewedSource(
 }
 
 base::WeakPtr<DesktopMediaListController>
-DesktopMediaListController::GetWeakPtr() const {
+DesktopMediaListController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
