@@ -192,7 +192,6 @@ public class TabGroupModelFilter extends TabModelFilter {
     private Tab mAbsentSelectedTab;
     private boolean mShouldRecordUma = true;
     private boolean mIsResetting;
-    private boolean mIsUndoing;
 
     // Create group automatically for target_blank links.
     private final boolean mGroupAutoCreation;
@@ -492,31 +491,18 @@ public class TabGroupModelFilter extends TabModelFilter {
      * @param originalGroupId The rootId before grouped.
      */
     public void undoGroupedTab(Tab tab, int originalIndex, int originalGroupId) {
-        if (!tab.isInitialized()) return;
-
+        if (!tab.isInitialized()) {
+            return;
+        }
         int currentIndex = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
         assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
-        // Unconditionally signal removal of the tab from the group it is in.
-        mIsUndoing = true;
-        boolean groupExistedBeforeMove = mGroupIdToGroupMap.get(originalGroupId) != null;
         setRootId(tab, originalGroupId);
         if (currentIndex == originalIndex) {
             didMoveTab(tab, originalIndex, currentIndex);
         } else {
             if (currentIndex < originalIndex) originalIndex++;
             getTabModel().moveTab(tab.getId(), originalIndex);
-        }
-        mIsUndoing = false;
-
-        // If undoing results in restoring a tab into a different group (not as a single tab) then
-        // notify observers it was added.
-        if (groupExistedBeforeMove) {
-            TabGroup group = mGroupIdToGroupMap.get(originalGroupId);
-            // Last shown tab IDs are not preserved across an undo.
-            for (Observer observer : mGroupFilterObserver) {
-                observer.didMergeTabToGroup(tab, group.getLastShownTabId());
-            }
         }
     }
 
@@ -802,7 +788,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (!isTabModelRestored()) return;
         // Need to cache the flags before resetting the internal data map.
         boolean isMergeTabToGroup = isMergeTabToGroup(tab);
-        boolean isMoveTabOutOfGroup = isMoveTabOutOfGroup(tab) || mIsUndoing;
+        boolean isMoveTabOutOfGroup = isMoveTabOutOfGroup(tab);
         int groupIdBeforeMove = getGroupIdBeforeMove(tab, isMergeTabToGroup || isMoveTabOutOfGroup);
         assert groupIdBeforeMove != TabGroup.INVALID_GROUP_ID;
         TabGroup groupBeforeMove = mGroupIdToGroupMap.get(groupIdBeforeMove);

@@ -833,6 +833,15 @@ class TabListMediator {
 
         if (mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter()
                         instanceof TabGroupModelFilter) {
+            // TODO(ckitagawa): When undoing the grouping of multiple groups this doesn't update the
+            // UI correctly. Specifically it only shows a single tab for each group that was undone.
+            // However, upon refreshing the TabSwitcher everything looks correct. Ask someone who
+            // might know more why and if they have guidance on how to fix?
+            //
+            // I suspect that TabGroupModelFilter#undoGroupedTab wasn't designed to undo a group
+            // action that aggregated multiple groups together and so
+            // TabGroupModelFilter#didMoveTab is not calling this observer in a way that results
+            // in the UI showing the now re-separated groups.
             mTabGroupObserver = new EmptyTabGroupModelFilterObserver() {
                 @Override
                 public void didMoveWithinGroup(
@@ -898,15 +907,13 @@ class TabListMediator {
                             addTabInfoToModel(PseudoTab.fromTab(movedTab), modelIndex,
                                     currentSelectedTab.getId() == movedTab.getId());
                         } else {
-                            // Only add a tab to the model if it represents a new card (new group or
-                            // new singular tab). However, always update the previous group to clean
-                            // up old state.
-                            if (!filter.hasOtherRelatedTabs(movedTab)) {
-                                int filterIndex = filter.indexOf(movedTab);
-                                addTabInfoToModel(PseudoTab.fromTab(movedTab),
-                                        mModel.indexOfNthTabCard(filterIndex),
-                                        currentSelectedTab.getId() == movedTab.getId());
-                            }
+                            int filterIndex = TabModelUtils.getTabIndexById(
+                                    mTabModelSelector.getTabModelFilterProvider()
+                                            .getCurrentTabModelFilter(),
+                                    movedTab.getId());
+                            addTabInfoToModel(PseudoTab.fromTab(movedTab),
+                                    mModel.indexOfNthTabCard(filterIndex),
+                                    currentSelectedTab.getId() == movedTab.getId());
                             boolean isSelected = mTabModelSelector.getCurrentTabId()
                                     == filter.getTabAt(prevFilterIndex).getId();
                             updateTab(mModel.indexOfNthTabCard(prevFilterIndex),
@@ -933,31 +940,13 @@ class TabListMediator {
                     // group 1, we can always find the current indexes of 1) Tab 1 and 2) Tab 2 or
                     // group 1 in the model. The method getIndexesForMergeToGroup() returns these
                     // two ids by using Tab 1's related Tabs, which have been updated in TabModel.
-                    List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
-                    Pair<Integer, Integer> positions = mModel.getIndexesForMergeToGroup(
-                            mTabModelSelector.getCurrentModel(), relatedTabs);
+                    Pair<Integer, Integer> positions =
+                            mModel.getIndexesForMergeToGroup(mTabModelSelector.getCurrentModel(),
+                                    getRelatedTabsForId(movedTab.getId()));
                     int srcIndex = positions.second;
                     int desIndex = positions.first;
 
-                    // If only the desIndex is valid then the movedTab was already part of another
-                    // group and is not present in the model. This happens only during an undo.
-                    // Refresh just the desIndex tab card in the model. The removal of the movedTab
-                    // from its previous group was already handled by didMoveTabOutOfGroup.
-                    if (desIndex != TabModel.INVALID_TAB_INDEX
-                            && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                        boolean isSelected = false;
-                        for (Tab tab : relatedTabs) {
-                            isSelected |= tab == mTabModelSelector.getCurrentTab();
-                        }
-                        updateTab(desIndex,
-                                PseudoTab.fromTab(mTabModelSelector.getTabById(
-                                        mModel.get(desIndex).model.get(TabProperties.TAB_ID))),
-                                isSelected, false, false);
-                        return;
-                    }
-
                     if (!isValidMovePosition(srcIndex) || !isValidMovePosition(desIndex)) return;
-
                     Tab newSelectedTabInMergedGroup = null;
                     boolean isMRU = isShowingTabsInMRUOrder();
                     if (isMRU) {

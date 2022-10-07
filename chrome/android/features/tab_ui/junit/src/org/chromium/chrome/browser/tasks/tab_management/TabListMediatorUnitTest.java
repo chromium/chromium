@@ -198,19 +198,16 @@ public class TabListMediatorUnitTest {
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
-    private static final String TAB4_TITLE = "Tab4";
     private static final String NEW_TITLE = "New title";
     private static final String CUSTOMIZED_DIALOG_TITLE1 = "Cool Tabs";
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
     private static final GURL TAB1_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
     private static final GURL TAB2_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final GURL TAB3_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3);
-    private static final GURL TAB4_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
     private static final String NEW_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
-    private static final int TAB4_ID = 290;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
 
@@ -1118,10 +1115,7 @@ public class TabListMediatorUnitTest {
 
         // Assume that TabGroupModelFilter is already updated.
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab1);
-        doReturn(false).when(mTabGroupModelFilter).hasOtherRelatedTabs(mTab1);
         doReturn(2).when(mTabGroupModelFilter).getCount();
 
         mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(mTab1, POSITION1);
@@ -1650,13 +1644,9 @@ public class TabListMediatorUnitTest {
 
         // Assume undo grouping tab3 with mTab1.
         doReturn(3).when(mTabGroupModelFilter).getCount();
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(2).when(mTabGroupModelFilter).indexOf(tab3);
         doReturn(tab3).when(mTabGroupModelFilter).getTabAt(2);
-        doReturn(false).when(mTabGroupModelFilter).hasOtherRelatedTabs(tab3);
 
         mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(tab3, POSITION1);
 
@@ -1676,15 +1666,11 @@ public class TabListMediatorUnitTest {
         mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
         assertThat(mModel.size(), equalTo(2));
 
-        // Assume undo grouping mTab1 from mTab2.
+        // Assume undo grouping tab3 with mTab1.
         doReturn(3).when(mTabGroupModelFilter).getCount();
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
         doReturn(tab3).when(mTabGroupModelFilter).getTabAt(2);
-        doReturn(2).when(mTabGroupModelFilter).indexOf(tab3);
-        doReturn(false).when(mTabGroupModelFilter).hasOtherRelatedTabs(mTab1);
 
         mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(mTab1, POSITION2);
 
@@ -1692,70 +1678,6 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.indexFromId(TAB1_ID), equalTo(0));
         assertThat(mModel.indexFromId(TAB2_ID), equalTo(1));
         assertThat(mModel.indexFromId(TAB3_ID), equalTo(2));
-    }
-
-    @Test
-    public void undoForwardGrouped_BetweenGroups() {
-        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-
-        // Assume there are 3 tabs in TabModel, tab3, tab4, just grouped with mTab1;
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1));
-        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
-        assertThat(mModel.size(), equalTo(1));
-
-        // Assume undo grouping tab3 with mTab1.
-        doReturn(2).when(mTabGroupModelFilter).getCount();
-
-        // Undo tab 3.
-        List<Tab> relatedTabs = Arrays.asList(tab3);
-        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
-        doReturn(mTab1).when(mTabModel).getTabAt(0);
-        doReturn(mTab2).when(mTabModel).getTabAt(1);
-        doReturn(tab4).when(mTabModel).getTabAt(2);
-        doReturn(tab3).when(mTabModel).getTabAt(3);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
-        doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(tab4);
-        doReturn(0).when(mTabModel).indexOf(mTab1);
-        doReturn(1).when(mTabModel).indexOf(mTab2);
-        doReturn(2).when(mTabModel).indexOf(tab4);
-        doReturn(tab3).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(tab3);
-        doReturn(3).when(mTabModel).indexOf(tab3);
-        doReturn(false).when(mTabGroupModelFilter).hasOtherRelatedTabs(tab3);
-        doReturn(true).when(mTabGroupModelFilter).hasOtherRelatedTabs(tab4);
-        doReturn(relatedTabs).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
-        mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(tab3, POSITION1);
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.indexFromId(TAB1_ID), equalTo(0));
-        assertThat(mModel.indexFromId(TAB2_ID), equalTo(-1));
-        assertThat(mModel.indexFromId(TAB3_ID), equalTo(1));
-        assertThat(mModel.indexFromId(TAB4_ID), equalTo(-1));
-
-        // Undo tab 4
-        relatedTabs = Arrays.asList(tab3, tab4);
-        doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(tab4);
-        doReturn(2).when(mTabModel).indexOf(tab3);
-        doReturn(3).when(mTabModel).indexOf(tab4);
-        doReturn(true).when(mTabGroupModelFilter).hasOtherRelatedTabs(tab3);
-        doReturn(true).when(mTabGroupModelFilter).hasOtherRelatedTabs(tab4);
-        doReturn(tab3).when(mTabGroupModelFilter).getTabAt(POSITION2);
-        doReturn(tab3).when(mTabModel).getTabAt(2);
-        doReturn(tab4).when(mTabModel).getTabAt(3);
-        doReturn(relatedTabs).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
-        doReturn(relatedTabs).when(mTabGroupModelFilter).getRelatedTabList(TAB4_ID);
-        mMediatorTabGroupModelFilterObserver.didMoveTabOutOfGroup(tab4, POSITION1);
-        assertThat(mModel.size(), equalTo(2));
-
-        mMediatorTabGroupModelFilterObserver.didMergeTabToGroup(tab4, TAB4_ID);
-
-        assertThat(mModel.size(), equalTo(2));
-        assertThat(mModel.indexFromId(TAB1_ID), equalTo(0));
-        assertThat(mModel.indexFromId(TAB2_ID), equalTo(-1));
-        assertThat(mModel.indexFromId(TAB3_ID), equalTo(1));
-        assertThat(mModel.indexFromId(TAB4_ID), equalTo(-1));
     }
 
     @Test

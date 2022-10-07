@@ -213,27 +213,25 @@ class TabListModel extends ModelList {
      * move another Tab tab3 to (tab2, tab1) group, tab3 is after tab1, (tab2, tab1, tab3). Thus,
      * the last Tab in the related Tabs is the movedTab. We use this to find the srcIndex; and query
      * all of its related Tabs to find the desIndex, i.e., the index of the current group / Tab to
-     * move to. For when undoing multi-group merges the srcIndex may be invalid while the desIndex
-     * is valid as the tab may be moving between existing groups and so has no index of its own.
+     * move to.
      *
      * @param tabModel   The tabModel that owns the tabs.
      * @param tabs       The list that contains tabs of the newly merged group.
-     * @return A Pair with its first member as the index of the tab that is selected to merge to and
-     * the second member as the index of the tab that is being merged from.
+     * @return A Pair with its first member as the index of the tab that is selected to merge and
+     * the second member as the index of the tab that is being merged into.
      */
     Pair<Integer, Integer> getIndexesForMergeToGroup(TabModel tabModel, List<Tab> tabs) {
-        int lastTabModelIndex = tabModel.indexOf(tabs.get(tabs.size() - 1));
-
-        Tab srcTab = tabModel.getTabAt(lastTabModelIndex);
-        assert tabs.contains(srcTab);
-        int srcIndex = indexFromId(srcTab.getId());
-
         int desIndex = TabModel.INVALID_TAB_INDEX;
-        for (int i = lastTabModelIndex - 1; i >= 0; i--) {
+        int srcIndex = TabModel.INVALID_TAB_INDEX;
+        int lastTabModelIndex = tabModel.indexOf(tabs.get(tabs.size() - 1));
+        for (int i = lastTabModelIndex; i >= 0; i--) {
             Tab curTab = tabModel.getTabAt(i);
             if (!tabs.contains(curTab)) break;
             int index = indexFromId(curTab.getId());
-            if (index != TabModel.INVALID_TAB_INDEX && desIndex == TabModel.INVALID_TAB_INDEX) {
+            if (index != TabModel.INVALID_TAB_INDEX && srcIndex == TabModel.INVALID_TAB_INDEX) {
+                srcIndex = index;
+            } else if (index != TabModel.INVALID_TAB_INDEX
+                    && desIndex == TabModel.INVALID_TAB_INDEX) {
                 desIndex = index;
             }
         }
