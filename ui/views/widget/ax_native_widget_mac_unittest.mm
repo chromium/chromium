@@ -333,7 +333,7 @@ TEST_F(AXNativeWidgetMacTest, PositionAttribute) {
 TEST_F(AXNativeWidgetMacTest, HelpAttribute) {
   Label* label = new Label(base::SysNSStringToUTF16(kTestStringValue));
   label->SetSize(GetWidgetBounds().size());
-  EXPECT_NSEQ(@"", A11yElementAtMidpoint().accessibilityHelp);
+  EXPECT_NSEQ(nil, A11yElementAtMidpoint().accessibilityHelp);
   label->SetTooltipText(base::SysNSStringToUTF16(kTestPlaceholderText));
   widget()->GetContentsView()->AddChildView(label);
   EXPECT_NSEQ(kTestPlaceholderText, A11yElementAtMidpoint().accessibilityHelp);

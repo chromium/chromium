@@ -1523,18 +1523,10 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSString*)AXHelp {
-  // TODO(aleventhal) Key shortcuts attribute should eventually get
-  // its own field. Follow what WebKit does for aria-keyshortcuts, see
-  // https://bugs.webkit.org/show_bug.cgi?id=159215 (WebKit bug).
-  NSString* desc =
-      [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
-  NSString* key =
-      [self getStringAttribute:ax::mojom::StringAttribute::kKeyShortcuts];
-  if (!desc.length)
-    return key.length ? key : @"";
-  if (!key.length)
-    return desc;
-  return [NSString stringWithFormat:@"%@ %@", desc, key];
+  if (![self instanceActive])
+    return nil;
+
+  return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
 
 - (id)AXValue {

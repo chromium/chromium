@@ -339,13 +339,6 @@ NSAttributedString* GetAttributedTextForTextMarkerRange(id marker_range) {
   return attributed_text;
 }
 
-// Returns an autoreleased copy of the AXNodeData's attribute.
-NSString* NSStringForStringAttribute(BrowserAccessibility* browserAccessibility,
-                                     StringAttribute attribute) {
-  return base::SysUTF8ToNSString(
-      browserAccessibility->GetStringAttribute(attribute));
-}
-
 // GetState checks the bitmask used in AXNodeData to check
 // if the given state was set on the accessibility object.
 bool GetState(BrowserAccessibility* accessibility, ax::mojom::State state) {
@@ -607,7 +600,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityExpandedAttribute, @"expanded"},
       {NSAccessibilityFocusedAttribute, @"focused"},
       {NSAccessibilityHeaderAttribute, @"header"},
-      {NSAccessibilityHelpAttribute, @"help"},
       {NSAccessibilityIndexAttribute, @"index"},
       {NSAccessibilityInsertionPointLineNumberAttribute,
        @"insertionPointLineNumber"},
@@ -869,13 +861,6 @@ bool content::IsNSRange(id value) {
       return headerObject->GetNativeViewAccessible();
   }
   return nil;
-}
-
-- (NSString*)help {
-  if (![self instanceActive])
-    return nil;
-  return NSStringForStringAttribute(_owner,
-                                    ax::mojom::StringAttribute::kDescription);
 }
 
 - (NSNumber*)index {
@@ -2477,7 +2462,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,
                        NSAccessibilityFocusedAttribute,
-                       NSAccessibilityHelpAttribute,
                        NSAccessibilityLinkedUIElementsAttribute,
                        NSAccessibilityParentAttribute,
                        NSAccessibilityPositionAttribute,
