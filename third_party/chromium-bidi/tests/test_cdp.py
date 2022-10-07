@@ -19,7 +19,7 @@ from _helpers import *
 @pytest.mark.asyncio
 async def test_cdp_sendCommand_commandResultReturned(websocket):
     command_result = await execute_command(websocket, {
-        "method": "PROTO.cdp.sendCommand",
+        "method": "cdp.sendCommand",
         "params": {
             "cdpMethod": "Target.getTargets",
             "cdpParams": {}}})
@@ -31,16 +31,16 @@ async def test_cdp_sendCommand_commandResultReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
-    await subscribe(websocket, "PROTO.cdp.eventReceived")
+    await subscribe(websocket, "cdp.eventReceived")
 
     command_result = await execute_command(websocket, {
-        "method": "PROTO.cdp.getSession",
+        "method": "cdp.getSession",
         "params": {"context": context_id}})
 
     session_id = command_result["cdpSession"]
 
     await send_JSON_command(websocket, {
-        "method": "PROTO.cdp.sendCommand",
+        "method": "cdp.sendCommand",
         "params": {
             "cdpMethod": "Runtime.evaluate",
             "cdpParams": {
@@ -51,7 +51,7 @@ async def test_cdp_subscribeCdpEvents_cdpEventReceived(websocket, context_id):
     resp = await read_JSON_message(websocket)
 
     recursive_compare({
-        "method": "PROTO.cdp.eventReceived",
+        "method": "cdp.eventReceived",
         "params": {
             "cdpMethod": "Runtime.consoleAPICalled",
             "cdpParams": {

@@ -160,13 +160,13 @@ export class CommandProcessor {
           BrowsingContext.PROTO.parseFindElementParams(commandData.params)
         );
 
-      case 'PROTO.cdp.sendCommand':
-        return await this.#contextProcessor.process_PROTO_cdp_sendCommand(
-          CDP.PROTO.parseSendCommandParams(commandData.params)
+      case 'cdp.sendCommand':
+        return await this.#contextProcessor.process_cdp_sendCommand(
+          CDP.parseSendCommandParams(commandData.params)
         );
-      case 'PROTO.cdp.getSession':
-        return await this.#contextProcessor.process_PROTO_cdp_getSession(
-          CDP.PROTO.parseGetSessionParams(commandData.params)
+      case 'cdp.getSession':
+        return await this.#contextProcessor.process_cdp_getSession(
+          CDP.parseGetSessionParams(commandData.params)
         );
 
       default:

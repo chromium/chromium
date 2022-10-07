@@ -75,7 +75,7 @@ export class BrowsingContextProcessor {
     sessionCdpClient.on('event', async (method, params) => {
       await this.#eventManager.sendEvent(
         {
-          method: 'PROTO.cdp.eventReceived',
+          method: 'cdp.eventReceived',
           params: {
             cdpMethod: method,
             cdpParams: params,
@@ -314,7 +314,7 @@ export class BrowsingContextProcessor {
     return ['page', 'iframe'].includes(target.type);
   }
 
-  async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
+  async process_cdp_sendCommand(params: CDP.SendCommandParams) {
     const sendCdpCommandResult = await this.#cdpConnection.sendCommand(
       params.cdpMethod,
       params.cdpParams,
@@ -326,7 +326,7 @@ export class BrowsingContextProcessor {
     };
   }
 
-  async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
+  async process_cdp_getSession(params: CDP.GetSessionParams) {
     const context = params.context;
     const sessionId =
       BrowsingContextStorage.getKnownContext(context).cdpSessionId;

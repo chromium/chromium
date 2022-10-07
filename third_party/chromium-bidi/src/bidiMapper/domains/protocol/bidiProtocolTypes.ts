@@ -869,62 +869,60 @@ export namespace Log {
 }
 
 export namespace CDP {
-  export type Command = PROTO.SendCommandCommand | PROTO.GetSessionCommand;
-  export type CommandResult = PROTO.SendCommandResult | PROTO.GetSessionResult;
-  export type Event = PROTO.EventReceivedEvent;
+  export type Command = SendCommandCommand | GetSessionCommand;
+  export type CommandResult = SendCommandResult | GetSessionResult;
+  export type Event = EventReceivedEvent;
 
-  export namespace PROTO {
-    export type SendCommandCommand = {
-      method: 'PROTO.cdp.sendCommand';
-      params: SendCommandParams;
-    };
+  export type SendCommandCommand = {
+    method: 'cdp.sendCommand';
+    params: SendCommandParams;
+  };
 
-    const SendCommandParamsSchema = zod.object({
-      cdpMethod: zod.string(),
-      // `passthrough` allows object to have any fields.
-      // https://github.com/colinhacks/zod#passthrough
-      cdpParams: zod.object({}).passthrough(),
-      cdpSession: zod.string().optional(),
-    });
-    export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
+  const SendCommandParamsSchema = zod.object({
+    cdpMethod: zod.string(),
+    // `passthrough` allows object to have any fields.
+    // https://github.com/colinhacks/zod#passthrough
+    cdpParams: zod.object({}).passthrough(),
+    cdpSession: zod.string().optional(),
+  });
+  export type SendCommandParams = zod.infer<typeof SendCommandParamsSchema>;
 
-    export function parseSendCommandParams(params: unknown): SendCommandParams {
-      return parseObject(params, SendCommandParamsSchema);
-    }
-
-    export type SendCommandResult = { result: any };
-
-    export type GetSessionCommand = {
-      method: 'PROTO.cdp.getSession';
-      params: GetSessionParams;
-    };
-
-    const GetSessionParamsSchema = zod.object({
-      context: CommonDataTypes.BrowsingContextSchema,
-    });
-    export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
-
-    export function parseGetSessionParams(params: unknown): GetSessionParams {
-      return parseObject(params, GetSessionParamsSchema);
-    }
-
-    export type GetSessionResult = { result: { session: string } };
-
-    export class EventReceivedEvent extends EventResponseClass<EventReceivedParams> {
-      static readonly method = 'PROTO.cdp.eventReceived';
-
-      constructor(params: EventReceivedParams) {
-        super(EventReceivedEvent.method, params);
-      }
-    }
-
-    export type EventReceivedParams = {
-      cdpMethod: string;
-      cdpParams: object;
-      cdpSession?: string;
-    };
+  export function parseSendCommandParams(params: unknown): SendCommandParams {
+    return parseObject(params, SendCommandParamsSchema);
   }
-  export const EventNames = [PROTO.EventReceivedEvent.method] as const;
+
+  export type SendCommandResult = { result: any };
+
+  export type GetSessionCommand = {
+    method: 'cdp.getSession';
+    params: GetSessionParams;
+  };
+
+  const GetSessionParamsSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+  });
+  export type GetSessionParams = zod.infer<typeof GetSessionParamsSchema>;
+
+  export function parseGetSessionParams(params: unknown): GetSessionParams {
+    return parseObject(params, GetSessionParamsSchema);
+  }
+
+  export type GetSessionResult = { result: { session: string } };
+
+  export class EventReceivedEvent extends EventResponseClass<EventReceivedParams> {
+    static readonly method = 'cdp.eventReceived';
+
+    constructor(params: EventReceivedParams) {
+      super(EventReceivedEvent.method, params);
+    }
+  }
+
+  export type EventReceivedParams = {
+    cdpMethod: string;
+    cdpParams: object;
+    cdpSession: string;
+  };
+  export const EventNames = [EventReceivedEvent.method] as const;
 }
 
 export namespace Session {
