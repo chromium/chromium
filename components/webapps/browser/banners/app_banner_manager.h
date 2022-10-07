@@ -83,9 +83,6 @@ class AppBannerManager : public content::WebContentsObserver,
     // engagement to trigger the banner.
     PENDING_ENGAGEMENT,
 
-    // The pipeline is waiting for service worker install to trigger the banner.
-    PENDING_WORKER,
-
     // The beforeinstallprompt event has been sent and the pipeline is waiting
     // for the response.
     SENDING_EVENT,
@@ -276,10 +273,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // necessary for a web app banner.
   virtual InstallableParams ParamsToPerformInstallableWebAppCheck();
 
-  // Returns an InstallableParams object that requests service worker check
-  // only.
-  virtual InstallableParams ParamsToPerformWorkerCheck();
-
   // Run at the conclusion of OnDidGetManifest. For web app banners, this calls
   // back to the InstallableManager to continue checking criteria. For native
   // app banners, this checks whether native apps are preferred in the manifest,
@@ -292,15 +285,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Callback invoked by the InstallableManager once it has finished checking
   // all other installable properties.
   virtual void OnDidPerformInstallableWebAppCheck(const InstallableData& data);
-
-  // Run at the conclusion of OnDidPerformInstallableWebAppCheck. This calls
-  // back to the InstallableManager to continue checking service worker criteria
-  // for web app banners.
-  virtual void PerformServiceWorkerCheck();
-
-  // Callback invoked by the InstallableManager once it has finished checking
-  // service worker.
-  virtual void OnDidPerformWorkerCheck(const InstallableData& data);
 
   // Records that a banner was shown.
   void RecordDidShowBanner();
@@ -441,8 +425,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // triggering the pipeline until the load is complete.
   bool has_sufficient_engagement_ = false;
   bool load_finished_ = false;
-
-  bool passed_worker_check_ = false;
 
   std::unique_ptr<StatusReporter> status_reporter_;
   bool install_animation_pending_ = false;

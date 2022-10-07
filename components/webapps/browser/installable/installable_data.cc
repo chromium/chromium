@@ -41,10 +41,6 @@ InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
 InstallableData::~InstallableData() = default;
 
 bool InstallableData::NoBlockingErrors() const {
-  return FirstNoBlockingError() == NO_ERROR_DETECTED;
-}
-
-InstallableStatusCode InstallableData::FirstNoBlockingError() const {
   for (auto e : errors) {
     switch (e) {
       case WARN_NOT_OFFLINE_CAPABLE:
@@ -56,12 +52,12 @@ InstallableStatusCode InstallableData::FirstNoBlockingError() const {
           continue;
         }
 #endif
-        [[fallthrough]];
+        return false;
       default:
-        return e;
+        return false;
     }
   }
-  return NO_ERROR_DETECTED;
+  return true;
 }
 
 bool InstallableData::HasErrorOnlyServiceWorkerErrors() const {
