@@ -64,6 +64,7 @@ bool AudioTrackOutputStream::Open() {
         format = kEncodingDts;
         break;
       case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
+      case AudioParameters::AUDIO_BITSTREAM_DTS_HD_MA:
         format = kEncodingDtshd;
         break;
       case AudioParameters::AUDIO_BITSTREAM_IEC61937:

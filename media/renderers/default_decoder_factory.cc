@@ -30,6 +30,10 @@
 #include "media/filters/ffmpeg_audio_decoder.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#include "media/filters/passthrough_dts_audio_decoder.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #include "media/filters/ffmpeg_video_decoder.h"
 #endif
@@ -66,6 +70,11 @@ void DefaultDecoderFactory::CreateAudioDecoders(
         std::make_unique<DecryptingAudioDecoder>(task_runner, media_log));
   }
 #endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+  audio_decoders->push_back(
+      std::make_unique<PassthroughDTSAudioDecoder>(task_runner, media_log));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   audio_decoders->push_back(

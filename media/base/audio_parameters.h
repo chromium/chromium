@@ -154,17 +154,19 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AudioEncodingFormat
   // GENERATED_JAVA_PREFIX_TO_STRIP: AUDIO_
   enum Format {
-    AUDIO_FAKE = 0x00,                // Creates a fake AudioOutputStream object
-    AUDIO_PCM_LINEAR = 0x01,          // PCM is 'raw' amplitude samples.
-    AUDIO_PCM_LOW_LATENCY = 0x02,     // Linear PCM, low latency requested.
-    AUDIO_BITSTREAM_AC3 = 0x04,       // Compressed AC3 bitstream.
-    AUDIO_BITSTREAM_EAC3 = 0x08,      // Compressed E-AC3 bitstream.
-    AUDIO_BITSTREAM_DTS = 0x10,       // Compressed DTS bitstream.
-    AUDIO_BITSTREAM_DTS_HD = 0x20,    // Compressed DTS-HD bitstream.
-    AUDIO_BITSTREAM_DTSX_P2 = 0x40,   // Compressed DTS-HD bitstream.
-    AUDIO_BITSTREAM_IEC61937 = 0x80,  // Compressed IEC61937 bitstream.
+    AUDIO_FAKE = 0x000,               // Creates a fake AudioOutputStream object
+    AUDIO_PCM_LINEAR = 0x001,         // PCM is 'raw' amplitude samples.
+    AUDIO_PCM_LOW_LATENCY = 0x002,    // Linear PCM, low latency requested.
+    AUDIO_BITSTREAM_AC3 = 0x004,      // Compressed AC3 bitstream.
+    AUDIO_BITSTREAM_EAC3 = 0x008,     // Compressed E-AC3 bitstream.
+    AUDIO_BITSTREAM_DTS = 0x010,      // Compressed DTS bitstream.
+    AUDIO_BITSTREAM_DTS_HD = 0x020,   // Compressed DTS-HD bitstream.
+    AUDIO_BITSTREAM_DTSX_P2 = 0x040,  // Compressed DTSX Profile 2 bitstream.
+    AUDIO_BITSTREAM_IEC61937 = 0x080,  // Compressed IEC61937 bitstream.
+    AUDIO_BITSTREAM_DTS_HD_MA =
+        0x100,  // Compressed DTS-HD Master Audio bitstream.
     AUDIO_FORMAT_LAST =
-        AUDIO_BITSTREAM_IEC61937,  // Only used for validation of format.
+        AUDIO_BITSTREAM_DTS_HD_MA,  // Only used for validation of format.
   };
 
   enum {
@@ -210,15 +212,18 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
         : min_frames_per_buffer(min_frames_per_buffer),
           max_frames_per_buffer(max_frames_per_buffer),
-          bitstream_formats(0) {}
-    explicit HardwareCapabilities(int bitstream_formats)
+          bitstream_formats(0),
+          require_encapsulation(false) {}
+    HardwareCapabilities(int bitstream_formats, bool require_encapsulation)
         : min_frames_per_buffer(0),
           max_frames_per_buffer(0),
-          bitstream_formats(bitstream_formats) {}
+          bitstream_formats(bitstream_formats),
+          require_encapsulation(require_encapsulation) {}
     HardwareCapabilities()
         : min_frames_per_buffer(0),
           max_frames_per_buffer(0),
-          bitstream_formats(0) {}
+          bitstream_formats(0),
+          require_encapsulation(false) {}
 
     // Minimum and maximum buffer sizes supported by the audio hardware. Opening
     // a device with frames_per_buffer set to a value between min and max should
@@ -227,7 +232,11 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     // Either value can be 0 and means that the min or max is not known.
     int min_frames_per_buffer;
     int max_frames_per_buffer;
+    // Bitstream formats (OR'ed) supported by audio hardware.
     int bitstream_formats;
+    // Bitstream will need to be encapsulated in IEC61937 to be
+    // passed through to the audio hardware.
+    bool require_encapsulation;
   };
 
   AudioParameters();
@@ -283,6 +292,8 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   bool IsBitstreamFormat() const;
 
   bool IsFormatSupportedByHardware(Format format) const;
+
+  bool RequireEncapsulation() const;
 
   void set_format(Format format) { format_ = format; }
   Format format() const { return format_; }

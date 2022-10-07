@@ -59,6 +59,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "media/audio/win/audio_manager_win.h"
+#include "media/base/media_switches.h"
 #include "sandbox/win/src/sandbox.h"
 extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(IS_WIN)
@@ -215,13 +217,27 @@ auto RunAudio(mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAudioProcessHighPriority)) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kAudioProcessHighPriority)) {
     auto success =
         ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
     DCHECK(success);
   }
-#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  // Codec Bitmask from main browser process is copied from AudioManagerWin
+  // to the command line when audio process is launched.  Set to the
+  // AudioManagerWin of the new audio process.
+  if (command_line->HasSwitch(switches::kAudioCodecsFromEDID)) {
+    uint32_t codec_bitmask = 0;
+    base::StringToUint(
+        command_line->GetSwitchValueASCII(switches::kAudioCodecsFromEDID),
+        &codec_bitmask);
+    media::AudioManagerWin::SetBitstreamPassthroughBitmask(codec_bitmask);
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(IS_WIN)
+
   return audio::CreateStandaloneService(std::move(receiver));
 }
 

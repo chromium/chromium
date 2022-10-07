@@ -473,6 +473,10 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
   SampleFormat target_output_sample_format = kUnknownSampleFormat;
   if (is_passthrough_) {
+    ChannelLayout channel_layout =
+        stream->audio_decoder_config().channel_layout();
+    int channels = stream->audio_decoder_config().channels();
+    int bytes_per_frame = stream->audio_decoder_config().bytes_per_frame();
     AudioParameters::Format format = AudioParameters::AUDIO_FAKE;
     // For DTS and Dolby formats, set target_output_sample_format to the
     // respective bit-stream format so that passthrough decoder will be selected
@@ -486,9 +490,11 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     } else if (codec == AudioCodec::kDTS) {
       format = AudioParameters::AUDIO_BITSTREAM_DTS;
       target_output_sample_format = kSampleFormatDts;
-    } else if (codec == AudioCodec::kDTSXP2) {
-      format = AudioParameters::AUDIO_BITSTREAM_DTSX_P2;
-      target_output_sample_format = kSampleFormatDtsxP2;
+      if (hw_params.RequireEncapsulation()) {
+        bytes_per_frame = 1;
+        channel_layout = CHANNEL_LAYOUT_MONO;
+        channels = 1;
+      }
     } else {
       NOTREACHED();
     }
@@ -500,12 +506,9 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // count for bitstream formats will be carried in additional fields of
     // AudioBus.
     const int buffer_size =
-        AudioParameters::kMaxFramesPerCompressedAudioBuffer *
-        stream->audio_decoder_config().bytes_per_frame();
+        AudioParameters::kMaxFramesPerCompressedAudioBuffer * bytes_per_frame;
 
-    audio_parameters_.Reset(format,
-                            {stream->audio_decoder_config().channel_layout(),
-                             stream->audio_decoder_config().channels()},
+    audio_parameters_.Reset(format, {channel_layout, channels},
                             stream->audio_decoder_config().samples_per_second(),
                             buffer_size);
     buffer_converter_.reset();

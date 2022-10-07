@@ -25,9 +25,10 @@ enum class AudioDecoderType : int {
   kTesting = 6,          // Never send this to UKM, for tests only.
   kAudioToolbox = 7,     // AudioToolbox (macOS)
   kMediaFoundation = 8,  // MediaFoundationAudioDecoder
+  kPassthroughDTS = 9,   // Passthrough DTS audio
 
   // Keep this at the end and equal to the last entry.
-  kMaxValue = kMediaFoundation,
+  kMaxValue = kPassthroughDTS,
 };
 
 // List of known VideoDecoder implementations; recorded to UKM, always add new

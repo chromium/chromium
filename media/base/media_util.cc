@@ -18,6 +18,8 @@ AudioParameters::Format ConvertAudioCodecToBitstreamFormat(AudioCodec codec) {
       return AudioParameters::Format::AUDIO_BITSTREAM_EAC3;
     case AudioCodec::kDTS:
       return AudioParameters::Format::AUDIO_BITSTREAM_DTS;
+    case AudioCodec::kDTSXP2:
+      return AudioParameters::Format::AUDIO_BITSTREAM_DTSX_P2;
       // No support for DTS_HD yet as this section is related to the incoming
       // stream type. DTS_HD support is only added for audio track output to
       // support audiosink reporting DTS_HD support.

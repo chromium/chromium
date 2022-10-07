@@ -207,6 +207,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Use this for multiple channel and hi-resolution PCM data.
   WAVEFORMATPCMEX format_;
 
+  // AudioParameters from the constructor.
+  const AudioParameters params_;
+
   // Set to true when stream is successfully opened.
   bool opened_;
 

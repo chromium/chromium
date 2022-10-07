@@ -22,6 +22,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/media_buildflags.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_listener_output_stream.h"
 #include "services/audio/stream_monitor.h"
@@ -438,7 +439,13 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 
   sync_reader_->RequestMoreData(delay, delay_timestamp, prior_frames_skipped);
 
-  if (will_monitor_audio_levels()) {
+#if !BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  constexpr bool is_bitstream = false;
+#else
+  const bool is_bitstream = params_.IsBitstreamFormat();
+#endif
+
+  if (will_monitor_audio_levels() && !is_bitstream) {
     // Note: this code path should never be hit when using bitstream streams.
     // Scan doesn't expect compressed audio, so it may go out of bounds trying
     // to read |frames| frames of PCM data.

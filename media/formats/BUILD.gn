@@ -24,10 +24,6 @@ source_set("formats") {
     "common/offset_byte_queue.h",
     "common/opus_constants.cc",
     "common/opus_constants.h",
-    "dts/dts_stream_parser.cc",
-    "dts/dts_stream_parser.h",
-    "dts/dts_util.cc",
-    "dts/dts_util.h",
     "mp4/bitstream_converter.cc",
     "mp4/bitstream_converter.h",
     "mp4/box_definitions.cc",
@@ -128,8 +124,12 @@ source_set("formats") {
     ]
   }
 
-  if (proprietary_codecs && enable_platform_dts_audio) {
+  if (enable_platform_dts_audio) {
     sources += [
+      "dts/dts_stream_parser.cc",
+      "dts/dts_stream_parser.h",
+      "dts/dts_util.cc",
+      "dts/dts_util.h",
       "mp4/dts.cc",
       "mp4/dts.h",
       "mp4/dtsx.cc",
@@ -262,7 +262,6 @@ source_set("unit_tests") {
   sources = [
     "ac3/ac3_util_unittest.cc",
     "common/offset_byte_queue_unittest.cc",
-    "dts/dts_util_unittest.cc",
     "mpeg/mpeg1_audio_stream_parser_unittest.cc",
     "webm/webm_cluster_parser_unittest.cc",
     "webm/webm_content_encodings_client_unittest.cc",
@@ -299,6 +298,7 @@ source_set("unit_tests") {
 
     if (enable_platform_dts_audio) {
       sources += [
+        "dts/dts_util_unittest.cc",
         "mp4/dts_unittest.cc",
         "mp4/dtsx_unittest.cc",
       ]

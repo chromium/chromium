@@ -61,6 +61,8 @@ const char* FormatToString(AudioParameters::Format format) {
       return "BITSTREAM_DTSX_P2";
     case AudioParameters::AUDIO_BITSTREAM_IEC61937:
       return "BITSTREAM_IEC61937";
+    case AudioParameters::AUDIO_BITSTREAM_DTS_HD_MA:
+      return "BITSTREAM_DTS_HD_MA";
     case AudioParameters::AUDIO_FAKE:
       return "FAKE";
   }
@@ -215,7 +217,9 @@ std::string AudioParameters::AsHumanReadableString() const {
       << hardware_capabilities_->min_frames_per_buffer
       << ", max_frames_per_buffer: "
       << hardware_capabilities_->max_frames_per_buffer
-      << ", bitstream_formats:" << hardware_capabilities_->bitstream_formats;
+      << ", bitstream_formats:" << hardware_capabilities_->bitstream_formats
+      << ", require_encapsulation:"
+      << hardware_capabilities_->require_encapsulation;
   }
   return s.str();
 }
@@ -268,6 +272,11 @@ bool AudioParameters::IsFormatSupportedByHardware(Format format) const {
 void AudioParameters::SetChannelLayoutConfig(ChannelLayout layout,
                                              int channels) {
   channel_layout_config_ = {layout, channels};
+}
+
+bool AudioParameters::RequireEncapsulation() const {
+  return hardware_capabilities_.has_value() &&
+         hardware_capabilities_->require_encapsulation;
 }
 
 // static

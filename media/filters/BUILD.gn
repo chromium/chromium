@@ -214,6 +214,12 @@ source_set("filters") {
       "mac/audio_toolbox_audio_encoder.h",
     ]
   }
+  if (is_win && enable_platform_dts_audio) {
+    sources += [
+      "passthrough_dts_audio_decoder.cc",
+      "passthrough_dts_audio_decoder.h",
+    ]
+  }
   if (is_win) {
     sources += [
       "win/media_foundation_utils.cc",

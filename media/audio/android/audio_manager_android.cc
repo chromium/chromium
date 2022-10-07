@@ -490,9 +490,11 @@ AudioParameters AudioManagerAndroid::GetAudioFormatsSupportedBySinkDevice(
   DVLOG(1) << __func__ << ": IsAudioSinkConnected()==true, output_device_id="
            << output_device_id << ", Supported Encodings=" << formats;
 
-  return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                         channel_layout_config, sample_rate, buffer_size,
-                         AudioParameters::HardwareCapabilities(formats));
+  return AudioParameters(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
+      AudioParameters::HardwareCapabilities(formats,
+                                            /*require_encapsulation=*/false));
 }
 
 void AudioManagerAndroid::DoSetMuteOnAudioThread(bool muted) {

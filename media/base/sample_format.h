@@ -29,9 +29,10 @@ enum SampleFormat {
   kSampleFormatPlanarU8,    // Unsigned 8-bit w/ bias of 128 planar.
   kSampleFormatDts,         // Compressed DTS audio bitstream.
   kSampleFormatDtsxP2,      // Compressed DTSX audio bitstream.
+  kSampleFormatIECDts,      // IEC-61937 encapsulated DTS audio bitstream.
 
   // Must always be equal to largest value ever logged.
-  kSampleFormatMax = kSampleFormatDtsxP2,
+  kSampleFormatMax = kSampleFormatIECDts,
 };
 
 // Returns the number of bytes used per channel for the specified

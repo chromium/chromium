@@ -9,6 +9,7 @@
 #include <string>
 
 #include "media/audio/audio_manager_base.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -54,10 +55,19 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
       const AudioParameters& params,
       const std::string& device_id,
       const LogCallback& log_callback) override;
+  AudioOutputStream* MakeBitstreamOutputStream(
+      const AudioParameters& params,
+      const std::string& device_id,
+      const LogCallback& log_callback) override;
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
   std::string GetCommunicationsInputDeviceID() override;
   std::string GetCommunicationsOutputDeviceID() override;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  // Bitmask indicating which audio codecs are playable using passthrough.
+  static void SetBitstreamPassthroughBitmask(uint32_t bitmask);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
  protected:
   void ShutdownOnAudioThread() override;
@@ -74,6 +84,10 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
   void InitializeOnAudioThread();
 
   void GetAudioDeviceNamesImpl(bool input, AudioDeviceNames* device_names);
+
+  AudioOutputStream* MakeOutputStream(const AudioParameters& params,
+                                      const std::string& device_id,
+                                      const LogCallback& log_callback);
 
   // Listen for output device changes.
   std::unique_ptr<AudioDeviceListenerWin> output_device_listener_;

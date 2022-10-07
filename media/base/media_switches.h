@@ -24,6 +24,10 @@ namespace switches {
 
 MEDIA_EXPORT extern const char kAudioBufferSize[];
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+MEDIA_EXPORT extern const char kAudioCodecsFromEDID[];
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+
 MEDIA_EXPORT extern const char kAudioServiceQuitTimeoutMs[];
 
 MEDIA_EXPORT extern const char kAutoplayPolicy[];

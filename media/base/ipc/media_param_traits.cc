@@ -80,6 +80,7 @@ void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
   WriteParam(m, p.min_frames_per_buffer);
   WriteParam(m, p.max_frames_per_buffer);
   WriteParam(m, p.bitstream_formats);
+  WriteParam(m, p.require_encapsulation);
 }
 
 bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
@@ -87,16 +88,19 @@ bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
     base::PickleIterator* iter,
     param_type* r) {
   int bitstream_formats;
+  bool require_encapsulation;
   int max_frames_per_buffer;
   int min_frames_per_buffer;
   if (!ReadParam(m, iter, &min_frames_per_buffer) ||
       !ReadParam(m, iter, &max_frames_per_buffer) ||
-      !ReadParam(m, iter, &bitstream_formats)) {
+      !ReadParam(m, iter, &bitstream_formats) ||
+      !ReadParam(m, iter, &require_encapsulation)) {
     return false;
   }
   r->min_frames_per_buffer = min_frames_per_buffer;
   r->max_frames_per_buffer = max_frames_per_buffer;
   r->bitstream_formats = bitstream_formats;
+  r->require_encapsulation = require_encapsulation;
   return true;
 }
 

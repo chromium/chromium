@@ -133,13 +133,12 @@ enum FourCC {
   FOURCC_VP09 = 0x76703039,
   FOURCC_VPCC = 0x76706343,
   FOURCC_WIDE = 0x77696465,
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   FOURCC_DTSC = 0x64747363,  // "dtsc"
   FOURCC_DTSX = 0x64747378,  // "dtsx"
   FOURCC_DDTS = 0x64647473,  // "ddts"
   FOURCC_UDTS = 0x75647473,  // "udts"
-#endif                       // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-                             // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif                       // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 };
 
 const inline std::string FourCCToString(FourCC fourcc) {

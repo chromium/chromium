@@ -30,6 +30,7 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
     case kSampleFormatF32:
     case kSampleFormatPlanarF32:
     case kSampleFormatPlanarS32:
+    case kSampleFormatIECDts:
       return 4;
   }
 
@@ -73,6 +74,8 @@ const char* SampleFormatToString(SampleFormat sample_format) {
       return "Compressed DTS bitstream";
     case kSampleFormatDtsxP2:
       return "Compressed DTSXP2 bitstream";
+    case kSampleFormatIECDts:
+      return "IEC-61937 encapsulated DTS bitstream";
   }
   NOTREACHED() << "Invalid sample format provided: " << sample_format;
   return "";
@@ -96,6 +99,7 @@ bool IsPlanar(SampleFormat sample_format) {
     case kSampleFormatMpegHAudio:
     case kSampleFormatDts:
     case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
       return false;
   }
 
@@ -115,6 +119,7 @@ bool IsInterleaved(SampleFormat sample_format) {
     case kSampleFormatMpegHAudio:
     case kSampleFormatDts:
     case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
       return true;
     case kUnknownSampleFormat:
     case kSampleFormatPlanarU8:
@@ -135,6 +140,7 @@ bool IsBitstream(SampleFormat sample_format) {
     case kSampleFormatMpegHAudio:
     case kSampleFormatDts:
     case kSampleFormatDtsxP2:
+    case kSampleFormatIECDts:
       // If on-device decoding is required, the sample format will be
       // kSampleFormatS16, so it will return false. If bit-stream passthrough
       // is required, the sample format would already be

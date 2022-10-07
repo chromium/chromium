@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -27,6 +28,11 @@
 #include "services/audio/service.h"
 #include "services/audio/service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#include "media/audio/win/audio_edid_scan_win.h"
+#include "media/audio/win/audio_manager_win.h"
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 namespace content {
 
@@ -93,13 +99,18 @@ void BindStreamFactoryFromAnySequence(
 }
 
 void LaunchAudioServiceInProcess(
-    mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
+    mojo::PendingReceiver<audio::mojom::AudioService> receiver,
+    uint32_t codec_bitmask) {
   // NOTE: If BrowserMainLoop is uninitialized, we have no AudioManager. In
   // this case we discard the receiver. The remote will always discard
   // messages. This is to work around unit testing environments where no
   // BrowserMainLoop is initialized.
   if (!BrowserMainLoop::GetInstance())
     return;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+  media::AudioManagerWin::SetBitstreamPassthroughBitmask(codec_bitmask);
+#endif
 
   // TODO(https://crbug.com/853254): Remove
   // BrowserMainLoop::GetAudioManager().
@@ -118,38 +129,40 @@ void LaunchAudioServiceInProcess(
 }
 
 void LaunchAudioServiceOutOfProcess(
-    mojo::PendingReceiver<audio::mojom::AudioService> receiver) {
+    mojo::PendingReceiver<audio::mojom::AudioService> receiver,
+    uint32_t codec_bitmask) {
+  std::vector<std::string> switches;
+#if BUILDFLAG(IS_MAC)
+  // On Mac, the audio service requires a CFRunLoop provided by a
+  // UI MessageLoop type, to run AVFoundation and CoreAudio code.
+  // See https://crbug.com/834581.
+  switches.push_back(switches::kMessageLoopTypeUi);
+#elif BUILDFLAG(IS_WIN)
+  if (GetContentClient()->browser()->ShouldEnableAudioProcessHighPriority())
+    switches.push_back(switches::kAudioProcessHighPriority);
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  switches.push_back(base::StrCat({switches::kAudioCodecsFromEDID, "=",
+                                   base::NumberToString(codec_bitmask)}));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(IS_WIN)
   ServiceProcessHost::Launch(
       std::move(receiver),
       ServiceProcessHost::Options()
           .WithDisplayName("Audio Service")
-#if BUILDFLAG(IS_MAC)
-          // On Mac, the audio service requires a CFRunLoop provided by a
-          // UI MessageLoop type, to run AVFoundation and CoreAudio code.
-          // See https://crbug.com/834581.
-          .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-#elif BUILDFLAG(IS_WIN)
-          .WithExtraCommandLineSwitches(
-              GetContentClient()
-                      ->browser()
-                      ->ShouldEnableAudioProcessHighPriority()
-                  ? std::vector<std::string>(
-                        {switches::kAudioProcessHighPriority})
-                  : std::vector<std::string>())
-#endif
+          .WithExtraCommandLineSwitches(std::move(switches))
           .Pass());
 }
 
-void LaunchAudioService(mojo::Remote<audio::mojom::AudioService>* remote) {
-  auto receiver = remote->BindNewPipeAndPassReceiver();
+void LaunchAudioService(
+    mojo::PendingReceiver<audio::mojom::AudioService> receiver,
+    uint32_t codec_bitmask) {
+  // The static storage slot in GetAudioService() prevents LaunchAudioService
+  // from being called more than once.
   if (IsAudioServiceOutOfProcess()) {
-    LaunchAudioServiceOutOfProcess(std::move(receiver));
-    if (auto idle_timeout = GetAudioServiceProcessIdleTimeout())
-      remote->reset_on_idle_timeout(*idle_timeout);
+    LaunchAudioServiceOutOfProcess(std::move(receiver), codec_bitmask);
   } else {
-    LaunchAudioServiceInProcess(std::move(receiver));
+    LaunchAudioServiceInProcess(std::move(receiver), codec_bitmask);
   }
-  remote->reset_on_disconnect();
 }
 
 }  // namespace
@@ -165,8 +178,27 @@ audio::mojom::AudioService& GetAudioService() {
       mojo::Remote<audio::mojom::AudioService>>
       remote_slot;
   auto& remote = remote_slot.GetOrCreateValue();
-  if (!remote)
-    LaunchAudioService(&remote);
+  if (!remote) {
+    auto receiver = remote.BindNewPipeAndPassReceiver();
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+    // The EDID scan is done in a COM STA thread and the result
+    // passed to the audio service launcher.
+    base::ThreadPool::CreateCOMSTATaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE, base::BindOnce(&media::ScanEdidBitstreams),
+            base::BindOnce(&LaunchAudioService, std::move(receiver)));
+#else
+    LaunchAudioService(std::move(receiver), 0);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+    if (IsAudioServiceOutOfProcess()) {
+      auto idle_timeout = GetAudioServiceProcessIdleTimeout();
+      if (idle_timeout)
+        remote.reset_on_idle_timeout(*idle_timeout);
+    }
+    remote.reset_on_disconnect();
+  }
   return *remote.get();
 }
 

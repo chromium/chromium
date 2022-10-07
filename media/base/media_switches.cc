@@ -19,6 +19,14 @@ namespace switches {
 // Allow users to specify a custom buffer size for debugging purpose.
 const char kAudioBufferSize[] = "audio-buffer-size";
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+// Audio codecs supported by the HDMI sink is retrieved from the audio
+// service process. EDID contains the Short Audio Descriptors, which list
+// the audio decoders supported, and the information is presented as a
+// bitmask of supported audio codecs.
+const char kAudioCodecsFromEDID[] = "audio-codecs-from-edid";
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO) && BUILDFLAG(IS_WIN)
+
 // Set a timeout (in milliseconds) for the audio service to quit if there are no
 // client connections to it. If the value is negative the service never quits.
 const char kAudioServiceQuitTimeoutMs[] = "audio-service-quit-timeout-ms";

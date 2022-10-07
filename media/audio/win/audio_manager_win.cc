@@ -13,7 +13,6 @@
 #include <setupapi.h>
 #include <stddef.h>
 
-#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -34,6 +33,10 @@
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#include "media/audio/win/audio_edid_scan_win.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 // The following are defined in various DDK headers, and we (re)define them here
 // to avoid adding the DDK as a chrome dependency.
@@ -66,7 +69,26 @@ constexpr int kWinMaxChannels = 8;
 // determined from the system
 constexpr int kFallbackBufferSize = 2048;
 
-static int NumberOfWaveOutBuffers() {
+namespace {
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+// Passthrough flags as defined in audio_edid_scan_win.h
+uint32_t bitstream_passthrough_bitmask_;
+
+// Convert result from ScanEdidBitstreams to AudioParameters::Format values
+uint32_t ConvertEdidScanToAudioBitstreamFlags(uint32_t edid_scan) {
+  uint32_t bitstream_codecs = 0;
+  if (edid_scan & kAudioBitstreamPcmLinear)
+    bitstream_codecs |= AudioParameters::AUDIO_PCM_LINEAR;
+  if (edid_scan & kAudioBitstreamDts)
+    bitstream_codecs |= AudioParameters::AUDIO_BITSTREAM_DTS;
+  if (edid_scan & kAudioBitstreamDtsHd)
+    bitstream_codecs |= AudioParameters::AUDIO_BITSTREAM_DTS_HD;
+  return bitstream_codecs;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
+int NumberOfWaveOutBuffers() {
   // Use the user provided buffer count if provided.
   int buffers = 0;
   std::string buffers_str(
@@ -78,6 +100,8 @@ static int NumberOfWaveOutBuffers() {
 
   return 3;
 }
+
+}  // namespace
 
 AudioManagerWin::AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
@@ -218,6 +242,17 @@ AudioOutputStream* AudioManagerWin::MakeLinearOutputStream(
                                          WAVE_MAPPER);
 }
 
+AudioOutputStream* AudioManagerWin::MakeBitstreamOutputStream(
+    const AudioParameters& params,
+    const std::string& device_id,
+    const LogCallback& log_callback) {
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  return MakeLowLatencyOutputStream(params, device_id, log_callback);
+#else   // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  return nullptr;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+}
+
 // Factory for the implementations of AudioOutputStream for
 // AUDIO_PCM_LOW_LATENCY mode. Two implementations should suffice most
 // windows user's needs.
@@ -227,7 +262,14 @@ AudioOutputStream* AudioManagerWin::MakeLowLatencyOutputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  DCHECK(params.format() == AudioParameters::AUDIO_BITSTREAM_DTS ||
+         params.format() == AudioParameters::AUDIO_PCM_LOW_LATENCY)
+      << params.format();
+#else
+  DCHECK_EQ(params.format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
+#endif
+
   if (params.channels() > kWinMaxChannels)
     return nullptr;
 
@@ -297,8 +339,6 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   int min_buffer_size = 0;
   int max_buffer_size = 0;
 
-  // TODO(henrika): Remove kEnableExclusiveAudio and related code. It doesn't
-  // look like it's used.
   if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio)) {
     // TODO(rtoy): tune these values for best possible WebAudio
     // performance. WebRTC works well at 48kHz and a buffer size of 480
@@ -384,10 +424,20 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   if (user_buffer_size)
     buffer_size = user_buffer_size;
 
-  AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
-      sample_rate, buffer_size,
-      AudioParameters::HardwareCapabilities(min_buffer_size, max_buffer_size));
+  AudioParameters::HardwareCapabilities hardware_capabilities(min_buffer_size,
+                                                              max_buffer_size);
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  hardware_capabilities.bitstream_formats = 0;
+  hardware_capabilities.require_encapsulation = false;
+  if (WASAPIAudioOutputStream::GetShareMode() == AUDCLNT_SHAREMODE_EXCLUSIVE) {
+    hardware_capabilities.bitstream_formats =
+        ConvertEdidScanToAudioBitstreamFlags(bitstream_passthrough_bitmask_);
+    hardware_capabilities.require_encapsulation = true;
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                         channel_layout_config, sample_rate, buffer_size,
+                         hardware_capabilities);
   params.set_effects(effects);
   DCHECK(params.IsValid());
   return params;
@@ -400,5 +450,11 @@ std::unique_ptr<AudioManager> CreateAudioManager(
   return std::make_unique<AudioManagerWin>(std::move(audio_thread),
                                            audio_log_factory);
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+void AudioManagerWin::SetBitstreamPassthroughBitmask(uint32_t bitmask) {
+  bitstream_passthrough_bitmask_ = bitmask;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 }  // namespace media

@@ -443,10 +443,12 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
     } else if (config_.codec() == AudioCodec::kEAC3) {
       frame_count = Ac3Util::ParseTotalEac3SampleCount(
           audio_buffer->channel_data()[0], out.size);
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (config_.codec() == AudioCodec::kDTS) {
       frame_count = media::dts::ParseTotalSampleCount(
           audio_buffer->channel_data()[0], out.size, AudioCodec::kDTS);
       DVLOG(2) << ": DTS Frame Count = " << frame_count;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else {
       NOTREACHED() << "Unsupported passthrough format.";
     }

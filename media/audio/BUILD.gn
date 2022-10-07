@@ -212,6 +212,13 @@ source_set("audio") {
       "win/waveout_output_win.h",
     ]
 
+    if (enable_platform_dts_audio) {
+      sources += [
+        "win/audio_edid_scan_win.cc",
+        "win/audio_edid_scan_win.h",
+      ]
+    }
+
     deps += [ "//media/base/win:media_foundation_util" ]
 
     libs += [

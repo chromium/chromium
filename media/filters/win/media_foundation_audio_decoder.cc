@@ -85,7 +85,7 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                              InitCB init_cb,
                                              const OutputCB& output_cb,
                                              const WaitingCB& waiting_cb) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   if (config.codec() != AudioCodec::kDTS &&
       config.codec() != AudioCodec::kDTSXP2) {
     std::move(init_cb).Run(
@@ -93,10 +93,9 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
                       "MFT Codec does not support DTS content"));
     return;
   }
-#else
+#else  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #error "MediaFoundationAudioDecoder requires proprietary codecs and DTS audio"
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   // FIXME: MFT will need to be signed by a Microsoft Certificate
   //        to support a secured chain of custody on Windows.
@@ -119,14 +118,13 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = output_cb;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   if (config.codec() == AudioCodec::kDTS ||
       config.codec() == AudioCodec::kDTSXP2) {
     std::move(init_cb).Run(
         CreateDecoder() ? OkStatus() : DecoderStatus::Codes::kUnsupportedCodec);
   }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 }
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -231,20 +229,19 @@ bool MediaFoundationAudioDecoder::CreateDecoder() {
   // for a codec pump), but alas MFT_ENUM_FLAG_ASYNC_MFT returns no matches :(
   MFT_REGISTER_TYPE_INFO type_info;
   switch (config_.codec()) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     case AudioCodec::kDTSXP2:
       type_info = {MFMediaType_Audio, MFAudioFormat_DTS_UHD};
       break;
     case AudioCodec::kDTS:
       type_info = {MFMediaType_Audio, MFAudioFormat_DTS_RAW};
       break;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     default:
       type_info = {MFMediaType_Audio, MFAudioFormat_Base};
   }
 
-  IMFActivate** acts = NULL;
+  base::win::ScopedCoMem<IMFActivate*> acts;
   UINT32 acts_num = 0;
   ::MFTEnumEx(MFT_CATEGORY_AUDIO_DECODER,
               MFT_ENUM_FLAG_SYNCMFT | MFT_ENUM_FLAG_LOCALMFT |
@@ -285,7 +282,7 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
     RETURN_ON_HR_FAILURE(output_type->GetGUID(MF_MT_SUBTYPE, &out_subtype),
                          "Failed to get output subtype", false);
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (config_.codec() == AudioCodec::kDTS ||
         config_.codec() == AudioCodec::kDTSXP2) {
       // Configuration specific to DTS Sound Unbound MFT v1.3.0
@@ -319,8 +316,7 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
         }
       }
     }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (!output_sample_) {
       output_type.Reset();
       continue;
@@ -354,6 +350,7 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
                       "Sample rate is not supported", false);
 
     timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate_);
+    decoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
     return true;
   }
   RETURN_ON_HR_FAILURE(decoder_->SetOutputType(0, output_type.Get(), 0),
@@ -363,13 +360,12 @@ bool MediaFoundationAudioDecoder::ConfigureOutput() {
 
 int GetBytesPerFrame(AudioCodec codec) {
   switch (codec) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     // DTS Sound Unbound MFT v1.3 supports 24-bit PCM output only
     case AudioCodec::kDTS:
     case AudioCodec::kDTSXP2:
       return 3;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     default:
       return 4;
   }
@@ -432,7 +428,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
                                 channel_count_, sample_rate_, frames, pool_);
   audio_buffer->set_timestamp(timestamp_helper_->GetTimestamp());
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   // DTS Sound Unbound MFT v1.3.0 outputs 24-bit PCM samples, and will
   // be converted to 32-bit float
   if (config_.codec() == AudioCodec::kDTS ||
@@ -449,8 +445,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
       }
     }
   }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
-        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   timestamp_helper_->AddFrames(frames);
 
