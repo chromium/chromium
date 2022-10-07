@@ -30,7 +30,7 @@ namespace ash::browser_data_migrator_util {
 namespace {
 
 constexpr char kDownloadsPath[] = "Downloads";
-constexpr char kPolicyDataPath[] = "Policy";
+constexpr char kSharedProtoDBPath[] = "shared_proto_db";
 constexpr char kBookmarksPath[] = "Bookmarks";
 constexpr char kCookiesPath[] = "Cookies";
 constexpr char kCachePath[] = "Cache";
@@ -635,7 +635,7 @@ class BrowserDataMigratorUtilWithTargetsTest : public ::testing::Test {
     // |- Downloads/     /* remain in ash */
     //     |- file
     //     |- file 2
-    // |- Policy         /* need to copy */
+    // |- shared_proto_db  /* need to copy */
     // |- Cache          /* deletable */
     // |- Code Cache/    /* deletable */
     //     |- file
@@ -658,7 +658,7 @@ class BrowserDataMigratorUtilWithTargetsTest : public ::testing::Test {
                                 kTextFileContent, kTextFileSize));
 
     // Need to copy items.
-    ASSERT_TRUE(base::WriteFile(profile_data_dir_.Append(kPolicyDataPath),
+    ASSERT_TRUE(base::WriteFile(profile_data_dir_.Append(kSharedProtoDBPath),
                                 kTextFileContent, kTextFileSize));
 
     // Deletable items.
@@ -708,7 +708,7 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, GetTargetItems) {
 
   // Check for items that need copies in lacros.
   std::vector<TargetItem> expected_need_copy_items = {
-      {profile_data_dir_.Append(kPolicyDataPath), kTextFileSize,
+      {profile_data_dir_.Append(kSharedProtoDBPath), kTextFileSize,
        TargetItem::ItemType::kFile}};
   TargetItems need_copy_items =
       GetTargetItems(profile_data_dir_, ItemType::kNeedCopyForMove);
@@ -748,9 +748,9 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
   const std::string uma_name_downloads =
       std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
       "Downloads";
-  const std::string uma_name_policy =
+  const std::string uma_name_shared_proto_db =
       std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
-      "Policy";
+      "SharedProtoDb";
   const std::string uma_name_cache =
       std::string(browser_data_migrator_util::kUserDataStatsRecorderDataSize) +
       "Cache";
@@ -764,7 +764,7 @@ TEST_F(BrowserDataMigratorUtilWithTargetsTest, DryRunToCollectUMA) {
                                      kTextFileSize / 1024 / 1024, 1);
   histogram_tester.ExpectBucketCount(uma_name_downloads,
                                      kTextFileSize * 2 / 1024 / 1024, 1);
-  histogram_tester.ExpectBucketCount(uma_name_policy,
+  histogram_tester.ExpectBucketCount(uma_name_shared_proto_db,
                                      kTextFileSize / 1024 / 1024, 1);
   histogram_tester.ExpectBucketCount(uma_name_cache,
                                      kTextFileSize / 1024 / 1024, 1);
