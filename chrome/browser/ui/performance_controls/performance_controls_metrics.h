@@ -22,6 +22,9 @@ enum class HighEfficiencyBubbleActionType {
 // End of enums for histograms.
 
 void RecordBatterySaverBubbleAction(BatterySaverBubbleActionType type);
+void RecordBatterySaverIPHOpenSettings(bool success);
 void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type);
+void RecordHighEfficiencyInfoIPHOpenSettings(bool success);
+void RecordHighEfficiencyIPHEnableMode(bool success);
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_METRICS_H_

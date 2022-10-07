@@ -11,7 +11,22 @@ void RecordBatterySaverBubbleAction(BatterySaverBubbleActionType type) {
                                 type);
 }
 
+void RecordBatterySaverIPHOpenSettings(bool success) {
+  base::UmaHistogramBoolean("PerformanceControls.BatterySaver.IPHOpenSettings",
+                            success);
+}
+
 void RecordHighEfficiencyBubbleAction(HighEfficiencyBubbleActionType type) {
   base::UmaHistogramEnumeration(
       "PerformanceControls.HighEfficiency.BubbleAction", type);
+}
+
+void RecordHighEfficiencyInfoIPHOpenSettings(bool success) {
+  base::UmaHistogramBoolean(
+      "PerformanceControls.HighEfficiency.InfoIPHOpenSettings", success);
+}
+
+void RecordHighEfficiencyIPHEnableMode(bool success) {
+  base::UmaHistogramBoolean("PerformanceControls.HighEfficiency.IPHEnableMode",
+                            success);
 }

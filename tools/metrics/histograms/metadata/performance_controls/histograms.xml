@@ -27,6 +27,19 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.BatterySaver.IPHOpenSettings"
+    units="BooleanSettingsOpened" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user opens the settings page through the link on the
+    battery saver mode IPH. This will be combined with an existing histogram
+    measuring the number of times the IPH is open to measure how the user
+    responds to it.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.HighEfficiency.BubbleAction"
     enum="HighEfficiencyBubbleActionType" expires_after="2023-03-01">
   <owner>agale@chromium.org</owner>
@@ -36,6 +49,30 @@ each histogram. Maybe add here or add a new performance controls one
     opened the settings page or dismissed the dialog. This will be used to
     measure the efficacy of the dialog message and the number of users that
     interact with the high efficiency page action chip.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.InfoIPHOpenSettings"
+    units="BooleanSettingsOpened" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user opens the settings page through the link on the
+    high efficiency mode IPH. This will be combined with an existing histogram
+    measuring the number of times the IPH is open to measure how the user
+    responds to it.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceControls.HighEfficiency.IPHEnableMode"
+    units="BooleanEnableMode" expires_after="2023-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged each time the user enables high efficiency mode through the link on
+    the high efficiency mode IPH. This will be combined with an existing
+    histogram measuring the number of times the IPH is open to measure how the
+    user responds to it.
   </summary>
 </histogram>
 

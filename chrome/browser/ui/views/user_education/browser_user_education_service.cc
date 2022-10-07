@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
@@ -293,6 +294,7 @@ void MaybeRegisterChromeFeaturePromos(
                 if (browser)
                   chrome::ShowSettingsSubPage(browser,
                                               chrome::kPerformanceSubPage);
+                RecordBatterySaverIPHOpenSettings(browser != nullptr);
               }))
           .SetBubbleTitleText(IDS_BATTERY_SAVER_MODE_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
@@ -311,6 +313,7 @@ void MaybeRegisterChromeFeaturePromos(
                 if (browser)
                   chrome::ShowSettingsSubPage(browser,
                                               chrome::kPerformanceSubPage);
+                RecordHighEfficiencyInfoIPHOpenSettings(browser != nullptr);
               }))
           .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
@@ -328,6 +331,7 @@ void MaybeRegisterChromeFeaturePromos(
                 prefs->SetBoolean(performance_manager::user_tuning::prefs::
                                       kHighEfficiencyModeEnabled,
                                   true);
+                RecordHighEfficiencyIPHEnableMode(true);
               }))
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NOT_NOW)
