@@ -128,7 +128,7 @@
   }
 </style>
 <div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
-  <button id="addFileLabel" class="file-input"
+  <button id="addFileLabel" class="file-input" aria-hidden="true"
       on-click="handleOpenFileInputClick_" tabindex="-1">
     <cr-icon-button id="addFileIcon" iron-icon="attachment:add-file"
         aria-label="[[i18n('addFileLabel')]]" title="[[i18n('addFileLabel')]]">
@@ -178,6 +178,6 @@
   <div id="mainPanel" class="dialog-main-panel">
     <div id="innerContentPanel" class="dialog-content-panel">
       <img src="[[selectedImageUrl_]]" class="image-preview">
-    </div> 
+    </div>
   </div>
 </dialog>
