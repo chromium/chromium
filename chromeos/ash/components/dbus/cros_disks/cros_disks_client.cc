@@ -124,6 +124,8 @@ MountError CrosDisksMountErrorToChromeMountError(
       return MountError::kInProgress;
     case cros_disks::MOUNT_ERROR_CANCELLED:
       return MountError::kCancelled;
+    case cros_disks::MOUNT_ERROR_BUSY:
+      return MountError::kBusy;
     default:
       LOG(ERROR) << "Unrecognised mount error code " << mount_error;
       return MountError::kUnknown;
@@ -698,6 +700,7 @@ std::ostream& operator<<(std::ostream& out, const MountError error) {
     PRINT_ERROR(kNeedPassword)
     PRINT_ERROR(kInProgress)
     PRINT_ERROR(kCancelled)
+    PRINT_ERROR(kBusy)
 #undef PRINT_ERROR
   }
 

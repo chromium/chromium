@@ -96,6 +96,7 @@ chrome.fileManagerPrivate.MountCompletedStatus = {
   ERROR_NEED_PASSWORD: 'error_need_password',
   ERROR_IN_PROGRESS: 'error_in_progress',
   ERROR_CANCELLED: 'error_cancelled',
+  ERROR_BUSY: 'error_busy',
 };
 
 /** @enum {string} */

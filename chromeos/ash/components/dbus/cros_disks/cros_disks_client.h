@@ -83,7 +83,8 @@ enum class MountError {
   kNeedPassword = 17,
   kInProgress = 18,
   kCancelled = 19,
-  kMaxValue = 19,
+  kBusy = 20,
+  kMaxValue = 20,
 };
 
 // Output operator for logging.

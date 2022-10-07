@@ -92,7 +92,8 @@ enum MountCompletedStatus {
   error_invalid_archive,
   error_need_password,
   error_in_progress,
-  error_cancelled
+  error_cancelled,
+  error_busy
 };
 
 // Filesystem to format to.

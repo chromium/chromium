@@ -203,6 +203,7 @@ VolumeManagerCommon.VolumeError = {
   UNSUPPORTED_FILESYSTEM: 'error_unsupported_filesystem',
   INVALID_ARCHIVE: 'error_invalid_archive',
   NEED_PASSWORD: 'error_need_password',
+  BUSY: 'error_busy',
 };
 Object.freeze(VolumeManagerCommon.VolumeError);
 

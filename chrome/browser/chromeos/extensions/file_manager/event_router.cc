@@ -542,6 +542,8 @@ file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
     case ash::MountError::kCancelled:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
+    case ash::MountError::kBusy:
+      return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_BUSY;
   }
 
   NOTREACHED();

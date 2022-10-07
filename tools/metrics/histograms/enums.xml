@@ -21749,6 +21749,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="17" label="Need password">MountError::kNeedPassword</int>
   <int value="18" label="In progress">MountError::kInProgress</int>
   <int value="19" label="Cancelled">MountError::kCancelled</int>
+  <int value="20" label="Busy">MountError::kBusy</int>
 </enum>
 
 <enum name="CrosDisksDeviceMediaType">
@@ -21835,6 +21836,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="19" label="Invalid - Cancelled">
     100 * MountType::kInvalid + MountError::kCancelled
   </int>
+  <int value="20" label="Invalid - Busy">
+    100 * MountType::kInvalid + MountError::kBusy
+  </int>
   <int value="100" label="Device - Success">
     100 * MountType::kDevice + MountError::kNone
   </int>
@@ -21894,6 +21898,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
   <int value="119" label="Device - Cancelled">
     100 * MountType::kDevice + MountError::kCancelled
+  </int>
+  <int value="120" label="Device - Busy">
+    100 * MountType::kDevice + MountError::kBusy
   </int>
   <int value="200" label="Archive - Success">
     100 * MountType::kArchive + MountError::kNone
@@ -21955,6 +21962,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="219" label="Archive - Cancelled">
     100 * MountType::kArchive + MountError::kCancelled
   </int>
+  <int value="220" label="Archive - Busy">
+    100 * MountType::kArchive + MountError::kBusy
+  </int>
   <int value="300" label="Network - Success">
     100 * MountType::kNetworkStorage + MountError::kNone
   </int>
@@ -22014,6 +22024,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   </int>
   <int value="319" label="Network - Cancelled">
     100 * MountType::kNetworkStorage + MountError::kCancelled
+  </int>
+  <int value="320" label="Network - Busy">
+    100 * MountType::kNetworkStorage + MountError::kBusy
   </int>
 </enum>
 
