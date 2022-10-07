@@ -31,9 +31,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 
-// TODO(crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 using content::WebContents;
 
 namespace {
@@ -834,5 +831,3 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
   EXPECT_EQ(script_result, "capture-handle-set");
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }
-
-#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

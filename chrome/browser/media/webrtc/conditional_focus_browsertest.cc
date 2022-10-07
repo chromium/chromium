@@ -20,9 +20,6 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/switches.h"
 
-// TODO(crbug.com/1215089): Enable this test suite on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 using content::WebContents;
@@ -305,5 +302,3 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
           "'BrowserCaptureMediaStreamTrack': The window of opportunity for "
           "focus-decision is closed.");
 }
-
-#endif  //  !BUILDFLAG(IS_CHROMEOS_LACROS)

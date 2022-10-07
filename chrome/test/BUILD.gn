@@ -1844,8 +1844,6 @@ if (!is_android) {
       "../browser/media/test_license_server.h",
       "../browser/media/test_license_server_config.h",
       "../browser/media/unified_autoplay_browsertest.cc",
-      "../browser/media/webrtc/capture_handle_browsertest.cc",
-      "../browser/media/webrtc/conditional_focus_browsertest.cc",
       "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
       "../browser/media/webrtc/multi_capture_browsertest.cc",
       "../browser/media/webrtc/region_capture_browsertest.cc",
@@ -2411,6 +2409,8 @@ if (!is_android) {
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
+        "../browser/media/webrtc/capture_handle_browsertest.cc",
+        "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
         "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
@@ -4821,6 +4821,8 @@ if (is_chromeos_lacros) {
       "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/lacros/window_lacros_browsertest.cc",
+      "../browser/media/webrtc/capture_handle_browsertest.cc",
+      "../browser/media/webrtc/conditional_focus_browsertest.cc",
       "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
