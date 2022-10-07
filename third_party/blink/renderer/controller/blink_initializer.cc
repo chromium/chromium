@@ -219,18 +219,8 @@ void SetIsCrossOriginIsolated(bool value) {
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
-bool IsCrossOriginIsolated() {
-  return Agent::IsCrossOriginIsolated();
-}
-
-// Function defined in third_party/blink/public/web/blink.h.
 void SetIsIsolatedApplication(bool value) {
   Agent::SetIsIsolatedApplication(value);
-}
-
-// Function defined in third_party/blink/public/web/blink.h.
-bool IsIsolatedApplication() {
-  return Agent::IsIsolatedApplication();
 }
 
 void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {

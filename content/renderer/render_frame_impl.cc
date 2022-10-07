@@ -2609,8 +2609,7 @@ void RenderFrameImpl::CommitNavigation(
   navigation_params->policy_container =
       ToWebPolicyContainer(std::move(policy_container));
 
-  if (blink::IsIsolatedApplication() && frame_->IsOutermostMainFrame() &&
-      permissions_policy) {
+  if (frame_->IsOutermostMainFrame() && permissions_policy) {
     navigation_params->permissions_policy_override = permissions_policy;
   }
 

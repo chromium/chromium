@@ -121,7 +121,6 @@ BLINK_EXPORT void ForceNextDrawingBufferCreationToFailForTest();
 // agents, not both.
 // This is called at most once. This is called earlier than any frame commit.
 BLINK_EXPORT void SetIsCrossOriginIsolated(bool value);
-BLINK_EXPORT bool IsCrossOriginIsolated();
 
 // Set whether this renderer process has the "isolated application" isolation
 // level. Similarly to the `SetIsCrossOriginIsolated()` method above, this
@@ -130,7 +129,7 @@ BLINK_EXPORT bool IsCrossOriginIsolated();
 //
 // TODO(mkwst): We need a specification for this restriction.
 BLINK_EXPORT void SetIsIsolatedApplication(bool value);
-BLINK_EXPORT bool IsIsolatedApplication();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_BLINK_H_
