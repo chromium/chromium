@@ -25,7 +25,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebAndAppActivityEnabledForShopping, true);
 
   registry->RegisterBooleanPref(
-      kPriceEmailNotificationsEnabled, true,
+      kPriceEmailNotificationsEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   registry->RegisterTimePref(kCommerceDailyMetricsLastUpdateTime, base::Time());

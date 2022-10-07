@@ -10,10 +10,12 @@
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_service.h"
 
 namespace commerce {
 
@@ -252,6 +254,16 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
   // clause for the above.
 
   return changed;
+}
+
+void MaybeEnableEmailNotifications(PrefService* pref_service) {
+  if (pref_service) {
+    const PrefService::Preference* email_pref =
+        pref_service->FindPreference(kPriceEmailNotificationsEnabled);
+    if (email_pref && email_pref->IsDefaultValue()) {
+      pref_service->SetBoolean(kPriceEmailNotificationsEnabled, true);
+    }
+  }
 }
 
 }  // namespace commerce

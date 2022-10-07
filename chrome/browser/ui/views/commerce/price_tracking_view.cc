@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -127,6 +128,9 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
       BookmarkModelFactory::GetForBrowserContext(profile_);
   const bookmarks::BookmarkNode* node =
       model->GetMostRecentlyAddedUserNodeForURL(url);
+  if (profile_ && is_price_track_enabled_) {
+    commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
+  }
   commerce::SetPriceTrackingStateForBookmark(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
       node, is_price_track_enabled_,

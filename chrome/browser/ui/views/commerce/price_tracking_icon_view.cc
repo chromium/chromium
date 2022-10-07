@@ -148,6 +148,7 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     }
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
+    commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
   }
 
   const bookmarks::BookmarkNode* node =

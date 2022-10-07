@@ -14,6 +14,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 
+class PrefService;
+
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
@@ -70,6 +72,11 @@ std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
 bool PopulateOrUpdateBookmarkMetaIfNeeded(
     power_bookmarks::PowerBookmarkMeta* out_meta,
     const ProductInfo& info);
+
+// Attempts to enable price email notifications for users. This will only set
+// the setting to true if it is the first time being called, after that this is
+// a noop.
+void MaybeEnableEmailNotifications(PrefService* pref_service);
 
 }  // namespace commerce
 

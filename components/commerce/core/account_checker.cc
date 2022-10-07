@@ -223,10 +223,15 @@ void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
   if (pref_service_ && is_waiting_for_pref_fetch_completion_ &&
       result.has_value() && result->is_dict()) {
     if (auto* preferences_map = result->FindKey(kPreferencesKey)) {
-      if (auto price_email_pref =
+      if (absl::optional<bool> price_email_pref =
               preferences_map->FindBoolKey(kPriceTrackEmailPref)) {
-        pref_service_->SetBoolean(kPriceEmailNotificationsEnabled,
-                                  *price_email_pref);
+        // Only set the pref value when necessary since it could affect
+        // PrefService::Preference::IsDefaultValue().
+        if (pref_service_->GetBoolean(kPriceEmailNotificationsEnabled) !=
+            *price_email_pref) {
+          pref_service_->SetBoolean(kPriceEmailNotificationsEnabled,
+                                    *price_email_pref);
+        }
       }
     }
   }
