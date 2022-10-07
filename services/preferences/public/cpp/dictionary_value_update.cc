@@ -317,7 +317,8 @@ bool DictionaryValueUpdate::RemoveWithoutPathExpansion(
 bool DictionaryValueUpdate::RemovePath(
     base::StringPiece path,
     std::unique_ptr<base::Value>* out_value) {
-  absl::optional<base::Value> value = value_->ExtractPath(path);
+  absl::optional<base::Value> value =
+      value_->GetDict().ExtractByDottedPath(path);
   if (!value)
     return false;
 

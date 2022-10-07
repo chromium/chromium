@@ -957,19 +957,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Use `Value::Dict::RemoveByDottedPath()`.
   bool RemovePath(StringPiece path);
 
-  // Tries to extract a Value at the given path.
-  //
-  // If the current value is not a dictionary or any path component does not
-  // exist, this operation fails, leaves underlying Values untouched and returns
-  // nullopt. In case intermediate dictionaries become empty as a result of this
-  // path removal, they will be removed as well. Returns the extracted value on
-  // success.
-  // Note: If there is only one component in the path, use `ExtractKey()`
-  // instead.
-  //
-  // DEPRECATED: Use `Value::Dict::ExtractByDottedPath()`.
-  absl::optional<Value> ExtractPath(StringPiece path);
-
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;
 

@@ -1272,10 +1272,6 @@ bool Value::RemovePath(StringPiece path) {
   return GetDict().RemoveByDottedPath(path);
 }
 
-absl::optional<Value> Value::ExtractPath(StringPiece path) {
-  return GetDict().ExtractByDottedPath(path);
-}
-
 // DEPRECATED METHODS
 Value* Value::FindPath(std::initializer_list<StringPiece> path) {
   return const_cast<Value*>(std::as_const(*this).FindPath(path));

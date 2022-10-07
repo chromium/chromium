@@ -1450,7 +1450,7 @@ TEST(ValuesTest, RemovePath) {
   EXPECT_NE(nullptr, root.FindByDottedPath("one.two.four"));
 }
 
-TEST(ValuesTest, ExtractPath) {
+TEST(ValuesTest, ExtractByDottedPath) {
   Value::Dict root;
   root.SetByDottedPath("one.two.three", Value(123));
 
