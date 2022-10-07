@@ -191,4 +191,19 @@ TEST_F(AshAcceleratorConfigurationTest, ValidateAllAcceleratorLayouts) {
   ValidateAcceleratorLayouts(actual_layouts);
 }
 
+TEST_F(AshAcceleratorConfigurationTest,
+       ValidatekAcceleratorActionToStringIdMap) {
+  // Initialize with all default accelerators.
+  config_->Initialize();
+  const std::vector<mojom::AcceleratorLayoutInfoPtr>& layouts =
+      config_->GetAcceleratorLayoutInfos();
+
+  for (const auto& layout : layouts) {
+    // kAcceleratorActionToStringIdMap should contain all actions in
+    // AcceleratorAction. Adding a new accelerator must add a new entry to this
+    // map.
+    EXPECT_TRUE(ash::kAcceleratorActionToStringIdMap.contains(layout->action))
+        << "Unknown accelerator action id: " << layout->action;
+  }
+}
 }  // namespace ash
