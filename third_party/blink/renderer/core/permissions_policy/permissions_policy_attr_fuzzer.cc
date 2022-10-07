@@ -13,10 +13,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // TODO(crbug.com/1345994): Add seed corpus w/ wildcards.
   static blink::BlinkFuzzerTestSupport test_support =
       blink::BlinkFuzzerTestSupport();
   blink::PolicyParserMessageBuffer logger;
-  // TODO(csharrison): Be smarter about parsing these origins for performance.
   scoped_refptr<const blink::SecurityOrigin> parent_origin =
       blink::SecurityOrigin::CreateFromString("https://example.com/");
   scoped_refptr<const blink::SecurityOrigin> child_origin =

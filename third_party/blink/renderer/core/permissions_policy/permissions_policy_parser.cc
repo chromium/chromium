@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -315,6 +317,11 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // attribute.)
       url::Origin target_origin;
 
+      // Determine if there is a wildcard subdomain in the target origin
+      // (e.g., https://*.google.com).
+      bool has_subdomain_wildcard = false;
+      wtf_size_t wildcard_pos = kNotFound;
+
       // If the iframe will have an opaque origin (for example, if it is
       // sandboxed, or has a data: URL), then 'src' needs to refer to the
       // opaque origin of the frame, which is not known yet. In this case,
@@ -345,6 +352,30 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
         allowlist_includes_star_ = true;
         target_is_all = true;
       }
+      // If there's a subdomain wildcard in the `origin_string` of a permissions
+      // policy, then we can parse it out and update `has_subdomain_wildcard`.
+      // We know there's a subdomain wildcard because there is a exactly one `*`
+      // and it's after the scheme and before the rest of the host.
+      else if (base::FeatureList::IsEnabled(
+                   features::kWildcardSubdomainsInPermissionsPolicy) &&
+               type == PermissionsPolicyParser::NodeType::kHeader &&
+               (wildcard_pos = origin_string.Find("://*.")) != kNotFound &&
+               origin_string.find('*') == origin_string.ReverseFind('*')) {
+        // We need a copy as Remove modifies the original.
+        String origin_string_copy(origin_string);
+        origin_string_copy.Remove(wildcard_pos + 3, 2);
+        scoped_refptr<SecurityOrigin> parsed_origin =
+            SecurityOrigin::CreateFromString(origin_string_copy);
+        if (!parsed_origin->IsOpaque()) {
+          target_origin = parsed_origin->ToUrlOrigin();
+          has_subdomain_wildcard = true;
+          allowlist_includes_origin_ = true;
+        } else {
+          logger_.Warn("Unrecognized origin with subdomain wildcard: '" +
+                       origin_string + "'.");
+          continue;
+        }
+      }
       // Otherwise, parse the origin string and verify that the result is
       // valid. Invalid strings will produce an opaque origin, which will
       // result in an error message.
@@ -366,11 +397,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       } else if (target_is_opaque) {
         allowlist.matches_opaque_src = true;
       } else {
-        // TODO(crbug.com/1345994): Support wildcard matching when type is
-        // kHeader.
-        allowlist.allowed_origins.emplace_back(
-            target_origin,
-            /*has_subdomain_wildcard=*/false);
+        allowlist.allowed_origins.emplace_back(target_origin,
+                                               has_subdomain_wildcard);
       }
     }
   }
