@@ -643,14 +643,23 @@ public class LibraryLoader {
 
     /**
      * Checks whether the native library is fully loaded.
+     *
+     * @deprecated: please avoid using in new code:
+     * https://crsrc.org/c/base/android/jni_generator/README.md#testing-for-readiness-use-get
      */
+    @Deprecated
+    @VisibleForTesting
     public boolean isLoaded() {
         return mLoadState == LoadState.LOADED;
     }
 
     /**
      * Checks whether the native library is fully loaded and initialized.
+     *
+     * @deprecated: please avoid using in new code:
+     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
      */
+    @Deprecated
     public boolean isInitialized() {
         return mInitialized && isLoaded();
     }
@@ -991,8 +1000,12 @@ public class LibraryLoader {
     /**
      * Overrides the library loader (normally with a mock) for testing.
      *
+     * @deprecated: please avoid using in new code:
+     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
+     *
      * @param loader the mock library loader.
      */
+    @Deprecated
     @VisibleForTesting
     public static void setLibraryLoaderForTesting(LibraryLoader loader) {
         sInstance = loader;
@@ -1023,10 +1036,15 @@ public class LibraryLoader {
      * This sets the LibraryLoader internal state to its fully initialized state and should *only*
      * be used by clients like NativeTests which manually load their native libraries without using
      * the LibraryLoader.
+     *
+     * Don't use in new code. Tests that require this call should be migrated to
+     * NativeUnitTest.
+     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
      */
-    public void setLibrariesLoadedForNativeTests() {
-        mLoadState = LoadState.LOADED;
-        mInitialized = true;
+    protected static void setLibrariesLoadedForNativeTests() {
+        LibraryLoader self = getInstance();
+        self.mLoadState = LoadState.LOADED;
+        self.mInitialized = true;
     }
 
     public static void setBrowserProcessStartupBlockedForTesting() {

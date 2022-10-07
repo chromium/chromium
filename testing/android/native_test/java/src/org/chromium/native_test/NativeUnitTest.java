@@ -20,6 +20,12 @@ import org.chromium.build.NativeLibraries;
 public class NativeUnitTest extends NativeTest {
     private static final String TAG = "NativeTest";
 
+    private static class NativeUnitTestLibraryLoader extends LibraryLoader {
+        static void setLibrariesLoaded() {
+            LibraryLoader.setLibrariesLoadedForNativeTests();
+        }
+    }
+
     @Override
     public void preCreate(Activity activity) {
         super.preCreate(activity);
@@ -50,6 +56,6 @@ public class NativeUnitTest extends NativeTest {
             System.loadLibrary(library);
             Log.i(TAG, "loaded: %s", library);
         }
-        LibraryLoader.getInstance().setLibrariesLoadedForNativeTests();
+        NativeUnitTestLibraryLoader.setLibrariesLoaded();
     }
 }
