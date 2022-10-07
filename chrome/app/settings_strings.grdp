@@ -1998,8 +1998,8 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in site settings notification page.">
     Review websites that sent a lot of notifications
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the description of the module in site settings notification page.">
-    These sites sent a lot of notifications in the last 2 months. You can stop them from sending future notifications.
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the description of the module in site settings notification page.">
+    These sites sent a lot of notifications recently. You can stop them from sending future notifications.
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_IGNORED_TOAST_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to indicate for which site the user has explicitly allowed permissions.">
     Notifications allowed for <ph name="SITE">$1<ex>www.example.com</ex></ph>
@@ -2010,18 +2010,18 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_RESET_TOAST_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to indicate for which site the user has reset the notification permissions.">
     Notifications not allowed for <ph name="SITE">$1<ex>www.example.com</ex></ph>. You’ll be asked again on your next visit.
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label holds the details of the item and shows how many notifications are sent.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label holds the details of the item and shows how many notifications are sent.">
     {NUM_NOTIFICATION, plural,
      =1 {About 1 notification a day}
      other {About {NUM_NOTIFICATION} notifications a day}}
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for 'don't allow' action for a website in the module.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for 'don't allow' action for a website in the module.">
     Don't allow
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_IGNORE_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to manually set users to allow the website so that the permissions will be never revoked later.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_IGNORE_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to manually set users to allow the website so that the permissions will be never revoked later.">
     Always allow notifications from this site
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_RESET_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for resetings the permission to the 'ask' state.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_RESET_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for resetings the permission to the 'ask' state.">
     Don’t allow but ask later
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_UNDO" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for undoing the current action after blocking permission for a site.">
