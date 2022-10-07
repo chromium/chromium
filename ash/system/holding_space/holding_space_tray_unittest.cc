@@ -40,7 +40,6 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
-#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -63,6 +62,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/drag_utils.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -287,6 +287,27 @@ class ViewVisibilityChangedWaiter : public views::ViewObserver {
                                views::View* starting_view) override {
     wait_loop_->Quit();
   }
+
+  std::unique_ptr<base::RunLoop> wait_loop_;
+};
+
+// WidgetWaiter ----------------------------------------------------------------
+
+// A class capable of waiting until a widget is closing.
+class WidgetWaiter : public views::WidgetObserver {
+ public:
+  void WaitForClose(views::Widget* widget) {
+    base::ScopedObservation<views::Widget, views::WidgetObserver>
+        widget_observation_{this};
+    widget_observation_.Observe(widget);
+    wait_loop_ = std::make_unique<base::RunLoop>();
+    wait_loop_->Run();
+    wait_loop_.reset();
+  }
+
+ private:
+  // views::WidgetObserver:
+  void OnWidgetClosing(views::Widget* widget) override { wait_loop_->Quit(); }
 
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
@@ -2005,6 +2026,27 @@ TEST_F(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
   Click(item_views[0]);
   DoubleClick(item_views[1], ui::EF_SHIFT_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
+}
+
+// Verifies that holding space tray bubble closes after double clicking on a
+// holding space item.
+TEST_F(HoldingSpaceTrayTest, CloseTrayBubbleAfterDoubleClick) {
+  StartSession();
+  // Add a file to holding space.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+
+  // Show and open the first item.
+  test_api()->Show();
+  std::vector<views::View*> pinned_file_chips =
+      test_api()->GetPinnedFileChips();
+  ASSERT_EQ(pinned_file_chips.size(), 1u);
+  DoubleClick(pinned_file_chips[0]);
+
+  // Monitor the tray bubble widget for an `OnWidgetClosing()` call.
+  WidgetWaiter().WaitForClose(test_api()->GetBubble()->GetWidget());
+
+  // Expect holding space tray bubble to be closed.
+  EXPECT_FALSE(test_api()->IsShowing());
 }
 
 // TODO(crbug.com/1208501): Fix flakes and re-enable.

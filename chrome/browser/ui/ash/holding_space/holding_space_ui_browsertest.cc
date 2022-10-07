@@ -54,7 +54,6 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-#include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
@@ -1014,11 +1013,12 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
     // space item that we attempted to open was a screenshot.
     base::RunLoop run_loop;
     EXPECT_CALL(mock, OnWindowActivated)
-        .WillOnce([&](wm::ActivationChangeObserver::ActivationReason reason,
-                      aura::Window* gained_active, aura::Window* lost_active) {
-          EXPECT_EQ("Gallery", base::UTF16ToUTF8(gained_active->GetTitle()));
-          run_loop.Quit();
-        });
+        .WillRepeatedly(
+            [&](wm::ActivationChangeObserver::ActivationReason reason,
+                aura::Window* gained_active, aura::Window* lost_active) {
+              if (gained_active->GetTitle() == u"Gallery")
+                run_loop.Quit();
+            });
     run_loop.Run();
 
     // Reset.
