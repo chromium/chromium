@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE(kResumeHeavyUserSegmentFeature);
 // Feature flag for enabling Power user segmentation.
 BASE_DECLARE_FEATURE(kSegmentationPlatformPowerUserFeature);
 
+// Feature flag for enabling frequent feature user segment.
+BASE_DECLARE_FEATURE(kFrequentFeatureUserSegmentFeature);
+
 // Feature flag for enabling contextual page actions. Only effective when at
 // least one action is enabled.
 BASE_DECLARE_FEATURE(kContextualPageActions);

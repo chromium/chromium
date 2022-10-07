@@ -12,6 +12,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
@@ -180,6 +181,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(ChromeStartModelV2::GetConfig());
   configs.emplace_back(IntentionalUserModel::GetConfig());
   configs.emplace_back(PowerUserSegment::GetConfig());
+  configs.emplace_back(FrequentFeatureUserModel::GetConfig());
 #endif
   // TODO(ssid): Move this check into the model.
   if (IsLowEngagementFeatureEnabled()) {

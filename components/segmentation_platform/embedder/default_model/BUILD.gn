@@ -28,6 +28,8 @@ static_library("default_model") {
   ]
   if (is_android) {
     sources += [
+      "frequent_feature_user_model.cc",
+      "frequent_feature_user_model.h",
       "intentional_user_model.cc",
       "intentional_user_model.h",
       "power_user_segment.cc",
@@ -56,6 +58,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "frequent_feature_user_model_unittest.cc",
       "intentional_user_model_unittest.cc",
       "power_user_segment_unittest.cc",
       "query_tiles_model_unittest.cc",

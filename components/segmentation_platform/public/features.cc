@@ -48,6 +48,10 @@ BASE_FEATURE(kSegmentationPlatformPowerUserFeature,
              "SegmentationPlatformPowerUserFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFrequentFeatureUserSegmentFeature,
+             "FrequentFeatureUserSegmentFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualPageActions,
              "ContextualPageActions",
              base::FEATURE_ENABLED_BY_DEFAULT);
