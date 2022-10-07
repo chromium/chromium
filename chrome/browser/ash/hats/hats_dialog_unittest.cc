@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "hats_dialog.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,26 +13,15 @@ namespace ash {
 
 TEST(HatsDialogTest, HandleClientTriggeredAction) {
   // Client asks to close the window
-  EXPECT_TRUE(HatsDialog::HandleClientTriggeredAction("close", "hist-name"));
+  EXPECT_TRUE(HatsDialog::HandleClientTriggeredAction("close"));
   // There was an unhandled error, close the window
-  EXPECT_TRUE(HatsDialog::HandleClientTriggeredAction(
-      "survey-loading-error-12345", "a-suffix"));
+  EXPECT_TRUE(
+      HatsDialog::HandleClientTriggeredAction("survey-loading-error-12345"));
   // Client sent an invalid action, ignore it
-  EXPECT_FALSE(HatsDialog::HandleClientTriggeredAction("Invalid", "hist-name"));
+  EXPECT_FALSE(HatsDialog::HandleClientTriggeredAction("Invalid"));
 
-  // Set up the histogram tester
-  base::HistogramTester histogram_tester;
-  std::string histogram("Browser.ChromeOS.HatsSatisfaction.General");
-  histogram_tester.ExpectTotalCount(histogram, 0);
-
-  EXPECT_FALSE(HatsDialog::HandleClientTriggeredAction("smiley-selected-4",
-                                                       "full-histogram-name"));
-
-  // Ensure we logged the right metric
-  // For the example above, it means adding 1 entry in the bucket for score=4
-  std::vector<base::Bucket> expected_buckets{{4, 1}};
-  EXPECT_EQ(histogram_tester.GetAllSamples("full-histogram-name"),
-            expected_buckets);
+  // Client sent a valid action
+  EXPECT_FALSE(HatsDialog::HandleClientTriggeredAction("smiley-selected-4"));
 }
 
 }  // namespace ash

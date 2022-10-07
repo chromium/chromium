@@ -22,7 +22,6 @@ class HatsDialog : public ui::WebDialogDelegate {
   HatsDialog& operator=(const HatsDialog&) = delete;
 
   static void Show(const std::string& trigger_id,
-                   const std::string& histogram_name,
                    const std::string& site_context);
 
  private:
@@ -32,15 +31,11 @@ class HatsDialog : public ui::WebDialogDelegate {
   // This class must be allocated on the heap, and general care should be taken
   // regarding its lifetime, due to its self-managing use of delete in the
   // `OnDialogClosed` method.
-  HatsDialog(const std::string& trigger_id,
-             const std::string& histogram_name,
-             const std::string& site_context);
+  HatsDialog(const std::string& trigger_id, const std::string& site_context);
 
   // Based on the supplied |action|, returns true if the client should be
-  // closed. Handling the action could imply logging or incrementing a survey
-  // specific UMA metric (using |histogram_name|).
-  static bool HandleClientTriggeredAction(const std::string& action,
-                                          const std::string& histogram_name);
+  // closed.
+  static bool HandleClientTriggeredAction(const std::string& action);
 
   // ui::WebDialogDelegate implementation.
   ui::ModalType GetDialogModalType() const override;
@@ -62,7 +57,6 @@ class HatsDialog : public ui::WebDialogDelegate {
 
   const std::string trigger_id_;
   std::string url_;
-  const std::string histogram_name_;
 };
 
 }  // namespace ash

@@ -89,6 +89,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ChromeOS.HatsSatisfaction{Survey}" units="score"
     expires_after="2023-01-01">
+  <obsolete>
+    M109; Replaced by &quot;ChromeOS.HaTS.*&quot;.
+  </obsolete>
   <owner>aalsum@chromium.org</owner>
   <owner>jackshira@google.org</owner>
   <owner>cros-telemetry@google.com</owner>
