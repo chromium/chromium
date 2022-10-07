@@ -174,6 +174,25 @@ class X11CrtcResizer {
   // the vertical layout code to be re-used for horizontal layout.
   void Transpose();
 
+  // Moves an application window. This tries to account for any re-parenting
+  // done by a window-manager.
+  // |window| is the top-level window to move (a child of the root window),
+  // which is possibly a window-manager frame.
+  // |attributes| is the response from GetWindowAttributes(window...). It is
+  // used here to avoid fetching the attributes again inside this method,
+  // as the caller already has them.
+  // |top_left| is the requested top-left corner of the new window position.
+  void MoveWindow(x11::Window window,
+                  const x11::GetWindowAttributesReply& attributes,
+                  webrtc::DesktopVector top_left);
+
+  // Helper method to locate an application window which was re-parented by the
+  // window-manager. It looks at |window| and its children recursively, in
+  // stacking order, and returns a viewable window which has the "WM_STATE"
+  // property. If not found, this returns x11::Window::None.
+  x11::Window FindAppWindow(x11::Window window,
+                            const x11::GetWindowAttributesReply& attributes);
+
   raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
   raw_ptr<x11::Connection> connection_;
   raw_ptr<x11::RandR> randr_;
@@ -194,6 +213,8 @@ class X11CrtcResizer {
 
   // Bounding-box size computed by NormalizeCrtcs().
   webrtc::DesktopSize bounding_box_size_{};
+
+  x11::Atom wm_state_atom_{};
 };
 
 }  // namespace remoting

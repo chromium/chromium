@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "remoting/base/logging.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/future.h"
 
 namespace {
@@ -63,6 +66,12 @@ X11CrtcResizer::X11CrtcResizer(
   // X server.
   if (connection_) {
     randr_ = &connection_->randr();
+    auto atom_reply = connection_->InternAtom({false, "WM_STATE"}).Sync();
+    if (atom_reply) {
+      wm_state_atom_ = atom_reply->atom;
+    } else {
+      LOG(ERROR) << "Failed to intern atom for WM_STATE.";
+    }
   }
 }
 
@@ -254,11 +263,7 @@ void X11CrtcResizer::MoveApplicationWindows() {
                                        crtc_info.y - crtc_info.old_y);
       window_top_left = window_top_left.add(adjustment);
 
-      connection_->ConfigureWindow({
-          .window = window,
-          .x = window_top_left.x(),
-          .y = window_top_left.y(),
-      });
+      MoveWindow(window, *attributes_response.reply, window_top_left);
       break;
     }
   }
@@ -404,6 +409,72 @@ void X11CrtcResizer::Transpose() {
     std::swap(crtc_info.x, crtc_info.y);
     std::swap(crtc_info.width, crtc_info.height);
   }
+}
+
+void X11CrtcResizer::MoveWindow(x11::Window window,
+                                const x11::GetWindowAttributesReply& attributes,
+                                webrtc::DesktopVector top_left) {
+  if (!attributes.override_redirect) {
+    // Try to locate the original window which was re-parented by the
+    // window-manager.
+    auto app_window = FindAppWindow(window, attributes);
+    if (app_window != x11::Window::None) {
+      window = app_window;
+    }
+  }
+
+  connection_->ConfigureWindow({
+      .window = window,
+      .x = top_left.x(),
+      .y = top_left.y(),
+  });
+}
+
+x11::Window X11CrtcResizer::FindAppWindow(
+    x11::Window window,
+    const x11::GetWindowAttributesReply& attributes) {
+  // Only descend into visible windows.
+  if (attributes.map_state != x11::MapState::Viewable) {
+    return x11::Window::None;
+  }
+
+  // If the window itself has the WM_STATE property, return it. Otherwise,
+  // descend into the window's children recursively.
+  auto property_reply = connection_
+                            ->GetProperty({
+                                .window = window,
+                                .property = wm_state_atom_,
+                                .long_length = 1,
+                            })
+                            .Sync();
+  if (!property_reply) {
+    return x11::Window::None;
+  }
+  if (property_reply->value_len != 0) {
+    // Found window with WM_STATE property.
+    return window;
+  }
+
+  // Descend into the children of |window| in stacking order. See for example:
+  // Find_Client_In_Children() at
+  // https://github.com/freedesktop/xorg-xwininfo/blob/master/clientwin.c
+  auto query_response = connection_->QueryTree({window}).Sync();
+  if (!query_response) {
+    return x11::Window::None;
+  }
+
+  for (const auto& child_window : base::Reversed(query_response->children)) {
+    auto attributes_response =
+        connection_->GetWindowAttributes({child_window}).Sync();
+    if (!attributes_response) {
+      return x11::Window::None;
+    }
+    auto found_window = FindAppWindow(child_window, *attributes_response.reply);
+    if (found_window != x11::Window::None) {
+      return found_window;
+    }
+  }
+  return x11::Window::None;
 }
 
 }  // namespace remoting
