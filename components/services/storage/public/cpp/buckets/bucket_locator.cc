@@ -18,6 +18,15 @@ BucketLocator::BucketLocator(BucketId id,
 BucketLocator::BucketLocator() = default;
 BucketLocator::~BucketLocator() = default;
 
+// static
+BucketLocator BucketLocator::ForDefaultBucket(blink::StorageKey storage_key) {
+  BucketLocator locator;
+  locator.storage_key = std::move(storage_key);
+  locator.is_default = true;
+  locator.type = blink::mojom::StorageType::kTemporary;
+  return locator;
+}
+
 BucketLocator::BucketLocator(const BucketLocator&) = default;
 BucketLocator::BucketLocator(BucketLocator&&) noexcept = default;
 BucketLocator& BucketLocator::operator=(const BucketLocator&) = default;

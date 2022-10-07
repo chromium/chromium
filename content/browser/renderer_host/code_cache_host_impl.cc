@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -196,7 +197,8 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
   // real StorageKey somehow.
   cache_storage_control->AddReceiver(
       cross_origin_embedder_policy, mojo::NullRemote(),
-      blink::StorageKey(cache_storage_origin),
+      storage::BucketLocator::ForDefaultBucket(
+          blink::StorageKey(cache_storage_origin)),
       storage::mojom::CacheStorageOwner::kCacheAPI,
       remote.BindNewPipeAndPassReceiver());
 

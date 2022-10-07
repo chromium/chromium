@@ -17,7 +17,8 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 // cannot be trusted. BucketLocator should only be passed from more trusted to
 // less trusted processes.
 struct BucketLocator {
-  BucketId id;
+  // If null, `is_default` should be true and this refers to the default bucket.
+  BucketId? id;
   blink.mojom.StorageKey storage_key;
   blink.mojom.StorageType type;
   bool is_default;

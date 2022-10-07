@@ -25,6 +25,8 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
 
   ~BucketLocator();
 
+  static BucketLocator ForDefaultBucket(blink::StorageKey storage_key);
+
   BucketLocator(const BucketLocator&);
   BucketLocator(BucketLocator&&) noexcept;
   BucketLocator& operator=(const BucketLocator&);
@@ -39,6 +41,8 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketLocator {
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator<(const BucketLocator& lhs, const BucketLocator& rhs);
 
+  // Only positive IDs are valid. A default bucket without a specified bucket ID
+  // can be represented by this struct when `id` is zero.
   BucketId id = BucketId::FromUnsafeValue(0);
   blink::StorageKey storage_key = blink::StorageKey();
   blink::mojom::StorageType type = blink::mojom::StorageType::kUnknown;

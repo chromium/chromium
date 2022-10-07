@@ -2278,7 +2278,8 @@ class CacheStorageSideDataSizeChecker
     network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
     cache_storage_control->AddReceiver(
         cross_origin_embedder_policy, mojo::NullRemote(),
-        blink::StorageKey(url::Origin::Create(origin)),
+        storage::BucketLocator::ForDefaultBucket(
+            blink::StorageKey(url::Origin::Create(origin))),
         storage::mojom::CacheStorageOwner::kCacheAPI,
         cache_storage_remote.InitWithNewPipeAndPassReceiver());
 
@@ -2541,7 +2542,7 @@ class CacheStorageControlForBadOrigin
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
     // The CodeCacheHostImpl should not try to add a receiver if the StorageKey

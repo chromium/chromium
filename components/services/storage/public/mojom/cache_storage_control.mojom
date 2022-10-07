@@ -4,6 +4,7 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
@@ -38,13 +39,14 @@ interface CacheStorageObserver {
 // out-of-process.
 interface CacheStorageControl {
   // Binds a CacheStorage receiver to the CacheStorageControl to access
-  // the cache storage for a particular storage key and owner.
-  // TODO(crbug.com/1218097): Allow custom bucket names.
+  // the cache storage for a particular storage key and owner. `bucket_locator`
+  // may represent the default bucket (`is_default` will be true), in which case
+  // its ID will not be valid.
   AddReceiver(
       network.mojom.CrossOriginEmbedderPolicy policy,
       pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
           coep_reporter,
-      blink.mojom.StorageKey storage_key,
+      BucketLocator bucket_locator,
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);
 

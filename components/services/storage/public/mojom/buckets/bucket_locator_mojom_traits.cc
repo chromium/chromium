@@ -28,6 +28,10 @@ bool StructTraits<
 
   bool is_default = data.is_default();
 
+  if (id.is_null()) {
+    CHECK(is_default);
+  }
+
   *out = storage::BucketLocator(id, std::move(storage_key), type, is_default);
   return true;
 }

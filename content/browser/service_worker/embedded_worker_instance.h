@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
@@ -228,7 +229,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle);
 
   void BindCacheStorage(
-      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      const storage::BucketLocator& bucket_locator);
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindHidService(const url::Origin& origin,
@@ -381,10 +383,20 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   mojo::Remote<blink::mojom::SubresourceLoaderUpdater>
       subresource_loader_updater_;
 
+  struct CacheStorageRequest {
+    CacheStorageRequest(
+        mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+        storage::BucketLocator bucket);
+    CacheStorageRequest(CacheStorageRequest&& other);
+    ~CacheStorageRequest();
+
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver;
+    storage::BucketLocator bucket;
+  };
+
   // Hold in-flight CacheStorage requests. They will be bound when the
   // ServiceWorker COEP header will be known.
-  std::vector<mojo::PendingReceiver<blink::mojom::CacheStorage>>
-      pending_cache_storage_receivers_;
+  std::vector<CacheStorageRequest> pending_cache_storage_requests_;
 
   // COEP Reporter connected to the URLLoaderFactories that handles subresource
   // requests initiated from the service worker. The impl lives on the UI

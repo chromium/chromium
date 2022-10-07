@@ -234,9 +234,7 @@ void ValidateAndAddUsageFromPath(
     // implemented. That means these index files will always use the
     // origin-based path format. Populate our BucketLocator with enough
     // data to construct the appropriate path from it below.
-    bucket_locator.is_default = true;
-    bucket_locator.storage_key = storage_key;
-    bucket_locator.type = blink::mojom::StorageType::kTemporary;
+    bucket_locator = storage::BucketLocator::ForDefaultBucket(storage_key);
     // TODO(https://crbug.com/1218097): Once enough time has passed it should be
     // safe to treat this case as an index validation error.
   }

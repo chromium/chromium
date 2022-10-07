@@ -1898,13 +1898,13 @@ void RenderProcessHostImpl::BindCacheStorage(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_remote,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket_locator,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   storage_partition_impl_->GetCacheStorageControl()->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter_remote),
-      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI,
+      bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI,
       std::move(receiver));
 }
 

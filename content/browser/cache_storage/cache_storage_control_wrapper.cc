@@ -64,16 +64,16 @@ void CacheStorageControlWrapper::AddReceiver(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_remote,
-    const blink::StorageKey& storage_key,
+    const storage::BucketLocator& bucket,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (storage_policy_observer_)
-    storage_policy_observer_->StartTrackingOrigin(storage_key.origin());
+    storage_policy_observer_->StartTrackingOrigin(bucket.storage_key.origin());
   cache_storage_control_->AddReceiver(cross_origin_embedder_policy,
-                                      std::move(coep_reporter_remote),
-                                      storage_key, owner, std::move(receiver));
+                                      std::move(coep_reporter_remote), bucket,
+                                      owner, std::move(receiver));
 }
 
 void CacheStorageControlWrapper::DeleteForStorageKey(

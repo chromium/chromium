@@ -45,7 +45,7 @@ class CacheStorageControlWrapper : public storage::mojom::CacheStorageControl {
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void DeleteForStorageKey(const blink::StorageKey& storage_key) override;

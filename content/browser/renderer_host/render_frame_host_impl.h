@@ -1907,6 +1907,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindNFCReceiver(mojo::PendingReceiver<device::mojom::NFC> receiver);
 #endif
 
+  // Binds a `CacheStorage` object for the default bucket.
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
@@ -3577,6 +3578,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
           receiver);
 
   TraceProto::LifecycleState LifecycleStateToProto() const;
+
+  void BindCacheStorageInternal(
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      const storage::BucketLocator& bucket_locator);
 
   void DidEnterBackForwardCacheInternal();
   void WillLeaveBackForwardCacheInternal();

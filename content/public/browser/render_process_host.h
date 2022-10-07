@@ -82,6 +82,10 @@ namespace network {
 struct CrossOriginEmbedderPolicy;
 }  // namespace network
 
+namespace storage {
+struct BucketLocator;
+}
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -562,7 +566,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter_remote,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
   virtual void BindFileSystemManager(
       const blink::StorageKey& storage_key,

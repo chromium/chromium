@@ -92,7 +92,9 @@ void ServiceWorkerHost::CreateWebTransportConnector(
 void ServiceWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  version_->embedded_worker()->BindCacheStorage(std::move(receiver));
+  version_->embedded_worker()->BindCacheStorage(
+      std::move(receiver),
+      storage::BucketLocator::ForDefaultBucket(version_->key()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -210,8 +212,8 @@ blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
 void ServiceWorkerHost::BindCacheStorageForBucket(
     const storage::BucketInfo& bucket,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  // TODO(estade): pass the bucket in order to support non-default buckets.
-  version_->embedded_worker()->BindCacheStorage(std::move(receiver));
+  version_->embedded_worker()->BindCacheStorage(std::move(receiver),
+                                                bucket.ToBucketLocator());
 }
 
 }  // namespace content

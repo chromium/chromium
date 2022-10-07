@@ -207,7 +207,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   void BindCacheStorage(
       const network::CrossOriginEmbedderPolicy&,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindFileSystemManager(
       const blink::StorageKey& storage_key,

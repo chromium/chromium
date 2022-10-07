@@ -675,15 +675,9 @@ void DedicatedWorkerHost::CreateWakeLockService(
 void DedicatedWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-      coep_reporter;
-  if (GetWorkerCoepReporter()) {
-    GetWorkerCoepReporter()->Clone(
-        coep_reporter.InitWithNewPipeAndPassReceiver());
-  }
-  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
-                                         std::move(coep_reporter),
-                                         GetStorageKey(), std::move(receiver));
+  BindCacheStorageInternal(
+      std::move(receiver),
+      storage::BucketLocator::ForDefaultBucket(GetStorageKey()));
 }
 
 void DedicatedWorkerHost::CreateNestedDedicatedWorker(
@@ -994,9 +988,22 @@ blink::mojom::PermissionStatus DedicatedWorkerHost::GetPermissionStatus(
 void DedicatedWorkerHost::BindCacheStorageForBucket(
     const storage::BucketInfo& bucket,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  // TODO(estade): pass the bucket rather than the storage key to support
-  // non-default buckets.
-  BindCacheStorage(std::move(receiver));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  BindCacheStorageInternal(std::move(receiver), bucket.ToBucketLocator());
+}
+
+void DedicatedWorkerHost::BindCacheStorageInternal(
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+    const storage::BucketLocator& bucket_locator) {
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter;
+  if (GetWorkerCoepReporter()) {
+    GetWorkerCoepReporter()->Clone(
+        coep_reporter.InitWithNewPipeAndPassReceiver());
+  }
+  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
+                                         std::move(coep_reporter),
+                                         bucket_locator, std::move(receiver));
 }
 
 blink::scheduler::WebSchedulerTrackedFeatures

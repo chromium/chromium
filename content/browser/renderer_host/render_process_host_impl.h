@@ -297,7 +297,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
-      const blink::StorageKey& storage_key,
+      const storage::BucketLocator& bucket_locator,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
   void BindIndexedDB(
       const blink::StorageKey& storage_key,

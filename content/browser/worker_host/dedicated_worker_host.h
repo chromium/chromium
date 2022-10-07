@@ -138,6 +138,9 @@ class DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::WakeLockService> receiver);
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+  void BindCacheStorageInternal(
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      const storage::BucketLocator& bucket_locator);
   void CreateCodeCacheHost(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateBroadcastChannelProvider(

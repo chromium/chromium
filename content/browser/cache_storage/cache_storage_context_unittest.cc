@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -60,7 +61,8 @@ class CacheStorageContextTest : public testing::Test {
       const blink::StorageKey& storage_key) {
     network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
     cache_storage_context_->AddReceiver(
-        cross_origin_embedder_policy, mojo::NullRemote(), storage_key,
+        cross_origin_embedder_policy, mojo::NullRemote(),
+        storage::BucketLocator::ForDefaultBucket(storage_key),
         storage::mojom::CacheStorageOwner::kCacheAPI,
         std::move(cache_storage_receiver));
   }

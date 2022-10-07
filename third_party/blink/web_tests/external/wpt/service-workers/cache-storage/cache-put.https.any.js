@@ -390,4 +390,38 @@ cache_test(async (cache) => {
   assert_true(cachedResponseText.indexOf("name=\"name\"\r\n\r\nvalue") !== -1);
 }, 'Cache.put called with simple Request and form data Response');
 
+promise_test(async function(test) {
+  var inboxBucket = await navigator.storageBuckets.open('inbox');
+  var draftsBucket = await navigator.storageBuckets.open('drafts');
+
+  test.add_cleanup(async function() {
+    await navigator.storageBuckets.delete('inbox');
+    await navigator.storageBuckets.delete('drafts');
+  });
+
+  const cacheName = 'attachments';
+  const cacheKey = 'receipt1.txt';
+
+  var inboxCache = await inboxBucket.caches.open(cacheName);
+  var draftsCache = await draftsBucket.caches.open(cacheName);
+
+  await inboxCache.put(cacheKey, new Response('bread x 2'))
+  await draftsCache.put(cacheKey, new Response('eggs x 1'));
+
+  return inboxCache.match(cacheKey)
+      .then(function(result) {
+        return result.text();
+      })
+      .then(function(body) {
+        assert_equals(body, 'bread x 2', 'Wrong cache contents');
+        return draftsCache.match(cacheKey);
+      })
+      .then(function(result) {
+        return result.text();
+      })
+      .then(function(body) {
+        assert_equals(body, 'eggs x 1', 'Wrong cache contents');
+      });
+}, 'caches from different buckets have different contents');
+
 done();

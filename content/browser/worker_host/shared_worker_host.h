@@ -265,6 +265,10 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void OnClientConnectionLost();
   void OnWorkerConnectionLost();
 
+  void BindCacheStorageInternal(
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+      const storage::BucketLocator& bucket_locator);
+
   // Creates a network factory for subresource requests from this worker. The
   // network factory is meant to be passed to the renderer.
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
