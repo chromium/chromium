@@ -47,7 +47,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "url/gurl.h"
 
 using extensions::ExternalInstallInfoFile;
@@ -391,9 +390,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
 
     KioskAppManager::InitializeForTesting(this);
 
-    in_process_data_decoder_ =
-        std::make_unique<data_decoder::test::InProcessDataDecoder>();
-
     InitializePrimaryAppState();
 
     extensions::ExtensionServiceTestBase::SetUp();
@@ -419,7 +415,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     primary_app_provider_->ServiceShutdown();
     secondary_apps_provider_->ServiceShutdown();
     external_apps_loader_handler_.reset();
-    in_process_data_decoder_.reset();
 
     app_launch_tracker_.reset();
 
@@ -633,9 +628,6 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
 
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
-      in_process_data_decoder_;
 };
 
 TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
