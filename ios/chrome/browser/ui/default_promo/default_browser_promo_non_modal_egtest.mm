@@ -7,7 +7,6 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

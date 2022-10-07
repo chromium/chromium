@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/history/history_coordinator.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator.h"
@@ -1032,9 +1031,7 @@ bool IsSigninForcedByPolicy() {
   return postOpeningAction == NO_ACTION &&
          !self.sceneState.appState.postCrashLaunch &&
          !IsChromeLikelyDefaultBrowser() &&
-         !HasUserOpenedSettingsFromFirstRunPromo() &&
-         fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() !=
-             NewDefaultBrowserPromoFRE::kFirstRunOnly;
+         !HasUserOpenedSettingsFromFirstRunPromo();
 }
 
 - (void)maybeShowDefaultBrowserPromo:(Browser*)browser {

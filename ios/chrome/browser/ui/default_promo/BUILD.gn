@@ -11,7 +11,6 @@ source_set("utils") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/first_run:field_trial",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -46,7 +45,6 @@ source_set("default_promo") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo/resources",
@@ -104,7 +102,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/test",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands:commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main:scene_state_header",
@@ -130,7 +127,6 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

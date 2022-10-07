@@ -6,7 +6,6 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

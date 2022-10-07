@@ -7,9 +7,8 @@
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
-#import "base/metrics/field_trial.h"
 #import "base/metrics/field_trial_params.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -176,10 +175,7 @@ NSTimeInterval ComputeCooldown() {
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
-  if (DisplayedPromoCount() < 2 &&
-      fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() ==
-          NewDefaultBrowserPromoFRE::kShortDelay &&
-      HasUserInteractedWithFirstRunPromoBefore() &&
+  if (DisplayedPromoCount() < 2 && HasUserInteractedWithFirstRunPromoBefore() &&
       !HasUserOpenedSettingsFromFirstRunPromo()) {
     return kPromosShortCoolDown;
   }

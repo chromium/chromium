@@ -196,8 +196,6 @@ source_set("scene") {
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run",
-    "//ios/chrome/browser/ui/first_run:field_trial",
-    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/history",
     "//ios/chrome/browser/ui/incognito_interstitial:incognito_interstitial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
