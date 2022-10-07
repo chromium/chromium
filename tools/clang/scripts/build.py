@@ -323,15 +323,15 @@ def BuildLibXml2():
           '-DLIBXML2_WITH_MEM_DEBUG=OFF',
           '-DLIBXML2_WITH_MODULES=OFF',
           '-DLIBXML2_WITH_OUTPUT=ON',
-          '-DLIBXML2_WITH_PATTERN=OFF',
+          '-DLIBXML2_WITH_PATTERN=ON',
           '-DLIBXML2_WITH_PROGRAMS=OFF',
           '-DLIBXML2_WITH_PUSH=OFF',
           '-DLIBXML2_WITH_PYTHON=OFF',
           '-DLIBXML2_WITH_READER=OFF',
-          '-DLIBXML2_WITH_REGEXPS=OFF',
+          '-DLIBXML2_WITH_REGEXPS=ON',
           '-DLIBXML2_WITH_RUN_DEBUG=OFF',
-          '-DLIBXML2_WITH_SAX1=OFF',
-          '-DLIBXML2_WITH_SCHEMAS=OFF',
+          '-DLIBXML2_WITH_SAX1=ON',
+          '-DLIBXML2_WITH_SCHEMAS=ON',
           '-DLIBXML2_WITH_SCHEMATRON=OFF',
           '-DLIBXML2_WITH_TESTS=OFF',
           '-DLIBXML2_WITH_THREADS=ON',
@@ -357,6 +357,7 @@ def BuildLibXml2():
       '-DLLVM_ENABLE_LIBXML2=FORCE_ON',
       '-DLIBXML2_INCLUDE_DIR=' + libxml2_include_dir.replace('\\', '/'),
       '-DLIBXML2_LIBRARIES=' + libxml2_lib.replace('\\', '/'),
+      '-DLIBXML2_LIBRARY=' + libxml2_lib.replace('\\', '/'),
   ]
   extra_cflags = ['-DLIBXML_STATIC']
 
