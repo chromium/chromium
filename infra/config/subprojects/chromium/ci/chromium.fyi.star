@@ -520,6 +520,8 @@ ci.builder(
     ),
     goma_backend = None,
     os = os.LINUX_DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
