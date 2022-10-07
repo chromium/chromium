@@ -138,26 +138,30 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/true,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
   EXPECT_TRUE(camera_icon()->GetVisible());
   EXPECT_FALSE(microphone_icon()->GetVisible());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/true);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/true);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
   EXPECT_FALSE(camera_icon()->GetVisible());
   EXPECT_TRUE(microphone_icon()->GetVisible());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/true,
-                                    /*microphone_is_used=*/true);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
   EXPECT_TRUE(camera_icon()->GetVisible());
   EXPECT_TRUE(microphone_icon()->GetVisible());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
@@ -176,8 +180,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   // Test screen share showing up with other icons.
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/true);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/true);
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/true);
   EXPECT_TRUE(privacy_indicators_view()->GetVisible());
@@ -198,30 +203,34 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/true,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
                                        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/true);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/true);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
                                        IDS_PRIVACY_NOTIFICATION_TITLE_MIC),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/true,
-                                    /*microphone_is_used=*/true);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
   EXPECT_EQ(
       GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
                                  IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC),
                              /*screen_share_status=*/std::u16string()),
       GetTooltipText());
 
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
@@ -398,8 +407,9 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
   AnimateToValue(expand_animation(), progress);
 
   // Update state in mid animation, shouldn't crash anything.
-  privacy_indicators_view()->Update(/*camera_is_used=*/true,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
 
   expand_animation()->End();
 
@@ -415,10 +425,43 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
   AnimateToValue(shorter_side_shrink_animation(), progress);
 
   // The view should become invisible immediately after setting these states.
-  privacy_indicators_view()->Update(/*camera_is_used=*/false,
-                                    /*microphone_is_used=*/false);
+  privacy_indicators_view()->Update(/*app_id=*/"app_id",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/false);
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
+  EXPECT_FALSE(privacy_indicators_view()->GetVisible());
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id1",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/false);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
+                                    /*is_camera_used=*/true,
+                                    /*is_microphone_used=*/true);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_TRUE(microphone_icon()->GetVisible());
+
+  // Indicator should still show when removing 1 app.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id2",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
+  EXPECT_TRUE(privacy_indicators_view()->GetVisible());
+  EXPECT_TRUE(camera_icon()->GetVisible());
+  EXPECT_FALSE(microphone_icon()->GetVisible());
+
+  // Indicator should hide when removing all apps.
+  privacy_indicators_view()->Update(/*app_id=*/"app_id1",
+                                    /*is_camera_used=*/false,
+                                    /*is_microphone_used=*/false);
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 

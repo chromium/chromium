@@ -14,6 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -128,21 +129,19 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
 
 PrivacyIndicatorsTrayItemView::~PrivacyIndicatorsTrayItemView() = default;
 
-void PrivacyIndicatorsTrayItemView::Update(bool camera_is_used,
-                                           bool microphone_is_used) {
-  if (camera_is_used_ == camera_is_used &&
-      microphone_is_used_ == microphone_is_used) {
-    return;
-  }
-  camera_is_used_ = camera_is_used;
-  microphone_is_used_ = microphone_is_used;
+void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
+                                           bool is_camera_used,
+                                           bool is_microphone_used) {
+  UpdateAccessStatus(app_id, /*is_accessed=*/is_camera_used, use_camera_apps_);
+  UpdateAccessStatus(app_id,
+                     /*is_accessed=*/is_microphone_used, use_microphone_apps_);
 
-  SetVisible(camera_is_used_ || microphone_is_used_ || is_screen_sharing_);
+  UpdateVisibility();
   if (!GetVisible())
     return;
 
-  camera_icon_->SetVisible(camera_is_used);
-  microphone_icon_->SetVisible(microphone_is_used);
+  camera_icon_->SetVisible(IsCameraUsed());
+  microphone_icon_->SetVisible(IsMicrophoneUsed());
   TooltipTextChanged();
 }
 
@@ -152,7 +151,7 @@ void PrivacyIndicatorsTrayItemView::UpdateScreenShareStatus(
     return;
   is_screen_sharing_ = is_screen_sharing;
 
-  SetVisible(camera_is_used_ || microphone_is_used_ || is_screen_sharing_);
+  UpdateVisibility();
   screen_share_icon_->SetVisible(is_screen_sharing_);
   TooltipTextChanged();
 }
@@ -167,13 +166,13 @@ void PrivacyIndicatorsTrayItemView::UpdateAlignmentForShelf(Shelf* shelf) {
 std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
     const gfx::Point& point) const {
   auto cam_and_mic_status = std::u16string();
-  if (camera_is_used_ && microphone_is_used_) {
+  if (IsCameraUsed() && IsMicrophoneUsed()) {
     cam_and_mic_status = l10n_util::GetStringUTF16(
         IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
-  } else if (camera_is_used_) {
+  } else if (IsCameraUsed()) {
     cam_and_mic_status =
         l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
-  } else if (microphone_is_used_) {
+  } else if (IsMicrophoneUsed()) {
     cam_and_mic_status =
         l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
   }
@@ -327,6 +326,14 @@ void PrivacyIndicatorsTrayItemView::AnimationCanceled(
   UpdateBoundsInset();
 }
 
+bool PrivacyIndicatorsTrayItemView::IsCameraUsed() const {
+  return !use_camera_apps_.empty();
+}
+
+bool PrivacyIndicatorsTrayItemView::IsMicrophoneUsed() const {
+  return !use_microphone_apps_.empty();
+}
+
 void PrivacyIndicatorsTrayItemView::UpdateIcons() {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
@@ -378,9 +385,27 @@ int PrivacyIndicatorsTrayItemView::CalculateSizeDuringShrinkAnimation(
 
 int PrivacyIndicatorsTrayItemView::GetLongerSideLengthInExpandedMode() const {
   // If all three icons are visible, the view should be longer.
-  return camera_is_used_ && microphone_is_used_ && is_screen_sharing_
+  return IsCameraUsed() && IsMicrophoneUsed() && is_screen_sharing_
              ? kPrivacyIndicatorsViewExpandedWithScreenShareSize
              : kPrivacyIndicatorsViewExpandedLongerSideSize;
+}
+
+void PrivacyIndicatorsTrayItemView::UpdateAccessStatus(
+    const std::string& app_id,
+    bool is_accessed,
+    base::flat_set<std::string>& access_set) {
+  if (access_set.contains(app_id) == is_accessed)
+    return;
+
+  if (is_accessed)
+    access_set.insert(app_id);
+  else
+    access_set.erase(app_id);
+}
+
+void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
+  // We only hide the view when all the sets are empty.
+  SetVisible(IsCameraUsed() || IsMicrophoneUsed() || is_screen_sharing_);
 }
 
 void PrivacyIndicatorsTrayItemView::EndAllAnimations() {

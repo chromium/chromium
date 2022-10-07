@@ -215,10 +215,11 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     if (ash::features::IsPrivacyIndicatorsEnabled()) {
       ash::UpdatePrivacyIndicatorsView(
-          /*is_camera_used=*/new_notification[static_cast<size_t>(
-              DeviceType::kCamera)],
-          /*is_microphone_used=*/new_notification[static_cast<size_t>(
-              DeviceType::kMic)]);
+          /*app_id=*/GetNotificationId(vm_type_, new_notification),
+          /*is_camera_used=*/
+          new_notification[static_cast<size_t>(DeviceType::kCamera)],
+          /*is_microphone_used=*/
+          new_notification[static_cast<size_t>(DeviceType::kMic)]);
     }
 
     notification_changed_callback_.Run();

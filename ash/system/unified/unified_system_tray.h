@@ -90,10 +90,6 @@ class ASH_EXPORT UnifiedSystemTray
   // icons in the tray, removes it if the clock is the only visible icon.
   void MaybeUpdateVerticalClockPadding();
 
-  // Update `privacy_indicators_view_` according to camera/microphone access.
-  void UpdatePrivacyIndicatorsTrayItem(bool camera_is_used,
-                                       bool microphone_is_used);
-
   // views::ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;

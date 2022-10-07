@@ -66,7 +66,8 @@ void ASH_EXPORT ModifyPrivacyIndicatorsNotification(
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate);
 
 // Update the `PrivacyIndicatorsTrayItemView` across all status area widgets.
-void ASH_EXPORT UpdatePrivacyIndicatorsView(bool is_camera_used,
+void ASH_EXPORT UpdatePrivacyIndicatorsView(const std::string& app_id,
+                                            bool is_camera_used,
                                             bool is_microphone_used);
 
 // Update `PrivacyIndicatorsTrayItemView` screen share status across all status

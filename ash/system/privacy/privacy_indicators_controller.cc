@@ -143,7 +143,9 @@ void ModifyPrivacyIndicatorsNotification(
   message_center->AddNotification(std::move(notification));
 }
 
-void UpdatePrivacyIndicatorsView(bool is_camera_used, bool is_microphone_used) {
+void UpdatePrivacyIndicatorsView(const std::string& app_id,
+                                 bool is_camera_used,
+                                 bool is_microphone_used) {
   DCHECK(ash::Shell::HasInstance());
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
@@ -152,7 +154,8 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used, bool is_microphone_used) {
 
     root_window_controller->GetStatusAreaWidget()
         ->unified_system_tray()
-        ->UpdatePrivacyIndicatorsTrayItem(is_camera_used, is_microphone_used);
+        ->privacy_indicators_view()
+        ->Update(app_id, is_camera_used, is_microphone_used);
   }
 }
 

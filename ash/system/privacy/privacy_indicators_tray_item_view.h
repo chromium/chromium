@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_item_view.h"
+#include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/throughput_tracker.h"
 
@@ -56,7 +57,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   ~PrivacyIndicatorsTrayItemView() override;
 
   // Update the view according to the state of camara/microphone access.
-  void Update(bool camera_is_used, bool microphone_is_used);
+  void Update(const std::string& app_id,
+              bool is_camera_used,
+              bool is_microphone_used);
 
   // Update the view according to the state of screen sharing.
   void UpdateScreenShareStatus(bool is_screen_sharing);
@@ -82,6 +85,10 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
+  // Specify whether camera/microphone is in used.
+  bool IsCameraUsed() const;
+  bool IsMicrophoneUsed() const;
+
   // Update the icons for the children views.
   void UpdateIcons();
 
@@ -96,6 +103,15 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // Calculate the length of the longer size, based on `is_screen_sharing_`.
   int GetLongerSideLengthInExpandedMode() const;
 
+  // Update the access status of `app_id` for the given `access_set`.
+  void UpdateAccessStatus(const std::string& app_id,
+                          bool is_accessed,
+                          base::flat_set<std::string>& access_set);
+
+  // Update the view's visibility based on camera/mic access and screen sharing
+  // state.
+  void UpdateVisibility();
+
   // End all 3 animations contained in this class.
   void EndAllAnimations();
 
@@ -106,8 +122,11 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   views::ImageView* microphone_icon_ = nullptr;
   views::ImageView* screen_share_icon_ = nullptr;
 
-  bool camera_is_used_ = false;
-  bool microphone_is_used_ = false;
+  // Store the app_id(s) that are currently accessing camera/microphone.
+  base::flat_set<std::string> use_camera_apps_;
+  base::flat_set<std::string> use_microphone_apps_;
+
+  // Keep track of the current screen sharing state.
   bool is_screen_sharing_ = false;
 
   // Keep track the current animation state during the multi-part animation.

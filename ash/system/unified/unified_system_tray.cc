@@ -335,14 +335,6 @@ void UnifiedSystemTray::MaybeUpdateVerticalClockPadding() {
     vertical_clock_padding_->SetVisible(should_show_padding);
 }
 
-void UnifiedSystemTray::UpdatePrivacyIndicatorsTrayItem(
-    bool camera_is_used,
-    bool microphone_is_used) {
-  if (!features::IsPrivacyIndicatorsEnabled())
-    return;
-  privacy_indicators_view_->Update(camera_is_used, microphone_is_used);
-}
-
 void UnifiedSystemTray::OnViewVisibilityChanged(views::View* observed_view,
                                                 views::View* starting_view) {
   MaybeUpdateVerticalClockPadding();

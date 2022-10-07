@@ -132,7 +132,8 @@ void AppAccessNotifier::OnCapabilityAccessUpdate(
         base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(
             launch_app, launch_settings));
 
-    ash::UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used);
+    ash::UpdatePrivacyIndicatorsView(app_id, is_camera_used,
+                                     is_microphone_used);
   }
 
   if (is_microphone_used) {
