@@ -21,7 +21,7 @@
 <div id="outer" class="layout vertical list-frame">
   <div id="container" class="scroll-container" scrollable>
     <iron-list id="list" items="[[siteList_]]" scroll-target="container"
-        preserve-focus risk-selection class="cr-separators">
+        preserve-focus risk-selection>
       <template>
         <tab-discard-exception-entry site="[[item]]" first$="[[!index]]"
             tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
