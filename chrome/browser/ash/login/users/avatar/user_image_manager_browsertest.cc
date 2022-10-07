@@ -371,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
   const gfx::ImageSkia& default_image =
       default_user_image::GetDefaultImageDeprecated(
           default_user_image::kFirstDefaultImageIndex);
+  auto scale =
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor();
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
@@ -381,10 +383,17 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
-  EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
+
   ExpectUserImageInfo(test_account_id1_,
                       default_user_image::kFirstDefaultImageIndex,
-                      GetUserImagePath(test_account_id1_, "jpg"));
+                      GetUserImagePath(test_account_id1_, "png"));
+
+  // Check image dimensions. Images can't be compared since we decode and
+  // re-encode the image bytes.
+  EXPECT_EQ(default_image.GetRepresentation(scale).pixel_width(),
+            user->GetImage().width());
+  EXPECT_EQ(default_image.GetRepresentation(scale).pixel_height(),
+            user->GetImage().height());
 }
 
 // Verifies that SaveUserImage() correctly sets and persists the chosen user
@@ -730,6 +739,8 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   const gfx::ImageSkia& default_image =
       default_user_image::GetDefaultImageDeprecated(
           default_user_image::kFirstDefaultImageIndex);
+  auto scale =
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor();
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
@@ -740,10 +751,16 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
 
   EXPECT_TRUE(user->HasDefaultImage());
   EXPECT_EQ(default_user_image::kFirstDefaultImageIndex, user->image_index());
-  EXPECT_TRUE(test::AreImagesEqual(default_image, user->GetImage()));
+
   ExpectUserImageInfo(enterprise_account_id_,
                       default_user_image::kFirstDefaultImageIndex,
-                      GetUserImagePath(enterprise_account_id_, "jpg"));
+                      GetUserImagePath(enterprise_account_id_, "png"));
+  // Check image dimensions. Images can't be compared since we decode and
+  // re-encode the image bytes.
+  EXPECT_EQ(default_image.GetRepresentation(scale).pixel_width(),
+            user->GetImage().width());
+  EXPECT_EQ(default_image.GetRepresentation(scale).pixel_height(),
+            user->GetImage().height());
 
   // Set policy. Verify that the policy-provided user image is downloaded, set
   // and persisted, overriding the previously set image.

@@ -104,6 +104,8 @@ const char* ChooseExtensionFromImageFormat(
       return ".jpg";
     case user_manager::UserImage::FORMAT_PNG:
       return ".png";
+    case user_manager::UserImage::FORMAT_WEBP:
+      return ".webp";
     default:
       NOTREACHED() << "Invalid format: " << image_format;
       return ".jpg";
@@ -288,30 +290,30 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
           !base::DirectoryExists(image_path_)) {
         // Will refactor to remove this redundant call after the feature flag
         // IsAvatarsCloudMigrationEnabled is no longer needed.
-        user_image_loader::StartWithFilePath(
-            parent_->background_task_runner_, image_path_,
-            ChooseCodecFromPath(image_path_),
-            0,  // Do not crop.
-            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
-                           false));
+        user_image_loader::StartWithFilePathAnimated(
+            image_path_, base::BindOnce(&Job::OnLoadImageDone,
+                                        weak_factory_.GetWeakPtr(), false));
       } else {
         // Fetch the default image from cloud before caching it.
         image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
-        user_image_loader::StartWithGURL(
+        user_image_loader::StartWithGURLAnimated(
             image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                        weak_factory_.GetWeakPtr(), true));
       }
     } else {
-      gfx::ImageSkia default_image =
-          default_user_image::GetDefaultImageDeprecated(image_index_);
-      std::unique_ptr<user_manager::UserImage> user_image(
-          user_manager::UserImage::CreateAndEncode(
-              default_image, user_manager::UserImage::ChooseImageFormat(
-                                 *default_image.bitmap())));
+      auto& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+      auto data = resource_bundle.GetRawDataResourceForScale(
+          default_user_image::GetDefaultImageResourceId(image_index_),
+          resource_bundle.GetMaxResourceScaleFactor());
+
       // Cache the in-use default image as part of the migration of avatar
       // images to cloud.
-      UpdateUserAndSaveImage(std::move(user_image));
+      user_image_loader::StartWithDataAnimated(
+          data,
+          base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                         /*save=*/true));
     }
+
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
@@ -341,21 +343,20 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   if (ash::features::IsAvatarsCloudMigrationEnabled()) {
     // Fetch the default image from cloud before caching it.
     image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
-    user_image_loader::StartWithGURL(
+    user_image_loader::StartWithGURLAnimated(
         image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                    weak_factory_.GetWeakPtr(), true));
   } else {
-    gfx::ImageSkia default_image =
-        default_user_image::GetDefaultImageDeprecated(image_index_);
-    std::unique_ptr<user_manager::UserImage> user_image(
-        user_manager::UserImage::CreateAndEncode(
-            default_image, user_manager::UserImage::ChooseImageFormat(
-                               *default_image.bitmap())));
+    auto& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+    auto data = resource_bundle.GetRawDataResourceForScale(
+        default_user_image::GetDefaultImageResourceId(image_index_),
+        resource_bundle.GetMaxResourceScaleFactor());
 
-    // Now that default images are served from the cloud, the current in-use
-    // user avatar image needs to be saved and cached in local state for
-    // offline usage.
-    UpdateUserAndSaveImage(std::move(user_image));
+    // Cache the in-use default image as part of the migration of avatar
+    // images to cloud.
+    user_image_loader::StartWithDataAnimated(
+        data, base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                             /*save=*/true));
   }
 }
 

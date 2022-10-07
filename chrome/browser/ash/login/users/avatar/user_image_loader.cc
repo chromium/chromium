@@ -16,20 +16,34 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "components/user_manager/user_image/user_image.h"
+#include "ipc/ipc_channel.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/encode/SkWebpEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace user_image_loader {
 namespace {
+
+constexpr int64_t kMaxImageSizeInBytes =
+    static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
 
 // Contains attributes we need to know about each image we decode.
 struct ImageInfo {
@@ -236,11 +250,112 @@ void DecodeImage(
   ImageDecoder::StartWithOptions(image_request, *data, codec, false);
 }
 
-void OnImageDownloaded(LoadedCallback loaded_cb,
-                       const gfx::ImageSkia& image_skia) {
-  std::move(loaded_cb).Run(user_manager::UserImage::CreateAndEncode(
-      image_skia,
-      user_manager::UserImage::ChooseImageFormat(*image_skia.bitmap())));
+void OnAnimationDecoded(
+    LoadedCallback loaded_cb,
+    std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames) {
+  auto frame_size = mojo_frames.size();
+  if (!frame_size) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(loaded_cb),
+                                  std::make_unique<user_manager::UserImage>()));
+    return;
+  }
+
+  // Re-encode static image as PNG and send to requester.
+  if (frame_size == 1) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](const SkBitmap& bitmap) {
+              auto encoded = base::MakeRefCounted<base::RefCountedBytes>();
+              if (!gfx::PNGCodec::EncodeBGRASkBitmap(
+                      bitmap, /*discard_transparency=*/false,
+                      &encoded->data())) {
+                return std::make_unique<user_manager::UserImage>();
+              }
+
+              auto image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+              image_skia.MakeThreadSafe();
+
+              auto user_image = std::make_unique<user_manager::UserImage>(
+                  image_skia, encoded, user_manager::UserImage::FORMAT_PNG);
+              user_image->MarkAsSafe();
+
+              return user_image;
+            },
+            mojo_frames[0]->bitmap),
+        std::move(loaded_cb));
+    return;
+  }
+
+  // The image is animated, re-encode as WebP animated image and send to
+  // requester.
+  std::vector<gfx::WebpCodec::Frame> frames;
+  for (auto& mojo_frame : mojo_frames) {
+    gfx::WebpCodec::Frame frame;
+    frame.bitmap = mojo_frame->bitmap;
+    frame.duration = mojo_frame->duration.InMilliseconds();
+    frames.push_back(frame);
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const std::vector<gfx::WebpCodec::Frame>& frames) {
+            SkWebpEncoder::Options options;
+            options.fCompression = SkWebpEncoder::Compression::kLossless;
+            // Lower quality under kLossless compression means compress faster
+            // into larger files.
+            options.fQuality = 0;
+
+            auto encoded = gfx::WebpCodec::EncodeAnimated(frames, options);
+            if (!encoded.has_value()) {
+              return std::make_unique<user_manager::UserImage>();
+            }
+
+            auto image_skia =
+                gfx::ImageSkia::CreateFrom1xBitmap(frames[0].bitmap);
+            image_skia.MakeThreadSafe();
+
+            auto bytes =
+                base::MakeRefCounted<base::RefCountedBytes>(encoded.value());
+
+            auto user_image = std::make_unique<user_manager::UserImage>(
+                image_skia, bytes, user_manager::UserImage::FORMAT_WEBP);
+            user_image->MarkAsSafe();
+
+            return user_image;
+          },
+          std::move(frames)),
+      std::move(loaded_cb));
+}
+
+void DecodeAnimation(LoadedCallback loaded_cb, base::StringPiece data) {
+  if (data.empty()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(loaded_cb),
+                                  std::make_unique<user_manager::UserImage>()));
+    return;
+  }
+
+  base::span<const uint8_t> bytes = base::make_span(
+      reinterpret_cast<const uint8_t*>(data.data()), data.size());
+
+  data_decoder::DecodeAnimationIsolated(
+      bytes, /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
+      base::BindOnce(&OnAnimationDecoded, std::move(loaded_cb)));
+}
+
+void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
+                       LoadedCallback loaded_cb,
+                       std::unique_ptr<std::string> body) {
+  if (loader->NetError() != net::OK || !body) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(loaded_cb),
+                                  std::make_unique<user_manager::UserImage>()));
+    return;
+  }
+  DecodeAnimation(std::move(loaded_cb), *body);
 }
 
 }  // namespace
@@ -272,16 +387,30 @@ void StartWithData(
               background_task_runner, data.get(), true /* data_is_ready */);
 }
 
+void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb) {
+  DecodeAnimation(std::move(loaded_cb), data);
+}
+
+void StartWithFilePathAnimated(const base::FilePath& file_path,
+                               LoadedCallback loaded_cb) {
+  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& file_path) {
+            std::string data;
+            if (!base::ReadFileToString(file_path, &data)) {
+              return std::string();
+            }
+            return data;
+          },
+          file_path),
+      base::BindOnce(&DecodeAnimation, std::move(loaded_cb)));
+}
+
 // Used to load user images from GURL, specifically in the case of
 // retrieving images from the cloud.
-void StartWithGURL(const GURL& default_image_url, LoadedCallback loaded_cb) {
-  if (!ash::ImageDownloader::Get()) {
-    LOG(ERROR) << "Could not retrieve image downloader for user image";
-    return;
-  }
-
-  ash::ImageDownloader::DownloadCallback download_callback =
-      base::BindOnce(&OnImageDownloaded, std::move(loaded_cb));
+void StartWithGURLAnimated(const GURL& default_image_url,
+                           LoadedCallback loaded_cb) {
   constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
       net::DefineNetworkTrafficAnnotation("user_image_downloader", R"(
             semantics: {
@@ -303,9 +432,20 @@ void StartWithGURL(const GURL& default_image_url, LoadedCallback loaded_cb) {
               policy_exception_justification: "Not implemented."
             })");
 
-  ash::ImageDownloader::Get()->Download(default_image_url,
-                                        kNetworkTrafficAnnotationTag,
-                                        std::move(download_callback));
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = default_image_url;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto loader = network::SimpleURLLoader::Create(std::move(request),
+                                                 kNetworkTrafficAnnotationTag);
+
+  auto* loader_ptr = loader.get();
+  loader_ptr->DownloadToString(
+      g_browser_process->shared_url_loader_factory().get(),
+      base::BindOnce(&OnImageDownloaded, std::move(loader),
+                     std::move(loaded_cb)),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
+
 }  // namespace user_image_loader
 }  // namespace ash
