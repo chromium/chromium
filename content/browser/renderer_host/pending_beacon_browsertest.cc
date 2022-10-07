@@ -294,6 +294,7 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
   ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
   // The beacon should have been sent out after the page is gone.
+  WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -311,6 +312,7 @@ IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
   ASSERT_TRUE(WaitUntilPreviousDocumentDeleted());
 
   // The beacon should have been sent out after the page is gone.
+  WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -692,6 +694,7 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
   std::u16string expected_title = u"true/false/false/false";
   TitleWatcher title_watcher(web_contents(), expected_title);
   EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
+  WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -724,6 +727,7 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
   std::u16string expected_title = u"true/false/false/false";
   TitleWatcher title_watcher(web_contents(), expected_title);
   EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
+  WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
@@ -756,6 +760,7 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconSendOnPagehideBrowserTest,
   std::u16string expected_title = u"true/false/false/false";
   TitleWatcher title_watcher(web_contents(), expected_title);
   EXPECT_EQ(title_watcher.WaitAndGetTitle(), expected_title);
+  WaitForAllBeaconsSent(total_beacon);
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
