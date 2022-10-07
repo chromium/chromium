@@ -138,11 +138,12 @@ class DisplayInfoProvider : public display::DisplayObserver {
       int64_t primary_display_id);
 
  private:
-  // Update the content of the `unit` obtained for `display` using
-  // platform specific method. This must be safe to call off the ui thread.
+  // Update the content of each unit in `units` obtained from the corresponding
+  // display in `displays` using a platform specific method.
+  // This must be safe to call off the ui thread.
   virtual void UpdateDisplayUnitInfoForPlatform(
-      const display::Display& display,
-      api::system_display::DisplayUnitInfo* unit) const;
+      const std::vector<display::Display>& displays,
+      DisplayUnitInfoList& units) const;
 
   // DisplayObserver
   void OnDisplayAdded(const display::Display& new_display) override;

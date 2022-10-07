@@ -12,8 +12,8 @@ namespace extensions {
 DisplayInfoProviderMac::DisplayInfoProviderMac() = default;
 
 void DisplayInfoProviderMac::UpdateDisplayUnitInfoForPlatform(
-    const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) const {
+    const std::vector<display::Display>& display,
+    DisplayUnitInfoList& units) const {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

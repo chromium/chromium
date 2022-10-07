@@ -122,9 +122,9 @@ DisplayInfoProvider::GetAllDisplaysInfoList(
   for (const display::Display& display : displays) {
     api::system_display::DisplayUnitInfo unit =
         CreateDisplayUnitInfo(display, primary_id);
-    UpdateDisplayUnitInfoForPlatform(display, &unit);
     all_displays.push_back(std::move(unit));
   }
+  UpdateDisplayUnitInfoForPlatform(displays, all_displays);
   return all_displays;
 }
 
@@ -219,8 +219,8 @@ void DisplayInfoProvider::DispatchOnDisplayChangedEvent() {
 }
 
 void DisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
-    const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) const {
+    const std::vector<display::Display>& displays,
+    DisplayUnitInfoList& units) const {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

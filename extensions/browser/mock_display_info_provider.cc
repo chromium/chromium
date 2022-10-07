@@ -96,23 +96,26 @@ void MockDisplayInfoProvider::SetMirrorMode(
 }
 
 void MockDisplayInfoProvider::UpdateDisplayUnitInfoForPlatform(
-    const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) const {
-  int64_t id = display.id();
-  unit->name = "DISPLAY NAME FOR " + base::NumberToString(id);
-  if (id == 1)
-    unit->mirroring_source_id = "0";
-  unit->is_primary = id == 0 ? true : false;
-  unit->is_internal = id == 0 ? true : false;
-  unit->is_enabled = true;
-  unit->rotation = (90 * id) % 360;
-  unit->dpi_x = 96.0;
-  unit->dpi_y = 96.0;
-  if (id == 0) {
-    unit->overscan.left = 20;
-    unit->overscan.top = 40;
-    unit->overscan.right = 60;
-    unit->overscan.bottom = 80;
+    const std::vector<display::Display>& displays,
+    DisplayUnitInfoList& units) const {
+  for (size_t i = 0; i < displays.size(); i++) {
+    int64_t id = displays[i].id();
+    units[i].name = "DISPLAY NAME FOR " + base::NumberToString(id);
+    if (id == 1)
+      units[i].mirroring_source_id = "0";
+
+    units[i].is_primary = (id == 0);
+    units[i].is_internal = (id == 0);
+    units[i].is_enabled = true;
+    units[i].rotation = (90 * id) % 360;
+    units[i].dpi_x = 96.0;
+    units[i].dpi_y = 96.0;
+    if (id == 0) {
+      units[i].overscan.left = 20;
+      units[i].overscan.top = 40;
+      units[i].overscan.right = 60;
+      units[i].overscan.bottom = 80;
+    }
   }
 }
 

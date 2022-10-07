@@ -18,8 +18,8 @@ class DisplayInfoProviderWin : public DisplayInfoProvider {
 
   // DisplayInfoProvider implementation.
   void UpdateDisplayUnitInfoForPlatform(
-      const display::Display& display,
-      api::system_display::DisplayUnitInfo* unit) const override;
+      const std::vector<display::Display>& displays,
+      DisplayUnitInfoList& units) const override;
 };
 
 }  // namespace extensions
