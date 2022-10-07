@@ -166,9 +166,6 @@ class PolicyBase final : public TargetPolicy {
 
   // TargetPolicy:
   TargetConfig* GetConfig() override;
-  std::wstring GetDesktopName() override;
-  ResultCode CreateAlternateDesktop(Desktop desktop) override;
-  void DestroyDesktops() override;
   ResultCode SetStdoutHandle(HANDLE handle) override;
   ResultCode SetStderrHandle(HANDLE handle) override;
   void AddHandleToShare(HANDLE handle) override;

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
+#include "sandbox/win/src/alternate_desktop.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/job.h"
 #include "sandbox/win/src/sandbox.h"
@@ -44,6 +46,8 @@ class BrokerServicesBase final : public BrokerServices,
 
   // BrokerServices interface.
   ResultCode Init() override;
+  ResultCode CreateAlternateDesktop(Desktop desktop) override;
+  void DestroyDesktops() override;
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
   std::unique_ptr<TargetPolicy> CreatePolicy(base::StringPiece key) override;
 
@@ -59,10 +63,14 @@ class BrokerServicesBase final : public BrokerServices,
   void SetStartingMitigations(MitigationFlags starting_mitigations) override;
   bool RatchetDownSecurityMitigations(
       MitigationFlags additional_flags) override;
+  std::wstring GetDesktopName(Desktop desktop) override;
 
   static void FreezeTargetConfigForTesting(TargetConfig* config);
 
  private:
+  // Ensures the desktop integrity suits any process we are launching.
+  ResultCode UpdateDesktopIntegrity(Desktop desktop, IntegrityLevel integrity);
+
   // The completion port used by the job objects to communicate events to
   // the worker thread.
   base::win::ScopedHandle job_port_;
@@ -77,6 +85,11 @@ class BrokerServicesBase final : public BrokerServices,
   // Provides a pool of threads that are used to wait on the IPC calls.
   // Owned by TargetEventsThread which is alive until our destructor.
   raw_ptr<ThreadPool> thread_pool_ = nullptr;
+
+  // Handles for the alternate winstation (desktop==kAlternateWinstation).
+  std::unique_ptr<AlternateDesktop> alt_winstation_;
+  // Handles for the same winstation as the parent (desktop==kAlternateDesktop).
+  std::unique_ptr<AlternateDesktop> alt_desktop_;
 
   // Cache of configs backing policies. Entries are retained until shutdown and
   // used to prime policies created by CreatePolicy() with the same `tag`.

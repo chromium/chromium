@@ -57,9 +57,8 @@ bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
       // process because it will initialize the sandbox broker, which requires
       // the process to swap its window station. During this time all the UI
       // will be broken. This has to run before threads and windows are created.
-      ResultCode result =
-          broker_services->CreatePolicy()->CreateAlternateDesktop(
-              Desktop::kAlternateWinstation);
+      ResultCode result = broker_services->CreateAlternateDesktop(
+          Desktop::kAlternateWinstation);
       base::UmaHistogramSparse(
           "Process.Sandbox.CreateAlternateDesktopResultCode", result);
       CHECK(SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION != result);

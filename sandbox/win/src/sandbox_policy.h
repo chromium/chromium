@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
-
 #include "base/memory/scoped_refptr.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
@@ -273,19 +271,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // lockdown tokens. The token the caller passes must remain valid for the
   // lifetime of the policy object.
   virtual void SetEffectiveToken(HANDLE token) = 0;
-
-  // Returns the name of the alternate desktop used. If an alternate window
-  // station is specified, the name is prepended by the window station name,
-  // followed by a backslash.
-  virtual std::wstring GetDesktopName() = 0;
-
-  // Precreates the desktop (for kAlternateDesktop & kAlternateWinstation) and
-  // window station (for kAlternateWindowstation). Should be called before any
-  // target is launched with an alternate desktop.
-  virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
-
-  // Destroys all desktops and window stations.
-  virtual void DestroyDesktops() = 0;
 };
 
 }  // namespace sandbox

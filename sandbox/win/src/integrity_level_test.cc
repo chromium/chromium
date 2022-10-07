@@ -46,7 +46,7 @@ std::unique_ptr<TestRunner> LowILRealRunner() {
   auto runner = std::make_unique<TestRunner>(
       JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
   runner->SetTimeout(INFINITE);
-  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+  EXPECT_EQ(SBOX_ALL_OK, runner->broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(

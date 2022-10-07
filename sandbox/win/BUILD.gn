@@ -13,6 +13,8 @@ static_library("sandbox") {
   sources = [
     "src/acl.cc",
     "src/acl.h",
+    "src/alternate_desktop.cc",
+    "src/alternate_desktop.h",
     "src/app_container.h",
     "src/app_container_base.cc",
     "src/app_container_base.h",

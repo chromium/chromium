@@ -132,8 +132,8 @@ sandbox::ResultCode InitializeSandboxBroker(sandbox::BrokerServices* broker) {
   sandbox::ResultCode result = broker->Init();
   if (result != sandbox::SBOX_ALL_OK)
     return result;
-  result = broker->CreatePolicy()->CreateAlternateDesktop(
-      sandbox::Desktop::kAlternateWinstation);
+  result =
+      broker->CreateAlternateDesktop(sandbox::Desktop::kAlternateWinstation);
   // Matches Chrome behavior. Silently ignore failures unless we're
   // in a bad state.
   if (result == sandbox::SBOX_ERROR_FAILED_TO_SWITCH_BACK_WINSTATION)

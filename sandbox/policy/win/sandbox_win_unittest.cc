@@ -129,11 +129,6 @@ class TestTargetPolicy : public TargetPolicy {
   ~TestTargetPolicy() override {}
   // TargetPolicy:
   TargetConfig* GetConfig() override { return &config_; }
-  std::wstring GetDesktopName() override { return std::wstring(); }
-  ResultCode CreateAlternateDesktop(Desktop desktop) override {
-    return SBOX_ALL_OK;
-  }
-  void DestroyDesktops() override {}
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   void AddHandleToShare(HANDLE handle) override {}

@@ -36,7 +36,6 @@
 #include "sandbox/win/src/signed_policy.h"
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/top_level_dispatcher.h"
-#include "sandbox/win/src/window.h"
 
 namespace sandbox {
 namespace {
@@ -69,92 +68,6 @@ bool IsInheritableHandle(HANDLE handle) {
   DWORD handle_type = GetFileType(handle);
   return handle_type == FILE_TYPE_DISK || handle_type == FILE_TYPE_PIPE;
 }
-
-// Holds handles and integrity levels about alternate desktops.
-class AlternateDesktop {
- public:
-  AlternateDesktop()
-      : desktop_(nullptr),
-        winstation_(nullptr),
-        integrity_(INTEGRITY_LEVEL_SYSTEM) {}
-  ~AlternateDesktop() {
-    if (desktop_) {
-      ::CloseDesktop(desktop_);
-      desktop_ = nullptr;
-    }
-    if (winstation_) {
-      ::CloseWindowStation(winstation_);
-      winstation_ = nullptr;
-    }
-  }
-  AlternateDesktop(const AlternateDesktop&) = delete;
-  AlternateDesktop& operator=(const AlternateDesktop&) = delete;
-
-  // Updates the desktop token's integrity level to be no higher than
-  // `integrity_level`.
-  ResultCode UpdateDesktopIntegrity(IntegrityLevel integrity_level) {
-    // Integrity label enum is reversed (higher level is a lower value).
-    static_assert(INTEGRITY_LEVEL_SYSTEM < INTEGRITY_LEVEL_UNTRUSTED,
-                  "Integrity level ordering reversed.");
-    DCHECK(integrity_level != INTEGRITY_LEVEL_LAST);
-    // Require that the desktop has been set.
-    if (!desktop_)
-      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-    if (integrity_ < integrity_level) {
-      DWORD result = SetObjectIntegrityLabel(
-          desktop_, SecurityObjectType::kWindow, 0, integrity_level);
-      if (ERROR_SUCCESS != result)
-        return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
-      integrity_ = integrity_level;
-    }
-    return SBOX_ALL_OK;
-  }
-
-  // Populate this object, creating a winstation if `alternate_winstation` is
-  // true.
-  ResultCode Initialize(bool alternate_winstation) {
-    DCHECK(!desktop_ && !winstation_);
-    if (alternate_winstation) {
-      // Create the window station.
-      ResultCode result = CreateAltWindowStation(&winstation_);
-      if (SBOX_ALL_OK != result)
-        return result;
-
-      // Verify that everything is fine.
-      if (!winstation_ || base::win::GetWindowObjectName(winstation_).empty()) {
-        return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-      }
-    }
-    ResultCode result = CreateAltDesktop(winstation_, &desktop_);
-    if (SBOX_ALL_OK != result)
-      return result;
-
-    // Verify that everything is fine.
-    if (!desktop_ || base::win::GetWindowObjectName(desktop_).empty()) {
-      return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
-    }
-    return SBOX_ALL_OK;
-  }
-
-  std::wstring GetDesktopName() {
-    if (!desktop_)
-      return std::wstring();
-    return GetFullDesktopName(winstation_, desktop_);
-  }
-
- private:
-  // Handle for the alternate desktop.
-  HDESK desktop_;
-  // Winstation for the alternate desktop, or nullptr if not used.
-  HWINSTA winstation_;
-  // Last set integrity level of the desktop.
-  IntegrityLevel integrity_;
-};
-
-// Handles for the alternate winstation (desktop==kAlternateWinstation).
-std::unique_ptr<AlternateDesktop> g_alt_winstation;
-// Handles for the same winstation as the parent (desktop==kAlternateDesktop).
-std::unique_ptr<AlternateDesktop> g_alt_desktop;
 
 }  // namespace
 
@@ -542,52 +455,6 @@ bool PolicyBase::SetConfig(TargetConfig* config) {
   return true;
 }
 
-std::wstring PolicyBase::GetDesktopName() {
-  switch (config()->desktop()) {
-    case Desktop::kDefault:
-      // No alternate desktop or winstation. Return an empty string.
-      return std::wstring();
-    case Desktop::kAlternateWinstation:
-      return g_alt_winstation ? g_alt_winstation->GetDesktopName()
-                              : std::wstring();
-    case Desktop::kAlternateDesktop:
-      return g_alt_desktop ? g_alt_desktop->GetDesktopName() : std::wstring();
-  }
-}
-
-ResultCode PolicyBase::CreateAlternateDesktop(Desktop desktop) {
-  switch (desktop) {
-    case Desktop::kAlternateWinstation: {
-      // If already populated keep going.
-      if (g_alt_winstation)
-        return SBOX_ALL_OK;
-      g_alt_winstation = std::make_unique<AlternateDesktop>();
-      ResultCode result = g_alt_winstation->Initialize(true);
-      if (result != SBOX_ALL_OK)
-        g_alt_winstation.reset();
-      return result;
-    };
-    case Desktop::kAlternateDesktop: {
-      // If already populated keep going.
-      if (g_alt_desktop)
-        return SBOX_ALL_OK;
-      g_alt_desktop = std::make_unique<AlternateDesktop>();
-      ResultCode result = g_alt_desktop->Initialize(false);
-      if (result != SBOX_ALL_OK)
-        g_alt_desktop.reset();
-      return result;
-    };
-    case Desktop::kDefault:
-      // The default desktop always exists.
-      return SBOX_ALL_OK;
-  }
-}
-
-void PolicyBase::DestroyDesktops() {
-  g_alt_winstation.reset();
-  g_alt_desktop.reset();
-}
-
 ResultCode PolicyBase::SetStdoutHandle(HANDLE handle) {
   if (!IsInheritableHandle(handle))
     return SBOX_ERROR_BAD_PARAMS;
@@ -674,25 +541,6 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
       PRIMARY, lockdown_default_dacl, random_sid, lockdown);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
-
-  // If we're launching on an alternate desktop we need to make sure the
-  // integrity label on the object is no higher than the sandboxed process's
-  // integrity level. So, we lower the label on the desktop handle if it's
-  // not already low enough for our process. TODO(crbug.com/1361470) we allow
-  // desktop creation to failure - perhaps we can require them to be present in
-  // the future.
-  if (integrity_level != INTEGRITY_LEVEL_LAST) {
-    ResultCode result_code = SBOX_ALL_OK;
-    if (config()->desktop() == Desktop::kAlternateWinstation &&
-        g_alt_winstation) {
-      result_code = g_alt_winstation->UpdateDesktopIntegrity(integrity_level);
-    } else if (config()->desktop() == Desktop::kAlternateDesktop &&
-               g_alt_desktop) {
-      result_code = g_alt_desktop->UpdateDesktopIntegrity(integrity_level);
-    }
-    if (result_code != SBOX_ALL_OK)
-      return result_code;
-  }
 
   AppContainerBase* app_container = config()->app_container();
   if (app_container &&

@@ -40,6 +40,7 @@ class PolicyDiagnosticsReceiver;
 class ProcessState;
 class TargetPolicy;
 class TargetServices;
+enum class Desktop;
 
 // BrokerServices exposes all the broker API.
 // The basic use is to start the target(s) and wait for them to end.
@@ -64,6 +65,16 @@ class [[clang::lto_visibility_public]] BrokerServices {
   // If the return is ERROR_GENERIC, you can call ::GetLastError() to get
   // more information.
   virtual ResultCode Init() = 0;
+
+  // Pre-creates an alternate desktop. May be retried if the return value
+  // is SBOX_ERROR_CANNOT_QUERY_WINSTATION_SECURITY.
+  virtual ResultCode CreateAlternateDesktop(Desktop desktop) = 0;
+  // Destroys all desktops created for this Broker.
+  virtual void DestroyDesktops() = 0;
+  // Returns the name of the alternate desktop used. If an alternate window
+  // station is specified, the name is prepended by the window station name,
+  // followed by a backslash.
+  virtual std::wstring GetDesktopName(Desktop desktop) = 0;
 
   // Returns the interface pointer to a new, empty policy object. Use this
   // interface to specify the sandbox policy for new processes created by

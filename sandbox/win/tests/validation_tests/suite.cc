@@ -158,7 +158,7 @@ TEST(ValidationSuite, TestRegistry) {
 
 std::unique_ptr<TestRunner> DesktopRunner() {
   auto runner = std::make_unique<TestRunner>();
-  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+  EXPECT_EQ(SBOX_ALL_OK, runner->broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
@@ -186,15 +186,16 @@ TEST(ValidationSuite, TestAlternateDesktop) {
   TestRunner runner;
   wchar_t command[1024] = {0};
   runner.SetTimeout(3600000);
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->CreateAlternateDesktop(
+  EXPECT_EQ(SBOX_ALL_OK, runner.broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
   runner.GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
   EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetIntegrityLevel(
                              INTEGRITY_LEVEL_LOW));
   // Ensure the desktop is created.
-  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->CreateAlternateDesktop(
+  EXPECT_EQ(SBOX_ALL_OK, runner.broker()->CreateAlternateDesktop(
                              Desktop::kAlternateWinstation));
-  std::wstring desktop_name = runner.GetPolicy()->GetDesktopName();
+  std::wstring desktop_name =
+      runner.broker()->GetDesktopName(Desktop::kAlternateWinstation);
   desktop_name = desktop_name.substr(desktop_name.find('\\') + 1);
   wsprintf(command, L"OpenAlternateDesktop %lS", desktop_name.c_str());
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(command));
@@ -202,7 +203,7 @@ TEST(ValidationSuite, TestAlternateDesktop) {
 
 std::unique_ptr<TestRunner> AlternateDesktopLocalWinstationRunner() {
   auto runner = std::make_unique<TestRunner>();
-  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+  EXPECT_EQ(SBOX_ALL_OK, runner->broker()->CreateAlternateDesktop(
                              Desktop::kAlternateDesktop));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
   EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(

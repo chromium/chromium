@@ -512,6 +512,11 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
     return SBOX_ERROR_BAD_PARAMS;
   }
 
+  result = UpdateDesktopIntegrity(config_base->desktop(),
+                                  config_base->integrity_level());
+  if (result != SBOX_ALL_OK)
+    return result;
+
   result = policy_base->InitJob();
   if (SBOX_ALL_OK != result)
     return result;
@@ -521,7 +526,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // We don't want any child processes causing the IDC_APPSTARTING cursor.
   startup_info->UpdateFlags(STARTF_FORCEOFFFEEDBACK);
-  startup_info->SetDesktop(policy_base->GetDesktopName());
+  startup_info->SetDesktop(GetDesktopName(config_base->desktop()));
   startup_info->SetMitigations(config_base->GetProcessMitigations());
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_TH2 &&
@@ -667,6 +672,76 @@ void BrokerServicesBase::SetStartingMitigations(
 bool BrokerServicesBase::RatchetDownSecurityMitigations(
     MitigationFlags additional_flags) {
   return sandbox::RatchetDownSecurityMitigations(additional_flags);
+}
+
+std::wstring BrokerServicesBase::GetDesktopName(Desktop desktop) {
+  switch (desktop) {
+    case Desktop::kDefault:
+      // No alternate desktop or winstation. Return an empty string.
+      return std::wstring();
+    case Desktop::kAlternateWinstation:
+      return alt_winstation_ ? alt_winstation_->GetDesktopName()
+                             : std::wstring();
+    case Desktop::kAlternateDesktop:
+      return alt_desktop_ ? alt_desktop_->GetDesktopName() : std::wstring();
+  }
+}
+
+ResultCode BrokerServicesBase::UpdateDesktopIntegrity(
+    Desktop desktop,
+    IntegrityLevel integrity) {
+  // If we're launching on an alternate desktop we need to make sure the
+  // integrity label on the object is no higher than the sandboxed process's
+  // integrity level. So, we lower the label on the desktop handle if it's
+  // not already low enough for our process. TODO(crbug.com/1361470) we allow
+  // desktop creation to fail - perhaps we can require them to be present in
+  // the future.
+  if (integrity == INTEGRITY_LEVEL_LAST)
+    return SBOX_ALL_OK;
+  if (desktop == Desktop::kDefault)
+    return SBOX_ALL_OK;
+
+  ResultCode result = SBOX_ALL_OK;
+  if (desktop == Desktop::kAlternateWinstation && alt_winstation_) {
+    result = alt_winstation_->UpdateDesktopIntegrity(integrity);
+  } else if (desktop == Desktop::kAlternateDesktop && alt_desktop_) {
+    result = alt_desktop_->UpdateDesktopIntegrity(integrity);
+  }
+
+  return result;
+}
+
+ResultCode BrokerServicesBase::CreateAlternateDesktop(Desktop desktop) {
+  switch (desktop) {
+    case Desktop::kAlternateWinstation: {
+      // If already populated keep going.
+      if (alt_winstation_)
+        return SBOX_ALL_OK;
+      alt_winstation_ = std::make_unique<AlternateDesktop>();
+      ResultCode result = alt_winstation_->Initialize(true);
+      if (result != SBOX_ALL_OK)
+        alt_winstation_.reset();
+      return result;
+    };
+    case Desktop::kAlternateDesktop: {
+      // If already populated keep going.
+      if (alt_desktop_)
+        return SBOX_ALL_OK;
+      alt_desktop_ = std::make_unique<AlternateDesktop>();
+      ResultCode result = alt_desktop_->Initialize(false);
+      if (result != SBOX_ALL_OK)
+        alt_desktop_.reset();
+      return result;
+    };
+    case Desktop::kDefault:
+      // The default desktop always exists.
+      return SBOX_ALL_OK;
+  }
+}
+
+void BrokerServicesBase::DestroyDesktops() {
+  alt_winstation_.reset();
+  alt_desktop_.reset();
 }
 
 // static
