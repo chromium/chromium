@@ -20,14 +20,12 @@ component("trial_group") {
     "//url",
   ]
 
-  defines = [ "IS_TRIAL_GROUP_CHECKER_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_TRIAL_GROUP_IMPL" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "trial_group_checker_unittest.cc",
-  ]
+  sources = [ "trial_group_checker_unittest.cc" ]
 
   deps = [
     ":trial_group",

@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",
     "//chromeos/ash/components/trash_service:unit_tests",
+    "//chromeos/ash/components/trial_group:unit_tests",
     "//chromeos/components/sensors:ash_unit_tests",
   ]
 

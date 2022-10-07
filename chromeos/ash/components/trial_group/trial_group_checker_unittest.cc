@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/trial_group/trial_group_checker.h"
+#include "chromeos/ash/components/trial_group/trial_group_checker.h"
 
 #include "base/test/task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

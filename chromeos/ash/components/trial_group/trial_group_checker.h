@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
-#define ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#define CHROMEOS_ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
 
 #include <string>
 
@@ -25,7 +25,7 @@ namespace trial_group {
 // this request for users that have a dogfood finch experiment flag set.
 // |group_id| contains the integer corresponding to the dogfood trial. Only one
 // |group_id| per instance. To check another |group_id| use another instance.
-class COMPONENT_EXPORT(TRIAL_GROUP_CHECKER) TrialGroupChecker {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TRIAL_GROUP) TrialGroupChecker {
  public:
   enum GroupId {
     INVALID_GROUP = 0,
@@ -74,4 +74,4 @@ class COMPONENT_EXPORT(TRIAL_GROUP_CHECKER) TrialGroupChecker {
 }  // namespace trial_group
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TRIAL_GROUP_TRIAL_GROUP_CHECKER_H_
