@@ -590,8 +590,13 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlayback) {
   if (AudioLatency::IsResamplingPassthroughSupported(params.latency_tag())) {
     // Expecting input sample rate
     EXPECT_EQ(32000, mixer->get_output_params_for_testing().sample_rate());
+#if BUILDFLAG(IS_FUCHSIA)
+    // On Fuchsia use 80ms buffer.
+    EXPECT_EQ(2560, mixer->get_output_params_for_testing().frames_per_buffer());
+#else
     // Round up 20 ms (640) to the power of 2.
     EXPECT_EQ(1024, mixer->get_output_params_for_testing().frames_per_buffer());
+#endif
   } else {
     // Expecting hardware sample rate
     EXPECT_EQ(44100, mixer->get_output_params_for_testing().sample_rate());
@@ -639,8 +644,14 @@ TEST_F(AudioRendererMixerManagerTest,
     EXPECT_EQ(44100, mixer->get_output_params_for_testing().sample_rate());
   }
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // On Fuchsia the buffer is rounder to a whole numbem of audio scheduling
+  // periods.
+  EXPECT_EQ(2560, mixer->get_output_params_for_testing().frames_per_buffer());
+#else
   // Prefer device buffer size (2048) if is larger than 20 ms buffer size.
   EXPECT_EQ(2048, mixer->get_output_params_for_testing().frames_per_buffer());
+#endif
 
   ReturnMixer(mixer);
 }
@@ -666,10 +677,13 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyPlaybackFakeAudio) {
   // Expecting input sample rate
   EXPECT_EQ(32000, mixer->get_output_params_for_testing().sample_rate());
 
-// 20 ms at 32000 is 640 frames per buffer.
+  // 20 ms at 32000 is 640 frames per buffer.
 #if BUILDFLAG(IS_WIN)
   // Use 20 ms buffer.
   EXPECT_EQ(640, mixer->get_output_params_for_testing().frames_per_buffer());
+#elif BUILDFLAG(IS_FUCHSIA)
+  // Use 80 ms buffer.
+  EXPECT_EQ(2560, mixer->get_output_params_for_testing().frames_per_buffer());
 #else
   // Ignore device buffer size, round up 640 to the power of 2.
   EXPECT_EQ(1024, mixer->get_output_params_for_testing().frames_per_buffer());
