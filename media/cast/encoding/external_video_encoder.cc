@@ -90,7 +90,8 @@ bool IsHardwareVP8EncodingSupported(
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_X86_64
+#if (BUILDFLAG(IS_CHROMEOS) && ARCH_CPU_X86_64) || \
+    (BUILDFLAG(IS_CHROMEOS_ASH) && ARCH_CPU_ARM_FAMILY)
   // The encoder also doesn't work well with some first party Chromecast
   // devices. See https://crbug.com/1342276 for more information.
   if (base::StartsWith(receiver_model_name, "Chromecast")) {
