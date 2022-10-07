@@ -69,7 +69,7 @@ class CONTENT_EXPORT PrefetchContainer {
 
   const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
 
-  base::WeakPtr<PrefetchContainer> GetWeakPtr() const {
+  base::WeakPtr<PrefetchContainer> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
   }
 

@@ -106,7 +106,7 @@ class CONTENT_EXPORT PrefetchCanaryChecker {
   PrefetchCanaryChecker(const PrefetchCanaryChecker&) = delete;
   PrefetchCanaryChecker& operator=(const PrefetchCanaryChecker) = delete;
 
-  base::WeakPtr<PrefetchCanaryChecker> GetWeakPtr() const;
+  base::WeakPtr<PrefetchCanaryChecker> GetWeakPtr();
 
   // Returns the successfulness of the last canary check, if there was one. If
   // the last status was not cached or was cached and needs to be revalidated,

@@ -163,7 +163,7 @@ PrefetchCanaryChecker::~PrefetchCanaryChecker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-base::WeakPtr<PrefetchCanaryChecker> PrefetchCanaryChecker::GetWeakPtr() const {
+base::WeakPtr<PrefetchCanaryChecker> PrefetchCanaryChecker::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
