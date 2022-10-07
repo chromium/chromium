@@ -38,9 +38,12 @@ struct KeyInfo {
   // Key's algorithm, will be UNKNOWN if `is_key_manager_initialized` is not
   // KEY_LOADED.
   KeyType key_type;
+
+  // URL Base64 encoded SHA-256 hash value for the loaded key's SPKI.
+  string encoded_spki_hash;
 };
 
-struct ZeroTrustState {
+struct DeviceTrustState {
   // Whether the connector is enabled or not.
   bool is_enabled;
 
@@ -54,6 +57,6 @@ struct ZeroTrustState {
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
-  // Get state information about the Zero Trust connector.
-  GetZeroTrustState() => (ZeroTrustState state);
+  // Get state information about the Device Trust connector.
+  GetDeviceTrustState() => (DeviceTrustState state);
 };

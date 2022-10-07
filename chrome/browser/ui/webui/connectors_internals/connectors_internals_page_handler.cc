@@ -12,7 +12,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
-#include "chrome/browser/ui/webui/connectors_internals/zero_trust_utils.h"
+#include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -27,21 +27,21 @@ ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
 
 ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 
-void ConnectorsInternalsPageHandler::GetZeroTrustState(
-    GetZeroTrustStateCallback callback) {
+void ConnectorsInternalsPageHandler::GetDeviceTrustState(
+    GetDeviceTrustStateCallback callback) {
   auto* device_trust_service =
       DeviceTrustServiceFactory::GetForProfile(profile_);
 
   // The factory will not return a service if the profile is off-the-record, or
   // if the current management configuration is not supported.
   if (!device_trust_service) {
-    auto state = connectors_internals::mojom::ZeroTrustState::New(
+    auto state = connectors_internals::mojom::DeviceTrustState::New(
         false,
         connectors_internals::mojom::KeyInfo::New(
             connectors_internals::mojom::KeyManagerInitializedValue::
                 UNSUPPORTED,
             connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
-            connectors_internals::mojom::KeyType::UNKNOWN),
+            connectors_internals::mojom::KeyType::UNKNOWN, std::string()),
         std::string());
     std::move(callback).Run(std::move(state));
     return;
@@ -56,13 +56,13 @@ void ConnectorsInternalsPageHandler::GetZeroTrustState(
 }
 
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
-    GetZeroTrustStateCallback callback,
+    GetDeviceTrustStateCallback callback,
     bool is_device_trust_enabled,
     const base::Value::Dict signals) {
   std::string signals_json;
   base::JSONWriter::WriteWithOptions(
       signals, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);
-  auto state = connectors_internals::mojom::ZeroTrustState::New(
+  auto state = connectors_internals::mojom::DeviceTrustState::New(
       is_device_trust_enabled, utils::GetKeyInfo(), signals_json);
   std::move(callback).Run(std::move(state));
 }

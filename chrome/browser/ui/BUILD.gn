@@ -694,8 +694,8 @@ static_library("ui") {
       "webui/connectors_internals/connectors_internals_page_handler.h",
       "webui/connectors_internals/connectors_internals_ui.cc",
       "webui/connectors_internals/connectors_internals_ui.h",
-      "webui/connectors_internals/zero_trust_utils.cc",
-      "webui/connectors_internals/zero_trust_utils.h",
+      "webui/connectors_internals/device_trust_utils.cc",
+      "webui/connectors_internals/device_trust_utils.h",
     ]
 
     deps += [

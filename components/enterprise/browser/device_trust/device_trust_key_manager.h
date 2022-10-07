@@ -23,8 +23,9 @@ class DeviceTrustKeyManager {
 
   struct KeyMetadata {
     enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel
-        trust_level;
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+        trust_level{};
+    crypto::SignatureVerifier::SignatureAlgorithm algorithm{};
+    std::string spki_bytes{};
   };
 
   enum class KeyRotationResult {

@@ -29,7 +29,7 @@ ConnectorsInternalsUI::ConnectorsInternalsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
 
   source->AddBoolean("isOtr", profile->IsOffTheRecord());
-  source->AddBoolean("zeroTrustConnectorEnabled",
+  source->AddBoolean("deviceTrustConnectorEnabled",
                      IsDeviceTrustConnectorFeatureEnabled());
 
   webui::SetupWebUIDataSource(

@@ -4,8 +4,8 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
-import {getTemplate} from './zero_trust_connector.html.js';
+import {DeviceTrustState, KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
+import {getTemplate} from './device_trust_connector.html.js';
 
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
@@ -19,9 +19,9 @@ const KeyTypeStringMap = {
   [KeyType.EC]: 'EC',
 };
 
-export class ZeroTrustConnectorElement extends CustomElement {
+export class DeviceTrustConnectorElement extends CustomElement {
   static get is() {
-    return 'zero-trust-connector';
+    return 'device-trust-connector';
   }
 
   static override get template() {
@@ -44,6 +44,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
     const metadataRowEl = (this.$('#key-metadata-row') as HTMLElement);
     const trustLevelStateEl = (this.$('#key-trust-level') as HTMLElement);
     const keyTypeStateEl = (this.$('#key-type') as HTMLElement);
+    const spkiHashStateEl = (this.$('#spki-hash') as HTMLElement);
 
     const initializedValue = keyInfo.isKeyManagerInitialized;
     if (initializedValue === KeyManagerInitializedValue.UNSUPPORTED) {
@@ -59,6 +60,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
         trustLevelStateEl.innerText =
             this.trustLevelToString(keyInfo.trustLevel);
         keyTypeStateEl.innerText = this.keyTypeToString(keyInfo.keyType);
+        spkiHashStateEl.innerText = keyInfo.encodedSpkiHash;
 
         this.showElement(metadataRowEl);
       } else {
@@ -92,8 +94,8 @@ export class ZeroTrustConnectorElement extends CustomElement {
     super();
     this.pageHandler = PageHandler.getRemote();
 
-    this.fetchZeroTrustValues()
-        .then(state => this.setZeroTrustValues(state))
+    this.fetchDeviceTrustValues()
+        .then(state => this.setDeviceTrustValues(state))
         .then(() => {
           const copyButton = this.copyButton;
           if (copyButton) {
@@ -103,7 +105,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
         });
   }
 
-  private setZeroTrustValues(state: ZeroTrustState|undefined) {
+  private setDeviceTrustValues(state: DeviceTrustState|undefined) {
     if (!state) {
       this.enabledString = 'error';
       return;
@@ -116,11 +118,11 @@ export class ZeroTrustConnectorElement extends CustomElement {
     this.signalsString = state.signalsJson;
   }
 
-  private async fetchZeroTrustValues(): Promise<ZeroTrustState|undefined> {
-    return this.pageHandler.getZeroTrustState().then(
-        (response: {state: ZeroTrustState}) => response && response.state,
+  private async fetchDeviceTrustValues(): Promise<DeviceTrustState|undefined> {
+    return this.pageHandler.getDeviceTrustState().then(
+        (response: {state: DeviceTrustState}) => response && response.state,
         (e: object) => {
-          console.warn(`fetchZeroTrustValues failed: ${JSON.stringify(e)}`);
+          console.warn(`fetchDeviceTrustValues failed: ${JSON.stringify(e)}`);
           return undefined;
         });
   }
@@ -148,4 +150,5 @@ export class ZeroTrustConnectorElement extends CustomElement {
   }
 }
 
-customElements.define(ZeroTrustConnectorElement.is, ZeroTrustConnectorElement);
+customElements.define(
+    DeviceTrustConnectorElement.is, DeviceTrustConnectorElement);

@@ -11,7 +11,7 @@ build_webui("build") {
   web_component_files = [
     "app.ts",
     "connectors_tabs.ts",
-    "zero_trust_connector.ts",
+    "device_trust_connector.ts",
   ]
   mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom-webui.js" ]
   mojo_files_deps = [

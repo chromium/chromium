@@ -129,8 +129,10 @@ DeviceTrustKeyManagerImpl::GetLoadedKeyMetadata() const {
     return absl::nullopt;
   }
 
-  return DeviceTrustKeyManagerImpl::KeyMetadata{key_pair_->trust_level(),
-                                                key_pair_->key()->Algorithm()};
+  const auto& spki_bytes = key_pair_->key()->GetSubjectPublicKeyInfo();
+  return DeviceTrustKeyManagerImpl::KeyMetadata{
+      key_pair_->trust_level(), key_pair_->key()->Algorithm(),
+      std::string(spki_bytes.begin(), spki_bytes.end())};
 }
 
 void DeviceTrustKeyManagerImpl::AddPendingRequest(
