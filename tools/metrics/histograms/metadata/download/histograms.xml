@@ -450,6 +450,16 @@ chromium-metrics-reviews@google.com.
   <summary>The reason that a download was interrupted.</summary>
 </histogram>
 
+<histogram name="Download.Interstitial.UIAction"
+    enum="DownloadInterstitialUIAction" expires_after="2023-09-26">
+  <owner>alexmitra@chromium.org</owner>
+  <owner>clank-downloads@google.com</owner>
+  <summary>
+    Records any user action taken within a download interstitial. Download
+    interstitials are shown only on Android inside CCTs.
+  </summary>
+</histogram>
+
 <histogram name="Download.IOSDownloadARModelState.USDZ"
     enum="DownloadARModelState" expires_after="2022-12-05">
   <owner>sdefresne@chromium.org</owner>

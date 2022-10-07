@@ -28033,6 +28033,19 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Size Unknown"/>
 </enum>
 
+<enum name="DownloadInterstitialUIAction">
+  <int value="0" label="Interstitial opened"/>
+  <int value="1" label="Download completed"/>
+  <int value="2" label="Download cancelled"/>
+  <int value="3" label="Download paused"/>
+  <int value="4" label="Download resumed"/>
+  <int value="5" label="Download opened"/>
+  <int value="6" label="Download deleted"/>
+  <int value="7" label="Download reinitiated"/>
+  <int value="8" label="Download shared"/>
+  <int value="9" label="Download renamed"/>
+</enum>
+
 <enum name="DownloadItem.DangerousFileType">
   <int value="0" label="unknown"/>
   <int value="1" label="ad"/>

@@ -11,6 +11,16 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doAnswer;
 
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.CANCELLED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.COMPLETED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.DELETED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.INITIATED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.OPENED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.PAUSED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.REINITIATED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.RENAMED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.RESUMED;
+import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialMediator.UmaHelper.Action.SHARED;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.DOWNLOAD_ITEM;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
 
@@ -25,6 +35,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.download.home.StubbedOfflineContentProvider;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
@@ -39,6 +50,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit tests for the {@link DownloadInterstitialMediator}. Modifies the page state through the
@@ -58,6 +72,7 @@ public class DownloadInterstitialMediatorTest {
     private final TestOfflineContentProvider mProvider = new TestOfflineContentProvider();
     private FakeModalDialogManager mModalDialogManager;
     private DownloadInterstitialMediator mMediator;
+    private UmaTestingHelper mUmaTestingHelper = new UmaTestingHelper();
     private PropertyModel mModel;
     private OfflineItem mItem0;
 
@@ -71,6 +86,7 @@ public class DownloadInterstitialMediatorTest {
                 .when(mSnackbarManager)
                 .showSnackbar(isA(Snackbar.class));
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
+        mUmaTestingHelper.initialise();
         mItem0 = createOfflineItem("item0");
         mModel = new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
         // Set the initial button texts. This is usually done in DownloadInterstitialView.
@@ -90,6 +106,7 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testItemIsAttached() {
         assertEquals(mItem0, mModel.get(DOWNLOAD_ITEM));
+        mUmaTestingHelper.assertActionWasLogged(INITIATED, 1);
     }
 
     @Test
@@ -101,6 +118,7 @@ public class DownloadInterstitialMediatorTest {
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
         assertEquals(mItem0, mModel.get(DOWNLOAD_ITEM));
+        mUmaTestingHelper.assertActionWasLogged(INITIATED, 1);
     }
 
     @Test
@@ -118,6 +136,7 @@ public class DownloadInterstitialMediatorTest {
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
         assertEquals(item1.id.id, mModel.get(DOWNLOAD_ITEM).id.id);
+        mUmaTestingHelper.assertActionWasLogged(INITIATED, 2);
     }
 
     @Test
@@ -129,6 +148,7 @@ public class DownloadInterstitialMediatorTest {
 
         assertEquals(DownloadInterstitialProperties.State.CANCELLED, mModel.get(STATE));
         assertNotEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
+        mUmaTestingHelper.assertActionWasLogged(CANCELLED, 1);
     }
 
     @Test
@@ -145,6 +165,8 @@ public class DownloadInterstitialMediatorTest {
 
         assertEquals(DownloadInterstitialProperties.State.IN_PROGRESS, mModel.get(STATE));
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
+        mUmaTestingHelper.assertActionWasLogged(CANCELLED, 1);
+        mUmaTestingHelper.assertActionWasLogged(REINITIATED, 1);
     }
 
     @Test
@@ -156,6 +178,7 @@ public class DownloadInterstitialMediatorTest {
 
         assertEquals(DownloadInterstitialProperties.State.PAUSED, mModel.get(STATE));
         assertEquals(OfflineItemState.PAUSED, mModel.get(DOWNLOAD_ITEM).state);
+        mUmaTestingHelper.assertActionWasLogged(PAUSED, 1);
     }
 
     @Test
@@ -163,11 +186,13 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testInProgressResumeDownload() {
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
-        mModel.get(ListProperties.CALLBACK_PAUSE).bind(mModel.get(DOWNLOAD_ITEM));
+        mModel.get(ListProperties.CALLBACK_PAUSE).onResult(mModel.get(DOWNLOAD_ITEM));
         clickButtonWithText(RESUME_BUTTON_TEXT);
 
         assertEquals(DownloadInterstitialProperties.State.IN_PROGRESS, mModel.get(STATE));
         assertEquals(OfflineItemState.IN_PROGRESS, mModel.get(DOWNLOAD_ITEM).state);
+        mUmaTestingHelper.assertActionWasLogged(PAUSED, 1);
+        mUmaTestingHelper.assertActionWasLogged(RESUMED, 1);
     }
 
     @Test
@@ -178,6 +203,8 @@ public class DownloadInterstitialMediatorTest {
         clickButtonWithText(CANCEL_BUTTON_TEXT);
 
         assertFalse(mProvider.getItems().contains(mModel.get(DOWNLOAD_ITEM)));
+        mUmaTestingHelper.assertActionWasLogged(CANCELLED, 1);
+        mUmaTestingHelper.assertActionWasLogged(DELETED, 0);
     }
 
     @Test
@@ -189,6 +216,7 @@ public class DownloadInterstitialMediatorTest {
         clickButtonWithText(OPEN_BUTTON_TEXT);
 
         assertEquals(mModel.get(DOWNLOAD_ITEM).id, mProvider.mLastOpenedDownload);
+        mUmaTestingHelper.assertActionWasLogged(OPENED, 1);
     }
 
     @Test
@@ -202,6 +230,8 @@ public class DownloadInterstitialMediatorTest {
 
         assertTrue(mSnackbarShown);
         assertEquals(DownloadInterstitialProperties.State.CANCELLED, mModel.get(STATE));
+        mUmaTestingHelper.assertActionWasLogged(COMPLETED, 1);
+        mUmaTestingHelper.assertActionWasLogged(DELETED, 1);
     }
 
     @Test
@@ -214,6 +244,8 @@ public class DownloadInterstitialMediatorTest {
         mModalDialogManager.clickNegativeButton();
 
         assertEquals(DownloadInterstitialProperties.State.SUCCESSFUL, mModel.get(STATE));
+        mUmaTestingHelper.assertActionWasLogged(COMPLETED, 1);
+        mUmaTestingHelper.assertActionWasLogged(DELETED, 0);
     }
 
     @Test
@@ -233,6 +265,9 @@ public class DownloadInterstitialMediatorTest {
 
         assertEquals(1, mProvider.getItems().size());
         assertTrue(mProvider.getItems().contains(mModel.get(DOWNLOAD_ITEM)));
+        mUmaTestingHelper.assertActionWasLogged(COMPLETED, 1);
+        mUmaTestingHelper.assertActionWasLogged(DELETED, 1);
+        mUmaTestingHelper.assertActionWasLogged(REINITIATED, 1);
     }
 
     @Test
@@ -245,6 +280,15 @@ public class DownloadInterstitialMediatorTest {
         mModalDialogManager.clickPositiveButton();
 
         assertFalse(mProvider.getItems().contains(mModel.get(DOWNLOAD_ITEM)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewDownloadTab"})
+    public void testSharingLogsMetrics() {
+        mProvider.completeDownload(mModel.get(DOWNLOAD_ITEM).id);
+        mModel.get(ListProperties.CALLBACK_SHARE).onResult(mModel.get(DOWNLOAD_ITEM));
+        mUmaTestingHelper.assertActionWasLogged(SHARED, 1);
     }
 
     private void clickButtonWithText(String text) {
@@ -272,6 +316,61 @@ public class DownloadInterstitialMediatorTest {
         item.description = "Test Description";
         item.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
         return item;
+    }
+
+    /**
+     * Helper class which provides utility methods for retrieving the number of logged UMA metrics
+     * for different UI actions. The live number of logs can be compared with the initial number of
+     * logs to test how many metrics of each type were logged during the test.
+     */
+    private static class UmaTestingHelper {
+        private Map<Integer, Integer> mValues;
+
+        UmaTestingHelper() {
+            mValues = new HashMap<Integer, Integer>();
+        }
+
+        /**
+         * Captures the number of each metric logged at a given moment.
+         * Should be called during test setup.
+         */
+        void initialise() {
+            mValues.put(INITIATED, getValueCount(INITIATED));
+            mValues.put(COMPLETED, getValueCount(COMPLETED));
+            mValues.put(CANCELLED, getValueCount(CANCELLED));
+            mValues.put(PAUSED, getValueCount(PAUSED));
+            mValues.put(RESUMED, getValueCount(RESUMED));
+            mValues.put(OPENED, getValueCount(OPENED));
+            mValues.put(DELETED, getValueCount(DELETED));
+            mValues.put(REINITIATED, getValueCount(REINITIATED));
+            mValues.put(SHARED, getValueCount(SHARED));
+            mValues.put(RENAMED, getValueCount(RENAMED));
+        }
+
+        /**
+         * Asserts that an action was logged a certain number of times.
+         * @param action The action that is being queried.
+         * @param numberOfTimes The expected number of times the action has been logged.
+         */
+        void assertActionWasLogged(
+                @DownloadInterstitialMediator.UmaHelper.Action int action, int numberOfTimes) {
+            assertEquals(numberOfTimes, getValueCount(action) - getInitialValueCount(action));
+        }
+
+        /**
+         * Returns the log count as of when {@link UmaTestingHelper#initialise()} was called for a
+         * given action.
+         */
+        private int getInitialValueCount(
+                @DownloadInterstitialMediator.UmaHelper.Action int action) {
+            return mValues.get(action);
+        }
+
+        /** Returns the live log count for a given action */
+        private int getValueCount(@DownloadInterstitialMediator.UmaHelper.Action int action) {
+            return RecordHistogram.getHistogramValueCountForTesting(
+                    "Download.Interstitial.UIAction", action);
+        }
     }
 
     /**
