@@ -188,6 +188,9 @@ fyi_reclient_test_builder(
     builderless = True,
     cores = None,
     priority = 35,
+    reclient_bootstrap_env = {
+        "RBE_ip_timeout": "-1s",
+    },
 )
 
 fyi_reclient_staging_builder(
