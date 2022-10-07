@@ -207,8 +207,14 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
       sites.push_back(site.second);
 
     std::sort(sites.begin(), sites.end(), [](const auto& o1, const auto& o2) {
-      return GetContentSettingRowOrder(o1.setting) <
-             GetContentSettingRowOrder(o2.setting);
+      int o1_order = GetContentSettingRowOrder(o1.setting);
+      int o2_order = GetContentSettingRowOrder(o2.setting);
+      if (o1_order != o2_order) {
+        return o1_order < o2_order;
+      }
+
+      // Sort sites with the same content setting alphabetically.
+      return o1.origin.host() < o2.origin.host();
     });
 
     return sites;

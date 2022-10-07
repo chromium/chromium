@@ -219,11 +219,13 @@ void SiteDataRowView::OnMenuIconClicked() {
                           menu_button_->GetAnchorBoundsInScreen(),
                           views::MenuAnchorPosition::kTopRight,
                           ui::MenuSourceType::MENU_SOURCE_MOUSE);
+  menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
 }
 
 void SiteDataRowView::OnMenuClosed() {
   menu_runner_.reset();
   dialog_model_.reset();
+  menu_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
 }
 
 void SiteDataRowView::OnDeleteIconClicked() {
