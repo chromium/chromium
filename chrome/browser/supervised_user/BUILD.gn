@@ -80,6 +80,7 @@ if (is_android) {
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/widget/android:java",
       "//components/signin/public/android:java",
+      "//components/url_formatter/android:url_formatter_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",
       "//ui/android:ui_no_recycler_view_java",
@@ -122,18 +123,23 @@ if (is_android) {
 
   android_library("javatests") {
     testonly = true
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/test/WebsiteParentApprovalTest.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/supervised_user/test/WebsiteParentApprovalTest.java",
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContentUnitTest.java",
+    ]
     deps = [
       ":test_support_java",
       "//base:base_java_test_support",
       "//chrome/android:chrome_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/supervised_user:website_parent_approval_java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",
+      "//url:gurl_java",
     ]
   }
 }

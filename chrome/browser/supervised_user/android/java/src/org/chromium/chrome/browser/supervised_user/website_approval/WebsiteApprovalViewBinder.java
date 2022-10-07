@@ -23,8 +23,8 @@ class WebsiteApprovalViewBinder {
         if (propertyKey == WebsiteApprovalProperties.CHILD_NAME) {
             view.setTitle(model.get(WebsiteApprovalProperties.CHILD_NAME));
         } else if (propertyKey == WebsiteApprovalProperties.URL) {
-            view.setDomainText(model.get(WebsiteApprovalProperties.URL).getHost());
-            view.setFullUrlText(model.get(WebsiteApprovalProperties.URL).getSpec());
+            view.setDomainText(model.get(WebsiteApprovalProperties.URL));
+            view.setFullUrlText(model.get(WebsiteApprovalProperties.URL));
         } else if (propertyKey == WebsiteApprovalProperties.ON_CLICK_APPROVE) {
             view.getApproveButton().setOnClickListener(
                     model.get(WebsiteApprovalProperties.ON_CLICK_APPROVE));
