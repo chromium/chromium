@@ -59368,6 +59368,7 @@ from previous Chrome versions.
   <int value="-433879402"
       label="EnableAmbientAuthenticationInIncognito:disabled"/>
   <int value="-432612065" label="AImageReader:enabled"/>
+  <int value="-432358189" label="ShelfFocusOrderV1:disabled"/>
   <int value="-431553693" label="ChangePasswordAffiliationInfo:disabled"/>
   <int value="-430369215" label="AssistPersonalInfo:disabled"/>
   <int value="-430360431" label="disable-password-generation"/>
@@ -63312,6 +63313,7 @@ from previous Chrome versions.
   <int value="1990528959" label="SchemefulSameSite:disabled"/>
   <int value="1990562608"
       label="LinkManagedNoticeToChromeUIManagementURL:enabled"/>
+  <int value="1990656254" label="ShelfFocusOrderV1:enabled"/>
   <int value="1990670943"
       label="AutofillEnableLocalCardMigrationForNonSyncUser:disabled"/>
   <int value="1990873642"

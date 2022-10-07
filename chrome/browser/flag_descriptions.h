@@ -3426,6 +3426,9 @@ extern const char kSecondaryGoogleAccountUsageDescription[];
 extern const char kShelfAutoHideSeparationName[];
 extern const char kShelfAutoHideSeparationDescription[];
 
+extern const char kShelfFocusOrderV1Name[];
+extern const char kShelfFocusOrderV1Description[];
+
 extern const char kShimlessRMAFlowName[];
 extern const char kShimlessRMAFlowDescription[];
 
