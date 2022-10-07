@@ -1,8 +1,8 @@
 Name: FlatBuffers Java API
 Short Name: flatbuffers-java
 URL: https://github.com/google/flatbuffers
-Version: 2.0.8
-License: Apache 2.0
+Version: 2.0.3
+License: Apache License V2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

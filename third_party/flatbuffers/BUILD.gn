@@ -119,7 +119,6 @@ flatbuffer("flatbuffers_samplebuffer") {
     "src/tests/monster_test.fbs",
     "src/tests/namespace_test/namespace_test1.fbs",
     "src/tests/namespace_test/namespace_test2.fbs",
-    "src/tests/native_inline_table_test.fbs",
     "src/tests/native_type_test.fbs",
     "src/tests/optional_scalars.fbs",
   ]
@@ -160,33 +159,10 @@ source_set("flatbuffers_test_files") {
 
 test("flatbuffers_unittests") {
   sources = [
-    "src/tests/evolution_test.cpp",
-    "src/tests/evolution_test.h",
-    "src/tests/flexbuffers_test.cpp",
-    "src/tests/flexbuffers_test.h",
-    "src/tests/fuzz_test.cpp",
-    "src/tests/fuzz_test.h",
-    "src/tests/json_test.cpp",
-    "src/tests/json_test.h",
-    "src/tests/monster_test.cpp",
-    "src/tests/monster_test.h",
     "src/tests/native_type_test_impl.cpp",
-    "src/tests/native_type_test_impl.h",
-    "src/tests/optional_scalars_test.cpp",
-    "src/tests/optional_scalars_test.h",
-    "src/tests/parser_test.cpp",
-    "src/tests/parser_test.h",
-    "src/tests/proto_test.cpp",
-    "src/tests/proto_test.h",
-    "src/tests/reflection_test.cpp",
-    "src/tests/reflection_test.h",
     "src/tests/test.cpp",
     "src/tests/test_assert.cpp",
-    "src/tests/test_assert.h",
     "src/tests/test_builder.cpp",
-    "src/tests/test_builder.h",
-    "src/tests/util_test.cpp",
-    "src/tests/util_test.h",
   ]
   deps = [
     ":flatbuffers",
