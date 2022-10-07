@@ -70,13 +70,16 @@ std::string GetClassifyURLRequestString(
 // ClassifyUrlResponse proto object.
 std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
 GetClassifyURLResponseProto(const std::string& response) {
-  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
-  const base::DictionaryValue* dict = nullptr;
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(response);
+  const base::Value::Dict* dict = nullptr;
+  if (maybe_value.has_value()) {
+    dict = maybe_value->GetIfDict();
+  }
 
   auto response_proto =
       std::make_unique<kids_chrome_management::ClassifyUrlResponse>();
 
-  if (!optional_value || !optional_value.value().GetAsDictionary(&dict)) {
+  if (!dict) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse response dictionary";
     response_proto->set_display_classification(
@@ -85,9 +88,9 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const base::Value* classification_value =
-      dict->FindKey("displayClassification");
-  if (!classification_value) {
+  const std::string* maybe_classification_string =
+      dict->FindString("displayClassification");
+  if (!maybe_classification_string) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse displayClassification";
     response_proto->set_display_classification(
@@ -96,7 +99,7 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const std::string classification_string = classification_value->GetString();
+  const std::string classification_string = *maybe_classification_string;
   if (classification_string == kClassifyUrlAllowed) {
     response_proto->set_display_classification(
         kids_chrome_management::ClassifyUrlResponse::ALLOWED);

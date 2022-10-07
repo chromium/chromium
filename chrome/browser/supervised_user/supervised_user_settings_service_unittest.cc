@@ -239,9 +239,7 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   ASSERT_TRUE(settings_);
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
-  const base::DictionaryValue* dict_value = nullptr;
-  ASSERT_TRUE(value->GetAsDictionary(&dict_value));
-  EXPECT_EQ(*dict_value, dict);
+  EXPECT_EQ(value->GetDict(), dict);
 }
 
 TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
