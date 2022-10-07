@@ -76,8 +76,11 @@ public class FastCheckoutMediator {
         };
 
         mModel.set(FastCheckoutProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
-        mModel.set(FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
-                () -> setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN));
+        mModel.set(FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER, () -> {
+            setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+            FastCheckoutUserActions.NAVIGATED_BACK_HOME.log();
+        });
+        FastCheckoutUserActions.INITIALIZED.log();
     }
 
     /** Returns an implementation the {@link HomeScreenCoordinator.Delegate} interface. */
@@ -88,6 +91,7 @@ public class FastCheckoutMediator {
                 if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
                     return; // Dismiss only if not dismissed yet.
                 }
+                FastCheckoutUserActions.ACCEPTED.log();
                 FastCheckoutAutofillProfile profile =
                         mModel.get(FastCheckoutProperties.SELECTED_PROFILE);
                 FastCheckoutCreditCard creditCard =
@@ -100,11 +104,13 @@ public class FastCheckoutMediator {
             @Override
             public void onShowAddressesList() {
                 setCurrentScreen(FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN);
+                FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES.log();
             }
 
             @Override
             public void onShowCreditCardList() {
                 setCurrentScreen(FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN);
+                FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS.log();
             }
         };
     }
@@ -153,7 +159,7 @@ public class FastCheckoutMediator {
         if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
             return; // Dismiss only if not dismissed yet.
         }
-        // TODO(crbug.com/1334642): Record dismissal metrics.
+        FastCheckoutUserActions.DISMISSED.log();
         mModel.set(FastCheckoutProperties.VISIBLE, false);
         mDelegate.onDismissed();
     }
@@ -205,7 +211,11 @@ public class FastCheckoutMediator {
         profileItems.add(new ListItem(DetailItemType.FOOTER,
                 FooterItemProperties.create(
                         /*label=*/R.string.fast_checkout_detail_screen_add_autofill_profile_text,
-                        /*onClickHandler=*/() -> mDelegate.openAutofillProfileSettings())));
+                        /*onClickHandler=*/() -> {
+                            mDelegate.openAutofillProfileSettings();
+                            FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_FOOTER
+                                    .log();
+                        })));
 
         setSelectedAutofillProfile(newSelection);
     }
@@ -217,6 +227,7 @@ public class FastCheckoutMediator {
      */
     public void setSelectedAutofillProfile(FastCheckoutAutofillProfile selectedProfile) {
         assert selectedProfile != null;
+        boolean isInitialSelection = mModel.get(FastCheckoutProperties.SELECTED_PROFILE) == null;
         mModel.set(FastCheckoutProperties.SELECTED_PROFILE, selectedProfile);
 
         int foundProfiles = 0;
@@ -227,9 +238,17 @@ public class FastCheckoutMediator {
             }
             boolean isSelected = selectedProfile.equals(
                     item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
+            boolean wasSelected = item.model.get(AutofillProfileItemProperties.IS_SELECTED);
             item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
             if (isSelected) {
                 ++foundProfiles;
+                if (!isInitialSelection) {
+                    if (wasSelected) {
+                        FastCheckoutUserActions.SELECTED_SAME_ADDRESS.log();
+                    } else {
+                        FastCheckoutUserActions.SELECTED_DIFFERENT_ADDRESS.log();
+                    }
+                }
             }
         }
 
@@ -272,7 +291,11 @@ public class FastCheckoutMediator {
         cardItems.add(new ListItem(DetailItemType.FOOTER,
                 FooterItemProperties.create(
                         /*label=*/R.string.fast_checkout_detail_screen_add_credit_card_text,
-                        /*onClickHandler=*/() -> mDelegate.openCreditCardSettings())));
+                        /*onClickHandler=*/() -> {
+                            mDelegate.openCreditCardSettings();
+                            FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_FOOTER
+                                    .log();
+                        })));
 
         setSelectedCreditCard(newSelection);
     }
@@ -284,6 +307,8 @@ public class FastCheckoutMediator {
      */
     public void setSelectedCreditCard(FastCheckoutCreditCard selectedCreditCard) {
         assert selectedCreditCard != null;
+        boolean isInitialSelection =
+                mModel.get(FastCheckoutProperties.SELECTED_CREDIT_CARD) == null;
         mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, selectedCreditCard);
 
         int foundCards = 0;
@@ -294,9 +319,17 @@ public class FastCheckoutMediator {
             }
             boolean isSelected =
                     selectedCreditCard.equals(item.model.get(CreditCardItemProperties.CREDIT_CARD));
+            boolean wasSelected = item.model.get(CreditCardItemProperties.IS_SELECTED);
             item.model.set(CreditCardItemProperties.IS_SELECTED, isSelected);
             if (isSelected) {
                 ++foundCards;
+                if (!isInitialSelection) {
+                    if (wasSelected) {
+                        FastCheckoutUserActions.SELECTED_SAME_CREDIT_CARD.log();
+                    } else {
+                        FastCheckoutUserActions.SELECTED_DIFFERENT_CREDIT_CARD.log();
+                    }
+                }
             }
         }
 
@@ -316,7 +349,10 @@ public class FastCheckoutMediator {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_autofill_profile_settings_button_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> mDelegate.openAutofillProfileSettings()));
+                    createSettingsOnClickListener(() -> {
+                        mDelegate.openAutofillProfileSettings();
+                        FastCheckoutUserActions.NAVIGATED_TO_ADDRESSES_SETTINGS_VIA_ICON.log();
+                    }));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX,
@@ -327,7 +363,10 @@ public class FastCheckoutMediator {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_credit_card_settings_button_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-                    createSettingsOnClickListener(() -> mDelegate.openCreditCardSettings()));
+                    createSettingsOnClickListener(() -> {
+                        mDelegate.openCreditCardSettings();
+                        FastCheckoutUserActions.NAVIGATED_TO_CREDIT_CARDS_SETTINGS_VIA_ICON.log();
+                    }));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX,
@@ -397,7 +436,7 @@ public class FastCheckoutMediator {
      */
     @MainThread
     public void destroy() {
-        // TODO(crbug.com/1334642): Record as part of the dismissal metrics.
+        FastCheckoutUserActions.DESTROYED.log();
         mModel.set(FastCheckoutProperties.VISIBLE, false);
     }
 }

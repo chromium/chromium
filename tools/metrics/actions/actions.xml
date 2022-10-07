@@ -3812,6 +3812,135 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Autofill.FastCheckout.Accepted">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user accepted their selections of profile and credit card.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.Destroyed" not_user_triggered="true">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>The bottomsheet was destroyed.</description>
+</action>
+
+<action name="Autofill.FastCheckout.Dismissed">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>The bottomsheet was dismissed by the user.</description>
+</action>
+
+<action name="Autofill.FastCheckout.Initialized">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>The FastCheckout bottomsheet was initialized.</description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedBackHome">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>The user tapped the back button on a detail sheet.</description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToAddresses">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>The user navigated to the addresses details sheet.</description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToAddressesSettingsViaFooter">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user tapped the &quot;Add new address&quot; footer.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToAddressesSettingsViaIcon">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user tapped the settings icon on the addresses details sheet.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToCreditCards">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user navigated to the credit cards details sheet.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToCreditCardsSettingsViaFooter">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user tapped the &quot;Add new credit card&quot; footer.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.NavigatedToCreditCardsSettingsViaIcon">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user tapped the settings icon on the credit cards details sheet.
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.SelectedDifferentAddress">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user selected a different address from the already selected one
+    (navigates back to home screen).
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.SelectedDifferentCreditCard">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user selected a different credit card from the already selected one
+    (navigates back to home screen).
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.SelectedSameAddress">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user selected the same address that was already selected (navigates back
+    to home screen).
+  </description>
+</action>
+
+<action name="Autofill.FastCheckout.SelectedSameCreditCard">
+  <owner>bwolfgang@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <description>
+    The user selected the same credit card that was already selected (navigates
+    back to home screen).
+  </description>
+</action>
+
 <action name="Autofill_BrandingTapped">
   <owner>ginnyhuang@chromium.org</owner>
   <description>
