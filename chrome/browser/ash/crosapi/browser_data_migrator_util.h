@@ -173,6 +173,7 @@ constexpr const char* const kLacrosDataPaths[]{
     "Service Worker",
     "Session Storage",
     "Sessions",
+    "SharedStorage",
     "Shortcuts",
     "Storage",
     "Sync App Settings",
