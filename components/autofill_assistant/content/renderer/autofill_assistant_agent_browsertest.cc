@@ -18,7 +18,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -33,7 +32,6 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
-using ::testing::Field;
 using ::testing::SizeIs;
 
 constexpr int kDummySemanticRole = 9999;
@@ -109,9 +107,7 @@ TEST_F(AutofillAssistantAgentBrowserTest, GetSemanticNodes) {
   base::MockCallback<base::OnceCallback<void(mojom::NodeDataStatus,
                                              const std::vector<NodeData>&)>>
       callback;
-  EXPECT_CALL(callback,
-              Run(mojom::NodeDataStatus::kSuccess,
-                  ElementsAre(Field(&NodeData::used_override, false))));
+  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, SizeIs(1)));
 
   LoadHTML(R"(
     <div>
@@ -295,9 +291,7 @@ TEST_F(AutofillAssistantAgentBrowserTest, Overrides) {
   base::MockCallback<base::OnceCallback<void(mojom::NodeDataStatus,
                                              const std::vector<NodeData>&)>>
       callback;
-  EXPECT_CALL(callback,
-              Run(mojom::NodeDataStatus::kSuccess,
-                  ElementsAre(Field(&NodeData::used_override, true))));
+  EXPECT_CALL(callback, Run(mojom::NodeDataStatus::kSuccess, SizeIs(1)));
 
   autofill_assistant_agent_->GetSemanticNodes(
       kDummySemanticRole, kDummyObjective,

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
 #include "third_party/blink/public/web/modules/autofill_assistant/node_signals.h"
 
 namespace autofill_assistant {
@@ -34,7 +33,7 @@ SemanticLabelsPair DecodeSemanticPredictionLabelsJson(std::string encodedJson);
 std::u16string SemanticPredictionResultToDebugString(
     SemanticPredictionLabelMap roles,
     SemanticPredictionLabelMap objectives,
-    const ModelExecutorResult& result,
+    const std::pair<int, int>& result,
     bool ignore_objective);
 
 }  // namespace autofill_assistant

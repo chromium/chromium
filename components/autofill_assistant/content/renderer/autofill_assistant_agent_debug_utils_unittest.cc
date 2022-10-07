@@ -11,11 +11,7 @@
 namespace autofill_assistant {
 namespace {
 
-class SemanticLabelsJsonParsingTest : public ::testing::Test {
- protected:
-  ModelExecutorResult model_executor_result_ =
-      ModelExecutorResult(47, 7, false);
-};
+using SemanticLabelsJsonParsingTest = ::testing::Test;
 
 TEST_F(SemanticLabelsJsonParsingTest, ValidJson) {
   std::string json_input = R"({
@@ -32,27 +28,7 @@ TEST_F(SemanticLabelsJsonParsingTest, ValidJson) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
-  EXPECT_EQ(debug_string,
-            std::u16string(expected_output.begin(), expected_output.end()));
-}
-
-TEST_F(SemanticLabelsJsonParsingTest, UseOverrideField) {
-  std::string json_input = R"({
-      "roles": [{"id": 47, "name": "ADDRESS_LINE1"}],
-      "objectives": [{"id": 7, "name": "FILL_DELIVERY_ADDRESS"}]
-    })";
-  std::string expected_output =
-      "{role: ADDRESS_LINE1, objective: FILL_DELIVERY_ADDRESS}[override]";
-
-  // Encode the JSON and add it to the debug DOM annotations switch
-  std::string base64_json;
-  base::Base64Encode(json_input, &base64_json);
-
-  SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
-
-  std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, ModelExecutorResult(47, 7, true), false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -78,7 +54,7 @@ TEST_F(SemanticLabelsJsonParsingTest, ValidJson_MoreThanOneObjectPerList) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -94,7 +70,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_NotAnObject) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -114,7 +90,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_RolesNotPresent) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -134,7 +110,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_ObjectivesNotPresent) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -153,7 +129,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_EnumsNotAList) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -173,7 +149,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_IndexFieldNotNamedId) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -193,7 +169,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_LabelValueFieldNotNamedName) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
@@ -209,7 +185,7 @@ TEST_F(SemanticLabelsJsonParsingTest, InvalidJson_Empty) {
   SemanticLabelsPair labels = DecodeSemanticPredictionLabelsJson(base64_json);
 
   std::u16string debug_string = SemanticPredictionResultToDebugString(
-      labels.first, labels.second, model_executor_result_, false);
+      labels.first, labels.second, {47, 7}, false);
   EXPECT_EQ(debug_string,
             std::u16string(expected_output.begin(), expected_output.end()));
 }
