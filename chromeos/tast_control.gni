@@ -297,6 +297,12 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1354230
   "crostini.NoAccessToDrive.bullseye_stable_gaia",
   "crostini.ShareDrive.bullseye_stable_gaia",
+  
+  # https://crbug.com/1368586
+  "u2fd.WebauthnUsingPassword.tpm1",
+  "u2fd.WebauthnUsingPassword.tpm1_lacros",
+  "u2fd.WebauthnUsingPassword.gsc",
+  "u2fd.WebauthnUsingPassword.gsc_lacros",
 ]
 
 # To create filters to be used on specific builders add them like this:
