@@ -45,6 +45,10 @@ const char kNoTargetWithGivenIdError[] = "No target with given id found";
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
 static constexpr int kInvalidParamsInspectorCode = -32602;
+static constexpr int kReservedChannelCount = 1;
+static constexpr int kUserChannelCount = 1;
+static constexpr int kMaxChannelCount =
+    kReservedChannelCount + kUserChannelCount;
 
 class ScopedIncrementer {
  public:
@@ -75,6 +79,45 @@ struct SessionId {
 
 std::ostream& operator<<(std::ostream& os, const SessionId& ses_manip) {
   return os << " (session_id=" << ses_manip.session_id_ << ")";
+}
+
+Status IsBidiMessage(const std::string& method,
+                     const base::Value::Dict& params,
+                     bool* is_bidi_message) {
+  *is_bidi_message = false;
+  if (method != "Runtime.bindingCalled") {
+    return Status{kOk};
+  }
+  const std::string* name = params.FindString("name");
+  if (name == nullptr) {
+    return Status{kUnknownError,
+                  "name is missing in the Runtime.bindingCalled params"};
+  }
+  if (*name != "sendBidiResponse") {
+    return Status{kOk};
+  }
+
+  *is_bidi_message = true;
+  return Status{kOk};
+}
+
+Status DeserializePayload(const base::Value::Dict& params,
+                          base::Value::Dict* result) {
+  result->clear();
+  const std::string* payload = params.FindString("payload");
+  if (!payload) {
+    return Status{kUnknownError,
+                  "payload is missing in the Runtime.bindingCalled params"};
+  }
+
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(*payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!value || !value->is_dict()) {
+    return Status{kUnknownError, "unable to deserialize the BiDi payload"};
+  }
+
+  *result = std::move(value->GetDict());
+  return Status{kOk};
 }
 
 }  // namespace
@@ -335,6 +378,11 @@ Status DevToolsClientImpl::SetUpDevTools() {
   return Status{kOk};
 }
 
+Status DevToolsClientImpl::PostBidiCommand(base::Value::Dict command) {
+  // kReservedChannelCount means that we use the first user channel
+  return PostBidiCommandInternal(kReservedChannelCount, std::move(command));
+}
+
 Status DevToolsClientImpl::SendCommand(const std::string& method,
                                        const base::Value::Dict& params) {
   return SendCommandWithTimeout(method, params, nullptr);
@@ -495,6 +543,37 @@ int DevToolsClientImpl::AdvanceNextMessageId() {
   for (; root->parent_ != nullptr; root = root->parent_.get()) {
   }
   return root->next_id_++;
+}
+
+Status DevToolsClientImpl::PostBidiCommandInternal(int bidi_channel,
+                                                   base::Value::Dict command) {
+  absl::optional<int> maybe_cmd_id = command.FindInt("id");
+  if (!maybe_cmd_id) {
+    return Status{kInvalidArgument, "BiDi command id not found"};
+  }
+  if (bidi_channel < 0 || bidi_channel >= kMaxChannelCount) {
+    return Status{kUnknownError, "BiDi channel id is out of range"};
+  }
+  int cmd_id = *maybe_cmd_id * kMaxChannelCount + bidi_channel;
+  command.Set("id", cmd_id);
+
+  std::string json;
+  Status status = SerializeAsJson(command, &json);
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string arg;
+  status = SerializeAsJson(json, &arg);
+  if (status.IsError()) {
+    return status;
+  }
+
+  std::string expression = "onBidiMessage(" + arg + ")";
+
+  base::Value::Dict params;
+  params.Set("expression", expression);
+  return SendCommandAndIgnoreResponse("Runtime.evaluate", params);
 }
 
 Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
@@ -888,7 +967,34 @@ bool ParseInspectorMessage(const std::string& message,
     if (!message_dict->GetString("method", &method))
       return false;
     base::DictionaryValue* params = nullptr;
-    message_dict->GetDictionary("params", &params);
+    bool is_bidi_message = false;
+    if (message_dict->GetDictionary("params", &params)) {
+      Status status =
+          IsBidiMessage(method, params->GetDict(), &is_bidi_message);
+      if (status.IsError()) {
+        LOG(WARNING) << status.message();
+        return false;
+      }
+    }
+
+    if (is_bidi_message) {
+      base::Value::Dict payload;
+      Status status = DeserializePayload(params->GetDict(), &payload);
+      if (status.IsError()) {
+        LOG(WARNING) << status.message();
+        return false;
+      }
+      absl::optional<int> maybe_cmd_id = payload.FindInt("id");
+      if (maybe_cmd_id) {  // if we have a command response
+        // The channel is ignored for now but it will be used in the near future
+        // by the CDP over BiDi code.
+        int cmd_id = *maybe_cmd_id / kMaxChannelCount;
+        payload.Set("id", cmd_id);
+      }
+      // Replace the payload string with the deserialized value to avoid
+      // double deserialization in the BidiTracker.
+      params->GetDict().Set("payload", std::move(payload));
+    }
 
     *type = kEventMessageType;
     event->method = method;

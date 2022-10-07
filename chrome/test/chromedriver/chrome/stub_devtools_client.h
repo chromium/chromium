@@ -25,6 +25,7 @@ class StubDevToolsClient : public DevToolsClient {
   bool IsNull() const override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
+  Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
   Status SendCommandFromWebSocket(const std::string& method,

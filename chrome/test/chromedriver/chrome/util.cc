@@ -25,3 +25,7 @@ Status SerializeAsJson(const base::Value::Dict& value, std::string* json) {
 Status SerializeAsJson(const base::Value& value, std::string* json) {
   return SerializeAsJsonT(value, json);
 }
+
+Status SerializeAsJson(const std::string& value, std::string* json) {
+  return SerializeAsJsonT(value, json);
+}

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -17,7 +18,7 @@ class DictionaryValue;
 
 class DevToolsClient;
 class Status;
-typedef base::RepeatingCallback<void(const std::string&)> SendTextFunc;
+typedef base::RepeatingCallback<void(base::Value::Dict)> SendBidiPayloadFunc;
 
 // Tracks the state of the DOM and BiDi messages coming from the browser
 class BidiTracker : public DevToolsEventListener {
@@ -35,10 +36,10 @@ class BidiTracker : public DevToolsEventListener {
                  const std::string& method,
                  const base::DictionaryValue& params) override;
 
-  void SetBidiCallback(SendTextFunc on_bidi_message);
+  void SetBidiCallback(SendBidiPayloadFunc on_bidi_message);
 
  private:
-  SendTextFunc send_bidi_response_;
+  SendBidiPayloadFunc send_bidi_response_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_BIDI_TRACKER_H_

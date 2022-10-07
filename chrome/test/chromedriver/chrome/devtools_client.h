@@ -36,6 +36,8 @@ class DevToolsClient {
   // Connect to DevTools if the DevToolsClient is disconnected.
   virtual Status ConnectIfNecessary() = 0;
 
+  virtual Status PostBidiCommand(base::Value::Dict command) = 0;
+
   virtual Status SendCommand(const std::string& method,
                              const base::Value::Dict& params) = 0;
 

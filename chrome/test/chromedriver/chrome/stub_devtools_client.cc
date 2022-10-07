@@ -35,6 +35,10 @@ Status StubDevToolsClient::ConnectIfNecessary() {
   return Status(kOk);
 }
 
+Status StubDevToolsClient::PostBidiCommand(base::Value::Dict command) {
+  return Status{kOk};
+}
+
 Status StubDevToolsClient::SendCommand(const std::string& method,
                                        const base::Value::Dict& params) {
   base::Value result;

@@ -514,6 +514,10 @@ Status WebViewImpl::Resume(const Timeout* timeout) {
                                          timeout);
 }
 
+Status WebViewImpl::PostBidiCommand(base::Value::Dict command) {
+  return client_->PostBidiCommand(std::move(command));
+}
+
 Status WebViewImpl::SendCommand(const std::string& cmd,
                                 const base::Value::Dict& params) {
   return client_->SendCommand(cmd, params);

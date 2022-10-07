@@ -72,6 +72,9 @@ class WebView {
   // Resume the current page.
   virtual Status Resume(const Timeout* timeout) = 0;
 
+  // Send the BiDi command to the BiDiMapper
+  virtual Status PostBidiCommand(base::Value::Dict command) = 0;
+
   // Send a command to the DevTools debugger
   virtual Status SendCommand(const std::string& cmd,
                              const base::Value::Dict& params) = 0;

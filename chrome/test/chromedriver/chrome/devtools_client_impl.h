@@ -115,6 +115,7 @@ class DevToolsClientImpl : public DevToolsClient {
   // Precondition: !IsNull()
   // Postcondition: result.IsError() || IsConnected()
   Status ConnectIfNecessary() override;
+  Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
   Status SendCommandFromWebSocket(const std::string& method,
@@ -179,6 +180,7 @@ class DevToolsClientImpl : public DevToolsClient {
     friend class base::RefCounted<ResponseInfo>;
     ~ResponseInfo();
   };
+  Status PostBidiCommandInternal(int bidi_channel, base::Value::Dict command);
   Status SendCommandInternal(const std::string& method,
                              const base::Value::Dict& params,
                              base::Value* result,

@@ -149,26 +149,6 @@ Status CreateBidiResponse(int cmd_id,
   return CreateCdpResponse(cmd_id, std::move(result), std::string(), resp);
 }
 
-Status WrapBidiCommandInCdpCommand(int cdp_cmd_id,
-                                   const base::Value::Dict& bidi_cmd,
-                                   std::string mapper_session_id,
-                                   base::Value::Dict* cmd) {
-  std::string bidi_cmd_str;
-  if (!base::JSONWriter::Write(bidi_cmd, &bidi_cmd_str)) {
-    return Status(kUnknownError, "cannot serialize a BiDi command");
-  }
-  std::string msg;
-  if (!base::JSONWriter::Write(bidi_cmd_str, &msg)) {
-    return Status(kUnknownError,
-                  "cannot serialize the string: " + bidi_cmd_str);
-  }
-  std::string expression = "onBidiMessage(" + msg + ")";
-  base::Value::Dict params;
-  params.Set("expression", expression);
-  return CreateCdpCommand(cdp_cmd_id, "Runtime.evaluate", std::move(params),
-                          std::move(mapper_session_id), cmd);
-}
-
 Status WrapBidiEventInCdpEvent(const base::Value::Dict& bidi_resp,
                                std::string mapper_session_id,
                                base::Value::Dict* evt) {
@@ -2235,25 +2215,14 @@ class BidiEventListener : public DevToolsEventListener {
       return Status{kOk};
     }
 
-    const std::string* payload = params.FindString("payload");
+    const base::Value::Dict* payload = params.FindDict("payload");
     EXPECT_NE(payload, nullptr);
     if (payload == nullptr) {
       return Status{kUnknownError,
                     "payload is missing in the Runtime.bindingCalled params"};
     }
 
-    absl::optional<base::Value> value = base::JSONReader::Read(*payload);
-    EXPECT_TRUE(value);
-    if (!value) {
-      return Status{kUnknownError, "unable to deserialize the event payload"};
-    }
-
-    EXPECT_TRUE(value->is_dict());
-    if (!value->is_dict()) {
-      return Status{kUnknownError, "event payload is not a dictionary"};
-    }
-
-    payload_list.push_back(value->GetDict().Clone());
+    payload_list.push_back(payload->Clone());
 
     return Status(kOk);
   }
@@ -2280,25 +2249,8 @@ TEST_F(DevToolsClientImplTest, BidiCommand) {
   Status status =
       CreateBidiCommand(111, "method", std::move(params), &bidi_cmd);
   ASSERT_TRUE(status.IsOk()) << status.message();
-  base::Value::Dict cmd;
-  status = WrapBidiCommandInCdpCommand(225, bidi_cmd, mapper_session, &cmd);
+  status = red_client.PostBidiCommand(std::move(bidi_cmd));
   ASSERT_TRUE(status.IsOk()) << status.message();
-
-  int cdp_cmd_id;
-  std::string cdp_method;
-  base::Value::Dict cdp_params;
-  std::string cdp_session_id;
-  ASSERT_TRUE(ParseCommand(cmd, &cdp_cmd_id, &cdp_method, &cdp_params,
-                           &cdp_session_id));
-
-  base::Value result;
-  status = red_client.SendCommandAndGetResult(cdp_method, cdp_params, &result);
-  ASSERT_TRUE(status.IsOk()) << status.message();
-  ASSERT_TRUE(result.is_dict());
-  const std::string* result_type =
-      result.GetDict().FindStringByDottedPath("result.type");
-  ASSERT_NE(nullptr, result_type);
-  ASSERT_EQ("undefined", *result_type);
 
   status = red_client.HandleReceivedEvents();
   ASSERT_TRUE(status.IsOk()) << status.message();
@@ -2307,4 +2259,35 @@ TEST_F(DevToolsClientImplTest, BidiCommand) {
   const base::Value::Dict& payload = bidi_listener.payload_list.front();
   ASSERT_EQ(111, payload.FindInt("id").value_or(-1));
   ASSERT_EQ(196, payload.FindIntByDottedPath("result.pong").value_or(-1));
+}
+
+TEST_F(DevToolsClientImplTest, BidiCommandIds) {
+  // DevToolsClientImpl changes command ids internally.
+  // In this test we check that the response ids are restored in accordance to
+  // the original command ids.
+  std::string mapper_session = "mapper_session";
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S<BidiMockSyncWebSocket>, mapper_session);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  DevToolsClientImpl red_client("red_client", mapper_session);
+  BidiEventListener bidi_listener;
+  red_client.AddListener(&bidi_listener);
+  red_client.AttachTo(&root_client);
+  root_client.ConnectIfNecessary();
+  red_client.ConnectIfNecessary();
+
+  for (int cmd_id : {2, 3, 11, 1000021, 1000022, 1000023}) {
+    base::Value::Dict bidi_cmd;
+    Status status =
+        CreateBidiCommand(cmd_id, "method", base::Value::Dict(), &bidi_cmd);
+    ASSERT_TRUE(status.IsOk()) << status.message();
+    status = red_client.PostBidiCommand(std::move(bidi_cmd));
+    ASSERT_TRUE(status.IsOk()) << status.message();
+    status = red_client.HandleReceivedEvents();
+    ASSERT_TRUE(status.IsOk()) << status.message();
+    ASSERT_EQ(static_cast<size_t>(1), bidi_listener.payload_list.size());
+    const base::Value::Dict& payload = bidi_listener.payload_list.front();
+    ASSERT_EQ(cmd_id, payload.FindInt("id").value_or(-1));
+    bidi_listener.payload_list.clear();
+  }
 }

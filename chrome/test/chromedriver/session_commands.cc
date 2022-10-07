@@ -1452,40 +1452,34 @@ Status ExecuteBidiCommand(Session* session,
     return status;
   }
 
-  absl::optional<base::Value> dataParsed =
+  absl::optional<base::Value> data_parsed =
       base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-  if (!dataParsed) {
+  if (!data_parsed) {
     return Status(kUnknownError, "cannot parse the BiDi command: " + data);
   }
 
-  if (!dataParsed->is_dict()) {
+  if (!data_parsed->is_dict()) {
     return Status(kUnknownError,
                   "a JSON map is expected as a BiDi command: " + data);
   }
 
-  absl::optional<int> cmd_id = dataParsed->GetDict().FindInt("id");
+  absl::optional<int> cmd_id = data_parsed->GetDict().FindInt("id");
   if (!cmd_id) {
     return Status(kUnknownError, "BiDi command is missing 'id' field: " + data);
   }
 
-  std::string* method = dataParsed->GetDict().FindString("method");
+  std::string* method = data_parsed->GetDict().FindString("method");
   if (!method) {
     return Status(kUnknownError,
                   "BiDi command is missing 'method' field: " + data);
   }
 
-  std::string msg;
-  if (!base::JSONWriter::Write(data, &msg)) {
-    return Status(kUnknownError, "cannot serialize the BiDi command: " + data);
-  }
-  std::string expression = "onBidiMessage(" + msg + ")";
-
   if (*method == "browsingContext.close") {
     // Closing of the context is handled in a blocking way.
     // This simplifies us closing the browser if the last tab was closed.
     session->awaited_bidi_response_id = *cmd_id;
-    status = web_view->EvaluateScript(std::string(), expression, false, value);
+    status = web_view->PostBidiCommand(std::move(data_parsed->GetDict()));
     base::RepeatingCallback<Status(bool*)> bidi_response_is_received =
         base::BindRepeating(
             [](Session* session, int cmd_id, bool* condition_is_met) {
@@ -1522,7 +1516,7 @@ Status ExecuteBidiCommand(Session* session,
       status = session->chrome->Quit();
     }
   } else {
-    status = web_view->EvaluateScript(std::string(), expression, false, value);
+    status = web_view->PostBidiCommand(std::move(data_parsed->GetDict()));
   }
 
   return status;

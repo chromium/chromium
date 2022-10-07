@@ -38,17 +38,16 @@ Status BidiTracker::OnEvent(DevToolsClient* client,
     return Status(kOk);
   }
 
-  const base::Value* payloadVal = params.FindKey("payload");
-  if (payloadVal == nullptr) {
+  const base::Value::Dict* payload = params.GetDict().FindDict("payload");
+  if (payload == nullptr) {
     return Status(kUnknownError, "Runtime.bindingCalled missing 'payload'");
   }
 
-  std::string payload = payloadVal->GetString();
-  send_bidi_response_.Run(payload);
+  send_bidi_response_.Run(payload->Clone());
 
   return Status(kOk);
 }
 
-void BidiTracker::SetBidiCallback(SendTextFunc on_bidi_message) {
+void BidiTracker::SetBidiCallback(SendBidiPayloadFunc on_bidi_message) {
   send_bidi_response_ = std::move(on_bidi_message);
 }
