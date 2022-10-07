@@ -109,7 +109,8 @@ class ParsingContext {
   static constexpr wtf_size_t MAX_LENGTH_PARSE = 1 << 16;
 
   absl::optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
-      const PermissionsPolicyParser::Declaration&);
+      const PermissionsPolicyParser::Declaration& declaration_node,
+      const PermissionsPolicyParser::NodeType type);
 
   struct ParsedAllowlist {
     std::vector<blink::OriginWithPossibleWildcards> allowed_origins;
@@ -123,7 +124,8 @@ class ParsingContext {
       const String& feature_name);
 
   // Parse allowlist for feature.
-  ParsedAllowlist ParseAllowlist(const Vector<String>& origin_strings);
+  ParsedAllowlist ParseAllowlist(const Vector<String>& origin_strings,
+                                 const PermissionsPolicyParser::NodeType type);
 
   void ReportFeatureUsage(mojom::blink::PermissionsPolicyFeature feature);
   void ReportFeatureUsageLegacy(mojom::blink::PermissionsPolicyFeature feature);
@@ -275,7 +277,11 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
 }
 
 ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
-    const Vector<String>& origin_strings) {
+    const Vector<String>& origin_strings,
+    const PermissionsPolicyParser::NodeType type) {
+  // The source of the PermissionsPolicyParser::Node must have an explicit
+  // source so that we know which wildcards can be enabled.
+  DCHECK_NE(PermissionsPolicyParser::NodeType::kUnknown, type);
   ParsedAllowlist allowlist;
   if (origin_strings.empty()) {
     // If a policy entry has no listed origins (e.g. "feature_name1" in
@@ -360,7 +366,8 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       } else if (target_is_opaque) {
         allowlist.matches_opaque_src = true;
       } else {
-        // TODO(crbug.com/1345994): Support wildcard matching.
+        // TODO(crbug.com/1345994): Support wildcard matching when type is
+        // kHeader.
         allowlist.allowed_origins.emplace_back(
             target_origin,
             /*has_subdomain_wildcard=*/false);
@@ -381,13 +388,15 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
 }
 
 absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
-    const PermissionsPolicyParser::Declaration& declaration_node) {
+    const PermissionsPolicyParser::Declaration& declaration_node,
+    const PermissionsPolicyParser::NodeType type) {
   absl::optional<mojom::blink::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature)
     return absl::nullopt;
 
-  ParsedAllowlist parsed_allowlist = ParseAllowlist(declaration_node.allowlist);
+  ParsedAllowlist parsed_allowlist =
+      ParseAllowlist(declaration_node.allowlist, type);
 
   // If same feature appeared more than once, only the first one counts.
   if (feature_observer_.FeatureObserved(*feature))
@@ -414,9 +423,10 @@ ParsedPermissionsPolicy ParsingContext::ParsePermissionsPolicy(
 ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
     const PermissionsPolicyParser::Node& root) {
   ParsedPermissionsPolicy parsed_policy;
-  for (const PermissionsPolicyParser::Declaration& declaration_node : root) {
+  for (const PermissionsPolicyParser::Declaration& declaration_node :
+       root.declarations) {
     absl::optional<ParsedPermissionsPolicyDeclaration> parsed_feature =
-        ParseFeature(declaration_node);
+        ParseFeature(declaration_node, root.type);
     if (parsed_feature) {
       ReportFeatureUsage(parsed_feature->feature);
       ReportFeatureUsageLegacy(parsed_feature->feature);
@@ -429,7 +439,8 @@ ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
 
 PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
     const String& policy) {
-  PermissionsPolicyParser::Node root;
+  PermissionsPolicyParser::Node root{
+      PermissionsPolicyParser::NodeType::kAttribute};
 
   if (policy.length() > MAX_LENGTH_PARSE) {
     logger_.Error("Feature policy declaration exceeds size limit(" +
@@ -485,7 +496,7 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
       declaration_node.feature_name = std::move(tokens.front());
       tokens.erase(tokens.begin());
       declaration_node.allowlist = std::move(tokens);
-      root.push_back(declaration_node);
+      root.declarations.push_back(declaration_node);
     }
   }
 
@@ -509,7 +520,8 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     return {};
   }
 
-  PermissionsPolicyParser::Node ir_root;
+  PermissionsPolicyParser::Node ir_root{
+      PermissionsPolicyParser::NodeType::kHeader};
   for (const auto& feature_entry : root.value()) {
     const auto& key = feature_entry.first;
     const char* feature_name = key.c_str();
@@ -560,7 +572,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     if (allowlist.empty())
       allowlist.push_back("'none'");
 
-    ir_root.push_back(
+    ir_root.declarations.push_back(
         PermissionsPolicyParser::Declaration{feature_name, allowlist});
   }
 

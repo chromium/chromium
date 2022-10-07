@@ -56,7 +56,13 @@ class CORE_EXPORT PermissionsPolicyParser {
     String feature_name;
     Vector<String> allowlist;
   };
-  using Node = Vector<Declaration>;
+  enum NodeType { kHeader, kAttribute, kUnknown };
+  // We need to keep track of the source of the list of declarations as
+  // different features (e.g., wildcards) might be active per-context.
+  struct Node {
+    NodeType type{kUnknown};
+    Vector<Declaration> declarations;
+  };
 
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional

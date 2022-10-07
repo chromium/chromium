@@ -1612,7 +1612,8 @@ bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
 
 Vector<blink::ParsedPermissionsPolicyDeclaration>
 ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
-  PermissionsPolicyParser::Node policy;
+  PermissionsPolicyParser::Node policy{
+      PermissionsPolicyParser::NodeType::kHeader};
 
   JSONValue* json_value = object->Get("permissions_policy");
   if (!json_value)
@@ -1649,7 +1650,7 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
       String wrapped_origin = (origin == "*" ? origin : "'" + origin + "'");
       new_policy.allowlist.push_back(wrapped_origin);
     }
-    policy.push_back(new_policy);
+    policy.declarations.push_back(new_policy);
   }
 
   PolicyParserMessageBuffer logger(
