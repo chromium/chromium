@@ -13,6 +13,7 @@
 #include "chrome/browser/autofill_assistant/assistant_field_trial_util_chrome.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -136,7 +137,7 @@ bool CommonDependenciesChrome::GetMakeSearchesAndBrowsingBetterEnabled() const {
 }
 
 bool CommonDependenciesChrome::GetMetricsReportingEnabled() const {
-  return GetPrefs()->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+  return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 }
 
 Profile* CommonDependenciesChrome::GetProfile() const {
