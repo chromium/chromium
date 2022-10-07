@@ -121,6 +121,7 @@ enum class CSPDisposition : int32_t;
 
 namespace blink {
 
+class Agent;
 class AnchorElementInteractionTracker;
 class AnimationClock;
 class AXContext;
@@ -1294,6 +1295,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // See `execution_context_` for details.
   ExecutionContext* GetExecutionContext() const final;
 
+  // Return the agent. Can only be null in unit tests.
+  Agent* GetAgent() const;
+
   ScriptRunner* GetScriptRunner() { return script_runner_.Get(); }
   const base::ElapsedTimer& GetStartTime() const { return start_time_; }
 
@@ -2166,6 +2170,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // will be the LocalDOMWindow where script will execute (which may be nullptr
   // in unit tests).
   Member<ExecutionContext> execution_context_;
+
+  // Documents should always have an agent except those created with
+  // DocumentInit::ForTest.
+  Member<Agent> agent_;
 
   Member<ResourceFetcher> fetcher_;
   Member<DocumentParser> parser_;

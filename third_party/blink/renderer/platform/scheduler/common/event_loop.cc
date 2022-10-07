@@ -38,8 +38,11 @@ void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
 }
 
 void EventLoop::PerformMicrotaskCheckpoint() {
-  if (microtask_queue_)
+  if (microtask_queue_) {
     microtask_queue_->PerformCheckpoint(isolate_);
+  } else {
+    v8::MicrotasksScope::PerformCheckpoint(isolate_);
+  }
 }
 
 // static

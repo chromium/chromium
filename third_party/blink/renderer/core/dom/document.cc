@@ -703,6 +703,7 @@ Document::Document(const DocumentInit& initializer,
       pending_sheet_layout_(kNoLayoutWithPendingSheets),
       dom_window_(initializer.GetWindow()),
       execution_context_(initializer.GetExecutionContext()),
+      agent_(execution_context_ ? execution_context_->GetAgent() : nullptr),
       context_features_(ContextFeatures::DefaultSwitch()),
       http_refresh_scheduler_(MakeGarbageCollected<HttpRefreshScheduler>(this)),
       well_formed_(false),
@@ -6905,6 +6906,10 @@ ExecutionContext* Document::GetExecutionContext() const {
   return execution_context_.Get();
 }
 
+Agent* Document::GetAgent() const {
+  return agent_.Get();
+}
+
 Attr* Document::createAttribute(const AtomicString& name,
                                 ExceptionState& exception_state) {
   if (!IsValidName(name)) {
@@ -8416,6 +8421,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(pending_animations_);
   visitor->Trace(worklet_animation_controller_);
   visitor->Trace(execution_context_);
+  visitor->Trace(agent_);
   visitor->Trace(canvas_font_cache_);
   visitor->Trace(intersection_observer_controller_);
   visitor->Trace(snap_coordinator_);
