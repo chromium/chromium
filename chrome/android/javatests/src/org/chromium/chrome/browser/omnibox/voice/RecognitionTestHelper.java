@@ -557,7 +557,7 @@ public class RecognitionTestHelper {
         }
 
         @Override
-        public int getPageClassification(boolean isFocusedFromFakebox) {
+        public int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch) {
             return PageClassification.NTP_VALUE;
         }
 

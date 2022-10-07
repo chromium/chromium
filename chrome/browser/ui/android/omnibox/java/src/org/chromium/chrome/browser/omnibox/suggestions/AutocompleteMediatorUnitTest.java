@@ -202,7 +202,8 @@ public class AutocompleteMediatorUnitTest {
         when(mLocationBarDataProvider.hasTab()).thenReturn(true);
         when(mLocationBarDataProvider.getCurrentUrl()).thenReturn(url);
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
-        when(mLocationBarDataProvider.getPageClassification(false)).thenReturn(pageClassification);
+        when(mLocationBarDataProvider.getPageClassification(false, false))
+                .thenReturn(pageClassification);
     }
 
     @Test

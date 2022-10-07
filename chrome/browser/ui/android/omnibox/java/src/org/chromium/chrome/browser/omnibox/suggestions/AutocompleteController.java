@@ -105,12 +105,14 @@ public class AutocompleteController {
 
     /**
      * Issue a prefetch request for zero prefix suggestions.
-     *
      * Prefetch is a fire-and-forget operation that yields no results.
+     *
+     * @param url The URL of the current tab, used to suggest query refinements.
+     * @param pageClassification The page classification of the current tab.
      */
-    void startPrefetch() {
+    void startPrefetch(@NonNull String url, int pageClassification) {
         if (mNativeController == 0) return;
-        AutocompleteControllerJni.get().startPrefetch(mNativeController);
+        AutocompleteControllerJni.get().startPrefetch(mNativeController, url, pageClassification);
     }
 
     /**
@@ -375,7 +377,8 @@ public class AutocompleteController {
         /**
          * Sends a zero suggest request to the server in order to pre-populate the result cache.
          */
-        void startPrefetch(long nativeAutocompleteControllerAndroid);
+        void startPrefetch(long nativeAutocompleteControllerAndroid, String currentUrl,
+                int pageClassification);
 
         /**
          * Acquire an instance of AutocompleteController associated with the supplied profile.

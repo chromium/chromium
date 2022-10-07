@@ -126,7 +126,7 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     }
 
     @Override
-    public int getPageClassification(boolean isFocusedFromFakebox) {
+    public int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch) {
         if (mIsFromQuickActionSearchWidget) {
             return PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE;
         } else {

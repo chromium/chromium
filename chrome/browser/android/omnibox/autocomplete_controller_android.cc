@@ -169,13 +169,34 @@ void AutocompleteControllerAndroid::Start(JNIEnv* env,
   autocomplete_controller_->Start(input_);
 }
 
-void AutocompleteControllerAndroid::StartPrefetch(JNIEnv* env) {
-  AutocompleteInput ntp_prefetch_input(
-      u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
-      ChromeAutocompleteSchemeClassifier(profile_));
-  ntp_prefetch_input.set_focus_type(
-      metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  autocomplete_controller_->StartPrefetch(ntp_prefetch_input);
+void AutocompleteControllerAndroid::StartPrefetch(
+    JNIEnv* env,
+    const JavaRef<jstring>& j_current_url,
+    jint j_page_classification) {
+  auto page_classification =
+      OmniboxEventProto::PageClassification(j_page_classification);
+  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
+          page_classification)) {
+    return;
+  }
+
+  const bool interaction_clobber_focus_type =
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
+      !BaseSearchProvider::IsNTPPage(page_classification);
+
+  GURL current_url;
+  if (!j_current_url.is_null()) {
+    current_url = GURL(ConvertJavaStringToUTF16(env, j_current_url));
+  }
+
+  AutocompleteInput input(u"", page_classification,
+                          ChromeAutocompleteSchemeClassifier(profile_));
+  input.set_current_url(current_url);
+  input.set_focus_type(interaction_clobber_focus_type
+                           ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                           : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  autocomplete_controller_->StartPrefetch(input);
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
@@ -222,7 +243,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
 
   auto page_class =
       OmniboxEventProto::PageClassification(j_page_classification);
-  bool interaction_clobber_focus_type =
+  const bool interaction_clobber_focus_type =
       base::FeatureList::IsEnabled(
           omnibox::kOmniboxOnClobberFocusTypeOnContent) &&
       !BaseSearchProvider::IsNTPPage(page_class);

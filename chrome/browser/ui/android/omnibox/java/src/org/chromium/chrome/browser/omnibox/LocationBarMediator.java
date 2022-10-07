@@ -1075,7 +1075,7 @@ class LocationBarMediator
         // This widget must guarantee consistent feature set regardless of search engine choice or
         // other aspects that may not be met by Lens.
         LocationBarDataProvider dataProvider = getLocationBarDataProvider();
-        if (dataProvider.getPageClassification(dataProvider.isIncognito())
+        if (dataProvider.getPageClassification(dataProvider.isIncognito(), /*isPrefetch=*/false)
                 == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
             return false;
         }

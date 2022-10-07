@@ -50,7 +50,8 @@ ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
 jint LocationBarModelAndroid::GetPageClassification(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    bool is_focused_from_fakebox) {
+    bool is_focused_from_fakebox,
+    bool is_prefetch) {
   // On phones, the omnibox is not initially shown on the NTP.  In this case,
   // treat the fakebox like the omnibox.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)

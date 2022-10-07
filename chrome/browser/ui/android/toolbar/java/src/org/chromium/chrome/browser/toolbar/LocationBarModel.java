@@ -579,15 +579,15 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
-    public int getPageClassification(boolean isFocusedFromFakebox) {
+    public int getPageClassification(boolean isFocusedFromFakebox, boolean isPrefetch) {
         if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC_VALUE;
 
         // Provide NTP as page class in overview mode (when Start Surface is enabled). No call
         // to the backend necessary or possible, since there is no tab or navigation entry.
         if (isInOverviewAndShowingOmnibox()) return PageClassification.NTP_VALUE;
 
-        return LocationBarModelJni.get().getPageClassification(
-                mNativeLocationBarModelAndroid, LocationBarModel.this, isFocusedFromFakebox);
+        return LocationBarModelJni.get().getPageClassification(mNativeLocationBarModelAndroid,
+                LocationBarModel.this, isFocusedFromFakebox, isPrefetch);
     }
 
     @Override
@@ -757,6 +757,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         String getFormattedFullURL(long nativeLocationBarModelAndroid, LocationBarModel caller);
         String getURLForDisplay(long nativeLocationBarModelAndroid, LocationBarModel caller);
         int getPageClassification(long nativeLocationBarModelAndroid, LocationBarModel caller,
-                boolean isFocusedFromFakebox);
+                boolean isFocusedFromFakebox, boolean isPrefetch);
     }
 }
