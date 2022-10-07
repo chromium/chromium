@@ -73,10 +73,6 @@ class ASH_EXPORT BluetoothNotificationController
   // continually bugging the user.
   static const char kBluetoothDevicePairingNotificationId[];
 
-  // Adds a prefix to the device's address to obtain an unique notification ID.
-  static std::string GetPairedNotificationId(
-      const device::BluetoothDevice* device);
-
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);

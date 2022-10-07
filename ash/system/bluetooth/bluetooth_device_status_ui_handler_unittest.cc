@@ -4,12 +4,10 @@
 
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_device_status_notifier.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,7 +33,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
     device_status_ui_handler_ =
         std::make_unique<NiceMock<MockBluetoothDeviceStatusUiHandler>>();
     base::RunLoop().RunUntilIdle();
@@ -78,7 +75,6 @@ class BluetoothDeviceStatusUiHandlerTest : public AshTestBase {
   }
 
   std::unique_ptr<MockBluetoothDeviceStatusUiHandler> device_status_ui_handler_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BluetoothDeviceStatusUiHandlerTest, PairedDevice) {

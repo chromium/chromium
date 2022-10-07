@@ -4,12 +4,10 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -24,8 +22,6 @@ class BluetoothDeviceListItemBatteryViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     widget_ = CreateTestWidget();
     bluetooth_device_list_battery_item_ =
@@ -80,7 +76,6 @@ class BluetoothDeviceListItemBatteryViewTest : public AshTestBase {
         bluetooth_device_list_battery_item()->children().at(1));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<BluetoothDeviceListItemBatteryView>
       bluetooth_device_list_battery_item_;

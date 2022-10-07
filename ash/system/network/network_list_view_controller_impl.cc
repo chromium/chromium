@@ -121,7 +121,6 @@ NetworkListViewControllerImpl::NetworkListViewControllerImpl(
     : model_(Shell::Get()->system_tray_model()->network_state_model()),
       network_detailed_network_view_(network_detailed_network_view) {
   DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   DCHECK(network_detailed_network_view_);
   Shell::Get()->system_tray_model()->network_state_model()->AddObserver(this);
 

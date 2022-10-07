@@ -21,8 +21,6 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
-#include "ash/system/bluetooth/bluetooth_feature_pod_controller_legacy.h"
-#include "ash/system/bluetooth/unified_bluetooth_detailed_view_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/camera/autozoom_feature_pod_controller.h"
 #include "ash/system/cast/cast_feature_pod_controller.h"
@@ -425,8 +423,7 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
 
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
 
-  if (ash::features::IsQuickSettingsNetworkRevampEnabled() &&
-      ash::features::IsBluetoothRevampEnabled()) {
+  if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
     ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
   } else {
     ShowDetailedView(
@@ -439,12 +436,7 @@ void UnifiedSystemTrayController::ShowBluetoothDetailedView() {
     return;
 
   base::RecordAction(base::UserMetricsAction("StatusArea_Bluetooth_Detailed"));
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    ShowDetailedView(std::make_unique<BluetoothDetailedViewController>(this));
-  } else {
-    ShowDetailedView(
-        std::make_unique<UnifiedBluetoothDetailedViewController>(this));
-  }
+  ShowDetailedView(std::make_unique<BluetoothDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowCastDetailedView() {
@@ -623,12 +615,8 @@ void UnifiedSystemTrayController::InitFeaturePods() {
     AddFeaturePodItem(
         std::make_unique<NetworkFeaturePodControllerLegacy>(this));
   }
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
-  } else {
-    AddFeaturePodItem(
-        std::make_unique<BluetoothFeaturePodControllerLegacy>(this));
-  }
+
+  AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());

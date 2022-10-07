@@ -20,7 +20,7 @@ message UserSettingsEvent {
     enum SettingId {
       WIFI = 1;
       CELLULAR = 2;
-      BLUETOOTH = 3;
+      // [Deprecated] BLUETOOTH = 3;
       NIGHT_LIGHT = 4;
       DO_NOT_DISTURB = 5;
       ACCESSIBILITY = 6;
@@ -125,9 +125,7 @@ message UserSettingsEvent {
     // Whether the user has connected to a cellular network in the current
     // session.
     optional bool used_cellular_in_session = 17;
-    // Whether or not the current bluetooth device was already paired. Only
-    // populated upon connection to a bluetooth device.
-    optional bool is_paired_bluetooth_device = 18;
+    optional bool is_paired_bluetooth_device = 18 [deprecated = true];
     // Whether the user has set up a night light schedule.
     optional bool has_night_light_schedule = 19;
     // True if it is after sunset and before sunrise in the local time.

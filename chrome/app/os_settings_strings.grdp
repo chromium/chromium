@@ -2127,20 +2127,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is already connected.">
     Connected
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_CONNECTED_WITH_BATTERY" desc="In Bluetooth device list, this label is shown below a device which is already connected and has a known battery percentage.">
-    Connected, <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% battery
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECTING">
     Connecting...
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_PAIRED" desc="Title of the settings subsection listing paired Bluetooth devices.">
-    Paired devices
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED" desc="Settings > Bluetooth > Text to show when Bluetooth configuration is controlled by the primary user.">
     Bluetooth configuration is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_UNPAIRED" desc="Title of the settings subsection listing unpaired Bluetooth devices.">
-    Unpaired devices
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_CONNECT" desc="Bluetooth pairing dialog: Text for dropdown meny item to connect to a device.">
     Connect
@@ -2241,15 +2232,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing available Bluetooth devices. Only visible by screen reader software.">
     Show available Bluetooth devices
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES" desc="Message displayed when there are no paired Bluetooth devices scan.">
-    No paired devices
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_NO_DEVICES_FOUND" desc="Message displayed when no Bluetooth devices are found after a scan.">
-    No Bluetooth devices found
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_NOT_CONNECTED" desc="In Bluetooth device list, this label is shown below a device which is not connected.">
-    Not connected
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH" desc="Name of the settings page which displays Bluetooth device settings.">
     Bluetooth
   </message>
@@ -2303,9 +2285,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device." meaning="'Forget this device' means the device will be unpaired and removed from the account">
     Forget this device?
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE" desc="Title of the settings dialog for adding or pairing Bluetooth a device.">
-    Connect to Bluetooth device
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_REMOVE" desc="Label for removing (unpairing) a paired Bluetooth device">
     Remove from list

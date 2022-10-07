@@ -21,7 +21,6 @@ import '../os_search_page/os_search_page.js';
 import '../personalization_page/personalization_page.js';
 import '../../settings_page/settings_section.js';
 import '../../settings_page_styles.css.js';
-import '../bluetooth_page/bluetooth_page.js';
 import '../device_page/device_page.js';
 import '../internet_page/internet_page.js';
 import '../kerberos_page/kerberos_page.js';
@@ -155,13 +154,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
       },
 
       currentRoute_: Object,
-
-      isBluetoothRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableBluetoothRevamp');
-        },
-      },
     };
   }
 
@@ -173,7 +165,6 @@ class OsSettingsPageElement extends OsSettingsPageElementBase {
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
   private currentRoute_?: Route;
-  private isBluetoothRevampEnabled_: boolean;
   /**
    * Used to avoid handling a new toggle while currently toggling.
    */

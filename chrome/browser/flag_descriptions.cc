@@ -4905,11 +4905,6 @@ const char kBluetoothQualityReportDescription[] =
     "which will send the Bluetooth link quality statistics such as the "
     "signal strength, the lost packet count, etc. to the host.";
 
-const char kBluetoothRevampName[] = "Bluetooth Revamp";
-const char kBluetoothRevampDescription[] =
-    "Enables the ChromeOS Bluetooth Revamp, which updates Bluetooth system UI "
-    "and related infrastructure.";
-
 const char kBluetoothWbsDogfoodName[] = "Bluetooth WBS dogfood";
 const char kBluetoothWbsDogfoodDescription[] =
     "Enables Bluetooth wideband speech mic as default audio option. "

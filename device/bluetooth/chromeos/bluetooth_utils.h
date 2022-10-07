@@ -67,7 +67,7 @@ enum class BluetoothUiSurface {
   kSettingsPairingDialog = 2,
   kBluetoothQuickSettings = 3,
   kStandalonePairingDialog = 4,
-  kPairedNotification = 5,
+  // [Deprecated] kPairedNotification = 5,
   kConnectionToast = 6,
   kDisconnectedToast = 7,
   kOobeHidDetection = 8,

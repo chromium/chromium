@@ -404,7 +404,6 @@ group("generate_web_components") {
     ":web_components",
 
     # Sub-folder targets
-    "bluetooth_page:web_components",
     "crostini_page:web_components",
     "device_page:web_components",
     "guest_os:web_components",
@@ -430,7 +429,6 @@ group("generate_web_components") {
 group("closure_compile_module") {
   deps = [
     ":closure_compile_local_module",
-    "bluetooth_page:closure_compile_module",
     "crostini_page:closure_compile_module",
     "device_page:closure_compile_module",
     "guest_os:closure_compile_module",

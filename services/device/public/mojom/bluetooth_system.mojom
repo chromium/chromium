@@ -79,6 +79,7 @@ interface BluetoothSystemFactory {
          pending_remote<BluetoothSystemClient> system_client);
 };
 
+// TODO(b/231254441): Remove BluetoothSystem.
 // High level interface targeted towards UI level components that:
 //  - Show the BT radio state and allow users to change it.
 //  - Show a list of nearby, connected and paired BT Devices.

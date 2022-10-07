@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -19,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -107,8 +105,6 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
-
     fake_bluetooth_detailed_view_ =
         std::make_unique<FakeBluetoothDetailedView>(/*delegate=*/nullptr);
     std::unique_ptr<BluetoothDeviceListItemView> bluetooth_device_list_item =
@@ -141,7 +137,6 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
   BluetoothDeviceListItemView* bluetooth_device_list_item_;

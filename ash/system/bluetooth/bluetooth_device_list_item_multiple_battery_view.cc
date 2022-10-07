@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_multiple_battery_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -23,8 +22,6 @@ namespace ash {
 
 BluetoothDeviceListItemMultipleBatteryView::
     BluetoothDeviceListItemMultipleBatteryView() {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-
   auto box_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal);
   box_layout->set_cross_axis_alignment(

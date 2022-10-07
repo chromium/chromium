@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/chromeos/bluetooth_shared_load_time_data_provider.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -28,11 +27,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"bluetoothNoAvailableDevices",
        IDS_BLUETOOTH_PAIRING_PAIRING_NO_AVAILABLE_DEVICES},
       {"bluetoothDisabled", IDS_BLUETOOTH_PAIRING_PAIRING_BLUETOOTH_DISABLED},
-      {"bluetoothAccept", IDS_BLUETOOTH_PAIRING_ACCEPT_PASSKEY},
       {"bluetoothEnterKey", IDS_BLUETOOTH_PAIRING_ENTER_KEY},
       {"bluetoothPair", IDS_BLUETOOTH_PAIRING_PAIR},
-      {"bluetoothReject", IDS_BLUETOOTH_PAIRING_REJECT_PASSKEY},
-      {"bluetoothStartConnecting", IDS_BLUETOOTH_PAIRING_START_CONNECTING},
       {"bluetoothEnterPin", IDS_BLUETOOTH_PAIRING_ENTER_PIN},
       {"bluetoothPairedDeviceItemBatteryPercentage",
        IDS_BLUETOOTH_DEVICE_ITEM_BATTERY_PERCENTAGE},
@@ -70,48 +66,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_ERROR_A11Y_LABEL},
       {"bluetoothPairingDeviceItemSecondaryPairingA11YLabel",
        IDS_BLUETOOTH_PAIRINGS_DEVICE_ITEM_SECONDARY_PAIRING_A11Y_LABEL},
-      // Device connecting and pairing.
-      // These ids are generated in JS using 'bluetooth_' + a value from
-      // bluetoothPrivate.PairingEventType (see bluetooth_private.idl).
-      // 'requestAuthorization' has no associated message.
-      {"bluetooth_requestPincode", IDS_BLUETOOTH_PAIRING_REQUEST_PINCODE},
-      {"bluetooth_displayPincode", IDS_BLUETOOTH_PAIRING_DISPLAY_PINCODE},
-      {"bluetooth_requestPasskey", IDS_BLUETOOTH_PAIRING_REQUEST_PASSKEY},
-      {"bluetooth_displayPasskey", IDS_BLUETOOTH_PAIRING_DISPLAY_PASSKEY},
-      {"bluetooth_confirmPasskey", IDS_BLUETOOTH_PAIRING_CONFIRM_PASSKEY},
-      // Also display the IDS_BLUETOOTH_PAIRING_DISPLAY_PASSKEY for the
-      // 'keysEntered' event: continue prompting the user to enter the passkey
-      // as they continue to enter its keys.
-      {"bluetooth_keysEntered", IDS_BLUETOOTH_PAIRING_DISPLAY_PASSKEY},
-      // These ids are generated in JS using 'bluetooth_connect_' + a value from
-      // bluetoothPrivate.ConnectResultType (see bluetooth_private.idl).
-      {"bluetooth_connect_attributeLengthInvalid",
-       IDS_BLUETOOTH_PAIRING_CONNECT_ATTRIBUTE_LENGTH_INVALID},
-      {"bluetooth_connect_authCanceled",
-       IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_CANCELED},
-      {"bluetooth_connect_authFailed",
-       IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_FAILED},
-      {"bluetooth_connect_authRejected",
-       IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_REJECTED},
-      {"bluetooth_connect_authTimeout",
-       IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_TIMEOUT},
-      {"bluetooth_connect_connectionCongested",
-       IDS_BLUETOOTH_PAIRING_CONNECT_CONNECTION_CONGESTED},
-      {"bluetooth_connect_failed", IDS_BLUETOOTH_PAIRING_CONNECT_FAILED},
-      {"bluetooth_connect_inProgress",
-       IDS_BLUETOOTH_PAIRING_CONNECT_IN_PROGRESS},
-      {"bluetooth_connect_insufficientEncryption",
-       IDS_BLUETOOTH_PAIRING_CONNECT_INSUFFICIENT_ENCRYPTION},
-      {"bluetooth_connect_offsetInvalid",
-       IDS_BLUETOOTH_PAIRING_CONNECT_OFFSET_INVALID},
-      {"bluetooth_connect_readNotPermitted",
-       IDS_BLUETOOTH_PAIRING_CONNECT_READ_NOT_PERMITTED},
-      {"bluetooth_connect_requestNotSupported",
-       IDS_BLUETOOTH_PAIRING_CONNECT_REQUEST_NOT_SUPPORTED},
-      {"bluetooth_connect_unsupportedDevice",
-       IDS_BLUETOOTH_PAIRING_CONNECT_UNSUPPORTED_DEVICE},
-      {"bluetooth_connect_writeNotPermitted",
-       IDS_BLUETOOTH_PAIRING_CONNECT_WRITE_NOT_PERMITTED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString(
@@ -123,9 +77,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
 
 void AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddLocalizedStrings(html_source);
-
-  html_source->AddBoolean("enableBluetoothRevamp",
-                          chromeos::features::IsBluetoothRevampEnabled());
 }
 
 }  // namespace bluetooth

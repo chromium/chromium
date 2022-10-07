@@ -77,7 +77,7 @@ enum class NotificationCatalogName {
   kFirmwareUpdate = 62,
   kPeripheralBattery = 63,
   kBluetoothPairingRequest = 64,
-  kBluetoothPairedDevice = 65,
+  // [Deprecated] kBluetoothPairedDevice = 65,
   kCellularSetup = 66,
   kScreenSecurity = 67,
   kWifiToggle = 68,

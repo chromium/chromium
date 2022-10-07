@@ -56,7 +56,6 @@ void OnBluetoothAdapter(
 
 void Initialize(FastPairDelegate* delegate) {
   BLUETOOTH_LOG(EVENT) << "Beginning CrosBluetoothConfig initialization";
-  CHECK(features::IsBluetoothRevampEnabled());
   CHECK(!g_instance);
   DCHECK_EQ(features::IsFastPairEnabled(), static_cast<bool>(delegate));
 
@@ -68,7 +67,6 @@ void Initialize(FastPairDelegate* delegate) {
 
 void Shutdown() {
   BLUETOOTH_LOG(EVENT) << "Shutting down CrosBluetoothConfig";
-  CHECK(features::IsBluetoothRevampEnabled());
   if (g_instance) {
     delete g_instance;
     g_instance = nullptr;
@@ -94,7 +92,6 @@ void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs) {
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
   BLUETOOTH_LOG(DEBUG) << "Binding to CrosBluetoothConfig";
-  CHECK(features::IsBluetoothRevampEnabled());
   DCHECK_EQ(features::IsFastPairEnabled(),
             static_cast<bool>(g_fast_pair_delegate));
   device::BluetoothAdapterFactory::Get()->GetAdapter(

@@ -4,7 +4,6 @@
 
 #include "ash/system/network/network_section_header_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -12,7 +11,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
-#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
@@ -206,10 +204,6 @@ MobileSectionHeaderView::MobileSectionHeaderView()
                                DeviceStateType::kEnabled;
   NetworkSectionHeaderView::Init(initially_enabled);
   model()->AddObserver(this);
-
-  if (!ash::features::IsBluetoothRevampEnabled())
-    return;
-
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
 }
@@ -411,15 +405,7 @@ void MobileSectionHeaderView::AddCellularButtonPressed() {
 
 void MobileSectionHeaderView::EnableBluetooth() {
   DCHECK(!waiting_for_tether_initialize_);
-
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
-  } else {
-    Shell::Get()
-        ->bluetooth_power_controller()
-        ->SetPrimaryUserBluetoothPowerSetting(true /* enabled */);
-  }
-
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
   waiting_for_tether_initialize_ = true;
   enable_bluetooth_timer_.Start(
       FROM_HERE, base::Seconds(kBluetoothTimeoutDelaySeconds),

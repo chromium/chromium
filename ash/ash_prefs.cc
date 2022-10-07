@@ -30,7 +30,6 @@
 #include "ash/session/fullscreen_controller.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
-#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/caps_lock_notification_controller.h"
@@ -80,8 +79,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AutozoomControllerImpl::RegisterProfilePrefs(registry);
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
-  if (!ash::features::IsBluetoothRevampEnabled())
-    BluetoothPowerController::RegisterProfilePrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
   CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);
   CaptureModeController::RegisterProfilePrefs(registry);
@@ -149,8 +146,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PaletteTray::RegisterLocalStatePrefs(registry);
   WallpaperPrefManager::RegisterLocalStatePrefs(registry);
-  if (!ash::features::IsBluetoothRevampEnabled())
-    BluetoothPowerController::RegisterLocalStatePrefs(registry);
   DetachableBaseHandler::RegisterPrefs(registry);
   PowerPrefs::RegisterLocalStatePrefs(registry);
   DisplayPrefs::RegisterLocalStatePrefs(registry);

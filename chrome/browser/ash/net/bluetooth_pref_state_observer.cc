@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,8 +13,6 @@
 namespace ash {
 
 BluetoothPrefStateObserver::BluetoothPrefStateObserver() {
-  CHECK(features::IsBluetoothRevampEnabled());
-
   // Set CrosBluetoothConfig with device prefs only.
   SetPrefs(/*profile=*/nullptr);
   session_observation_.Observe(session_manager::SessionManager::Get());

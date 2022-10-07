@@ -1144,12 +1144,10 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Initialize an observer to update NetworkHandler's pref based services.
     network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
 
-    if (features::IsBluetoothRevampEnabled()) {
-      // Initialize an observer to update CrosBluetoothConfig's pref based
-      // services.
-      bluetooth_pref_state_observer_ =
-          std::make_unique<BluetoothPrefStateObserver>();
-    }
+    // Initialize an observer to update CrosBluetoothConfig's pref based
+    // services.
+    bluetooth_pref_state_observer_ =
+        std::make_unique<BluetoothPrefStateObserver>();
 
     // Initialize the NetworkHealth aggregator.
     network_health::NetworkHealthService::GetInstance();
@@ -1478,9 +1476,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   shortcut_mapping_pref_service_.reset();
   if (features::IsTrafficCountersEnabled())
     traffic_counters_handler_.reset();
-
-  if (features::IsBluetoothRevampEnabled())
-    bluetooth_pref_state_observer_.reset();
+  bluetooth_pref_state_observer_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();

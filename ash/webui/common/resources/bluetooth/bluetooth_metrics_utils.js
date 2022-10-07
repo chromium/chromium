@@ -13,7 +13,7 @@ export const BluetoothUiSurface = {
   SETTINGS_PAIRING_DIALOG: 2,
   BLUETOOTH_QUICK_SETTINGS: 3,
   PAIRING_DIALOG: 4,
-  PAIRED_NOTIFICATION: 5,
+  // [Deprecated] PAIRED_NOTIFICATION: 5,
   CONNECTION_TOAST: 6,
   DISCONNECTED_TOAST: 7,
   OOBE_HID_DETECTION: 8,
@@ -28,49 +28,6 @@ export function recordBluetoothUiSurfaceMetrics(uiSurface) {
   chrome.metricsPrivate.recordEnumerationValue(
       'Bluetooth.ChromeOS.UiSurfaceDisplayed', uiSurface,
       Object.keys(BluetoothUiSurface).length);
-}
-
-/**
- * Records metrics indicating the |durationInMs| taken for a user initiated
- * reconnection attempt to complete.
- * @param {number} durationInMs
- * @param {!chrome.bluetooth.Transport|undefined} transport The transport type
- *     of the device.
- * @param {!chrome.bluetoothPrivate.ConnectResultType|undefined}
- *     connectionResult
- */
-export function recordUserInitiatedReconnectionAttemptDuration(
-    durationInMs, transport, connectionResult) {
-  if (!transport || !connectionResult) {
-    return;
-  }
-  let transportHistogramName;
-  switch (transport) {
-    case chrome.bluetooth.Transport.CLASSIC:
-      transportHistogramName = '.Classic';
-      break;
-    case chrome.bluetooth.Transport.DUAL:
-      transportHistogramName = '.Dual';
-      break;
-    case chrome.bluetooth.Transport.LE:
-      transportHistogramName = '.BLE';
-      break;
-    default:
-      // Invalid transport type.
-      return;
-  }
-  const successHistogramName =
-      connectionResult === chrome.bluetoothPrivate.ConnectResultType.SUCCESS ?
-      'Success' :
-      'Failure';
-  chrome.metricsPrivate.recordTime(
-      'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.' +
-          successHistogramName,
-      durationInMs);
-  chrome.metricsPrivate.recordTime(
-      'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.' +
-          successHistogramName + transportHistogramName,
-      durationInMs);
 }
 
 /**

@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/shell_observer.h"
-#include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/machine_learning/user_settings_event.pb.h"
 #include "ash/wm/video_detector.h"
 #include "base/sequence_checker.h"
@@ -47,10 +46,6 @@ class ASH_EXPORT UserSettingsEventLogger
   // Logs an event to UKM that the user has connected to the given network.
   void LogNetworkUkmEvent(
       const chromeos::network_config::mojom::NetworkStateProperties& network);
-
-  // Logs an event to UKM that the user has connected to the given bluetooth
-  // device.
-  void LogBluetoothUkmEvent(const BluetoothAddress& device_address);
 
   // Logs an event to UKM that the user has toggled night light to the given
   // state.

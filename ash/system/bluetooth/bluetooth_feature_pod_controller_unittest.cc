@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -24,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -59,8 +57,6 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     GetPrimaryUnifiedSystemTray()->ShowBubble();
 
@@ -186,7 +182,6 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BluetoothFeaturePodControllerTest,

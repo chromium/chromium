@@ -32,7 +32,6 @@ class BluetoothHandler : public ::settings::SettingsPageUIHandler {
   void BluetoothDeviceAdapterReady(
       scoped_refptr<device::BluetoothAdapter> adapter);
 
-  void HandleIsDeviceBlockedByPolicy(const base::Value::List& args);
   void HandleRequestFastPairDeviceSupport(const base::Value::List& args);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;

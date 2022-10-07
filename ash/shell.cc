@@ -116,9 +116,6 @@
 #include "ash/system/audio/display_speaker_controller.h"
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/bluetooth/bluetooth_notification_controller.h"
-#include "ash/system/bluetooth/bluetooth_power_controller.h"
-#include "ash/system/bluetooth/tray_bluetooth_helper_experimental.h"
-#include "ash/system/bluetooth/tray_bluetooth_helper_legacy.h"
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
@@ -604,20 +601,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   keyboard_controller_ =
       std::make_unique<KeyboardControllerImpl>(session_controller_.get());
 
-  if (!ash::features::IsBluetoothRevampEnabled()) {
-    if (base::FeatureList::IsEnabled(features::kUseBluetoothSystemInAsh)) {
-      mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
-          bluetooth_system_factory;
-      shell_delegate_->BindBluetoothSystemFactory(
-          bluetooth_system_factory.InitWithNewPipeAndPassReceiver());
-      tray_bluetooth_helper_ =
-          std::make_unique<TrayBluetoothHelperExperimental>(
-              std::move(bluetooth_system_factory));
-    } else {
-      tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperLegacy>();
-    }
-  }
-
   PowerStatus::Initialize();
 
   session_controller_->AddObserver(this);
@@ -762,8 +745,6 @@ Shell::~Shell() {
   ml::UserSettingsEventLogger::DeleteInstance();
 
   toast_manager_.reset();
-
-  tray_bluetooth_helper_.reset();
 
   // Accesses root window containers.
   logout_confirmation_controller_.reset();
@@ -950,9 +931,6 @@ Shell::~Shell() {
   power_event_observer_.reset();
 
   session_controller_->RemoveObserver(this);
-  // BluetoothPowerController depends on the PrefService and must be destructed
-  // before it.
-  bluetooth_power_controller_ = nullptr;
   // TouchDevicesController depends on the PrefService and must be destructed
   // before it.
   touch_devices_controller_ = nullptr;
@@ -1027,10 +1005,6 @@ void Shell::Init(
     privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
   }
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
-  if (!ash::features::IsBluetoothRevampEnabled()) {
-    bluetooth_power_controller_ =
-        std::make_unique<BluetoothPowerController>(local_state_);
-  }
   detachable_base_handler_ =
       std::make_unique<DetachableBaseHandler>(local_state_);
   detachable_base_notification_controller_ =
@@ -1377,11 +1351,6 @@ void Shell::Init(
   logout_confirmation_controller_ =
       std::make_unique<LogoutConfirmationController>();
 
-  if (!ash::features::IsBluetoothRevampEnabled()) {
-    // May trigger initialization of the Bluetooth adapter.
-    tray_bluetooth_helper_->Initialize();
-  }
-
   // Create AshTouchTransformController before
   // WindowTreeHostManager::InitDisplays()
   // since AshTouchTransformController listens on
@@ -1437,12 +1406,8 @@ void Shell::Init(
           user_activity_detector_.get(), std::move(fingerprint));
   video_activity_notifier_ =
       std::make_unique<VideoActivityNotifier>(video_detector_.get());
-
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    bluetooth_device_status_ui_handler_ =
-        std::make_unique<BluetoothDeviceStatusUiHandler>();
-  }
-
+  bluetooth_device_status_ui_handler_ =
+      std::make_unique<BluetoothDeviceStatusUiHandler>();
   bluetooth_notification_controller_ =
       std::make_unique<BluetoothNotificationController>(
           message_center::MessageCenter::Get());

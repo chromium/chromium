@@ -6,8 +6,6 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/utf_string_conversions.h"
-#include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -115,44 +113,6 @@ TEST(BluetoothUtilsTest,
 TEST(BluetoothUtilsTest, GetBluetoothAddressForDisplay) {
   EXPECT_EQ(u"AA:BB:CC:00:11:22", GetBluetoothAddressForDisplay(
                                       {0xAA, 0xBB, 0xCC, 0x00, 0x11, 0x22}));
-}
-
-static std::u16string LabelFromTypeWithName(
-    BluetoothDeviceInfo::DeviceType type,
-    const char* name = kName) {
-  BluetoothDeviceInfoPtr info = BluetoothDeviceInfo::New();
-  info->address = kAddress;
-  info->name = name;
-  info->device_type = type;
-  return GetBluetoothDeviceLabelForAccessibility(info);
-}
-
-TEST(BluetoothUtilsTest, GetBluetoothDeviceLabelForAccessibility) {
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER, kName16),
-      LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kComputer, kName));
-
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_CAR_AUDIO, kUnicodeName16),
-      LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kCarAudio,
-                            kUnicodeName));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD,
-                u"00:00:00:00:00:00"),
-            LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kKeyboard,
-                                  kEmptyName));
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_VIDEO,
-                                 u"00:00:00:00:00:00"),
-      LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kVideo,
-                            kWhitespaceName));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_JOYSTICK,
-                u"00:00:00:00:00:00"),
-            LabelFromTypeWithName(BluetoothDeviceInfo::DeviceType::kJoystick,
-                                  kUnicodeWhitespaceName));
 }
 
 }  // namespace device

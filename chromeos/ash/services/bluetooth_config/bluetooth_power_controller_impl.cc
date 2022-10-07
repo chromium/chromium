@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -32,23 +31,15 @@ bool ShouldApplyUserBluetoothSetting(user_manager::UserType user_type) {
 // static
 void BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  // If this flag is off, this pref is registered by
-  // ash::BluetoothPowerController.
-  if (features::IsBluetoothRevampEnabled()) {
-    registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
-                                  /*default_value=*/false);
-  }
+  registry->RegisterBooleanPref(prefs::kSystemBluetoothAdapterEnabled,
+                                /*default_value=*/false);
 }
 
 // static
 void BluetoothPowerControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  // If this flag is off, this pref is registered by
-  // ash::BluetoothPowerController.
-  if (features::IsBluetoothRevampEnabled()) {
-    registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
-                                  /*default_value=*/false);
-  }
+  registry->RegisterBooleanPref(prefs::kUserBluetoothAdapterEnabled,
+                                /*default_value=*/false);
 }
 
 BluetoothPowerControllerImpl::BluetoothPowerControllerImpl(

@@ -124,7 +124,6 @@ NetworkDetailedViewController::NetworkDetailedViewController(
       detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)) {
   DCHECK(ash::features::IsQuickSettingsNetworkRevampEnabled());
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
 
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());

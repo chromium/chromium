@@ -291,12 +291,6 @@ BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the ChromeOS Bluetooth Revamp, which updates Bluetooth
-// system UI and related infrastructure. See https://crbug.com/1010321.
-BASE_FEATURE(kBluetoothRevamp,
-             "BluetoothRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables Bluetooth WBS microphone be selected as default
 // audio input option.
 BASE_FEATURE(kBluetoothWbsDogfood,
@@ -2258,10 +2252,6 @@ bool IsBluetoothQualityReportEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothQualityReport);
 }
 
-bool IsBluetoothRevampEnabled() {
-  return base::FeatureList::IsEnabled(kBluetoothRevamp);
-}
-
 bool IsCalendarViewEnabled() {
   return base::FeatureList::IsEnabled(kCalendarView);
 }
@@ -2689,8 +2679,7 @@ bool IsOobeChromeVoxHintEnabled() {
 }
 
 bool IsOobeHidDetectionRevampEnabled() {
-  return base::FeatureList::IsEnabled(kOobeHidDetectionRevamp) &&
-         base::FeatureList::IsEnabled(kBluetoothRevamp);
+  return base::FeatureList::IsEnabled(kOobeHidDetectionRevamp);
 }
 
 bool IsKioskEnrollmentInOobeEnabled() {

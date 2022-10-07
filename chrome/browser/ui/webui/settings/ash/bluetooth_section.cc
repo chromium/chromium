@@ -85,30 +85,6 @@ const std::vector<SearchConcept>& GetBluetoothOffSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetBluetoothConnectableSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_BLUETOOTH_CONNECT,
-       mojom::kBluetoothDevicesSubpagePath,
-       mojom::SearchResultIcon::kBluetooth,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kBluetoothConnectToDevice}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetBluetoothConnectedSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_BLUETOOTH_DISCONNECT,
-       mojom::kBluetoothDevicesSubpagePath,
-       mojom::SearchResultIcon::kBluetooth,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kBluetoothDisconnectFromDevice}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetBluetoothPairableSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_BLUETOOTH_PAIR,
@@ -117,19 +93,6 @@ const std::vector<SearchConcept>& GetBluetoothPairableSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kBluetoothPairDevice}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetBluetoothPairedSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_BLUETOOTH_UNPAIR,
-       mojom::kBluetoothDevicesSubpagePath,
-       mojom::SearchResultIcon::kBluetooth,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kBluetoothUnpairDevice},
-       {IDS_OS_SETTINGS_TAG_BLUETOOTH_UNPAIR_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -195,8 +158,7 @@ BluetoothSection::BluetoothSection(Profile* profile,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (chromeos::features::IsBluetoothRevampEnabled() &&
-      ash::features::IsFastPairEnabled()) {
+  if (ash::features::IsFastPairEnabled()) {
     pref_change_registrar_->Init(pref_service_);
     pref_change_registrar_->Add(
         ash::prefs::kFastPairEnabled,
@@ -213,12 +175,7 @@ BluetoothSection::~BluetoothSection() {
 void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bluetoothConnected", IDS_SETTINGS_BLUETOOTH_CONNECTED},
-      {"bluetoothConnectedWithBattery",
-       IDS_SETTINGS_BLUETOOTH_CONNECTED_WITH_BATTERY},
       {"bluetoothConnecting", IDS_SETTINGS_BLUETOOTH_CONNECTING},
-      {"bluetoothDeviceListPaired", IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_PAIRED},
-      {"bluetoothDeviceListUnpaired",
-       IDS_SETTINGS_BLUETOOTH_DEVICE_LIST_UNPAIRED},
       {"bluetoothConnect", IDS_SETTINGS_BLUETOOTH_CONNECT},
       {"bluetoothDisconnect", IDS_SETTINGS_BLUETOOTH_DISCONNECT},
       {"bluetoothDeviceDetailConnected",
@@ -282,9 +239,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_BLUETOOTH_TOGGLE_ACCESSIBILITY_LABEL},
       {"bluetoothExpandA11yLabel",
        IDS_SETTINGS_BLUETOOTH_EXPAND_ACCESSIBILITY_LABEL},
-      {"bluetoothNoDevices", IDS_SETTINGS_BLUETOOTH_NO_DEVICES},
-      {"bluetoothNoDevicesFound", IDS_SETTINGS_BLUETOOTH_NO_DEVICES_FOUND},
-      {"bluetoothNotConnected", IDS_SETTINGS_BLUETOOTH_NOT_CONNECTED},
       {"bluetoothPageTitle", IDS_SETTINGS_BLUETOOTH},
       {"bluetoothSummaryPageConnectedA11yOneDevice",
        IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_CONNECTED_A11Y_ONE_DEVICE},
@@ -331,8 +285,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothA11yDeviceNamedBatteryInfoRightBud",
        IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_RIGHT_BUD},
       {"bluetoothA11yDeviceName", IDS_BLUETOOTH_A11Y_DEVICE_NAME},
-      {"bluetoothPairDevicePageTitle",
-       IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE},
       {"bluetoothRemove", IDS_SETTINGS_BLUETOOTH_REMOVE},
       {"bluetoothManaged", IDS_SETTINGS_BLUETOOTH_MANAGED},
       {"enableFastPairLabel", IDS_BLUETOOTH_ENABLE_FAST_PAIR_LABEL},
@@ -355,36 +307,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothDevicesDialogTitle", IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE},
       {"bluetoothPrimaryUserControlled",
        IDS_SETTINGS_BLUETOOTH_PRIMARY_USER_CONTROLLED},
-      {"bluetoothDeviceWithConnectionStatus",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_AND_CONNECTION_STATUS},
-      {"bluetoothDeviceType_computer",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER},
-      {"bluetoothDeviceType_phone",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_PHONE},
-      {"bluetoothDeviceType_modem",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_MODEM},
-      {"bluetoothDeviceType_audio",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_AUDIO},
-      {"bluetoothDeviceType_carAudio",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_CAR_AUDIO},
-      {"bluetoothDeviceType_video",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_VIDEO},
-      {"bluetoothDeviceType_peripheral",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_PERIPHERAL},
-      {"bluetoothDeviceType_joystick",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_JOYSTICK},
-      {"bluetoothDeviceType_gamepad",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_GAMEPAD},
-      {"bluetoothDeviceType_keyboard",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD},
-      {"bluetoothDeviceType_mouse",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_MOUSE},
-      {"bluetoothDeviceType_tablet",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_TABLET},
-      {"bluetoothDeviceType_keyboardMouseCombo",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO},
-      {"bluetoothDeviceType_unknown",
-       IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_UNKNOWN},
       {"bluetoothDeviceListCurrentlyConnected",
        IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED},
       {"bluetoothDeviceListPreviouslyConnected",
@@ -456,10 +378,6 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kBluetoothOnOff, mojom::Setting::kBluetoothPairDevice,
       mojom::Setting::kBluetoothUnpairDevice, mojom::Setting::kFastPairOnOff,
       mojom::Setting::kFastPairSavedDevices};
-  static constexpr mojom::Setting kBluetoothDevicesSettingsLegacy[] = {
-      mojom::Setting::kBluetoothConnectToDevice,
-      mojom::Setting::kBluetoothDisconnectFromDevice,
-  };
 
   RegisterNestedSettingBulk(mojom::Subpage::kBluetoothDevices,
                             kBluetoothDevicesSettings, generator);
@@ -470,10 +388,6 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::SearchResultIcon::kBluetooth,
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kBluetoothDeviceDetailSubpagePath);
-  RegisterNestedSettingBulk(ash::features::IsBluetoothRevampEnabled()
-                                ? mojom::Subpage::kBluetoothDeviceDetail
-                                : mojom::Subpage::kBluetoothDevices,
-                            kBluetoothDevicesSettingsLegacy, generator);
 
   generator->RegisterNestedSubpage(IDS_SETTINGS_BLUETOOTH_SAVED_DEVICES,
                                    mojom::Subpage::kBluetoothSavedDevices,
@@ -529,18 +443,14 @@ void BluetoothSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetFastPairOnSearchConcepts());
   updater.RemoveSearchTags(GetFastPairOffSearchConcepts());
   updater.RemoveSearchTags(GetFastPairSavedDevicesSearchConcepts());
-  updater.RemoveSearchTags(GetBluetoothConnectableSearchConcepts());
-  updater.RemoveSearchTags(GetBluetoothConnectedSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothPairableSearchConcepts());
-  updater.RemoveSearchTags(GetBluetoothPairedSearchConcepts());
 
   if (!bluetooth_adapter_->IsPresent())
     return;
 
   updater.AddSearchTags(GetBluetoothSearchConcepts());
 
-  if (ash::features::IsFastPairEnabled() &&
-      ash::features::IsBluetoothRevampEnabled()) {
+  if (ash::features::IsFastPairEnabled()) {
     if (pref_service_->GetBoolean(ash::prefs::kFastPairEnabled)) {
       updater.AddSearchTags(GetFastPairOnSearchConcepts());
     } else {
@@ -558,46 +468,7 @@ void BluetoothSection::UpdateSearchTags() {
   }
 
   updater.AddSearchTags(GetBluetoothOnSearchConcepts());
-
-  // Always include the option to pair devices, but skip any device-specific
-  // search options since we have no way to determine which device the user is
-  // interested in.
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    updater.AddSearchTags(GetBluetoothPairableSearchConcepts());
-    return;
-  }
-
-  // Filter devices so that only those shown in the UI are returned. Note that
-  // passing |max_devices| of 0 indicates that there is no maximum.
-  device::BluetoothAdapter::DeviceList devices =
-      device::FilterBluetoothDeviceList(bluetooth_adapter_->GetDevices(),
-                                        device::BluetoothFilterType::KNOWN,
-                                        /*max_devices=*/0);
-
-  bool connectable_device_exists = false;
-  bool connected_device_exists = false;
-  bool pairable_device_exists = false;
-  bool paired_device_exists = false;
-  for (const device::BluetoothDevice* device : devices) {
-    // Note: Device must be paired to be connectable.
-    if (device->IsPaired() && device->IsConnectable() && !device->IsConnected())
-      connectable_device_exists = true;
-    if (device->IsConnected())
-      connected_device_exists = true;
-    if (device->IsPairable() && !device->IsPaired())
-      pairable_device_exists = true;
-    if (device->IsPaired())
-      paired_device_exists = true;
-  }
-
-  if (connectable_device_exists)
-    updater.AddSearchTags(GetBluetoothConnectableSearchConcepts());
-  if (connected_device_exists)
-    updater.AddSearchTags(GetBluetoothConnectedSearchConcepts());
-  if (pairable_device_exists)
-    updater.AddSearchTags(GetBluetoothPairableSearchConcepts());
-  if (paired_device_exists)
-    updater.AddSearchTags(GetBluetoothPairedSearchConcepts());
+  updater.AddSearchTags(GetBluetoothPairableSearchConcepts());
 }
 
 }  // namespace settings

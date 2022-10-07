@@ -11,7 +11,6 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/bind.h"
@@ -111,12 +110,8 @@ void NotifyAndroidAppListRefreshed(
 
 DeviceActions::DeviceActions(std::unique_ptr<DeviceActionsDelegate> delegate)
     : delegate_(std::move(delegate)) {
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    // BluetoothConfigService is not available if kBluetoothRevamp is not
-    // enabled.
-    ash::GetBluetoothConfigService(
-        remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
-  }
+  ash::GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
 }
 
 DeviceActions::~DeviceActions() = default;
@@ -129,19 +124,7 @@ void DeviceActions::SetWifiEnabled(bool enabled) {
 }
 
 void DeviceActions::SetBluetoothEnabled(bool enabled) {
-  // If kBluetoothRevamp is enabled, BluetoothPowerController does not observe
-  // the pref value change.
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    remote_cros_bluetooth_config_->SetBluetoothEnabledState(enabled);
-  } else {
-    const user_manager::User* const user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    DCHECK(profile);
-    // BluetoothPowerController observes the pref value change.
-    profile->GetPrefs()->SetBoolean(ash::prefs::kUserBluetoothAdapterEnabled,
-                                    enabled);
-  }
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(enabled);
 }
 
 void HandleScreenBrightnessCallback(

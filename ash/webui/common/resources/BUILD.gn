@@ -23,7 +23,6 @@ web_component_files = [
   "navigation_view_panel.js",
   "page_toolbar.js",
 
-  "bluetooth/bluetooth_dialog.js",
   "bluetooth/bluetooth_icon.js",
   "bluetooth/bluetooth_pairing_confirm_code_page.js",
   "bluetooth/bluetooth_pairing_enter_code_page.js",
@@ -314,7 +313,6 @@ checked_in_dts_files = [
   "bluetooth/bluetooth_base_page.d.ts",
   "bluetooth/bluetooth_battery_icon_percentage.d.ts",
   "bluetooth/bluetooth_device_battery_info.d.ts",
-  "bluetooth/bluetooth_dialog.d.ts",
   "bluetooth/bluetooth_icon.d.ts",
   "bluetooth/bluetooth_pairing_confirm_code_page.d.ts",
   "bluetooth/bluetooth_pairing_device_item.d.ts",

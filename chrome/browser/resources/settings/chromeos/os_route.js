@@ -70,11 +70,9 @@ function createOSSettingsRoutes() {
   r.BLUETOOTH_DEVICES = createSubpage(
       r.BLUETOOTH, routesMojomWebui.BLUETOOTH_DEVICES_SUBPAGE_PATH,
       Subpage.kBluetoothDevices);
-  if (loadTimeData.getBoolean('enableBluetoothRevamp')) {
-    r.BLUETOOTH_DEVICE_DETAIL = createSubpage(
-        r.BLUETOOTH, routesMojomWebui.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
-        Subpage.kBluetoothDeviceDetail);
-  }
+  r.BLUETOOTH_DEVICE_DETAIL = createSubpage(
+      r.BLUETOOTH, routesMojomWebui.BLUETOOTH_DEVICE_DETAIL_SUBPAGE_PATH,
+      Subpage.kBluetoothDeviceDetail);
   if (loadTimeData.getBoolean('enableSavedDevicesFlag')) {
     r.BLUETOOTH_SAVED_DEVICES = createSubpage(
         r.BLUETOOTH, routesMojomWebui.BLUETOOTH_SAVED_DEVICES_SUBPAGE_PATH,

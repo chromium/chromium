@@ -101,7 +101,6 @@ class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
 class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
-class BluetoothPowerController;
 class BrightnessControlDelegate;
 class CalendarController;
 class CaptureModeController;
@@ -215,7 +214,6 @@ class ToplevelWindowEventHandler;
 class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
 class TrayAction;
-class TrayBluetoothHelper;
 class UserMetricsRecorder;
 class VideoActivityNotifier;
 class VideoDetector;
@@ -383,10 +381,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   BacklightsForcedOffSetter* backlights_forced_off_setter() {
     return backlights_forced_off_setter_.get();
-  }
-  BluetoothPowerController* bluetooth_power_controller() {
-    DCHECK(!ash::features::IsBluetoothRevampEnabled());
-    return bluetooth_power_controller_.get();
   }
   BrightnessControlDelegate* brightness_control_delegate() {
     return brightness_control_delegate_.get();
@@ -646,10 +640,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   TrayAction* tray_action() { return tray_action_.get(); }
 
-  // Will return |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
-  TrayBluetoothHelper* tray_bluetooth_helper() {
-    return tray_bluetooth_helper_.get();
-  }
   UserMetricsRecorder* metrics() { return user_metrics_recorder_.get(); }
   VideoDetector* video_detector() { return video_detector_.get(); }
   WallpaperControllerImpl* wallpaper_controller() {
@@ -975,10 +965,6 @@ class ASH_EXPORT Shell : public SessionObserver,
       bluetooth_notification_controller_;
   std::unique_ptr<BluetoothDeviceStatusUiHandler>
       bluetooth_device_status_ui_handler_;
-  std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;
-
-  // Will be |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
-  std::unique_ptr<TrayBluetoothHelper> tray_bluetooth_helper_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
   std::unique_ptr<DisplayAlignmentController> display_alignment_controller_;
   std::unique_ptr<DisplayColorManager> display_color_manager_;

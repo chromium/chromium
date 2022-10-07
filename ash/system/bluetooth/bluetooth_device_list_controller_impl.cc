@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_controller_impl.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
@@ -42,9 +41,7 @@ void RemoveAndResetViewIfExists(T** view) {
 
 BluetoothDeviceListControllerImpl::BluetoothDeviceListControllerImpl(
     BluetoothDetailedView* bluetooth_detailed_view)
-    : bluetooth_detailed_view_(bluetooth_detailed_view) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-}
+    : bluetooth_detailed_view_(bluetooth_detailed_view) {}
 
 BluetoothDeviceListControllerImpl::~BluetoothDeviceListControllerImpl() =
     default;

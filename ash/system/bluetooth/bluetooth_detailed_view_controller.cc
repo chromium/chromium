@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
@@ -29,7 +28,6 @@ BluetoothDetailedViewController::BluetoothDetailedViewController(
     : detailed_view_delegate_(
           std::make_unique<DetailedViewDelegate>(tray_controller)),
       tray_controller_(tray_controller) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -41,7 +40,6 @@ BluetoothDetailedViewImpl::BluetoothDetailedViewImpl(
     BluetoothDetailedView::Delegate* delegate)
     : BluetoothDetailedView(delegate),
       TrayDetailedView(detailed_view_delegate) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
   CreateTitleRowButtons();
   CreateScrollableList();

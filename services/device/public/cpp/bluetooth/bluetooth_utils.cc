@@ -85,60 +85,6 @@ std::u16string GetBluetoothDeviceNameForDisplay(
   NOTREACHED();
 }
 
-namespace {
-
-int GetBluetoothDeviceTypeAccessibilityLabelId(DeviceType device_type) {
-  switch (device_type) {
-    case DeviceType::kComputer:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_COMPUTER;
-    case DeviceType::kPhone:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_PHONE;
-    case DeviceType::kModem:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_MODEM;
-    case DeviceType::kAudio:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_AUDIO;
-    case DeviceType::kCarAudio:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_CAR_AUDIO;
-    case DeviceType::kVideo:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_VIDEO;
-    case DeviceType::kPeripheral:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_PERIPHERAL;
-    case DeviceType::kJoystick:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_JOYSTICK;
-    case DeviceType::kGamepad:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_GAMEPAD;
-    case DeviceType::kKeyboard:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD;
-    case DeviceType::kMouse:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_MOUSE;
-    case DeviceType::kTablet:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_TABLET;
-    case DeviceType::kKeyboardMouseCombo:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_KEYBOARD_MOUSE_COMBO;
-    case DeviceType::kUnknown:
-      return IDS_BLUETOOTH_ACCESSIBILITY_DEVICE_TYPE_UNKNOWN;
-  }
-  NOTREACHED();
-}
-
-}  // namespace
-
-// Returns a a11y accessibility label of the device
-std::u16string GetBluetoothDeviceLabelForAccessibility(
-    const mojom::BluetoothDeviceInfoPtr& device_info) {
-  std::u16string name_utf16 =
-      device::GetBluetoothAddressForDisplay(device_info->address);
-  if (device_info->name) {
-    const std::string& device_name = device_info->name.value();
-    if (device::HasGraphicCharacter(device_name))
-      name_utf16 = base::UTF8ToUTF16(device_name);
-  }
-
-  return l10n_util::GetStringFUTF16(
-      GetBluetoothDeviceTypeAccessibilityLabelId(device_info->device_type),
-      name_utf16);
-}
-
 const BluetoothUUID& GetSerialPortProfileUUID() {
   // The Serial Port Profile (SPP) UUID is 1101.
   // https://chromium-review.googlesource.com/c/chromium/src/+/2334682/17..19

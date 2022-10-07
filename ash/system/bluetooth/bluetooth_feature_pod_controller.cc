@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -29,7 +28,6 @@ using bluetooth_config::mojom::DeviceConnectionState;
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
   GetBluetoothConfigService(
       remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
   remote_cros_bluetooth_config_->ObserveSystemProperties(

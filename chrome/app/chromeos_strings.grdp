@@ -701,77 +701,11 @@
   </message>
 
   <!-- Strings for the Bluetooth pairing dialog -->
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_WRITE_NOT_PERMITTED" desc="Bluetooth pairing dialog: Error message displayed when write operation is not permitted on Bluetooth device.">
-    Write operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_UNSUPPORTED_DEVICE" desc="Bluetooth pairing dialog: Error message displayed when Bluetooth device is not supported.">
-    Unsupported Bluetooth device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_REQUEST_NOT_SUPPORTED" desc="Bluetooth pairing dialog: Error message displayed when Bluetooth pair request is not supported.">
-    The given request is not supported to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_READ_NOT_PERMITTED" desc="Bluetooth pairing dialog: Error message displayed when read operation is not permitted on pairing Bluetooth device.">
-    Read operation is not permitted on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_OFFSET_INVALID" desc="Bluetooth pairing dialog: Error message displayed during pairing operation when read or write has an invalid offset.">
-    Read or write operation was requested with an invalid offset on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_INSUFFICIENT_ENCRYPTION" desc="Bluetooth pairing dialog: Error message displayed during Bluetooth pairing when operation is not sufficiently encrypted.">
-    Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_IN_PROGRESS" desc="Bluetooth pairing dialog: Message informing that current Bluetooth device is still being connected to.">
-    Connection to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>" still in progress
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_FAILED" desc="Bluetooth pairing dialog: Error message informing that connection to Bluetooth device failed.">
-    Failed to connect to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_CONNECTION_CONGESTED" desc="Bluetooth pairing dialog: Error message informing that connection to Bluetooth device is congested.">
-    Connection is congested to remote device: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_TIMEOUT" desc="Bluetooth pairing dialog: Error message informing that Bluetooth authentication connection timed out.">
-    Authentication timeout while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_REJECTED" desc="Bluetooth pairing dialog: Error message informing that Bluetooth authentication code was rejected while connecting to a Bluetooth device.">
-    Authentication code rejected while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_FAILED" desc="Bluetooth pairing dialog: Error message informing that authentication failed while trying to connect to Bluetooth device">
-    Authentication failed while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_AUTH_CANCELED" desc="Bluetooth pairing dialog: Error message informing that authentication was canceled while connecting a Bluetooth device.">
-    Authentication canceled while connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONNECT_ATTRIBUTE_LENGTH_INVALID" desc="Bluetooth pairing dialog: Error message informing that write operations exceeds the maximum length of attribute to a Bluetooth device.">
-    Write operation exceeds the maximum length of the attribute to: "<ph name="DEVICE_NAME">$1<ex>Nexus 4</ex></ph>".
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically shown when pairing with a device that has a display.">
-    Please confirm this passkey is shown on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_DISPLAY_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when pairing a Bluetooth 2.1 and later wireless keyboard.">
-    Please enter this passkey on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_REQUEST_PASSKEY" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when the external Bluetooth 2.1 and later device has no display or means of input, and does not support SSP.">
-    Please enter the passkey for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_DISPLAY_PINCODE" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when pairing a Bluetooth 2.0 and older wireless keyboard.">
-    Please enter this PIN code on "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_REQUEST_PINCODE" desc="Bluetooth pairing dialog: Bluetooth pairing message typically displayed when the external Bluetooth 2.0 and older device has no display or means of input.">
-    Please enter the PIN for "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>":
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_START_CONNECTING">
-    Connecting to "<ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>"
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_REJECT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to reject pairing a device.">
-    Reject
-  </message>
   <message name="IDS_BLUETOOTH_PAIRING_PAIR" desc="Label for the settings button to pair a previously paired Bluetooth device.">
     Pair
   </message>
   <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEY" desc="Bluetooth pairing dialog: Text for enter key when pairing keyboard devices." >
     enter
-  </message>
-  <message name="IDS_BLUETOOTH_PAIRING_ACCEPT_PASSKEY" desc="Bluetooth pairing dialog: Text for button to accept pairing code.">
-    Accept
   </message>
   <message name="IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES" desc="Message displayed describing how to pair a new Bluetooth device.">
     Pair new device

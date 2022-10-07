@@ -6,10 +6,8 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,8 +25,6 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
-
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
     widget_ = CreateTestWidget();
     container_ = widget_->GetContentsView()->AddChildView(
@@ -67,7 +63,6 @@ class BluetoothDisabledDetailedViewTest : public AshTestBase {
   views::View* container() { return container_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   views::View* container_;
   BluetoothDisabledDetailedView* bluetooth_disabled_detailed_view_;

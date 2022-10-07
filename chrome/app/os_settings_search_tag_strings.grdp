@@ -202,9 +202,6 @@
   <message name="IDS_OS_SETTINGS_TAG_BLUETOOTH_UNPAIR" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with an option to unpair from a device. Alternate phrase for: 'Forget Bluetooth device'">
     Unpair Bluetooth device
   </message>
-  <message name="IDS_OS_SETTINGS_TAG_BLUETOOTH_UNPAIR_ALT1" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with an option to unpair from a device. Alternate phrase for: 'Unpair from a Bluetooth device'">
-    Forget Bluetooth device
-  </message>
   <message name="IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn off Bluetooth. Alternate phrase for: 'Disable Bluetooth'">
     Turn off Bluetooth
   </message>

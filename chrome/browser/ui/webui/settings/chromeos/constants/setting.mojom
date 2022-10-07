@@ -42,8 +42,8 @@ enum Setting {
 
   // Bluetooth section.
   kBluetoothOnOff = 100,
-  kBluetoothConnectToDevice = 101,
-  kBluetoothDisconnectFromDevice = 102,
+  // [Deprecated] kBluetoothConnectToDevice = 101,
+  // [Deprecated] kBluetoothDisconnectFromDevice = 102,
   kBluetoothPairDevice = 103,
   kBluetoothUnpairDevice = 104,
   kFastPairOnOff = 105,

@@ -11480,7 +11480,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Settings - pairing dialog"/>
   <int value="3" label="Bluetooth Quick Settings"/>
   <int value="4" label="Standalone Pairing dialog"/>
-  <int value="5" label="Paired notification"/>
+  <int value="5" label="Paired notification (obsolete)"/>
   <int value="6" label="Connected toast"/>
   <int value="7" label="Disconnected toast"/>
   <int value="8" label="OOBE HID Detection"/>

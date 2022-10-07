@@ -240,14 +240,12 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   desks_client_ = std::make_unique<DesksClient>();
 
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    ash::bluetooth_config::FastPairDelegate* delegate =
-        ash::features::IsFastPairEnabled()
-            ? ash::Shell::Get()->quick_pair_mediator()->GetFastPairDelegate()
-            : nullptr;
+  ash::bluetooth_config::FastPairDelegate* delegate =
+      ash::features::IsFastPairEnabled()
+          ? ash::Shell::Get()->quick_pair_mediator()->GetFastPairDelegate()
+          : nullptr;
 
-    ash::bluetooth_config::Initialize(delegate);
-  }
+  ash::bluetooth_config::Initialize(delegate);
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -310,8 +308,7 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
-  if (ash::features::IsBluetoothRevampEnabled())
-    ash::bluetooth_config::Shutdown();
+  ash::bluetooth_config::Shutdown();
 
   // Disable event dispatch before Exo starts closing windows to prevent
   // synthetic events from being dispatched. crbug.com/874156 and

@@ -2803,9 +2803,6 @@ extern const char kBluetoothFixA2dpPacketSizeDescription[];
 extern const char kBluetoothQualityReportName[];
 extern const char kBluetoothQualityReportDescription[];
 
-extern const char kBluetoothRevampName[];
-extern const char kBluetoothRevampDescription[];
-
 extern const char kBluetoothWbsDogfoodName[];
 extern const char kBluetoothWbsDogfoodDescription[];
 

@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/bluetooth_power_controller_impl.h"
 #include "chromeos/ash/services/bluetooth_config/device_name_manager_impl.h"
@@ -43,8 +41,6 @@ class CrosBluetoothConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
-
     DeviceNameManagerImpl::RegisterLocalStatePrefs(
         test_pref_service_.registry());
     BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
@@ -87,7 +83,6 @@ class CrosBluetoothConfigTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   user_manager::FakeUserManager* fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   session_manager::SessionManager session_manager_;

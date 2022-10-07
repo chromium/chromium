@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -29,8 +28,6 @@ const char kBluetoothToastIdPrefix[] = "cros_bluetooth_device_toast_id-";
 }  // namespace
 
 BluetoothDeviceStatusUiHandler::BluetoothDeviceStatusUiHandler() {
-  DCHECK(ash::features::IsBluetoothRevampEnabled());
-
   // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
   // to bind to it before it has initialized.
   base::ThreadTaskRunnerHandle::Get()->PostTask(

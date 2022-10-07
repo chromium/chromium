@@ -21,19 +21,9 @@
 #include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace bluez {
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(b/213229904): Remove this constant and replace with
-// |bluetooth_device::kDisconnectOld| once it has been uprev'd.
-constexpr char kDisconnectOldPlaceholder[] = "DisconnectOld";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Value returned for the the RSSI or TX power if it cannot be read.
 const int kUnknownPower = 127;
@@ -370,20 +360,8 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
   void Disconnect(const dbus::ObjectPath& object_path,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
-// TODO(b/208933029): Only use the new disconnect method, e.g.
-// |bluetooth_device::kDisconnect|, once the Bluetooth revamp is fully launched.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // For the Bluetooth revamp we want to use an updated disconnect mechanism
-    // that does not disable auto-reconnect since we no longer provide a
-    // "connect" button for HID devices.
-    const char* method_name = ash::features::IsBluetoothRevampEnabled()
-                                  ? bluetooth_device::kDisconnect
-                                  : kDisconnectOldPlaceholder;
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    const char* method_name = bluetooth_device::kDisconnect;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
-                                 method_name);
+                                 bluetooth_device::kDisconnect);
 
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(object_path);

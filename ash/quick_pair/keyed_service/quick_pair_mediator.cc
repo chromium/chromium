@@ -109,13 +109,11 @@ Mediator::Mediator(
                    !has_at_least_one_discovery_session_);
   quick_pair_process::SetProcessManager(process_manager_.get());
 
-  if (ash::features::IsBluetoothRevampEnabled()) {
-    // Asynchronously bind to CrosBluetoothConfig so that we don't attempt to
-    // bind to it before it has initialized.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Asynchronously bind to CrosBluetoothConfig so that we don't attempt to
+  // bind to it before it has initialized.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&Mediator::BindToCrosBluetoothConfig,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 Mediator::~Mediator() {
