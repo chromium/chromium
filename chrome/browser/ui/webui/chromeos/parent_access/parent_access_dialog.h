@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 
@@ -34,6 +35,9 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 
     // The Parent Access Token.  Only set if status is kVerified.
     std::string parent_access_token = "";
+
+    // The UTC timestamp at which the token expires.
+    base::Time parent_access_token_expire_timestamp_;
   };
 
   // Callback for the result of the dialog.

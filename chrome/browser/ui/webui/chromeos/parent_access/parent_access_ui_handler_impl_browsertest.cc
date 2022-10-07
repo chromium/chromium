@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
@@ -144,6 +145,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   kids::platform::parentaccess::client::proto::Timestamp* expire_time =
       pat->mutable_expire_time();
   expire_time->set_seconds(123456);
+  // Nanoseconds will be ignored.
   expire_time->set_nanos(567890);
 
   // Show the parent access dialog.
@@ -154,8 +156,11 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
           [](base::OnceClosure quit_closure,
              std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
               -> void {
-            // The dialog result should contain the test token.
+            // The dialog result should contain the test token and expire
+            // timestamp.
             EXPECT_EQ("TEST_TOKEN", result->parent_access_token);
+            EXPECT_EQ(base::Time::FromDoubleT(123456),
+                      result->parent_access_token_expire_timestamp_);
             std::move(quit_closure).Run();
           },
           show_dialog_run_loop.QuitClosure()));
