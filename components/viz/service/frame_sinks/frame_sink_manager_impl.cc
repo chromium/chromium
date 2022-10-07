@@ -751,7 +751,20 @@ void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
 
 void FrameSinkManagerImpl::StartThrottlingAllFrameSinks(
     base::TimeDelta interval) {
-  global_throttle_interval_ = interval;
+  // Floor the requested interval to the nearest 10th of a millisecond. This is
+  // because the precision of timing between frames is in microseconds, which
+  // can result in error accumulation over several throttled frames.
+  //
+  // For instance, on a 60Hz display, the first frame is produced at 0.016666
+  // seconds, and the second at (0.016666 + 0.016666 = 0.033332) seconds.
+  // base::Hertz(30) is 0.033333 seconds, so the second frame is considered to
+  // have been produced too fast, and is therefore throttled. This results in a
+  // 20Hz refresh rate instead of the desired 30Hz.
+  //
+  // Flooring at the nearest 10th of a millisecond produces correct throttling
+  // results for frame rates up to 960Hz, after which either flooring to
+  // milliseconds or a more precise between-frames measurement is required.
+  global_throttle_interval_ = interval.FloorToMultiple(base::Microseconds(100));
   UpdateThrottling();
 }
 

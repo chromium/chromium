@@ -535,6 +535,10 @@ TEST_F(FrameSinkManagerTest, GlobalThrottle) {
 
   constexpr base::TimeDelta global_interval = base::Hertz(30);
   constexpr base::TimeDelta interval = base::Hertz(20);
+  // The global throttle interval is floored to avoid precision-related
+  // accumulated error. See the comment on `StartThrottlingAllFrameSinks`
+  const base::TimeDelta expected_global_interval =
+      base::Hertz(30).FloorToMultiple(base::Microseconds(100));
 
   std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
                                kFrameSinkIdC, kFrameSinkIdD};
@@ -545,20 +549,20 @@ TEST_F(FrameSinkManagerTest, GlobalThrottle) {
 
   // Starting global throttling should throttle the entire hierarchy.
   manager_.StartThrottlingAllFrameSinks(global_interval);
-  VerifyThrottling(global_interval, ids);
+  VerifyThrottling(expected_global_interval, ids);
 
   // Throttling more aggressively on top of global throttling should further
   // throttle the specified frame sink hierarchy, but preserve global throttling
   // on the unaffected framesinks.
   manager_.Throttle({kFrameSinkIdC}, interval);
-  VerifyThrottling(global_interval,
+  VerifyThrottling(expected_global_interval,
                    {kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB});
   VerifyThrottling(interval, {kFrameSinkIdC, kFrameSinkIdD});
 
   // Attempting to per-sink throttle to an interval shorter than the global
   // throttling should still throttle all frame sinks to the global interval.
   manager_.Throttle({kFrameSinkIdA}, base::Hertz(40));
-  VerifyThrottling(global_interval, ids);
+  VerifyThrottling(expected_global_interval, ids);
 
   // Add a new branch to the hierarchy. These new frame sinks should be globally
   // throttled immediately. root -> A -> B
@@ -571,7 +575,7 @@ TEST_F(FrameSinkManagerTest, GlobalThrottle) {
   manager_.RegisterFrameSinkHierarchy(client_e->frame_sink_id(),
                                       client_f->frame_sink_id());
   VerifyThrottling(
-      global_interval,
+      expected_global_interval,
       {kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB, kFrameSinkIdC,
        kFrameSinkIdD, kFrameSinkIdE, kFrameSinkIdF});
 
