@@ -33,10 +33,9 @@ function runGenericSensorTests(sensorName,
     throw new TypeError('readingData.expectedReadings must be an array of ' +
                         'arrays.');
   }
-  if (readings.length != expectedReadings.length) {
-    throw new TypeError('readingData.readings and ' +
-                        'readingData.expectedReadings must have the same ' +
-                        'length.');
+  if (readings.length < expectedReadings.length) {
+    throw new TypeError('readingData.readings\' length must be bigger than ' +
+                        'or equal to readingData.expectedReadings\' length.');
   }
   if (expectedRemappedReadings &&
       !validateReadingFormat(expectedRemappedReadings)) {
@@ -44,8 +43,8 @@ function runGenericSensorTests(sensorName,
                         'array of arrays.');
   }
   if (expectedRemappedReadings &&
-      readings.length != expectedRemappedReadings.length) {
-    throw new TypeError('readingData.readings and ' +
+      expectedReadings.length != expectedRemappedReadings.length) {
+    throw new TypeError('readingData.expectedReadings and ' +
       'readingData.expectedRemappedReadings must have the same ' +
       'length.');
   }
@@ -247,6 +246,28 @@ function runGenericSensorTests(sensorName,
     sensor2.stop();
     assert_true(verificationFunction(expected, sensor2, /*isNull=*/true));
   }, `${sensorName}: sensor reading is correct.`);
+
+  // Tests that readings maps to expectedReadings correctly. Due to threshold
+  // check and rounding some values might be discarded or changed.
+  sensor_test(async (t, sensorProvider) => {
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
+    const sensor = new sensorType();
+    const sensorWatcher = new EventWatcher(t, sensor, ["reading", "error"]);
+    sensor.start();
+
+    const mockSensor = await sensorProvider.getCreatedSensor(sensorName);
+    await mockSensor.setSensorReading(readings);
+
+    for (let expectedReading of expectedReadings) {
+      await sensorWatcher.wait_for("reading");
+      assert_true(sensor.hasReading, "hasReading");
+      assert_true(verificationFunction(expectedReading, sensor),
+                                       "verification");
+    }
+
+    sensor.stop();
+  }, `${sensorName}: Test that readings are all mapped to expectedReadings\
+ correctly.`);
 
   sensor_test(async (t, sensorProvider) => {
     assert_implements(sensorName in self, `${sensorName} is not supported.`);
