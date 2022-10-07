@@ -183,22 +183,6 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
                                       end_point],
                                      check_return=True)
 
-    with open(filename, 'r+') as logcat_file:
-      logcat_lines = []
-      store_line = False
-      for line in logcat_file.readlines():
-        if start_point in line:
-          store_line = True
-        elif end_point in line:
-          store_line = False
-          logcat_lines.append(line)
-
-        if store_line:
-          logcat_lines.append(line)
-
-    with open(filename, 'w') as logcat_file:
-      logcat_file.write(''.join(logcat_lines))
-
   def parse_args(self, args=None):
     super(FinchTestCase, self).parse_args(args)
     if (not self.options.finch_seed_path or
