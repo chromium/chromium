@@ -145,15 +145,16 @@ void UpgradeToVersion1(sync_pb::LocalTrustedVault* local_trusted_vault) {
   local_trusted_vault->set_data_version(1);
 }
 
-// Version 1 may contain `keys_are_stale` accidentally set to true, upgrade to
-// version 2 resets it to false.
+// Version 1 may contain `keys_marked_as_stale_by_consumer` (before the field
+// was renamed) accidentally set to true, upgrade to version 2 resets it to
+// false.
 void UpgradeToVersion2(sync_pb::LocalTrustedVault* local_trusted_vault) {
   DCHECK(local_trusted_vault);
   DCHECK_EQ(local_trusted_vault->data_version(), 1);
 
   for (sync_pb::LocalTrustedVaultPerUser& per_user_vault :
        *local_trusted_vault->mutable_user()) {
-    per_user_vault.set_keys_are_stale(false);
+    per_user_vault.set_keys_marked_as_stale_by_consumer(false);
   }
   local_trusted_vault->set_data_version(2);
 }
@@ -278,7 +279,7 @@ void StandaloneTrustedVaultBackend::FetchKeys(
       FindUserVault(account_info.gaia);
 
   if (per_user_vault && HasNonConstantKey(*per_user_vault) &&
-      !per_user_vault->keys_are_stale()) {
+      !per_user_vault->keys_marked_as_stale_by_consumer()) {
     // There are locally available keys, which weren't marked as stale. Keys
     // download attempt is not needed.
     FulfillOngoingFetchKeys(/*status_for_uma=*/absl::nullopt);
@@ -365,9 +366,14 @@ void StandaloneTrustedVaultBackend::StoreKeys(
     per_user_vault->set_gaia_id(gaia_id);
   }
 
+  // Having retrieved (or downloaded) new keys indicates that past failures may
+  // no longer be relevant.
+  per_user_vault->mutable_local_device_registration_info()
+      ->set_last_registration_returned_local_data_obsolete(false);
+
   // Replace all keys.
   per_user_vault->set_last_vault_key_version(last_key_version);
-  per_user_vault->set_keys_are_stale(false);
+  per_user_vault->set_keys_marked_as_stale_by_consumer(false);
   per_user_vault->clear_vault_key();
   for (const std::vector<uint8_t>& key : keys) {
     AssignBytesToProtoString(
@@ -502,12 +508,12 @@ bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info) {
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
-  if (!per_user_vault || per_user_vault->keys_are_stale()) {
+  if (!per_user_vault || per_user_vault->keys_marked_as_stale_by_consumer()) {
     // No keys available for |account_info| or they are already marked as stale.
     return false;
   }
 
-  per_user_vault->set_keys_are_stale(true);
+  per_user_vault->set_keys_marked_as_stale_by_consumer(true);
   WriteToDisk(data_, file_path_);
   return true;
 }
@@ -653,6 +659,16 @@ void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
   WriteToDisk(data_, file_path_);
 }
 
+void StandaloneTrustedVaultBackend::
+    SetLastRegistrationReturnedLocalDataObsoleteForTesting(
+        const std::string& gaia_id) {
+  sync_pb::LocalTrustedVaultPerUser* per_user_vault = FindUserVault(gaia_id);
+  DCHECK(per_user_vault);
+  per_user_vault->mutable_local_device_registration_info()
+      ->set_last_registration_returned_local_data_obsolete(true);
+  WriteToDisk(data_, file_path_);
+}
+
 void StandaloneTrustedVaultBackend::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
@@ -706,7 +722,8 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
     return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV0;
   }
 
-  if (per_user_vault->keys_are_stale()) {
+  if (per_user_vault->local_device_registration_info()
+          .last_registration_returned_local_data_obsolete()) {
     // Client already knows that existing vault keys (or their absence) isn't
     // sufficient for device registration. Fresh keys should be obtained first.
     return TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale;
@@ -807,6 +824,13 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
+  // Registration is only attempted if the was no previous failure with
+  // |kLocalDataObsolete|. If this precondition wasn't guaranteed here, the
+  // field would need to be reset for some cases below such as `kSuccess` and
+  // `kAlreadyRegistered`.
+  DCHECK(!per_user_vault->local_device_registration_info()
+              .last_registration_returned_local_data_obsolete());
+
   switch (status) {
     case TrustedVaultRegistrationStatus::kSuccess:
     case TrustedVaultRegistrationStatus::kAlreadyRegistered:
@@ -819,7 +843,8 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
       WriteToDisk(data_, file_path_);
       return;
     case TrustedVaultRegistrationStatus::kLocalDataObsolete:
-      per_user_vault->set_keys_are_stale(true);
+      per_user_vault->mutable_local_device_registration_info()
+          ->set_last_registration_returned_local_data_obsolete(true);
       WriteToDisk(data_, file_path_);
       return;
     case TrustedVaultRegistrationStatus::kAccessTokenFetchingFailure:

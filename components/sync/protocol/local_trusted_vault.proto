@@ -19,12 +19,25 @@ message LocalDeviceRegistrationInfo {
   optional bytes private_key_material = 1;
 
   // Indicates whether device is registered, i.e. whether its public key is
-  // successfully submitted to the server.
+  // successfully submitted to the server. If set to true, it is only
+  // trustworthy depending on whether re-registration completed successfully,
+  // reflected in `device_registered_version`.
   optional bool device_registered = 2;
 
   // Used to trigger another device registration attempt, even if device is
   // already registered. Not set if `device_registered` is false.
   optional int32 device_registered_version = 3;
+
+  // If true, it indicates that a previous attempt to register or reregister
+  // the device failed, with a failure that suggests future attempts will fail
+  // too. This usually means additional keys are needed, which can be resolved
+  // via key retrieval.
+  //
+  // Note that true doesn't imply the device isn't registered. It may be that
+  // the failure corresponds to a re-registration attempt. In this case, besides
+  // key retrieval, it may be possible to resolve the error by attempting to
+  // download new keys.
+  optional bool last_registration_returned_local_data_obsolete = 4;
 }
 
 message LocalTrustedVaultDegradedRecoverabilityState {
@@ -46,10 +59,12 @@ message LocalTrustedVaultPerUser {
   // The version corresponding to the last element in `vault_key`.
   optional int32 last_vault_key_version = 3;
 
-  // Indicates whether `vault_key` is stale, i.e. that the latest locally
-  // available key isn't the latest key in the vault. New keys need to be
-  // fetched through key retrieval procedure or by following key rotation.
-  optional bool keys_are_stale = 4;
+  // Indicates whether `vault_key` is marked as stale by upper layers, which
+  // suggests (but doesn't guarantee) that the server may contain additional
+  // (newer) keys. If the device is registered in the security domain, it means
+  // it may be worth downloading new keys (follow key rotation). Otherwise, new
+  // keys need to be fetched through key retrieval procedure.
+  optional bool keys_marked_as_stale_by_consumer = 4;
 
   // Device key and corresponding registration metadata.
   optional LocalDeviceRegistrationInfo local_device_registration_info = 5;

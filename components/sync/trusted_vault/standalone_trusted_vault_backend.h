@@ -129,6 +129,8 @@ class StandaloneTrustedVaultBackend
 
   void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
                                             int version);
+  void SetLastRegistrationReturnedLocalDataObsoleteForTesting(
+      const std::string& gaia_id);
 
   void SetClockForTesting(base::Clock* clock);
 

@@ -176,6 +176,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
         file_path_, std::move(delegate), std::move(connection));
     backend_->SetClockForTesting(&clock_);
+    backend_->ReadDataFromDisk();
 
     // To avoid DCHECK failures in tests that exercise SetPrimaryAccount(),
     // return non-null for RegisterAuthenticationFactor(). This registration
@@ -428,19 +429,19 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   sync_pb::LocalTrustedVaultPerUser* user_data1 = initial_data.add_user();
   sync_pb::LocalTrustedVaultPerUser* user_data2 = initial_data.add_user();
   user_data1->set_gaia_id(account_info_1.gaia);
-  user_data1->set_keys_are_stale(true);
+  user_data1->set_keys_marked_as_stale_by_consumer(true);
   user_data2->set_gaia_id(account_info_2.gaia);
-  user_data2->set_keys_are_stale(true);
+  user_data2->set_keys_marked_as_stale_by_consumer(true);
   ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
 
-  // Backend should reset |keys_are_stale| for both accounts and write new
-  // state.
+  // Backend should reset |keys_marked_as_stale_by_consumer| for both accounts
+  // and write new state.
   backend()->ReadDataFromDisk();
 
   sync_pb::LocalTrustedVault new_data = ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(new_data.user_size(), Eq(2));
-  EXPECT_FALSE(new_data.user(0).keys_are_stale());
-  EXPECT_FALSE(new_data.user(1).keys_are_stale());
+  EXPECT_FALSE(new_data.user(0).keys_marked_as_stale_by_consumer());
+  EXPECT_FALSE(new_data.user(1).keys_marked_as_stale_by_consumer());
   EXPECT_THAT(new_data.data_version(), Eq(2));
 }
 
@@ -678,9 +679,11 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &decrypted_content));
   EXPECT_TRUE(proto.ParseFromString(decrypted_content));
   ASSERT_THAT(proto.user_size(), Eq(1));
-  // Ensure that keys are marked as stale, regression test for
-  // crbug.com/1358015.
-  EXPECT_TRUE(proto.user(0).keys_are_stale());
+  // Ensure that the failure is remembered, so there are no retries. This is a
+  // regression test for crbug.com/1358015.
+  EXPECT_TRUE(proto.user(0)
+                  .local_device_registration_info()
+                  .last_registration_returned_local_data_obsolete());
   // Additionally ensure that |local_device_registration_info| has correct
   // state.
   EXPECT_FALSE(
@@ -688,6 +691,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(proto.user(0)
                   .local_device_registration_info()
                   .has_private_key_material());
+  // Keys shouldn't be marked as stale: this is exclusively about upper layers
+  // invoking MarkLocalKeysAsStale().
+  EXPECT_FALSE(proto.user(0).keys_marked_as_stale_by_consumer());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -792,13 +798,43 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldNotRegisterDeviceIfLocalKeysAreStale) {
+       ShouldTryToRegisterDeviceEvenIfLocalKeysAreStale) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
 
   backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _));
+
+  base::HistogramTester histogram_tester;
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDeviceRegistrationState",
+      /*sample=*/
+      TrustedVaultDeviceRegistrationStateForUMA::
+          kAttemptingRegistrationWithNewKeyPair,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotTryToRegisterDeviceIfPreviousAttemptFailed) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
+  backend()->SetLastRegistrationReturnedLocalDataObsoleteForTesting(
+      account_info.gaia);
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
@@ -812,6 +848,38 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRegisterDeviceAlthoughPreviousAttemptFailedUponNewStoredKeys) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialKeys = {1, 2, 3};
+  const int kInitialKeysVersion = 5;
+  const std::vector<uint8_t> kNewKeys = {1, 2, 3, 4};
+  const int kNewKeysVersion = 6;
+
+  backend()->StoreKeys(account_info.gaia, {kInitialKeys}, kInitialKeysVersion);
+  backend()->SetLastRegistrationReturnedLocalDataObsoleteForTesting(
+      account_info.gaia);
+
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  EXPECT_CALL(*connection(), RegisterDeviceWithoutKeys).Times(0);
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  Mock::VerifyAndClearExpectations(connection());
+
+  ASSERT_FALSE(backend()
+                   ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                   .device_registered());
+
+  // StoreKeys() should trigger a registration nevertheless.
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kNewKeys), kNewKeysVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _));
+
+  backend()->StoreKeys(account_info.gaia, {kNewKeys}, kNewKeysVersion);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -850,7 +918,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester;
   ResetBackend();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
   histogram_tester.ExpectUniqueSample(
@@ -865,7 +932,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ResetBackend();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
   clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
-  backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
   histogram_tester2.ExpectUniqueSample(
@@ -911,7 +977,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // throttled.
   ResetBackend();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor);
-  backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
 }
@@ -1313,7 +1378,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
   const int kLastKeyVersion = 1;
 
   std::vector<uint8_t> private_device_key = StoreKeysAndMimicDeviceRegistration(
-      {kVaultKey}, kLastKeyVersion, account_info);
+      {GetConstantTrustedVaultKey(), kVaultKey}, kLastKeyVersion, account_info);
   // Mimic that device was registered before "redo registration" logic was
   // introduced.
   backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
@@ -1321,7 +1386,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
 
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
-  backend()->ReadDataFromDisk();
 
   // Another device registration request should be issued upon setting the
   // primary account.
@@ -1382,7 +1446,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRedoDeviceRegistration) {
   {
     // Mimic the restart and verify that kAlreadyRegisteredV1 is recorded.
     ResetBackend();
-    backend()->ReadDataFromDisk();
 
     base::HistogramTester histogram_tester;
     backend()->SetPrimaryAccount(account_info,
@@ -1430,7 +1493,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
-  backend()->ReadDataFromDisk();
 
   // Another device registration request should be issued upon setting the
   // primary account and it should ignore presence of
@@ -1486,7 +1548,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   {
     // Mimic the restart and verify that kAlreadyRegisteredV1 is recorded.
     ResetBackend();
-    backend()->ReadDataFromDisk();
 
     base::HistogramTester histogram_tester;
     backend()->SetPrimaryAccount(account_info,
@@ -1521,7 +1582,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
-  backend()->ReadDataFromDisk();
 
   // No registration attempt should be made, since device is already registered
   // and "redo registration" logic is disabled.
@@ -1560,7 +1620,6 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
-  backend()->ReadDataFromDisk();
 
   // No registration attempt should be made, since device is already registered
   // with version 1.
@@ -1792,7 +1851,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldVerifyRegistration) {
 
   // Mimic a restart. The device should remain registered.
   ResetBackend();
-  backend()->ReadDataFromDisk();
 
   ASSERT_TRUE(backend()
                   ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
