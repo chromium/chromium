@@ -68,25 +68,13 @@ async function main() {
       contents: TestFileSystemProvider.INITIAL_TEXT,
     },
   });
-
-  const {fileSystem} = await mountTestFileSystem();
-
-  /**
-   * @param {string} path
-   * @param {{create: boolean, exclusive: boolean}} options
-   * @returns {!Promise<!FileEntry>}
-   */
-  const getFileEntry = (path, options) => {
-    return new Promise(
-        (resolve, reject) =>
-            fileSystem.root.getFile(path, options, resolve, reject));
-  };
+  const fileSystem = await mountTestFileSystem();
 
   chrome.test.runTests([
     // Write contents to a non-existing file. It should succeed.
     async function writeNewFileSuccess() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TESTING_NEW_FILE_NAME, {create: true, exclusive: true});
 
         await writeTextToFile(
@@ -104,7 +92,7 @@ async function main() {
     // Overwrite contents in an existing file. It should succeed.
     async function overwriteFileSuccess() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TESTING_TIRAMISU_FILE_NAME, {create: true, exclusive: false});
 
         await writeTextToFile(
@@ -122,7 +110,7 @@ async function main() {
     // Append contents to an existing file. It should succeed.
     async function appendFileSuccess() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false});
 
         const fileWriter = await createWriter(fileEntry);
@@ -142,7 +130,7 @@ async function main() {
     // Replace contents in an existing file. It should succeed.
     async function replaceFileSuccess() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TESTING_TIRAMISU_FILE_NAME, {create: false, exclusive: false});
 
         const fileWriter = await createWriter(fileEntry);
@@ -164,7 +152,7 @@ async function main() {
     // Write bytes to a broken file. This should result in an error.
     async function writeBrokenFileError() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_FAIL,
             {create: false, exclusive: false});
         const fileWriter = await createWriter(fileEntry);
@@ -187,7 +175,7 @@ async function main() {
       let writePromise;
       try {
         // A write to this file will be stuck forever.
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_BLOCKS_FOREVER,
             {create: false, exclusive: false});
         const fileWriter = await createWriter(fileEntry);

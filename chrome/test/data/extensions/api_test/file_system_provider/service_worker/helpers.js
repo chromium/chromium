@@ -8,7 +8,7 @@ import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_prov
  * @param {...?} args
  * @returns {!Promise<?>}
  */
-export async function promisifyWithLastError(fn, ...args) {
+async function promisifyWithLastError(fn, ...args) {
   return new Promise((resolve, reject) => {
     fn(...args, (result) => {
       if (chrome.runtime.lastError) {
@@ -43,15 +43,11 @@ export async function getVolumeInfo(fileSystemId) {
 };
 
 /**
- * Mounts a testing file system and calls the callback in case of a success.
- * On failure, the current test case is failed on an assertion.
- *
  * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
  *     unspecified, then not limited.
- * @returns {!Promise<{fileSystem: !Object, volumeId: string}>} mounted
- *     filesystem and its volume ID.
+ * @returns {!Promise<!FileSystem>} mounted filesystem instance.
  */
-export async function mountTestFileSystem(openedFilesLimit) {
+async function mount(openedFilesLimit) {
   const fileSystemId = TestFileSystemProvider.FILESYSTEM_ID;
   const options = {
     fileSystemId,
@@ -72,8 +68,53 @@ export async function mountTestFileSystem(openedFilesLimit) {
   if (!fileSystem) {
     throw new Error(`filesystem not found for volume: ${volumeInfo.volumeId}`);
   }
-  return {fileSystem, volumeId: volumeInfo.volumeId};
+  return fileSystem;
 };
+
+export class MountedTestFileSystem {
+  /** @param {!FileSystem} fileSystem */
+  constructor(fileSystem) {
+    /** @type {!FileSystem} */
+    this.fileSystem = fileSystem;
+  }
+
+  /**
+   * Unmount and mount the test filesystem with a new open file limit.
+   *
+   * @param {number} openedFilesLimit
+   */
+  async remount(openedFilesLimit) {
+    await promisifyWithLastError(chrome.fileSystemProvider.unmount, {
+      fileSystemId: TestFileSystemProvider.FILESYSTEM_ID,
+    });
+    this.fileSystem = await mount(openedFilesLimit);
+  }
+
+  /**
+   * Get a file entry from the root of the mounted filesystem.
+   *
+   * @param {string} path
+   * @param {{create: (boolean|undefined), exclusive: (boolean|undefined)}}
+   *     options
+   * @returns {!Promise<!FileEntry>}
+   */
+  async getFileEntry(path, options) {
+    return new Promise(
+        (resolve, reject) =>
+            this.fileSystem.root.getFile(path, options, resolve, reject));
+  }
+};
+
+/**
+ * Create a mounted test filesystem instance.
+ *
+ * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
+ *     unspecified, then not limited.
+ * @return {!Promise<!MountedTestFileSystem>}
+ */
+export async function mountTestFileSystem(openedFilesLimit) {
+  return new MountedTestFileSystem(await mount(openedFilesLimit));
+}
 
 /**
  * @suppress {checkTypes}

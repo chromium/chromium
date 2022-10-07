@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {mountTestFileSystem, promisifyWithLastError, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -37,41 +37,15 @@ function startReadTextFromFile(file) {
   return {reader, promise};
 }
 
-/**
- * Unmounts and remounts a test filesystem with a different opened files limit.
- *
- * @param {number} openedFilesLimit Limit of opened files at once. If 0, then
- *     not limited.
- * @returns {!Promise<{fileSystem: !Object, volumeId: string}>} mounted
- *     filesystem and its volume ID.
- */
-async function remountTestFileSystem(openedFilesLimit) {
-  await promisifyWithLastError(chrome.fileSystemProvider.unmount, {
-    fileSystemId: TestFileSystemProvider.FILESYSTEM_ID,
-  });
-  return mountTestFileSystem(openedFilesLimit);
-}
-
 async function main() {
   await navigator.serviceWorker.ready;
-  let {fileSystem} = await mountTestFileSystem();
-
-  /**
-   * @param {string} path
-   * @param {{create: boolean}} options
-   * @returns {!Promise<!FileEntry>}
-   */
-  const getFileEntry = (path, options) => {
-    return new Promise(
-        (resolve, reject) =>
-            fileSystem.root.getFile(path, options, resolve, reject));
-  };
+  const fileSystem = await mountTestFileSystem();
 
   chrome.test.runTests([
     // Read contents of a file. This file exists, so it should succeed.
     async function readFileSuccess() {
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_READ_SUCCESS,
             {create: false},
         );
@@ -87,14 +61,13 @@ async function main() {
     // Read contents of a file multiple times at once. Verify that there is at
     // most as many opened files at once as permitted per limit.
     async function readFileWithOpenedFilesLimitSuccess() {
-      fileSystem =
-          (await remountTestFileSystem(/*openedFilesLimit=*/ 2)).fileSystem;
+      await fileSystem.remount(/*openedFilesLimit=*/ 2);
       try {
         // Start N read requests in parallel.
         const N = 20;
         const reads = [];
         for (let i = 0; i < N; i++) {
-          const fileEntry = await getFileEntry(
+          const fileEntry = await fileSystem.getFileEntry(
               TestFileSystemProvider.FILE_STALL_READ, {create: false});
           const file = await openFile(fileEntry);
           reads.push(readTextFromFile(file));
@@ -124,10 +97,9 @@ async function main() {
     // Read contents of a file, but with an error on the way. This should
     // result in an error.
     async function readFileError() {
-      fileSystem =
-          (await remountTestFileSystem(/*openedFilesLimit=*/ 0)).fileSystem;
+      await fileSystem.remount(/*openedFilesLimit=*/ 0);
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_FAIL,
             {create: false},
         );
@@ -149,7 +121,7 @@ async function main() {
     async function abortReadingSuccess() {
       await remoteProvider.resetState();
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_BLOCKS_FOREVER,
             {create: false},
         );
@@ -180,7 +152,7 @@ async function main() {
       await remoteProvider.resetState();
       await remoteProvider.setHandlerEnabled('onAbortRequested', false);
       try {
-        const fileEntry = await getFileEntry(
+        const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_BLOCKS_FOREVER,
             {create: false, exclusive: false},
         );
@@ -209,15 +181,14 @@ async function main() {
     // opened files at once. This is a regression test for: crbug.com/519063.
     async function abortOpenedAndReopenSuccess() {
       await remoteProvider.resetState();
-      fileSystem =
-          (await remountTestFileSystem(/*openedFilesLimit=*/ 1)).fileSystem;
+      await fileSystem.remount(/*openedFilesLimit=*/ 1);
       await remoteProvider.setHandlerEnabled('onAbortRequested', false);
       try {
-        const fileEntry1 = await getFileEntry(
+        const fileEntry1 = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_STALL_OPEN,
             {create: false, exclusive: false},
         );
-        const fileEntry2 = await getFileEntry(
+        const fileEntry2 = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_READ_SUCCESS,
             {create: false, exclusive: false},
         );
