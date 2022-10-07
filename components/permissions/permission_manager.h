@@ -145,7 +145,7 @@ class PermissionManager : public KeyedService,
       blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  bool IsPermissionOverridableByDevTools(
+  bool IsPermissionOverridable(
       blink::PermissionType permission,
       const absl::optional<url::Origin>& origin) override;
   SubscriptionId SubscribePermissionStatusChange(

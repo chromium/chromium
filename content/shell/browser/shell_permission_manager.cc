@@ -13,6 +13,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/origin.h"
 
 using blink::PermissionType;
 

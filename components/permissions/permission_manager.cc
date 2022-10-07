@@ -402,7 +402,7 @@ PermissionStatus PermissionManager::GetPermissionStatusForWorker(
       result.content_setting);
 }
 
-bool PermissionManager::IsPermissionOverridableByDevTools(
+bool PermissionManager::IsPermissionOverridable(
     PermissionType permission,
     const absl::optional<url::Origin>& origin) {
   ContentSettingsType type =

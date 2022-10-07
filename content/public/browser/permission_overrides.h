@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_DEVTOOLS_PERMISSION_OVERRIDES_H_
-#define CONTENT_PUBLIC_BROWSER_DEVTOOLS_PERMISSION_OVERRIDES_H_
+#ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
+#define CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_
 
 #include <vector>
 
@@ -20,19 +20,15 @@ enum class PermissionType;
 namespace content {
 
 // Maintains permission overrides for each origin.
-class CONTENT_EXPORT DevToolsPermissionOverrides {
+class CONTENT_EXPORT PermissionOverrides {
  public:
-  explicit DevToolsPermissionOverrides();
-  ~DevToolsPermissionOverrides();
-  DevToolsPermissionOverrides(DevToolsPermissionOverrides&& other);
-  DevToolsPermissionOverrides& operator=(DevToolsPermissionOverrides&& other);
+  PermissionOverrides();
+  ~PermissionOverrides();
+  PermissionOverrides(PermissionOverrides&& other);
+  PermissionOverrides& operator=(PermissionOverrides&& other);
 
-  DevToolsPermissionOverrides(const DevToolsPermissionOverrides&) = delete;
-  DevToolsPermissionOverrides& operator=(const DevToolsPermissionOverrides&) =
-      delete;
-
-  using PermissionOverrides =
-      base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>;
+  PermissionOverrides(const PermissionOverrides&) = delete;
+  PermissionOverrides& operator=(const PermissionOverrides&) = delete;
 
   // Set permission override for |permission| at |origin| to |status|.
   // Null |origin| specifies global overrides.
@@ -48,8 +44,8 @@ class CONTENT_EXPORT DevToolsPermissionOverrides {
   // Get all overrides for particular |origin|, stored in |overrides|
   // if found. Will return empty overrides if none previously existed. Returns
   // global overrides when |origin| is nullptr.
-  const PermissionOverrides& GetAll(
-      const absl::optional<url::Origin>& origin) const;
+  const base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>&
+  GetAllForTest(const absl::optional<url::Origin>& origin) const;
 
   // Resets overrides for |origin|.
   // Null |origin| resets global overrides.
@@ -63,9 +59,12 @@ class CONTENT_EXPORT DevToolsPermissionOverrides {
 
  private:
   url::Origin global_overrides_origin_;
-  base::flat_map<url::Origin, PermissionOverrides> overrides_;
+  base::flat_map<
+      url::Origin,
+      base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>>
+      overrides_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_DEVTOOLS_PERMISSION_OVERRIDES_H_
+#endif  // CONTENT_PUBLIC_BROWSER_PERMISSION_OVERRIDES_H_

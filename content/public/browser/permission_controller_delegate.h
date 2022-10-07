@@ -7,11 +7,14 @@
 
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/devtools_permission_overrides.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace blink {
 enum class PermissionType;
@@ -129,9 +132,8 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   virtual void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) = 0;
 
-  // Returns whether permission can be overridden by
-  // DevToolsPermissionOverrides.
-  virtual bool IsPermissionOverridableByDevTools(
+  // Returns whether permission can be overridden.
+  virtual bool IsPermissionOverridable(
       blink::PermissionType permission,
       const absl::optional<url::Origin>& origin);
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/devtools_permission_overrides.h"
+#include "content/public/browser/permission_overrides.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,18 +16,17 @@ namespace content {
 namespace {
 using blink::PermissionType;
 using blink::mojom::PermissionStatus;
-using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
 using url::Origin;
 
-TEST(DevToolsPermissionOverridesTest, GetOriginNoOverrides) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GetOriginNoOverrides) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   EXPECT_FALSE(overrides.Get(url, PermissionType::GEOLOCATION).has_value());
 }
 
-TEST(DevToolsPermissionOverridesTests, SetMidi) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTests, SetMidi) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/"));
   overrides.Set(url, PermissionType::MIDI_SYSEX, PermissionStatus::GRANTED);
 
@@ -52,8 +51,8 @@ TEST(DevToolsPermissionOverridesTests, SetMidi) {
             PermissionStatus::DENIED);
 }
 
-TEST(DevToolsPermissionOverridesTest, GetBasic) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GetBasic) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
   overrides.Set(url, PermissionType::GEOLOCATION, PermissionStatus::GRANTED);
 
@@ -61,8 +60,8 @@ TEST(DevToolsPermissionOverridesTest, GetBasic) {
             PermissionStatus::GRANTED);
 }
 
-TEST(DevToolsPermissionOverridesTest, GetAllStates) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GetAllStates) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   // Override some settings.
@@ -81,8 +80,8 @@ TEST(DevToolsPermissionOverridesTest, GetAllStates) {
             PermissionStatus::ASK);
 }
 
-TEST(DevToolsPermissionOverridesTest, GetReturnsNullOptionalIfMissingOverride) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GetReturnsNullOptionalIfMissingOverride) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   // Override some settings.
@@ -100,12 +99,13 @@ TEST(DevToolsPermissionOverridesTest, GetReturnsNullOptionalIfMissingOverride) {
                    .has_value());
 }
 
-TEST(DevToolsPermissionOverridesTest, GetAllOverrides) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GetAllOverrides) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   // Override some settings.
-  PermissionOverrides expected_override_for_origin;
+  base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
+      expected_override_for_origin;
   expected_override_for_origin[PermissionType::GEOLOCATION] =
       PermissionStatus::GRANTED;
   expected_override_for_origin[PermissionType::NOTIFICATIONS] =
@@ -117,13 +117,15 @@ TEST(DevToolsPermissionOverridesTest, GetAllOverrides) {
   overrides.Set(url, PermissionType::NOTIFICATIONS, PermissionStatus::DENIED);
   overrides.Set(url, PermissionType::AUDIO_CAPTURE, PermissionStatus::ASK);
 
-  EXPECT_THAT(overrides.GetAll(url), testing::Eq(expected_override_for_origin));
-  EXPECT_THAT(overrides.GetAll(Origin::Create(GURL("https://imgur.com/"))),
-              testing::IsEmpty());
+  EXPECT_THAT(overrides.GetAllForTest(url),
+              testing::Eq(expected_override_for_origin));
+  EXPECT_THAT(
+      overrides.GetAllForTest(Origin::Create(GURL("https://imgur.com/"))),
+      testing::IsEmpty());
 }
 
-TEST(DevToolsPermissionOverridesTest, SameOriginSameOverrides) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, SameOriginSameOverrides) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   // Override some settings.
@@ -139,8 +141,8 @@ TEST(DevToolsPermissionOverridesTest, SameOriginSameOverrides) {
             PermissionStatus::ASK);
 }
 
-TEST(DevToolsPermissionOverridesTest, DifferentOriginExpectations) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, DifferentOriginExpectations) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
 
   // Override some settings.
@@ -161,8 +163,8 @@ TEST(DevToolsPermissionOverridesTest, DifferentOriginExpectations) {
                    .has_value());
 }
 
-TEST(DevToolsPermissionOverridesTest, DifferentOriginsDifferentOverrides) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, DifferentOriginsDifferentOverrides) {
+  PermissionOverrides overrides;
   Origin first_url = Origin::Create(GURL("https://google.com/search?q=foo"));
   Origin second_url = Origin::Create(GURL("https://tumblr.com/fizz_buzz"));
 
@@ -183,8 +185,8 @@ TEST(DevToolsPermissionOverridesTest, DifferentOriginsDifferentOverrides) {
       overrides.Get(second_url, PermissionType::GEOLOCATION).has_value());
 }
 
-TEST(DevToolsPermissionOverridesTest, ResetOneOrigin) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, ResetOneOrigin) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=foo"));
   Origin other_url = Origin::Create(GURL("https://pinterest.com/index.php"));
 
@@ -202,8 +204,8 @@ TEST(DevToolsPermissionOverridesTest, ResetOneOrigin) {
             PermissionStatus::GRANTED);
 }
 
-TEST(DevToolsPermissionOverridesTest, GrantPermissionsSetsSomeBlocksRest) {
-  DevToolsPermissionOverrides overrides;
+TEST(PermissionOverridesTest, GrantPermissionsSetsSomeBlocksRest) {
+  PermissionOverrides overrides;
   Origin url = Origin::Create(GURL("https://google.com/search?q=all"));
 
   overrides.GrantPermissions(

@@ -8,7 +8,7 @@
 
 namespace content {
 
-bool PermissionControllerDelegate::IsPermissionOverridableByDevTools(
+bool PermissionControllerDelegate::IsPermissionOverridable(
     blink::PermissionType permission,
     const absl::optional<url::Origin>& origin) {
   return true;

@@ -8,8 +8,8 @@
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/devtools_permission_overrides.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_overrides.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,7 +42,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   static PermissionControllerImpl* FromBrowserContext(
       BrowserContext* browser_context);
 
-  using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
   enum class OverrideStatus { kOverrideNotSet, kOverrideSet };
 
   // For the given |origin|, grant permissions in |overrides| and reject all
@@ -56,6 +55,18 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       PermissionType permission,
       const blink::mojom::PermissionStatus& status);
   void ResetOverridesForDevTools();
+
+  // Sets status for |permissions| to GRANTED in |origin|, and DENIED
+  // for all others.
+  // Null |origin| grants permissions globally for context.
+  OverrideStatus GrantPermissionOverrides(
+      const absl::optional<url::Origin>& origin,
+      const std::vector<PermissionType>& permissions);
+  OverrideStatus SetPermissionOverride(
+      const absl::optional<url::Origin>& origin,
+      PermissionType permission,
+      const blink::mojom::PermissionStatus& status);
+  void ResetPermissionOverrides();
 
   void ResetPermission(PermissionType permission,
                        const GURL& requesting_origin,
@@ -148,7 +159,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
                                         blink::mojom::PermissionStatus status);
 
-  DevToolsPermissionOverrides devtools_permission_overrides_;
+  PermissionOverrides permission_overrides_;
 
   // Note that SubscriptionId is distinct from
   // PermissionControllerDelegate::SubscriptionId, and the concrete ID values

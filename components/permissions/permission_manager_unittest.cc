@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -226,11 +227,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->UnsubscribePermissionStatusChange(subscription_id);
   }
 
-  bool IsPermissionOverridableByDevTools(
-      PermissionType permission,
-      const absl::optional<url::Origin>& origin) {
-    return GetPermissionManager()->IsPermissionOverridableByDevTools(permission,
-                                                                     origin);
+  bool IsPermissionOverridable(PermissionType permission,
+                               const absl::optional<url::Origin>& origin) {
+    return GetPermissionManager()->IsPermissionOverridable(permission, origin);
   }
 
   void ResetPermission(PermissionType permission,
@@ -741,28 +740,27 @@ TEST_F(PermissionManagerTest, InsecureOriginIsNotOverridable) {
       url::Origin::Create(GURL("http://example.com/geolocation"));
   const url::Origin kSecureOrigin =
       url::Origin::Create(GURL("https://example.com/geolocation"));
-  EXPECT_FALSE(IsPermissionOverridableByDevTools(PermissionType::GEOLOCATION,
-                                                 kInsecureOrigin));
-  EXPECT_TRUE(IsPermissionOverridableByDevTools(PermissionType::GEOLOCATION,
-                                                kSecureOrigin));
+  EXPECT_FALSE(
+      IsPermissionOverridable(PermissionType::GEOLOCATION, kInsecureOrigin));
+  EXPECT_TRUE(
+      IsPermissionOverridable(PermissionType::GEOLOCATION, kSecureOrigin));
 }
 
 TEST_F(PermissionManagerTest, MissingContextIsNotOverridable) {
   // Permissions that are not implemented should be denied overridability.
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(IsPermissionOverridableByDevTools(
-      PermissionType::PROTECTED_MEDIA_IDENTIFIER,
-      url::Origin::Create(GURL("http://localhost"))));
+  EXPECT_FALSE(
+      IsPermissionOverridable(PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+                              url::Origin::Create(GURL("http://localhost"))));
 #endif
-  EXPECT_TRUE(IsPermissionOverridableByDevTools(
-      PermissionType::MIDI_SYSEX,
-      url::Origin::Create(GURL("http://localhost"))));
+  EXPECT_TRUE(
+      IsPermissionOverridable(PermissionType::MIDI_SYSEX,
+                              url::Origin::Create(GURL("http://localhost"))));
 }
 
 TEST_F(PermissionManagerTest, KillSwitchOnIsNotOverridable) {
   const url::Origin kLocalHost = url::Origin::Create(GURL("http://localhost"));
-  EXPECT_TRUE(IsPermissionOverridableByDevTools(PermissionType::GEOLOCATION,
-                                                kLocalHost));
+  EXPECT_TRUE(IsPermissionOverridable(PermissionType::GEOLOCATION, kLocalHost));
 
   // Turn on kill switch for GEOLOCATION.
   std::map<std::string, std::string> params;
@@ -775,8 +773,8 @@ TEST_F(PermissionManagerTest, KillSwitchOnIsNotOverridable) {
   base::FieldTrialList::CreateFieldTrial(
       PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup");
 
-  EXPECT_FALSE(IsPermissionOverridableByDevTools(PermissionType::GEOLOCATION,
-                                                 kLocalHost));
+  EXPECT_FALSE(
+      IsPermissionOverridable(PermissionType::GEOLOCATION, kLocalHost));
 }
 
 TEST_F(PermissionManagerTest, ResetPermission) {
