@@ -30,56 +30,20 @@ namespace gbm_wrapper {
 
 namespace {
 
-// Function availability can be tested by checking if the address of gbm_* is
-// not nullptr.
-#define WEAK_GBM_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
-// TODO(https://crbug.com/784010): Remove these once support for Ubuntu Trusty
-// is dropped.
-WEAK_GBM_FN(gbm_bo_map);
-WEAK_GBM_FN(gbm_bo_unmap);
-
-// TODO(https://crbug.com/784010): Remove these once support for Ubuntu Trusty
-// and Debian Stretch are dropped.
-WEAK_GBM_FN(gbm_bo_create_with_modifiers);
-WEAK_GBM_FN(gbm_bo_get_handle_for_plane);
-WEAK_GBM_FN(gbm_bo_get_modifier);
-WEAK_GBM_FN(gbm_bo_get_offset);
-WEAK_GBM_FN(gbm_bo_get_plane_count);
-WEAK_GBM_FN(gbm_bo_get_stride_for_plane);
-
-bool HaveGbmMap() {
-  return gbm_bo_map && gbm_bo_unmap;
-}
-
-bool HaveGbmModifiers() {
-  return gbm_bo_create_with_modifiers && gbm_bo_get_modifier;
-}
-
-bool HaveGbmMultiplane() {
-  return gbm_bo_get_handle_for_plane && gbm_bo_get_offset &&
-         gbm_bo_get_plane_count && gbm_bo_get_stride_for_plane;
-}
-
 uint32_t GetHandleForPlane(struct gbm_bo* bo, int plane) {
-  CHECK(HaveGbmMultiplane() || plane == 0);
-  return HaveGbmMultiplane() ? gbm_bo_get_handle_for_plane(bo, plane).u32
-                             : gbm_bo_get_handle(bo).u32;
+  return gbm_bo_get_handle_for_plane(bo, plane).u32;
 }
 
 uint32_t GetStrideForPlane(struct gbm_bo* bo, int plane) {
-  CHECK(HaveGbmMultiplane() || plane == 0);
-  return HaveGbmMultiplane() ? gbm_bo_get_stride_for_plane(bo, plane)
-                             : gbm_bo_get_stride(bo);
+  return gbm_bo_get_stride_for_plane(bo, plane);
 }
 
 uint32_t GetOffsetForPlane(struct gbm_bo* bo, int plane) {
-  CHECK(HaveGbmMultiplane() || plane == 0);
-  return HaveGbmMultiplane() ? gbm_bo_get_offset(bo, plane) : 0;
+  return gbm_bo_get_offset(bo, plane);
 }
 
 int GetPlaneCount(struct gbm_bo* bo) {
-  return HaveGbmMultiplane() ? gbm_bo_get_plane_count(bo) : 1;
+  return gbm_bo_get_plane_count(bo);
 }
 
 int GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
@@ -227,7 +191,6 @@ class Buffer final : public ui::GbmBuffer {
   }
 
   sk_sp<SkSurface> GetSurface() override {
-    CHECK(HaveGbmMap());
     DCHECK(!mmap_data_);
     uint32_t stride;
     void* addr;
@@ -251,7 +214,6 @@ class Buffer final : public ui::GbmBuffer {
 
  private:
   static void UnmapGbmBo(void* pixels, void* context) {
-    CHECK(HaveGbmMap());
     Buffer* buffer = static_cast<Buffer*>(context);
     gbm_bo_unmap(buffer->bo_, buffer->mmap_data_);
     buffer->mmap_data_ = nullptr;
@@ -276,7 +238,7 @@ std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,
   DCHECK(bo);
   gfx::NativePixmapHandle handle;
 
-  const uint64_t modifier = HaveGbmModifiers() ? gbm_bo_get_modifier(bo) : 0;
+  const uint64_t modifier = gbm_bo_get_modifier(bo);
   const int plane_count = GetPlaneCount(bo);
   // The Mesa's gbm implementation explicitly checks whether plane count <= and
   // returns 1 if the condition is true. Nevertheless, use a DCHECK here to make
@@ -343,7 +305,6 @@ class Device final : public ui::GbmDevice {
       const std::vector<uint64_t>& modifiers) override {
     if (modifiers.empty())
       return CreateBuffer(format, size, flags);
-    CHECK(HaveGbmModifiers());
     struct gbm_bo* bo = gbm_bo_create_with_modifiers(
         device_, size.width(), size.height(), format, modifiers.data(),
         modifiers.size());
