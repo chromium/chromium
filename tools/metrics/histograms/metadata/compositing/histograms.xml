@@ -511,11 +511,26 @@ chromium-metrics-reviews@google.com.
     The time that the renderer's main thread blocked waiting for the impl thread
     to commit. This is only reported if the main thread blocked.
 
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    Drops reports on clients with low-resolution clocks, biasing to a portion of
+    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
+    affected sample.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.MainThreadBlockedDuringCommitTime.ApplyCompositorChanges"
+    units="microseconds" expires_after="2023-03-19">
+  <owner>szager@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
+  <owner>paint-dev@chromium.org</owner>
+  <summary>
+    The time that ApplyCompositorChanges is blocked waiting for the impl thread
+    to commit. This is a subset of the total time spent in
+    Compositing.MainThreadBlockedDuringCommitTime.
+
+    Drops reports on clients with low-resolution clocks, biasing to a portion of
+    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
+    affected sample.
   </summary>
 </histogram>
 

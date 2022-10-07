@@ -455,8 +455,15 @@ void LayerTreeHost::WaitForCommitCompletion(bool for_protected_sequence) const {
     commit_completion_event_ = nullptr;
     if (for_protected_sequence) {
       waited_for_protected_sequence_ = true;
+      auto elapsed = timer.Elapsed();
       base::UmaHistogramMicrosecondsTimes(
-          "Compositing.MainThreadBlockedDuringCommitTime", timer.Elapsed());
+          "Compositing.MainThreadBlockedDuringCommitTime", elapsed);
+      if (in_apply_compositor_changes_) {
+        base::UmaHistogramMicrosecondsTimes(
+            "Compositing.MainThreadBlockedDuringCommitTime."
+            "ApplyCompositorChanges",
+            elapsed);
+      }
     }
   }
 }
@@ -1084,6 +1091,9 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   DCHECK(IsMainThread());
   DCHECK(commit_data);
   TRACE_EVENT0("cc", "LayerTreeHost::ApplyCompositorChanges");
+
+  DCHECK(!in_apply_compositor_changes_);
+  base::AutoReset<bool> in_apply_changes(&in_apply_compositor_changes_, true);
 
   using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;

@@ -1032,6 +1032,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool in_paint_layer_contents_ = false;
 
+  bool in_apply_compositor_changes_ = false;
+
   // This is true if atleast one layer in the layer tree has a copy request. We
   // use this bool to decide whether we need to compute subtree has copy request
   // for every layer during property tree building.
