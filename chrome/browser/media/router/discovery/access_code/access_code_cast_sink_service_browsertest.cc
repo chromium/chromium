@@ -131,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac/ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PRE_SavedDevice DISABLED_PRE_SavedDevice
 #define MAYBE_SavedDevice DISABLED_SavedDevice
 #else
