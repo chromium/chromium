@@ -52,9 +52,14 @@ std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     absl::optional<int> dip_size) {
+  // We can't use `value_or` as that ALWAYS evaluates the false case, which is
+  // undefined for some valid and commonly used Chrome vector icons.
+  const int dip_size_value = dip_size.has_value()
+                                 ? dip_size.value()
+                                 : GetDefaultSizeOfVectorIcon(icon);
+
   auto button = std::make_unique<ColorTrackingVectorImageButton>(
-      std::move(callback), icon,
-      dip_size.value_or(GetDefaultSizeOfVectorIcon(icon)));
+      std::move(callback), icon, dip_size_value);
   ConfigureVectorImageButton(button.get());
   return button;
 }

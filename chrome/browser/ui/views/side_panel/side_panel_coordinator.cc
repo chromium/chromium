@@ -24,10 +24,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
@@ -303,6 +305,22 @@ void SidePanelCoordinator::Toggle() {
   }
 }
 
+void SidePanelCoordinator::OpenInNewTab() {
+  if (!GetContentView() || !current_entry_)
+    return;
+
+  // TODO(tommycli): Hook this up to the current entry's Open in New Tab GURL.
+  GURL new_tab_url("https://www.google.com/");
+
+  content::OpenURLParams params(new_tab_url, content::Referrer(),
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                                /*is_renderer_initiated=*/false);
+  browser_view_->browser()->OpenURL(params);
+
+  Close();
+}
+
 SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry() {
   return static_cast<SidePanelRegistry*>(
       browser_view_->browser()->GetUserData(kGlobalSidePanelRegistryKey));
@@ -498,6 +516,22 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       views::CreateThemedSolidBackground(ui::kColorWindowBackground));
 
   header_combobox_ = header->AddChildView(CreateCombobox());
+  header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  header_open_in_new_tab_button_ = header->AddChildView(CreateControlButton(
+      header.get(),
+      base::BindRepeating(&SidePanelCoordinator::OpenInNewTab,
+                          base::Unretained(this)),
+      vector_icons::kOpenInNewIcon, gfx::Insets(),
+      l10n_util::GetStringUTF16(IDS_ACCNAME_OPEN_IN_NEW_TAB),
+      kSidePanelOpenInNewTabButtonElementId,
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
+  header_open_in_new_tab_button_->SetFocusBehavior(
+      views::View::FocusBehavior::ALWAYS);
+  // The icon is later set as visible for side panels that support it.
+  // TODO(tommycli): Implement setting this button as visible later.
+  header_open_in_new_tab_button_->SetVisible(false);
 
   auto* header_close_button = header->AddChildView(CreateControlButton(
       header.get(),
@@ -507,8 +541,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
       kSidePanelCloseButtonElementId,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
-
-  header_combobox_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   header_close_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
   return header;

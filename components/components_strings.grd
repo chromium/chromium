@@ -485,6 +485,9 @@
       <message name="IDS_ACCNAME_OPEN" desc="The accessible name for the Open button.">
         Open
       </message>
+      <message name="IDS_ACCNAME_OPEN_IN_NEW_TAB" desc="The accessible name for the Open in New Tab button.">
+        Open in new tab
+      </message>
       <message name="IDS_ACCNAME_PREVIOUS" desc="The accessible name for the previous button.">
         Previous
       </message>
