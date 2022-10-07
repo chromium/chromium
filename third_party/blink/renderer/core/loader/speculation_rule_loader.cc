@@ -69,7 +69,6 @@ void SpeculationRuleLoader::NotifyFinished() {
   String parse_error;
   if (auto* rule_set =
           SpeculationRuleSet::Parse(source_text, base_url_, &parse_error)) {
-    speculation_rule_set_ = rule_set;
     DocumentSpeculationRules::From(*document_).AddRuleSet(rule_set);
   }
   if (!parse_error.IsNull()) {
@@ -88,7 +87,6 @@ void SpeculationRuleLoader::NotifyFinished() {
 void SpeculationRuleLoader::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(resource_);
-  visitor->Trace(speculation_rule_set_);
   ResourceFinishObserver::Trace(visitor);
 }
 

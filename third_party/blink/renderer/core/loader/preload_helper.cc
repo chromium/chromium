@@ -636,7 +636,6 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
 
 void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
     const String& header_value,
-    const KURL& base_url,
     Document* document,
     LocalFrame& frame) {
   DCHECK(document);
@@ -655,9 +654,16 @@ void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
   }
 
   for (auto const& parsed_item : parsed_header.value()) {
-    // to make sure not a nested list
+    // Only strings are valid list members.
     if (parsed_item.member.size() != 1u ||
         !parsed_item.member[0].item.is_string()) {
+      SendMessageToConsoleForPossiblyNullDocument(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              String("Only strings are valid in Speculation-Rules header value "
+                     "and inner lists are ignored.")),
+          document, &frame);
       continue;
     }
     const auto& url_str = String(parsed_item.member[0].item.GetString());

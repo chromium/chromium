@@ -2503,8 +2503,7 @@ void DocumentLoader::CreateParserPostCommit() {
     auto& speculation_rules_header =
         response_.HttpHeaderField(http_names::kSpeculationRules);
     PreloadHelper::LoadSpeculationRuleLinkFromHeader(
-        speculation_rules_header, response_.CurrentRequestUrl(),
-        GetFrame()->GetDocument(), *GetFrame());
+        speculation_rules_header, GetFrame()->GetDocument(), *GetFrame());
   }
 
   // DidObserveLoadingBehavior() must be called after DispatchDidCommitLoad() is

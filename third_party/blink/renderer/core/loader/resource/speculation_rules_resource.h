@@ -12,7 +12,7 @@ namespace blink {
 class FetchParameters;
 class ResourceFetcher;
 
-// This is the implementation of Resource for in Speculation-Rules header.
+// This is the implementation of Resource for the Speculation-Rules header.
 class SpeculationRulesResource final : public TextResource {
  public:
   static SpeculationRulesResource* Fetch(FetchParameters&, ResourceFetcher*);

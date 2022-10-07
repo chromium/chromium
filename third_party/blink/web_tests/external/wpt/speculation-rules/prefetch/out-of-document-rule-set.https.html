@@ -13,6 +13,7 @@
 <meta name="variant" content="?include=UseNonUTF8EncodingForSpeculationRulesSet">
 <meta name="variant" content="?include=FailCORS">
 <meta name="variant" content="?include=FailToParseSpeculationRulesHeader">
+<meta name="variant" content="?include=InnerListInSpeculationRulesHeader">
 <meta name="variant" content="?include=EmptyRuleSet">
 <meta name="variant" content="?include=FailToParseRuleSet">
 <meta name="variant" content="?include=InvalidUrlForSpeculationRulesSet">
@@ -39,6 +40,8 @@
       failCors: false,
       // Whether to use a valid SpeculationRules header format.
       useValidSpeculationRulesHeaderValue: true,
+      // Whether to use an inner list of URLS in SpeculationRules header.
+      useInnerListInSpeculationRulesHeaderValue: false,
       // Whether to return an empty response.
       useEmptySpeculationRulesSet: false,
       // Wheter to return a rule set with valid JSON format
@@ -67,7 +70,14 @@
       speculation_rule_set_url = "http://:80/";
     }
 
-    let speculation_rules_header = options.useValidSpeculationRulesHeaderValue ? `header(Speculation-Rules,"${speculation_rule_set_url}")` : `header(Speculation-Rules, x y z)`;
+    let speculation_rules_header = `header(Speculation-Rules,"${speculation_rule_set_url}")`;
+    if (!options.useValidSpeculationRulesHeaderValue) {
+      speculation_rules_header = `header(Speculation-Rules, x y z)`;
+    }
+    else if (options.useInnerListInSpeculationRulesHeaderValue) {
+      speculation_rules_header =  `header(Speculation-Rules, \\("${speculation_rule_set_url}" "xyz.com/rule-set.json"\\))`;
+    }
+
     let agent = await spawnWindow(t, {pipe: speculation_rules_header}, uuid);
     await new Promise(resolve => t.step_timeout(resolve, 2000));
     // Passing non-ascii character '÷' as part of the next URL to check if we always decode the speculation rules set using utf-8 or not. This character is encoded differently in utf-8 and windows-1250
@@ -109,7 +119,11 @@
 
   subsetTestByKey('FailToParseSpeculationRulesHeader', promise_test, async t => {
     return runSpeculationRulesFetchTest(t, {useValidSpeculationRulesHeaderValue: false, shouldPrefetch: false});
-  }, "It should reject the speculation rules set if it fails to parse the SpecultionRules header.");
+  }, "It should reject the speculation rules set if it fails to parse the SpeculationRules header.");
+
+  subsetTestByKey('InnerListInSpeculationRulesHeader', promise_test, async t => {
+    return runSpeculationRulesFetchTest(t, {useInnerListInSpeculationRulesHeaderValue: true, shouldPrefetch: false});
+  }, "It should reject the speculation rules passed as inner list in the SpeculationRules header.");
 
   subsetTestByKey('EmptyRuleSet', promise_test, async t => {
     return runSpeculationRulesFetchTest(t, {useEmptySpeculationRulesSet: true, shouldPrefetch: false});

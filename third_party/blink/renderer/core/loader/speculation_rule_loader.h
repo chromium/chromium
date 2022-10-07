@@ -15,8 +15,8 @@ namespace blink {
 
 class Document;
 class SpeculationRulesResource;
-class SpeculationRuleSet;
 
+// This is used for Speculation-Rules header
 class CORE_EXPORT SpeculationRuleLoader final : public ResourceFinishObserver,
                                                 public NameClient {
  public:
@@ -37,7 +37,6 @@ class CORE_EXPORT SpeculationRuleLoader final : public ResourceFinishObserver,
   KURL base_url_;
   Member<Document> document_;
   Member<SpeculationRulesResource> resource_;
-  Member<SpeculationRuleSet> speculation_rule_set_;
 };
 
 }  // namespace blink
