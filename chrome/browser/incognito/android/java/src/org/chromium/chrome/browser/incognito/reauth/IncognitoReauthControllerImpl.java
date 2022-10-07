@@ -108,6 +108,23 @@ public class IncognitoReauthControllerImpl
                 }
             };
 
+    private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver =
+            new LayoutStateProvider.LayoutStateObserver() {
+                @Override
+                public void onStartedShowing(int layoutType, boolean showToolbar) {
+                    if (layoutType == LayoutType.BROWSING) {
+                        showDialogIfRequired();
+                    }
+                }
+
+                @Override
+                public void onFinishedHiding(int layoutType) {
+                    if (layoutType == LayoutType.TAB_SWITCHER) {
+                        hideDialogIfShowing(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
+                    }
+                }
+            };
+
     // The {@link TabModelSelectorProfileSupplier} passed to the constructor may not have a {@link
     // Profile} set if the Tab state is not initialized yet. We make use of the {@link Profile} when
     // accessing {@link UserPrefs} in showDialogIfRequired. A null {@link Profile} would result in a
@@ -189,6 +206,7 @@ public class IncognitoReauthControllerImpl
         layoutStateProviderOneshotSupplier.onAvailable(
                 mLayoutStateProviderCallbackController.makeCancelable(layoutStateProvider -> {
                     mLayoutStateProvider = layoutStateProvider;
+                    mLayoutStateProvider.addObserver(mLayoutStateObserver);
                     showDialogIfRequired();
                 }));
 
@@ -221,6 +239,10 @@ public class IncognitoReauthControllerImpl
         mLayoutStateProviderCallbackController.destroy();
         mIncognitoReauthCoordinatorFactory.destroy();
         mOnBackPressedInFullScreenReauthCallback.setEnabled(false);
+
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+        }
         hideDialogIfShowing(DialogDismissalCause.ACTIVITY_DESTROYED);
     }
 
