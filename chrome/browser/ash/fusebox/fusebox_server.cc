@@ -380,6 +380,22 @@ storage::FileSystemURL Server::ResolveFilename(Profile* profile,
       ->CrackURLInFirstPartyContext(GURL(resolved.first));
 }
 
+base::Value Server::GetDebugJSON() {
+  base::Value::Dict subdirs;
+  subdirs.Set(kMonikerSubdir, base::Value("[special]"));
+  for (const auto& i : prefix_map_) {
+    subdirs.Set(i.first,
+                base::Value(base::StrCat(
+                    {i.second.fs_url_prefix,
+                     i.second.read_only ? " (read-only)" : " (read-write)"})));
+  }
+
+  base::Value::Dict dict;
+  dict.Set("monikers", moniker_map_.GetDebugJSON());
+  dict.Set("subdirs", std::move(subdirs));
+  return base::Value(std::move(dict));
+}
+
 void Server::Close(std::string fs_url_as_string, CloseCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

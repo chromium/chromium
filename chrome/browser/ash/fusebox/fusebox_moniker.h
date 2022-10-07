@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/token.h"
+#include "base/values.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace fusebox {
@@ -110,6 +111,9 @@ class MonikerMap {
   // destroyed. If valid, the bool element is the read_only argument passed to
   // CreateMoniker.
   FSURLAndReadOnlyState Resolve(const Moniker& moniker);
+
+  // Returns human-readable debugging information as a JSON value.
+  base::Value GetDebugJSON();
 
  private:
   std::map<base::Token, FSURLAndReadOnlyState> map_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 
+#include "base/strings/strcat.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -81,6 +82,17 @@ MonikerMap::FSURLAndReadOnlyState MonikerMap::Resolve(const Moniker& moniker) {
     return iter->second;
   }
   return std::make_pair(storage::FileSystemURL(), false);
+}
+
+base::Value MonikerMap::GetDebugJSON() {
+  base::Value::Dict dict;
+  for (const auto& i : map_) {
+    dict.Set(i.first.ToString(),
+             base::Value(base::StrCat(
+                 {i.second.first.ToGURL().spec(),
+                  i.second.second ? " (read-only)" : " (read-write)"})));
+  }
+  return base::Value(std::move(dict));
 }
 
 }  // namespace fusebox

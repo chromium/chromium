@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/fusebox/fusebox_staging.pb.h"
 #include "chromeos/ash/components/dbus/fusebox/fusebox.pb.h"
@@ -64,6 +65,9 @@ class Server {
   // "/media/fuse/fusebox/subdir/etc" or the "subdir" wasn't registered.
   storage::FileSystemURL ResolveFilename(Profile* profile,
                                          const std::string& filename);
+
+  // Returns human-readable debugging information as a JSON value.
+  base::Value GetDebugJSON();
 
   // These methods map 1:1 to the D-Bus methods implemented by
   // fusebox_service_provider.cc.

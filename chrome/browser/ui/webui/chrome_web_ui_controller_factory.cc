@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/accessibility/accessibility_ui.h"
+#include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -190,6 +191,8 @@
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "ash/webui/files_internals/files_internals.h"
+#include "ash/webui/files_internals/url_constants.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/firmware_update_ui/url_constants.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
@@ -565,6 +568,13 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheUidGenerator, manager),
       base::BindRepeating(&BindEcheNotificationGenerator, manager),
       base::BindRepeating(&BindEcheDisplayStreamHandler, manager));
+}
+
+template <>
+WebUIController* NewWebUI<ash::FilesInternalsUI>(WebUI* web_ui,
+                                                 const GURL& url) {
+  return new ash::FilesInternalsUI(
+      web_ui, std::make_unique<ChromeFilesInternalsUIDelegate>());
 }
 
 template <>
@@ -999,6 +1009,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::CryptohomeUI>;
   if (url.host_piece() == chrome::kChromeUIDriveInternalsHost)
     return &NewWebUI<chromeos::DriveInternalsUI>;
+  if (url.host_piece() == ash::kChromeUIFilesInternalsHost)
+    return &NewWebUI<ash::FilesInternalsUI>;
   if (url.host_piece() == chrome::kChromeUILauncherInternalsHost)
     return &NewWebUI<chromeos::LauncherInternalsUI>;
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
@@ -1583,6 +1595,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUICrashesURL),
       GURL(chrome::kOsUICreditsURL),
       GURL(chrome::kChromeUIBorealisCreditsURL),
+      GURL(chrome::kChromeUICloudUploadURL),
       GURL(chrome::kChromeUICrostiniCreditsURL),
       GURL(chrome::kChromeUICrostiniInstallerUrl),
       GURL(chrome::kChromeUICrostiniUpgraderUrl),
@@ -1594,7 +1607,7 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kChromeUIEmojiPickerURL),
       GURL(chrome::kOsUIEmojiPickerURL),
       GURL(ash::file_manager::kChromeUIFileManagerURL),
-      GURL(chrome::kChromeUICloudUploadURL),
+      GURL(ash::kChromeUIFilesInternalsURL),
       GURL(chrome::kChromeUIFlagsURL),
       GURL(chrome::kOsUIFlagsURL),
       GURL(chrome::kOsUIGpuURL),
