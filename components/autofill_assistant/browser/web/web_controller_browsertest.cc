@@ -2719,7 +2719,9 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendDuplexwebEvent) {
   GetFieldsValue({selector}, {"received"});
 }
 
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
+// Extremely flaky: https://crbug.com/1372516
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       DISABLED_WaitForElementToBecomeStable) {
   ClientStatus element_status;
   ElementFinderResult element;
   FindElement(Selector({"#touch_area_one"}), &element_status, &element);
@@ -2745,8 +2747,9 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
       WaitUntilElementIsStable(element, 10, base::Milliseconds(100)).ok());
 }
 
+// Extremely flaky: https://crbug.com/1372516
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       WaitForElementToBecomeStableForEmptyBoxModel) {
+                       DISABLED_WaitForElementToBecomeStableForEmptyBoxModel) {
   ClientStatus element_status;
 
   // The element has an empty box model.
@@ -2766,8 +2769,9 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                 .proto_status());
 }
 
+// Extremely flaky: https://crbug.com/1372516
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       WaitForElementToBecomeStableDevtoolsFailure) {
+                       DISABLED_WaitForElementToBecomeStableDevtoolsFailure) {
   // This makes the devtools action fail.
   ElementFinderResult element;
   element.SetNodeFrameId("doesnotexist");
