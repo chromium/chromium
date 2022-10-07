@@ -1,9 +1,9 @@
 <style include="os-feedback-shared">
   ::-webkit-scrollbar {
-      background-color: transparent;
-      border-radius: 4px;
-      width: 4px;
-    }
+    background-color: transparent;
+    border-radius: 4px;
+    width: 4px;
+  }
 
   ::-webkit-scrollbar-thumb {
     background-color: var(--cros-app-scrollbar-color);
@@ -176,17 +176,57 @@
     height: 424px;
     left: 0;
     margin-bottom: 20px;
+    margin-inline-end: 4px;
     overflow: auto;
     padding: 0 40px;
     position: absolute;
-    right: 4px;
+    right: 0;
     top: 92px;
+  }
+
+  #shadowElevation {
+    height: 2px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 90px;
+  }
+
+  .scrolling-elevation {
+    background-color: var(--cros-bg-color-elevation-1);
+    box-shadow: var(--cros-elevation-2-shadow);
+  }
+
+  .scrolling-shield {
+    background: linear-gradient(to bottom,
+        rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1))
+  }
+
+  .separator-visible {
+    border-top: 1px solid var(--cros-separator-color);
+    bottom: 92px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  #shadowShield {
+    bottom: 92px;
+    height: 48px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  #content {
+    width: 520px;
   }
 </style>
 <div id="container">
   <div id="header">
     <h1 class="page-title">[[i18n('pageTitle')]]</h1>
   </div>
+  <div id="shadowElevation"></div>
   <div id="content">
     <div id="scrollContainer" on-scroll="onContainerScroll_">
       <!-- Attach files -->
@@ -291,6 +331,9 @@
       <!-- Privacy note -->
       <div id="privacyNote" inner-h-t-m-l="[[privacyNote_]]"></div>
     </div>
+    <!-- Separator -->
+    <div id="separator"></div>
+    <div id="shadowShield" class="scrolling-container"></div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonBack" class="cancel-button"

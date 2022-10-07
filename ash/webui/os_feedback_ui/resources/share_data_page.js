@@ -466,6 +466,22 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           `chrome://slow_trace/tracing.zip#${this.feedbackContext.traceId}`);
     }
   }
+
+  /** @protected */
+  onContainerScroll_() {
+    const shadowShield = this.getElement_('#shadowShield');
+    const shadowElevation = this.getElement_('#shadowElevation');
+    const separator = this.getElement_('#separator');
+    const container = this.getElement_('#scrollContainer');
+    shadowElevation.classList.toggle(
+        'scrolling-elevation', container.scrollTop > 0);
+    shadowShield.classList.toggle(
+        'scrolling-shield',
+        container.scrollTop + container.clientHeight < container.scrollHeight);
+    separator.classList.toggle(
+        'separator-visible',
+        container.scrollTop + container.clientHeight == container.scrollHeight);
+  }
 }
 
 customElements.define(ShareDataPageElement.is, ShareDataPageElement);
