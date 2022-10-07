@@ -23723,6 +23723,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow port forwarding into Linux virtual machines',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow port forwarding into Linux virtual machines',
+        },
+      ],
       'example_value': False,
       'id': 716,
       'caption': '''Allow users to [enable/configure] Crostini port forwarding''',
@@ -23871,6 +23881,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of system information and page content to help improve Safe Browsing',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of system information and page content to help improve Safe Browsing',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 429,
       'tags': ['google-sharing'],
@@ -23940,6 +23965,16 @@
         'per_profile': False,
         'platform_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Prevent Chrome from launching if not enrolled into Chrome Browser Cloud Management',
+        },
+        {
+          'value': False,
+          'caption': 'Allow Chrome to launch if not enrolled into Chrome Browser Cloud Management',
+        },
+      ],
       'example_value': True,
       'id': 505,
       'caption': '''Enable mandatory cloud management enrollment''',
@@ -23961,6 +23996,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Chrome to autoplay media',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Chrome to autoplay media',
+        },
+      ],
       'example_value': True,
       'id': 430,
       'caption': '''Allow media autoplay''',
@@ -24072,6 +24117,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to add, configure, and print from non-enterprise printers',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to add, configure, and print from non-enterprise printers',
+        },
+      ],
       'example_value': False,
       'id': 768,
       'caption': '''Allow access to CUPS printers''',
@@ -24093,6 +24148,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Chrome Cleanup to periodically scan the system and allow manual scans',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent Chrome Cleanup from periodically scanning the system and disable manual scans',
+        },
+      ],
       'example_value': True,
       'id': 441,
       'caption': '''Enable Chrome Cleanup on Windows''',
@@ -24113,6 +24178,21 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Results from a Chrome Cleanup cleanup are always shared with Google',
+        },
+        {
+          'value': False,
+          'caption': 'Results from a Chrome Cleanup cleanup are never shared with Google',
+        },
+        {
+          'value': None,
+          'caption': 'Users may choose to share results from a Chrome Cleanup cleanup with Google',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 442,
       'caption': '''Control how Chrome Cleanup reports data to Google''',
@@ -24186,6 +24266,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Android app install event logs are shared with Google',
+        },
+        {
+          'value': False,
+          'caption': 'Android app install event logs are not shared with Google',
+        },
+      ],
       'example_value': True,
       'id': 447,
       'caption': '''Log events for Android app installs''',
