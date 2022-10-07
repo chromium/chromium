@@ -36,13 +36,14 @@ build_webui("build") {
 
   non_web_component_files = [
     "ensure_lazy_loaded.ts",
-    "icons.ts",
     "lazy_load.ts",
     "manage_profiles_browser_proxy.ts",
     "navigation_mixin.ts",
     "policy_helper.ts",
     "profile_picker.ts",
   ]
+
+  icons_html_files = [ "icons.html" ]
 
   css_files = [
     "profile_creation_flow/profile_creation_shared.css",
