@@ -152,7 +152,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|x64",
+            category = "gardener|ci|x64",
             short_name = "off",
         ),
     ],

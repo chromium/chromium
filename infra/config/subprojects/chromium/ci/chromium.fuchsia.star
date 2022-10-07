@@ -48,7 +48,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|x64",
+            category = "gardener|ci|x64",
             short_name = "det",
         ),
     ],
@@ -68,7 +68,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|arm64",
+            category = "gardener|ci|arm64",
             short_name = "rel",
         ),
     ],
@@ -104,7 +104,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|x64",
+            category = "gardener|ci|x64",
             short_name = "rel",
         ),
     ],
@@ -141,7 +141,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|arm64",
+            category = "gardener|ci|arm64",
             short_name = "cast",
         ),
     ],
@@ -181,7 +181,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|x64",
+            category = "gardener|ci|x64",
             short_name = "cast",
         ),
     ],
@@ -220,7 +220,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "ci|x64",
+            category = "gardener|ci|x64",
             short_name = "dbg",
         ),
     ],
