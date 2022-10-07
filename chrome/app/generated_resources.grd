@@ -7276,6 +7276,27 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_LENS_SEARCH" desc="The tooltip for search-by-image button">
         Search by image
       </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_CLOSE_BUTTON_LABEL" desc="Aria label for the button to close the upload dialog.">
+        Close
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_TITLE" desc="Title on dialog to upload an image to Google Lens.">
+        Search any image with Google Lens
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_DRAG_TITLE" desc="Message to user on drop zone where they can drag-and-drop an image to search.">
+        Drag an image here or
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_UPLOAD_FILE_TITLE" desc="Message to user on drop zone where they can drag-and-drop an image to search.">
+        upload a file
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_OR_TEXT" desc="Message to user on drop zone where they can select a file to search.">
+        or
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_TEXT_PLACEHOLDER" desc="Label on the input box for Lens search URL upload.">
+        Paste image link
+      </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_SEARCH_BUTTON_LABEL" desc="Label for button which allows the user to submit URL for upload.">
+        Search
+      </message>
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD" desc="The tooltip for the icon that shows the save credit card bubble">
         Save card
       </message>

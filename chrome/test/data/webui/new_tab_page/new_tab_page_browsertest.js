@@ -64,6 +64,10 @@ TEST_F('NewTabPageAppTest', 'CustomizeChromeSidePanel', function() {
   runMochaSuite('NewTabPageAppTest customize chrome side panel');
 });
 
+TEST_F('NewTabPageAppTest', 'LensUploadDialog', function() {
+  runMochaSuite('NewTabPageAppTest Lens upload dialog');
+});
+
 var NewTabPageCustomizeDialogTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {
@@ -138,6 +142,17 @@ var NewTabPageVoiceSearchOverlayTest = class extends NewTabPageBrowserTest {
 };
 
 TEST_F('NewTabPageVoiceSearchOverlayTest', 'All', function() {
+  mocha.run();
+});
+
+var NewTabPageLensUploadDialogTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/lens_upload_dialog_test.js';
+  }
+};
+
+TEST_F('NewTabPageLensUploadDialogTest', 'All', function() {
   mocha.run();
 });
 

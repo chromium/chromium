@@ -2454,8 +2454,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertEquals(
         pedalEl.querySelector<HTMLImageElement>('#action-icon')!.src,
-        'chrome://theme/current-channel-logo');  // Default Pedal
-                                                 // Icon
+        'chrome://theme/current-channel-logo');  // Default Pedal Icon
 
     const leftClick = new MouseEvent('click', {
       bubbles: true,
@@ -2508,8 +2507,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertEquals(
         pedalEl.querySelector<HTMLImageElement>('#action-icon')!.src,
-        'chrome://theme/current-channel-logo');  // Default Pedal
-                                                 // Icon
+        'chrome://theme/current-channel-logo');  // Default Pedal Icon
 
     const leftClick = new MouseEvent('click', {
       bubbles: true,
@@ -2592,7 +2590,32 @@ suite('NewTabPageRealboxTest', () => {
 
       // Restore.
       loadTimeData.overrideValues({
-        realboxImageSearch: false,
+        realboxLensSearch: false,
+      });
+    });
+
+    test('clicking Lens search button sends Lens search event', async () => {
+      // Arrange.
+      loadTimeData.overrideValues({
+        realboxLensSearch: true,
+      });
+      document.body.innerHTML = '';
+      realbox = document.createElement('ntp-realbox');
+      document.body.appendChild(realbox);
+      const whenOpenLensSearch = eventToPromise('open-lens-search', realbox);
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      const lensButton =
+        realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+      lensButton.click();
+
+      // Assert.
+      await whenOpenLensSearch;
+
+      // Restore.
+      loadTimeData.overrideValues({
+        realboxLensSearch: false,
       });
     });
   });

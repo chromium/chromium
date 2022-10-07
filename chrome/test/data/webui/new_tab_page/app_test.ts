@@ -5,7 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {counterfactualLoad, Module, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, AppElement, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, LensUploadDialogElement, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageInterface} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
@@ -658,6 +658,36 @@ suite('NewTabPageAppTest', () => {
 
       // Assert.
       assertFalse($$(app, '#customizeButtonContainer')!.hasAttribute('hidden'));
+    });
+  });
+
+  suite('Lens upload dialog', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        realboxLensSearch: true,
+      });
+    });
+
+    test('realbox is not visible when Lens upload dialog is open', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#realbox')!.dispatchEvent(new Event('open-lens-search'));
+      await flushTasks();
+
+      // Assert.
+      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
+
+      // Act.
+      (app.shadowRoot!.querySelector(LensUploadDialogElement.is) as
+       LensUploadDialogElement)
+          .closeDialog();
+      await flushTasks();
+
+      // Assert.
+      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
     });
   });
 });

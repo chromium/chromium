@@ -12,8 +12,8 @@ import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_ch
 import {ClickInfo, Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -22,6 +22,7 @@ import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {loadTimeData} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
+import {LensUploadDialogElement} from './lens_upload_dialog.js';
 import {LogoElement} from './logo.js';
 import {recordLoadDuration} from './metrics_utils.js';
 import {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
@@ -180,6 +181,11 @@ export class AppElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('realboxLensSearch'),
       },
 
+      realboxShown_: {
+        type: Boolean,
+        computed: 'computeRealboxShown_(showLensUploadDialog_)',
+      },
+
       logoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('logoEnabled'),
@@ -255,6 +261,8 @@ export class AppElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      showLensUploadDialog_: Boolean,
+
       /**
        * If true, renders additional elements that were not deemed crucial to
        * to show up immediately on load.
@@ -285,6 +293,8 @@ export class AppElement extends PolymerElement {
   private logoColor_: string;
   private singleColoredLogo_: boolean;
   private realboxLensSearchEnabled_: boolean;
+  private realboxShown_: boolean;
+  private showLensUploadDialog_: boolean = false;
   private logoEnabled_: boolean;
   private oneGoogleBarEnabled_: boolean;
   private shortcutsEnabled_: boolean;
@@ -436,6 +446,11 @@ export class AppElement extends PolymerElement {
         '';
   }
 
+  private computeRealboxShown_(showLensUploadDialog: boolean): boolean {
+    // Do not show the realbox if the upload dialog is showing.
+    return !showLensUploadDialog;
+  }
+
   private computePromoAndModulesLoaded_(): boolean {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
@@ -451,6 +466,19 @@ export class AppElement extends PolymerElement {
   private onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
     recordVoiceAction(VoiceAction.ACTIVATE_SEARCH_BOX);
+  }
+
+  private onOpenLensSearch_() {
+    // TODO(crbug.com/1371943): Use shadow root to select upload dialog until
+    // feature is no-longer wrapped by dom-if.
+    (this.shadowRoot!.querySelector(LensUploadDialogElement.is)! as
+     LensUploadDialogElement)
+        .openDialog();
+    this.showLensUploadDialog_ = true;
+  }
+
+  private onCloseLensSearch_() {
+    this.showLensUploadDialog_ = false;
   }
 
   private onCustomizeClick_() {

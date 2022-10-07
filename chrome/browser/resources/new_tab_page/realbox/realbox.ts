@@ -76,6 +76,13 @@ export class RealboxElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /** Whether the Google Lens icon should be visible in the searchbox. */
+      realboxLensSearchEnabled: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+        reflectToAttribute: true,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================
@@ -185,6 +192,7 @@ export class RealboxElement extends PolymerElement {
   isDark: boolean;
   matchesAreVisible: boolean;
   matchSearchbox: boolean;
+  realboxLensSearchEnabled: boolean;
   private charTypedTime_: number;
   private isDeletingInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;

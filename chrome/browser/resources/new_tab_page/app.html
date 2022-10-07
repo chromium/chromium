@@ -94,7 +94,12 @@
   }
 
   ntp-realbox {
+    visibility: hidden;
     width: var(--ntp-search-box-width);
+  }
+
+  ntp-realbox[shown] {
+    visibility: visible;
   }
 
   cr-most-visited {
@@ -317,12 +322,13 @@
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
   <div id="realboxContainer">
-    <ntp-realbox id="realbox"
-        is-dark="[[theme_.isDark]]"
-        on-open-voice-search="onOpenVoiceSearch_">
+    <ntp-realbox id="realbox" is-dark="[[theme_.isDark]]"
+        on-open-lens-search="onOpenLensSearch_"
+        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
     </ntp-realbox>
     <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
-      <ntp-lens-upload-dialog>
+      <ntp-lens-upload-dialog id="lensUploadDialog" 
+          on-close-lens-search="onCloseLensSearch_">
       </ntp-lens-upload-dialog>
     </template>
   </div>
