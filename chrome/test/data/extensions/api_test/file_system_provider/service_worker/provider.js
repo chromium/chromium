@@ -154,14 +154,16 @@ export class TestFileSystemProvider {
   }
 
   setUpProviderListeners() {
+    this.setHandlerEnabled('onAbortRequested', true);
+    this.setHandlerEnabled('onAddWatcherRequested', true);
+    this.setHandlerEnabled('onCloseFileRequested', true);
+    this.setHandlerEnabled('onCopyEntryRequested', true);
+    this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
     this.setHandlerEnabled('onOpenFileRequested', true);
-    this.setHandlerEnabled('onCloseFileRequested', true);
-    this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
+    this.setHandlerEnabled('onRemoveWatcherRequested', true);
     this.setHandlerEnabled('onWriteFileRequested', true);
-    this.setHandlerEnabled('onAbortRequested', true);
-    this.setHandlerEnabled('onCopyEntryRequested', true);
   }
 
   /**
@@ -306,6 +308,140 @@ export class TestFileSystemProvider {
     this.stalledRequests = {};
   }
 
+  onAbortRequested(options, onSuccess, onError) {
+    this.recordEvent('onAbortRequested', options);
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    onSuccess();
+  }
+
+  /**
+   * FSP: implementation for adding an entry watcher.
+   *
+   * @param {!chrome.fileSystemProvider.AddWatcherRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback.
+   * @param {function(string)} onError Error callback with an error code.
+   */
+  onAddWatcherRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.entryPath in this.files) {
+      onSuccess();
+      return;
+    }
+
+    onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  };
+
+
+  /**
+   * FSP: implementation for the file close request event. The file,
+   * previously opened with <code>openRequestId</code> will be closed.
+   *
+   * @param {!chrome.fileSystemProvider.CloseFileRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback.
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback.
+   */
+  onCloseFileRequested(options, onSuccess, onError) {
+    this.recordEvent('onCloseFileRequested', options);
+
+    if (options.fileSystemId !== this.fileSystemId ||
+        !this.openedFiles[options.openRequestId]) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    delete this.openedFiles[options.openRequestId];
+    onSuccess();
+  };
+
+  /**
+   * FSP: implementation of copying an entry within the same file system.
+   *
+   * @param {!chrome.fileSystemProvider.CopyEntryRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback with an error code.
+   */
+  onCopyEntryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.sourcePath === '/') {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (!(options.sourcePath in this.files)) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+
+    if (options.targetPath in this.files) {
+      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
+      return;
+    }
+
+    // Copy the metadata, but change the 'name' field.
+    const source = this.files[options.sourcePath];
+    /** @suppress {undefinedVars} */
+    const dest = structuredClone(source);
+    dest.name = options.targetPath.split('/').pop();
+    this.files[options.targetPath] = dest;
+
+    onSuccess();
+  }
+
+  /**
+   * FSP: implementation for the file create request event.
+   *
+   * @param {!chrome.fileSystemProvider.CreateFileRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback with an error code.
+   */
+  onCreateFileRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.filePath === '/') {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (options.filePath in this.files) {
+      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
+      return;
+    }
+
+    this.files[options.filePath] = {
+      metadata: {
+        isDirectory: false,
+        name: options.filePath.split('/').pop(),
+        size: 0,
+        modificationTime: new Date()
+      },
+      contents: '',
+    };
+
+    onSuccess();
+  };
+
   /**
    * FSP: implementation for the metadata request event.
    *
@@ -362,67 +498,6 @@ export class TestFileSystemProvider {
       this.stallRequest('onOpenFileRequested', options).then(onSuccess);
       return;
     }
-
-    onSuccess();
-  };
-
-  /**
-   * FSP: implementation for the file close request event. The file,
-   * previously opened with <code>openRequestId</code> will be closed.
-   *
-   * @param {!chrome.fileSystemProvider.CloseFileRequestedOptions} options
-   *     Options.
-   * @param {function()} onSuccess Success callback.
-   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
-   *     callback.
-   */
-  onCloseFileRequested(options, onSuccess, onError) {
-    this.recordEvent('onCloseFileRequested', options);
-
-    if (options.fileSystemId !== this.fileSystemId ||
-        !this.openedFiles[options.openRequestId]) {
-      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
-      return;
-    }
-
-    delete this.openedFiles[options.openRequestId];
-    onSuccess();
-  };
-
-  /**
-   * FSP: implementation for the file create request event.
-   *
-   * @param {!chrome.fileSystemProvider.CreateFileRequestedOptions} options
-   *     Options.
-   * @param {function()} onSuccess Success callback
-   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
-   *     callback with an error code.
-   */
-  onCreateFileRequested(options, onSuccess, onError) {
-    if (options.fileSystemId !== this.fileSystemId) {
-      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
-      return;
-    }
-
-    if (options.filePath === '/') {
-      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
-      return;
-    }
-
-    if (options.filePath in this.files) {
-      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
-      return;
-    }
-
-    this.files[options.filePath] = {
-      metadata: {
-        isDirectory: false,
-        name: options.filePath.split('/').pop(),
-        size: 0,
-        modificationTime: new Date()
-      },
-      contents: '',
-    };
 
     onSuccess();
   };
@@ -489,6 +564,28 @@ export class TestFileSystemProvider {
   }
 
   /**
+   * FSP: implementation for removing an entry watcher.
+   *
+   * @param {!chrome.fileSystemProvider.AddWatcherRequestedOptions} options
+   *     Options.
+   * @param {function()} onSuccess Success callback.
+   * @param {function(string)} onError Error callback with an error code.
+   */
+  onRemoveWatcherRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.entryPath in this.files) {
+      onSuccess();
+      return;
+    }
+
+    onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  };
+
+  /**
    * FSP: requests writing contents to a file, previously opened with <code>
    * openRequestId</code>.
    *
@@ -551,100 +648,6 @@ export class TestFileSystemProvider {
     metadata.size = newContents.length;
     onSuccess();
   }
-
-  onAbortRequested(options, onSuccess, onError) {
-    this.recordEvent('onAbortRequested', options);
-    if (options.fileSystemId !== this.fileSystemId) {
-      onError('SECURITY');  // enum ProviderError.
-      return;
-    }
-
-    onSuccess();
-  }
-
-  /**
-   * FSP: implementation of copying an entry within the same file system.
-   *
-   * @param {!chrome.fileSystemProvider.CopyEntryRequestedOptions} options
-   *     Options.
-   * @param {function()} onSuccess Success callback
-   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
-   *     callback with an error code.
-   */
-  onCopyEntryRequested(options, onSuccess, onError) {
-    if (options.fileSystemId !== this.fileSystemId) {
-      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
-      return;
-    }
-
-    if (options.sourcePath === '/') {
-      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
-      return;
-    }
-
-    if (!(options.sourcePath in this.files)) {
-      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
-      return;
-    }
-
-    if (options.targetPath in this.files) {
-      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
-      return;
-    }
-
-    // Copy the metadata, but change the 'name' field.
-    const source = this.files[options.sourcePath];
-    /** @suppress {undefinedVars} */
-    const dest = structuredClone(source);
-    dest.name = options.targetPath.split('/').pop();
-    this.files[options.targetPath] = dest;
-
-    onSuccess();
-  }
-
-  /**
-   * FSP: implementation for adding an entry watcher.
-   *
-   * @param {!chrome.fileSystemProvider.AddWatcherRequestedOptions} options
-   *     Options.
-   * @param {function()} onSuccess Success callback.
-   * @param {function(string)} onError Error callback with an error code.
-   */
-  onAddWatcherRequested(options, onSuccess, onError) {
-    if (options.fileSystemId !== this.fileSystemId) {
-      onError('SECURITY');  // enum ProviderError.
-      return;
-    }
-
-    if (options.entryPath in this.files) {
-      onSuccess();
-      return;
-    }
-
-    onError('NOT_FOUND');  // enum ProviderError.
-  };
-
-  /**
-   * FSP: implementation for removing an entry watcher.
-   *
-   * @param {!chrome.fileSystemProvider.AddWatcherRequestedOptions} options
-   *     Options.
-   * @param {function()} onSuccess Success callback.
-   * @param {function(string)} onError Error callback with an error code.
-   */
-  onRemoveWatcherRequested(options, onSuccess, onError) {
-    if (options.fileSystemId !== this.fileSystemId) {
-      onError('SECURITY');  // enum ProviderError.
-      return;
-    }
-
-    if (options.entryPath in this.files) {
-      onSuccess();
-      return;
-    }
-
-    onError('NOT_FOUND');  // enum ProviderError.
-  };
 };
 
 /**
