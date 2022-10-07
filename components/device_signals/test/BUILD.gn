@@ -5,9 +5,14 @@
 source_set("test_support") {
   testonly = true
   sources = [
+    "signals_contract.cc",
+    "signals_contract.h",
     "test_constants.cc",
     "test_constants.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/device_signals/core/common",
+  ]
 }

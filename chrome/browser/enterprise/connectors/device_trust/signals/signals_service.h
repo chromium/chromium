@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_SIGNALS_SERVICE_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/values.h"
 
@@ -15,8 +13,7 @@ namespace enterprise_connectors {
 // Service in charge of retrieving context-aware signals for its consumers.
 class SignalsService {
  public:
-  using CollectSignalsCallback =
-      base::OnceCallback<void(const base::Value::Dict)>;
+  using CollectSignalsCallback = base::OnceCallback<void(base::Value::Dict)>;
 
   virtual ~SignalsService() = default;
 

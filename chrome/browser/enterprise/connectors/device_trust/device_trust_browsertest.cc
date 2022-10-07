@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
@@ -18,18 +19,21 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
-#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/device_signals/test/signals_contract.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -48,11 +52,13 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #else
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #endif
 
 using content::NavigationHandle;
@@ -94,6 +100,9 @@ constexpr char kChallengeV1[] =
     "2ZgSJhErFEQDvWjyX0cDuFX8fO2i40aAwJsFoX+Z5fHbd3kanTcK+ty56w==\""
     "}"
     "}";
+
+constexpr char kDeviceAffiliationId[] = "device_aid";
+constexpr char kProfileAffiliationId[] = "profile_aid";
 
 constexpr char kFakeCustomerId[] = "fake-customer-id";
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -263,15 +272,12 @@ class DeviceTrustBrowserTestBase
       challenge_response_request_;
 
  protected:
-  void SetObfuscatedCustomerIDPolicy(
-      policy::CloudPolicyManager* cloud_policy_manager) {
-    auto browser_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-
+  void SetPolicyValues(enterprise_management::PolicyData* browser_policy_data,
+                       enterprise_management::PolicyData* user_policy_data) {
     browser_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+    browser_policy_data->add_device_affiliation_ids(kDeviceAffiliationId);
 
-    cloud_policy_manager->core()->store()->set_policy_data_for_testing(
-        std::move(browser_policy_data));
+    user_policy_data->add_user_affiliation_ids(kProfileAffiliationId);
   }
 };
 
@@ -294,13 +300,32 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     }
     ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_challenge_key));
+
+    policy::SetDMTokenForTesting(
+        policy::DMToken::CreateValidTokenForTesting("dm_token"));
   }
 
   void SetUpOnMainThread() override {
     DeviceTrustBrowserTestBase::SetUpOnMainThread();
 
-    SetObfuscatedCustomerIDPolicy(
-        browser()->profile()->GetUserCloudPolicyManagerAsh());
+    auto* device_policy_manager = g_browser_process->platform_part()
+                                      ->browser_policy_connector_ash()
+                                      ->GetDeviceCloudPolicyManager();
+    auto* profile_policy_manager =
+        browser()->profile()->GetUserCloudPolicyManagerAsh();
+    profile_policy_manager->core()->client()->SetupRegistration(
+        "dm_token", "client_id", {});
+
+    auto device_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+    auto user_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+    SetPolicyValues(device_policy_data.get(), user_policy_data.get());
+
+    device_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(device_policy_data));
+    profile_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(user_policy_data));
   }
 
   void TearDownOnMainThread() override {
@@ -329,11 +354,25 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
 
     scoped_persistence_delegate_factory_.emplace();
     scoped_rotation_command_factory_.emplace();
-    enterprise_signals::DeviceInfoFetcher::SetForceStubForTesting(true);
 
-    SetObfuscatedCustomerIDPolicy(
+    safe_browsing::SetProfileDMToken(browser()->profile(), "dm_token");
+
+    auto browser_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+    auto user_policy_data =
+        std::make_unique<enterprise_management::PolicyData>();
+    SetPolicyValues(browser_policy_data.get(), user_policy_data.get());
+
+    auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()
-            ->machine_level_user_cloud_policy_manager());
+            ->machine_level_user_cloud_policy_manager();
+    browser_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(browser_policy_data));
+
+    auto* profile_policy_manager =
+        browser()->profile()->GetUserCloudPolicyManager();
+    profile_policy_manager->core()->store()->set_policy_data_for_testing(
+        std::move(user_policy_data));
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -533,6 +572,38 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest,
             is_enabled());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests that signal values respect the expected format and is filled-out as
+// expect per platform.
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, SignalsContract) {
+  if (!is_enabled()) {
+    // Cannot create a DeviceTrustService if the feature flag is disabled.
+    return;
+  }
+
+  auto* device_trust_service =
+      DeviceTrustServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(device_trust_service);
+
+  base::test::TestFuture<base::Value::Dict> future;
+  device_trust_service->GetSignals(future.GetCallback());
+
+  // This error most likely indicates that one of the signals decorators did
+  // not invoke its done_closure in time.
+  ASSERT_TRUE(future.Wait()) << "Timed out while collecting signals.";
+
+  const base::Value::Dict& signals_dict = future.Get();
+
+  const auto signals_contract_map = device_signals::test::GetSignalsContract();
+  ASSERT_FALSE(signals_contract_map.empty());
+  for (const auto& signals_contract_entry : signals_contract_map) {
+    // First is the signal name.
+    // Second is the contract evaluation predicate.
+    EXPECT_TRUE(signals_contract_entry.second.Run(signals_dict))
+        << "Signals contract validation failed for: "
+        << signals_contract_entry.first;
+  }
+}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeviceTrustBrowserTest,

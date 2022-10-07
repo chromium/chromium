@@ -55,7 +55,7 @@ class DeviceTrustService : public KeyedService {
   virtual bool Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
-  void GetSignals(base::OnceCallback<void(const base::Value::Dict)> callback);
+  void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
 
   // Parses the `challenge` response and returns it via a `callback`.
   void ParseJsonChallenge(const std::string& challenge,

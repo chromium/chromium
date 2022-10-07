@@ -94,9 +94,8 @@ void ContextSignalsDecorator::OnSignalsFetched(
               ToListValue(context_info.system_dns_servers));
 
   if (context_info.chrome_cleanup_enabled) {
-    signals.Set(
-        device_signals::names::kChromeCleanupEnabled,
-        static_cast<int32_t>(context_info.chrome_cleanup_enabled.value()));
+    signals.Set(device_signals::names::kChromeCleanupEnabled,
+                context_info.chrome_cleanup_enabled.value());
   }
 
   if (context_info.third_party_blocking_enabled) {
