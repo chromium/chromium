@@ -13902,9 +13902,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
     <!-- High Efficiency Chip strings -->
     <if expr="not is_android">
-      <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="Label for a page action chip that highlights that the Memory Saver setting is enabled">
-        Tab active again
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="In Title Case: Label for a page action chip that highlights that the Memory Saver setting is enabled">
+          Tab Active Again
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_CHIP_LABEL" desc="Label for a page action chip that highlights that the Memory Saver setting is enabled">
+          Tab active again
+        </message>
+      </if>
       <message name="IDS_HIGH_EFFICIENCY_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Tab active again
       </message>
