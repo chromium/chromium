@@ -1107,20 +1107,7 @@ void TabStrip::OnGroupVisualsChanged(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData* old_visuals,
     const tab_groups::TabGroupVisualData* new_visuals) {
-  tab_container_->GetGroupViews()[group]->OnGroupVisualsChanged();
-  // The group title may have changed size, so update bounds.
-  // First exit tab closing mode, unless this change was a collapse, in which
-  // case we want to stay in tab closing mode.
-  bool is_collapsing = old_visuals && !old_visuals->is_collapsed() &&
-                       new_visuals->is_collapsed();
-  if (!is_collapsing)
-    tab_container_->ExitTabClosingMode();
-  tab_container_->StartBasicAnimation();
-
-  // The active tab may need to repaint its group stroke if it's in |group|.
-  int active_index = GetActiveIndex();
-  if (IsValidModelIndex(active_index))
-    tab_at(active_index)->SchedulePaint();
+  tab_container_->OnGroupVisualsChanged(group, old_visuals, new_visuals);
 }
 
 void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
@@ -1209,11 +1196,9 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
                                   : nullptr;
 
   if (new_active_tab != old_active_tab) {
-    if (old_active_tab) {
+    if (old_active_tab)
       old_active_tab->ActiveStateChanged();
-      if (old_active_tab->group().has_value())
-        tab_container_->UpdateTabGroupVisuals(old_active_tab->group().value());
-    }
+
     if (new_active_tab->group().has_value()) {
       const tab_groups::TabGroupId new_group = new_active_tab->group().value();
       // If the tab that is about to be activated is in a collapsed group,
@@ -1221,34 +1206,11 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
       if (IsGroupCollapsed(new_group))
         ToggleTabGroupCollapsedState(
             new_group, ToggleTabGroupCollapsedStateOrigin::kImplicitAction);
-      tab_container_->UpdateTabGroupVisuals(new_group);
     }
-
     new_active_tab->ActiveStateChanged();
+
     tab_container_->SetActiveTab(selected_tabs_.active(),
                                  new_selection.active());
-    if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
-      tab_container_->ScrollTabToVisible(new_selection.active().value());
-    }
-  }
-
-  if (GetActiveTabWidth() == GetInactiveTabWidth()) {
-    // When tabs are wide enough, selecting a new tab cannot change the
-    // ideal bounds, so only a repaint is necessary.
-    SchedulePaint();
-  } else if (IsAnimating() || drag_context_->IsDragSessionActive()) {
-    // The selection change will have modified the ideal bounds of the tabs
-    // in |selected_tabs_| and |new_selection|.  We need to recompute and
-    // retarget the animation to these new bounds. Note: This is safe even if
-    // we're in the midst of mouse-based tab closure--we won't expand the
-    // tabstrip back to the full window width--because PrepareForCloseAt() will
-    // have set |override_available_width_for_tabs_| already.
-    tab_container_->StartBasicAnimation();
-  } else {
-    // As in the animating case above, the selection change will have
-    // affected the desired bounds of the tabs, but since we're in a steady
-    // state we can just snap to the new bounds.
-    tab_container_->CompleteAnimationAndLayout();
   }
 
   // Use STLSetDifference to get the indices of elements newly selected

@@ -324,6 +324,14 @@ void CompoundTabContainer::OnGroupContentsChanged(
   unpinned_tab_container_->OnGroupContentsChanged(group);
 }
 
+void CompoundTabContainer::OnGroupVisualsChanged(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData* old_visuals,
+    const tab_groups::TabGroupVisualData* new_visuals) {
+  unpinned_tab_container_->OnGroupVisualsChanged(group, old_visuals,
+                                                 new_visuals);
+}
+
 void CompoundTabContainer::OnGroupClosed(const tab_groups::TabGroupId& group) {
   unpinned_tab_container_->OnGroupClosed(group);
 }
@@ -414,13 +422,6 @@ void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
   NOTREACHED();
-}
-
-void CompoundTabContainer::StartBasicAnimation() {
-  // TODO(crbug.com/1346023): Remove callers so this method can be private to
-  // TabContainerImpl.
-  pinned_tab_container_->StartBasicAnimation();
-  unpinned_tab_container_->StartBasicAnimation();
 }
 
 void CompoundTabContainer::InvalidateIdealBounds() {

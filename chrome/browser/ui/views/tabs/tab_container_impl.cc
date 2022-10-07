@@ -282,7 +282,42 @@ void TabContainerImpl::SetTabPinned(int model_index, TabPinned pinned) {
 
 void TabContainerImpl::SetActiveTab(absl::optional<size_t> prev_active_index,
                                     absl::optional<size_t> new_active_index) {
+  auto maybe_update_group_visuals = [this](absl::optional<size_t> tab_index) {
+    if (!tab_index.has_value())
+      return;
+    absl::optional<tab_groups::TabGroupId> group =
+        GetTabAtModelIndex(tab_index.value())->group();
+    if (group.has_value())
+      UpdateTabGroupVisuals(group.value());
+  };
+
+  maybe_update_group_visuals(prev_active_index);
+  maybe_update_group_visuals(new_active_index);
+
   layout_helper_->SetActiveTab(prev_active_index, new_active_index);
+
+  if (GetActiveTabWidth() == GetInactiveTabWidth()) {
+    // When tabs are wide enough, selecting a new tab cannot change the
+    // ideal bounds, so only a repaint is necessary.
+    SchedulePaint();
+  } else if (IsAnimating() || drag_context_->IsDragSessionActive()) {
+    // The selection change will have modified the ideal bounds of the tabs
+    // in |selected_tabs_| and |new_selection|.  We need to recompute and
+    // retarget the animation to these new bounds. Note: This is safe even if
+    // we're in the midst of mouse-based tab closure--we won't expand the
+    // tabstrip back to the full window width--because PrepareForCloseAt() will
+    // have set |override_available_width_for_tabs_| already.
+    StartBasicAnimation();
+  } else {
+    // As in the animating case above, the selection change will have
+    // affected the desired bounds of the tabs, but since we're in a steady
+    // state we can just snap to the new bounds.
+    CompleteAnimationAndLayout();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
+      new_active_index.has_value())
+    ScrollTabToVisible(new_active_index.value());
 }
 
 std::unique_ptr<Tab> TabContainerImpl::TransferTabOut(int model_index) {
@@ -429,6 +464,26 @@ void TabContainerImpl::OnGroupContentsChanged(
   StartBasicAnimation();
 }
 
+void TabContainerImpl::OnGroupVisualsChanged(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData* old_visuals,
+    const tab_groups::TabGroupVisualData* new_visuals) {
+  GetGroupViews()[group]->OnGroupVisualsChanged();
+  // The group title may have changed size, so update bounds.
+  // First exit tab closing mode, unless this change was a collapse, in which
+  // case we want to stay in tab closing mode.
+  const bool is_collapsing = old_visuals && !old_visuals->is_collapsed() &&
+                             new_visuals->is_collapsed();
+  if (!is_collapsing)
+    ExitTabClosingMode();
+  StartBasicAnimation();
+
+  // The active tab may need to repaint its group stroke if it's in `group`.
+  const int active_index = controller_->GetActiveIndex();
+  if (IsValidModelIndex(active_index))
+    GetTabAtModelIndex(active_index)->SchedulePaint();
+}
+
 void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
   DCHECK(group_views_[group]);
 
@@ -561,11 +616,6 @@ void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
   PreferredSizeChanged();
   if (view->group())
     UpdateTabGroupVisuals(view->group().value());
-}
-
-void TabContainerImpl::StartBasicAnimation() {
-  UpdateIdealBounds();
-  AnimateToIdealBounds();
 }
 
 void TabContainerImpl::InvalidateIdealBounds() {
@@ -1028,6 +1078,11 @@ void TabContainerImpl::SnapToIdealBounds() {
 int TabContainerImpl::CalculateAvailableWidthForTabs() const {
   return override_available_width_for_tabs_.value_or(
       GetAvailableWidthForTabContainer());
+}
+
+void TabContainerImpl::StartBasicAnimation() {
+  UpdateIdealBounds();
+  AnimateToIdealBounds();
 }
 
 void TabContainerImpl::StartInsertTabAnimation(int model_index) {

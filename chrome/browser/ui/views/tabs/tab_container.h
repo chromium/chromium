@@ -71,6 +71,10 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void OnGroupEditorOpened(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupMoved(const tab_groups::TabGroupId& group) = 0;
   virtual void OnGroupContentsChanged(const tab_groups::TabGroupId& group) = 0;
+  virtual void OnGroupVisualsChanged(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData* old_visuals,
+      const tab_groups::TabGroupVisualData* new_visuals) = 0;
   virtual void OnGroupClosed(const tab_groups::TabGroupId& group) = 0;
   virtual void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) = 0;
   virtual void NotifyTabGroupEditorBubbleOpened() = 0;
@@ -99,12 +103,6 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   // Called whenever a tab close animation has completed. This kills the `tab`.
   virtual void OnTabCloseAnimationCompleted(Tab* tab) = 0;
-
-  // Animates tabs and group views from where they are to where they should be.
-  // Callers that want to do fancier things can manipulate starting bounds
-  // before calling this and/or replace the animation for some tabs or group
-  // views after calling this.
-  virtual void StartBasicAnimation() = 0;
 
   // Force recalculation of ideal bounds at the next layout. Used to cause tabs
   // to animate to their ideal bounds after somebody other than TabContainer

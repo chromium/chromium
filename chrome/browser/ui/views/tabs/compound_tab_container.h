@@ -49,6 +49,10 @@ class CompoundTabContainer : public TabContainer {
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group) override;
   void OnGroupMoved(const tab_groups::TabGroupId& group) override;
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
+  void OnGroupVisualsChanged(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData* old_visuals,
+      const tab_groups::TabGroupVisualData* new_visuals) override;
   void OnGroupClosed(const tab_groups::TabGroupId& group) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
   void NotifyTabGroupEditorBubbleOpened() override;
@@ -64,7 +68,6 @@ class CompoundTabContainer : public TabContainer {
   bool IsRectInContentArea(const gfx::Rect& rect) override;
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
   void OnTabCloseAnimationCompleted(Tab* tab) override;
-  void StartBasicAnimation() override;
   void InvalidateIdealBounds() override;
   bool IsAnimating() const override;
   void CancelAnimation() override;

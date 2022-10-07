@@ -892,8 +892,9 @@ TEST_F(TabContainerTest, GroupHighlightBasics) {
 
 TEST_F(TabContainerTest, PreferredWidth) {
   Tab* const tab = AddTab(0);
+  // Manually displace `tab`, then trigger an animation back to ideal bounds.
   tab->SetBoundsRect(gfx::Rect());
-  tab_container_->StartBasicAnimation();
+  tab_container_->MoveTab(0, 0);
 
   // During animations, container should prefer to match its child bounds.
   const gfx::Rect initial_tab_bounds = tab->bounds();

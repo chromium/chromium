@@ -70,6 +70,10 @@ class TabContainerImpl : public TabContainer,
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group) override;
   void OnGroupMoved(const tab_groups::TabGroupId& group) override;
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
+  void OnGroupVisualsChanged(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData* old_visuals,
+      const tab_groups::TabGroupVisualData* new_visuals) override;
   void OnGroupClosed(const tab_groups::TabGroupId& group) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
   void NotifyTabGroupEditorBubbleOpened() override;
@@ -92,7 +96,6 @@ class TabContainerImpl : public TabContainer,
 
   void OnTabCloseAnimationCompleted(Tab* tab) override;
 
-  void StartBasicAnimation() override;
   void InvalidateIdealBounds() override;
   bool IsAnimating() const override;
   void CancelAnimation() override;
@@ -221,6 +224,12 @@ class TabContainerImpl : public TabContainer,
   // This can differ from GetAvailableWidthForTabContainer() when in tab closing
   // mode.
   int CalculateAvailableWidthForTabs() const;
+
+  // Animates tabs and group views from where they are to where they should be.
+  // Callers that want to do fancier things can manipulate starting bounds
+  // before calling this and/or replace the animation for some tabs or group
+  // views after calling this.
+  void StartBasicAnimation();
 
   // Invoked from |AddTab| after the newly created tab has been inserted.
   void StartInsertTabAnimation(int model_index);
