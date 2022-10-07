@@ -28,6 +28,10 @@ group("orchestrator_all") {
     # the root vpython spec files.
     "//.vpython3",
 
+    # Used if the orchestrator needs to run recipe_module.chromium.get_version()
+    # to get the Chrome milestone being tested.
+    "//chrome/VERSION",
+
     # Test specs the Orchestrator needs to trigger swarming tests
     "//testing/buildbot/*.json",
   ]
@@ -76,19 +80,19 @@ python_library("process_perf_results_py") {
   pydeps_file = "//tools/perf/process_perf_results.pydeps"
 
   data = [
-      # Telemetry fails if catapult's vendored libs aren't present on the
-      # filesystem. But since process_perf_results.py doesn't ever import any of
-      # them, build/print_python_deps.py doesn't detect them. So to appease
-      # telemetry, just add the needed dirs directly.
-      "//third_party/catapult/telemetry/third_party/",
-      "//third_party/catapult/third_party/polymer/",
-      "//third_party/catapult/third_party/six/",
-      "//third_party/catapult/third_party/vinn/",
-      "//third_party/catapult/tracing/bin/add_reserved_diagnostics",
-      "//third_party/catapult/tracing/third_party/",
-      "//third_party/catapult/tracing/tracing/",
+    # Telemetry fails if catapult's vendored libs aren't present on the
+    # filesystem. But since process_perf_results.py doesn't ever import any of
+    # them, build/print_python_deps.py doesn't detect them. So to appease
+    # telemetry, just add the needed dirs directly.
+    "//third_party/catapult/telemetry/third_party/",
+    "//third_party/catapult/third_party/polymer/",
+    "//third_party/catapult/third_party/six/",
+    "//third_party/catapult/third_party/vinn/",
+    "//third_party/catapult/tracing/bin/add_reserved_diagnostics",
+    "//third_party/catapult/tracing/third_party/",
+    "//third_party/catapult/tracing/tracing/",
 
-      # This file is read at script run-time.
-      "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
+    # This file is read at script run-time.
+    "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
   ]
 }
