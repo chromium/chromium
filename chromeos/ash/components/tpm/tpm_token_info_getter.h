@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
-#define ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#define CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@ namespace ash {
 
 // Class for getting a user or the system TPM token info from cryptohome during
 // TPM token loading.
-class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
  public:
   using TpmTokenInfoCallback = base::OnceCallback<void(
       absl::optional<user_data_auth::TpmTokenInfo> token_info)>;
@@ -61,10 +61,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
   }
 
  private:
-  enum Type {
-    TYPE_SYSTEM,
-    TYPE_USER
-  };
+  enum Type { TYPE_SYSTEM, TYPE_USER };
 
   enum State {
     STATE_INITIAL,
@@ -126,4 +123,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_INFO_GETTER_H_

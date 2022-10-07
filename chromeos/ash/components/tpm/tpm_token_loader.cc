@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/tpm/tpm_token_loader.h"
+#include "chromeos/ash/components/tpm/tpm_token_loader.h"
 
 #include <algorithm>
 
-#include "ash/components/tpm/tpm_token_info_getter.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -15,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "crypto/nss_util.h"
 
 namespace ash {

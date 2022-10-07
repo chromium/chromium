@@ -562,7 +562,6 @@ static_library("test_support") {
     public_deps += [
       "//ash",
       "//ash:test_support",
-      "//ash/components/tpm",
       "//ash/constants",
       "//ash/public/cpp:test_support",
       "//chrome/browser/ash",
@@ -572,6 +571,7 @@ static_library("test_support") {
       "//chromeos/ash/components/dbus/userdataauth",
       "//chromeos/ash/components/install_attributes:test_support",
       "//chromeos/ash/components/settings",
+      "//chromeos/ash/components/tpm",
       "//chromeos/dbus/tpm_manager",
       "//chromeos/login/login_state",
       "//components/exo",

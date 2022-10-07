@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ash/components/tpm/buildflags.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/tpm/buildflags.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos_ash)
@@ -15,7 +15,7 @@ buildflag_header("buildflags") {
 }
 
 component("tpm") {
-  defines = [ "IS_ASH_COMPONENTS_TPM_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_TPM_IMPL" ]
   deps = [
     ":buildflags",
     "//base",

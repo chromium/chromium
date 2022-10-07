@@ -4,14 +4,10 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/dbus",
-  "+chromeos/dbus",
+  "+chromeos/dbus/tpm_manager",
   "+chromeos/login/login_state",
   "+components/account_id",
-  "+components/policy/proto",
   "+crypto",
-  "+google_apis/gaia",
-  "+testing",
-  "+third_party/cros_system_api",
 
   # Abseil features must be allowlisted explicitly for now. See
   # //styleguide/c++/c++11.html. Allowed features' headers will be listed
@@ -25,3 +21,9 @@ include_rules = [
   '+third_party/abseil-cpp/absl/types/variant.h',
   '+third_party/abseil-cpp/absl/utility/utility.h',
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+testing",
+  ]
+}

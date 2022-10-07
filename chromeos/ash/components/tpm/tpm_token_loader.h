@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
-#define ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
+#define CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/tpm/tpm_token_info_getter.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,7 +31,7 @@ namespace ash {
 // When the TPM token is loaded, or if the TPM should stay disabled for the
 // session, the observers are notified using |OnTPMTokenReady|.
 // Note: This currently initializes the token with the hard coded default id 0.
-class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenLoader
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenLoader
     : public LoginState::Observer {
  public:
   enum TPMTokenStatus {
@@ -138,4 +138,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_TPM) TPMTokenLoader
 
 }  // namespace ash
 
-#endif  // ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_TPM_TPM_TOKEN_LOADER_H_

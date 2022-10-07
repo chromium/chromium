@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/components/tpm/tpm_token_info_getter.h"
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
