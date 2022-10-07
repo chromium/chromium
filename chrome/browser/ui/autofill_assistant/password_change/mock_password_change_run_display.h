@@ -60,7 +60,8 @@ class MockPasswordChangeRunDisplay : public PasswordChangeRunDisplay {
   MOCK_METHOD(void, ShowStartingScreen, (const GURL&), (override));
   MOCK_METHOD(void,
               ShowCompletionScreen,
-              (base::RepeatingClosure done_button_callback),
+              (autofill_assistant::password_change::FlowType flow_type,
+               base::RepeatingClosure done_button_callback),
               (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, PauseProgressBarAnimation, (), (override));
