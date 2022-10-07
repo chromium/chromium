@@ -20,6 +20,10 @@ struct StructTraits<autofill_assistant::mojom::NodeDataDataView,
     return r.backend_node_id;
   }
 
+  static bool used_override(const autofill_assistant::NodeData& r) {
+    return r.used_override;
+  }
+
   static bool Read(autofill_assistant::mojom::NodeDataDataView data,
                    autofill_assistant::NodeData* out);
 };

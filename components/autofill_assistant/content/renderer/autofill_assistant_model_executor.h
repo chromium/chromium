@@ -23,15 +23,27 @@
 
 namespace autofill_assistant {
 
+struct ModelExecutorResult {
+  ModelExecutorResult() = default;
+  ModelExecutorResult(int r, int o, bool with_override)
+      : role(r), objective(o), used_override(with_override) {}
+
+  // Role and objective pair.
+  int role = 0;
+  int objective = 0;
+  // Whether this result came from an override.
+  bool used_override = false;
+};
+
 // Holds and executes the AnnotateDOM model to predict semantic roles based on
 // node signals.
 class AutofillAssistantModelExecutor
     : public optimization_guide::BaseModelExecutor<
-          std::pair<int, int>,
+          ModelExecutorResult,
           const blink::AutofillAssistantNodeSignals&> {
  public:
   using ExecutionTask = optimization_guide::GenericModelExecutionTask<
-      std::pair<int, int>,
+      ModelExecutorResult,
       const blink::AutofillAssistantNodeSignals&>;
   using SparseVector = std::vector<std::pair<std::pair<int, int>, int>>;
   using SparseMap = base::flat_map<std::pair<int, int>, int>;
@@ -49,7 +61,7 @@ class AutofillAssistantModelExecutor
   bool InitializeModelFromFile(base::File model_file);
 
   // Execute the model with the given input.
-  absl::optional<std::pair<int, int>> ExecuteModelWithInput(
+  absl::optional<ModelExecutorResult> ExecuteModelWithInput(
       const blink::AutofillAssistantNodeSignals& node_signals);
 
  protected:
@@ -57,7 +69,7 @@ class AutofillAssistantModelExecutor
   bool Preprocess(
       const std::vector<TfLiteTensor*>& input_tensors,
       const blink::AutofillAssistantNodeSignals& node_signals) override;
-  absl::optional<std::pair<int, int>> Postprocess(
+  absl::optional<ModelExecutorResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
  private:

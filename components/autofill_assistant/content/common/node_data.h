@@ -18,6 +18,7 @@ struct NodeData {
   ~NodeData();
 
   int32_t backend_node_id;
+  bool used_override;
 };
 
 }  // namespace autofill_assistant

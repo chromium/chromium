@@ -14,6 +14,7 @@ bool StructTraits<autofill_assistant::mojom::NodeDataDataView,
     Read(autofill_assistant::mojom::NodeDataDataView data,
          autofill_assistant::NodeData* out) {
   out->backend_node_id = data.backend_node_id();
+  out->used_override = data.used_override();
   return true;
 }
 
