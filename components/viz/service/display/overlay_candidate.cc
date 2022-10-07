@@ -10,6 +10,7 @@
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_transform_utils.h"
 
 namespace viz {
 
@@ -60,6 +61,30 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
     }
   }
   return false;
+}
+
+// static
+void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
+                                 const gfx::RectF& clip_rect) {
+  DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  if (!clip_rect.Contains(candidate.display_rect)) {
+    // Apply the buffer transform to the candidate's |uv_rect| so that it is
+    // in the same orientation as |display_rect| when applying the clip.
+    gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
+        absl::get<gfx::OverlayTransform>(candidate.transform),
+        gfx::SizeF(1, 1));
+    candidate.uv_rect = buffer_transform.MapRect(candidate.uv_rect);
+
+    gfx::RectF intersect_clip_display = clip_rect;
+    intersect_clip_display.Intersect(candidate.display_rect);
+    gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
+        candidate.uv_rect, candidate.display_rect, intersect_clip_display);
+    candidate.display_rect = intersect_clip_display;
+
+    // Return |uv_rect| to buffer uv space.
+    candidate.uv_rect =
+        buffer_transform.InverseMapRect(uv_rect).value_or(uv_rect);
+  }
 }
 
 void OverlayCandidate::TransformRectToTargetSpace(

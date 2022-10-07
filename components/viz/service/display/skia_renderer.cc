@@ -3579,19 +3579,16 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->display_rect =
       quad->shared_quad_state->quad_to_target_transform.MapRect(
           gfx::RectF(filter_bounds));
-  // TODO(petermcneeley): This clipping is only correct for translation and
-  // scale. For other transforms we will need to send the rect over as a
-  // separate parameter.
-  auto unclipped_display_rect = overlay->display_rect;
-  overlay->display_rect.Intersect(
-      gfx::RectF(gfx::SizeF(current_frame()->device_viewport_size)));
   // Set |uv_rect| to reflect rounding from |filter_bounds| to |buffer_size|.
   overlay->uv_rect = gfx::RectF{
       static_cast<float>(filter_bounds.width()) / buffer_size.width(),
       static_cast<float>(filter_bounds.height()) / buffer_size.height()};
-  if (unclipped_display_rect != overlay->display_rect) {
-    overlay->uv_rect = cc::MathUtil::ScaleRectProportional(
-        overlay->uv_rect, unclipped_display_rect, overlay->display_rect);
+  // TODO(rivr): Handle the case where the overlay has an arbitrary transform
+  // applied.
+  if (absl::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {
+    OverlayCandidate::ApplyClip(
+        *overlay,
+        gfx::RectF(gfx::SizeF(current_frame()->device_viewport_size)));
   }
 #endif  // BUILDFLAG(IS_APPLE)
 }

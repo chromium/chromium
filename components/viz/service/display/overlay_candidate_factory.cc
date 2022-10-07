@@ -118,31 +118,6 @@ OverlayCandidate::CandidateStatus GetReasonForTransformNotAxisAligned(
   return OverlayCandidate::CandidateStatus::kFailNotAxisAligned2dRotation;
 }
 
-// Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
-// This function will also update the |uv_rect| based on what clipping was
-// applied to |display_rect|.
-// |clip_rect| should be in the same space as |candidate|'s |display_rect|.
-void ApplyClip(OverlayCandidate& candidate, const gfx::RectF& clip_rect) {
-  if (!clip_rect.Contains(candidate.display_rect)) {
-    // Apply the buffer transform to the candidate's |uv_rect| so that it is
-    // in the same orientation as |display_rect| when applying the clip.
-    gfx::Transform buffer_transform = gfx::OverlayTransformToTransform(
-        absl::get<gfx::OverlayTransform>(candidate.transform),
-        gfx::SizeF(1, 1));
-    candidate.uv_rect = buffer_transform.MapRect(candidate.uv_rect);
-
-    gfx::RectF intersect_clip_display = clip_rect;
-    intersect_clip_display.Intersect(candidate.display_rect);
-    gfx::RectF uv_rect = cc::MathUtil::ScaleRectProportional(
-        candidate.uv_rect, candidate.display_rect, intersect_clip_display);
-    candidate.display_rect = intersect_clip_display;
-
-    // Return |uv_rect| to buffer uv space.
-    candidate.uv_rect =
-        buffer_transform.InverseMapRect(uv_rect).value_or(uv_rect);
-  }
-}
-
 }  // namespace
 
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuad(
@@ -433,7 +408,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
       // need to clip here with the |primary_rect|.
       clip_to_apply.Intersect(primary_rect_);
 
-      ApplyClip(candidate, clip_to_apply);
+      OverlayCandidate::ApplyClip(candidate, clip_to_apply);
 
       if (candidate.display_rect.IsEmpty())
         return CandidateStatus::kFailVisible;

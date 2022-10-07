@@ -69,6 +69,14 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                          QuadList::ConstIterator quad_list_begin,
                          QuadList::ConstIterator quad_list_end);
 
+  // Modifies the |candidate|'s |display_rect| to be clipped within |clip_rect|.
+  // This function will also update the |uv_rect| based on what clipping was
+  // applied to |display_rect|.
+  // |clip_rect| should be in the same space as |candidate|'s |display_rect|,
+  // and |candidate| should not have an arbitrary transform.
+  static void ApplyClip(OverlayCandidate& candidate,
+                        const gfx::RectF& clip_rect);
+
   // Returns true if the |quad| cannot be displayed on the main plane. This is
   // used in conjuction with protected content that can't be GPU composited and
   // will be shown via an overlay.
