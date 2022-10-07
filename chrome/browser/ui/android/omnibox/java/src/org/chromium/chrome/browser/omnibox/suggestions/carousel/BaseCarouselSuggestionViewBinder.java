@@ -40,21 +40,14 @@ public final class BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.SHOW_TITLE) {
             final boolean showTitle = model.get(BaseCarouselSuggestionViewProperties.SHOW_TITLE);
             final View headerView = view.getHeaderView();
-            final int verticalPadStart = view.getResources().getDimensionPixelSize(
+            final int paddingVertical = view.getResources().getDimensionPixelSize(
                     R.dimen.omnibox_carousel_suggestion_padding);
-
-            // Remove end padding for the carousel as the feature OMNIBOX_HEADER_PADDING_UPDATE will
-            // increase the start margin of the suggestion header below the carousel.
-            final int verticalPadEnd =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE)
-                    ? 0
-                    : verticalPadStart;
             if (showTitle) {
                 headerView.setVisibility(View.VISIBLE);
-                view.setPaddingRelative(0, 0, 0, verticalPadEnd);
+                view.setPaddingRelative(0, 0, 0, paddingVertical);
             } else {
                 headerView.setVisibility(View.GONE);
-                view.setPaddingRelative(0, verticalPadStart, 0, verticalPadEnd);
+                view.setPaddingRelative(0, paddingVertical, 0, paddingVertical);
             }
         } else if (key == SuggestionCommonProperties.DEVICE_FORM_FACTOR) {
             view.setItemSpacingPx(getItemSpacingPx(

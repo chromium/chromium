@@ -46,13 +46,15 @@ found in the LICENSE file.
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
 
     <!-- Omnibox suggestions -->
-    <dimen name="omnibox_suggestion_header_margin_start">
+    <dimen name="omnibox_suggestion_header_padding_start">
         @dimen/omnibox_suggestion_24dp_icon_margin_start
     </dimen>
-    <dimen name="omnibox_suggestion_header_margin_start_modern">20dp</dimen>
-    <dimen name="omnibox_suggestion_header_margin_top">24dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_start_modern">20dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_top">12dp</dimen>
+    <dimen name="omnibox_suggestion_header_padding_bottom">12dp</dimen>
     <dimen name="omnibox_suggestion_header_height">48dp</dimen>
-    <dimen name="omnibox_suggestion_header_height_modern">56dp</dimen>
+    <dimen name="omnibox_suggestion_header_height_modern">44dp</dimen>
+    <dimen name="omnibox_suggestion_header_height_modern_phase2">32dp</dimen>
     <dimen name="omnibox_suggestion_semicompact_height">56dp</dimen>
     <dimen name="omnibox_suggestion_compact_height">48dp</dimen>
     <dimen name="omnibox_suggestion_semicompact_padding">8dp</dimen>

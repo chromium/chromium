@@ -154,11 +154,15 @@ public class HeaderView extends SimpleHorizontalLayoutView {
     /**
      * Specifies the paddings for suggestion header.
      *
-     * @param shouldUpdateHeaderPadding true, if suggestion header's padding should be updated.
+     * @param minHeight the min height of header view.
+     * @param paddingStart the start padding of header view.
+     * @param paddingTop the top padding of header view.
+     * @param paddingBottom the bottom padding of header view.
      */
-    void setUpdateHeaderPadding(int minHeight, int paddingMarginStart, int paddingMarginTop) {
+    void setUpdateHeaderPadding(
+            int minHeight, int paddingStart, int paddingTop, int paddingBottom) {
         mHeaderText.setMinHeight(minHeight);
-        mHeaderText.setPaddingRelative(paddingMarginStart, paddingMarginTop, 0, 0);
+        mHeaderText.setPaddingRelative(paddingStart, paddingTop, 0, paddingBottom);
     }
 
     @Override
