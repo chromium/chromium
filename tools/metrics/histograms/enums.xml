@@ -35681,6 +35681,8 @@ Called by update_extension_histograms.py.-->
   <int value="1718" label="WMDESKSPRIVATE_GETACTIVEDESK"/>
   <int value="1719" label="WMDESKSPRIVATE_SWITCHDESK"/>
   <int value="1720" label="OS_TELEMETRY_GETTPMINFO"/>
+  <int value="1721"
+      label="INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING"/>
 </enum>
 
 <enum name="ExtensionIconState">

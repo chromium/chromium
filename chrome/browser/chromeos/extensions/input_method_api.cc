@@ -643,6 +643,18 @@ InputMethodPrivateOnAutocorrectFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+InputMethodPrivateNotifyInputMethodReadyForTestingFunction::Run() {
+  std::string error;
+  ash::input_method::InputMethodEngine* engine = GetEngineIfActive(
+      Profile::FromBrowserContext(browser_context()), extension_id(), &error);
+  if (!engine)
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+
+  engine->NotifyInputMethodExtensionReadyForTesting();  // IN-TEST
+  return RespondNow(NoArguments());
+}
+
 InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
     : context_(context) {
   EventRouter::Get(context_)->RegisterObserver(this, OnChanged::kEventName);

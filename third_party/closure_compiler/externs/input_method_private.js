@@ -124,6 +124,7 @@ chrome.inputMethodPrivate.InputContext;
  *   enableSoundOnKeypress: (boolean|undefined),
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
  *   physicalKeyboardEnableCapitalization: (boolean|undefined),
+ *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
  *   virtualKeyboardAutoCorrectionLevel: (number|undefined),
  *   virtualKeyboardEnableCapitalization: (boolean|undefined),
  *   xkbLayout: (string|undefined),
@@ -441,6 +442,12 @@ chrome.inputMethodPrivate.onAutocorrect = function(parameters) {};
  *     operation completes. On failure, $(ref:runtime.lastError) is set.
  */
 chrome.inputMethodPrivate.getTextFieldBounds = function(parameters, callback) {};
+
+/**
+ * Notifies Chrome that the current input method is ready to accept key events
+ * from Tast.
+ */
+chrome.inputMethodPrivate.notifyInputMethodReadyForTesting = function() {};
 
 /**
  * Fired when the caret bounds change.

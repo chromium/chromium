@@ -474,6 +474,30 @@ class InputMethodPrivateOnAutocorrectFunction : public ExtensionFunction {
                              INPUTMETHODPRIVATE_ONAUTOCORRECT)
 };
 
+class InputMethodPrivateNotifyInputMethodReadyForTestingFunction
+    : public ExtensionFunction {
+ public:
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction() = default;
+
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction(
+      const InputMethodPrivateNotifyInputMethodReadyForTestingFunction&) =
+      delete;
+  InputMethodPrivateNotifyInputMethodReadyForTestingFunction& operator=(
+      const InputMethodPrivateNotifyInputMethodReadyForTestingFunction&) =
+      delete;
+
+ protected:
+  ~InputMethodPrivateNotifyInputMethodReadyForTestingFunction() override =
+      default;
+
+  ResponseAction Run() override;
+
+ private:
+  DECLARE_EXTENSION_FUNCTION(
+      "inputMethodPrivate.notifyInputMethodReadyForTesting",
+      INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING)
+};
+
 class InputMethodAPI : public BrowserContextKeyedAPI,
                        public extensions::EventRouter::Observer {
  public:

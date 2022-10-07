@@ -652,6 +652,8 @@ void InputMethodEngine::Enable(const std::string& component_id) {
   // engine_id) is enabled.
   candidate_window_property_ = {component_id,
                                 InputMethodEngine::CandidateWindowProperty()};
+
+  is_ready_for_testing_ = false;
 }
 
 bool InputMethodEngine::IsActive() const {
@@ -762,9 +764,7 @@ ui::VirtualKeyboardController* InputMethodEngine::GetVirtualKeyboardController()
 }
 
 bool InputMethodEngine::IsReadyForTesting() {
-  // For extension-based IMEs, we cannot tell if they are ready or not, so just
-  // return false.
-  return false;
+  return is_ready_for_testing_;
 }
 
 void InputMethodEngine::OnSuggestionsChanged(
@@ -1182,6 +1182,10 @@ void InputMethodEngine::MenuItemToProperty(
   }
 
   // TODO(nona): Support item.children.
+}
+
+void InputMethodEngine::NotifyInputMethodExtensionReadyForTesting() {
+  is_ready_for_testing_ = true;
 }
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(

@@ -314,6 +314,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
 
   gfx::Range GetAutocorrectRange();
 
+  void NotifyInputMethodExtensionReadyForTesting();
+
  protected:
   virtual void OnInputMethodOptionsChanged();
 
@@ -405,6 +407,8 @@ class InputMethodEngine : virtual public ui::TextInputMethod,
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::Value::Dict input_method_settings_snapshot_;
+
+  bool is_ready_for_testing_ = false;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };

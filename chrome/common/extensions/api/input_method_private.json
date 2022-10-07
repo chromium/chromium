@@ -836,6 +836,12 @@
             ]
           }
         ]
+    },
+    {
+      "name" : "notifyInputMethodReadyForTesting",
+      "type" : "function",
+      "description" : "Notifies Chrome that the current input method is ready to accept key events from Tast.",
+      "parameters": []
     }
     ],
     "events": [
