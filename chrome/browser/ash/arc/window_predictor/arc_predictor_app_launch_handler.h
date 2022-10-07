@@ -18,7 +18,7 @@ enum class GhostWindowType;
 // policy to control the system resource usage.
 class ArcPredictorAppLaunchHandler : public ash::AppLaunchHandler {
  public:
-  explicit ArcPredictorAppLaunchHandler(Profile* profile);
+  ArcPredictorAppLaunchHandler();
   ArcPredictorAppLaunchHandler(const ArcPredictorAppLaunchHandler&) = delete;
   ArcPredictorAppLaunchHandler& operator=(const ArcPredictorAppLaunchHandler&) =
       delete;

@@ -5,14 +5,15 @@
 #include "chrome/browser/ash/arc/window_predictor/arc_predictor_app_launch_handler.h"
 
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
 #include "ui/display/screen.h"
 
 namespace arc {
 
-ArcPredictorAppLaunchHandler::ArcPredictorAppLaunchHandler(Profile* profile)
-    : ash::AppLaunchHandler(profile) {
+ArcPredictorAppLaunchHandler::ArcPredictorAppLaunchHandler()
+    : ash::AppLaunchHandler(ProfileManager::GetPrimaryUserProfile()) {
   set_restore_data(std::make_unique<app_restore::RestoreData>());
 }
 

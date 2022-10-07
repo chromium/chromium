@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
@@ -370,9 +371,9 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
 
     if (IsFixupWindowEnabled() && app_info->need_fixup) {
       // TODO(sstan): Use different UI after UX design finalized.
-      if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
-                                      user_action, GhostWindowType::kFixup,
-                                      window_info)) {
+      if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
+              profile, app_id, *app_info, event_flags, GhostWindowType::kFixup,
+              window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }
@@ -380,9 +381,9 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       return false;
     } else if (full_restore::features::IsArcWindowPredictorEnabled() &&
                IsArcVmEnabled()) {
-      if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
-                                      user_action, GhostWindowType::kAppLaunch,
-                                      window_info)) {
+      if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
+              profile, app_id, *app_info, event_flags,
+              GhostWindowType::kAppLaunch, window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }

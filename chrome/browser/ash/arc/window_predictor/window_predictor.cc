@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
@@ -13,6 +16,19 @@
 namespace arc {
 
 namespace {
+
+constexpr char kWindowPredictorLaunchHistogram[] = "Arc.WindowPredictorLaunch";
+
+// Reason for Window Predictor launch action enumeration; Used for UMA counter.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WindowPredictorLaunchType {
+  kSuccess = 0,
+  kFailedNoArcTaskHandler = 1,
+  kFailedAppPendingRestore = 2,
+  kFailedNoArcAppLaunchHandler = 3,
+  kMaxValue = kFailedNoArcAppLaunchHandler,
+};
 
 // Pre-defined screen size for ARC. See ArcLaunchParamsModifier.java in ARC
 // codebase.
@@ -60,12 +76,44 @@ WindowPredictor::WindowPredictor() = default;
 
 WindowPredictor::~WindowPredictor() = default;
 
-void WindowPredictor::MaybeCreateAppLaunchHandler(Profile* profile) {
-  DCHECK(profile);
-  if (app_launch_handler_ && app_launch_handler_->profile() == profile)
-    return;
+bool WindowPredictor::LaunchArcAppWithGhostWindow(
+    Profile* profile,
+    const std::string& arc_app_id,
+    const ArcAppListPrefs::AppInfo& app_info,
+    int event_flags,
+    GhostWindowType window_type,
+    const arc::mojom::WindowInfoPtr& window_info) {
+  auto* arc_task_handler =
+      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
+  if (!arc_task_handler) {
+    base::UmaHistogramEnumeration(
+        kWindowPredictorLaunchHistogram,
+        WindowPredictorLaunchType::kFailedNoArcTaskHandler);
+    return false;
+  }
 
-  app_launch_handler_ = std::make_unique<ArcPredictorAppLaunchHandler>(profile);
+  // Do not launch ghost window and App if it exist in full restore pending
+  // launch queue.
+  if (arc_task_handler->IsAppPendingRestore(arc_app_id)) {
+    base::UmaHistogramEnumeration(
+        kWindowPredictorLaunchHistogram,
+        WindowPredictorLaunchType::kFailedAppPendingRestore);
+    return false;
+  }
+
+  arc::mojom::WindowInfoPtr predict_window_info =
+      PredictAppWindowInfo(app_info, window_info.Clone());
+
+  auto data_handler = std::make_unique<ArcPredictorAppLaunchHandler>();
+  data_handler->AddPendingApp(arc_app_id, event_flags, window_type,
+                              std::move(predict_window_info));
+  arc_task_handler->GetWindowPredictorArcAppLaunchHandler(handlers_.size())
+      ->RestoreArcApps(data_handler.get());
+  handlers_.push_back(std::move(data_handler));
+
+  base::UmaHistogramEnumeration(kWindowPredictorLaunchHistogram,
+                                WindowPredictorLaunchType::kSuccess);
+  return true;
 }
 
 arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(

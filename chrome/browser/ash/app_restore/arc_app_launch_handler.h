@@ -122,7 +122,8 @@ class ArcAppLaunchHandler
   ~ArcAppLaunchHandler() override;
 
   // Invoked when the restoration process can start. Reads the restore data, and
-  // add the ARC apps windows to `windows_` and `no_stack_windows_`.
+  // add the ARC apps windows to `windows_` and `no_stack_windows_`. For each
+  // AppLaunchHandler, it is only expected be called once.
   void RestoreArcApps(AppLaunchHandler* app_launch_handler);
 
   void OnAppConnectionReady();
