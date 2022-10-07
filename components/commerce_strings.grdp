@@ -3,7 +3,6 @@
   <!-- Desktop only -->
   <if expr="not is_android and not is_ios">
     <!-- Discount consent strings -->
-    <!-- TODO(crbug.com/1368330): Delete the following strings. -->
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_TITLE" desc="The title shown on the consent bubble for getting discount.">
       Get discount on <ph name="MERCHANT_NAME">$1</ph> and more
     </message>
@@ -25,18 +24,17 @@
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_DONE" desc="The text shown on the consent confirmation bubble bubble. User can click this button to close the bubble.">
       Done
     </message>
-    <!-- Discount consent strings -->
-    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON" desc="Text shown on the accept button of the consent dialog. By clicking this button, users has chosen to accept the consent to let Google find discounts for your carts.">
+    <!-- TODO(meiliang@): Use the final approved strings and remove the translateable tag. -->
+    <!-- These strings can skip translation because the feature is targeted en-us locale. Only the
+         en-us user can access the feature UI. -->
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON" translateable="false" desc="Text shown on the accept button of the consent dialog. By clicking this button, users has chosen to accept the consent.">
       Yes, I'm in
     </message>
-    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" desc="The title shown on the native consent dialog for getting discount.">
-      Let Google help you find&#13; discounts for your carts
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount. Note: This is intentionally left blank. No translation is required.">
+      Get discounts on your carts&#13; &amp; when you shop online
     </message>
-    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" desc="The actual consent descrition that shows in the native consent dialog.">
-      Let Google use your carts to search for personalized discounts. When available, discounts will automatically show up on your carts.
-    </message>
-    <message name="IDS_NTP_CART_DISCOUNT_STEP_ONE_CONTENT" desc="Text shown in the consent card within the cart module. This is the first step of the discount consent flow.">
-      Let Google help you find discounts for your carts
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" translateable="false" desc="The actual consent descrition that shows in the native consent dialog. Note: This is intentionally left blank. No translation is required.">
+      Let Google find personalized discounts on your carts and on online stores you visit. When available, discounts will automatically show up on your carts and on sites.
     </message>
 
     <!-- For Desktop Price Tracking -->

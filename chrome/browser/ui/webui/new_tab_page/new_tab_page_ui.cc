@@ -137,8 +137,11 @@ void AddResourcesForCartDiscountConsentV2(content::WebUIDataSource* source) {
       "modulesCartStepOneUseStaticContent",
       commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent
           .Get());
-  source->AddLocalizedString("modulesCartStepOneStaticContent",
-                             IDS_NTP_CART_DISCOUNT_STEP_ONE_CONTENT);
+  // This does not have a raw string resource.
+  source->AddString(
+      "modulesCartStepOneStaticContent",
+      commerce::kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent
+          .Get());
 
   AddRawStringOrDefault(
       source, "modulesCartConsentStepOneOneMerchantContent",

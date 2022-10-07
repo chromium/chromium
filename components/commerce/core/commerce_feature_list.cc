@@ -125,7 +125,7 @@ const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 // Params use for Discount Consent v2.
 BASE_FEATURE(kDiscountConsentV2,
              "DiscountConsentV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommerceHintAndroid,
              "CommerceHintAndroid",
@@ -140,7 +140,7 @@ const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
     "discount-consent-ntp-variation";
 const base::FeatureParam<int> kNtpChromeCartModuleDiscountConsentNtpVariation{
     &commerce::kDiscountConsentV2,
-    kNtpChromeCartModuleDiscountConsentNtpVariationParam, 4};
+    kNtpChromeCartModuleDiscountConsentNtpVariationParam, 0};
 const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[] =
     "discount-consent-ntp-reshow-time";
 const base::FeatureParam<base::TimeDelta>
@@ -177,7 +177,7 @@ const base::FeatureParam<bool>
     kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent{
         &commerce::kDiscountConsentV2,
         kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam,
-        true};
+        false};
 const char kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[] =
     "step-one-static-content";
 const base::FeatureParam<std::string>
