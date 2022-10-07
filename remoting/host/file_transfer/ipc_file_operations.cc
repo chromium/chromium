@@ -94,7 +94,7 @@ class IpcFileOperations::IpcReader : public FileOperations::Reader {
 
   void OnChannelDisconnected();
 
-  base::WeakPtr<IpcReader> GetWeakPtr() const;
+  base::WeakPtr<IpcReader> GetWeakPtr();
 
  private:
   void OnOpenResult(mojom::BeginFileReadResultPtr result);
@@ -130,7 +130,7 @@ class IpcFileOperations::IpcWriter : public FileOperations::Writer {
 
   void OnChannelDisconnected();
 
-  base::WeakPtr<IpcWriter> GetWeakPtr() const;
+  base::WeakPtr<IpcWriter> GetWeakPtr();
 
  private:
   void OnOpenResult(mojom::BeginFileWriteResultPtr result);
@@ -248,7 +248,7 @@ void IpcFileOperations::IpcReader::OnChannelDisconnected() {
 }
 
 base::WeakPtr<IpcFileOperations::IpcReader>
-IpcFileOperations::IpcReader::GetWeakPtr() const {
+IpcFileOperations::IpcReader::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -376,7 +376,7 @@ void IpcFileOperations::IpcWriter::OnChannelDisconnected() {
 }
 
 base::WeakPtr<IpcFileOperations::IpcWriter>
-IpcFileOperations::IpcWriter::GetWeakPtr() const {
+IpcFileOperations::IpcWriter::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
 }
