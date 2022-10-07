@@ -53859,7 +53859,8 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 
 <enum name="KioskBrowserWindowType">
   <int value="0" label="Settings Page"/>
-  <int value="1" label="Other, immediately closed"/>
+  <int value="1" label="Closed regular browser"/>
+  <int value="2" label="Opened regular browser"/>
 </enum>
 
 <enum name="KioskLaunchError">

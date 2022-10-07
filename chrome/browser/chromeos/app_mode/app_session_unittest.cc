@@ -277,10 +277,6 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   // The main browser window still exists, the kiosk session should not
   // shutdown.
   EXPECT_FALSE(IsSessionShuttingDown());
-  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kOther, 1);
-  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kSettingsPage, 0);
   // Opening a new browser should not be counted as a new session.
   histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 
@@ -316,7 +312,8 @@ TEST_F(AppSessionTest, ChromeAppKioskTracksBrowserCreation) {
   // Closing the browser should not shutdown the ChromeApp kiosk session.
   EXPECT_FALSE(IsSessionShuttingDown());
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kOther, 1);
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 1);
   histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 
   const base::Value::Dict& dict = local_state()->GetDict(prefs::kKioskMetrics);
@@ -488,6 +485,32 @@ TEST_F(AppSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
 
   EXPECT_TRUE(ShouldBrowserBeClosedByAppSessionBrowserHander(
       CreateBrowserForWebApp(kTestWebAppName2)->window()));
+}
+
+TEST_F(AppSessionTest, NewOpenedRegularBrowserMetrics) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
+  StartWebKioskSession(kTestWebAppName1);
+
+  ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForWebApp(kTestWebAppName1)->window());
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOpenedRegularBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
+}
+
+TEST_F(AppSessionTest, NewClosedRegularBrowserMetrics) {
+  GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, false);
+  StartWebKioskSession(kTestWebAppName1);
+
+  ShouldBrowserBeClosedByAppSessionBrowserHander(
+      CreateBrowserForWebApp(kTestWebAppName1)->window());
+
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kClosedRegularBrowser,
+                                 1);
+  histogram()->ExpectTotalCount(kKioskNewBrowserWindowHistogram, 1);
 }
 
 TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {

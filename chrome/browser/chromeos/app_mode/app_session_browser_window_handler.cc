@@ -50,16 +50,19 @@ void AppSessionBrowserWindowHandler::HandleNewBrowserWindow(Browser* browser) {
     HandleNewSettingsWindow(browser, url_string);
     on_browser_window_added_callback_.Run(false);
   } else {
-    base::UmaHistogramEnumeration(kKioskNewBrowserWindowHistogram,
-                                  KioskBrowserWindowType::kOther);
-
     if (IsNewBrowserWindowAllowed(browser)) {
+      base::UmaHistogramEnumeration(
+          kKioskNewBrowserWindowHistogram,
+          KioskBrowserWindowType::kOpenedRegularBrowser);
       LOG(WARNING)
           << "Open additional fullscreen browser window in kiosk session"
           << ", url=" << url_string;
       chrome::ToggleFullscreenMode(browser);
       on_browser_window_added_callback_.Run(false);
     } else {
+      base::UmaHistogramEnumeration(
+          kKioskNewBrowserWindowHistogram,
+          KioskBrowserWindowType::kClosedRegularBrowser);
       LOG(WARNING) << "Force close browser opened in kiosk session"
                    << ", url=" << url_string;
       browser->window()->Close();

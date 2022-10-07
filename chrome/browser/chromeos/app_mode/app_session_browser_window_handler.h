@@ -22,8 +22,9 @@ extern const char kKioskNewBrowserWindowHistogram[];
 // Keep in sync with respective enum in tools/metrics/histograms/enums.xml
 enum class KioskBrowserWindowType {
   kSettingsPage = 0,
-  kOther = 1,
-  kMaxValue = kOther,
+  kClosedRegularBrowser = 1,
+  kOpenedRegularBrowser = 2,
+  kMaxValue = kOpenedRegularBrowser,
 };
 
 // This class monitors for the addition and removal of new browser windows
