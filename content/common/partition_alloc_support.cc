@@ -467,7 +467,7 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
   }
 
   if (!base::FeatureList::IsEnabled(
-          features::kLowerMemoryLimitForNonMainRenderers) ||
+          features::kLowerPAMemoryLimitForNonMainRenderers) ||
       has_main_frame)
     ::partition_alloc::ThreadCache::SetLargestCachedSize(largest_cached_size_);
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&
