@@ -634,10 +634,10 @@ void AddSubTree(const ui::AXTree& tree,
 
   // Add children.
   std::vector<int> child_ids;
-  for (size_t i = 0; i < node->GetChildCount(); i++) {
+  for (auto it = node->AllChildrenBegin(); it != node->AllChildrenEnd(); ++it) {
     child_ids.push_back(++next_unused_node_id);
-    AddSubTree(tree, node->GetChildAtIndex(i), proto, next_unused_node_id,
-               current_node_id, tree_dimensions);
+    AddSubTree(tree, it.get(), proto, next_unused_node_id, current_node_id,
+               tree_dimensions);
   }
 
   // Add child ids.
