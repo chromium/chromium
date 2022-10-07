@@ -48,9 +48,11 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
     EXPECT_EQ(CertificateTrustType::TRUSTED_ANCHOR, trust.type);
   }
 
-  // Other certificates should not be included.
+  // Other certificates should not be included. Which test cert used here isn't
+  // important as long as it isn't one of the certificates in the
+  // chrome_root_store/test_store.certs.
   scoped_refptr<X509Certificate> other_cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ocsp-test-root.pem");
+      ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
   ASSERT_TRUE(other_cert);
   scoped_refptr<ParsedCertificate> other_parsed =
       ToParsedCertificate(*other_cert);
