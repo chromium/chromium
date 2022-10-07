@@ -13,7 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -60,7 +60,7 @@ TrafficCountersLogSource::TrafficCountersLogSource()
     : SystemLogsSource("TrafficCountersLog") {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
-  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+  ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       network_health_service_.BindNewPipeAndPassReceiver());
 }
 

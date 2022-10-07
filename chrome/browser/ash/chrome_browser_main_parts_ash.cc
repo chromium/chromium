@@ -109,7 +109,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/network_portal_detector_impl.h"
 #include "chrome/browser/ash/net/network_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
@@ -1150,7 +1150,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         std::make_unique<BluetoothPrefStateObserver>();
 
     // Initialize the NetworkHealth aggregator.
-    network_health::NetworkHealthService::GetInstance();
+    network_health::NetworkHealthManager::GetInstance();
 
     // Create cros_healthd data collector.
     cros_healthd_data_collector_ =
@@ -1162,7 +1162,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // Pass a callback to the CrosHealthd service connection that binds a
     // pending remote to service.
     cros_healthd->SetBindNetworkHealthServiceCallback(base::BindRepeating([] {
-      return network_health::NetworkHealthService::GetInstance()
+      return network_health::NetworkHealthManager::GetInstance()
           ->GetHealthRemoteAndBindReceiver();
     }));
 
@@ -1170,7 +1170,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     // pending remote to the interface.
     cros_healthd->SetBindNetworkDiagnosticsRoutinesCallback(
         base::BindRepeating([] {
-          return network_health::NetworkHealthService::GetInstance()
+          return network_health::NetworkHealthManager::GetInstance()
               ->GetDiagnosticsRemoteAndBindReceiver();
         }));
 

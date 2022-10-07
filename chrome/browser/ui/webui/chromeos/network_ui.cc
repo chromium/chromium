@@ -18,7 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -978,15 +978,15 @@ void NetworkUI::BindInterface(
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
         receiver) {
-  network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+  ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<
         network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  network_health::NetworkHealthService::GetInstance()->BindDiagnosticsReceiver(
-      std::move(receiver));
+  ash::network_health::NetworkHealthManager::GetInstance()
+      ->BindDiagnosticsReceiver(std::move(receiver));
 }
 
 void NetworkUI::BindInterface(

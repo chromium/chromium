@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -174,9 +174,9 @@ std::string FormatNetworkDiagnosticResults(
 
 NetworkHealthSource::NetworkHealthSource(bool scrub)
     : SystemLogsSource("NetworkHealth"), scrub_(scrub) {
-  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+  ash::network_health::NetworkHealthManager::GetInstance()->BindHealthReceiver(
       network_health_service_.BindNewPipeAndPassReceiver());
-  ash::network_health::NetworkHealthService::GetInstance()
+  ash::network_health::NetworkHealthManager::GetInstance()
       ->BindDiagnosticsReceiver(
           network_diagnostics_service_.BindNewPipeAndPassReceiver());
 }

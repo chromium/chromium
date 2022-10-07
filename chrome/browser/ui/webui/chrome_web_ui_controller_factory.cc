@@ -230,7 +230,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
@@ -664,14 +664,14 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
           [](mojo::PendingReceiver<
               chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
                  receiver) {
-            chromeos::network_health::NetworkHealthService::GetInstance()
+            ash::network_health::NetworkHealthManager::GetInstance()
                 ->BindDiagnosticsReceiver(std::move(receiver));
           }),
       /* BindNetworkHealthServiceCallback */
       base::BindRepeating(
           [](mojo::PendingReceiver<
               chromeos::network_health::mojom::NetworkHealthService> receiver) {
-            chromeos::network_health::NetworkHealthService::GetInstance()
+            ash::network_health::NetworkHealthManager::GetInstance()
                 ->BindHealthReceiver(std::move(receiver));
           }),
       /* SendFeedbackReportCallback */

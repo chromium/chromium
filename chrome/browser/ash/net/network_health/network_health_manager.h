@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
-#define CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
+#ifndef CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_MANAGER_H_
+#define CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_MANAGER_H_
 
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
@@ -19,12 +19,12 @@ namespace network_health {
 
 class NetworkHealth;
 
-class NetworkHealthService {
+class NetworkHealthManager {
  public:
-  static NetworkHealthService* GetInstance();
+  static NetworkHealthManager* GetInstance();
 
-  NetworkHealthService();
-  ~NetworkHealthService() = delete;
+  NetworkHealthManager();
+  ~NetworkHealthManager() = delete;
 
   mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
   GetHealthRemoteAndBindReceiver();
@@ -52,11 +52,4 @@ class NetworkHealthService {
 }  // namespace network_health
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-namespace network_health {
-using ::ash::network_health::NetworkHealthService;
-}
-}  // namespace chromeos
-
-#endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
+#endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_MANAGER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
@@ -15,7 +15,7 @@ namespace network_health {
 // TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_health::mojom;
 
-NetworkHealthService::NetworkHealthService() {
+NetworkHealthManager::NetworkHealthManager() {
   network_health_ = std::make_unique<NetworkHealth>();
   network_diagnostics_ =
       std::make_unique<network_diagnostics::NetworkDiagnostics>(
@@ -23,7 +23,7 @@ NetworkHealthService::NetworkHealthService() {
 }
 
 mojo::PendingRemote<mojom::NetworkHealthService>
-NetworkHealthService::GetHealthRemoteAndBindReceiver() {
+NetworkHealthManager::GetHealthRemoteAndBindReceiver() {
   mojo::PendingRemote<mojom::NetworkHealthService> remote;
   BindHealthReceiver(remote.InitWithNewPipeAndPassReceiver());
   return remote;
@@ -31,7 +31,7 @@ NetworkHealthService::GetHealthRemoteAndBindReceiver() {
 
 mojo::PendingRemote<
     chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
-NetworkHealthService::GetDiagnosticsRemoteAndBindReceiver() {
+NetworkHealthManager::GetDiagnosticsRemoteAndBindReceiver() {
   mojo::PendingRemote<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       remote;
@@ -39,25 +39,25 @@ NetworkHealthService::GetDiagnosticsRemoteAndBindReceiver() {
   return remote;
 }
 
-void NetworkHealthService::BindHealthReceiver(
+void NetworkHealthManager::BindHealthReceiver(
     mojo::PendingReceiver<mojom::NetworkHealthService> receiver) {
   network_health_->BindReceiver(std::move(receiver));
 }
 
-void NetworkHealthService::BindDiagnosticsReceiver(
+void NetworkHealthManager::BindDiagnosticsReceiver(
     mojo::PendingReceiver<
         chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
         receiver) {
   network_diagnostics_->BindReceiver(std::move(receiver));
 }
 
-void NetworkHealthService::AddObserver(
+void NetworkHealthManager::AddObserver(
     mojo::PendingRemote<mojom::NetworkEventsObserver> observer) {
   network_health_->AddObserver(std::move(observer));
 }
 
-NetworkHealthService* NetworkHealthService::GetInstance() {
-  static base::NoDestructor<NetworkHealthService> instance;
+NetworkHealthManager* NetworkHealthManager::GetInstance() {
+  static base::NoDestructor<NetworkHealthManager> instance;
   return instance.get();
 }
 

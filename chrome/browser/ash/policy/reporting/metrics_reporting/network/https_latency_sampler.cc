@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/task/bind_post_task.h"
-#include "chrome/browser/ash/net/network_health/network_health_service.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -90,7 +90,7 @@ void HttpsLatencySampler::Delegate::BindDiagnosticsReceiver(
     mojo::PendingReceiver<
         ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
         receiver) {
-  chromeos::network_health::NetworkHealthService::GetInstance()
+  ash::network_health::NetworkHealthManager::GetInstance()
       ->BindDiagnosticsReceiver(std::move(receiver));
 }
 
