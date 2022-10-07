@@ -1729,22 +1729,26 @@ TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
 // serverAuth EKU.
 // TODO(crbug.com/843735): Deprecate support for this.
 TEST_P(CertVerifyProcInternalTest, Sha1IntermediateUsesServerGatedCrypto) {
-  std::unique_ptr<CertBuilder> leaf, intermediate, root;
-  CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
-  ASSERT_TRUE(leaf && intermediate && root);
+  base::FilePath certs_dir =
+      GetTestNetDataDirectory()
+          .AppendASCII("verify_certificate_chain_unittest")
+          .AppendASCII("intermediate-eku-server-gated-crypto");
 
-  root->GenerateRSAKey();
-  root->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha1);
+  scoped_refptr<X509Certificate> cert_chain = CreateCertificateChainFromFile(
+      certs_dir, "sha1-chain.pem", X509Certificate::FORMAT_AUTO);
 
-  intermediate->SetExtendedKeyUsages({der::Input(kNetscapeServerGatedCrypto)});
-  intermediate->SetSignatureAlgorithm(SignatureAlgorithm::kRsaPkcs1Sha1);
+  ASSERT_TRUE(cert_chain);
+  ASSERT_FALSE(cert_chain->intermediate_buffers().empty());
 
-  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  auto root = X509Certificate::CreateFromBuffer(
+      bssl::UpRef(cert_chain->intermediate_buffers().back().get()), {});
+
+  ScopedTestRoot scoped_root(root.get());
 
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(leaf->GetX509CertificateChain().get(), "www.example.com", flags,
+      Verify(cert_chain.get(), "test.example", flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
 
   if (AreSHA1IntermediatesAllowed()) {
