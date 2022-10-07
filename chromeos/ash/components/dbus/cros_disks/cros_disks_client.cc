@@ -115,14 +115,14 @@ MountError CrosDisksMountErrorToChromeMountError(
       return MountError::kUnsupportedFilesystem;
     case cros_disks::MOUNT_ERROR_INVALID_ARCHIVE:
       return MountError::kInvalidArchive;
-    case cros_disks::MOUNT_ERROR_UNSUPPORTED_ARCHIVE:
-      // TODO(amistry): Add MOUNT_ERROR_UNSUPPORTED_ARCHIVE.
-      return MountError::kUnknown;
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD:
+    case cros_disks::MOUNT_ERROR_NEED_PASSWORD_EX:
       return MountError::kNeedPassword;
     case cros_disks::MOUNT_ERROR_IN_PROGRESS:
+    case cros_disks::MOUNT_ERROR_IN_PROGRESS_EX:
       return MountError::kInProgress;
     case cros_disks::MOUNT_ERROR_CANCELLED:
+    case cros_disks::MOUNT_ERROR_CANCELLED_EX:
       return MountError::kCancelled;
     case cros_disks::MOUNT_ERROR_BUSY:
       return MountError::kBusy;
