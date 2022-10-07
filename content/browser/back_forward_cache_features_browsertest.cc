@@ -197,16 +197,8 @@ IN_PROC_BROWSER_TEST_P(
 
 // Confirms that a page using a dedicated worker with WebTransport is not
 // cached.
-// TODO(crbug.com/1299018): Flakes on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport \
-  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransport
-#else
-#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport \
-  DoNotCacheWithDedicatedWorkerWithWebTransport
-#endif
 IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport) {
+                       DoNotCacheWithDedicatedWorkerWithWebTransport) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
@@ -2471,6 +2463,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
 
 // Disabled on Android, since we have problems starting up the websocket test
 // server in the host
+// TODO(crbug.com/1372291): Re-enable the test after solving the WS server.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebSocketNotCached DISABLED_WebSocketNotCached
 #else
