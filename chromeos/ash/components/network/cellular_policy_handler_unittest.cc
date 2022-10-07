@@ -212,8 +212,6 @@ class CellularPolicyHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     if (expect_install_success) {
-      FastForwardAutoConnectWaiting();
-      base::RunLoop().RunUntilIdle();
       EXPECT_LE(1u, network_connection_handler_->connect_calls().size());
       network_connection_handler_->connect_calls()
           .back()
@@ -241,11 +239,6 @@ class CellularPolicyHandlerTest : public testing::Test {
     // Connect can result in two profile refresh calls before and after
     // enabling profile. Fast forward by delay after refresh.
     FastForwardBy(2 * kProfileRefreshCallbackDelay);
-  }
-
-  void FastForwardAutoConnectWaiting() {
-    task_environment_.FastForwardBy(
-        CellularConnectionHandler::kWaitingForAutoConnectTimeout);
   }
 
   void FastForwardBy(base::TimeDelta delay) {
@@ -325,7 +318,6 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForDeviceState) {
   ShillDeviceClient::Get()->GetTestInterface()->AddDevice(
       "/device/cellular1", shill::kTypeCellular, "TestCellular");
   FastForwardProfileRefreshDelay();
-  FastForwardAutoConnectWaiting();
   base::RunLoop().RunUntilIdle();
   CheckShillConfiguration(/*is_installed=*/true);
 }
@@ -346,7 +338,6 @@ TEST_F(CellularPolicyHandlerTest, InstallWaitForEuicc) {
   CheckShillConfiguration(/*is_installed=*/false);
   SetupEuicc();
   FastForwardProfileRefreshDelay();
-  FastForwardAutoConnectWaiting();
   base::RunLoop().RunUntilIdle();
   CheckShillConfiguration(/*is_installed=*/true);
   CheckIccidSmdpPairInPref(/*is_installed=*/true);

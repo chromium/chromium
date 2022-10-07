@@ -99,12 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
   ConnectRequest* GetPendingRequest(const std::string& service_path);
   bool HasPendingCellularRequest() const;
 
-  // Callback when PrepareExistingCellularNetworkForConnection succeeded.
-  void OnPrepareCellularNetworkForConnectionSuccess(
-      const std::string& service_path,
-      bool auto_connected);
-
-  // Callback when PrepareExistingCellularNetworkForConnection failed.
   void OnPrepareCellularNetworkForConnectionFailure(
       const std::string& service_path,
       const std::string& error_name);

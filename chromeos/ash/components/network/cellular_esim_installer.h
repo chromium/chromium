@@ -96,8 +96,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                            InstallProfileConnectFailure);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest, InstallProfileSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
-                           InstallProfileAutoConnect);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileViaQrCodeSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileAlreadyConnected);
@@ -155,8 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   void OnPrepareCellularNetworkForConnectionSuccess(
       const dbus::ObjectPath& profile_path,
       InstallProfileFromActivationCodeCallback callback,
-      const std::string& service_path,
-      bool auto_connected);
+      const std::string& service_path);
   void OnPrepareCellularNetworkForConnectionFailure(
       const dbus::ObjectPath& profile_path,
       InstallProfileFromActivationCodeCallback callback,

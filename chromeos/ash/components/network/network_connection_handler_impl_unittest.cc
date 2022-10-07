@@ -701,8 +701,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 TEST_F(NetworkConnectionHandlerImplTest, IgnoreConnectInProgressError_Fails) {
   Init();
 
-  AddNonConnectablePSimService();
-  SetCellularServiceConnectable();
+  AddCellularServiceWithESimProfile();
   SetShillConnectError(shill::kErrorResultInProgress);
   Connect(kTestCellularServicePath);
   EXPECT_TRUE(GetResultAndReset().empty());
@@ -1170,8 +1169,7 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_AlreadyConnectable) {
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
-TEST_F(NetworkConnectionHandlerImplTest,
-       ESimProfile_EnableProfileAndWaitForAutoconnect) {
+TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_EnableProfile) {
   Init();
   AddCellularServiceWithESimProfile();
 
@@ -1179,24 +1177,6 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // connection is initiated, we attempt to enable the profile via Hermes.
   Connect(kTestCellularServicePath);
   SetCellularServiceConnectable();
-  // Set cellular service to connected state.
-  SetCellularServiceState(shill::kStateOnline);
-  EXPECT_EQ(kSuccessResult, GetResultAndReset());
-}
-
-TEST_F(NetworkConnectionHandlerImplTest,
-       ESimProfile_EnableProfileAndAutoconnectTimeout) {
-  const base::TimeDelta kCellularAutoConnectTimeout = base::Seconds(120);
-  Init();
-  AddCellularServiceWithESimProfile();
-
-  // Do not set the service to be connectable before trying to connect. When a
-  // connection is initiated, we attempt to enable the profile via Hermes.
-  Connect(kTestCellularServicePath);
-  SetCellularServiceConnectable();
-  EXPECT_TRUE(GetResultAndReset().empty());
-
-  AdvanceClock(kCellularAutoConnectTimeout);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
 
@@ -1211,8 +1191,6 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_StubToShillBacked) {
   // Now, create a non-stub service and make it connectable.
   AddNonConnectableESimService();
   SetCellularServiceConnectable();
-  // Set cellular service to connected state.
-  SetCellularServiceState(shill::kStateOnline);
 
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 

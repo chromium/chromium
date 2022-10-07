@@ -298,8 +298,7 @@ void CellularESimInstaller::EnableProfile(
 void CellularESimInstaller::OnPrepareCellularNetworkForConnectionSuccess(
     const dbus::ObjectPath& profile_path,
     InstallProfileFromActivationCodeCallback callback,
-    const std::string& service_path,
-    bool auto_connected) {
+    const std::string& service_path) {
   NET_LOG(EVENT) << "Successfully enabled installed profile on service path: "
                  << service_path;
   const NetworkState* network_state =

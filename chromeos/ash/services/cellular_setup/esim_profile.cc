@@ -391,8 +391,7 @@ void ESimProfile::OnPendingProfileInstallResult(
               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path,
-                                            bool auto_connected) {
+void ESimProfile::OnNewProfileEnableSuccess(const std::string& service_path) {
   const NetworkState* network_state =
       esim_manager_->network_state_handler()->GetNetworkState(service_path);
   if (!network_state) {

@@ -139,7 +139,6 @@ class ESimProfileTest : public ESimTestBase {
             }));
 
     FastForwardProfileRefreshDelay();
-    FastForwardAutoConnectWaiting();
 
     if (wait_for_connect) {
       base::RunLoop().RunUntilIdle();
