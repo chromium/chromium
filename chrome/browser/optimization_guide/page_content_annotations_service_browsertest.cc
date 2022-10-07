@@ -478,7 +478,6 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                        DISABLED_ModelExecutes) {
   base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -528,10 +527,6 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   ASSERT_TRUE(got_content_annotations.has_value());
   EXPECT_NE(-1.0, got_content_annotations->model_annotations.visibility_score);
   EXPECT_TRUE(got_content_annotations->model_annotations.categories.empty());
-
-  auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::PageContentAnnotations::kEntryName);
-  EXPECT_EQ(1u, entries.size());
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }

@@ -13608,6 +13608,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageContentAnnotations" singular="True">
+  <obsolete>
+    Removed in 10/2022.
+  </obsolete>
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
