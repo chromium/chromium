@@ -49,6 +49,8 @@ constexpr char kTestFileContents[] = "This is some test content.";
 constexpr char kTestVideoFile[] = "tulip2.webm";
 constexpr char kTestVideoDurationMilliesecond[] = "16682";
 
+#if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
+
 void VerifyResponse(const content::EvalJsResult& result) {
   EXPECT_TRUE(result.error.empty());
 
@@ -66,6 +68,8 @@ void VerifyResponse(const content::EvalJsResult& result) {
   ASSERT_TRUE(duration_millis);
   EXPECT_EQ(*duration_millis, kTestVideoDurationMilliesecond);
 }
+
+#endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
 }  // namespace
 
