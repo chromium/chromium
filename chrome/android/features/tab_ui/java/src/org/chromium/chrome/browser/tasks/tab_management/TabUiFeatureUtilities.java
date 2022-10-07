@@ -170,7 +170,8 @@ public class TabUiFeatureUtilities {
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && ChromeFeatureList.sGridTabSwitcherForTablets.isEnabled()
                 && ChromeFeatureList.sTabStripImprovements.isEnabled()
-                && ChromeFeatureList.sTabGroupsForTablets.isEnabled();
+                && ChromeFeatureList.sTabGroupsForTablets.isEnabled()
+                && !DeviceClassManager.enableAccessibilityLayout(context);
     }
 
     /**

@@ -220,7 +220,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     // Experiment flags
     private final boolean mTabStripImpEnabled;
-    private final boolean mTabGroupsEnabled;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -293,7 +292,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mTabMenu.setWidth(menuWidth);
         mTabMenu.setModal(true);
 
-        mTabGroupsEnabled = TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext);
         mShouldCascadeTabs =
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(context) && !mTabStripImpEnabled;
         mStripStacker = mShouldCascadeTabs ? mCascadingStripStacker : mScrollingStripStacker;
@@ -1755,7 +1753,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                     calculateOffsetToMakeTabVisible(mInteractingTab, true, true, true, true);
             mScroller.startScroll(Math.round(mScrollOffset), 0, (int) fastExpandDelta, 0, time,
                     getExpandDuration());
-        } else if (mTabGroupsEnabled) {
+        } else if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
             Tab tab = getTabById(mInteractingTab.getId());
             computeAndUpdateTabGroupMargins(true, true);
             setTabGroupDimmed(mTabGroupModelFilter.getRootId(tab), false);
@@ -1784,7 +1782,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         setBackgroundTabsDimmed(false);
 
         // 4. Clear any tab group margins if they are enabled.
-        if (mTabGroupsEnabled) resetTabGroupMargins();
+        if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) resetTabGroupMargins();
 
         // 5. Request an update.
         mUpdateHost.requestUpdate();
@@ -1960,7 +1958,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     private void setTabGroupDimmed(int groupId, boolean dimmed) {
-        assert mTabGroupsEnabled;
+        assert TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext);
 
         for (int i = 0; i < mStripTabs.length; i++) {
             final StripLayoutTab tab = mStripTabs[i];
@@ -2111,7 +2109,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int destIndex = TabModel.INVALID_TAB_INDEX;
         boolean isAnimating = mRunningAnimator != null && mRunningAnimator.isRunning();
         boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
-        boolean isInGroup = mTabGroupsEnabled
+        boolean isInGroup = TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)
                 && mTabGroupModelFilter.hasOtherRelatedTabs(getTabById(mInteractingTab.getId()));
         boolean hasTrailingMargin = mInteractingTab.getTrailingMargin() == mTabMarginWidth;
         boolean hasStartingMargin = curIndex == 0
@@ -2164,7 +2162,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             // 3.c. Re-compute tab group margins if necessary.
             float oldIdealX = mInteractingTab.getIdealX();
             float oldOffset = mScrollOffset;
-            if (mTabGroupsEnabled) computeAndUpdateTabGroupMargins(false, false);
+            if (TabUiFeatureUtilities.isTabletTabGroupsEnabled(mContext)) {
+                computeAndUpdateTabGroupMargins(false, false);
+            }
 
             // 3.d. Since we just moved the tab we're dragging, adjust its offset so it stays in
             // the same apparent position.
