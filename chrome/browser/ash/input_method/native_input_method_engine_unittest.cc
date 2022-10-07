@@ -137,9 +137,6 @@ void SetInputMethodOptions(Profile& profile,
 
 void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
   base::Value input_method_setting(base::Value::Type::DICTIONARY);
-  // TODO(b/175085612): Remove pinyin.xkbLayout once we migrated from the
-  // legacy pref keys.
-  input_method_setting.SetStringPath("pinyin.xkbLayout", layout);
   input_method_setting.SetStringPath("zh-t-i0-pinyin.xkbLayout", layout);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);

@@ -83,16 +83,6 @@ bool IsZhuyinEngine(const std::string& engine_id) {
   return engine_id == "zh-hant-t-i0-und";
 }
 
-std::string GetPrefKeyForEngineId(const std::string& engine_id) {
-  if (engine_id == "zh-t-i0-pinyin") {
-    return "pinyin";
-  }
-  if (engine_id == "zh-hant-t-i0-und") {
-    return "zhuyin";
-  }
-  return engine_id;
-}
-
 mojom::LatinSettingsPtr CreateLatinSettings(
     const base::Value::Dict& input_method_specific_pref,
     const PrefService& prefs,
@@ -259,7 +249,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // The subdictionary may be null if the user hasn't changed any settings for
   // that input method.
   const base::Value::Dict* input_method_specific_pref_or_null =
-      all_input_method_pref.FindDict(GetPrefKeyForEngineId(engine_id));
+      all_input_method_pref.FindDict(engine_id);
 
   // For convenience, pass an empty dictionary if there are no settings for this
   // input method yet.

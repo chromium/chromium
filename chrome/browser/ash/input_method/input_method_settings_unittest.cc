@@ -163,15 +163,20 @@ TEST(CreateSettingsFromPrefsTest, CreatePinyinSettingsDefault) {
 
 TEST(CreateSettingsFromPrefsTest, CreatePinyinSettings) {
   base::DictionaryValue dict;
-  dict.SetBoolPath("pinyin.en:eng", true);
-  dict.SetBoolPath("pinyin.k:g", true);
-  dict.SetBoolPath("pinyin.in:ing", true);
-  dict.SetStringPath("pinyin.xkbLayout", "Colemak");
-  dict.SetBoolPath("pinyin.pinyinEnableLowerPaging", false);
-  dict.SetBoolPath("pinyin.pinyinEnableUpperPaging", false);
-  dict.SetBoolPath("pinyin.pinyinDefaultChinese", false);
-  dict.SetBoolPath("pinyin.pinyinFullWidthCharacter", true);
-  dict.SetBoolPath("pinyin.pinyinChinesePunctuation", false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".en:eng"}), true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".k:g"}), true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".in:ing"}), true);
+  dict.SetStringPath(base::StrCat({kPinyinEngineId, ".xkbLayout"}), "Colemak");
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableLowerPaging"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinEnableUpperPaging"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinDefaultChinese"}),
+                   false);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinFullWidthCharacter"}),
+                   true);
+  dict.SetBoolPath(base::StrCat({kPinyinEngineId, ".pinyinChinesePunctuation"}),
+                   false);
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
@@ -218,9 +223,11 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettingsDefault) {
 
 TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
   base::DictionaryValue dict;
-  dict.SetStringPath("zhuyin.zhuyinKeyboardLayout", "IBM");
-  dict.SetStringPath("zhuyin.zhuyinSelectKeys", "asdfghjkl;");
-  dict.SetStringPath("zhuyin.zhuyinPageSize", "8");
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinKeyboardLayout"}),
+                     "IBM");
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinSelectKeys"}),
+                     "asdfghjkl;");
+  dict.SetStringPath(base::StrCat({kZhuyinEngineId, ".zhuyinPageSize"}), "8");
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, dict);
 
