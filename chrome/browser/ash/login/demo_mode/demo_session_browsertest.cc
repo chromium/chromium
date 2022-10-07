@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -234,7 +235,8 @@ class DemoLoginTestMainExtraParts : public ChromeBrowserMainExtraParts {
 class DemoSessionLoginTest : public LoginManagerTest,
                              public LocalStateMixin::Delegate,
                              public BrowserListObserver,
-                             public user_manager::UserManager::Observer {
+                             public user_manager::UserManager::Observer,
+                             public chromeos::FakePowerManagerClient::Observer {
  public:
   DemoSessionLoginTest() {
     login_manager_mixin_.set_should_launch_browser(true);
@@ -277,6 +279,10 @@ class DemoSessionLoginTest : public LoginManagerTest,
             kAccountIdEmail);
     device_local_account_policy_update.reset();
 
+    // chromeos::PowerManagerClient::InitializeFake();
+    chromeos::FakePowerManagerClient::Get()->set_keyboard_brightness_percent(
+        kInitialBrightness);
+
     LoginManagerTest::SetUpOnMainThread();
   }
 
@@ -305,6 +311,8 @@ class DemoSessionLoginTest : public LoginManagerTest,
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   base::test::ScopedFeatureList scoped_feature_list_;
   base::OnceClosure on_browser_added_callback_;
+  static constexpr double kInitialBrightness = 20.0;
+  base::WeakPtrFactory<DemoSessionLoginTest> weak_ptr_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
@@ -324,6 +332,17 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
   Browser* demo_app_browser =
       ash::FindSystemWebAppBrowser(profile, SystemWebAppType::DEMO_MODE);
   ASSERT_TRUE(demo_app_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DemoSessionLoginTest,
+    DemoSessionKeyboardBrightnessIncreaseThreeTimesToOneHundredPercents) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  login_manager_mixin_.WaitForActiveSession();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(chromeos::FakePowerManagerClient::Get()
+                ->num_increase_keyboard_brightness_calls(),
+            3);
 }
 
 }  // namespace

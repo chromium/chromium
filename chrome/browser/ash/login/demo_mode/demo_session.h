@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -43,7 +44,8 @@ class DemoResources;
 class DemoSession : public session_manager::SessionManagerObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
                     public extensions::AppWindowRegistry::Observer,
-                    public apps::AppRegistryCache::Observer {
+                    public apps::AppRegistryCache::Observer,
+                    public chromeos::PowerManagerClient::Observer {
  public:
   // Type of demo mode configuration.
   // Warning: DemoModeConfig is stored in local state. Existing entries should
@@ -224,6 +226,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  // Once received the keyboard brightness percentage, increase the keyboard
+  // brightness to the max level.
+  void SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
+      absl::optional<double> keyboard_brightness_percentage);
 
   // Whether demo session has been started.
   bool started_ = false;

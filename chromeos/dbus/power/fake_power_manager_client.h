@@ -58,6 +58,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_wake_notification_calls() const {
     return num_wake_notification_calls_;
   }
+  int num_increase_keyboard_brightness_calls() const {
+    return num_increase_keyboard_brightness_calls_;
+  }
   int num_pending_suspend_readiness_callbacks() const {
     return num_pending_suspend_readiness_callbacks_;
   }
@@ -252,6 +255,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_set_is_projecting_calls_ = 0;
   int num_set_backlights_forced_off_calls_ = 0;
   int num_wake_notification_calls_ = 0;
+  int num_increase_keyboard_brightness_calls_ = 0;
 
   // Number of pending suspend readiness callbacks.
   int num_pending_suspend_readiness_callbacks_ = 0;

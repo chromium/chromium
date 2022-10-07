@@ -151,7 +151,9 @@ void FakePowerManagerClient::GetScreenBrightnessPercent(
 
 void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
 
-void FakePowerManagerClient::IncreaseKeyboardBrightness() {}
+void FakePowerManagerClient::IncreaseKeyboardBrightness() {
+  ++num_increase_keyboard_brightness_calls_;
+}
 
 void FakePowerManagerClient::GetKeyboardBrightnessPercent(
     DBusMethodCallback<double> callback) {

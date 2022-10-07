@@ -541,6 +541,27 @@ void DemoSession::InstallAppFromUpdateUrl(const std::string& id) {
   extensions_external_loader_->LoadApp(id);
 }
 
+void DemoSession::SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
+    absl::optional<double> keyboard_brightness_percentage) {
+  // Map of current keyboard brightness percentage to times needed to call
+  // IncreaseKeyboardBrightness to reach max brightness level.
+  const base::flat_map<int, int> kTimesToIncreaseKeyboardBrightnessToMax = {
+      {0, 5}, {10, 4}, {20, 3}, {40, 2}, {60, 1}, {100, 0}};
+
+  if (keyboard_brightness_percentage.has_value()) {
+    const auto timesToIncreaseKeyboardBrightness =
+        kTimesToIncreaseKeyboardBrightnessToMax.find(
+            keyboard_brightness_percentage.value());
+
+    if (kTimesToIncreaseKeyboardBrightnessToMax.end() !=
+        timesToIncreaseKeyboardBrightness) {
+      for (int i = 0; i < timesToIncreaseKeyboardBrightness->second; i++) {
+        chromeos::PowerManagerClient::Get()->IncreaseKeyboardBrightness();
+      }
+    }
+  }
+}
+
 void DemoSession::OnSessionStateChanged() {
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::LOGIN_PRIMARY:
@@ -571,6 +592,14 @@ void DemoSession::OnSessionStateChanged() {
                 user_manager::UserManager::Get()
                     ->GetActiveUser()
                     ->GetAccountId());
+      }
+
+      if (chromeos::PowerManagerClient::Get()) {
+        chromeos::PowerManagerClient::Get()->GetKeyboardBrightnessPercent(
+            base::BindOnce(
+                &DemoSession::
+                    SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel,
+                weak_ptr_factory_.GetWeakPtr()));
       }
 
       if (!ash::features::IsDemoModeSWAEnabled() ||
