@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
 namespace {
@@ -220,12 +221,8 @@ void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {
       mojom::AcceleratorLayoutInfo::New();
   layout_info->category = layout_details.category;
   layout_info->sub_category = layout_details.sub_category;
-  // TODO(jimmyxgong): Create a mapping between action_id and description.
-  const std::string stub_description =
-      base::StrCat({"action: ", base::NumberToString(data.action),
-                    " : keycode: ", base::NumberToString(data.keycode),
-                    " : modifiers: ", base::NumberToString(data.modifiers)});
-  layout_info->description = base::UTF8ToUTF16(stub_description);
+  layout_info->description = l10n_util::GetStringUTF16(
+      kAcceleratorActionToStringIdMap.at(data.action));
   layout_info->style = layout_details.layout_style;
   layout_info->source = mojom::AcceleratorSource::kAsh;
   layout_info->action = static_cast<uint32_t>(data.action);
