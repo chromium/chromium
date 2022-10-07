@@ -74,9 +74,6 @@ using test::AppsGridViewTestApi;
 
 constexpr int kInitialItems = 34;
 
-constexpr int kMaxItemsPerFolderPage = AppListFolderView::kMaxFolderColumns *
-                                       AppListFolderView::kMaxPagedFolderRows;
-
 // Constants used for for testing app list layout in fullscreen state:
 // The app list grid vertical inset - the height of the view fadeout area.
 constexpr int kGridVerticalInset = 16;
@@ -1043,53 +1040,6 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
   const views::ViewModelT<AppListItemView>* view_model =
       app_list_folder_view()->items_grid_view()->view_model();
   for (size_t i = 0; i < view_model->view_size();
-       i += app_list_folder_view()->items_grid_view()->cols()) {
-    forward_view_list.push_back(view_model->view_at(i));
-  }
-  forward_view_list.push_back(
-      app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
-  forward_view_list.push_back(search_box_view()->search_box());
-  forward_view_list.push_back(view_model->view_at(0));
-
-  // Test traversal triggered by down.
-  TestFocusTraversal(forward_view_list, ui::VKEY_DOWN, false);
-
-  std::vector<views::View*> backward_view_list;
-  backward_view_list.push_back(view_model->view_at(0));
-  backward_view_list.push_back(search_box_view()->search_box());
-  backward_view_list.push_back(
-      app_list_folder_view()->folder_header_view()->GetFolderNameViewForTest());
-  for (size_t i = view_model->view_size() - 1; i < view_model->view_size();
-       i -= app_list_folder_view()->items_grid_view()->cols()) {
-    backward_view_list.push_back(view_model->view_at(i));
-  }
-  backward_view_list.push_back(search_box_view()->search_box());
-
-  // Test traversal triggered by up.
-  TestFocusTraversal(backward_view_list, ui::VKEY_UP, false);
-}
-
-// Tests the vertical focus traversal in FULLSCREEN_ALL_APPS state in the second
-// page within folder. ProductivityLauncher does not use pages for folders.
-TEST_F(AppListViewPeekingFocusTest,
-       VerticalFocusTraversalInSecondPageOfFolder) {
-  Show();
-
-  // Open the folder.
-  folder_item_view()->RequestFocus();
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
-
-  // Select the second page.
-  ASSERT_FALSE(features::IsProductivityLauncherEnabled());
-  static_cast<PagedAppsGridView*>(app_list_folder_view()->items_grid_view())
-      ->pagination_model()
-      ->SelectPage(1, false /* animate */);
-
-  std::vector<views::View*> forward_view_list;
-  const views::ViewModelT<AppListItemView>* view_model =
-      app_list_folder_view()->items_grid_view()->view_model();
-  for (size_t i = kMaxItemsPerFolderPage; i < view_model->view_size();
        i += app_list_folder_view()->items_grid_view()->cols()) {
     forward_view_list.push_back(view_model->view_at(i));
   }
@@ -2788,31 +2738,6 @@ TEST_F(AppListViewScalableLayoutTest, LayoutAfterConfigChangeWithRecentApps) {
   VerifyAppsContainerLayout(
       updated_window_size, /*row_count=*/3, expected_horizontal_margin,
       expected_updated_item_size, /*has_recent_apps=*/true);
-}
-
-// Tests that page switching in folder doesn't record AppListPageSwitcherSource
-// metric. ProductivityLauncher does not use pages in folders.
-TEST_F(AppListViewPeekingFocusTest, PageSwitchingNotRecordingMetric) {
-  base::HistogramTester histogram_tester;
-  Show();
-
-  histogram_tester.ExpectTotalCount("Apps.AppListPageSwitcherSource", 0);
-  // Open the folder.
-  folder_item_view()->RequestFocus();
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  ASSERT_TRUE(contents_view()->apps_container_view()->IsInFolderView());
-
-  // Create a fling to the left so the folder view changes page.
-  constexpr float kFlingVelocityForChangingPage = 850.0f;
-  gfx::Point location = app_list_folder_view()->bounds().CenterPoint();
-  ui::GestureEventDetails details = ui::GestureEventDetails(
-      ui::ET_SCROLL_FLING_START, -kFlingVelocityForChangingPage, 0);
-  ui::GestureEvent event = ui::GestureEvent(
-      location.x(), location.y(), ui::EF_NONE, base::TimeTicks::Now(), details);
-  app_list_folder_view()->items_grid_view()->OnGestureEvent(&event);
-
-  ASSERT_TRUE(event.handled());
-  histogram_tester.ExpectTotalCount("Apps.AppListPageSwitcherSource", 0);
 }
 
 }  // namespace

@@ -85,10 +85,6 @@ namespace test {
 namespace {
 
 constexpr int kNumOfSuggestedApps = 3;
-
-constexpr size_t kMaxItemsPerFolderPage =
-    AppListFolderView::kMaxFolderColumns *
-    AppListFolderView::kMaxPagedFolderRows;
 constexpr size_t kMaxItemsInFolder = 48;
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
@@ -1182,47 +1178,6 @@ TEST_F(AppsGridViewTest, RemoveItemsInFolderShouldUpdateBounds) {
             one_row_folder_view.size());
 }
 
-TEST_F(AppsGridViewTest, AddItemsToFolderShouldUpdateBounds) {
-  // Populate two folders with different number of apps.
-  AppListFolderItem* folder_1 = model_->CreateAndPopulateFolderWithApps(2);
-  model_->CreateAndPopulateFolderWithApps(4);
-
-  // Record the bounds of the folder view with 4 items in it.
-  AppsGridView* items_grid_view = app_list_folder_view()->items_grid_view();
-  test_api_->PressItemAt(1);
-  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
-  gfx::Rect two_rows_folder_view = items_grid_view->GetBoundsInScreen();
-  app_list_folder_view()->CloseFolderPage();
-
-  // Record the bounds of the folder view with 2 items in it and keep the folder
-  // view open for further testing.
-  test_api_->PressItemAt(0);
-  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
-  gfx::Rect one_row_folder_view = items_grid_view->GetBoundsInScreen();
-  EXPECT_NE(one_row_folder_view.size(), two_rows_folder_view.size());
-
-  // Add an item to the folder so that there are two rows in the folder view.
-  model_->AddItemToFolder(model_->CreateItem("Extra 1"), folder_1->id());
-  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
-  items_grid_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
-            two_rows_folder_view.size());
-  app_list_folder_view()->CloseFolderPage();
-
-  // Create a folder with a full page of apps. Add an item to the folder should
-  // not change the size of the folder view.
-  AppListFolderItem* folder_full =
-      model_->CreateAndPopulateFolderWithApps(kMaxItemsPerFolderPage);
-  test_api_->PressItemAt(2);
-  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
-  gfx::Rect full_folder_view = items_grid_view->GetBoundsInScreen();
-
-  model_->AddItemToFolder(model_->CreateItem("Extra 2"), folder_full->id());
-  EXPECT_EQ(items_grid_view->GetBoundsInScreen().size(),
-            full_folder_view.size());
-  app_list_folder_view()->CloseFolderPage();
-}
-
 TEST_P(AppsGridViewClamshellAndTabletTest, AddItemsToFolderShouldUpdateBounds) {
   // Populate two folders with different number of apps.
   AppListFolderItem* folder_1 = model_->CreateAndPopulateFolderWithApps(2);
@@ -1250,10 +1205,10 @@ TEST_P(AppsGridViewClamshellAndTabletTest, AddItemsToFolderShouldUpdateBounds) {
             two_rows_folder_view.size());
   app_list_folder_view()->CloseFolderPage();
 
-  // Create a folder with a full page of apps. Add an item to the folder should
+  // Create and add an almost full folder. Add an item to the folder should
   // not change the size of the folder view.
   AppListFolderItem* folder_full =
-      model_->CreateAndPopulateFolderWithApps(kMaxItemsPerFolderPage);
+      model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder - 1);
   test_api_->PressItemAt(2);
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
   gfx::Rect full_folder_view = items_grid_view->GetBoundsInScreen();
@@ -1265,7 +1220,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, AddItemsToFolderShouldUpdateBounds) {
 }
 
 TEST_P(AppsGridViewTabletTest, ScrollDownShouldNotExitFolder) {
-  const size_t kTotalItems = kMaxItemsPerFolderPage;
+  const size_t kTotalItems = kMaxItemsInFolder;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   EXPECT_EQ(1u, model_->top_level_item_list()->item_count());
   EXPECT_EQ(AppListFolderItem::kItemType,
@@ -1659,9 +1614,9 @@ TEST_P(AppsGridViewDragTest, FolderNotOpenedIfGridHidesDuringIconDrop) {
   EXPECT_EQ(1, GetHapticTickEventsCount());
 }
 
-TEST_F(AppsGridViewTest, CheckFolderWithMultiplePagesContents) {
+TEST_F(AppsGridViewTest, CheckFolderWithMultipleItemsContents) {
   // Creates a folder item.
-  const size_t kTotalItems = kMaxItemsPerFolderPage;
+  const size_t kTotalItems = kMaxItemsInFolder;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
 
@@ -1742,7 +1697,7 @@ TEST_F(AppsGridViewTest, DeletingFolderRecordsUserAction) {
 
 TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
   // Creates a folder item.
-  const size_t kTotalItems = kMaxItemsPerFolderPage;
+  const size_t kTotalItems = kMaxItemsInFolder;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
@@ -3752,7 +3707,7 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemFromFolderToShelf) {
 }
 
 TEST_P(AppsGridViewDragTest, DragAndPinNotInitiallyVisibleFolderItemToShelf) {
-  model_->CreateAndPopulateFolderWithApps(2 * kMaxItemsPerFolderPage);
+  model_->CreateAndPopulateFolderWithApps(kMaxItemsInFolder);
   UpdateLayout();
 
   // Open the folder.
@@ -4174,7 +4129,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, PopulateAppsGridWithTwoApps) {
 
 TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
   // Creates a folder item.
-  const size_t kTotalItems = kMaxItemsPerFolderPage;
+  const size_t kTotalItems = kMaxItemsInFolder;
   AppListFolderItem* folder_item =
       model_->CreateAndPopulateFolderWithApps(kTotalItems);
 
@@ -4187,7 +4142,8 @@ TEST_F(AppsGridViewTest, PopulateAppsGridWithAFolder) {
             model_->top_level_item_list()->item_at(0)->GetItemType());
   EXPECT_EQ(kTotalItems, folder_item->ChildItemCount());
   EXPECT_EQ(4, folder_apps_grid_view()->cols());
-  EXPECT_EQ(16u, AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
+  EXPECT_EQ(kTotalItems,
+            AppsGridViewTestApi(folder_apps_grid_view()).TilesPerPage(0));
   EXPECT_EQ(1, GetTotalPages(folder_apps_grid_view()));
   EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
@@ -4725,7 +4681,7 @@ TEST_P(AppsGridViewTabletTest, DragWithinFolderDoesNotEnterCardifiedState) {
   ASSERT_TRUE(paged_apps_grid_view_);
 
   // Creates a folder item and open it.
-  const size_t kTotalItems = kMaxItemsPerFolderPage;
+  const size_t kTotalItems = kMaxItemsInFolder;
   model_->CreateAndPopulateFolderWithApps(kTotalItems);
   test_api_->Update();
   test_api_->PressItemAt(0);
