@@ -1913,7 +1913,6 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/ev_test.pem",
     "data/ssl/certificates/ev_test_state_only.pem",
     "data/ssl/certificates/expired_cert.pem",
-    "data/ssl/certificates/explicit-policy-chain.pem",
     "data/ssl/certificates/foaf.me.chromium-test-cert.der",
     "data/ssl/certificates/gms.hongleong.com.my-verisign-chain.pem",
     "data/ssl/certificates/google.binary.p7b",

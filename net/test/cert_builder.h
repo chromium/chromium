@@ -164,6 +164,12 @@ class CertBuilder {
   // OIDs, which must be specified in dotted string notation (e.g. "1.2.3.4").
   void SetCertificatePolicies(const std::vector<std::string>& policy_oids);
 
+  // Sets the PolicyConstraints extension. If both |require_explicit_policy|
+  // and |inhibit_policy_mapping| are nullopt, the PolicyConstraints extension
+  // will removed.
+  void SetPolicyConstraints(absl::optional<uint64_t> require_explicit_policy,
+                            absl::optional<uint64_t> inhibit_policy_mapping);
+
   void SetValidity(base::Time not_before, base::Time not_after);
 
   // Sets the Subject Key Identifier (SKI) extension to the specified string.
@@ -258,7 +264,7 @@ class CertBuilder {
   scoped_refptr<X509Certificate> GetX509Certificate();
 
   // Returns an X509Certificate for the generated certificate, including
-  // intermediate certificates.
+  // intermediate certificates (not including the self-signed root).
   scoped_refptr<X509Certificate> GetX509CertificateChain();
 
   // Returns a copy of the certificate's DER.

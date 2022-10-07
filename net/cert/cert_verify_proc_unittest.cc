@@ -536,20 +536,22 @@ TEST_P(CertVerifyProcInternalTest, EVVerificationMultipleOID) {
 // length 1 because the target cert was directly trusted in the trust store.
 // Should verify OK but not with STATUS_IS_EV.
 TEST_P(CertVerifyProcInternalTest, TrustedTargetCertWithEVPolicy) {
-  // The policy that "explicit-policy-chain.pem" target certificate asserts.
+  std::unique_ptr<CertBuilder> leaf, root;
+  CertBuilder::CreateSimpleChain(&leaf, &root);
+  ASSERT_TRUE(leaf && root);
+
   static const char kEVTestCertPolicy[] = "1.2.3.4";
+  leaf->SetCertificatePolicies({kEVTestCertPolicy});
   ScopedTestEVPolicy scoped_test_ev_policy(
       EVRootCAMetadata::GetInstance(), SHA256HashValue(), kEVTestCertPolicy);
 
-  scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "explicit-policy-chain.pem");
-  ASSERT_TRUE(cert);
+  scoped_refptr<X509Certificate> cert = leaf->GetX509Certificate();
   ScopedTestRoot scoped_test_root(cert.get());
 
   CertVerifyResult verify_result;
   int flags = 0;
   int error =
-      Verify(cert.get(), "policy_test.example", flags,
+      Verify(cert.get(), "www.example.com", flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
   if (ScopedTestRootCanTrustTargetCert(verify_proc_type())) {
     EXPECT_THAT(error, IsOk());
@@ -567,27 +569,23 @@ TEST_P(CertVerifyProcInternalTest, TrustedTargetCertWithEVPolicy) {
 // explode if it does.
 TEST_P(CertVerifyProcInternalTest,
        TrustedTargetCertWithEVPolicyAndEVFingerprint) {
-  // The policy that "explicit-policy-chain.pem" target certificate asserts.
-  static const char kEVTestCertPolicy[] = "1.2.3.4";
-  // This the fingerprint of the "explicit-policy-chain.pem" target certificate.
-  // See net/data/ssl/certificates/explicit-policy-chain.pem
-  static const SHA256HashValue kEVTestCertFingerprint = {
-      {0x71, 0xac, 0xfa, 0x12, 0xa4, 0x42, 0x31, 0x3c, 0xff, 0x10, 0xd2,
-       0x9d, 0xb6, 0x1b, 0x4a, 0xe8, 0x25, 0x4e, 0x77, 0xd3, 0x9f, 0xa3,
-       0x2f, 0xb3, 0x19, 0x8d, 0x46, 0x9f, 0xb7, 0x73, 0x07, 0x30}};
-  ScopedTestEVPolicy scoped_test_ev_policy(EVRootCAMetadata::GetInstance(),
-                                           kEVTestCertFingerprint,
-                                           kEVTestCertPolicy);
+  std::unique_ptr<CertBuilder> leaf, root;
+  CertBuilder::CreateSimpleChain(&leaf, &root);
+  ASSERT_TRUE(leaf && root);
 
-  scoped_refptr<X509Certificate> cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "explicit-policy-chain.pem");
-  ASSERT_TRUE(cert);
+  static const char kEVTestCertPolicy[] = "1.2.3.4";
+  leaf->SetCertificatePolicies({kEVTestCertPolicy});
+  ScopedTestEVPolicy scoped_test_ev_policy(
+      EVRootCAMetadata::GetInstance(),
+      X509Certificate::CalculateFingerprint256(leaf->GetCertBuffer()),
+      kEVTestCertPolicy);
+  scoped_refptr<X509Certificate> cert = leaf->GetX509Certificate();
   ScopedTestRoot scoped_test_root(cert.get());
 
   CertVerifyResult verify_result;
   int flags = 0;
   int error =
-      Verify(cert.get(), "policy_test.example", flags,
+      Verify(cert.get(), "www.example.com", flags,
              CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
   if (ScopedTestRootCanTrustTargetCert(verify_proc_type())) {
     EXPECT_THAT(error, IsOk());
@@ -614,59 +612,32 @@ TEST_P(CertVerifyProcInternalTest, TrustedIntermediateCertWithEVPolicy) {
     return;
   }
 
-  CertificateList orig_certs = CreateCertificateListFromFile(
-      GetTestCertsDirectory(), "explicit-policy-chain.pem",
-      X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, orig_certs.size());
-
   for (bool trust_the_intermediate : {false, true}) {
     SCOPED_TRACE(trust_the_intermediate);
 
     // Need to build unique certs for each try otherwise caching can break
     // things.
-    CertBuilder root(orig_certs[2]->cert_buffer(), nullptr);
-    root.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-    root.GenerateECKey();
-    CertBuilder intermediate(orig_certs[1]->cert_buffer(), &root);
-    intermediate.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-    intermediate.GenerateECKey();
-    CertBuilder leaf(orig_certs[0]->cert_buffer(), &intermediate);
-    leaf.SetSignatureAlgorithm(SignatureAlgorithm::kEcdsaSha256);
-    leaf.GenerateECKey();
+    std::unique_ptr<CertBuilder> leaf, intermediate, root;
+    CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
+    ASSERT_TRUE(leaf && intermediate && root);
 
-    // The policy that "explicit-policy-chain.pem" target certificate asserts.
     static const char kEVTestCertPolicy[] = "1.2.3.4";
+    leaf->SetCertificatePolicies({kEVTestCertPolicy});
+    intermediate->SetCertificatePolicies({kEVTestCertPolicy});
     // Consider the root of the test chain a valid EV root for the test policy.
     ScopedTestEVPolicy scoped_test_ev_policy(
         EVRootCAMetadata::GetInstance(),
-        X509Certificate::CalculateFingerprint256(root.GetCertBuffer()),
+        X509Certificate::CalculateFingerprint256(root->GetCertBuffer()),
         kEVTestCertPolicy);
 
-    // CRLSet which covers the leaf.
-    base::StringPiece intermediate_spki;
-    ASSERT_TRUE(asn1::ExtractSPKIFromDERCert(
-        x509_util::CryptoBufferAsStringPiece(intermediate.GetCertBuffer()),
-        &intermediate_spki));
-    SHA256HashValue intermediate_spki_hash;
-    crypto::SHA256HashString(intermediate_spki, &intermediate_spki_hash,
-                             sizeof(SHA256HashValue));
-    scoped_refptr<CRLSet> crl_set =
-        CRLSet::ForTesting(false, &intermediate_spki_hash, "", "", {});
-
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-    intermediates.push_back(bssl::UpRef(intermediate.GetCertBuffer()));
-    scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBuffer(
-        bssl::UpRef(leaf.GetCertBuffer()), std::move(intermediates));
+    scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
     ASSERT_TRUE(cert.get());
 
     scoped_refptr<X509Certificate> intermediate_cert =
-        X509Certificate::CreateFromBuffer(
-            bssl::UpRef(intermediate.GetCertBuffer()), {});
+        intermediate->GetX509Certificate();
     ASSERT_TRUE(intermediate_cert.get());
 
-    scoped_refptr<X509Certificate> root_cert =
-        X509Certificate::CreateFromBuffer(bssl::UpRef(root.GetCertBuffer()),
-                                          {});
+    scoped_refptr<X509Certificate> root_cert = root->GetX509Certificate();
     ASSERT_TRUE(root_cert.get());
 
     if (!trust_the_intermediate) {
@@ -675,8 +646,9 @@ TEST_P(CertVerifyProcInternalTest, TrustedIntermediateCertWithEVPolicy) {
       ScopedTestRoot scoped_test_root({root_cert});
       CertVerifyResult verify_result;
       int flags = 0;
-      int error = Verify(cert.get(), "policy_test.example", flags,
-                         crl_set.get(), CertificateList(), &verify_result);
+      int error = Verify(cert.get(), "www.example.com", flags,
+                         CRLSet::BuiltinCRLSet().get(), CertificateList(),
+                         &verify_result);
       EXPECT_THAT(error, IsOk());
       ASSERT_TRUE(verify_result.verified_cert);
       // Verified chain should include the intermediate and the root.
@@ -688,8 +660,9 @@ TEST_P(CertVerifyProcInternalTest, TrustedIntermediateCertWithEVPolicy) {
       ScopedTestRoot scoped_test_root({intermediate_cert, root_cert});
       CertVerifyResult verify_result;
       int flags = 0;
-      int error = Verify(cert.get(), "policy_test.example", flags,
-                         crl_set.get(), CertificateList(), &verify_result);
+      int error = Verify(cert.get(), "www.example.com", flags,
+                         CRLSet::BuiltinCRLSet().get(), CertificateList(),
+                         &verify_result);
       EXPECT_THAT(error, IsOk());
       ASSERT_TRUE(verify_result.verified_cert);
       // Verified chain should only go to the trusted intermediate, not the
@@ -881,7 +854,11 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
   }
 }
 
-// A regression test for http://crbug.com/31497.
+// A regression test for https://crbug.com/31497: If an intermediate has
+// requireExplicitPolicy in its policyConstraints extension, verification
+// should still succeed as long as some policy is valid for the chain, since
+// Chrome does not specify any required policy as an input to certificate
+// verification (allows anyPolicy).
 TEST_P(CertVerifyProcInternalTest, IntermediateCARequireExplicitPolicy) {
   if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
     // Disabled on Android, as the Android verification libraries require an
@@ -890,28 +867,39 @@ TEST_P(CertVerifyProcInternalTest, IntermediateCARequireExplicitPolicy) {
     return;
   }
 
-  base::FilePath certs_dir = GetTestCertsDirectory();
+  for (bool leaf_has_policy : {false, true}) {
+    SCOPED_TRACE(leaf_has_policy);
 
-  CertificateList certs = CreateCertificateListFromFile(
-      certs_dir, "explicit-policy-chain.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, certs.size());
+    std::unique_ptr<CertBuilder> leaf, intermediate, root;
+    CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
+    ASSERT_TRUE(leaf && intermediate && root);
 
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    static const char kPolicy1[] = "1.2.3.4";
+    static const char kPolicy2[] = "1.2.3.4.5";
+    static const char kPolicy3[] = "1.2.3.5";
+    intermediate->SetCertificatePolicies({kPolicy1, kPolicy2, kPolicy3});
+    intermediate->SetPolicyConstraints(
+        /*require_explicit_policy=*/0,
+        /*inhibit_policy_mapping=*/absl::nullopt);
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBuffer(
-      bssl::UpRef(certs[0]->cert_buffer()), std::move(intermediates));
-  ASSERT_TRUE(cert.get());
+    if (leaf_has_policy)
+      leaf->SetCertificatePolicies({kPolicy1});
 
-  ScopedTestRoot scoped_root(certs[2].get());
+    scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
+    ScopedTestRoot scoped_root(root->GetX509Certificate().get());
 
-  int flags = 0;
-  CertVerifyResult verify_result;
-  int error =
-      Verify(cert.get(), "policy_test.example", flags,
-             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
-  EXPECT_THAT(error, IsOk());
-  EXPECT_EQ(0u, verify_result.cert_status);
+    int flags = 0;
+    CertVerifyResult verify_result;
+    int error = Verify(cert.get(), "www.example.com", flags,
+                       CRLSet::BuiltinCRLSet().get(), CertificateList(),
+                       &verify_result);
+    if (leaf_has_policy) {
+      EXPECT_THAT(error, IsOk());
+      EXPECT_EQ(0u, verify_result.cert_status);
+    } else {
+      EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+    }
+  }
 }
 
 TEST_P(CertVerifyProcInternalTest, RejectExpiredCert) {

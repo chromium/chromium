@@ -12,6 +12,7 @@
 #include "crypto/openssl_util.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
@@ -624,6 +625,39 @@ void CertBuilder::SetCertificatePolicies(
   }
 
   SetExtension(der::Input(kCertificatePoliciesOid), FinishCBB(cbb.get()));
+}
+
+void CertBuilder::SetPolicyConstraints(
+    absl::optional<uint64_t> require_explicit_policy,
+    absl::optional<uint64_t> inhibit_policy_mapping) {
+  if (!require_explicit_policy.has_value() &&
+      !inhibit_policy_mapping.has_value()) {
+    EraseExtension(der::Input(kPolicyConstraintsOid));
+    return;
+  }
+
+  // From RFC 5280:
+  //   PolicyConstraints ::= SEQUENCE {
+  //        requireExplicitPolicy           [0] SkipCerts OPTIONAL,
+  //        inhibitPolicyMapping            [1] SkipCerts OPTIONAL }
+  //
+  //   SkipCerts ::= INTEGER (0..MAX)
+  bssl::ScopedCBB cbb;
+  CBB policy_constraints;
+  ASSERT_TRUE(CBB_init(cbb.get(), 64));
+  ASSERT_TRUE(CBB_add_asn1(cbb.get(), &policy_constraints, CBS_ASN1_SEQUENCE));
+  if (require_explicit_policy.has_value()) {
+    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(&policy_constraints,
+                                             *require_explicit_policy,
+                                             der::ContextSpecificPrimitive(0)));
+  }
+  if (inhibit_policy_mapping.has_value()) {
+    ASSERT_TRUE(CBB_add_asn1_uint64_with_tag(&policy_constraints,
+                                             *inhibit_policy_mapping,
+                                             der::ContextSpecificPrimitive(1)));
+  }
+
+  SetExtension(der::Input(kPolicyConstraintsOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {
