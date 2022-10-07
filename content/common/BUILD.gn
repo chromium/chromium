@@ -448,11 +448,6 @@ mojom("mojo_bindings") {
   # This interface is internal to content.
   visibility = [ "//content/*" ]
 
-  # indexed_db.mojom used a native typemap that was not available in Java.
-  # indexed_db.mojom was removed in an earlier commit.  This should be removed
-  # at some point.
-  cpp_only = true
-
   disable_variants = true
 
   sources = [
