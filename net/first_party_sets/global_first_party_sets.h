@@ -106,6 +106,10 @@ class NET_EXPORT GlobalFirstPartySets {
   // Whether the global sets are empty.
   bool empty() const { return entries_.empty() && manual_config_.empty(); }
 
+  const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_sets() const {
+    return manual_sets_;
+  }
+
  private:
   // mojo (de)serialization needs access to private details.
   friend struct mojo::StructTraits<network::mojom::GlobalFirstPartySetsDataView,
@@ -164,6 +168,10 @@ class NET_EXPORT GlobalFirstPartySets {
   // Stores the customizations induced by the manually-specified set. May be
   // empty if no switch was provided.
   FirstPartySetsContextConfig manual_config_;
+
+  // A map representing the manually-specified sets. Contains entries for
+  // aliases as well as canonical sites.
+  base::flat_map<SchemefulSite, FirstPartySetEntry> manual_sets_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

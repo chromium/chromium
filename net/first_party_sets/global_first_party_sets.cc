@@ -222,6 +222,7 @@ void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
   // replacement enterprise policy sets.
   manual_config_ = ComputeConfig(
       /*replacement_sets=*/{manual_entries}, /*addition_sets=*/{});
+  manual_sets_ = manual_entries;
 }
 
 FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(

@@ -161,6 +161,9 @@ bool FirstPartySetsDatabase::PersistSets(
   if (!SetPublicSets(browser_context_id, public_sets_version, sets))
     return false;
 
+  if (!InsertManualSets(browser_context_id, sets.manual_sets()))
+    return false;
+
   if (!InsertPolicyModifications(browser_context_id, config))
     return false;
 
@@ -327,13 +330,7 @@ bool FirstPartySetsDatabase::InsertManualSets(
     const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
         manual_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!LazyInit())
-    return false;
-
-  sql::Transaction transaction(db_.get());
-  if (!transaction.Begin())
-    return false;
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
 
   static constexpr char kDeleteSql[] =
       "DELETE FROM manual_sets WHERE browser_context_id=?";
@@ -359,7 +356,7 @@ bool FirstPartySetsDatabase::InsertManualSets(
     if (!insert_statement.Run())
       return false;
   }
-  return transaction.Commit();
+  return true;
 }
 
 net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
@@ -411,8 +408,14 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
   if (!statement.Succeeded())
     return {};
 
-  // TODO(crbug.com/1363707): query & apply manual set.
-  return net::GlobalFirstPartySets(entries, /*aliases=*/{});
+  // Aliases are merged with entries inside of the public sets table so it is
+  // sufficient to declare the global sets object with only the entries field.
+  net::GlobalFirstPartySets global_sets(entries, /*aliases=*/{});
+
+  // Query & apply manual set.
+  global_sets.ApplyManuallySpecifiedSet(FetchManualSets(browser_context_id));
+
+  return global_sets;
 }
 
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
