@@ -6,7 +6,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/buildflags.h"
-#include "content/browser/net/socket_broker_impl.h"
+#include "content/browser/network/socket_broker_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"

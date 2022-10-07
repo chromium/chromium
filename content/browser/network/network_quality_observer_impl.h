@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_NETWORK_QUALITY_OBSERVER_IMPL_H_
-#define CONTENT_BROWSER_NET_NETWORK_QUALITY_OBSERVER_IMPL_H_
+#ifndef CONTENT_BROWSER_NETWORK_NETWORK_QUALITY_OBSERVER_IMPL_H_
+#define CONTENT_BROWSER_NETWORK_NETWORK_QUALITY_OBSERVER_IMPL_H_
 
 #include <stdint.h>
 
@@ -61,4 +61,4 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_NETWORK_QUALITY_OBSERVER_IMPL_H_
+#endif  // CONTENT_BROWSER_NETWORK_NETWORK_QUALITY_OBSERVER_IMPL_H_

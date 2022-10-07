@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/net/socket_broker_impl.h"
+#include "content/browser/network/socket_broker_impl.h"
 
 #include <errno.h>
 
@@ -22,7 +22,7 @@
 #include <winsock2.h>
 
 #include "base/scoped_generic.h"
-#include "content/browser/net/network_service_process_tracker_win.h"
+#include "content/browser/network/network_service_process_tracker_win.h"
 #endif
 
 namespace content {

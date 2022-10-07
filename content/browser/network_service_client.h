@@ -13,7 +13,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/buildflags.h"
-#include "content/browser/net/socket_broker_impl.h"
+#include "content/browser/network/socket_broker_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

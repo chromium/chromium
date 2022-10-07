@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/values.h"
-#include "content/browser/net/cross_origin_opener_policy_reporter.h"
+#include "content/browser/network/cross_origin_opener_policy_reporter.h"
 
 namespace content {
 

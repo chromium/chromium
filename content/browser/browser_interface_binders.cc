@@ -36,7 +36,7 @@
 #include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/ml/ml_service_factory.h"
-#include "content/browser/net/reporting_service_proxy.h"
+#include "content/browser/network/reporting_service_proxy.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/preloading/prerender/prerender_internals.mojom.h"
 #include "content/browser/preloading/prerender/prerender_internals_ui.h"

@@ -78,7 +78,7 @@
 #include "content/browser/media/media_internals.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/metrics/histogram_synchronizer.h"
-#include "content/browser/net/browser_online_state_observer.h"
+#include "content/browser/network/browser_online_state_observer.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"

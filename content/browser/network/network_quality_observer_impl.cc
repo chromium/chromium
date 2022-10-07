@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/net/network_quality_observer_impl.h"
+#include "content/browser/network/network_quality_observer_impl.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "content/common/renderer.mojom.h"

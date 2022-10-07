@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
-#define CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
+#ifndef CONTENT_BROWSER_NETWORK_BROWSER_ONLINE_STATE_OBSERVER_H_
+#define CONTENT_BROWSER_NETWORK_BROWSER_ONLINE_STATE_OBSERVER_H_
 
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "net/base/network_change_notifier.h"
@@ -35,4 +35,4 @@ class BrowserOnlineStateObserver
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
+#endif  // CONTENT_BROWSER_NETWORK_BROWSER_ONLINE_STATE_OBSERVER_H_

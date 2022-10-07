@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
-#define CONTENT_BROWSER_NET_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
+#ifndef CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
+#define CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
 
 #include "base/process/process.h"
 #include "content/common/content_export.h"
@@ -17,4 +17,4 @@ CONTENT_EXPORT base::Process GetNetworkServiceProcess();
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
+#endif  // CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_

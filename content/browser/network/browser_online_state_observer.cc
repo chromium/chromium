@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/net/browser_online_state_observer.h"
+#include "content/browser/network/browser_online_state_observer.h"
 
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
@@ -37,8 +37,8 @@ void BrowserOnlineStateObserver::OnRenderProcessHostCreated(
   net::NetworkChangeNotifier::ConnectionType connection_type;
   net::NetworkChangeNotifier::GetMaxBandwidthAndConnectionType(
       &max_bandwidth_mbps, &connection_type);
-  rph->GetRendererInterface()->OnNetworkConnectionChanged(
-      connection_type, max_bandwidth_mbps);
+  rph->GetRendererInterface()->OnNetworkConnectionChanged(connection_type,
+                                                          max_bandwidth_mbps);
 }
 
 }  // namespace content

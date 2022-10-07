@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "content/browser/net/http_cache_backend_file_operations_factory.h"
+#include "content/browser/network/http_cache_backend_file_operations_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page.h"

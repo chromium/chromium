@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_
-#define CONTENT_BROWSER_NET_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_
+#ifndef CONTENT_BROWSER_NETWORK_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_
+#define CONTENT_BROWSER_NETWORK_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_
 
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
@@ -31,4 +31,4 @@ class CONTENT_EXPORT HttpCacheBackendFileOperationsFactory final
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_
+#endif  // CONTENT_BROWSER_NETWORK_HTTP_CACHE_BACKEND_FILE_OPERATIONS_FACTORY_H_

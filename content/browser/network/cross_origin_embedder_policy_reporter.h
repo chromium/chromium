@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_
-#define CONTENT_BROWSER_NET_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_
+#ifndef CONTENT_BROWSER_NETWORK_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_
+#define CONTENT_BROWSER_NETWORK_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_
 
 #include <initializer_list>
 #include <string>
@@ -102,4 +102,4 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_
+#endif  // CONTENT_BROWSER_NETWORK_CROSS_ORIGIN_EMBEDDER_POLICY_REPORTER_H_

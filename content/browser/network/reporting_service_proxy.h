@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_REPORTING_SERVICE_PROXY_H_
-#define CONTENT_BROWSER_NET_REPORTING_SERVICE_PROXY_H_
+#ifndef CONTENT_BROWSER_NETWORK_REPORTING_SERVICE_PROXY_H_
+#define CONTENT_BROWSER_NETWORK_REPORTING_SERVICE_PROXY_H_
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom.h"
@@ -32,4 +32,4 @@ void CreateReportingServiceProxyForDedicatedWorker(
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_REPORTING_SERVICE_PROXY_H_
+#endif  // CONTENT_BROWSER_NETWORK_REPORTING_SERVICE_PROXY_H_

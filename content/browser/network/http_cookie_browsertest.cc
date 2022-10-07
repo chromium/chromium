@@ -36,7 +36,6 @@ using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::UnorderedElementsAre;
 
-
 // This file contains tests for cookie access via HTTP requests.
 // See also (tests for cookie access via JavaScript):
 // //content/browser/renderer_host/cookie_browsertest.cc

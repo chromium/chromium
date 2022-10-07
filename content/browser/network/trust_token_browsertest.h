@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
-#define CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
+#ifndef CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
+#define CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -101,4 +101,4 @@ class HandlerWrappingLocalTrustTokenFulfiller final
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NET_TRUST_TOKEN_BROWSERTEST_H_
+#endif  // CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_

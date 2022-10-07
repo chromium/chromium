@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/net/network_errors_listing_ui.h"
+#include "content/browser/network/network_errors_listing_ui.h"
 
 #include <memory>
 #include <utility>
@@ -19,9 +19,9 @@
 #include "net/log/net_log_util.h"
 
 static const char kNetworkErrorDataFile[] = "network-error-data.json";
-static const char kErrorCodeField[]  = "errorCode";
+static const char kErrorCodeField[] = "errorCode";
 static const char kErrorCodesDataName[] = "errorCodes";
-static const char kErrorIdField[]  = "errorId";
+static const char kErrorIdField[] = "errorId";
 static const char kNetworkErrorKey[] = "netError";
 
 namespace content {
@@ -67,7 +67,7 @@ void HandleWebUIRequestCallback(BrowserContext* current_context,
   std::move(callback).Run(base::RefCountedString::TakeString(&json_string));
 }
 
-} // namespace
+}  // namespace
 
 NetworkErrorsListingUI::NetworkErrorsListingUI(WebUI* web_ui)
     : WebUIController(web_ui) {

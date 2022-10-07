@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/net/trust_token_browsertest.h"
+#include "content/browser/network/trust_token_browsertest.h"
 
 #include <memory>
 #include <string>
@@ -1766,10 +1766,10 @@ class TrustTokenBrowsertestWithPlatformIssuance : public TrustTokenBrowsertest {
     // This assertion helps guard against the brittleness of deserializing
     // "true", in case we refactor the parameter's type.
     static_assert(
-        std::is_same<decltype(
-                         network::features::kPlatformProvidedTrustTokenIssuance
-                             .default_value),
-                     const bool>::value,
+        std::is_same<
+            decltype(network::features::kPlatformProvidedTrustTokenIssuance
+                         .default_value),
+            const bool>::value,
         "Need to update this initialization logic if the type of the param "
         "changes.");
     features_.InitAndEnableFeatureWithParameters(

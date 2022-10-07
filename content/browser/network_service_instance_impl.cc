@@ -36,8 +36,8 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/buildflags.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
-#include "content/browser/net/http_cache_backend_file_operations_factory.h"
-#include "content/browser/net/socket_broker_impl.h"
+#include "content/browser/network/http_cache_backend_file_operations_factory.h"
+#include "content/browser/network/socket_broker_impl.h"
 #include "content/browser/network_sandbox_grant_result.h"
 #include "content/browser/network_service_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -72,7 +72,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "content/browser/net/network_service_process_tracker_win.h"
+#include "content/browser/network/network_service_process_tracker_win.h"
 #endif
 
 namespace content {
