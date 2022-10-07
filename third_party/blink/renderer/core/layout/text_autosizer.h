@@ -98,6 +98,11 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   bool PageNeedsAutosizing() const;
 
+  // Register the specified |inline_size| for |ng_block| if the document has
+  // a TextAutosizer instance and it should handle layout.
+  static void MaybeRegisterInlineSize(const LayoutBlock& ng_block,
+                                      LayoutUnit inline_size);
+
   void Trace(Visitor*) const;
 
   class LayoutScope {
@@ -309,6 +314,8 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   void BeginLayout(LayoutBlock*, SubtreeLayoutScope*);
   void EndLayout(LayoutBlock*);
+  void RegisterInlineSize(const LayoutBlock& ng_block, LayoutUnit inline_size);
+  void UnregisterInlineSize(const LayoutBlock& ng_block);
   void InflateAutoTable(LayoutNGTableInterface*);
   float Inflate(LayoutObject*,
                 SubtreeLayoutScope*,
@@ -371,8 +378,14 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   void ReportIfCrossSiteFrame();
 
+  float ContentInlineSize(const LayoutBlock* block) const;
+
   Member<const Document> document_;
   Member<const LayoutBlock> first_block_to_begin_layout_;
+  // WeakMember because we don't call UnregisterInlineSize() for
+  // LayoutMultiColumnFlowThread.
+  HeapHashMap<WeakMember<const LayoutBlock>, LayoutUnit> inline_size_map_;
+
 #if DCHECK_IS_ON()
   // Used to ensure we don't compute properties of a block before beginLayout()
   // is called on it.

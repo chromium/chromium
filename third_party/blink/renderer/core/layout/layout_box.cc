@@ -1105,6 +1105,28 @@ LayoutUnit LayoutBox::ClientHeight() const {
   }
 }
 
+LayoutUnit LayoutBox::ClientWidthFrom(LayoutUnit width) const {
+  NOT_DESTROYED();
+  if (CanSkipComputeScrollbars()) {
+    return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
+  } else {
+    return (width - BorderLeft() - BorderRight() -
+            ComputeScrollbarsInternal(kClampToContentBox).HorizontalSum())
+        .ClampNegativeToZero();
+  }
+}
+
+LayoutUnit LayoutBox::ClientHeightFrom(LayoutUnit height) const {
+  NOT_DESTROYED();
+  if (CanSkipComputeScrollbars()) {
+    return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
+  } else {
+    return (height - BorderTop() - BorderBottom() -
+            ComputeScrollbarsInternal(kClampToContentBox).VerticalSum())
+        .ClampNegativeToZero();
+  }
+}
+
 int LayoutBox::PixelSnappedClientWidth() const {
   NOT_DESTROYED();
   return SnapSizeToPixel(ClientWidth(), Location().X() + ClientLeft());

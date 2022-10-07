@@ -1036,7 +1036,7 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
 
   if (!(block->IsTable() || block->IsTableCell() ||
         block->IsListItemIncludingNG()))
-    return block->ContentLogicalWidth().ToFloat();
+    return ContentInlineSize(block);
 
   if (!block->ContainingBlock())
     return 0;
@@ -1054,13 +1054,12 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
         return width;
     }
     if (specified_width.IsPercentOrCalc()) {
-      if (float container_width =
-              block->ContainingBlock()->ContentLogicalWidth().ToFloat()) {
+      if (float container_width = ContentInlineSize(block->ContainingBlock())) {
         if ((width = FloatValueForLength(specified_width, container_width)) > 0)
           return width;
       }
     }
-    if ((width = block->ContentLogicalWidth().ToFloat()) > 0)
+    if ((width = ContentInlineSize(block)) > 0)
       return width;
   }
   return 0;
@@ -1289,9 +1288,9 @@ bool TextAutosizer::IsWiderOrNarrowerDescendant(Cluster* cluster) {
 #endif
 
   float content_width =
-      DeepestBlockContainingAllText(cluster)->ContentLogicalWidth().ToFloat();
+      ContentInlineSize(DeepestBlockContainingAllText(cluster));
   float cluster_text_width =
-      parent_deepest_block_containing_all_text->ContentLogicalWidth().ToFloat();
+      ContentInlineSize(parent_deepest_block_containing_all_text);
 
   // Clusters with a root that is wider than the deepestBlockContainingAllText
   // of their parent autosize independently of their parent.
@@ -1460,6 +1459,15 @@ TextAutosizer::DeferUpdatePageInfo::DeferUpdatePageInfo(Page* page)
   }
 }
 
+// static
+void TextAutosizer::MaybeRegisterInlineSize(const LayoutBlock& ng_block,
+                                            LayoutUnit inline_size) {
+  if (auto* text_autosizer = ng_block.GetDocument().GetTextAutosizer()) {
+    if (text_autosizer->ShouldHandleLayout())
+      text_autosizer->RegisterInlineSize(ng_block, inline_size);
+  }
+}
+
 TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
                                             LayoutUnit inline_size)
     : text_autosizer_(box->GetDocument().GetTextAutosizer()),
@@ -1478,17 +1486,19 @@ TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
   }
 
   // In order for the text autosizer to do anything useful at all, it needs to
-  // know the inline size of the block. So set it. LayoutNG normally writes back
-  // to the legacy tree *after* layout, but this one must be set before, at
-  // least if the autosizer is enabled.
-  block_->SetLogicalWidth(inline_size);
+  // know the inline size of the block. So register it. LayoutNG normally
+  // writes back to the legacy tree *after* layout, but this one must be ready
+  // before, at least if the autosizer is enabled.
+  text_autosizer_->RegisterInlineSize(*block_, inline_size);
 
   text_autosizer_->BeginLayout(block_, nullptr);
 }
 
 TextAutosizer::NGLayoutScope::~NGLayoutScope() {
-  if (text_autosizer_)
+  if (text_autosizer_) {
     text_autosizer_->EndLayout(block_);
+    text_autosizer_->UnregisterInlineSize(*block_);
+  }
 }
 
 TextAutosizer::DeferUpdatePageInfo::~DeferUpdatePageInfo() {
@@ -1569,9 +1579,36 @@ void TextAutosizer::CheckSuperclusterConsistency() {
   potentially_inconsistent_superclusters.clear();
 }
 
+float TextAutosizer::ContentInlineSize(const LayoutBlock* block) const {
+  if (!block->IsLayoutNGObject())
+    return block->ContentLogicalWidth().ToFloat();
+  auto iter = inline_size_map_.find(block);
+  if (iter == inline_size_map_.end())
+    return block->ContentLogicalWidth().ToFloat();
+  LayoutUnit size = iter.Get()->value;
+  if (block->IsHorizontalWritingMode()) {
+    size = block->ClientWidthFrom(size) - block->PaddingLeft() -
+           block->PaddingRight();
+  } else {
+    size = block->ClientHeightFrom(size) - block->PaddingTop() -
+           block->PaddingBottom();
+  }
+  return size.ClampNegativeToZero().ToFloat();
+}
+
+void TextAutosizer::RegisterInlineSize(const LayoutBlock& ng_block,
+                                       LayoutUnit inline_size) {
+  inline_size_map_.insert(&ng_block, inline_size);
+}
+
+void TextAutosizer::UnregisterInlineSize(const LayoutBlock& ng_block) {
+  inline_size_map_.erase(&ng_block);
+}
+
 void TextAutosizer::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(first_block_to_begin_layout_);
+  visitor->Trace(inline_size_map_);
 #if DCHECK_IS_ON()
   visitor->Trace(blocks_that_have_begun_layout_);
 #endif

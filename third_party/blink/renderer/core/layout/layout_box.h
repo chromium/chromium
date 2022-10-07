@@ -856,8 +856,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     else
       return BorderTop() + ComputeScrollbarsInternal(kClampToContentBox).top;
   }
+
+  // Size without borders and scrollbars.
   LayoutUnit ClientWidth() const;
   LayoutUnit ClientHeight() const;
+  // Similar to ClientWidth() and ClientHeight(), but based on the specified
+  // border-box size.
+  LayoutUnit ClientWidthFrom(LayoutUnit width) const;
+  LayoutUnit ClientHeightFrom(LayoutUnit height) const;
   DISABLE_CFI_PERF LayoutUnit ClientLogicalWidth() const {
     NOT_DESTROYED();
     return IsHorizontalWritingMode() ? ClientWidth() : ClientHeight();

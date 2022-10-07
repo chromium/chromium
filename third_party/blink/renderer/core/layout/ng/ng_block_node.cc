@@ -2150,7 +2150,9 @@ void NGBlockNode::StoreMargins(const NGPhysicalBoxStrut& physical_margins) {
 void NGBlockNode::StoreColumnInlineSize(LayoutUnit inline_size) {
   LayoutMultiColumnFlowThread* flow_thread =
       To<LayoutBlockFlow>(box_.Get())->MultiColumnFlowThread();
-  flow_thread->SetLogicalWidth(inline_size);
+  // We have no chance to unregister the inline size for the
+  // LayoutMultiColumnFlowThread.
+  TextAutosizer::MaybeRegisterInlineSize(*flow_thread, inline_size);
   flow_thread->ClearNeedsLayout();
 }
 
