@@ -158,7 +158,6 @@ idl::PrintJobInfo PrintJobInfoProtoToIdl(
   print_job_info.title = print_job_info_proto.title();
   print_job_info.source =
       PrintJobSourceProtoToIdl(print_job_info_proto.source());
-  print_job_info.source_id = nullptr;
   print_job_info.status =
       PrintJobStatusProtoToIdl(print_job_info_proto.status());
   print_job_info.creation_time =
