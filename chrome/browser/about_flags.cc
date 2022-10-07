@@ -5846,6 +5846,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kHandwritingLibraryDlc)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"hats-use-new-histograms", flag_descriptions::kHatsUseNewHistogramsName,
+     flag_descriptions::kHatsUseNewHistogramsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHatsUseNewHistograms)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     {"block-insecure-private-network-requests",
      flag_descriptions::kBlockInsecurePrivateNetworkRequestsName,
      flag_descriptions::kBlockInsecurePrivateNetworkRequestsDescription, kOsAll,

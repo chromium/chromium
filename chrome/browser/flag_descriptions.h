@@ -912,6 +912,9 @@ extern const char kHandwritingLibraryDlcDescription[];
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 
+extern const char kHatsUseNewHistogramsName[];
+extern const char kHatsUseNewHistogramsDescription[];
+
 extern const char kHeavyAdPrivacyMitigationsName[];
 extern const char kHeavyAdPrivacyMitigationsDescription[];
 

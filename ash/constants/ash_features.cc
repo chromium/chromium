@@ -1000,6 +1000,11 @@ BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables new histogram logic for ChromeOS HaTS surveys.
+BASE_FEATURE(kHatsUseNewHistograms,
+             "HatsUseNewHistograms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Background Page in the help app.
 BASE_FEATURE(kHelpAppBackgroundPage,
              "HelpAppBackgroundPage",
@@ -2466,6 +2471,10 @@ bool AreGlanceablesEnabled() {
 
 bool IsGuestOsFilesEnabled() {
   return base::FeatureList::IsEnabled(kGuestOsFiles);
+}
+
+bool IsHatsUseNewHistogramsEnabled() {
+  return base::FeatureList::IsEnabled(kHatsUseNewHistograms);
 }
 
 bool IsHibernateEnabled() {

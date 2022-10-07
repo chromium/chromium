@@ -1637,6 +1637,10 @@ const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
     "requires MediaSessionService to be enabled too";
 
+const char kHatsUseNewHistogramsName[] = "New ChromeOS HaTS Histograms";
+const char kHatsUseNewHistogramsDescription[] =
+    "Enables the ability for surveys to emit new, more inclusive histograms";
+
 const char kHeavyAdPrivacyMitigationsName[] = "Heavy ad privacy mitigations";
 const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "

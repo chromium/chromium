@@ -59552,6 +59552,7 @@ from previous Chrome versions.
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
+  <int value="-324099334" label="HatsUseNewHistograms:disabled"/>
   <int value="-323913169" label="PasswordNotesWithBackup:enabled"/>
   <int value="-323831744" label="token-binding:enabled"/>
   <int value="-323508281" label="VrWebInputEditing:disabled"/>
@@ -62993,6 +62994,7 @@ from previous Chrome versions.
   <int value="1795214277" label="SupportForAddPasswordsInSettings:disabled"/>
   <int value="1796436890" label="MinorModeSupport:enabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
+  <int value="1797002314" label="HatsUseNewHistograms:enabled"/>
   <int value="1798347197"
       label="ContextualSuggestionsIPHReverseScroll:disabled"/>
   <int value="1799521026" label="LegacyTLSEnforced:disabled"/>

@@ -3917,6 +3917,11 @@
     "expiry_milestone": 113
   },
   {
+    "name": "hats-use-new-histograms",
+    "owners": [ "jackshira", "cros-telemetry@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "hdrnet-override",
     "owners": [ "jcliang", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 110
