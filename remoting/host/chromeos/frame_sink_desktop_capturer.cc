@@ -42,6 +42,7 @@ FrameSinkDesktopCapturer::FrameSinkDesktopCapturer()
 
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer(AshProxy& ash_proxy)
     : ash_(ash_proxy) {
+  LOG(INFO) << "CRD: Starting frame sink desktop capturer";
   SendEventToUma(kUmaKeyForCapturerCreated);
 }
 

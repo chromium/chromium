@@ -52,6 +52,7 @@ AuraDesktopCapturer::AuraDesktopCapturer()
 
 AuraDesktopCapturer::AuraDesktopCapturer(AshProxy& ash_proxy)
     : ash_(ash_proxy) {
+  LOG(INFO) << "CRD: Starting aura desktop capturer";
   SendEventToUma(kUmaKeyForCapturerCreated);
 }
 
