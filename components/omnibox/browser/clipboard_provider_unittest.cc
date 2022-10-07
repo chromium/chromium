@@ -246,8 +246,7 @@ TEST_F(ClipboardProviderTest, DeleteMatch) {
 
 TEST_F(ClipboardProviderTest, CreateBlankURLMatchOnStart) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature feature = omnibox::kClipboardSuggestionContentHidden;
-  feature_list.InitAndEnableFeature(feature);
+  feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   SetClipboardUrl(GURL(kClipboardURL));
   auto template_url_service = std::make_unique<TemplateURLService>(
@@ -266,8 +265,7 @@ TEST_F(ClipboardProviderTest, CreateBlankURLMatchOnStart) {
 
 TEST_F(ClipboardProviderTest, CreateBlankTextMatchOnStart) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature feature = omnibox::kClipboardSuggestionContentHidden;
-  feature_list.InitAndEnableFeature(feature);
+  feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   auto template_url_service = std::make_unique<TemplateURLService>(
       /*initializers=*/nullptr, /*count=*/0);
@@ -287,8 +285,7 @@ TEST_F(ClipboardProviderTest, CreateBlankTextMatchOnStart) {
 
 TEST_F(ClipboardProviderTest, CreateBlankImageMatchOnStart) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature feature = omnibox::kClipboardSuggestionContentHidden;
-  feature_list.InitAndEnableFeature(feature);
+  feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   auto template_url_service =
       std::make_unique<TemplateURLService>(/*initializers=*/nullptr,
@@ -308,8 +305,7 @@ TEST_F(ClipboardProviderTest, CreateBlankImageMatchOnStart) {
 
 TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
   base::test::ScopedFeatureList feature_list;
-  base::Feature feature = omnibox::kClipboardSuggestionContentHidden;
-  feature_list.InitAndEnableFeature(feature);
+  feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   auto template_url_service =
       std::make_unique<TemplateURLService>(/*initializers=*/nullptr,
