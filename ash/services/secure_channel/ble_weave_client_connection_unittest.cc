@@ -45,6 +45,7 @@ using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::WithArgs;
 
 typedef BluetoothLowEnergyWeaveClientConnection::SubStatus SubStatus;
 typedef BluetoothLowEnergyWeavePacketReceiver::State ReceiverState;
@@ -433,10 +434,14 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
   void ConnectGatt(TestBluetoothLowEnergyWeaveClientConnection* connection) {
     if (connection->should_set_low_connection_latency()) {
       EXPECT_CALL(*mock_bluetooth_device_,
-                  SetConnectionLatency_(
+                  SetConnectionLatency(
                       device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
-          .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
-                          MoveArg<2>(&connection_latency_error_callback_)));
+          .WillOnce(WithArgs<1, 2>(
+              [&](base::OnceClosure callback,
+                  device::BluetoothDevice::ErrorCallback error_callback) {
+                connection_latency_callback_ = std::move(callback);
+                connection_latency_error_callback_ = std::move(error_callback);
+              }));
     }
 
     // Preparing |connection| for a CreateGattConnection call.
@@ -1366,10 +1371,14 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
       CreateConnection(true /* should_set_low_connection_latency */));
 
   EXPECT_CALL(*mock_bluetooth_device_,
-              SetConnectionLatency_(
+              SetConnectionLatency(
                   device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
-      .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
-                      MoveArg<2>(&connection_latency_error_callback_)));
+      .WillOnce(WithArgs<1, 2>(
+          [&](base::OnceClosure callback,
+              device::BluetoothDevice::ErrorCallback error_callback) {
+            connection_latency_callback_ = std::move(callback);
+            connection_latency_error_callback_ = std::move(error_callback);
+          }));
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
       .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
 
@@ -1418,10 +1427,14 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
       CreateConnection(true /* should_set_low_connection_latency */));
 
   EXPECT_CALL(*mock_bluetooth_device_,
-              SetConnectionLatency_(
+              SetConnectionLatency(
                   device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
-      .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
-                      MoveArg<2>(&connection_latency_error_callback_)));
+      .WillOnce(WithArgs<1, 2>(
+          [&](base::OnceClosure callback,
+              device::BluetoothDevice::ErrorCallback error_callback) {
+            connection_latency_callback_ = std::move(callback);
+            connection_latency_error_callback_ = std::move(error_callback);
+          }));
 
   // Even if setting the connection interval fails, we should still connect.
   connection->Connect();
@@ -1463,10 +1476,14 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
       CreateConnection(true /* should_set_low_connection_latency */));
 
   EXPECT_CALL(*mock_bluetooth_device_,
-              SetConnectionLatency_(
+              SetConnectionLatency(
                   device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
-      .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
-                      MoveArg<2>(&connection_latency_error_callback_)));
+      .WillOnce(WithArgs<1, 2>(
+          [&](base::OnceClosure callback,
+              device::BluetoothDevice::ErrorCallback error_callback) {
+            connection_latency_callback_ = std::move(callback);
+            connection_latency_error_callback_ = std::move(error_callback);
+          }));
 
   // Call Connect(), which should set the connection latency.
   connection->Connect();
@@ -1519,10 +1536,14 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
       CreateConnection(true /* should_set_low_connection_latency */));
 
   EXPECT_CALL(*mock_bluetooth_device_,
-              SetConnectionLatency_(
+              SetConnectionLatency(
                   device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
-      .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
-                      MoveArg<2>(&connection_latency_error_callback_)));
+      .WillOnce(WithArgs<1, 2>(
+          [&](base::OnceClosure callback,
+              device::BluetoothDevice::ErrorCallback error_callback) {
+            connection_latency_callback_ = std::move(callback);
+            connection_latency_error_callback_ = std::move(error_callback);
+          }));
 
   // Preparing |connection| for a CreateGattConnection call.
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))

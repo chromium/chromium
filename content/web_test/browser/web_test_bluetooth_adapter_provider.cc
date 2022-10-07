@@ -1372,9 +1372,9 @@ WebTestBluetoothAdapterProvider::GetBaseDevice(
           /*connection=*/nullptr, BluetoothDevice::ERROR_UNSUPPORTED_DEVICE));
 
   auto* device_ptr = device.get();
-  ON_CALL(*device, Pair_(_, _))
+  ON_CALL(*device, Pair(_, _))
       .WillByDefault(
-          WithArg<1>([device_ptr](BluetoothDevice::ConnectCallback& callback) {
+          WithArg<1>([device_ptr](BluetoothDevice::ConnectCallback callback) {
             device_ptr->SetPaired(/*paired=*/true);
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback),

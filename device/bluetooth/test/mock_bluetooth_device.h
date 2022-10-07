@@ -62,38 +62,21 @@ class MockBluetoothDevice : public BluetoothDevice {
   MOCK_CONST_METHOD0(ExpectingPasskey, bool());
   MOCK_CONST_METHOD0(ExpectingConfirmation, bool());
   MOCK_METHOD1(GetConnectionInfo, void(ConnectionInfoCallback callback));
-  void SetConnectionLatency(ConnectionLatency connection_latency,
-                            base::OnceClosure callback,
-                            ErrorCallback error_callback) override {
-    SetConnectionLatency_(connection_latency, callback, error_callback);
-  }
-  MOCK_METHOD3(SetConnectionLatency_,
+  MOCK_METHOD3(SetConnectionLatency,
                void(ConnectionLatency connection_latency,
-                    base::OnceClosure& callback,
-                    ErrorCallback& error_callback));
-  void Connect(BluetoothDevice::PairingDelegate* pairing_delegate,
-               ConnectCallback callback) override {
-    Connect_(pairing_delegate, callback);
-  }
-  MOCK_METHOD2(Connect_,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback));
+  MOCK_METHOD2(Connect,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    ConnectCallback& callback));
+                    ConnectCallback callback));
 #if BUILDFLAG(IS_CHROMEOS)
-  void ConnectClassic(BluetoothDevice::PairingDelegate* pairing_delegate,
-                      ConnectCallback callback) override {
-    ConnectClassic_(pairing_delegate, callback);
-  }
-  MOCK_METHOD2(ConnectClassic_,
+  MOCK_METHOD2(ConnectClassic,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    ConnectCallback& callback));
+                    ConnectCallback callback));
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  void Pair(BluetoothDevice::PairingDelegate* pairing_delegate,
-            ConnectCallback callback) override {
-    Pair_(pairing_delegate, callback);
-  }
-  MOCK_METHOD2(Pair_,
+  MOCK_METHOD2(Pair,
                void(BluetoothDevice::PairingDelegate* pairing_delegate,
-                    ConnectCallback& callback));
+                    ConnectCallback callback));
   MOCK_METHOD1(SetPinCode, void(const std::string&));
   MOCK_METHOD1(SetPasskey, void(uint32_t));
   MOCK_METHOD0(ConfirmPairing, void());

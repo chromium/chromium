@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -258,12 +259,8 @@ class HIDDetectionScreenChromeboxTest
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
             /*adapter=*/nullptr, kTestBluetoothClass, kTestBluetoothName,
             address, /*paired=*/false, /*connected=*/false);
-    ON_CALL(*mock_device, Connect_(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
-            [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
-                   device::BluetoothDevice::ConnectCallback& callback) {
-              connect_callback_ = std::move(callback);
-            }));
+    ON_CALL(*mock_device, Connect(testing::_, testing::_))
+        .WillByDefault(MoveArg<1>(&connect_callback_));
     ON_CALL(*mock_device, GetDeviceType())
         .WillByDefault(testing::Return(device_type));
 

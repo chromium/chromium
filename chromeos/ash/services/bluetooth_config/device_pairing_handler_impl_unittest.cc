@@ -138,11 +138,11 @@ class DevicePairingHandlerImplTest : public testing::Test {
             address, /*paired=*/false, /*connected=*/false);
 
     device::BluetoothDevice* device = mock_device.get();
-    ON_CALL(*mock_device, Connect_(testing::_, testing::_))
+    ON_CALL(*mock_device, Connect(testing::_, testing::_))
         .WillByDefault(testing::Invoke(
             [this, auth_type, device, passkey](
                 device::BluetoothDevice::PairingDelegate* pairing_delegate,
-                device::BluetoothDevice::ConnectCallback& callback) {
+                device::BluetoothDevice::ConnectCallback callback) {
               EXPECT_FALSE(connect_callback_);
               connect_callback_ = std::move(callback);
 

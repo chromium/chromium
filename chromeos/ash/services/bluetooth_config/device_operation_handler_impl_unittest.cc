@@ -107,10 +107,10 @@ class DeviceOperationHandlerImplTest : public testing::Test {
             mock_adapter_.get(), kTestBluetoothClass, kTestBluetoothName,
             address, /*paired=*/false, /*connected=*/false);
 
-    ON_CALL(*mock_device, ConnectClassic_(testing::_, testing::_))
+    ON_CALL(*mock_device, ConnectClassic(testing::_, testing::_))
         .WillByDefault(testing::Invoke(
             [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
-                   device::BluetoothDevice::ConnectCallback& callback) {
+                   device::BluetoothDevice::ConnectCallback callback) {
               EXPECT_FALSE(connect_callback_);
               connect_callback_ = std::move(callback);
             }));
