@@ -2255,6 +2255,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.MemoryPressureMonitor.GetMyMemoryState.Failed.Time"
     units="microseconds" expires_after="M77">
+  <obsolete>
+    Removed 09/2022. Expired and not needed anymore.
+  </obsolete>
   <owner>ssid@chromium.org</owner>
   <summary>
     The duration of each failed ActivityManager.getMyMemoryState() call made by
@@ -2270,6 +2273,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.MemoryPressureMonitor.GetMyMemoryState.Succeeded.Time"
     units="microseconds" expires_after="2020-04-26">
+  <obsolete>
+    Removed 09/2022. Expired and not needed anymore.
+  </obsolete>
   <owner>ssid@chromium.org</owner>
   <summary>
     The duration of each successful ActivityManager.getMyMemoryState() call made
