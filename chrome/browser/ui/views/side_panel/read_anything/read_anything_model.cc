@@ -240,18 +240,16 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   // TODO (crbug.com/1266555): Define default colors from system theme.
   ColorInfo kDefaultColors = {u"Default", IDS_READ_ANYTHING_DEFAULT_PNG,
-                              SkColors::kBlack.toSkColor(),
-                              SkColors::kWhite.toSkColor()};
+                              gfx::kGoogleGrey800, gfx::kGoogleGrey050};
 
   ColorInfo kLightColors = {u"Light", IDS_READ_ANYTHING_LIGHT_PNG,
-                            gfx::kGoogleGrey900, gfx::kGoogleGrey050};
+                            gfx::kGoogleGrey800, gfx::kGoogleGrey050};
 
   ColorInfo kDarkColors = {u"Dark", IDS_READ_ANYTHING_DARK_PNG,
-                           gfx::kGoogleGrey200, kReadAnythingDarkBackground};
+                           gfx::kGoogleGrey200, gfx::kGoogleGrey900};
 
   ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
-                             kReadAnythingYellowForeground,
-                             gfx::kGoogleYellow200};
+                             gfx::kGoogleGrey800, gfx::kGoogleYellow200};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);

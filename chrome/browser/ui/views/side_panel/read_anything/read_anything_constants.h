@@ -27,11 +27,6 @@ const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
 
-// Custom feature colors.
-constexpr SkColor kReadAnythingDarkBackground = SkColorSetRGB(0x33, 0x36, 0x39);
-constexpr SkColor kReadAnythingYellowForeground =
-    SkColorSetRGB(0x4E, 0x3F, 0x6C);
-
 }  // namespace
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_CONSTANTS_H_
