@@ -7241,3 +7241,6 @@ crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ F
 
 # Temporarily disable tests to land cache storage changes
 crbug.com/1363138 http/tests/inspector-protocol/cachestorage/read-cached-response.js [ Skip ]
+
+# Investigate the flake
+crbug.com/1371395 virtual/not-restored-reasons/external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]
