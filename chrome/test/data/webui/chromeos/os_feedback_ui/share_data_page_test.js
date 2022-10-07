@@ -439,6 +439,82 @@ export function shareDataPageTestSuite() {
     assertEquals(0, report.feedbackContext.traceId);
   });
 
+  /**
+   * Test that when the send button is clicked, an on-continue is fired.
+   * Case 7: Report won't have assistant log flags if isInternalAccount
+   * and fromAssistant flag in feedbackContext is false.
+   */
+  test('ReportWillNotHaveAssistantLogIfFromAssistantSetFalse', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    // The report should not have assistant logs by default.
+    getElement('#assistantLogsContainer').hidden = true;
+    assertTrue(getElement('#assiatantLogsCheckbox').checked);
+    const report = (await clickSendAndWait(page)).report;
+
+    assertFalse(report.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report.feedbackContext.fromAssistant);
+  });
+
+  /**
+   * Test that when the send button is clicked, an on-continue is fired.
+   * Case 8: Send assistant log if assistant log checkbox is checked,
+   * the report should show assistant Debug Info allowed.
+   */
+  test('SendAssistantLogWithReport', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    assertTrue(!!getElement('#assistantLogsContainer'));
+    getElement('#assistantLogsContainer').hidden = false;
+    getElement('#assiatantLogsCheckbox').checked = true;
+
+    const report = (await clickSendAndWait(page)).report;
+    assertTrue(report.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report.feedbackContext.fromAssistant);
+  });
+
+  /**
+   * Test that when the send button is clicked, an on-continue is fired.
+   * Case 9: Don't include assistant log if assistant log checkbox is unchecked,
+   * the report should show assistant Debug Info not allowed.
+   */
+  test('SendAssistantLogWithReport', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    assertTrue(!!getElement('#assistantLogsContainer'));
+    getElement('#assistantLogsContainer').hidden = false;
+
+    // Uncheck the assistant logs checkbox.
+    getElement('#assiatantLogsCheckbox').checked = false;
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertFalse(report.feedbackContext.assistantDebugInfoAllowed);
+    assertTrue(report.feedbackContext.fromAssistant);
+  });
+
+  /**
+   * Case 10: Test when user using internal account but feedback is not called
+   * from Assistant, and the report should not have fromAssistant and
+   * assistantDebugInfoAllowed flags set true.
+   */
+  test('SendReportWithInternalAccountButNotFromAssistant', async () => {
+    await initializePage();
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.feedbackContext.fromAssistant = false;
+
+    assertTrue(isVisible(getElement('#assistantLogsContainer')));
+    assertTrue(getElement('#assiatantLogsCheckbox').checked);
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertFalse(report.feedbackContext.assistantDebugInfoAllowed);
+    assertFalse(report.feedbackContext.fromAssistant);
+  });
+
   // Test that the send button will be disabled once clicked.
   test('DisableSendButtonAfterClick', async () => {
     await initializePage();

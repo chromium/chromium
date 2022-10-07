@@ -472,6 +472,8 @@ export function FeedbackFlowTestSuite() {
         activePage.shadowRoot.querySelector('#assistantLogsContainer');
     assertTrue(!!assistantCheckbox);
     assertFalse(isVisible(assistantCheckbox));
+    // Set the flag back to true.
+    fakeInternalUserFeedbackContext.fromAssistant = true;
   });
 
   // Test the navigation from confirmation page to search page after the

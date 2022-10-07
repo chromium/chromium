@@ -76,6 +76,8 @@ struct FeedbackContext {
   bool is_internal_account;
   // Whether or not the feedback app is opened from Assistant.
   bool from_assistant;
+  // Whether or not the assistant debug info is allowed by user.
+  bool assistant_debug_info_allowed;
   // The URL of the page that this issue was being experienced on.
   url.mojom.Url?  page_url;
   // Extra diagnostics information provided by source CrOS application by

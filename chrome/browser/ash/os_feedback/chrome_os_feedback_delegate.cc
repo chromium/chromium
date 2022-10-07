@@ -202,6 +202,10 @@ void ChromeOsFeedbackDelegate::SendReport(
                           feedback_context->extra_diagnostics.value());
   }
   feedback_data->set_trace_id(report->feedback_context->trace_id);
+  feedback_data->set_from_assistant(feedback_context->from_assistant);
+  feedback_data->set_assistant_debug_info_allowed(
+      feedback_context->assistant_debug_info_allowed);
+
   if (feedback_context->category_tag.has_value()) {
     feedback_data->set_category_tag(feedback_context->category_tag.value());
   }

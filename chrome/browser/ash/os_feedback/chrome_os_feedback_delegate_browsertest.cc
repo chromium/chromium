@@ -345,6 +345,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
 // - category_tag is set to "BluetoothReportWithLogs".
 // - User is logged in with internal google account.
 // - Performance trace id is present.
+// - from_assistant flag is set true.
+// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
@@ -358,6 +360,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
+  report->feedback_context->from_assistant = true;
+  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
@@ -385,6 +389,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   // Verify category_tag is marked as BluetoothReportWithLogs in the report.
   EXPECT_EQ(kFeedbackCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -397,6 +403,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - category_tag is set to a fake value.
 // - User is logged in with internal google account.
 // - Performance trace id is present.
+// - from_assistant flag is set true.
+// - Assistant debug info is allowed.
 IN_PROC_BROWSER_TEST_F(
     ChromeOsFeedbackDelegateTest,
     FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndFakeCategoryTag) {
@@ -411,6 +419,8 @@ IN_PROC_BROWSER_TEST_F(
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
   report->feedback_context->trace_id = kPerformanceTraceId;
+  report->feedback_context->from_assistant = true;
+  report->feedback_context->assistant_debug_info_allowed = true;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
@@ -438,6 +448,8 @@ IN_PROC_BROWSER_TEST_F(
   // Verify category_tag is marked as a fake category tag in the report.
   EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -450,6 +462,8 @@ IN_PROC_BROWSER_TEST_F(
 // - Empty string Extra Diagnostics provided.
 // - User is not logged in with an internal google account.
 // - Performance trace id is absent (set to zero).
+// - from_assistant flag is set false.
+// - Assistant debug info is not allowed.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
@@ -464,6 +478,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->feedback_context->is_internal_account = false;
   report->include_system_logs_and_histograms = false;
   report->feedback_context->trace_id = 0;
+  report->feedback_context->from_assistant = false;
+  report->feedback_context->assistant_debug_info_allowed = false;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
@@ -490,6 +506,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   // Verify category_tag is not marked as BluetoothReportWithLogs.
   EXPECT_NE(kFeedbackCategoryTag, feedback_data->category_tag());
   EXPECT_EQ(0, feedback_data->trace_id());
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.

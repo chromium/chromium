@@ -82,6 +82,7 @@ export const fakeFeedbackContext = {
   pageUrl: {url: 'chrome://tab/'},
   isInternalAccount: false,
   fromAssistant: false,
+  assistantDebugInfoAllowed: false,
   traceId: 1,
 };
 
@@ -91,6 +92,7 @@ export const fakeEmptyFeedbackContext = {
   pageUrl: {url: ''},
   isInternalAccount: false,
   fromAssistant: false,
+  assistantDebugInfoAllowed: false,
   traceId: 0,
 };
 
@@ -99,7 +101,8 @@ export const fakeInternalUserFeedbackContext = {
   email: 'test.user@google.com',
   pageUrl: {url: 'chrome://tab/'},
   isInternalAccount: true,
-  fromAssistant: false,
+  fromAssistant: true,
+  assistantDebugInfoAllowed: false,
   traceId: 1,
 };
 

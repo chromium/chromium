@@ -362,6 +362,13 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.feedbackContext.traceId = 0;
     }
 
+    report.feedbackContext.fromAssistant = this.feedbackContext.fromAssistant;
+
+    report.feedbackContext.assistantDebugInfoAllowed =
+        this.feedbackContext.fromAssistant &&
+        !this.getElement_('#assistantLogsContainer').hidden &&
+        this.getElement_('#assiatantLogsCheckbox').checked;
+
     return report;
   }
 
