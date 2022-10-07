@@ -67,10 +67,10 @@ void InitializeTimeout(const char* switch_name,
   // On coverage build, tests run 3x slower.
   constexpr int kTimeoutMultiplier = 3;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1295825): reduce the multiplier back to 2x.
+  // TODO(crbug.com/1058022): reduce the multiplier back to 2x.
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
-  // gets 4x.
-  constexpr int kTimeoutMultiplier = 4;
+  // gets 3x.
+  constexpr int kTimeoutMultiplier = 3;
 #elif !defined(NDEBUG) && BUILDFLAG(IS_MAC)
   // A lot of browser_tests on Mac debug time out.
   constexpr int kTimeoutMultiplier = 2;
