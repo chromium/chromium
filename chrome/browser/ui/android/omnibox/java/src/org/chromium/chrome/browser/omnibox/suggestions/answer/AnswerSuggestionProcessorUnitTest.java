@@ -18,10 +18,12 @@ import android.text.Spannable;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -31,13 +33,16 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableState;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.omnibox.AnswerTextStyle;
 import org.chromium.components.omnibox.AnswerTextType;
@@ -53,6 +58,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.url.ShadowGURL;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Tests for {@link AnswerSuggestionProcessor}.
@@ -65,6 +71,7 @@ public class AnswerSuggestionProcessorUnitTest {
             AnswerType.TRANSLATION, AnswerType.WEATHER, AnswerType.WHEN_IS, AnswerType.CURRENCY};
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
@@ -72,6 +79,7 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock Bitmap mBitmap;
 
     private AnswerSuggestionProcessor mProcessor;
+    private Locale mDefaultLocale;
 
     /**
      * Base Suggestion class that can be used for testing.
@@ -171,6 +179,12 @@ public class AnswerSuggestionProcessorUnitTest {
     public void setUp() {
         mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
                 mSuggestionHost, mUrlStateProvider, () -> mImageFetcher);
+        mDefaultLocale = Locale.getDefault();
+    }
+
+    @After
+    public void tearDown() {
+        Locale.setDefault(mDefaultLocale);
     }
 
     /** Populate model for associated suggestion. */
@@ -186,6 +200,60 @@ public class AnswerSuggestionProcessorUnitTest {
 
     ImageFetcher.Params createParams(String url) {
         return ImageFetcher.Params.create(url, ImageFetcher.ANSWER_SUGGESTIONS_UMA_CLIENT_NAME);
+    }
+
+    void setColorReversalFeatureValues(
+            boolean flagEnabled, boolean financeOnly, String countryList) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE, flagEnabled);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                "omnibox_answer_color_reversal_finance_only", String.valueOf(financeOnly));
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                "omnibox_answer_color_reversal_countries", countryList);
+        FeatureList.setTestValues(testValues);
+    }
+
+    @Test
+    @SmallTest
+    public void onNativeInitialized_checkColorReversalDisable() {
+        setColorReversalFeatureValues(false, false, "");
+        mProcessor.onNativeInitialized();
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalEnabled());
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void onNativeInitialized_checkColorReversalEnableWithoutCountryList() {
+        setColorReversalFeatureValues(true, true, "");
+        Locale.setDefault(new Locale("ja", "JP"));
+
+        mProcessor.onNativeInitialized();
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void onNativeInitialized_checkColorReversalEnableWithExcludedCountryList() {
+        setColorReversalFeatureValues(true, true, "zh-CN,zh-TW,ko-KR");
+        Locale.setDefault(new Locale("ja", "JP"));
+
+        mProcessor.onNativeInitialized();
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
+        Assert.assertFalse(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void onNativeInitialized_checkColorReversalEnableWithIncludedCountryList() {
+        setColorReversalFeatureValues(true, true, "zh-CN,zh-TW,ja-JP,ko-KR");
+        Locale.setDefault(new Locale("ja", "JP"));
+
+        mProcessor.onNativeInitialized();
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalEnabled());
+        Assert.assertTrue(mProcessor.isOmniboxAnswerColorReversalFinanceOnlyEnabled());
     }
 
     @Test

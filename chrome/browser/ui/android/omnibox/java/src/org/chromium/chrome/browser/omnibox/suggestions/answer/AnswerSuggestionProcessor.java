@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -29,7 +28,6 @@ import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,23 +65,16 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void onNativeInitialized() {
         mOmniBoxAnswerColorReversal =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
-
-        mOmniBoxAnswerColorReversalFinanceOnly =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
-                        "omnibox_answer_color_reversal_finance_only",
-                        /* default= */ true);
-
+        boolean financeReversalEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
+                "omnibox_answer_color_reversal_finance_only",
+                /* default= */ true);
         String stockColorReversalCountryList = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE,
                 "omnibox_answer_color_reversal_countries");
-        if (!TextUtils.isEmpty(stockColorReversalCountryList)) {
-            List<String> financeTickerColorReversalCountryList =
-                    Arrays.asList(stockColorReversalCountryList.split(","));
-            String localeString = LocaleUtils.getDefaultLocaleString();
-            mOmniBoxAnswerColorReversalFinanceOnly &=
-                    financeTickerColorReversalCountryList.contains(localeString);
-        }
+        mOmniBoxAnswerColorReversalFinanceOnly = financeReversalEnabled
+                && stockColorReversalCountryList != null
+                && stockColorReversalCountryList.contains(LocaleUtils.getDefaultLocaleString());
     }
 
     @Override
@@ -203,6 +194,16 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         return (omniBoxAnswerColorReversal && !omniBoxAnswerColorReversalFinanceOnly)
                 || (omniBoxAnswerColorReversal && omniBoxAnswerColorReversalFinanceOnly
                         && isFinanceAnswer);
+    }
+
+    /* Returns whether Omnibox answer color reversal is enabled. */
+    public boolean isOmniboxAnswerColorReversalEnabled() {
+        return mOmniBoxAnswerColorReversal;
+    }
+
+    /* Returns whether Omnibox answer color reversal is enabled to finance answer only. */
+    public boolean isOmniboxAnswerColorReversalFinanceOnlyEnabled() {
+        return mOmniBoxAnswerColorReversalFinanceOnly;
     }
 
     /**
