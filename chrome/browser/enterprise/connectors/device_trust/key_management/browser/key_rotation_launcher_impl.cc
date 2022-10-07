@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -65,16 +64,16 @@ void KeyRotationLauncherImpl::LaunchKeyRotation(
   std::string dm_server_url = config.GetResourceRequest(false, 0)->url.spec();
 
   KeyRotationCommand::Params params{dm_token.value(), dm_server_url, nonce};
-  auto command = KeyRotationCommandFactory::GetInstance()->CreateCommand(
+  command_ = KeyRotationCommandFactory::GetInstance()->CreateCommand(
       url_loader_factory_, local_prefs_);
-  if (!command) {
+  if (!command_) {
     // Command can be nullptr if trying to create a key on a unsupported
     // platform.
     std::move(callback).Run(KeyRotationCommand::Status::FAILED);
     return;
   }
 
-  command->Trigger(params, std::move(callback));
+  command_->Trigger(params, std::move(callback));
 }
 
 }  // namespace enterprise_connectors

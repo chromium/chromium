@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 
 class PrefService;
@@ -43,6 +44,7 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   raw_ptr<policy::DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::raw_ptr<PrefService> local_prefs_;
+  std::unique_ptr<KeyRotationCommand> command_;
 };
 
 }  // namespace enterprise_connectors
