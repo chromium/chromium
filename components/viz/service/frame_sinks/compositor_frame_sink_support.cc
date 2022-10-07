@@ -20,6 +20,7 @@
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -764,6 +765,14 @@ void CompositorFrameSinkSupport::DidPresentCompositorFrame(
   details.presentation_feedback = feedback;
   AdjustPresentationFeedback(&details.presentation_feedback,
                              swap_timings.swap_start);
+  // Override with the throttled interval if one has been set. Otherwise,
+  // consumers will assume that the default vsync interval was the target and
+  // that the frames are presented too late when in fact, this is intentional.
+  if (begin_frame_interval_.is_positive() &&
+      details.presentation_feedback.interval.is_positive() &&
+      features::ShouldOverrideThrottledFrameRateParams()) {
+    details.presentation_feedback.interval = begin_frame_interval_;
+  }
   pending_received_frame_times_.erase(received_frame_timestamp);
 
   // We should only ever get one PresentationFeedback per frame_token.
@@ -817,37 +826,50 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
   CheckPendingSurfaces();
 
+  BeginFrameArgs adjusted_args = args;
+  if (begin_frame_interval_.is_positive() &&
+      features::ShouldOverrideThrottledFrameRateParams()) {
+    adjusted_args.interval = begin_frame_interval_;
+    // Deadline is not necessarily frame_time + interval. For example, it may
+    // incorporate an estimate for the frame's draw/swap time, so it's
+    // desirable to preserve any offset from the next scheduled frame.
+    base::TimeDelta offset_from_next_scheduled_frame =
+        args.deadline - (args.frame_time + args.interval);
+    adjusted_args.deadline = args.frame_time + begin_frame_interval_ +
+                             offset_from_next_scheduled_frame;
+  }
+
   bool send_begin_frame_to_client =
-      client_ && ShouldSendBeginFrame(args.frame_time);
+      client_ && ShouldSendBeginFrame(adjusted_args.frame_time);
   if (send_begin_frame_to_client) {
     if (last_activated_surface_id_.is_valid())
-      surface_manager_->SurfaceDamageExpected(last_activated_surface_id_, args);
-    last_begin_frame_args_ = args;
+      surface_manager_->SurfaceDamageExpected(last_activated_surface_id_,
+                                              adjusted_args);
+    last_begin_frame_args_ = adjusted_args;
 
-    BeginFrameArgs copy_args = args;
     // Force full frame if surface not yet activated to ensure surface creation.
     if (!last_activated_surface_id_.is_valid())
-      copy_args.animate_only = false;
+      adjusted_args.animate_only = false;
 
-    copy_args.trace_id = ComputeTraceId();
+    adjusted_args.trace_id = ComputeTraceId();
     TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Graphics.Pipeline",
-                           TRACE_ID_GLOBAL(copy_args.trace_id),
+                           TRACE_ID_GLOBAL(adjusted_args.trace_id),
                            TRACE_EVENT_FLAG_FLOW_OUT, "step",
                            "IssueBeginFrame");
-    copy_args.frames_throttled_since_last = frames_throttled_since_last_;
+    adjusted_args.frames_throttled_since_last = frames_throttled_since_last_;
     frames_throttled_since_last_ = 0;
 
-    last_frame_time_ = args.frame_time;
-    client_->OnBeginFrame(copy_args, std::move(frame_timing_details_));
-    begin_frame_tracker_.SentBeginFrame(args);
-    frame_sink_manager_->DidBeginFrame(frame_sink_id_, args);
+    last_frame_time_ = adjusted_args.frame_time;
+    client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_));
+    begin_frame_tracker_.SentBeginFrame(adjusted_args);
+    frame_sink_manager_->DidBeginFrame(frame_sink_id_, adjusted_args);
     frame_timing_details_.clear();
     UpdateNeedsBeginFramesInternal();
   }
 
   // Notify surface animation manager of the latest time and advance a frame if
   // it needs a begin frame.
-  surface_animation_manager_.UpdateFrameTime(args.frame_time);
+  surface_animation_manager_.UpdateFrameTime(adjusted_args.frame_time);
   if (surface_animation_manager_.NeedsBeginFrame()) {
     surface_animation_manager_.NotifyFrameAdvanced();
 
@@ -856,7 +878,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     if (surface_animation_manager_.NeedsBeginFrame()) {
       if (last_activated_surface_id_.is_valid()) {
         if (!send_begin_frame_to_client)
-          frame_sink_manager_->DidBeginFrame(frame_sink_id_, args);
+          frame_sink_manager_->DidBeginFrame(frame_sink_id_, adjusted_args);
 
         auto* surface =
             surface_manager_->GetSurfaceForId(last_activated_surface_id_);
@@ -882,7 +904,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
         // `DidNotProduceFrame()`.
         if (!send_begin_frame_to_client && begin_frame_source_) {
           begin_frame_source_->DidFinishFrame(this);
-          frame_sink_manager_->DidFinishFrame(frame_sink_id_, args);
+          frame_sink_manager_->DidFinishFrame(frame_sink_id_, adjusted_args);
         }
       }
     } else {

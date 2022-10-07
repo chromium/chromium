@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -34,9 +36,12 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 using testing::_;
+using testing::Contains;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
+using testing::Key;
+using testing::Ne;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
@@ -95,12 +100,17 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
 
 class CompositorFrameSinkSupportTest : public testing::Test {
  public:
-  CompositorFrameSinkSupportTest()
+  explicit CompositorFrameSinkSupportTest(
+      bool override_throttled_frame_rate_params = false)
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         begin_frame_source_(0.f, false),
         local_surface_id_(3, kArbitraryToken),
         frame_sync_token_(GenTestSyncToken(4)),
         consumer_sync_token_(GenTestSyncToken(5)) {
+    if (override_throttled_frame_rate_params) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kOverrideThrottledFrameRateParams);
+    }
     manager_.SetLocalClient(&frame_sink_manager_client_);
     now_src_ = std::make_unique<base::SimpleTestTickClock>();
     manager_.surface_manager()->SetTickClockForTesting(now_src_.get());
@@ -240,6 +250,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -257,6 +268,14 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   // This is the sync token returned by the consumer. It should always be
   // returned to the client.
   const gpu::SyncToken consumer_sync_token_;
+};
+
+class ThrottledBeginFrameCompositorFrameSinkSupportTest
+    : public CompositorFrameSinkSupportTest {
+ protected:
+  ThrottledBeginFrameCompositorFrameSinkSupportTest()
+      : CompositorFrameSinkSupportTest(
+            /*override_throttled_frame_rate_params=*/true) {}
 };
 
 // Tests submitting a frame with resources followed by one with no resources
@@ -1553,7 +1572,7 @@ TEST_F(CompositorFrameSinkSupportTest, ThrottleUnresponsiveClient) {
 // Verifies that when CompositorFrameSinkSupport has its |begin_frame_interval_|
 // set, any BeginFrame would be sent only after this interval has passed from
 // the time when the last BeginFrame was sent.
-TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
+TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
   testing::NiceMock<MockCompositorFrameSinkClient> mock_client;
@@ -1582,9 +1601,14 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
       EXPECT_CALL(mock_client, OnBeginFrame(_, _)).Times(0);
       ++frames_throttled_since_last;
     } else {
-      args.frames_throttled_since_last = frames_throttled_since_last;
+      BeginFrameArgs expected_args(args);
+      expected_args.interval = throttled_interval;
+      expected_args.deadline =
+          frame_time + throttled_interval -
+          BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
+      expected_args.frames_throttled_since_last = frames_throttled_since_last;
       frames_throttled_since_last = 0;
-      EXPECT_CALL(mock_client, OnBeginFrame(args, _)).WillOnce([&]() {
+      EXPECT_CALL(mock_client, OnBeginFrame(expected_args, _)).WillOnce([&]() {
         support->SubmitCompositorFrame(local_surface_id_,
                                        MakeDefaultCompositorFrame());
         GetSurfaceForId(id)->MarkAsDrawn();
@@ -1600,6 +1624,48 @@ TEST_F(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   // In total 10 frames should have been sent (5fps x 2 seconds).
   EXPECT_EQ(sent_frames, 10);
   support->SetNeedsBeginFrame(false);
+}
+
+TEST_F(ThrottledBeginFrameCompositorFrameSinkSupportTest,
+       UsesThrottledIntervalInPresentationFeedback) {
+  static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
+  // Request BeginFrames.
+  support_->SetNeedsBeginFrame(true);
+  support_->ThrottleBeginFrame(kThrottledFrameInterval);
+  ASSERT_THAT(BeginFrameArgs::DefaultInterval(), Ne(kThrottledFrameInterval));
+
+  base::TimeTicks frame_time = base::TimeTicks::Now();
+
+  // Issue a BeginFrame.
+  BeginFrameArgs args =
+      CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  // Client submits a compositor frame in response.
+  BeginFrameAck ack(args, true);
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetBeginFrameAck(ack)
+                              .Build();
+  auto token = frame.metadata.frame_token;
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+
+  // The presentation-feedback from the last submitted frame arrives.
+  SendPresentationFeedback(support_.get(), token);
+
+  // Issue a new BeginFrame. The frame timing details with submitted
+  // presentation feedback should be received with the throttled interval.
+  frame_time += kThrottledFrameInterval;
+  args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 1, 2, frame_time);
+  begin_frame_source_.TestOnBeginFrame(args);
+
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(), SizeIs(1));
+  ASSERT_THAT(fake_support_client_.all_frame_timing_details(),
+              Contains(Key(token)));
+  EXPECT_THAT(fake_support_client_.all_frame_timing_details()
+                  .at(token)
+                  .presentation_feedback.interval,
+              Eq(kThrottledFrameInterval));
 }
 
 TEST_F(CompositorFrameSinkSupportTest, ForceFullFrameToActivateSurface) {

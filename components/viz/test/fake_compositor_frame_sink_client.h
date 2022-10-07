@@ -42,12 +42,18 @@ class FakeCompositorFrameSinkClient : public mojom::CompositorFrameSinkClient {
     return returned_resources_;
   }
 
+  const FrameTimingDetailsMap& all_frame_timing_details() const {
+    return all_frame_timing_details_;
+  }
+
  private:
   void InsertResources(std::vector<ReturnedResource> resources);
 
   std::vector<ReturnedResource> returned_resources_;
 
   mojo::Receiver<mojom::CompositorFrameSinkClient> receiver_{this};
+
+  FrameTimingDetailsMap all_frame_timing_details_;
 };
 
 }  // namespace viz

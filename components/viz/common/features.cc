@@ -220,6 +220,16 @@ BASE_FEATURE(kEagerSurfaceGarbageCollection,
              "EagerSurfaceGarbageCollection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Only applies when a caller has requested a custom BeginFrame rate via the
+// Throttle() API in frame_sink_manager.mojom. If enabled, parameters related
+// to the BeginFrame rate are overridden in viz to reflect the throttled rate
+// before being circulated in the system. The most notable are the interval and
+// deadline in BeginFrameArgs. If disabled, these parameters reflect the default
+// vsync rate (the behavior at the time this feature was created.)
+BASE_FEATURE(kOverrideThrottledFrameRateParams,
+             "OverrideThrottledFrameRateParams",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);
@@ -383,6 +393,10 @@ int MaxOverlaysConsidered() {
 
 bool ShouldVideoDetectorIgnoreNonVideoFrames() {
   return base::FeatureList::IsEnabled(kVideoDetectorIgnoreNonVideos);
+}
+
+bool ShouldOverrideThrottledFrameRateParams() {
+  return base::FeatureList::IsEnabled(kOverrideThrottledFrameRateParams);
 }
 
 }  // namespace features
