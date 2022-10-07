@@ -2271,14 +2271,13 @@ TEST_F(TemplateURLTest, SideImageSearchParams) {
   // Removes the param if the provided URL has it.
   result = url.RemoveSideImageSearchParamFromURL(
       GURL("http://foo.com/?q=123&sideimagesearch=1"));
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=", result.spec());
+  EXPECT_EQ("http://foo.com/?q=123", result.spec());
 
   // Removes the first instance of the query param that exist in the URL. This
   // should not happen but just asserting for expected behavior.
   result = url.RemoveSideImageSearchParamFromURL(
       GURL("http://foo.com/?q=123&sideimagesearch=1&sideimagesearch=2"));
-  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=&sideimagesearch=2",
-            result.spec());
+  EXPECT_EQ("http://foo.com/?q=123&sideimagesearch=2", result.spec());
 }
 
 TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
