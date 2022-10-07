@@ -31,6 +31,8 @@ constexpr char kExtraDataDictKey[] = "extra_data";
 constexpr char kCapabilitiesKey[] = "capabilities";
 constexpr char kPortKey[] = "port";
 constexpr char kIpAddressKey[] = "ip_address";
+constexpr char kModelName[] = "model_name";
+constexpr char kDefaultAccessCodeModelName[] = "Chromecast Cast Moderator";
 
 uint8_t ConvertDeviceCapabilitiesToInt(
     chrome_browser_media::proto::DeviceCapabilities proto) {
@@ -116,6 +118,10 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   extra_data.capabilities =
       ConvertDeviceCapabilitiesToInt(discovery_device.device_capabilities());
   extra_data.discovery_type = CastDiscoveryType::kAccessCodeManualEntry;
+  // Various pieces of Chrome make decisions about how to support casting based
+  // on the device's model name, generally speaking treating anything that
+  // starts with "Chromecast" as a first party casting device.
+  extra_data.model_name = kDefaultAccessCodeModelName;
 
   const std::string& processed_uuid =
       MediaSinkInternal::ProcessDeviceUUID(unique_id);
@@ -141,6 +147,7 @@ base::Value CreateValueDictFromMediaSinkInternal(
   extra_data_dict.Set(kPortKey, extra_data.ip_endpoint.port());
   extra_data_dict.Set(kIpAddressKey,
                       extra_data.ip_endpoint.address().ToString());
+  extra_data_dict.Set(kModelName, extra_data.model_name);
 
   base::Value::Dict sink_dict;
   sink_dict.Set(kSinkIdKey, sink.id());
@@ -191,6 +198,9 @@ absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
   extra_data.ip_endpoint = net::IPEndPoint(ip_address, port.value());
   extra_data.capabilities = capabilities.value();
   extra_data.discovery_type = CastDiscoveryType::kAccessCodeRememberedDevice;
+  const std::string* model_name = extra_data_dict->FindString(kModelName);
+  extra_data.model_name =
+      model_name ? *model_name : kDefaultAccessCodeModelName;
 
   const auto* sink_dict = value_dict.FindDict(kSinkDictKey);
   if (!sink_dict)
