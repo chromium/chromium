@@ -302,49 +302,6 @@ BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,
 extern const base::FeatureParam<int> kMigrationVersion = {
     &kUnifiedPasswordManagerAndroid, "migration_version", 1};
 
-// Current version of the GMS Core API errors lists. Users save this value on
-// eviction due to error and will only be re-enrolled to the experiment if the
-// configured version is greater than the saved one.
-extern const base::FeatureParam<int> kGmsApiErrorListVersion = {
-    &kUnifiedPasswordManagerAndroid, "api_error_list_version", 0};
-
-// Current list of the GMS Core API error codes that should be ignored and not
-// result in user eviction.
-// Codes DEVELOPER_ERROR=10, BAD_REQUEST=11008 are ignored to keep the default
-// pre-M107 behaviour.
-extern const base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", "10,11008"};
-
-// Current list of the GMS Core API error codes considered retriable.
-// User could still be evicted if retries do not resolve the error.
-extern const base::FeatureParam<std::string> kRetriableGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "retriable_api_errors", ""};
-
-// Enables fallback to the Chrome built-in backend if the operation executed on
-// the GMS Core backend returns with error. Errors listed in the
-// |kIgnoredGmsApiErrors| will not fallback and will be directly returned to the
-// caller to be addressed in a specific way.
-
-// Fallback on AddLogin and UpdateLogin operations. This is default behaviour
-// since M103.
-extern const base::FeatureParam<bool> kFallbackOnModifyingOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_modifying_operations", true};
-// Fallback on RemoveLogin* operations.
-extern const base::FeatureParam<bool> kFallbackOnRemoveOperations = {
-    &kUnifiedPasswordManagerAndroid, "fallback_on_remove_operations", false};
-// Fallback on FillMatchingLogins which is needed to perform autofill and could
-// affect user experience.
-extern const base::FeatureParam<bool> kFallbackOnUserAffectingReadOperations = {
-    &kUnifiedPasswordManagerAndroid,
-    "fallback_on_user_affecting_read_operations", false};
-// Fallback on GetAllLogins* and GetAutofillableLogins operations which are
-// needed for certain features (e.g. PhishGuard) but do not affect the core
-// experience.
-extern const base::FeatureParam<bool>
-    kFallbackOnNonUserAffectingReadOperations = {
-        &kUnifiedPasswordManagerAndroid,
-        "fallback_on_non_user_affecting_read_operations", false};
-
 // The maximum possible number of reenrollments into the UPM. Needed to avoid a
 // patchy experience for users who experience errors in communication with
 // Google Mobile Services on a regular basis.
