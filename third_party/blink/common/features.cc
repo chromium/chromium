@@ -1644,7 +1644,7 @@ BASE_FEATURE(kDocumentEventNodePathCaching,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
-    &kDocumentEventNodePathCaching, "max-cache-entries", 100};
+    &kDocumentEventNodePathCaching, "max-cache-entries", 10};
 
 BASE_FEATURE(kPostMessageDifferentPartitionSameOriginBlocked,
              "PostMessageDifferentPartitionSameOriginBlocked",
