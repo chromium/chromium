@@ -5,31 +5,23 @@
  */
 
 /**
- * Launches the PaymentRequest UI including a details.id and prints the
- * resulting requestId.
+ * Launches the PaymentRequest UI including a details.id and returns the
+ * request identifier from the response.
+ * @param {string} method - The payment method identifier to use.
+ * @return {string} - The request identifier from the response.
  */
-function buy() { // eslint-disable-line no-unused-vars
+async function getResponseId(method) { // eslint-disable-line no-unused-vars
   try {
-    new PaymentRequest(
-        [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
+    const request = new PaymentRequest(
+        [{supportedMethods: method}],
         {
           id: 'my_payment_id',
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
-        })
-        .show()
-        .then(function(resp) {
-          resp.complete('success')
-              .then(function() {
-                print(resp.requestId);
-              })
-              .catch(function(error) {
-                print(error.message);
-              });
-        })
-        .catch(function(error) {
-          print(error.message);
         });
+    const response = await request.show();
+    await response.complete('success');
+    return response.requestId;
   } catch (error) {
-    print(error.message);
+    return error.toString();
   }
 }
