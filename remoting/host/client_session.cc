@@ -266,7 +266,8 @@ void ClientSession::SetCapabilities(
   // are fully deprecated and no longer sent. We already start the monitor in
   // OnConnectionChannelsConnected() so we don't need this block if the legacy
   // message in multi-stream mode is no longer required.
-  if (HasCapability(capabilities_, protocol::kMultiStreamCapability)) {
+  if (HasCapability(capabilities_, protocol::kMultiStreamCapability) ||
+      HasCapability(capabilities_, protocol::kMultiStreamOldCapability)) {
     if (desktop_display_info_.NumDisplays() != 0) {
       // If display info is already known, create the initial video streams.
       // Otherwise they will be created on the next displays-changed message.
@@ -324,7 +325,8 @@ void ClientSession::SelectDesktopDisplay(
   LOG(INFO) << "SelectDesktopDisplay "
             << "'" << select_display.id() << "'";
 
-  if (HasCapability(capabilities_, protocol::kMultiStreamCapability)) {
+  if (HasCapability(capabilities_, protocol::kMultiStreamCapability) ||
+      HasCapability(capabilities_, protocol::kMultiStreamOldCapability)) {
     // TODO(lambroslambrou): Close the connection with a protocol error,
     // once we are sure the client will not send this request after
     // multi-stream has been negotiated.
@@ -944,7 +946,8 @@ void ClientSession::OnDesktopDisplayChanged(
   LOG(INFO) << "ClientSession::OnDesktopDisplayChanged";
 
   bool multiStreamEnabled =
-      HasCapability(capabilities_, protocol::kMultiStreamCapability);
+      HasCapability(capabilities_, protocol::kMultiStreamCapability) ||
+      HasCapability(capabilities_, protocol::kMultiStreamOldCapability);
 
   // Scan display list to calculate the full desktop size.
   int min_x = 0;
