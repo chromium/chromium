@@ -39,8 +39,9 @@ For concrete examples, see
 and
 [executor.html](../../html/browsers/browsing-the-web/back-forward-cache/resources/executor.html)
 in back-forward cache tests.
-Note that executor files under `/common/dispatcher/` are NOT for
-`RemoteContext.execute_script()`.
+
+Note that `executor*` files under `/common/dispatcher/` are NOT for
+`RemoteContext.execute_script()`. Use `remote-executor.html` instead.
 
 This is universal and avoids introducing many specific `XXX-helper.html`
 resources.

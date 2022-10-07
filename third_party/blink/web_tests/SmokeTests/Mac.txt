@@ -1000,7 +1000,6 @@ http/tests/preload/without_doc_write_evaluator.html
 http/tests/security/cross-origin-shared-worker-allowed.html
 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html
 http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html
-http/tests/security/opened-document-security-origin-resets-on-navigation.html
 ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm
 images/color-profile-image-filter-all.html
 images/color-profile-svg-foreign-object.html
