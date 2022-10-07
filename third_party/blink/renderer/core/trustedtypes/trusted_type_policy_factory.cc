@@ -62,45 +62,62 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesCreatePolicy);
 
+  // TT requires two validity checks: One against the CSP, and one for the
+  // default policy. Use |disallowed| (and |violation_details|) to aggregate
+  // these, so we can have unified error handling.
+  //
+  // Spec ref:
+  // https://www.w3.org/TR/2022/WD-trusted-types-20220927/#create-trusted-type-policy-algorithm,
+  // steps 2 + 3
+  bool disallowed = false;
+  ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details =
+      ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
+
   // This issue_id is used to generate a link in the DevTools front-end from
   // the JavaScript TypeError to the inspector issue which is reported by
   // ContentSecurityPolicy::ReportViolation via the call to
   // AllowTrustedTypeAssignmentFailure below.
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
+
   if (GetExecutionContext()->GetContentSecurityPolicy()) {
-    ContentSecurityPolicy::AllowTrustedTypePolicyDetails violation_details =
-        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
-    bool disallowed = !GetExecutionContext()
-                           ->GetContentSecurityPolicy()
-                           ->AllowTrustedTypePolicy(
-                               policy_name, policy_map_.Contains(policy_name),
-                               violation_details, issue_id);
-    if (violation_details != ContentSecurityPolicy::ContentSecurityPolicy::
-                                 AllowTrustedTypePolicyDetails::kAllowed) {
-      // We may report a violation here even when disallowed is false
-      // in case policy is a report-only one.
-      probe::OnContentSecurityPolicyViolation(
-          GetExecutionContext(),
-          ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation);
-    }
-    if (disallowed) {
-      // For a better error message, we'd like to disambiguate between
-      // "disallowed" and "disallowed because of a duplicate name".
-      bool disallowed_because_of_duplicate_name =
-          violation_details ==
-          ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
-              kDisallowedDuplicateName;
-      const String message =
-          disallowed_because_of_duplicate_name
-              ? "Policy with name \"" + policy_name + "\" already exists."
-              : "Policy \"" + policy_name + "\" disallowed.";
-      exception_state.ThrowTypeError(message);
-      MaybeAssociateExceptionMetaData(
-          exception_state, "issueId",
-          IdentifiersFactory::IdFromToken(issue_id));
-      return nullptr;
-    }
+    disallowed = !GetExecutionContext()
+                      ->GetContentSecurityPolicy()
+                      ->AllowTrustedTypePolicy(
+                          policy_name, policy_map_.Contains(policy_name),
+                          violation_details, issue_id);
   }
+  if (!disallowed && policy_name == "default" &&
+      policy_map_.Contains("default")) {
+    disallowed = true;
+    violation_details = ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+        kDisallowedDuplicateName;
+  }
+
+  if (violation_details != ContentSecurityPolicy::ContentSecurityPolicy::
+                               AllowTrustedTypePolicyDetails::kAllowed) {
+    // We may report a violation here even when disallowed is false
+    // in case policy is a report-only one.
+    probe::OnContentSecurityPolicyViolation(
+        GetExecutionContext(),
+        ContentSecurityPolicyViolationType::kTrustedTypesPolicyViolation);
+  }
+  if (disallowed) {
+    // For a better error message, we'd like to disambiguate between
+    // "disallowed" and "disallowed because of a duplicate name".
+    bool disallowed_because_of_duplicate_name =
+        violation_details ==
+        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+            kDisallowedDuplicateName;
+    const String message =
+        disallowed_because_of_duplicate_name
+            ? "Policy with name \"" + policy_name + "\" already exists."
+            : "Policy \"" + policy_name + "\" disallowed.";
+    exception_state.ThrowTypeError(message);
+    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+                                    IdentifiersFactory::IdFromToken(issue_id));
+    return nullptr;
+  }
+
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesPolicyCreated);
   if (policy_name == "default") {
