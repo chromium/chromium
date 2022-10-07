@@ -45,8 +45,8 @@ class KidsExternalFetcherStatus {
   static KidsExternalFetcherStatus HttpError();
   static KidsExternalFetcherStatus InvalidResponse();
 
-  // KidsExternalFetcherStatus::IsOk iff google_service_auth_error_ is empty and
-  // fetch_error_ == NONE
+  // KidsExternalFetcherStatus::IsOk iff google_service_auth_error_.state() ==
+  // NONE and state_ == NONE
   bool IsOk() const;
 
   State state() const;
