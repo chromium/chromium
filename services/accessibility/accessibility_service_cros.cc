@@ -29,8 +29,12 @@ void AccessibilityServiceCros::BindAutomation(
 
 void AccessibilityServiceCros::BindAssistiveTechnologyController(
     mojo::PendingReceiver<mojom::AssistiveTechnologyController>
-        at_at_controller_receiver) {
+        at_at_controller_receiver,
+    const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   at_controller_->Bind(std::move(at_at_controller_receiver));
+  for (auto feature : enabled_features) {
+    at_controller_->EnableAssistiveTechnology(feature, /*enabled=*/true);
+  }
 }
 
 }  // namespace ax

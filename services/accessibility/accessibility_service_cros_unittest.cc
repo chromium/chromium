@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/accessibility/accessibility_service_cros.h"
+#include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -30,9 +31,10 @@ class FakeAssistiveTechnologyController {
       const FakeAssistiveTechnologyController&) = delete;
   ~FakeAssistiveTechnologyController() = default;
 
-  void BindAssistiveTechnologyController() {
+  void BindAssistiveTechnologyController(
+      const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
     service_->BindAssistiveTechnologyController(
-        at_controller_.BindNewPipeAndPassReceiver());
+        at_controller_.BindNewPipeAndPassReceiver(), enabled_features);
   }
 
   bool IsBound() { return at_controller_.is_bound(); }
@@ -44,7 +46,22 @@ class FakeAssistiveTechnologyController {
 
 }  // namespace
 
-TEST(AccessibilityServiceCrosTest, BindsAutomation) {
+class AccessibilityServiceCrosTest : public testing::Test {
+ public:
+  AccessibilityServiceCrosTest() = default;
+  AccessibilityServiceCrosTest(const AccessibilityServiceCrosTest& other) =
+      delete;
+  AccessibilityServiceCrosTest& operator=(const AccessibilityServiceCrosTest&) =
+      delete;
+  ~AccessibilityServiceCrosTest() override = default;
+
+  bool IsFeatureEnabled(AccessibilityServiceCros* service,
+                        mojom::AssistiveTechnologyType feature) {
+    return service->at_controller_->IsFeatureEnabled(feature);
+  }
+};
+
+TEST_F(AccessibilityServiceCrosTest, BindsAutomation) {
   base::test::SingleThreadTaskEnvironment task_environment;
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<AccessibilityServiceCros> service =
@@ -55,15 +72,31 @@ TEST(AccessibilityServiceCrosTest, BindsAutomation) {
   EXPECT_TRUE(client.IsBound());
 }
 
-TEST(AccessibilityServiceCrosTest, BindsAssistiveTechnologyController) {
+TEST_F(AccessibilityServiceCrosTest, BindsAssistiveTechnologyController) {
   base::test::SingleThreadTaskEnvironment task_environment;
   mojo::PendingReceiver<mojom::AccessibilityService> receiver;
   std::unique_ptr<AccessibilityServiceCros> service =
       std::make_unique<AccessibilityServiceCros>(std::move(receiver));
 
   FakeAssistiveTechnologyController at_controller(service.get());
-  at_controller.BindAssistiveTechnologyController();
+  at_controller.BindAssistiveTechnologyController(
+      std::vector<mojom::AssistiveTechnologyType>(
+          {mojom::AssistiveTechnologyType::kChromeVox,
+           mojom::AssistiveTechnologyType::kAutoClick}));
   EXPECT_TRUE(at_controller.IsBound());
+
+  EXPECT_TRUE(IsFeatureEnabled(service.get(),
+                               mojom::AssistiveTechnologyType::kChromeVox));
+  EXPECT_TRUE(IsFeatureEnabled(service.get(),
+                               mojom::AssistiveTechnologyType::kAutoClick));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kSwitchAccess));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kDictation));
+  EXPECT_FALSE(IsFeatureEnabled(service.get(),
+                                mojom::AssistiveTechnologyType::kMagnifier));
+  EXPECT_FALSE(IsFeatureEnabled(
+      service.get(), mojom::AssistiveTechnologyType::kSelectToSpeak));
 }
 
 }  // namespace ax

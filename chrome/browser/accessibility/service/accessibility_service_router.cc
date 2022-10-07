@@ -24,12 +24,13 @@ void AccessibilityServiceRouter::BindAutomationWithClient(
 
 void AccessibilityServiceRouter::BindAssistiveTechnologyController(
     mojo::PendingReceiver<mojom::AssistiveTechnologyController>
-        at_controller_receiver) {
+        at_controller_receiver,
+    const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   LaunchIfNotRunning();
 
   if (accessibility_service_.is_bound()) {
     accessibility_service_->BindAssistiveTechnologyController(
-        std::move(at_controller_receiver));
+        std::move(at_controller_receiver), enabled_features);
   }
 }
 

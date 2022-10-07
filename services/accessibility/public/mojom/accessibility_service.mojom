@@ -107,7 +107,10 @@ interface AccessibilityService {
 
   // Binds an AssistiveTechnologyController hosted in the service process,
   // allowing the client to control which Assistive Technologies are active.
+  // Callers may pass in a list of initially enabled features; features not
+  // in this list are assumed disabled.
   [EnableIf=is_chromeos]
   BindAssistiveTechnologyController(
-    pending_receiver<AssistiveTechnologyController> at_controller);
+    pending_receiver<AssistiveTechnologyController> at_controller,
+    array<AssistiveTechnologyType> enabled_features);
 };

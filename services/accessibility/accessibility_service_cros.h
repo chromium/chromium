@@ -25,13 +25,17 @@ class AccessibilityServiceCros : public mojom::AccessibilityService {
   AccessibilityServiceCros& operator=(const AccessibilityServiceCros&) = delete;
 
  private:
+  friend class AccessibilityServiceCrosTest;
+
   // mojom::AccessibilityService:
   void BindAutomation(
       mojo::PendingRemote<mojom::AutomationClient> accessibility_client_remote,
       mojo::PendingReceiver<mojom::Automation> automation_receiver) override;
   void BindAssistiveTechnologyController(
       mojo::PendingReceiver<mojom::AssistiveTechnologyController>
-          at_controller_receiver) override;
+          at_controller_receiver,
+      const std::vector<mojom::AssistiveTechnologyType>& enabled_features)
+      override;
 
   std::unique_ptr<AssistiveTechnologyControllerImpl> at_controller_;
 

@@ -33,7 +33,7 @@ AccessibilityServiceRouterFactory::~AccessibilityServiceRouterFactory() =
     default;
 
 KeyedService* AccessibilityServiceRouterFactory::BuildServiceInstanceFor(
-    content::BrowserContext* /*context*/) const {
+    content::BrowserContext* context) const {
   return new AccessibilityServiceRouter();
 }
 
