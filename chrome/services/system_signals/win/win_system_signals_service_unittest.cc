@@ -235,7 +235,8 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Wsc_MixedParsingError) {
 }
 
 // Tests that AV products are retrieved via WMI on Win7.
-TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7_Success) {
+// TODO(crbug.com/1372568): Fix flaky test.
+TEST_F(WinSystemSignalsServiceTest, DISABLED_GetAntiVirusSignals_Win7_Success) {
   device_signals::AvProduct fake_av_product;
   fake_av_product.display_name = "some display name";
   fake_av_product.product_id = "some product id";
@@ -266,7 +267,9 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7_Success) {
 }
 
 // Tests when a query error occurs when querying AVs from WMI on Win7.
-TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7_QueryError) {
+// TODO(crbug.com/1372568): Fix flaky test.
+TEST_F(WinSystemSignalsServiceTest,
+       DISABLED_GetAntiVirusSignals_Win7_QueryError) {
   device_signals::WmiAvProductsResponse fake_response;
   fake_response.query_error = base::win::WmiError::kFailedToCreateInstance;
 
@@ -292,8 +295,9 @@ TEST_F(WinSystemSignalsServiceTest, GetAntiVirusSignals_Win7_QueryError) {
 
 // Tests when items and parsing error are returned when querying AVs from WMI on
 // Win7.
+// TODO(crbug.com/1372568): Fix flaky test.
 TEST_F(WinSystemSignalsServiceTest,
-       GetAntiVirusSignals_Win7_MixedParsingErrors) {
+       DISABLED_GetAntiVirusSignals_Win7_MixedParsingErrors) {
   device_signals::AvProduct fake_av_product;
   fake_av_product.display_name = "some display name";
   fake_av_product.product_id = "some product id";
