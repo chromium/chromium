@@ -39,51 +39,52 @@ TEST(MediaGalleriesPermissionTest, GoodValues) {
 
   // access_type + all_detected
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   CheckFromValue(permission.get(), &value, true);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   CheckFromValue(permission.get(), &value, true);
 
   // all_detected
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
   CheckFromValue(permission.get(), &value, true);
 
   // access_type
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   CheckFromValue(permission.get(), &value, true);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   CheckFromValue(permission.get(), &value, true);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   CheckFromValue(permission.get(), &value, true);
 
   // Repeats do not make a difference.
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
   CheckFromValue(permission.get(), &value, true);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   CheckFromValue(permission.get(), &value, true);
 }
 
@@ -97,38 +98,39 @@ TEST(MediaGalleriesPermissionTest, BadValues) {
 
   // copyTo and delete without read
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
   CheckFromValue(permission.get(), &value, false);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   CheckFromValue(permission.get(), &value, false);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   CheckFromValue(permission.get(), &value, false);
 
   // copyTo without delete
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   CheckFromValue(permission.get(), &value, false);
 
   // Repeats do not make a difference.
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
   CheckFromValue(permission.get(), &value, false);
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   CheckFromValue(permission.get(), &value, false);
 }
 
@@ -144,8 +146,9 @@ TEST(MediaGalleriesPermissionTest, UnknownValues) {
 
   // A good one and an unknown one.
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append("Unknown");
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append("Unknown");
   EXPECT_TRUE(permission->FromValue(&value, &error, &unhandled));
   EXPECT_TRUE(error.empty());
   EXPECT_EQ(1U, unhandled.size());
@@ -153,9 +156,9 @@ TEST(MediaGalleriesPermissionTest, UnknownValues) {
   unhandled.clear();
 
   // Multiple unknown permissions.
-  value.ClearList();
-  value.Append("Unknown1");
-  value.Append("Unknown2");
+  value_list.clear();
+  value_list.Append("Unknown1");
+  value_list.Append("Unknown2");
   EXPECT_TRUE(permission->FromValue(&value, &error, &unhandled));
   EXPECT_TRUE(error.empty());
   EXPECT_EQ(2U, unhandled.size());
@@ -163,8 +166,8 @@ TEST(MediaGalleriesPermissionTest, UnknownValues) {
   unhandled.clear();
 
   // Unnknown with a nullptr argument.
-  value.ClearList();
-  value.Append("Unknown1");
+  value_list.clear();
+  value_list.Append("Unknown1");
   EXPECT_FALSE(permission->FromValue(&value, &error, nullptr));
   EXPECT_FALSE(error.empty());
   error.clear();
@@ -181,44 +184,45 @@ TEST(MediaGalleriesPermissionTest, Equal) {
       permission_info->CreateAPIPermission());
 
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
   ASSERT_TRUE(permission2->FromValue(&value, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
   ASSERT_TRUE(permission2->FromValue(&value, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission2->FromValue(&value, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission2->FromValue(&value, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 }
@@ -234,15 +238,16 @@ TEST(MediaGalleriesPermissionTest, NotEqual) {
       permission_info->CreateAPIPermission());
 
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
   ASSERT_TRUE(permission2->FromValue(&value, nullptr, nullptr));
   EXPECT_FALSE(permission1->Equal(permission2.get()));
 }
@@ -258,8 +263,9 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
       permission_info->CreateAPIPermission());
 
   base::Value value(base::Value::Type::LIST);
-  value.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
-  value.Append(MediaGalleriesPermission::kReadPermission);
+  base::Value::List& value_list = value.GetList();
+  value_list.Append(MediaGalleriesPermission::kAllAutoDetectedPermission);
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
   std::unique_ptr<base::Value> vtmp(permission1->ToValue());
@@ -267,10 +273,10 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
   ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
-  value.Append(MediaGalleriesPermission::kCopyToPermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.Append(MediaGalleriesPermission::kCopyToPermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
   vtmp = permission1->ToValue();
@@ -278,9 +284,9 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
   ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
-  value.Append(MediaGalleriesPermission::kReadPermission);
-  value.Append(MediaGalleriesPermission::kDeletePermission);
+  value_list.clear();
+  value_list.Append(MediaGalleriesPermission::kReadPermission);
+  value_list.Append(MediaGalleriesPermission::kDeletePermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
   vtmp = permission1->ToValue();
@@ -288,7 +294,7 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
   ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
-  value.ClearList();
+  value_list.clear();
   // without sub-permission
   ASSERT_TRUE(permission1->FromValue(nullptr, nullptr, nullptr));
 
