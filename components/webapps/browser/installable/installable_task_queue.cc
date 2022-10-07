@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "components/webapps/browser/installable/installable_data.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
@@ -78,16 +79,16 @@ void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false, std::vector<SkBitmap>(),
-                               false, false));
+                               GURL(), nullptr, false,
+                               std::vector<Screenshot>(), false, false));
     }
   }
   for (InstallableTask& task : paused_tasks) {
     if (task.callback) {
       std::move(task.callback)
           .Run(InstallableData({code}, GURL(), manifest, GURL(), nullptr, false,
-                               GURL(), nullptr, false, std::vector<SkBitmap>(),
-                               false, false));
+                               GURL(), nullptr, false,
+                               std::vector<Screenshot>(), false, false));
     }
   }
 }

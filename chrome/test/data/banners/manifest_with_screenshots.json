@@ -6,13 +6,15 @@
       "src": "screenshot1-portrait.jpeg",
       "type": "image/jpeg",
       "sizes": "409x728",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "a narrow screenshot"
     },
     {
       "src": "screenshot1.jpeg",
       "type": "image/jpeg",
       "sizes": "728x409",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "a wide screenshot"
     },
     {
       "src": "screenshot2.jpeg",

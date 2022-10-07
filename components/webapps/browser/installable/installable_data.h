@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -16,6 +17,19 @@
 #include "url/gurl.h"
 
 namespace webapps {
+
+struct Screenshot {
+  Screenshot(SkBitmap image, absl::optional<std::u16string> label);
+  Screenshot(const Screenshot&);
+  Screenshot& operator=(const Screenshot&);
+
+  ~Screenshot();
+
+  SkBitmap image;
+
+  // Label for accessibility.
+  absl::optional<std::u16string> label;
+};
 
 // This struct contains the results of an InstallableManager::GetData call and
 // is passed to an InstallableCallback. Each pointer and reference is owned by
@@ -31,7 +45,7 @@ struct InstallableData {
                   const GURL& splash_icon_url,
                   const SkBitmap* splash_icon,
                   bool has_maskable_splash_icon,
-                  const std::vector<SkBitmap>& screenshots,
+                  const std::vector<Screenshot>& screenshots,
                   bool valid_manifest,
                   bool worker_check_passed);
 
@@ -95,7 +109,7 @@ struct InstallableData {
   const bool has_maskable_splash_icon;
 
   // The screenshots to show in the install UI.
-  const std::vector<SkBitmap>& screenshots;
+  const std::vector<Screenshot>& screenshots;
 
   // true if the site has a valid, installable web app manifest. If
   // |valid_manifest| or |worker_check_passed| was true and the site isn't

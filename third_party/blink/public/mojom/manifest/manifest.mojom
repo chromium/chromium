@@ -186,6 +186,9 @@ struct ManifestScreenshot {
 
   // The form factor for which a given screenshot applies.
   FormFactor form_factor;
+
+  // This serves as the accessible name of the screenshot.
+  mojo_base.mojom.String16? label;
 };
 
 // Structure representing a share target file.

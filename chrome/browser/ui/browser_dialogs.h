@@ -70,6 +70,10 @@ class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
 
+namespace webapps {
+struct Screenshot;
+}  // namespace webapps
+
 namespace chrome {
 
 // Shows or hides the Task Manager. |browser| can be NULL when called from Ash.
@@ -238,7 +242,7 @@ void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     AppInstallationAcceptanceCallback callback,
-    const std::vector<SkBitmap>& screenshots,
+    const std::vector<webapps::Screenshot>& screenshots,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any

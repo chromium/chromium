@@ -31,6 +31,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -91,7 +92,8 @@ class ImageCarouselLayoutManager : public views::LayoutManagerBase {
 
 class ImageCarouselView : public views::View {
  public:
-  explicit ImageCarouselView(const std::vector<SkBitmap>& screenshots)
+  explicit ImageCarouselView(
+      const std::vector<webapps::Screenshot>& screenshots)
       : screenshots_(screenshots) {
     DCHECK(screenshots.size());
 
@@ -103,8 +105,8 @@ class ImageCarouselView : public views::View {
     // and should all have the same aspect ratio.
 #if DCHECK_IS_ON()
     for (const auto& screenshot : screenshots) {
-      DCHECK(screenshot.width() * screenshots_[0].height() ==
-             screenshot.height() * screenshots_[0].width());
+      DCHECK(screenshot.image.width() * screenshots_[0].image.height() ==
+             screenshot.image.height() * screenshots_[0].image.width());
     }
 #endif
 
@@ -160,8 +162,11 @@ class ImageCarouselView : public views::View {
         screen->GetDisplayNearestView(GetWidget()->GetNativeView())
             .device_scale_factor();
     for (size_t i = 0; i < screenshots_.size(); i++) {
-      image_views_[i]->SetImage(ui::ImageModel::FromImageSkia(
-          gfx::ImageSkia::CreateFromBitmap(screenshots_[i], current_scale)));
+      image_views_[i]->SetImage(
+          ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
+              screenshots_[i].image, current_scale)));
+      if (screenshots_[i].label)
+        image_views_[i]->SetAccessibleName(screenshots_[i].label.value());
     }
   }
 
@@ -178,9 +183,10 @@ class ImageCarouselView : public views::View {
     // by `OnScrollButtonClicked` based on image carousel animation.
     if (!trailing_button_visibility_set_up_) {
       for (size_t i = 0; i < screenshots_.size(); i++) {
-        const int item_width = base::checked_cast<int>(
-            screenshots_[i].width() * (base::checked_cast<float>(fixed_height) /
-                                       screenshots_[i].height()));
+        const int item_width =
+            base::checked_cast<int>(screenshots_[i].image.width() *
+                                    (base::checked_cast<float>(fixed_height) /
+                                     screenshots_[i].image.height()));
         image_views_[i]->SetImageSize({item_width, fixed_height});
       }
       image_carousel_full_width_ =
@@ -268,7 +274,7 @@ class ImageCarouselView : public views::View {
     return scroll_button;
   }
 
-  const std::vector<SkBitmap>& screenshots_;
+  const std::vector<webapps::Screenshot>& screenshots_;
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
   views::View* image_container_ = nullptr;
   views::BoxLayoutView* image_inner_container_ = nullptr;
@@ -290,7 +296,7 @@ void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
     chrome::AppInstallationAcceptanceCallback callback,
-    const std::vector<SkBitmap>& screenshots,
+    const std::vector<webapps::Screenshot>& screenshots,
     chrome::PwaInProductHelpState iph_state) {
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
   PrefService* const prefs =

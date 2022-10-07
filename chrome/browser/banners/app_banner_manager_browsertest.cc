@@ -31,6 +31,7 @@
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -921,7 +922,7 @@ IN_PROC_BROWSER_TEST_F(
   service->ResetBaseScoreForURL(test_url, 10);
 
   blink::mojom::Manifest manifest;
-  std::vector<SkBitmap> screenshots;
+  std::vector<Screenshot> screenshots;
   installable_manager_->FailNext(base::WrapUnique(
       new InstallableData({MANIFEST_URL_CHANGED}, GURL::EmptyGURL(), manifest,
                           GURL::EmptyGURL(), nullptr, false, GURL::EmptyGURL(),

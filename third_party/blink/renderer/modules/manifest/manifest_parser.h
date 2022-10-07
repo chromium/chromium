@@ -228,6 +228,10 @@ class MODULES_EXPORT ManifestParser {
   mojom::blink::ManifestScreenshot::FormFactor ParseScreenshotFormFactor(
       const JSONObject* screenshot);
 
+  // Parse the 'label' field of 'screenshots' as defined in:
+  // https://www.w3.org/TR/manifest-app-info/#label-member
+  String ParseScreenshotLabel(const JSONObject* object);
+
   // A helper function for parsing ImageResources under |key| in the manifest.
   Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResourceArray(
       const String& key,

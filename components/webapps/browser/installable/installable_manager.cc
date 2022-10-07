@@ -984,9 +984,9 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
       // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
       if (screenshots_.size() &&
           screenshot.dimensions().width() *
-                  screenshots_[0].dimensions().height() !=
+                  screenshots_[0].image.dimensions().height() !=
               screenshot.dimensions().height() *
-                  screenshots_[0].dimensions().width()) {
+                  screenshots_[0].image.dimensions().width()) {
         continue;
       }
 
@@ -995,7 +995,7 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
       if (dimensions.second > dimensions.first * kMaximumScreenshotRatio)
         continue;
 
-      screenshots_.push_back(screenshot);
+      screenshots_.emplace_back(std::move(screenshot), url->label);
     }
 
     downloaded_screenshots_.clear();

@@ -22,6 +22,8 @@ class WebContents;
 
 namespace webapps {
 
+struct Screenshot;
+
 // A Controller for the BottomSheet install UI for progressive web apps.
 // If successfully created, the lifetime of this object is tied to the lifetime
 // of the BottomSheet UI being shown and the object is destroyed from Java when
@@ -39,7 +41,7 @@ class PwaBottomSheetController {
       const SkBitmap& primary_icon,
       const bool is_primary_icon_maskable,
       const GURL& start_url,
-      const std::vector<SkBitmap>& screenshots,
+      const std::vector<Screenshot>& screenshots,
       const std::u16string& description,
       bool expand_sheet,
       std::unique_ptr<AddToHomescreenParams> a2hs_params,
@@ -75,7 +77,7 @@ class PwaBottomSheetController {
       const SkBitmap& primary_icon,
       const bool is_primary_icon_maskable,
       const GURL& start_url,
-      const std::vector<SkBitmap>& screenshots,
+      const std::vector<Screenshot>& screenshots,
       const std::u16string& description,
       std::unique_ptr<AddToHomescreenParams> a2hs_params,
       base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
@@ -97,7 +99,7 @@ class PwaBottomSheetController {
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_ = false;
   const GURL& start_url_;
-  const std::vector<SkBitmap>& screenshots_;
+  const std::vector<Screenshot>& screenshots_;
   const std::u16string description_;
   // Contains app parameters such as its type and the install source used that
   // will be passed to |a2hs_event_callback_| eventually.

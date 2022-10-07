@@ -1224,6 +1224,57 @@ TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, ScreenshotLabelRules) {
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "label": "example screenshot." }] })");
+    EXPECT_FALSE(manifest->screenshots.empty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->label, "example screenshot.");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  // Unspecified.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "screenshots": [{ "src": "foo.jpg"}] })");
+    EXPECT_FALSE(manifest->screenshots.empty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_TRUE(screenshots[0]->label.IsNull());
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  // Empty string.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "label": "" }] })");
+    EXPECT_FALSE(manifest->screenshots.empty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->label, "");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+  // Invalid type.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "label": 2 }] })");
+    EXPECT_FALSE(manifest->screenshots.empty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_TRUE(screenshots[0]->label.IsNull());
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(1u, GetErrorCount());
+  }
+}
+
 TEST_F(ManifestParserTest, IconSrcParseRules) {
   // Smoke test.
   {

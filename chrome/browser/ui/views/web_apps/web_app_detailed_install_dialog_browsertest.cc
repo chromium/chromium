@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -34,24 +35,31 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
     install_info->icon_bitmaps.any[kIconSize] =
         CreateSolidColorIcon(kIconSize, kIconSize, kIconColor);
 
-    std::vector<SkBitmap> screenshots;
+    std::vector<webapps::Screenshot> screenshots;
     if (name == "single_screenshot") {
-      screenshots.push_back(CreateSolidColorIcon(
-          kScreenshotSize, kScreenshotSize, SK_ColorGREEN));
+      screenshots.emplace_back(
+          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
+          u"example screenshot");
     } else if (name == "multiple_screenshots") {
-      screenshots.push_back(CreateSolidColorIcon(
-          kScreenshotSize, kScreenshotSize, SK_ColorGREEN));
-      screenshots.push_back(CreateSolidColorIcon(
-          kScreenshotSize, kScreenshotSize, SK_ColorBLACK));
-      screenshots.push_back(
-          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorBLUE));
+      screenshots.emplace_back(
+          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
+          u"example screenshot");
+      screenshots.emplace_back(
+          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorBLACK),
+          u"example screenshot 2");
+      screenshots.emplace_back(
+          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorBLUE),
+          u"");
     } else if (name == "max_ratio_screenshot") {
-      screenshots.push_back(CreateSolidColorIcon(
-          webapps::kMaximumScreenshotRatio * kScreenshotSize, kScreenshotSize,
-          SK_ColorGREEN));
+      screenshots.emplace_back(
+          CreateSolidColorIcon(
+              webapps::kMaximumScreenshotRatio * kScreenshotSize,
+              kScreenshotSize, SK_ColorGREEN),
+          absl::nullopt);
     } else {
-      screenshots.push_back(CreateSolidColorIcon(
-          kScreenshotSize, kScreenshotSize, SK_ColorGREEN));
+      screenshots.emplace_back(
+          CreateSolidColorIcon(kScreenshotSize, kScreenshotSize, SK_ColorGREEN),
+          absl::nullopt);
     }
     chrome::ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0),

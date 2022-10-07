@@ -23,6 +23,7 @@
 #include "components/favicon/core/large_favicon_provider.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -175,7 +176,7 @@ class TestInstallableManager : public InstallableManager {
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon, GURL() /* splash_icon_url */,
          nullptr /* splash_icon */, params.prefer_maskable_icon,
-         std::vector<SkBitmap>() /* screenshots */,
+         std::vector<webapps::Screenshot>() /* screenshots */,
          params.valid_manifest ? is_installable : false,
          params.has_worker ? is_installable : true});
   }
