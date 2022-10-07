@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -80,6 +81,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowLooper.class, ShadowPostTask.class})
 @LooperMode(Mode.PAUSED)
+@EnableFeatures(ChromeFeatureList.CCT_SHOW_ABOUT_BLANK_URL)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 public class CustomTabToolbarUnitTest {
     @Rule
@@ -320,6 +322,36 @@ public class CustomTabToolbarUnitTest {
         assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.CCT_ANIMATION);
     }
 
+    @Test
+    public void testAboutBlankUrlIsShown() {
+        setUpForAboutBlank();
+        ShadowLooper.idleMainLooper();
+        mLocationBar.onUrlChanged();
+        assertEquals("The url bar should be visible.", View.VISIBLE, mUrlBar.getVisibility());
+        assertEquals("The url bar should show about:blank",
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void testTitleIsHiddenForAboutBlank() {
+        setUpForAboutBlank();
+        mLocationBar.setShowTitle(true);
+        ShadowLooper.idleMainLooper();
+        mLocationBar.onUrlChanged();
+        assertEquals("The title should be gone.", View.GONE, mTitleBar.getVisibility());
+    }
+
+    @Test
+    public void testCannotHideUrlForAboutBlank() {
+        setUpForAboutBlank();
+        mLocationBar.setUrlBarHidden(true);
+        ShadowLooper.idleMainLooper();
+        mLocationBar.onUrlChanged();
+        assertEquals("The url bar should be visible.", View.VISIBLE, mUrlBar.getVisibility());
+        assertEquals("The url bar should show about:blank",
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, mUrlBar.getText().toString());
+    }
+
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
         int expectedTitleVisibility = titleVisible ? View.VISIBLE : View.GONE;
         int expectedUrlVisibility = urlVisible ? View.VISIBLE : View.GONE;
@@ -343,5 +375,13 @@ public class CustomTabToolbarUnitTest {
         mToolbar.setTextureCaptureMode(true);
         // Normally an actual capture would happen here.
         mToolbar.setTextureCaptureMode(false);
+    }
+
+    private void setUpForAboutBlank() {
+        when(mToolbarDataProvider.getTab()).thenReturn(mTab);
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+        UrlBarData urlBarData = UrlBarData.forUrl(JUnitTestGURLs.ABOUT_BLANK);
+        when(mLocationBarModel.getUrlBarData()).thenReturn(urlBarData);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.ABOUT_BLANK));
     }
 }
