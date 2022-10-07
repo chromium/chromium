@@ -290,7 +290,7 @@ SpeculativeReportQueueImpl::PrepareToAttachActualQueue() const {
             speculative_queue->AttachActualQueue(
                 std::move(std::move(actual_queue_result)));
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetMutableWeakPtr()));
 }
 
 void SpeculativeReportQueueImpl::AttachActualQueue(

@@ -75,7 +75,7 @@ void HealthModuleDelegate::PostHealthRecord(HealthDataHistory record) {
   *data_in_memory_.add_history() = record;
 }
 
-base::WeakPtr<HealthModuleDelegate> HealthModuleDelegate::GetWeakPtr() const {
+base::WeakPtr<HealthModuleDelegate> HealthModuleDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 }  // namespace reporting

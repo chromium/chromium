@@ -42,7 +42,7 @@ class HealthModuleDelegate {
 
   bool IsInitialized() const;
 
-  base::WeakPtr<HealthModuleDelegate> GetWeakPtr() const;
+  base::WeakPtr<HealthModuleDelegate> GetWeakPtr();
 
  private:
   // Local copy of the health data. This is read from storage on startup and
