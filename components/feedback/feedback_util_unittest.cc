@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
+#include "components/feedback/feedback_report.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feedback_util {
@@ -122,6 +123,19 @@ TEST_F(FeedbackUtilTest, ReadEndOfFileMedium) {
   read_data.clear();
   EXPECT_TRUE(feedback_util::ReadEndOfFile(file_path, 175, &read_data));
   EXPECT_EQ(test_data.substr(test_size - 175, 175), read_data);
+}
+
+TEST_F(FeedbackUtilTest, LogsToStringShouldSkipFeedbackUserCtlConsentKey) {
+  FeedbackCommon::SystemLogsMap sys_info;
+  sys_info[feedback::FeedbackReport::kFeedbackUserCtlConsentKey] = "true";
+
+  std::string logs = feedback_util::LogsToString(sys_info);
+  EXPECT_TRUE(logs.empty());
+
+  // Now add a fake key expected to be in system_logs.
+  sys_info["fake_key"] = "fake_value";
+  logs = feedback_util::LogsToString(sys_info);
+  EXPECT_EQ("fake_key=fake_value\n", logs);
 }
 
 }  // namespace feedback_util

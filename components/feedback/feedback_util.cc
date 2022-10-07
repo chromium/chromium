@@ -62,6 +62,12 @@ std::string LogsToString(const FeedbackCommon::SystemLogsMap& sys_info) {
       continue;
     }
 
+    if (key == feedback::FeedbackReport::kFeedbackUserCtlConsentKey) {
+      // Avoid adding user consent to the system_logs.txt file. It just needs to
+      // be in the product specific data.
+      continue;
+    }
+
     std::string value = iter.second;
     base::TrimString(value, "\n ", &value);
     if (value.find("\n") != std::string::npos) {

@@ -56,6 +56,11 @@ class FeedbackReport : public base::RefCountedThreadSafe<FeedbackReport> {
   // mem_usage entries with tab names.
   static const char kMemUsageWithTabTitlesKey[];
 
+  // The ID of the product specific data indicating whether the users want to be
+  // contacted back with any additional questions or updates about the issue
+  // they are reporting.
+  static const char kFeedbackUserCtlConsentKey[];
+
   // Loads the reports still on disk and queues then using the given callback.
   // This call blocks on the file reads.
   static void LoadReportsAndQueue(const base::FilePath& user_dir,

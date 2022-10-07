@@ -102,6 +102,10 @@ const char FeedbackReport::kAllCrashReportIdsKey[] = "all_crash_report_ids";
 const char FeedbackReport::kMemUsageWithTabTitlesKey[] = "mem_usage_with_title";
 
 // static
+const char FeedbackReport::kFeedbackUserCtlConsentKey[] =
+    "feedbackUserCtlConsent";
+
+// static
 void FeedbackReport::LoadReportsAndQueue(const base::FilePath& user_dir,
                                          const QueueCallback& callback) {
   if (user_dir.empty())
