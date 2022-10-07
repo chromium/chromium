@@ -672,16 +672,22 @@ EnterpriseReportingPrivateGetFileSystemInfoFunction::Run() {
   aggregation_request.file_system_signal_parameters =
       ConvertFileSystemInfoOptions(params->request.options);
 
+  const size_t number_of_items =
+      aggregation_request.file_system_signal_parameters.size();
+  LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
+
   StartSignalCollection(
       aggregation_request, browser_context(),
       base::BindOnce(&EnterpriseReportingPrivateGetFileSystemInfoFunction::
                          OnSignalRetrieved,
-                     this));
+                     this, base::TimeTicks::Now(), number_of_items));
 
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetFileSystemInfoFunction::OnSignalRetrieved(
+    base::TimeTicks start_time,
+    size_t request_items_count,
     device_signals::SignalsAggregationResponse response) {
   if (!CanReturnResponse(browser_context())) {
     // The browser is no longer accepting responses, so just bail.
@@ -693,13 +699,14 @@ void EnterpriseReportingPrivateGetFileSystemInfoFunction::OnSignalRetrieved(
   auto parsed_error = ConvertFileSystemInfoResponse(response, &arg_list);
 
   if (parsed_error) {
-    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+    LogSignalCollectionFailed(signal_name(), start_time, parsed_error->error,
                               parsed_error->is_top_level_error);
     Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
-  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
+  LogSignalCollectionSucceeded(signal_name(), start_time, arg_list.size(),
+                               request_items_count);
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetFileSystemInfo::Results::Create(
           arg_list)));
@@ -744,16 +751,22 @@ EnterpriseReportingPrivateGetSettingsFunction::Run() {
   aggregation_request.settings_signal_parameters =
       ConvertSettingsOptions(params->request.options);
 
+  const size_t number_of_items =
+      aggregation_request.settings_signal_parameters.size();
+  LogSignalCollectionRequestedWithItems(signal_name(), number_of_items);
+
   StartSignalCollection(
       aggregation_request, browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved,
-          this));
+          this, base::TimeTicks::Now(), number_of_items));
 
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved(
+    base::TimeTicks start_time,
+    size_t request_items_count,
     device_signals::SignalsAggregationResponse response) {
   if (!CanReturnResponse(browser_context())) {
     // The browser is no longer accepting responses, so just bail.
@@ -764,13 +777,14 @@ void EnterpriseReportingPrivateGetSettingsFunction::OnSignalRetrieved(
   auto parsed_error = ConvertSettingsResponse(response, &arg_list);
 
   if (parsed_error) {
-    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+    LogSignalCollectionFailed(signal_name(), start_time, parsed_error->error,
                               parsed_error->is_top_level_error);
     Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
-  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
+  LogSignalCollectionSucceeded(signal_name(), start_time, arg_list.size(),
+                               request_items_count);
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetSettings::Results::Create(
           arg_list)));
@@ -803,13 +817,14 @@ EnterpriseReportingPrivateGetAvInfoFunction::Run() {
       CreateAggregationRequest(params->user_context.user_id, signal_name()),
       browser_context(),
       base::BindOnce(
-          &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved,
-          this));
+          &EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved, this,
+          base::TimeTicks::Now()));
 
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved(
+    base::TimeTicks start_time,
     device_signals::SignalsAggregationResponse response) {
   if (!CanReturnResponse(browser_context())) {
     // The browser is no longer accepting responses, so just bail.
@@ -820,13 +835,13 @@ void EnterpriseReportingPrivateGetAvInfoFunction::OnSignalRetrieved(
   auto parsed_error = ConvertAvProductsResponse(response, &arg_list);
 
   if (parsed_error) {
-    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+    LogSignalCollectionFailed(signal_name(), start_time, parsed_error->error,
                               parsed_error->is_top_level_error);
     Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
-  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
+  LogSignalCollectionSucceeded(signal_name(), start_time, arg_list.size());
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetAvInfo::Results::Create(arg_list)));
 }
@@ -856,12 +871,13 @@ EnterpriseReportingPrivateGetHotfixesFunction::Run() {
       browser_context(),
       base::BindOnce(
           &EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved,
-          this));
+          this, base::TimeTicks::Now()));
 
   return RespondLater();
 }
 
 void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
+    base::TimeTicks start_time,
     device_signals::SignalsAggregationResponse response) {
   if (!CanReturnResponse(browser_context())) {
     // The browser is no longer accepting responses, so just bail.
@@ -872,13 +888,13 @@ void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
   auto parsed_error = ConvertHotfixesResponse(response, &arg_list);
 
   if (parsed_error) {
-    LogSignalCollectionFailed(signal_name(), parsed_error->error,
+    LogSignalCollectionFailed(signal_name(), start_time, parsed_error->error,
                               parsed_error->is_top_level_error);
     Respond(Error(device_signals::ErrorToString(parsed_error->error)));
     return;
   }
 
-  LogSignalCollectionSucceeded(signal_name(), arg_list.size());
+  LogSignalCollectionSucceeded(signal_name(), start_time, arg_list.size());
   Respond(ArgumentList(
       api::enterprise_reporting_private::GetHotfixes::Results::Create(
           arg_list)));

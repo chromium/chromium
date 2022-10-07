@@ -1414,13 +1414,22 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
   EXPECT_EQ(*parsed_file_system_signal->sha256_hash, "c29tZSBoYXNoZWQgdmFsdWU");
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.FileSystemInfo.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.FileSystemInfo.Delta", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success.FileSystemInfo.Items",
       /*number_of_items=*/1,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.FileSystemInfo.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Failure", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, TopLevelError) {
@@ -1438,6 +1447,8 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, TopLevelError) {
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.FileSystemInfo.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo."
@@ -1445,7 +1456,14 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, TopLevelError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.FileSystemInfo.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.FileSystemInfo.Delta", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, CollectionError) {
@@ -1466,6 +1484,8 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, CollectionError) {
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.FileSystemInfo.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo."
@@ -1473,7 +1493,14 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, CollectionError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.FileSystemInfo.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.FileSystemInfo.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.FileSystemInfo.Delta", 0);
 }
 
 class EnterpriseReportingPrivateGetFileSystemInfoDisabledTest
@@ -1590,13 +1617,22 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
             enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER);
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.SystemSettings.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.SystemSettings.Delta", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success.SystemSettings.Items",
       /*number_of_items=*/1,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.SystemSettings.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Failure", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.SystemSettings.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetSettingsTest, TopLevelError) {
@@ -1614,6 +1650,8 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, TopLevelError) {
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.SystemSettings.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure.SystemSettings."
@@ -1621,7 +1659,14 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, TopLevelError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.SystemSettings.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.SystemSettings.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.SystemSettings.Delta", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetSettingsTest, CollectionError) {
@@ -1642,6 +1687,8 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, CollectionError) {
   EXPECT_EQ(error, device_signals::ErrorToString(expected_error));
 
   histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Request.SystemSettings.Items", 1, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure", signal_name(), 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Failure.SystemSettings."
@@ -1649,7 +1696,14 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, CollectionError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.SystemSettings.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.SystemSettings.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.SystemSettings.Delta", 0);
 }
 
 class EnterpriseReportingPrivateGetSettingsDisabledTest
@@ -1745,7 +1799,12 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
       /*number_of_items=*/1,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.AntiVirus.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Failure", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.AntiVirus.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetAvInfoTest, TopLevelError) {
@@ -1769,7 +1828,12 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, TopLevelError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.AntiVirus.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.AntiVirus.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
@@ -1797,7 +1861,12 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, CollectionError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.AntiVirus.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.AntiVirus.Latency", 0);
 }
 
 class EnterpriseReportingPrivateGetAvInfoDisabledTest
@@ -1873,7 +1942,12 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, Success) {
       /*number_of_items=*/1,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.Hotfixes.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Failure", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.Hotfixes.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetHotfixesTest, TopLevelError) {
@@ -1897,7 +1971,12 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, TopLevelError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.Hotfixes.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.Hotfixes.Latency", 0);
 }
 
 TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
@@ -1925,7 +2004,12 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, CollectionError) {
       /*error=*/expected_error,
       /*number_of_occurrences=*/1);
   histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Failure.Hotfixes.Latency", 1);
+
+  histogram_tester_.ExpectTotalCount(
       "Enterprise.DeviceSignals.Collection.Success", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Success.Hotfixes.Latency", 0);
 }
 
 class EnterpriseReportingPrivateGetHotfixesInfoDisabledTest

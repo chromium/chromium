@@ -662,6 +662,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.Request.{Signal}.Items"
+    units="items" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the number of items as part of the {Signal} signal collection
+    response. Recorded when the collection request was received. This histogram
+    applies only to parameterized signals.
+  </summary>
+  <token key="Signal">
+    <variant name="FileSystemInfo" summary="file system items"/>
+    <variant name="SystemSettings" summary="system setting items"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.Collection.Success.{Signal}.Items"
     units="items" expires_after="2023-03-01">
   <owner>seblalancette@chromium.org</owner>
@@ -673,9 +688,45 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Signal">
     <variant name="AntiVirus" summary="AntiVirus"/>
-    <variant name="FileSystemInfo" summary="file system information"/>
+    <variant name="FileSystemInfo" summary="file system items"/>
     <variant name="Hotfixes" summary="Hotfixes"/>
     <variant name="SystemSettings" summary="system settings"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceSignals.Collection.{Outcome}.{Signal}.Latency"
+    units="ms" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the signal collection latency for the {Signal} signal. Recorded
+    only when the collection {Outcome}.
+  </summary>
+  <token key="Outcome">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
+  <token key="Signal">
+    <variant name="AntiVirus" summary="AntiVirus"/>
+    <variant name="FileSystemInfo" summary="file system items"/>
+    <variant name="Hotfixes" summary="Hotfixes"/>
+    <variant name="SystemSettings" summary="system settings"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Collection.{Signal}.Delta"
+    units="items" expires_after="2023-03-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the number of delta between requested and returned items as part of
+    the {Signal} signal collection response. Recorded when the collection
+    request was completed. This histogram applies only to parameterized signals.
+  </summary>
+  <token key="Signal">
+    <variant name="FileSystemInfo" summary="file system items"/>
+    <variant name="SystemSettings" summary="system setting items"/>
   </token>
 </histogram>
 

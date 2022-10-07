@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_METRICS_UTILS_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_METRICS_UTILS_H_
 
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
@@ -19,19 +20,30 @@ void LogUserPermissionChecked(UserPermission permission);
 // Records that a request to collect `signal_name` was received.
 void LogSignalCollectionRequested(SignalName signal_name);
 
+// Records that a request to collect the parameterized signal named
+// `signal_name` was received with `number_of_items` parameters.
+void LogSignalCollectionRequestedWithItems(SignalName signal_name,
+                                           size_t number_of_items);
+
 // Records that the collection of the signal `signal_name` failed with `error`,
 // which, based on `is_top_level_error`, is either a top-level aggregation
-// error, or a collection-level error.
+// error, or a collection-level error. `start_time` is the time at which the
+// signal collection request was received.
 void LogSignalCollectionFailed(SignalName signal_name,
+                               base::TimeTicks start_time,
                                SignalCollectionError error,
                                bool is_top_level_error);
 
 // Records that the collection of the signal `signal_name` was successful.
 // If applicable, will also record the number of items collected as given by
-// `signal_collection_size`.
+// `signal_collection_size`. `start_time` is the time at which the
+// signal collection request was received. `signal_request_size` is the number
+// of items that were part of the signal collection request.
 void LogSignalCollectionSucceeded(
     SignalName signal_name,
-    absl::optional<size_t> signal_collection_size);
+    base::TimeTicks start_time,
+    absl::optional<size_t> signal_collection_size,
+    absl::optional<size_t> signal_request_size = absl::nullopt);
 
 }  // namespace device_signals
 

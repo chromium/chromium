@@ -20,6 +20,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/statusor.h"
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/time/time.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -284,7 +285,9 @@ class EnterpriseReportingPrivateGetFileSystemInfoFunction
   // ExtensionFunction
   ExtensionFunction::ResponseAction Run() override;
 
-  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+  void OnSignalRetrieved(base::TimeTicks start_time,
+                         size_t request_items_count,
+                         device_signals::SignalsAggregationResponse response);
 
   device_signals::SignalName signal_name() {
     return device_signals::SignalName::kFileSystemInfo;
@@ -311,7 +314,9 @@ class EnterpriseReportingPrivateGetSettingsFunction : public ExtensionFunction {
   // ExtensionFunction
   ExtensionFunction::ResponseAction Run() override;
 
-  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+  void OnSignalRetrieved(base::TimeTicks start_time,
+                         size_t request_items_count,
+                         device_signals::SignalsAggregationResponse response);
 
   device_signals::SignalName signal_name() {
     return device_signals::SignalName::kSystemSettings;
@@ -339,7 +344,8 @@ class EnterpriseReportingPrivateGetAvInfoFunction : public ExtensionFunction {
   // ExtensionFunction
   ExtensionFunction::ResponseAction Run() override;
 
-  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+  void OnSignalRetrieved(base::TimeTicks start_time,
+                         device_signals::SignalsAggregationResponse response);
 
   device_signals::SignalName signal_name() {
     return device_signals::SignalName::kAntiVirus;
@@ -363,7 +369,8 @@ class EnterpriseReportingPrivateGetHotfixesFunction : public ExtensionFunction {
   // ExtensionFunction
   ExtensionFunction::ResponseAction Run() override;
 
-  void OnSignalRetrieved(device_signals::SignalsAggregationResponse response);
+  void OnSignalRetrieved(base::TimeTicks start_time,
+                         device_signals::SignalsAggregationResponse response);
 
   device_signals::SignalName signal_name() {
     return device_signals::SignalName::kHotfixes;

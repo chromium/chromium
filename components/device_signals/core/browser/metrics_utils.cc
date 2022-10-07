@@ -24,6 +24,14 @@ constexpr char kCollectionSuccessHistogram[] =
 constexpr char kCollectionFailureHistogram[] =
     "Enterprise.DeviceSignals.Collection.Failure";
 
+constexpr char kCollectionSuccessLatencyHistogramFormat[] =
+    "Enterprise.DeviceSignals.Collection.Success.%s.Latency";
+constexpr char kCollectionFailureLatencyHistogramFormat[] =
+    "Enterprise.DeviceSignals.Collection.Failure.%s.Latency";
+constexpr char kCollectionRequestItemsSizeHistogramFormat[] =
+    "Enterprise.DeviceSignals.Collection.Request.%s.Items";
+constexpr char kCollectionItemsSizeDeltaHistogramFormat[] =
+    "Enterprise.DeviceSignals.Collection.%s.Delta";
 constexpr char kCollectionSuccessSizeHistogramFormat[] =
     "Enterprise.DeviceSignals.Collection.Success.%s.Items";
 constexpr char kCollectionSpecificFailureHistogramFormat[] =
@@ -58,10 +66,24 @@ void LogSignalCollectionRequested(SignalName signal_name) {
   base::UmaHistogramEnumeration(kCollectionRequestHistogram, signal_name);
 }
 
+void LogSignalCollectionRequestedWithItems(SignalName signal_name,
+                                           size_t number_of_items) {
+  base::UmaHistogramExactLinear(
+      base::StringPrintf(kCollectionRequestItemsSizeHistogramFormat,
+                         GetHistogramVariant(signal_name).c_str()),
+      number_of_items, kMaxSampleValue);
+}
+
 void LogSignalCollectionFailed(SignalName signal_name,
+                               base::TimeTicks start_time,
                                SignalCollectionError error,
                                bool is_top_level_error) {
   base::UmaHistogramEnumeration(kCollectionFailureHistogram, signal_name);
+
+  base::UmaHistogramTimes(
+      base::StringPrintf(kCollectionFailureLatencyHistogramFormat,
+                         GetHistogramVariant(signal_name).c_str()),
+      base::TimeTicks::Now() - start_time);
 
   base::UmaHistogramEnumeration(
       base::StringPrintf(
@@ -70,16 +92,31 @@ void LogSignalCollectionFailed(SignalName signal_name,
       error);
 }
 
-void LogSignalCollectionSucceeded(
-    SignalName signal_name,
-    absl::optional<size_t> signal_collection_size) {
+void LogSignalCollectionSucceeded(SignalName signal_name,
+                                  base::TimeTicks start_time,
+                                  absl::optional<size_t> signal_collection_size,
+                                  absl::optional<size_t> signal_request_size) {
   base::UmaHistogramEnumeration(kCollectionSuccessHistogram, signal_name);
+
+  const std::string histogram_variant = GetHistogramVariant(signal_name);
+  base::UmaHistogramTimes(
+      base::StringPrintf(kCollectionSuccessLatencyHistogramFormat,
+                         histogram_variant.c_str()),
+      base::TimeTicks::Now() - start_time);
 
   if (signal_collection_size.has_value()) {
     base::UmaHistogramExactLinear(
         base::StringPrintf(kCollectionSuccessSizeHistogramFormat,
-                           GetHistogramVariant(signal_name).c_str()),
+                           histogram_variant.c_str()),
         signal_collection_size.value(), kMaxSampleValue);
+
+    if (signal_request_size.has_value()) {
+      base::UmaHistogramExactLinear(
+          base::StringPrintf(kCollectionItemsSizeDeltaHistogramFormat,
+                             histogram_variant.c_str()),
+          signal_request_size.value() - signal_collection_size.value(),
+          kMaxSampleValue);
+    }
   }
 }
 
