@@ -74,7 +74,6 @@ constexpr auto kLacrosAvailabilityMap =
 bool IsUserTypeAllowed(const User* user) {
   switch (user->GetType()) {
     case user_manager::USER_TYPE_REGULAR:
-    case user_manager::USER_TYPE_WEB_KIOSK_APP:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
     // Note: Lacros will not be enabled for Guest users unless LacrosSupport
     // flag is passed in --enable-features. See https://crbug.com/1294051#c25.
@@ -82,6 +81,8 @@ bool IsUserTypeAllowed(const User* user) {
       return true;
     case user_manager::USER_TYPE_CHILD:
       return base::FeatureList::IsEnabled(kLacrosForSupervisedUsers);
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return base::FeatureList::IsEnabled(features::kWebKioskEnableLacros);
     case user_manager::USER_TYPE_KIOSK_APP:
       return base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros);
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
@@ -726,13 +727,11 @@ bool IsLacrosChromeAppsEnabled() {
 
 bool IsLacrosEnabledInWebKioskSession() {
   return user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() &&
-         base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
          IsLacrosEnabled();
 }
 
 bool IsLacrosEnabledInChromeKioskSession() {
   return user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
-         base::FeatureList::IsEnabled(features::kChromeKioskEnableLacros) &&
          IsLacrosEnabled();
 }
 
