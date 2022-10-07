@@ -41,6 +41,8 @@ public class LocationBarLayout extends FrameLayout {
     protected ImageButton mMicButton;
     protected ImageButton mLensButton;
     protected UrlBar mUrlBar;
+    protected View mStatusViewLeftSpace;
+    protected View mStatusViewRightSpace;
 
     protected UrlBarCoordinator mUrlCoordinator;
     protected AutocompleteCoordinator mAutocompleteCoordinator;
@@ -73,6 +75,8 @@ public class LocationBarLayout extends FrameLayout {
         mMicButton = findViewById(R.id.mic_button);
         mLensButton = findViewById(R.id.lens_camera_button);
         mUrlActionContainer = (LinearLayout) findViewById(R.id.url_action_container);
+        mStatusViewLeftSpace = findViewById(R.id.location_bar_status_view_left_space);
+        mStatusViewRightSpace = findViewById(R.id.location_bar_status_view_right_space);
     }
 
     /**
@@ -305,6 +309,51 @@ public class LocationBarLayout extends FrameLayout {
     public int getEndPaddingPixelSizeOnFocusDelta() {
         return getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
                 - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
+    }
+
+    /**
+     * Set the url focus change percent, expand the left and right space besides the status view.
+     *
+     * @param percent The current focus percent.
+     */
+    public void setUrlFocusChangePercent(float percent) {
+        setStatusViewLeftSpacePercent(percent);
+        setStatusViewRightSpacePrecent(percent);
+    }
+
+    /**
+     * Set the status view's left space's width based on current animation progress percent.
+     *
+     * @param percent The animation progress percent.
+     */
+    public void setStatusViewLeftSpacePercent(float percent) {
+        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
+            return;
+        }
+
+        // Set the left space expansion width.
+        ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
+        leftSpacingParams.width = (int) (getResources().getDimensionPixelSize(
+                                                 R.dimen.location_bar_status_view_left_space_width)
+                * percent);
+        mStatusViewLeftSpace.setLayoutParams(leftSpacingParams);
+    }
+
+    /**
+     * Set the status view's right space's width based on current animation progress percent.
+     *
+     * @param percent The animation progress percent.
+     */
+    public void setStatusViewRightSpacePrecent(float percent) {
+        // Status view's right space does not need to expand for tablets.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+            return;
+        }
+
+        // Set the right space expansion width.
+        ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
+        rightSpacingParams.width = (int) (getEndPaddingPixelSizeOnFocusDelta() * percent);
+        mStatusViewRightSpace.setLayoutParams(rightSpacingParams);
     }
 
     public void notifyVoiceRecognitionCanceled() {}

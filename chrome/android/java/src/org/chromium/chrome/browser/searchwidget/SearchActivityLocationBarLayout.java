@@ -73,6 +73,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             }
         }
         setBackground(backgroundDrawable);
+
+        // Expand status view's left and right space to match the expanded interface on the regular
+        // omnibox.
+        setUrlFocusChangePercent(1f);
     }
 
     @Override

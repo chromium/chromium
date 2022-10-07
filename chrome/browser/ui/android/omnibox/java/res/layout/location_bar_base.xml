@@ -11,7 +11,25 @@ found in the LICENSE file.
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    <!-- This space will be expanded when the location bar is focused on phone and tablet
+         form factor. Or its width will be expanded when initialized in search widget location
+         bar on phone form factor.
+    -->
+    <Space android:id="@+id/location_bar_status_view_left_space"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:focusable="false" />
+
     <include layout="@layout/location_status" />
+
+    <!-- This space will be expanded when the location bar is focused on phone form factor.
+         Or its width will be expanded when initialized in search widget location bar on
+         phone form factor
+    -->
+    <Space android:id="@+id/location_bar_status_view_right_space"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:focusable="false" />
 
     <include
         android:layout_width="match_parent"

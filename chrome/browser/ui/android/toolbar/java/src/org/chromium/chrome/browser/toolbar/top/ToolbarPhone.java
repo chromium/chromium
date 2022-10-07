@@ -1062,19 +1062,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         mLocationBar.getPhoneCoordinator().setTranslationX(locationBarTranslationX);
 
-        // When the dse icon is enabled, the UrlBar needs additional translation to compensate for
-        // the additional translation applied to the LocationBar. See comments in
-        // LocationBarCoordinator#getUrlBarTranslationXForToolbarAnimation() and
-        // LocationBarMediator#getUrlBarTranslationXForToolbarAnimation() for implementation
-        // details.
-        if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
-            mUrlBar.setTranslationX(
-                    mLocationBar.getUrlBarTranslationXForToolbarAnimation(mUrlExpansionFraction,
-                            UrlUtilities.isNTPUrl(getToolbarDataProvider().getCurrentGurl())));
-        } else {
-            mUrlBar.setTranslationX(0);
-        }
-
         if (!mOptionalButtonAnimationRunning) {
             mUrlActionContainer.setTranslationX(getUrlActionsTranslationXForExpansionAnimation(
                     isLocationBarRtl, locationBarBaseTranslationX));

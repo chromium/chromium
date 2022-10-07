@@ -362,6 +362,8 @@ class LocationBarMediator
                 mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
             }
 
+            // Add expansion animation for the space besides status view in location bar.
+            mLocationBarLayout.setUrlFocusChangePercent(fraction);
             mStatusCoordinator.setUrlFocusChangePercent(fraction);
         }
     }
