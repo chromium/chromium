@@ -11,6 +11,7 @@
 
 #import "base/check_op.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_gesture_recognizer.h"
@@ -60,11 +61,11 @@ const CGFloat kHorizontalPanDistance = 400.0;
 // if the scrollview is scrolled to top.
 const CGFloat kScrolledToTopToleranceInPoint = 50;
 // The minimum duration between scrolling in order to allow overscroll actions.
-// In seconds.
-const CFTimeInterval kMinimumDurationBetweenScrollingInSeconds = 0.15;
+constexpr base::TimeDelta kMinimumDurationBetweenScrolling =
+    base::Milliseconds(150);
 // The minimum duration that the pull must last in order to trigger an action.
-// In seconds.
-const CFTimeInterval kMinimumPullDurationToTriggerActionInSeconds = 0.2;
+constexpr base::TimeDelta kMinimumPullDurationToTriggerAction =
+    base::Milliseconds(200);
 // Bounce dynamic constants.
 // Since the bounce effect of the scrollview is cancelled by setting the
 // contentInsets to the value of the overscroll contentOffset, the bounce
@@ -145,7 +146,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   SpringInsetState _bounceState;
   NSInteger _overscrollActionLock;
   // The last time the user started scrolling the view.
-  CFTimeInterval _lastScrollBeginTime;
+  base::TimeTicks _lastScrollBeginTime;
   // Set to YES when the bounce animation must be independent of the scrollview
   // contentOffset change.
   // This is done when an action has been triggered. In that case the webview's
@@ -424,7 +425,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
   [self.overscrollActionView pullStarted];
   if (!_performingScrollViewIndependentAnimation)
     _allowPullingActions = [self isOverscrollActionsAllowed];
-  _lastScrollBeginTime = CACurrentMediaTime();
+  _lastScrollBeginTime = base::TimeTicks::Now();
 }
 
 - (BOOL)isOverscrollActionsAllowed {
@@ -435,8 +436,8 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
                                kScrolledToTopToleranceInPoint;
   // Check that the user is not quickly scrolling the view repeatedly.
   const BOOL isMinimumTimeBetweenScrollRespected =
-      (CACurrentMediaTime() - _lastScrollBeginTime) >=
-      kMinimumDurationBetweenScrollingInSeconds;
+      (base::TimeTicks::Now() - _lastScrollBeginTime) >=
+      kMinimumDurationBetweenScrolling;
   // Finally check that the delegate allow overscroll actions.
   const BOOL delegateAllowOverscrollActions = [self.delegate
       shouldAllowOverscrollActionsForOverscrollActionsController:self];
@@ -732,8 +733,8 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
         (isOverscrollStateActionReady && isOverscrollActionNone)) {
       [self recordMetricForTriggeredAction:OverscrollAction::NONE];
     } else if (isOverscrollStateActionReady && !isOverscrollActionNone) {
-      if (CACurrentMediaTime() - _lastScrollBeginTime >=
-          kMinimumPullDurationToTriggerActionInSeconds) {
+      if ((base::TimeTicks::Now() - _lastScrollBeginTime) >=
+          kMinimumPullDurationToTriggerAction) {
         _performingScrollViewIndependentAnimation = YES;
         [self setScrollViewContentInset:TopContentInset(
                                             self.scrollView,

@@ -9,6 +9,8 @@
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/numerics/math_constants.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -120,8 +122,6 @@ enum class OverscrollViewState {
 
 }  // namespace
 
-// Minimum delay to perform the transition to the ready state.
-const CFTimeInterval kMinimumPullDurationToTransitionToReadyInSeconds = 0.25;
 // The brightness of the actions view background color for non incognito mode.
 const CGFloat kActionViewBackgroundColorBrightnessNonIncognito = 242.0 / 256.0;
 // The brightness of the actions view background color for incognito mode.
@@ -149,8 +149,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   // The last vertical offset.
   CGFloat _lastVerticalOffset;
   // Last recorded pull start absolute time.
-  // Unit is in seconds.
-  CFTimeInterval _pullStartTimeInSeconds;
+  base::TimeTicks _pullStartTime;
   // Tap gesture recognizer that allow the user to tap on an action to activate
   // it.
   UITapGestureRecognizer* _tapGesture;
@@ -376,16 +375,15 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)pullStarted {
   _didTransitionToReadyState = NO;
-  _pullStartTimeInSeconds = CACurrentMediaTime();
+  _pullStartTime = base::TimeTicks::Now();
   // Ensure we will update the state after time threshold even without offset
   // change.
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    (kMinimumPullDurationToTransitionToReadyInSeconds + 0.01) *
-                        NSEC_PER_SEC),
-      dispatch_get_main_queue(), ^{
-        [self updateState];
-      });
+  __weak OverscrollActionsView* weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf updateState];
+      }),
+      kMinimumPullDurationToTransitionToReady + base::Milliseconds(10));
 }
 
 - (void)updateWithVerticalOffset:(CGFloat)offset {
@@ -797,10 +795,10 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)updateState {
   if (self.verticalOffset > 1) {
-    const CFTimeInterval elapsedTime =
-        CACurrentMediaTime() - _pullStartTimeInSeconds;
+    const base::TimeDelta elapsedTime =
+        base::TimeTicks::Now() - _pullStartTime;
     const BOOL isMinimumTimeElapsed =
-        elapsedTime >= kMinimumPullDurationToTransitionToReadyInSeconds;
+        elapsedTime >= kMinimumPullDurationToTransitionToReady;
     const BOOL isPullingDownOrAlreadyTriggeredOnce =
         _lastVerticalOffset <= self.verticalOffset ||
         _didTransitionToReadyState;
@@ -988,15 +986,16 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   if (!_viewTouched)
     return;
   __weak OverscrollActionsView* weakSelf = self;
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        OverscrollActionsView* strongSelf = weakSelf;
-        if (strongSelf) {
-          strongSelf->_deformationBehaviorEnabled = YES;
-          strongSelf->_viewTouched = NO;
-        }
-      });
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf clearDirectTouchInteractionAfterDelay];
+      }),
+      base::Milliseconds(100));
+}
+
+- (void)clearDirectTouchInteractionAfterDelay {
+  _deformationBehaviorEnabled = YES;
+  _viewTouched = NO;
 }
 
 - (UILabel*)labelForAction:(OverscrollAction)action {

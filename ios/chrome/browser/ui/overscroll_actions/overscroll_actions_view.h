@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/time/time.h"
+
 // Describes the current Index of an action in the OverScrollActionsView.
 enum class OverscrollAction {
   NONE,       // No action
@@ -24,7 +26,8 @@ enum class OverscrollStyle {
 };
 
 // Minimum delay for the view to perform the transition to the ready state.
-extern const CFTimeInterval kMinimumPullDurationToTransitionToReadyInSeconds;
+constexpr base::TimeDelta kMinimumPullDurationToTransitionToReady =
+    base::Milliseconds(250);
 
 // The brightness of the actions view background color for non incognito mode.
 extern const CGFloat kActionViewBackgroundColorBrightnessNonIncognito;
