@@ -871,42 +871,42 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(*json_value);
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
 
   // Add->Save.
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(1, (int)GetPendingAddActions().size());
+  EXPECT_EQ(1u, GetPendingAddActions().size());
   injector_->OnBindingSave();
-  EXPECT_EQ(3, (int)injector_->actions().size());
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
+  EXPECT_EQ(3u, injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, GetNextActionID());
 
   // Add->Save->Restore->Save. Final result only has default actions.
   injector_->AddNewAction(ActionType::TAP);
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(2, (int)GetPendingAddActions().size());
+  EXPECT_EQ(2u, GetPendingAddActions().size());
   injector_->OnBindingSave();
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
-  EXPECT_EQ(5, (int)injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(5u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 2,
             (injector_->actions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 3, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 4, GetNextActionID());
   injector_->OnBindingRestore();
-  EXPECT_EQ(2, (int)injector_->actions().size());
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
   injector_->OnBindingSave();
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
 
   // Add->Cancel. Nothing is added.
   injector_->AddNewAction(ActionType::TAP);
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(2, (int)GetPendingAddActions().size());
+  EXPECT_EQ(2u, GetPendingAddActions().size());
   injector_->OnBindingCancel();
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
 
   // Add->Cancel->Add->Save. Second "add" is saved.
@@ -915,15 +915,15 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   EXPECT_EQ(kMaxDefaultActionID + 1,
             (GetPendingAddActions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, GetPendingAddActions().back()->id());
-  EXPECT_EQ(2, (int)GetPendingAddActions().size());
+  EXPECT_EQ(2u, GetPendingAddActions().size());
   injector_->OnBindingCancel();
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
-  EXPECT_EQ(2, (int)injector_->actions().size());
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
   injector_->AddNewAction(ActionType::MOVE);
-  EXPECT_EQ(1, (int)GetPendingAddActions().size());
+  EXPECT_EQ(1u, GetPendingAddActions().size());
   injector_->OnBindingSave();
-  EXPECT_EQ(3, (int)injector_->actions().size());
+  EXPECT_EQ(3u, injector_->actions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, GetNextActionID());
   // Reset.
@@ -934,20 +934,20 @@ TEST_F(TouchInjectorTest, TestAddAction) {
   injector_->AddNewAction(ActionType::MOVE);
   injector_->AddNewAction(ActionType::TAP);
   injector_->OnBindingSave();
-  EXPECT_EQ(4, (int)injector_->actions().size());
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
+  EXPECT_EQ(4u, injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1,
             (injector_->actions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, injector_->actions().back()->id());
   EXPECT_EQ(kMaxDefaultActionID + 3, GetNextActionID());
   injector_->OnBindingRestore();
-  EXPECT_EQ(2, (int)injector_->actions().size());
-  EXPECT_EQ(2, (int)GetPendingDeleteActions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
+  EXPECT_EQ(2u, GetPendingDeleteActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1, GetNextActionID());
   injector_->OnBindingCancel();
-  EXPECT_EQ(4, (int)injector_->actions().size());
-  EXPECT_EQ(0, (int)GetPendingAddActions().size());
-  EXPECT_EQ(0, (int)GetPendingDeleteActions().size());
+  EXPECT_EQ(4u, injector_->actions().size());
+  EXPECT_EQ(0u, GetPendingAddActions().size());
+  EXPECT_EQ(0u, GetPendingDeleteActions().size());
   EXPECT_EQ(kMaxDefaultActionID + 1,
             (injector_->actions().rbegin() + 1)->get()->id());
   EXPECT_EQ(kMaxDefaultActionID + 2, injector_->actions().back()->id());

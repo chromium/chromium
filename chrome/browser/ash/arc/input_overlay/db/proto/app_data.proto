@@ -55,7 +55,7 @@ message PositionProto {
 
 message ActionProto {
   // Action ID. Each action has a unique ID within the game/app.
-  required uint32 id = 1;
+  required int32 id = 1;
   // Input Element. Customized input binding for this action.
   optional InputElementProto input_element = 2;
   // Customized Positions for this action. Now it only saves one position. Use
