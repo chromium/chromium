@@ -108,6 +108,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
         gfx::Range(offset, offset + folder_name.length()), style_info);
   }
   SetMainImage(std::move(image_model));
+  body_label_->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 PriceTrackingBubbleDialogView::~PriceTrackingBubbleDialogView() = default;

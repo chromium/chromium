@@ -64,6 +64,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE),
           views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   // Body label
   body_label_ = text_container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
@@ -74,6 +75,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   body_label_->SetAllowCharacterBreak(true);
   body_label_->SetMultiLine(true);
   body_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  body_label_->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   AddChildView(std::move(text_container));
 
   // Toggle button column
