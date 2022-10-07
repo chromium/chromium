@@ -54,4 +54,8 @@ fuzzer_test("first_party_sets_overrides_policy_handler_fuzzer") {
     "//testing/libfuzzer/proto:json_proto_converter",
     "//third_party/libprotobuf-mutator",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/cros_disks" ]
+  }
 }
