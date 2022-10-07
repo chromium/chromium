@@ -68,6 +68,7 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
 }
 
 void SVGResources::UpdateEffects(LayoutObject& object,
+                                 StyleDifference diff,
                                  const ComputedStyle* old_style) {
   const bool had_client = GetClient(object);
   const ComputedStyle& style = object.StyleRef();
@@ -75,14 +76,16 @@ void SVGResources::UpdateEffects(LayoutObject& object,
           DynamicTo<ReferenceClipPathOperation>(style.ClipPath())) {
     reference_clip->AddClient(EnsureClient(object));
   }
-  if (style.HasFilter()) {
-    SVGElementResourceClient& client = EnsureClient(object);
-    style.Filter().AddClient(client);
-    object.SetNeedsPaintPropertyUpdate();
-    client.MarkFilterDataDirty();
-  }
+  if (style.HasFilter())
+    style.Filter().AddClient(EnsureClient(object));
   if (StyleSVGResource* masker_resource = style.MaskerResource())
     masker_resource->AddClient(EnsureClient(object));
+  if (diff.FilterChanged()) {
+    // We either created one above, or had one already.
+    DCHECK(GetClient(object));
+    object.SetNeedsPaintPropertyUpdate();
+    GetClient(object)->MarkFilterDataDirty();
+  }
   if (!old_style || !had_client)
     return;
   SVGElementResourceClient* client = GetClient(object);
@@ -90,10 +93,8 @@ void SVGResources::UpdateEffects(LayoutObject& object,
           DynamicTo<ReferenceClipPathOperation>(old_style->ClipPath())) {
     old_reference_clip->RemoveClient(*client);
   }
-  if (old_style->HasFilter()) {
+  if (old_style->HasFilter())
     old_style->Filter().RemoveClient(*client);
-    client->InvalidateFilterData();
-  }
   if (StyleSVGResource* masker_resource = old_style->MaskerResource())
     masker_resource->RemoveClient(*client);
 }

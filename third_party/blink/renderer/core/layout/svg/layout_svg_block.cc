@@ -126,7 +126,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  SVGResources::UpdateEffects(*this, old_style);
+  SVGResources::UpdateEffects(*this, diff, old_style);
 
   if (!Parent())
     return;

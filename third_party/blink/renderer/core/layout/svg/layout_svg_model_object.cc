@@ -144,7 +144,7 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   SetHasTransformRelatedProperty(
       StyleRef().HasTransformRelatedPropertyForSVG());
 
-  SVGResources::UpdateEffects(*this, old_style);
+  SVGResources::UpdateEffects(*this, diff, old_style);
 
   if (!Parent())
     return;

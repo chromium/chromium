@@ -364,7 +364,7 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
 
-  SVGResources::UpdateEffects(*this, old_style);
+  SVGResources::UpdateEffects(*this, diff, old_style);
 
   if (diff.TransformChanged()) {
     for (auto& svg_text : text_set_) {

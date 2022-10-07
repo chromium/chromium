@@ -202,7 +202,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout())
     SetNeedsBoundariesUpdate();
 
-  SVGResources::UpdateEffects(*this, old_style);
+  SVGResources::UpdateEffects(*this, diff, old_style);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
   if (!Parent())
