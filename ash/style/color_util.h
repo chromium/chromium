@@ -24,7 +24,7 @@ class ASH_EXPORT ColorUtil {
   // Returns the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper
   // prominent color + SK_ColorBLACK 50%. For light mode, it will be light
-  // muted wallpaper prominent color + SK_ColorWHITE 75%. Extracts the color on
+  // muted wallpaper prominent color + SK_ColorWHITE 50%. Extracts the color on
   // dark mode if `use_dark_color` is true.
   static SkColor GetBackgroundThemedColor(SkColor default_color,
                                           bool use_dark_color);
