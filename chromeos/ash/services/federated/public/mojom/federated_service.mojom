@@ -22,7 +22,11 @@ interface FederatedService {
 
   // Stores `example` in cryptohome-backed storage for use during future
   // scheduled federated analytics or ML model training, identified by
-  // `client_id`.
+  // `client_name`.
   // Examples are deleted when they are used for federated analytics/training.
   ReportExample@1(string client_name, Example example);
+
+  // Starts scheduling federated training tasks if they are not scheduled yet,
+  // otherwise does nothing.
+  StartScheduling@2();
 };

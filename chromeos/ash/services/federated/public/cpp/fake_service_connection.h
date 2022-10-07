@@ -39,6 +39,7 @@ class FakeServiceConnectionImpl
                  receiver) override;
   void ReportExample(const std::string& client_name,
                      chromeos::federated::mojom::ExamplePtr example) override;
+  void StartScheduling() override;
 
  private:
   mojo::ReceiverSet<chromeos::federated::mojom::FederatedService> receivers_;

@@ -29,5 +29,9 @@ void FakeServiceConnectionImpl::ReportExample(
   return;
 }
 
+void FakeServiceConnectionImpl::StartScheduling() {
+  return;
+}
+
 }  // namespace federated
 }  // namespace ash
