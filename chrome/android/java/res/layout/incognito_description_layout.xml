@@ -98,6 +98,7 @@ found in the LICENSE file.
             android:layout_centerVertical="true"
             android:theme="@style/SwitchMaterialDark"
             android:layout_alignParentEnd="true"
+            android:contentDescription="@string/new_tab_otr_third_party_cookie"
             app:showText="false" />
 
         <org.chromium.ui.widget.TextViewWithLeading
