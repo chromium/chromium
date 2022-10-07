@@ -24,7 +24,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
-#include "services/accessibility/buildflags.h"
 #include "services/audio/service_factory.h"
 #include "services/data_decoder/data_decoder_service.h"
 #include "services/network/network_service.h"
@@ -92,15 +91,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/accessibility/accessibility_service_cros.h"  // nogncheck
-#elif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "services/accessibility/accessibility_service_chrome.h"  // nogncheck
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"  // nogncheck
 #include "ui/accessibility/accessibility_features.h"
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 
@@ -254,16 +249,12 @@ auto RunDataDecoder(
       std::move(receiver));
 }
 
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunAccessibilityService(
     mojo::PendingReceiver<ax::mojom::AccessibilityService> receiver) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<ax::AccessibilityServiceCros>(std::move(receiver));
-#elif   // !BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<ax::AccessibilityServiceChrome>(std::move(reciver));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
 std::unique_ptr<media::MediaFoundationServiceBroker>
@@ -370,10 +361,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 
-#if BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (::features::IsAccessibilityServiceEnabled())
     services.Add(RunAccessibilityService);
-#endif  // BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Add new main-thread services above this line.
   GetContentClient()->utility()->RegisterMainThreadServices(services);

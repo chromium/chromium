@@ -1,14 +1,7 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//services/accessibility/buildflags.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_ACCESSIBILITY_SERVICE=$enable_accessibility_service" ]
-}
 
 source_set("lib") {
   sources = [

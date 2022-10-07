@@ -9,7 +9,6 @@ import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
-import("//services/accessibility/buildflags.gni")
 
 source_set("utility") {
   # Only the public target should depend on this. All other targets (even
@@ -57,7 +56,6 @@ source_set("utility") {
     "//net",
     "//printing/buildflags",
     "//sandbox",
-    "//services/accessibility:buildflags",
     "//services/audio",
     "//services/data_decoder:lib",
     "//services/data_decoder/public/cpp",
@@ -89,6 +87,7 @@ source_set("utility") {
       "//ash/services/ime:sandbox_hook",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/services/tts:sandbox_hook",
+      "//services/accessibility:lib",
     ]
     if (use_vaapi || use_v4l2_codec) {
       deps += [ "//ash/components/arc/video_accelerator" ]
@@ -139,10 +138,6 @@ source_set("utility") {
 
   if (is_linux || is_chromeos) {
     deps += [ "//components/services/screen_ai:screen_ai_sandbox_hook" ]
-  }
-
-  if (enable_accessibility_service) {
-    deps += [ "//services/accessibility:lib" ]
   }
 
   if (enable_vr && !is_android) {
