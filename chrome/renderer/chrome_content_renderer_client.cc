@@ -1602,15 +1602,21 @@ void ChromeContentRendererClient::
     blink::WebRuntimeFeatures::EnablePrerender2RelatedFeatures(true);
   }
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
-  // WebHID on service workers is only available in extension for now with
-  // feature enabled.
-  if (IsStandaloneContentExtensionProcess() &&
-      base::FeatureList::IsEnabled(
-          features::kEnableWebHidOnExtensionServiceWorker)) {
-    blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // WebHID and WebUSB on service workers is only available in extensions.
+  if (IsStandaloneContentExtensionProcess()) {
+    if (base::FeatureList::IsEnabled(
+            features::kEnableWebUsbOnExtensionServiceWorker)) {
+      blink::WebRuntimeFeatures::EnableWebUSBOnServiceWorkers(true);
+    }
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kEnableWebHidOnExtensionServiceWorker)) {
+      blink::WebRuntimeFeatures::EnableWebHIDOnServiceWorkers(true);
+    }
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 bool ChromeContentRendererClient::AllowScriptExtensionForServiceWorker(

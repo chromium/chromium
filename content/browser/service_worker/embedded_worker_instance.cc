@@ -34,11 +34,13 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/usb/web_usb_service_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/url_schemes.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/hid_delegate.h"
+#include "content/public/browser/usb_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
@@ -777,11 +779,6 @@ void EmbeddedWorkerInstance::BindHidService(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* rph = static_cast<RenderProcessHostImpl*>(
-      RenderProcessHost::FromID(process_id()));
-  if (!rph)
-    return;
-
   HidDelegate* hid_delegate = GetContentClient()->browser()->GetHidDelegate();
   if (!hid_delegate) {
     return;
@@ -791,6 +788,19 @@ void EmbeddedWorkerInstance::BindHidService(
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void EmbeddedWorkerInstance::BindUsbService(
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  UsbDelegate* usb_delegate = GetContentClient()->browser()->GetUsbDelegate();
+  if (!usb_delegate) {
+    return;
+  }
+  if (usb_delegate->IsServiceWorkerAllowedForOrigin(origin)) {
+    WebUsbServiceImpl::Create(context_, origin, std::move(receiver));
+  }
+}
 
 base::WeakPtr<EmbeddedWorkerInstance> EmbeddedWorkerInstance::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

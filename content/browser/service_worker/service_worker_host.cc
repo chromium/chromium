@@ -106,6 +106,13 @@ void ServiceWorkerHost::BindHidService(
 }
 #endif
 
+void ServiceWorkerHost::BindUsbService(
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindUsbService(version_->key().origin(),
+                                              std::move(receiver));
+}
+
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
   // top-level browsing context, which shouldn't be use for ServiceWorkers used

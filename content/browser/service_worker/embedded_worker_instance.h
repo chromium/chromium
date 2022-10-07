@@ -38,6 +38,7 @@
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "url/gurl.h"
 
@@ -236,6 +237,10 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void BindHidService(const url::Origin& origin,
                       mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  void BindUsbService(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
   base::WeakPtr<EmbeddedWorkerInstance> AsWeakPtr();
 

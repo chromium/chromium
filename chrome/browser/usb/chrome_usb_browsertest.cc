@@ -43,15 +43,25 @@
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
+using ::base::test::TestFuture;
 using ::testing::Return;
 
 constexpr char kIsolatedAppHost[] = "app.com";
@@ -69,6 +79,11 @@ constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
       return e.message;
     }
   })();)";
+
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
+const AccountId kManagedUserAccountId =
+    AccountId::FromUserEmail("example@example.com");
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 class FakeChooserView : public permissions::ChooserController::View {
  public:
@@ -909,5 +924,199 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppPermissionsPolicyBrowserTest,
 
   EXPECT_EQ("Success", EvalJs(iframe, OpenAndClaimDeviceScript));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Base Test fixture with kEnableWebUsbOnExtensionServiceWorker default
+// disabled.
+class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
+ public:
+  WebUsbExtensionBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+
+    mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
+    device_manager_.AddReceiver(
+        device_manager.InitWithNewPipeAndPassReceiver());
+
+    // Connect the UsbDeviceManager and ensure we've received the initial
+    // enumeration before continuing.
+    auto* chooser_context = UsbChooserContextFactory::GetForProfile(profile());
+    chooser_context->SetDeviceManagerForTesting(std::move(device_manager));
+    TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> devices_future;
+    chooser_context->GetDevices(devices_future.GetCallback());
+    ASSERT_TRUE(devices_future.Get().empty());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Create a user account affiliated with the machine owner.
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    fake_user_manager->AddUserWithAffiliation(kManagedUserAccountId, true);
+    fake_user_manager->LoginUser(kManagedUserAccountId);
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Explicitly removing the user is required; otherwise ProfileHelper keeps
+    // a dangling pointer to the User.
+    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
+    // destructor of ash::FakeChromeUserManager.
+    GetFakeUserManager()->RemoveUserFromList(kManagedUserAccountId);
+    scoped_user_manager_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  void SetUpPolicy(const extensions::Extension* extension) {
+    // Define a policy to automatically grant permission to access the device
+    // created by AddFakeDevice.
+    constexpr char kPolicyTemplate[] = R"(
+        [
+          {
+            "devices": [{ "vendor_id": 1234, "product_id": 5678 }],
+            "urls": ["%s"]
+          }
+        ])";
+    profile()->GetPrefs()->Set(
+        prefs::kManagedWebUsbAllowDevicesForUrls,
+        base::test::ParseJson(base::StringPrintf(
+            kPolicyTemplate, extension->url().spec().c_str())));
+  }
+
+  void LoadExtensionAndRunTest(base::StringPiece background_js) {
+    constexpr char kManifestTemplate[] =
+        R"({
+              "name": "Test Extension",
+              "version": "0.1",
+              "manifest_version": 3,
+              "background": {
+                "service_worker": "%s"
+              }
+            })";
+
+    extensions::TestExtensionDir test_dir;
+    test_dir.WriteManifest(
+        base::StringPrintf(kManifestTemplate, "background.js"));
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
+
+    // Launch the test app.
+    ExtensionTestMessageListener ready_listener("ready",
+                                                ReplyBehavior::kWillReply);
+    extensions::ResultCatcher result_catcher;
+    const extensions::Extension* extension =
+        LoadExtension(test_dir.UnpackedPath());
+
+    // TODO(crbug.com/1336400): Grant permission using requestDevice().
+    // Run the test.
+    SetUpPolicy(extension);
+    EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
+    ready_listener.Reply("ok");
+    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  }
+
+  void AddFakeDevice() {
+    device_manager_.CreateAndAddDevice(1234, 5678, "Test Manufacturer",
+                                       "Test Device", "123456");
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  device::FakeUsbDeviceManager device_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+};
+
+// Test fixture with kEnableWebUsbOnExtensionServiceWorker enabled.
+class WebUsbExtensionFeatureEnabledBrowserTest
+    : public WebUsbExtensionBrowserTest {
+ public:
+  WebUsbExtensionFeatureEnabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableWebUsbOnExtensionServiceWorker}, {});
+  }
+};
+
+// Test fixture with kEnableWebUsbOnExtensionServiceWorker disabled.
+class WebUsbExtensionFeatureDisabledBrowserTest
+    : public WebUsbExtensionBrowserTest {
+ public:
+  WebUsbExtensionFeatureDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kEnableWebUsbOnExtensionServiceWorker});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, FeatureDefaultDisabled) {
+  constexpr base::StringPiece kBackgroundJs = R"(
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        chrome.test.assertEq(navigator.usb, undefined);
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureDisabledBrowserTest,
+                       FeatureDisabled) {
+  constexpr base::StringPiece kBackgroundJs = R"(
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        chrome.test.assertEq(navigator.usb, undefined);
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest, GetDevices) {
+  constexpr base::StringPiece kBackgroundJs = R"(
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        const devices = await navigator.usb.getDevices();
+        chrome.test.assertEq(1, devices.length);
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  AddFakeDevice();
+  LoadExtensionAndRunTest(kBackgroundJs);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionFeatureEnabledBrowserTest,
+                       RequestDevice) {
+  constexpr base::StringPiece kBackgroundJs = R"(
+    chrome.test.sendMessage("ready", async () => {
+      try {
+        chrome.test.assertEq(navigator.usb.requestDevice, undefined);
+        chrome.test.notifyPass();
+      } catch (e) {
+        chrome.test.fail(e.name + ':' + e.message);
+      }
+    });
+  )";
+  LoadExtensionAndRunTest(kBackgroundJs);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace

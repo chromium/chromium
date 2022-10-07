@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
@@ -92,6 +93,9 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
 #if !BUILDFLAG(IS_ANDROID)
   void BindHidService(mojo::PendingReceiver<blink::mojom::HidService> receiver);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  void BindUsbService(
+      mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
   content::ServiceWorkerContainerHost* container_host() {
     return container_host_.get();

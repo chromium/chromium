@@ -333,16 +333,19 @@ void USB::EnsureServiceConnection() {
 
 bool USB::IsContextSupported() const {
   // Since WebUSB on Web Workers is in the process of being implemented, we
-  // check here if the runtime flag for the appropriate worker is enabled..
+  // check here if the runtime flag for the appropriate worker is enabled.
   // TODO(https://crbug.com/837406): Remove this check once the feature has
   // shipped.
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return false;
 
-  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope());
+  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope() ||
+         context->IsServiceWorkerGlobalScope());
   DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
          RuntimeEnabledFeatures::WebUSBOnDedicatedWorkersEnabled());
+  DCHECK(!context->IsServiceWorkerGlobalScope() ||
+         RuntimeEnabledFeatures::WebUSBOnServiceWorkersEnabled());
 
   return true;
 }
