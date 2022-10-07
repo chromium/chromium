@@ -16,6 +16,7 @@ import {assert} from '//resources/js/assert_ts.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
@@ -839,18 +840,23 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   }
 
   canDisableLanguage(languageState: LanguageState): boolean {
+    // <if expr="is_win">
     // Cannot disable the prospective UI language.
     if (languageState.language.code === this.languages!.prospectiveUILanguage) {
       return false;
     }
+    // </if>
 
     // Cannot disable the only enabled language.
     if (this.languages!.enabled.length === 1) {
       return false;
     }
 
+    // In the Detailed Language Settings the Translate Blocked list should not
+    // affect the disabled status of Preferred Languages.
     // Cannot disable the last translate blocked language.
-    if (this.isOnlyTranslateBlockedLanguage(languageState)) {
+    if (!loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings') &&
+        this.isOnlyTranslateBlockedLanguage(languageState)) {
       return false;
     }
 

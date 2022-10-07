@@ -493,8 +493,10 @@ suite('languages page', function() {
       item.querySelector('cr-icon-button')!.click();
 
       assertTrue(actionMenu.open);
-      const removeMenuItem = getMenuItem('removeLanguage');
-      assertTrue(removeMenuItem.hidden);
+      const removeMenuItem = getMenuItem<HTMLButtonElement>('removeLanguage');
+      // Remove button should be disabled
+      assertFalse(removeMenuItem.hidden);
+      assertTrue(removeMenuItem.disabled);
     });
 
     test('remove language when starting with 2 languages', function() {
