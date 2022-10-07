@@ -4462,7 +4462,7 @@ Press an assigned switch or key to remove assignment.
     Hide notification content when someone else is detected
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_TITLE" desc="Text on the privacy page that opens up the privacy hub section.">
-    Privacy Hub
+    Privacy controls
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_HARDWARE_TOGGLE_ACTIVE_SUBTEXT" desc="Sub-label on the privacy page that indicates that the hardware camera toggle is active.">
     Internal camera deactivated by hardware switch
