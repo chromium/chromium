@@ -51,8 +51,8 @@ class NetworkAnonymizationKeyTest
       public testing::WithParamInterface<EnabledFeatureFlagsTestingParam> {
  public:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features = {};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     if (IsDoubleKeyNetworkIsolationKeyEnabled()) {
       enabled_features.push_back(

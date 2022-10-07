@@ -17,7 +17,7 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
 
   // Triple keyed NIK and NAK.
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> disabled_features_1 = {};
+  std::vector<base::test::FeatureRef> disabled_features_1 = {};
   disabled_features_1.push_back(
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
   disabled_features_1.push_back(
@@ -57,8 +57,8 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
 
   // Double key NIK and triple key NAK.
   scoped_feature_list_.Reset();
-  std::vector<base::Feature> enabled_features_2 = {};
-  std::vector<base::Feature> disabled_features_2 = {};
+  std::vector<base::test::FeatureRef> enabled_features_2 = {};
+  std::vector<base::test::FeatureRef> disabled_features_2 = {};
   enabled_features_2.push_back(
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
   disabled_features_2.push_back(
@@ -74,8 +74,8 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
 
   // Triple key NIK and double key NAK.
   scoped_feature_list_.Reset();
-  std::vector<base::Feature> enabled_features_3 = {};
-  std::vector<base::Feature> disabled_features_3 = {};
+  std::vector<base::test::FeatureRef> enabled_features_3 = {};
+  std::vector<base::test::FeatureRef> disabled_features_3 = {};
   disabled_features_3.push_back(
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
   enabled_features_3.push_back(
@@ -90,8 +90,8 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
 
   // Triple key NIK and double key with cross site flag NAK.
   scoped_feature_list_.Reset();
-  std::vector<base::Feature> enabled_features_4 = {};
-  std::vector<base::Feature> disabled_features_4 = {};
+  std::vector<base::test::FeatureRef> enabled_features_4 = {};
+  std::vector<base::test::FeatureRef> disabled_features_4 = {};
   disabled_features_3.push_back(
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
   enabled_features_3.push_back(

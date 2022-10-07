@@ -19,8 +19,8 @@ namespace mojo {
 TEST(NetworkAnonymizationKeyMojomTraitsTest, SerializeAndDeserializeTripleKey) {
   // Enable triple keying.
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -61,9 +61,9 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest, SerializeAndDeserializeTripleKey) {
 TEST(NetworkAnonymizationKeyMojomTraitsTest, SerializeAndDeserializeDoubleKey) {
   // Enable double keying.
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -90,9 +90,9 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest,
      DISABLED_SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
   // Enable double keying with cross site flag.
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

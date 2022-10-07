@@ -20165,7 +20165,7 @@ class HttpNetworkTransactionReportingTest
       public ::testing::WithParamInterface<bool> {
  protected:
   HttpNetworkTransactionReportingTest() {
-    std::vector<base::Feature> required_features = {
+    std::vector<base::test::FeatureRef> required_features = {
         features::kPartitionNelAndReportingByNetworkIsolationKey};
     if (UseDocumentReporting()) {
       required_features.push_back(features::kDocumentReporting);

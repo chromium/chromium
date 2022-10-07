@@ -632,7 +632,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
 }
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
-  auto FindProviderFeature = [](base::StringPiece provider) -> base::Feature {
+  auto FindProviderFeature =
+      [](base::StringPiece provider) -> base::test::FeatureRef {
     const auto it =
         base::ranges::find(net::DohProviderEntry::GetList(), provider,
                            &net::DohProviderEntry::provider);

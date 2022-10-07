@@ -13089,8 +13089,8 @@ TEST_F(URLRequestTest, SetURLChain) {
 
 TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
@@ -13150,10 +13150,10 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikTripleNak) {
 
 TEST_F(URLRequestTest, SetIsolationInfoFromNakDoubleNikDoubleNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
@@ -13208,9 +13208,9 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakDoubleNikDoubleNak) {
 
 TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikDoubleNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -13270,10 +13270,10 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikDoubleNak) {
 TEST_F(URLRequestTest,
        SetIsolationInfoFromNakTripleNikDoubleWithCrossSiteFlagNak) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::vector<base::Feature> enabled_features = {
+  std::vector<base::test::FeatureRef> enabled_features = {
       net::features::kEnableDoubleKeyNetworkAnonymizationKey,
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey};
-  std::vector<base::Feature> disabled_features = {
+  std::vector<base::test::FeatureRef> disabled_features = {
       net::features::kForceIsolationInfoFrameOriginToTopLevelFrame};
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 

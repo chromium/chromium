@@ -68,8 +68,8 @@ class IsolationInfoTest : public testing::Test,
                               IsolationInfoEnabledFeatureFlagsTestingParam> {
  public:
   IsolationInfoTest() {
-    std::vector<base::Feature> enabled_features = {};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     if (IsDoubleKeyIsolationInfoEnabled()) {
       enabled_features.push_back(
