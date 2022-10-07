@@ -12,7 +12,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/gestures/layout_switcher.h"
 #import "ios/chrome/browser/ui/gestures/pan_handler_scroll_view.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
