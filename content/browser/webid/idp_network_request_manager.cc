@@ -317,6 +317,7 @@ void OnDownloadedJson(
 
 void OnManifestListParsed(
     IdpNetworkRequestManager::FetchManifestListCallback callback,
+    const GURL& manifest_list_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
   if (callback.IsCancelled())
@@ -342,13 +343,17 @@ void OnManifestListParsed(
   }
 
   for (const auto& value : *list) {
-    const std::string* url = value.GetIfString();
-    if (!url) {
+    const std::string* url_str = value.GetIfString();
+    if (!url_str) {
       std::move(callback).Run(FetchStatus::kInvalidResponseError,
                               std::set<GURL>());
       return;
     }
-    urls.insert(GURL(*url));
+    GURL url(*url_str);
+    if (!url.is_valid()) {
+      url = manifest_list_url.Resolve(*url_str);
+    }
+    urls.insert(url);
   }
 
   std::move(callback).Run(FetchStatus::kSuccess, urls);
@@ -544,6 +549,7 @@ void IdpNetworkRequestManager::FetchManifestList(
   if (!manifest_list_url) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&OnManifestListParsed, std::move(callback),
+                                  /*manifest_list_url=*/GURL(),
                                   FetchStatus::kHttpNotFoundError,
                                   data_decoder::DataDecoder::ValueOrError()));
     return;
@@ -553,11 +559,11 @@ void IdpNetworkRequestManager::FetchManifestList(
       CreateUncredentialedResourceRequest(*manifest_list_url,
                                           /*send_referrer=*/false,
                                           /* follow_redirects= */ true);
-  DownloadJsonAndParse(
-      std::move(resource_request),
-      /*url_encoded_post_data=*/absl::nullopt,
-      base::BindOnce(&OnManifestListParsed, std::move(callback)),
-      maxResponseSizeInKiB * 1024);
+  DownloadJsonAndParse(std::move(resource_request),
+                       /*url_encoded_post_data=*/absl::nullopt,
+                       base::BindOnce(&OnManifestListParsed,
+                                      std::move(callback), *manifest_list_url),
+                       maxResponseSizeInKiB * 1024);
 }
 
 void IdpNetworkRequestManager::FetchManifest(

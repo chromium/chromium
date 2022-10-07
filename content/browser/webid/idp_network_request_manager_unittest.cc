@@ -543,6 +543,20 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
   "provider_urls": [1]
   })");
   EXPECT_EQ(FetchStatus::kInvalidResponseError, fetch_status);
+
+  // Relative URLs
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "provider_urls": ["/fedcm.json"]
+  })");
+  EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")}, urls);
+
+  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  "provider_urls": ["fedcm.json"]
+  })");
+  EXPECT_EQ(FetchStatus::kSuccess, fetch_status);
+  EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/.well-known/fedcm.json")},
+            urls);
 }
 
 // Test that the "alpha" value in the "branding" JSON is ignored.
