@@ -10,7 +10,7 @@
 @class AppState;
 
 // The main delegate of the application.
-@interface MainApplicationDelegate : NSObject<UIApplicationDelegate>
+@interface MainApplicationDelegate : UIResponder <UIApplicationDelegate>
 
 // Handles the application stage changes.
 @property(nonatomic, strong) AppState* appState;

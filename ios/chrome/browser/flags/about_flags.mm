@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
@@ -1244,6 +1245,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppStoreRatingIgnoreEligibilityCheckTestDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppStoreRatingIgnoreEligibilityCheckTest)},
+    {"keyboard-shortcuts-menu", flag_descriptions::kKeyboardShortcutsMenuName,
+     flag_descriptions::kKeyboardShortcutsMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kKeyboardShortcutsMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

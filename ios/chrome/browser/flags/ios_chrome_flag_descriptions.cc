@@ -443,6 +443,10 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
+const char kKeyboardShortcutsMenuName[] = "Keyboard Shortcuts Menu";
+const char kKeyboardShortcutsMenuDescription[] =
+    "Enables the new keyboard shortcuts menu.";
+
 const char kLockBottomToolbarName[] = "Lock bottom toolbar";
 const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "

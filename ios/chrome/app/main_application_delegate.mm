@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/ui/keyboard/features.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -369,6 +370,16 @@ const int kMainIntentCheckDelay = 1;
     [_appState application:[UIApplication sharedApplication]
         didDiscardSceneSessions:_sceneSessionsToDiscard];
     _sceneSessionsToDiscard = nil;
+  }
+}
+
+#pragma mark - UIResponder methods
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  [super buildMenuWithBuilder:builder];
+
+  if (IsKeyboardShortcutsMenuEnabled()) {
+    // TODO(crbug.com/1371848): Build the menu.
   }
 }
 
