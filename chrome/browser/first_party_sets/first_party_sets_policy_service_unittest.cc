@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
@@ -48,6 +49,7 @@ class FirstPartySetsPolicyServiceTest : public testing::Test {
   }
 
   void SetUp() override {
+    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
     mock_delegate_receiver_.Bind(
         mock_delegate_remote_.BindNewPipeAndPassReceiver());
 
