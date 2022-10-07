@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -50,8 +51,10 @@ struct RenderPrintedPageData {
 #endif
 
 PrintBackendServiceTestImpl::PrintBackendServiceTestImpl(
-    mojo::PendingReceiver<mojom::PrintBackendService> receiver)
-    : PrintBackendServiceImpl(std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::PrintBackendService> receiver,
+    scoped_refptr<TestPrintBackend> backend)
+    : PrintBackendServiceImpl(std::move(receiver)),
+      test_print_backend_(std::move(backend)) {}
 
 PrintBackendServiceTestImpl::~PrintBackendServiceTestImpl() = default;
 
@@ -161,16 +164,6 @@ void PrintBackendServiceTestImpl::RenderPrintedPage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// static
-std::unique_ptr<PrintBackendServiceTestImpl>
-PrintBackendServiceTestImpl::LaunchUninitialized(
-    mojo::Remote<mojom::PrintBackendService>& remote) {
-  // Launch the service running locally in-process.
-  mojo::PendingReceiver<mojom::PrintBackendService> receiver =
-      remote.BindNewPipeAndPassReceiver();
-  return std::make_unique<PrintBackendServiceTestImpl>(std::move(receiver));
-}
-
 void PrintBackendServiceTestImpl::TerminateConnection() {
   DLOG(ERROR) << "Terminating print backend service test connection";
   receiver_.reset();
@@ -182,11 +175,12 @@ PrintBackendServiceTestImpl::LaunchForTesting(
     mojo::Remote<mojom::PrintBackendService>& remote,
     scoped_refptr<TestPrintBackend> backend,
     bool sandboxed) {
-  std::unique_ptr<PrintBackendServiceTestImpl> service =
-      LaunchUninitialized(remote);
+  mojo::PendingReceiver<mojom::PrintBackendService> receiver =
+      remote.BindNewPipeAndPassReceiver();
 
-  // Do the common initialization using the testing print backend.
-  service->test_print_backend_ = backend;
+  // Private ctor.
+  auto service = base::WrapUnique(
+      new PrintBackendServiceTestImpl(std::move(receiver), std::move(backend)));
   service->Init(/*locale=*/std::string());
 
   // Register this test version of print backend service to be used instead of

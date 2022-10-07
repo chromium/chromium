@@ -41,8 +41,14 @@ struct RenderPrintedPageData;
 // printer drivers.
 class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
  public:
-  explicit PrintBackendServiceTestImpl(
-      mojo::PendingReceiver<mojom::PrintBackendService> receiver);
+  // Launch the service in-process for testing using the provided backend.
+  // `sandboxed` identifies if this service is potentially subject to
+  // experiencing access-denied errors on some commands.
+  static std::unique_ptr<PrintBackendServiceTestImpl> LaunchForTesting(
+      mojo::Remote<mojom::PrintBackendService>& remote,
+      scoped_refptr<TestPrintBackend> backend,
+      bool sandboxed);
+
   PrintBackendServiceTestImpl(const PrintBackendServiceTestImpl&) = delete;
   PrintBackendServiceTestImpl& operator=(const PrintBackendServiceTestImpl&) =
       delete;
@@ -94,18 +100,11 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
   }
 #endif
 
-  // Launch the service in-process for testing using the provided backend.
-  // `sandboxed` identifies if this service is potentially subject to
-  // experiencing access-denied errors on some commands.
-  static std::unique_ptr<PrintBackendServiceTestImpl> LaunchForTesting(
-      mojo::Remote<mojom::PrintBackendService>& remote,
-      scoped_refptr<TestPrintBackend> backend,
-      bool sandboxed);
-
  private:
-  // Launch the service in-process for testing without initializing backend.
-  static std::unique_ptr<PrintBackendServiceTestImpl> LaunchUninitialized(
-      mojo::Remote<mojom::PrintBackendService>& remote);
+  // Use LaunchForTesting().
+  PrintBackendServiceTestImpl(
+      mojo::PendingReceiver<mojom::PrintBackendService> receiver,
+      scoped_refptr<TestPrintBackend> backend);
 
   void OnDidGetDefaultPrinterName(
       mojom::PrintBackendService::GetDefaultPrinterNameCallback callback,
