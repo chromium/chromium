@@ -1973,4 +1973,31 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
 }
 
+TEST_P(PaintPropertyTreeUpdateTest, ChangeMaskOutputClip) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="width: 100px; height: 10px; overflow: hidden">
+      <div id="masked"
+           style="height: 100px; background: red; -webkit-mask: url()"></div>
+    </div>
+  )HTML");
+
+  auto* container_properties = PaintPropertiesForElement("container");
+  ASSERT_TRUE(container_properties);
+  auto* masked_properties = PaintPropertiesForElement("masked");
+  ASSERT_TRUE(masked_properties);
+  ASSERT_TRUE(masked_properties->Mask());
+  EXPECT_EQ(container_properties->OverflowClip(),
+            masked_properties->Mask()->OutputClip());
+
+  GetDocument()
+      .getElementById("container")
+      ->setAttribute(html_names::kStyleAttr, "width: 100px; height: 100px");
+  UpdateAllLifecyclePhasesExceptPaint();
+
+  EXPECT_FALSE(PaintPropertiesForElement("container"));
+  EXPECT_EQ(masked_properties, PaintPropertiesForElement("masked"));
+  EXPECT_EQ(DocContentClip(), masked_properties->Mask()->OutputClip());
+  EXPECT_TRUE(GetPaintLayerByElementId("masked")->SelfNeedsRepaint());
+}
+
 }  // namespace blink

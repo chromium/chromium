@@ -1591,6 +1591,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         mask_state.blend_mode = SkBlendMode::kDstIn;
         mask_state.compositor_element_id = mask_compositor_element_id;
         mask_state.direct_compositing_reasons = mask_direct_compositing_reasons;
+
+        if (const auto* old_mask = properties_->Mask()) {
+          // The mask node's output clip is used in the property tree state
+          // when painting the mask, so the impact of its change should be the
+          // same as a clip change in LocalBorderBoxProperties (see
+          // UpdateLocalBorderBoxContext()).
+          if (old_mask->OutputClip() != mask_state.output_clip)
+            OnUpdateClip(PaintPropertyChangeType::kNodeAddedOrRemoved);
+        }
+
         OnUpdateEffect(properties_->UpdateMask(*properties_->Effect(),
                                                std::move(mask_state)));
       } else {
