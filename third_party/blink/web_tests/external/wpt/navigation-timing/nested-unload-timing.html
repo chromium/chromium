@@ -33,7 +33,7 @@
         const popupContext = new RemoteContext(token());
         const iframeContext = new RemoteContext(token());
         const finalContext = new RemoteContext(token());
-        const popup = window.open(`resources/exec.html?uuid=${popupContext.context_id}`);
+        const popup = window.open(remoteExecutorUrl(popupContext.context_id));
         t.add_cleanup(() => popup.close());
         const registerBusyWaitUnload = duration => window.addEventListener('unload', () => {
             const buffer = 3;
@@ -46,13 +46,13 @@
         const unloadIframe = iframeContext.execute_script(registerBusyWaitUnload, [iframeUnloadDuration]);
         const loadPopup = popupContext.execute_script(async iframeUid => {
             const iframe = document.createElement('iframe');
-            iframe.src = `./exec.html?uuid=${iframeUid}`;
+            iframe.src = `/common/dispatcher/remote-executor.html?uuid=${iframeUid}`;
             document.body.appendChild(iframe);
             await new Promise(resolve => iframe.addEventListener('load', resolve));
         }, [iframeContext.context_id]);
 
         await Promise.all([unloadIframe, loadPopup]);
-        await popupContext.execute_script((uid) => location.href = `./exec.html?uuid=${uid}`, [finalContext.context_id]);
+        await popupContext.execute_script((uid) => location.href = `/common/dispatcher/remote-executor.html?uuid=${uid}`, [finalContext.context_id]);
         const navigationTimingEntry = await finalContext.execute_script(() => performance.getEntriesByType('navigation')[0].toJSON());
         const unloadDuration = navigationTimingEntry.unloadEventEnd - navigationTimingEntry.unloadEventStart;
         assert_greater_than_equal(unloadDuration, mainWindowUnloadDuration);

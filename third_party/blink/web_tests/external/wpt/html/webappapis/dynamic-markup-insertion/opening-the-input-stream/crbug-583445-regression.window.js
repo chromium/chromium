@@ -10,18 +10,6 @@
 // introduced the precursor to this test:
 // https://codereview.chromium.org/1675473002.
 
-function executorUrl(uuid, options) {
-  const url =
-      new URL("/common/dispatcher/remote-executor.html", window.location);
-  url.searchParams.set("uuid", uuid);
-
-  if (options?.host) {
-    url.host = options.host;
-  }
-
-  return url;
-}
-
 function nextMessage() {
   return new Promise((resolve) => {
     window.addEventListener("message", (e) => { resolve(e.data); }, {
@@ -36,7 +24,7 @@ promise_test(async (t) => {
   t.add_cleanup(() => { iframeA.remove(); });
 
   const uuidA = token();
-  iframeA.src = executorUrl(uuidA, { host: get_host_info().REMOTE_HOST });
+  iframeA.src = remoteExecutorUrl(uuidA, { host: get_host_info().REMOTE_HOST });
   const ctxA = new RemoteContext(uuidA);
 
   // Frame A embeds a cross-origin frame B, which is same-origin with the
@@ -51,7 +39,7 @@ promise_test(async (t) => {
     const iframeB = document.createElement("iframe");
     iframeB.src = url;
     document.body.appendChild(iframeB);
-  }, [executorUrl(uuidB).href]);
+  }, [remoteExecutorUrl(uuidB).href]);
 
   // Start listening for a message, which will come as a result of executing
   // the code below in frame B.

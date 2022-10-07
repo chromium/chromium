@@ -127,6 +127,26 @@ const cacheableShowRequestHeaders = function(origin, uuid) {
 // This script requires
 // - `/common/utils.js` for `token()`.
 
+// Returns the URL of a document that can be used as a `RemoteContext`.
+//
+// `uuid` should be a UUID uniquely identifying the given remote context.
+// `options` has the following shape:
+//
+// {
+//   host: (optional) Sets the returned URL's `host` property. Useful for
+//     cross-origin executors.
+// }
+function remoteExecutorUrl(uuid, options) {
+  const url = new URL("/common/dispatcher/remote-executor.html", location);
+  url.searchParams.set("uuid", uuid);
+
+  if (options?.host) {
+    url.host = options.host;
+  }
+
+  return url;
+}
+
 // Represents a remote executor. For more detailed explanation see `README.md`.
 class RemoteContext {
   // `uuid` is a UUID string that identifies the remote context and should
