@@ -1382,6 +1382,9 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
       case kSemicolonToken:
         stream.UncheckedConsume();
         break;
+      case kAtKeywordToken:
+        ConsumeErroneousAtRule(stream);
+        break;
       case kIdentToken: {
         {
           CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
