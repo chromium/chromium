@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
@@ -78,14 +77,10 @@ GURL AppendQueryParameter(const GURL& url,
 
 GURL AppendOrReplaceQueryParameter(const GURL& url,
                                    const std::string& name,
-                                   absl::optional<base::StringPiece> value) {
+                                   const std::string& value) {
   bool replaced = false;
   std::string param_name = base::EscapeQueryParamValue(name, true);
-  bool should_keep_param = value.has_value();
-
-  std::string param_value;
-  if (should_keep_param)
-    param_value = base::EscapeQueryParamValue(value.value(), true);
+  std::string param_value = base::EscapeQueryParamValue(value, true);
 
   const std::string input = url.query();
   url::Component cursor(0, input.size());
@@ -99,11 +94,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
     // Check |replaced| as only the first pair should be replaced.
     if (!replaced && key == param_name) {
       replaced = true;
-      if (!should_keep_param)
-        continue;
-
       key_value_pair = (param_name + "=" + param_value);
-
     } else {
       key_value_pair.assign(input, key_range.begin,
                             value_range.end() - key_range.begin);
@@ -113,7 +104,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
 
     output += key_value_pair;
   }
-  if (!replaced && should_keep_param) {
+  if (!replaced) {
     if (!output.empty())
       output += "&";
 

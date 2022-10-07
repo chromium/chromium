@@ -1744,8 +1744,12 @@ GURL TemplateURL::RemoveSideImageSearchParamFromURL(
     const GURL& image_search_url) const {
   if (!IsSideImageSearchSupported())
     return image_search_url;
-  return net::AppendOrReplaceQueryParameter(
-      image_search_url, side_image_search_param(), absl::nullopt);
+  std::string value;
+  if (!net::GetValueForKeyInQuery(image_search_url, side_image_search_param(),
+                                  &value))
+    return image_search_url;
+  return net::AppendOrReplaceQueryParameter(image_search_url,
+                                            side_image_search_param(), "");
 }
 
 void TemplateURL::CopyFrom(const TemplateURL& other) {
