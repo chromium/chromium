@@ -82,6 +82,9 @@ void ReadAnythingController::OnLineSpacingChanged(int new_index) {
     return;
 
   model_->SetSelectedLineSpacingByIndex(new_index);
+
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingLineSpacing, new_index);
 }
 
 ui::ComboboxModel* ReadAnythingController::GetLineSpacingModel() {

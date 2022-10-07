@@ -23,6 +23,10 @@ const char kAccessibilityReadAnythingFontScale[] =
 const char kAccessibilityReadAnythingColorInfo[] =
     "settings.a11y.read_anything.color_info";
 
+// Int value to represent the user's preferred line spacing setting.
+const char kAccessibilityReadAnythingLineSpacing[] =
+    "settings.a11y.read_anything.line_spacing";
+
 // Int value to represent the user's preferred letter spacing setting.
 const char kAccessibilityReadAnythingLetterSpacing[] =
     "settings.a11y.read_anything.letter_spacing";
@@ -42,8 +46,12 @@ void RegisterReadAnythingProfilePrefs(
       (int)read_anything::mojom::Colors::kDefaultValue,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
+      prefs::kAccessibilityReadAnythingLineSpacing,
+      (int)read_anything::mojom::Spacing::kDefault,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingLetterSpacing,
-      (int)read_anything::mojom::Spacing::kDefaultValue,
+      (int)read_anything::mojom::Spacing::kDefault,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

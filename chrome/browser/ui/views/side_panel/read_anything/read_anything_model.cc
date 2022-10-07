@@ -32,7 +32,7 @@ ReadAnythingModel::ReadAnythingModel()
       font_scale_(kReadAnythingDefaultFontScale),
       font_model_(std::make_unique<ReadAnythingFontModel>()),
       colors_model_(std::make_unique<ReadAnythingColorsModel>()),
-      lines_model_(std::make_unique<ReadAnythingLineSpacingModel>()),
+      line_spacing_model_(std::make_unique<ReadAnythingLineSpacingModel>()),
       letter_spacing_model_(
           std::make_unique<ReadAnythingLetterSpacingModel>()) {}
 
@@ -50,14 +50,6 @@ void ReadAnythingModel::Init(std::string& font_name,
     font_name_ = font_name;
   }
 
-  size_t letter_spacing_index = static_cast<size_t>(letter_spacing);
-  if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
-    letter_spacing_model_->SetDefaultLetterSpacingIndexFromPref(
-        letter_spacing_index);
-    letter_spacing_ =
-        letter_spacing_model_->GetLetterSpacingAt(letter_spacing_index);
-  }
-
   font_scale_ = font_scale;
 
   size_t colors_index = static_cast<size_t>(colors);
@@ -71,8 +63,17 @@ void ReadAnythingModel::Init(std::string& font_name,
   background_color_ = initial_colors.background;
 
   size_t line_spacing_index = static_cast<size_t>(line_spacing);
-  if (lines_model_->IsValidLineSpacingIndex(line_spacing_index)) {
-    line_spacing_ = lines_model_->GetLineSpacingAt(line_spacing_index);
+  if (line_spacing_model_->IsValidLineSpacingIndex(line_spacing_index)) {
+    line_spacing_model_->SetDefaultLineSpacingIndexFromPref(line_spacing_index);
+    line_spacing_ = line_spacing_model_->GetLineSpacingAt(line_spacing_index);
+  }
+
+  size_t letter_spacing_index = static_cast<size_t>(letter_spacing);
+  if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
+    letter_spacing_model_->SetDefaultLetterSpacingIndexFromPref(
+        letter_spacing_index);
+    letter_spacing_ =
+        letter_spacing_model_->GetLetterSpacingAt(letter_spacing_index);
   }
 }
 
@@ -107,9 +108,9 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
 
 void ReadAnythingModel::SetSelectedLineSpacingByIndex(size_t new_index) {
   // Check that the index is valid.
-  DCHECK(lines_model_->IsValidLineSpacingIndex(new_index));
+  DCHECK(line_spacing_model_->IsValidLineSpacingIndex(new_index));
 
-  line_spacing_ = lines_model_->GetLineSpacingAt(new_index);
+  line_spacing_ = line_spacing_model_->GetLineSpacingAt(new_index);
   NotifyThemeChanged();
 }
 

@@ -31,6 +31,9 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
         prefs::kAccessibilityReadAnythingColorInfo,
         (int)read_anything::mojom::Colors::kDefaultValue);
     browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingLineSpacing,
+        (int)read_anything::mojom::Spacing::kDefault);
+    browser()->profile()->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLetterSpacing,
         (int)read_anything::mojom::Spacing::kDefault);
   }
@@ -74,6 +77,11 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
   int GetPrefsColors() {
     return browser()->profile()->GetPrefs()->GetInteger(
         prefs::kAccessibilityReadAnythingColorInfo);
+  }
+
+  int GetPrefsLineSpacing() {
+    return browser()->profile()->GetPrefs()->GetInteger(
+        prefs::kAccessibilityReadAnythingLineSpacing);
   }
 
   int GetPrefsLetterSpacing() {
@@ -142,6 +150,22 @@ TEST_F(ReadAnythingControllerTest, OnColorsChangedUpdatesPref) {
   MockOnColorsChanged((int)read_anything::mojom::Colors::kYellow);
 
   EXPECT_EQ(GetPrefsColors(), 3);
+}
+
+TEST_F(ReadAnythingControllerTest, OnLineSpacingChangedUpdatesPref) {
+  EXPECT_EQ(GetPrefsLineSpacing(), 1);
+
+  MockOnLineSpacingChanged((int)read_anything::mojom::Spacing::kLoose);
+
+  EXPECT_EQ(GetPrefsLineSpacing(), 2);
+}
+
+TEST_F(ReadAnythingControllerTest, OnLineSpacingChangedInvalidInput) {
+  EXPECT_EQ(GetPrefsLineSpacing(), 1);
+
+  MockOnLineSpacingChanged(10);
+
+  EXPECT_EQ(GetPrefsLineSpacing(), 1);
 }
 
 TEST_F(ReadAnythingControllerTest, OnLetterSpacingChangedUpdatesPref) {

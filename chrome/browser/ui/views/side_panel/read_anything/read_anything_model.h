@@ -235,7 +235,7 @@ class ReadAnythingModel {
   double GetFontScale() { return font_scale_; }
   ReadAnythingColorsModel* GetColorsModel() { return colors_model_.get(); }
   ReadAnythingLineSpacingModel* GetLineSpacingModel() {
-    return lines_model_.get();
+    return line_spacing_model_.get();
   }
   ReadAnythingLetterSpacingModel* GetLetterSpacingModel() {
     return letter_spacing_model_.get();
@@ -266,7 +266,7 @@ class ReadAnythingModel {
   base::ObserverList<Observer> observers_;
   const std::unique_ptr<ReadAnythingFontModel> font_model_;
   const std::unique_ptr<ReadAnythingColorsModel> colors_model_;
-  const std::unique_ptr<ReadAnythingLineSpacingModel> lines_model_;
+  const std::unique_ptr<ReadAnythingLineSpacingModel> line_spacing_model_;
   const std::unique_ptr<ReadAnythingLetterSpacingModel> letter_spacing_model_;
 };
 

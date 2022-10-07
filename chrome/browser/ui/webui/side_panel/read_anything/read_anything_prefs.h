@@ -19,6 +19,7 @@ namespace prefs {
 extern const char kAccessibilityReadAnythingFontName[];
 extern const char kAccessibilityReadAnythingFontScale[];
 extern const char kAccessibilityReadAnythingColorInfo[];
+extern const char kAccessibilityReadAnythingLineSpacing[];
 extern const char kAccessibilityReadAnythingLetterSpacing[];
 
 }  // namespace prefs
