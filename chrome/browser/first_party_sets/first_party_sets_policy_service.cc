@@ -93,11 +93,16 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
     return;
   }
 
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
+    // TODO(https://crbug.com/1348572): regular profiles and guest sessions
+    // aren't mutually exclusive on ChromeOS.
+    OnReadyToNotifyDelegates(std::move(config));
+    return;
+  }
+
   // Representation of the current profile to be persisted on disk.
-  const std::string browser_context_id =
-      Profile::FromBrowserContext(browser_context_)
-          ->GetBaseName()
-          .AsUTF8Unsafe();
+  const std::string browser_context_id = profile->GetBaseName().AsUTF8Unsafe();
 
   base::RepeatingCallback<content::BrowserContext*()> browser_context_getter =
       base::BindRepeating(
