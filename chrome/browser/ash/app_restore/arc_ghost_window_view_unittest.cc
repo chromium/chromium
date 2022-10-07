@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -75,8 +74,6 @@ class ArcGhostWindowViewTest : public testing::Test {
         /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile_);
   }
 
   void InstallApp(const std::string& app_id) {

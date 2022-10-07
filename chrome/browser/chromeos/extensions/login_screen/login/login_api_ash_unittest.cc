@@ -188,11 +188,9 @@ class LoginApiUnittest : public ExtensionApiUnittest {
 
   std::unique_ptr<ScopedTestingProfile> AddPublicAccountUser(
       const std::string& email) {
-    AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager::User* user =
-        fake_chrome_user_manager_->AddPublicAccountUser(account_id);
+    fake_chrome_user_manager_->AddPublicAccountUser(
+        AccountId::FromUserEmail(email));
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
@@ -566,12 +564,10 @@ class LoginApiUserSessionUnittest : public LoginApiUnittest {
  protected:
   std::unique_ptr<ScopedTestingProfile> AddRegularUser(
       const std::string& email) {
-    AccountId account_id = AccountId::FromUserEmailGaiaId(email, kGaiaId);
-    user_manager::User* user =
-        fake_chrome_user_manager_->AddUserWithAffiliation(
-            account_id, /* is_affiliated= */ true);
+    fake_chrome_user_manager_->AddUserWithAffiliation(
+        AccountId::FromUserEmailGaiaId(email, kGaiaId),
+        /* is_affiliated= */ true);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(email);
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }

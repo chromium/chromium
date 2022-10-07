@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -213,7 +212,6 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestingProfile* profile =
       testing_profile_manager.CreateTestingProfile(account.GetUserEmail());
   profile->set_profile_name(account.GetUserEmail());
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
   auto crosapi_manager = CreateCrosapiManagerWithTestRegistry();
 

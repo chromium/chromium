@@ -6,7 +6,6 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,9 +143,6 @@ void ProfileHelperForTesting::Init(bool user_is_affiliated) {
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   user_ = fake_user_manager_.AddUserWithAffiliation(test_account,
                                                     user_is_affiliated);
-
-  ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      fake_user_manager_.GetPrimaryUser(), testing_profile_);
 }
 
 Profile* ProfileHelperForTesting::GetProfile() const {

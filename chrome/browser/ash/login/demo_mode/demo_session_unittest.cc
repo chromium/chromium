@@ -17,7 +17,6 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -120,16 +119,14 @@ class DemoSessionTest : public testing::Test {
         AccountId::FromUserEmailGaiaId("demo@test.com", "demo_user"));
     FakeChromeUserManager* user_manager =
         static_cast<FakeChromeUserManager*>(user_manager::UserManager::Get());
-    const user_manager::User* user =
-        user_manager->AddPublicAccountUser(account_id);
+    user_manager->AddPublicAccountUser(account_id);
 
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
-        "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
-        TestingProfile::TestingFactories());
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+        account_id.GetUserEmail(), std::move(prefs), u"Test profile",
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
 
     user_manager->LoginUser(account_id);
     return profile;

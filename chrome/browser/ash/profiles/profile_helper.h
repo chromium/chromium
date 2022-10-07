@@ -148,14 +148,20 @@ class ProfileHelper
   // Flushes all files of |profile|.
   virtual void FlushProfile(Profile* profile) = 0;
 
+  // DEPRECATED: please set up UserManager.
   // Associates |user| with profile with the same user_id,
   // for GetUserByProfile() testing.
   virtual void SetProfileToUserMappingForTesting(user_manager::User* user) = 0;
 
+  // DEPRECATED: please set up UserManager and create a Profile tied to a user
+  // by its path. You may be interested in to create a testing profile by
+  // TestingProfileManager.
   // Associates |profile| with |user|, for GetProfileByUser() testing.
   virtual void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                                  Profile* profile) = 0;
 
+  // DEPRECATED: avoiding SetProfileToUserMappingForTesting will help
+  // to remove this function's invocations.
   // Removes |account_id| user from |user_to_profile_for_testing_| for testing.
   virtual void RemoveUserFromListForTesting(const AccountId& account_id) = 0;
 

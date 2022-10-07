@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/mock_key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/user_private_token_kpm_service_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -298,9 +297,6 @@ TestingProfile* TpmChallengeKeySubtleTestBase::CreateUserProfile(
   auto test_account =
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
   fake_user_manager_.AddUserWithAffiliation(test_account, is_affiliated);
-
-  ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      fake_user_manager_.GetPrimaryUser(), testing_profile);
 
   return testing_profile;
 }

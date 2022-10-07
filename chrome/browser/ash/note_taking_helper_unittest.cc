@@ -412,11 +412,10 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     ash::FakeChromeUserManager* fake_user_manager =
         static_cast<ash::FakeChromeUserManager*>(
             user_manager::UserManager::Get());
-    auto* user = fake_user_manager->AddUser(account_id);
+    fake_user_manager->AddUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
-        1 /*avatar_id*/, TestingProfile::TestingFactories());
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
+        /*avatar_id=*/1, TestingProfile::TestingFactories());
 
     InitExtensionService(profile);
     InitWebAppProvider(profile);

@@ -140,19 +140,14 @@ class MultiProfileUserControllerTest
     controller_ = std::make_unique<MultiProfileUserController>(
         this, TestingBrowserProcess::GetGlobal()->local_state());
 
-    for (size_t i = 0; i < test_users_.size(); ++i) {
-      const AccountId account_id(test_users_[i]);
-      const user_manager::User* user =
-          fake_user_manager_->AddUser(test_users_[i]);
+    for (const auto& account_id : test_users_) {
+      fake_user_manager_->AddUser(account_id);
 
       // Note that user profiles are created after user login in reality.
       TestingProfile* user_profile =
           profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
       user_profile->set_profile_name(account_id.GetUserEmail());
       user_profiles_.push_back(user_profile);
-
-      ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                              user_profile);
     }
   }
 
