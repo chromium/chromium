@@ -4,7 +4,9 @@
 
 #include "chrome/browser/media/media_foundation_service_monitor.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -33,7 +35,7 @@ void TestEarliestEnableDate(std::vector<int> disabled_dates,
 
 }  // namespace
 
-TEST(MediaFoundationServiceMonitorTest, GetEarliestEnableTime) {
+TEST(MediaFoundationServiceMonitorTest, GetEarliestEnableTime_Default) {
   // One disabling event will cause the feature to be disabled for 30 days,
   // which is the minimum disabling days.
   TestEarliestEnableDate({0}, 30);
@@ -59,4 +61,38 @@ TEST(MediaFoundationServiceMonitorTest, GetEarliestEnableTime) {
   // The third disabling event time doesn't matter.
   TestEarliestEnableDate({10, 50}, 142);
   TestEarliestEnableDate({1, 10, 50}, 142);
+}
+
+TEST(MediaFoundationServiceMonitorTest, GetEarliestEnableTime_Overridden) {
+  // Ensure we take any base::Feature overrides into account.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      media::kHardwareSecureDecryptionFallback,
+      {{"min_disabling_days", "10"}, {"max_disabling_days", "60"}});
+
+  // One disabling event will cause the feature to be disabled for 30 days,
+  // which is the minimum disabling days.
+  TestEarliestEnableDate({0}, 10);
+  TestEarliestEnableDate({1}, 10);
+  TestEarliestEnableDate({10}, 10);
+
+  // Two close disabling events will cause the feature to be disabled for 60
+  // days, which is the maximum disabling days.
+  TestEarliestEnableDate({10, 10}, 60);
+  TestEarliestEnableDate({10, 20}, 60);
+
+  // The closer the two disabling events are, the longer the feature will be
+  // disabled.
+  TestEarliestEnableDate({10, 40}, 26);
+  TestEarliestEnableDate({10, 50}, 22);
+  TestEarliestEnableDate({10, 100}, 15);
+
+  // Two far apart disabling events will cause the feature to be disabled for 10
+  // days, which is the minimum disabling days.
+  TestEarliestEnableDate({10, 1000}, 10);
+  TestEarliestEnableDate({10, 10000}, 10);
+
+  // The third disabling event time doesn't matter.
+  TestEarliestEnableDate({10, 50}, 22);
+  TestEarliestEnableDate({1, 10, 50}, 22);
 }

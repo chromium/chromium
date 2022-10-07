@@ -749,6 +749,13 @@ BASE_FEATURE(kHardwareSecureDecryptionFallback,
              "HardwareSecureDecryptionFallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// The minimum and maximum number of days to disable hardware secure Content
+// Decryption Module (CDM) as part of the fallback logic.
+const base::FeatureParam<int> kHardwareSecureDecryptionFallbackMinDisablingDays{
+    &kHardwareSecureDecryptionFallback, "min_disabling_days", 30};
+const base::FeatureParam<int> kHardwareSecureDecryptionFallbackMaxDisablingDays{
+    &kHardwareSecureDecryptionFallback, "max_disabling_days", 180};
+
 BASE_FEATURE(kWakeLockOptimisationHiddenMuted,
              "kWakeLockOptimisationHiddenMuted",
              base::FEATURE_ENABLED_BY_DEFAULT);

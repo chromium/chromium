@@ -44,13 +44,6 @@ constexpr int kCrash = 1;
 // for now but may need them in the future when we refine the algorithm.
 constexpr int kMaxNumberOfDisabledTimesInPref = 3;
 
-// Minimum and maximum number of days to keep disabling hardware secure
-// decryption after it's disabled because of prior errors.
-constexpr base::TimeDelta kMinDisablingDuration = base::Days(30);
-constexpr base::TimeDelta kMaxDisablingDuration = base::Days(180);
-static_assert(kMinDisablingDuration >= base::Days(1));
-static_assert(kMaxDisablingDuration >= kMinDisablingDuration);
-
 // Gets the list of disabled times from "Local State".
 std::vector<base::Time> GetDisabledTimesPref() {
   PrefService* service = g_browser_process->local_state();
@@ -111,8 +104,17 @@ base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
 
   base::Time last_disabled_time = disabled_times[0];
 
+  // Get and normalize `min_disabling_duration` and `max_disabling_duration`.
+  auto min_disabling_duration = base::Days(
+      media::kHardwareSecureDecryptionFallbackMinDisablingDays.Get());
+  auto max_disabling_duration = base::Days(
+      media::kHardwareSecureDecryptionFallbackMaxDisablingDays.Get());
+  min_disabling_duration = std::max(min_disabling_duration, base::Days(1));
+  max_disabling_duration =
+      std::max(max_disabling_duration, min_disabling_duration);
+
   // One disabled time will disable the feature for `kDaysDisablingExtended`.
-  base::TimeDelta disabling_duration = kMinDisablingDuration;
+  base::TimeDelta disabling_duration = min_disabling_duration;
 
   // A previous disabled time will cause longer disabling time since the
   // probability of failure is much higher.
@@ -124,7 +126,7 @@ base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
     // directly, or enabling/disabling the fallback manually.
     // Take a max to normalize it and also avoid divided by zero issue.
     auto gap = std::max(last_disabled_time - prev_disabled_time,
-                        kMinDisablingDuration);
+                        min_disabling_duration);
 
     // This is a heuristic algorithm to determine how long we should keep
     // disabling the feature after the `last_disabled_time`, given it was
@@ -139,8 +141,10 @@ base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
     // `kMinDisablingDuration`.
     // We construct a reciprocal function to satisfy the above properties.
     disabling_duration =
-        ((kMaxDisablingDuration - kMinDisablingDuration) / gap + 1) *
-        kMinDisablingDuration;
+        ((max_disabling_duration - min_disabling_duration) / gap + 1) *
+        min_disabling_duration;
+    DVLOG(1) << __func__
+             << "disabling_duration =" << disabling_duration.InDays();
   }
 
   return last_disabled_time + disabling_duration;
