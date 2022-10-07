@@ -57,6 +57,7 @@ public class JUnitTestGURLs {
     public static final String GOOGLE_URL_DOG = "http://www.google.com/dog";
     public static final String GOOGLE_URL_CAT = "http://www.google.com/cat";
     public static final String GOOGLE_URL_PIG = "http://www.google.com/pig";
+    public static final String ABOUT_BLANK = "about:blank";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -142,6 +143,8 @@ public class JUnitTestGURLs {
                 "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/cat");
         map.put(GOOGLE_URL_PIG,
                 "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/pig");
+        map.put(ABOUT_BLANK,
+                "68,1,true,0,5,0,-1,0,-1,0,-1,0,-1,6,5,0,-1,0,-1,false,false,about:blank");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

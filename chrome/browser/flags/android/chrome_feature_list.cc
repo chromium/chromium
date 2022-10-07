@@ -203,6 +203,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTRetainingState,
     &kCCTResourcePrefetch,
+    &kCCTShowAboutBlankUrl,
     &kCCTToolbarCustomizations,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
@@ -569,6 +570,9 @@ const base::Feature kCCTResourcePrefetch{"CCTResourcePrefetch",
 
 const base::Feature kCCTRetainingState{"CCTRetainingState",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kCCTShowAboutBlankUrl{"CCTShowAboutBlankUrl",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCCTToolbarCustomizations{"CCTToolbarCustomizations",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
