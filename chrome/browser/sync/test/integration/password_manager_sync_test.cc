@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -907,10 +908,14 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
       password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
   EXPECT_TRUE(
       password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
+  EXPECT_NE(absl::nullopt,
+            password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
   EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
                 GetSyncService(0),
                 IdentityManagerFactory::GetForProfile(GetProfile(0))),
             kExpectedUsername);
+  EXPECT_EQ(password_manager_util::GetPasswordSyncState(GetSyncService(0)),
+            password_manager::SyncState::kSyncingNormalEncryption);
 
   // Enter a persistent auth error state (web signout).
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -925,11 +930,15 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
   // all persistent auth errors.
   EXPECT_FALSE(
       password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
+  EXPECT_EQ(password_manager_util::GetPasswordSyncState(GetSyncService(0)),
+            password_manager::SyncState::kNotSyncing);
 
-  // In the current implementation, these predicates return true even if sync is
-  // paused.
+  // In the current implementation, the APIs below treat sync as enabled/active
+  // even while paused.
   EXPECT_TRUE(
       password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
+  EXPECT_NE(absl::nullopt,
+            password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
   EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
                 GetSyncService(0),
                 IdentityManagerFactory::GetForProfile(GetProfile(0))),

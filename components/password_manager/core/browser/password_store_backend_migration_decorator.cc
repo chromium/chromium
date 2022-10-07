@@ -138,6 +138,11 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     return;
   }
 
+  // TODO(crbug.com/1156584): The condition below could be simplified, as long
+  // as the handling of transient auth errors is unimportant, once the feature
+  // toggle syncer::kSyncPauseUponAnyPersistentAuthError is cleaned up.
+  // Alternatively IsPasswordSyncActive() could be removed entirely in favor of
+  // password_manager_util::GetPasswordSyncState().
   if (sync_util::IsPasswordSyncActive(sync) &&
       (sync->GetAuthError() ==
        GoogleServiceAuthError(GoogleServiceAuthError::NONE))) {

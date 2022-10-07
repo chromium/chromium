@@ -414,7 +414,18 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
             client->GetPasswordSyncState());
 
+  // Persistent auth error other than web signout (sync continues active).
+  sync_service_->SetPersistentAuthErrorOtherThanWebSignout();
+  EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
+            client->GetPasswordSyncState());
+
+  // Sync paused due to web signout.
+  sync_service_->SetPersistentAuthErrorWithWebSignout();
+  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
+            client->GetPasswordSyncState());
+
   // Again, using a custom passphrase.
+  sync_service_->ClearAuthError();
   sync_service_->SetIsUsingExplicitPassphrase(true);
 
   EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
