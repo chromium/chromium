@@ -15003,7 +15003,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Web.CurrentOriginEqualsLastCommittedOrigin"
-    enum="BooleanEqual" expires_after="2022-11-17">
+    enum="BooleanEqual" expires_after="2023-11-17">
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
