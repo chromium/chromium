@@ -24,8 +24,8 @@
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaBooleanArray;
+using base::android::ToJavaByteArray;
 using base::android::ToJavaIntArray;
 
 namespace {
@@ -94,28 +94,22 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   const size_t groups_count = suggestion_groups_map().size();
 
   std::vector<int> group_ids(groups_count);
-  std::vector<std::u16string> group_names(groups_count);
-  bool group_collapsed_states[groups_count];
+  omnibox::GroupsInfo groups_info;
+  std::string serialized_groups_info;
 
-  size_t index = 0;
   for (const auto& suggestion_group : suggestion_groups_map()) {
-    group_ids[index] = suggestion_group.first;
-    group_names[index] =
-        base::UTF8ToUTF16(suggestion_group.second.header_text());
-    group_collapsed_states[index] = suggestion_group.second.visibility() ==
-                                    omnibox::GroupConfig_Visibility_HIDDEN;
-    ++index;
+    (*groups_info.mutable_group_configs())[suggestion_group.first] =
+        suggestion_group.second;
+  }
+  if (!groups_info.SerializeToString(&serialized_groups_info)) {
+    serialized_groups_info.clear();
   }
 
   ScopedJavaLocalRef<jintArray> j_group_ids = ToJavaIntArray(env, group_ids);
-  ScopedJavaLocalRef<jbooleanArray> j_group_collapsed_states =
-      ToJavaBooleanArray(env, group_collapsed_states, groups_count);
-  ScopedJavaLocalRef<jobjectArray> j_group_names =
-      ToJavaArrayOfStrings(env, group_names);
 
   java_result_ = Java_AutocompleteResult_fromNative(
-      env, reinterpret_cast<intptr_t>(this), BuildJavaMatches(env), j_group_ids,
-      j_group_names, j_group_collapsed_states);
+      env, reinterpret_cast<intptr_t>(this), BuildJavaMatches(env),
+      ToJavaByteArray(env, serialized_groups_info));
 
   return ScopedJavaLocalRef<jobject>(java_result_);
 }

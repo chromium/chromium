@@ -446,12 +446,15 @@ if (is_android) {
       "//components/query_tiles:query_tile_java",
       "//components/security_state/core:security_state_enums_java",
       "//content/public/android:content_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",
     ]
+
+    public_deps = [ "//third_party/omnibox_proto:omnibox_proto_java" ]
 
     srcjar_deps = [ ":browser_java_enums_srcjar" ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

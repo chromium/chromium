@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
+import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class CachedZeroSuggestionsManager {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
-        SparseArray<GroupDetails> groupsDetails =
+        SparseArray<GroupConfig> groupsDetails =
                 CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
         removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails);
         return AutocompleteResult.fromCache(suggestions, groupsDetails);
@@ -193,16 +193,16 @@ public class CachedZeroSuggestionsManager {
      * Cache suggestion group details in shared preferences.
      *
      * @param prefs Shared preferences manager.
-     * @param groupsDetails Map of Group ID to GroupDetails.
+     * @param groupsDetails Map of Group ID to GroupConfig.
      */
     private static void cacheGroupsDetails(
-            SharedPreferencesManager prefs, SparseArray<GroupDetails> groupsDetails) {
+            SharedPreferencesManager prefs, SparseArray<GroupConfig> groupsDetails) {
         final int size = groupsDetails.size();
         prefs.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, size);
         for (int i = 0; i < size; i++) {
-            final GroupDetails details = groupsDetails.valueAt(i);
-            String title = details.title;
-            boolean collapsedByDefault = details.collapsedByDefault;
+            final GroupConfig details = groupsDetails.valueAt(i);
+            String title = details.getHeaderText();
+            boolean collapsedByDefault = details.getVisibility() == GroupConfig.Visibility.HIDDEN;
 
             prefs.writeInt(
                     KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i), groupsDetails.keyAt(i));
@@ -217,13 +217,13 @@ public class CachedZeroSuggestionsManager {
      * Restore group details from shared preferences.
      *
      * @param prefs Shared preferences manager.
-     * @return Map of group ID to GroupDetails previously cached in shared preferences.
+     * @return Map of group ID to GroupConfig previously cached in shared preferences.
      */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static SparseArray<GroupDetails> readCachedGroupsDetails(SharedPreferencesManager prefs) {
+    static SparseArray<GroupConfig> readCachedGroupsDetails(SharedPreferencesManager prefs) {
         final int size = prefs.readInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, 0);
-        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>(size);
+        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>(size);
 
         for (int i = 0; i < size; i++) {
             int groupId = prefs.readInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i),
@@ -233,7 +233,19 @@ public class CachedZeroSuggestionsManager {
             boolean collapsedByDefault = prefs.readBoolean(
                     KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i), false);
 
-            groupsDetails.put(groupId, new GroupDetails(groupTitle, collapsedByDefault));
+            if (groupTitle == null) {
+                // Group definition incomplete.
+                // Note that an empty string is a valid group title.
+                continue;
+            }
+
+            groupsDetails.put(groupId,
+                    GroupConfig.newBuilder()
+                            .setHeaderText(groupTitle)
+                            .setVisibility(collapsedByDefault
+                                            ? GroupConfig.Visibility.HIDDEN
+                                            : GroupConfig.Visibility.DEFAULT_VISIBLE)
+                            .build());
         }
         return groupsDetails;
     }
@@ -242,15 +254,15 @@ public class CachedZeroSuggestionsManager {
      * Remove all invalid entries for group details map and omnibox suggestions list.
      *
      * @param suggestions List of suggestions to scan for invalid entries.
-     * @param groupsDetails Map of GroupDetails to scan for invalid entries.
+     * @param groupsDetails Map of GroupConfig to scan for invalid entries.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void removeInvalidSuggestionsAndGroupsDetails(
-            List<AutocompleteMatch> suggestions, SparseArray<GroupDetails> groupsDetails) {
-        // Remove all group details that have invalid index or title.
+            List<AutocompleteMatch> suggestions, SparseArray<GroupConfig> groupsDetails) {
+        // Remove all group details that have invalid index.
+        // Note that the missing title is OK: groups do not need to have one.
         for (int index = groupsDetails.size() - 1; index >= 0; index--) {
-            if (groupsDetails.keyAt(index) == AutocompleteMatch.INVALID_GROUP
-                    || TextUtils.isEmpty(groupsDetails.valueAt(index).title)) {
+            if (groupsDetails.keyAt(index) == AutocompleteMatch.INVALID_GROUP) {
                 groupsDetails.removeAt(index);
             }
         }
