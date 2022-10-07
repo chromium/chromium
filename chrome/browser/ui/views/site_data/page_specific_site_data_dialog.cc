@@ -98,13 +98,17 @@ std::vector<PageSpecificSiteDataDialogSection> GetSections(
   auto eltd_current_origin = GetEtldPlusOne(current_origin);
 
   PageSpecificSiteDataDialogSection first_party_section;
-  first_party_section.title = u"From this site";
-  first_party_section.subtitle = u"From this site subtitle";
+  first_party_section.title = l10n_util::GetStringUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_TITLE);
+  first_party_section.subtitle = l10n_util::GetStringUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_SUBTITLE);
   first_party_section.identifier = kPageSpecificSiteDataDialogFirstPartySection;
 
   PageSpecificSiteDataDialogSection third_party_section;
-  third_party_section.title = u"From other site";
-  third_party_section.subtitle = u"From other site subtitle";
+  third_party_section.title = l10n_util::GetStringUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_TITLE);
+  third_party_section.subtitle = l10n_util::GetStringUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_SUBTITLE);
   third_party_section.identifier = kPageSpecificSiteDataDialogThirdPartySection;
 
   for (const auto& site : all_sites) {
@@ -425,7 +429,8 @@ views::Widget* ShowPageSpecificSiteDataDialog(
   PageSpecificSiteDataDialogModelDelegate* delegate = delegate_unique.get();
   auto builder = ui::DialogModel::Builder(std::move(delegate_unique));
   builder
-      .SetTitle(l10n_util::GetStringUTF16(IDS_COLLECTED_COOKIES_DIALOG_TITLE))
+      .SetTitle(
+          l10n_util::GetStringUTF16(IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE))
       .SetInternalName("PageSpecificSiteDataDialog")
       .AddOkButton(
           base::BindRepeating(&PageSpecificSiteDataDialogModelDelegate::

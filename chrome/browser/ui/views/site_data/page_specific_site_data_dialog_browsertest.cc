@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -24,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -327,7 +329,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
-  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
   // The delete button isn't available for blocked sites.
   EXPECT_FALSE(row_view->delete_button_for_testing()->GetVisible());
 
@@ -369,7 +373,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteBlocked), 1);
 
-  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
   ClickAllowMenuItem(row_view);
 
   histograms.ExpectBucketCount(
@@ -377,7 +383,9 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteAllowed), 1);
 
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
-  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());
@@ -416,7 +424,10 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteClearedOnExit),
       1);
   EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
-  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Clear on close");
+  EXPECT_EQ(
+      row_view->state_label_for_testing()->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SESSION_ONLY_STATE_SUBTITLE));
 
   dialog->Close();
   EXPECT_EQ(1u, infobar_count());

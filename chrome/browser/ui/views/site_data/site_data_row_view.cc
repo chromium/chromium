@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/views/controls/button/image_button.h"
@@ -39,20 +41,27 @@ constexpr int kIconSize = 16;
 std::u16string GetSettingStateString(ContentSetting setting,
                                      bool is_fully_partitioned) {
   // TODO(crbug.com/1344787): Return actual strings.
+  int message_id = -1;
   switch (setting) {
     case CONTENT_SETTING_ALLOW: {
-      return is_fully_partitioned ? u"Only using partitioned storage"
-                                  : u"Allowed";
+      message_id =
+          is_fully_partitioned
+              ? IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE
+              : IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE;
+      break;
     }
     case CONTENT_SETTING_BLOCK: {
       // Partitioned cookies don't need a special call out because they are
       // blocked with the rest of the cookies.
-      return u"Blocked";
+      message_id = IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE;
+      break;
     }
     case CONTENT_SETTING_SESSION_ONLY: {
-      return is_fully_partitioned
-                 ? u"Only using partitioned storage. Clear on close"
-                 : u"Clear on close";
+      message_id =
+          is_fully_partitioned
+              ? IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_SESSION_ONLY_STATE_SUBTITLE
+              : IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SESSION_ONLY_STATE_SUBTITLE;
+      break;
     }
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_ASK:
@@ -60,8 +69,10 @@ std::u16string GetSettingStateString(ContentSetting setting,
     case CONTENT_SETTING_NUM_SETTINGS:
       // Not supported settings for cookies.
       NOTREACHED();
-      return u"";
+      break;
   }
+
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 std::unique_ptr<views::TableLayout> SetupTableLayout() {
@@ -138,8 +149,8 @@ SiteDataRowView::SiteDataRowView(
     SetFaviconImage(favicon);
 
   // TODO(crbug.com/1344787): Use proper formatting of the host.
-  auto* label = AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(origin.host())));
+  std::u16string host_name = base::UTF8ToUTF16(origin.host());
+  auto* label = AddChildView(std::make_unique<views::Label>(host_name));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   auto* delete_button_container = AddChildView(std::make_unique<views::View>());
@@ -150,7 +161,8 @@ SiteDataRowView::SiteDataRowView(
                               base::Unretained(this)),
           kTrashCanIcon, kIconSize));
   views::InstallCircleHighlightPathGenerator(delete_button_);
-  delete_button_->SetAccessibleName(u"Delete storage");
+  delete_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_DELETE_BUTTON_TOOLTIP, host_name));
   delete_button_->SetVisible(setting_ != CONTENT_SETTING_BLOCK);
   delete_button_->SetProperty(views::kElementIdentifierKey, kDeleteButton);
 
@@ -159,7 +171,8 @@ SiteDataRowView::SiteDataRowView(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
       kBrowserToolsIcon, kIconSize));
-  menu_button_->SetAccessibleName(u"Open context menu");
+  menu_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_CONTEXT_MENU_TOOLTIP, host_name));
   menu_button_->SetProperty(views::kElementIdentifierKey, kMenuButton);
   views::InstallCircleHighlightPathGenerator(menu_button_);
 
@@ -189,21 +202,27 @@ void SiteDataRowView::OnMenuIconClicked() {
     // TODO(crbug.com/1344787): Consider clearing the data before blocking the
     // site to have a clean slate.
     builder.AddMenuItem(
-        ui::ImageModel(), u"Don't allow",
+        ui::ImageModel(),
+        l10n_util::GetStringUTF16(
+            IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCK_MENU_ITEM),
         base::BindRepeating(&SiteDataRowView::OnBlockMenuItemClicked,
                             base::Unretained(this)),
         ui::DialogModelMenuItem::Params().SetId(kBlockMenuItem));
   }
   if (setting_ != CONTENT_SETTING_ALLOW) {
     builder.AddMenuItem(
-        ui::ImageModel(), u"Allow",
+        ui::ImageModel(),
+        l10n_util::GetStringUTF16(
+            IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_MENU_ITEM),
         base::BindRepeating(&SiteDataRowView::OnAllowMenuItemClicked,
                             base::Unretained(this)),
         ui::DialogModelMenuItem::Params().SetId(kAllowMenuItem));
   }
   if (setting_ != CONTENT_SETTING_SESSION_ONLY) {
     builder.AddMenuItem(
-        ui::ImageModel(), u"Clear when you close Chrome",
+        ui::ImageModel(),
+        l10n_util::GetStringUTF16(
+            IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SESSION_ONLY_MENU_ITEM),
         base::BindRepeating(&SiteDataRowView::OnClearOnExitMenuItemClicked,
                             base::Unretained(this)),
         ui::DialogModelMenuItem::Params().SetId(kClearOnExitMenuItem));

@@ -9468,8 +9468,78 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!-- Page specific site data dialog (redesign of Collected cookies window) -->
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_TITLE" desc="The title of `Cookies and site data` dialog (previously 'Cookies in use' dialog). The dialog contains a list of sites that have access to storage or are blocked from accessing it. It also has controls for each site to allow access, block access or allow access for a session only.">
+        Cookies and site data
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_TITLE" desc="This is a title of a section that displayed a list of sites that have accessed storage and are considered first-party to the site the user is currently visiting. The label is shown in the `Cookies and site data` dialog.">
+        From the site you’re viewing
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_FIRST_PARTY_SUBTITLE" desc="This is a subtitle of a section that displayed a list of sites that have accessed storage and are considered first-party to the site the user is currently visiting. It provides more information about what first party sites means. The label is shown in the `Cookies and site data` dialog.">
+        Including sites from the same domain, for example, google.com and mail.google.com. Sites you’re viewing can save data on your device.
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_TITLE" desc="This is a title of a section that displayed a list of sites that have accessed storage and are considered third-party to the site the user is currently visiting. The label is shown in the `Cookies and site data` dialog.">
+        From other sites
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_THIRD_PARTY_SUBTITLE" desc="This is a subtitle of a section that displayed a list of sites that have accessed storage and are considered third-party to the site the user is currently visiting. It provides more information about what third party sites means. The label is shown in the `Cookies and site data` dialog.">
+        A site you’re viewing can embed content from other sites, for example images, ads, and text. These embedded sites can save data on your device.
+      </message>
+
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL" desc="The text used to explain to users that there are no cookies set and that this is the place where they will be shown. The label is shown in the `Cookies and site data` dialog.">
         If a site uses cookies, it will appear here
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_MENU_ITEM"
+          desc="The name of a menu item that allows storage access (creates an allow exception) for a site. The menu item is shown in the `Cookies and site data` dialog.">
+        Allow to save data
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCK_MENU_ITEM"
+          desc="The name of a menu item that blocks storage access (creates a block exception) for a site. The menu item is shown in the `Cookies and site data` dialog.">
+        Don’t allow to save data
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SESSION_ONLY_MENU_ITEM"
+          desc="The name of a menu item that allows storage access and clears the storage set after user closes Chrome (creates a 'Clear on exit' exception) for a site. The menu item is shown in the `Cookies and site data` dialog.">
+        Delete when you close all windows
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE"
+          desc="The label that is shown under a site's name to indicate the state of storage access for the site: the site is allowed to access storage. It isn't visible by default, only if user has allowed previously blocked site. The label is shown in the `Cookies and site data` dialog.">
+        Allowed to save data to your device
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE"
+          desc="The label that is shown under a site's name to indicate the state of storage access for the site: the site is not allowed to access storage. The label is shown in the `Cookies and site data` dialog.">
+        Not allowed to save data to your device
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_SESSION_ONLY_STATE_SUBTITLE"
+          desc="The label that is shown under a site's name to indicate the state of storage access for the site: the site is allowed to access storage but the accessed storage is cleared when user closes Chrome. The label is shown in the `Cookies and site data` dialog.">
+        Delete data when you close all windows
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE"
+          desc="The label that is shown under a site's name to indicate the state of storage access for the site: the site has only accessed partitioned storage. Partitioned storage set in a context of one site can only be accessed in that site's context and cannot be accessed when embedded on other sites. The label is shown in the `Cookies and site data` dialog.">
+        Data is treated the same as the site you’re viewing
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_SESSION_ONLY_STATE_SUBTITLE"
+          desc="The label that is shown under a site's name to indicate the state of storage access for the site: the site has only accessed partitioned storage and the accessed storage is cleared when user closes Chrome. Partitioned storage set in a context of one site can only be accessed in that site's context and cannot be accessed when embedded on other sites. The label is shown in the `Cookies and site data` dialog.">
+        Delete data when you close all windows. Data is treated the same as the site you’re viewing
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_CONTEXT_MENU_TOOLTIP"
+          desc="The tooltip that is used for 3-dot menu button that opens a menu with actions to control storage access for the site. The button is shown in the `Cookies and site data` dialog.">
+        More actions for <ph name="SITE_NAME">$1<ex>example.com</ex></ph>
+      </message>
+
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_DELETE_BUTTON_TOOLTIP"
+          desc="The tooltip that is used for button button that clears storage accessed by the site. The button is shown in the `Cookies and site data` dialog.">
+        Delete saved data for <ph name="SITE_NAME">$1<ex>example.com</ex></ph>
       </message>
 
       <!-- Accessiblility strings for Infobars in Views -->

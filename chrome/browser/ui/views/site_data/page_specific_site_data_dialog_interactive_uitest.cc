@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/webui_interaction_test_util.h"
 #include "components/page_info/core/features.h"
@@ -22,6 +23,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tree/tree_view.h"
@@ -35,6 +37,7 @@
 #endif
 
 namespace {
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebUIInteractionTestUtilTestId);
 const char kFirstPartyAllowedRow[] = "FirstPartyAllowedRow";
 const char kThirdPartyBlockedRow[] = "ThirdPartyBlockedRow";
@@ -204,15 +207,18 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                                 GetContext(element),
                                 kPageSpecificSiteDataDialogEmptyStateLabel));
                       })))
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementName(kFirstPartyAllowedRow)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             EXPECT_EQ(GetStateLabelText(element), u"Allowed");
-                             test_util_.PressButton(
-                                 GetMenuButtonElement(element));
-                           })))
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetElementName(kFirstPartyAllowedRow)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(
+                            GetStateLabelText(element),
+                            l10n_util::GetStringUTF16(
+                                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
+                        test_util_.PressButton(GetMenuButtonElement(element));
+                      })))
           // Verify that the menu has "Block" and "Clear on exit" menu
           // items.
           .AddStep(CheckIsElementPresent(SiteDataRowView::kBlockMenuItem))
@@ -307,15 +313,18 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                         views::InteractionSequenceViews::NameView(
                             sequence, row_view, kThirdPartyBlockedRow);
                       })))
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementName(kThirdPartyBlockedRow)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             EXPECT_EQ(GetStateLabelText(element), u"Blocked");
-                             test_util_.PressButton(
-                                 GetMenuButtonElement(element));
-                           })))
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetElementName(kThirdPartyBlockedRow)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(
+                            GetStateLabelText(element),
+                            l10n_util::GetStringUTF16(
+                                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
+                        test_util_.PressButton(GetMenuButtonElement(element));
+                      })))
           // Verify that the menu has "Clear on exit" and "Allow" menu items.
           .AddStep(CheckIsElementPresent(SiteDataRowView::kClearOnExitMenuItem))
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -344,17 +353,20 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        .SetElementName(kThirdPartyBlockedRow))
           // Verify that UI has updated as a result of clicking on a menu item
           // and the correct histogram was logged. Open the content menu again.
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementName(kThirdPartyBlockedRow)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence*,
-                               ui::TrackedElement* element) {
-                             EXPECT_EQ(GetStateLabelText(element), u"Allowed");
-                             ExpectActionCount(
-                                 histograms,
-                                 PageSpecificSiteDataDialogAction::kSiteAllowed,
-                                 1);
-                           })))
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetElementName(kThirdPartyBlockedRow)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(
+                            GetStateLabelText(element),
+                            l10n_util::GetStringUTF16(
+                                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
+                        ExpectActionCount(
+                            histograms,
+                            PageSpecificSiteDataDialogAction::kSiteAllowed, 1);
+                      })))
           // Verify that after allowing a site, it can be deleted.
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementName(kThirdPartyBlockedRow)
