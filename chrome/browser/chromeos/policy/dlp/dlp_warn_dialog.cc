@@ -84,7 +84,7 @@ constexpr int kConfidentialContentLineHeight = 20;
 constexpr int kConfidentialContentListMaxHeight = 240;
 
 // Returns the destination name for |dst_component|
-const std::u16string GetDestinationForFiles(
+const std::u16string GetDestinationComponentForFiles(
     DlpRulesManager::Component dst_component) {
   switch (dst_component) {
     case DlpRulesManager::Component::kArc:
@@ -116,6 +116,12 @@ const std::u16string GetDialogButtonOkLabelForFiles(
     case DlpFilesController::FileAction::kUpload:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
+    case DlpFilesController::FileAction::kCopy:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON);
+    case DlpFilesController::FileAction::kMove:
+      return l10n_util::GetStringUTF16(
+          IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
@@ -137,6 +143,12 @@ const std::u16string GetTitleForFiles(
     case DlpFilesController::FileAction::kUpload:
       return l10n_util::GetPluralStringFUTF16(
           IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, files_number);
+    case DlpFilesController::FileAction::kCopy:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_COPY_WARN_TITLE, files_number);
+    case DlpFilesController::FileAction::kMove:
+      return l10n_util::GetPluralStringFUTF16(
+          IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, files_number);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
@@ -157,7 +169,8 @@ const std::u16string GetMessageForFiles(
           l10n_util::GetPluralStringFUTF16(
               // Download action is only allowed for one file.
               IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
-          GetDestinationForFiles(options.destination_component.value()),
+          GetDestinationComponentForFiles(
+              options.destination_component.value()),
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kUpload:
       DCHECK(!options.destination_pattern->empty());
@@ -167,14 +180,32 @@ const std::u16string GetMessageForFiles(
               options.confidential_files.size()),
           base::UTF8ToUTF16(options.destination_pattern.value()),
           /*offset=*/nullptr);
+    case DlpFilesController::FileAction::kCopy:
+      DCHECK(!options.destination_pattern->empty());
+      return base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE,
+              options.confidential_files.size()),
+          GetDestinationComponentForFiles(
+              options.destination_component.value()),
+          /*offset=*/nullptr);
+    case DlpFilesController::FileAction::kMove:
+      DCHECK(!options.destination_pattern->empty());
+      return base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE,
+              options.confidential_files.size()),
+          GetDestinationComponentForFiles(
+              options.destination_component.value()),
+          /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
     case DlpFilesController::FileAction::kUnknown:  // TODO(crbug.com/1361900)
                                                     // Set proper text when file
                                                     // action is unknown
       std::u16string destination;
       if (options.destination_component.has_value()) {
-        destination =
-            GetDestinationForFiles(options.destination_component.value());
+        destination = GetDestinationComponentForFiles(
+            options.destination_component.value());
       } else {
         DCHECK(!options.destination_pattern->empty());
         destination = base::UTF8ToUTF16(options.destination_pattern.value());

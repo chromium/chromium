@@ -238,6 +238,7 @@ void DlpFilesController::GetDisallowedTransfers(
   }
 
   request.set_destination_url(destination.path().value());
+  // TODO(crbug.com/1356109): Set move or copy action instead of transfer.
   request.set_file_action(::dlp::FileAction::TRANSFER);
   auto return_transfers_callback =
       base::BindOnce(&DlpFilesController::ReturnDisallowedTransfers,

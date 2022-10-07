@@ -47,7 +47,9 @@ class DlpFilesController {
     kDownload = 1,
     kTransfer = 2,
     kUpload = 3,
-    kMaxValue = kUpload
+    kCopy = 4,
+    kMove = 5,
+    kMaxValue = kMove
   };
 
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
