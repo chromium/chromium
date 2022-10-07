@@ -134,6 +134,11 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   }
 
   if (user) {
+    // After the default avatar images are moved to cloud, the user
+    // should have image bytes when using default images.
+    CHECK(!ash::features::IsAvatarsCloudMigrationEnabled() ||
+          !user->HasDefaultImage() || user->has_image_bytes());
+
     if (user->has_image_bytes()) {
       if (user->image_format() == user_manager::UserImage::FORMAT_PNG) {
         return GetUserImageFrame(user->image_bytes(), user->image_format(),
@@ -150,12 +155,8 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
-    // After the default avatar images are moved to cloud, the user
-    // will have image bytes when using default images. Therefore, after
-    // the migration, remove this if case.
+    // After the avatar cloud migration, remove this if case.
     if (user->HasDefaultImage()) {
-      if (ash::features::IsAvatarsCloudMigrationEnabled())
-        LOG(ERROR) << "No image bytes found for default user image";
       return LoadUserImageFrameForScaleFactor(
           default_user_image::GetDefaultImageResourceId(user->image_index()),
           frame, scale_factor);
