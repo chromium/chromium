@@ -152,6 +152,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // unrecognized id was specified or if this was called during a screen update.
   static ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id);
 
+  // Returns the device id for the given `device_name`.
+  static int64_t DeviceIdFromDeviceName(const wchar_t* device_name);
+
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
 

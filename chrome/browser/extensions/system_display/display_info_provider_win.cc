@@ -18,6 +18,7 @@
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
 #include "ui/display/win/dpi.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -46,9 +47,8 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
     return FALSE;
 
   std::string id = base::NumberToString(
-      base::PersistentHash(base::WideToUTF8(monitor_info.szDevice)));
+      display::win::ScreenWin::DeviceIdFromDeviceName(monitor_info.szDevice));
   (*device_id_to_name)[id] = base::WideToUTF8(device.DeviceString);
-
   return TRUE;
 }
 

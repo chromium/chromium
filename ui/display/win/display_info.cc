@@ -47,7 +47,8 @@ DisplayInfo::~DisplayInfo() = default;
 
 // static
 int64_t DisplayInfo::DeviceIdFromDeviceName(const wchar_t* device_name) {
-  return static_cast<int64_t>(base::Hash(base::WideToUTF8(device_name)));
+  return static_cast<int64_t>(
+      base::PersistentHash(base::WideToUTF8(device_name)));
 }
 
 bool DisplayInfo::operator==(const DisplayInfo& rhs) const {

@@ -723,6 +723,11 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
                                                          : *it;
 }
 
+// static
+int64_t ScreenWin::DeviceIdFromDeviceName(const wchar_t* device_name) {
+  return display::win::DisplayInfo::DeviceIdFromDeviceName(device_name);
+}
+
 HWND ScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
   NOTREACHED();
   return nullptr;
