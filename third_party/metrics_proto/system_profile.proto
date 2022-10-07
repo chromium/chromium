@@ -153,7 +153,7 @@ message SystemProfileProto {
   repeated fixed32 command_line_key_hash = 38 [packed = true];
 
   // Information on the user's operating system.
-  // Next tag: 9
+  // Next tag: 11
   message OS {
     // The user's operating system. This should be one of:
     // - 'Android'
@@ -225,6 +225,38 @@ message SystemProfileProto {
       LIGHT_MODE_APP = 4;
     }
     optional DarkModeState dark_mode_state = 8 [default = UNKNOWN];
+
+    // The value returned by the "XDG_SESSION_TYPE" environment variable, as
+    // translated to a base::nix::SessionType, this field is only set on Linux.
+    // Some features are enabled/disabled depending on this value.
+    enum XdgSessionType {
+      UNSET = 0;
+      OTHER_SESSION_TYPE = 1;
+      UNSPECIFIED = 2;
+      TTY = 3;
+      X11 = 4;
+      WAYLAND = 5;
+      MIR = 6;
+    }
+    optional XdgSessionType xdg_session_type = 9;
+
+    // The value returned by the "XDG_CURRENT_DESKTOP" environment variable, as
+    // translated to a base::nix::DesktopEnvironment. Note that all KDE values
+    // from that enum are bucketed together. This field is only set on Linux.
+    // Some bugs reproduce only in particular desktop environments.
+    enum XdgCurrentDesktop {
+      OTHER = 0;
+      CINNAMON = 1;
+      DEEPIN = 2;
+      GNOME = 3;
+      KDE = 4;
+      PANTHEON = 5;
+      UKUI = 6;
+      UNITY = 7;
+      XFCE = 8;
+      LXQT = 9;
+    }
+    optional XdgCurrentDesktop xdg_current_desktop = 10;
   }
   optional OS os = 5;
 
