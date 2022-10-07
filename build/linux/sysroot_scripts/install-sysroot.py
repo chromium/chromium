@@ -80,14 +80,15 @@ def main(args):
   parser.add_option('--all', action='store_true',
                     help='Install all sysroot images (useful when updating the'
                          ' images)')
-  parser.add_option('--print-hash',
+  parser.add_option('--print-key',
                     help='Print the hash of the sysroot for the given arch.')
   options, _ = parser.parse_args(args)
 
-  if options.print_hash:
-    arch = options.print_hash
-    print(GetSysrootDict(DEFAULT_TARGET_PLATFORM,
-                         ARCH_TRANSLATIONS.get(arch, arch))['Sha1Sum'])
+  if options.print_key:
+    arch = options.print_key
+    print(
+        GetSysrootDict(DEFAULT_TARGET_PLATFORM,
+                       ARCH_TRANSLATIONS.get(arch, arch))['Key'])
     return 0
   if options.arch:
     InstallSysroot(DEFAULT_TARGET_PLATFORM,

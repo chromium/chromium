@@ -8,6 +8,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DISTRO=debian
 DIST=bullseye
 
+# This number is appended to the sysroot key to cause full rebuilds.  It
+# should be incremented when removing packages or patching existing packages.
+# It should not be incremented when adding packages.
+SYSROOT_RELEASE=0
+
 ARCHIVE_TIMESTAMP=20220331T153654Z
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian/$ARCHIVE_TIMESTAMP/"
 APT_SOURCES_LIST=(

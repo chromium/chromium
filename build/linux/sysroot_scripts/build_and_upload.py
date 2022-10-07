@@ -40,7 +40,7 @@ def get_proc_output(args):
   return subprocess.check_output(args, encoding='utf-8').strip()
 
 
-def build_and_upload(script_path, distro, release, arch, lock):
+def build_and_upload(script_path, distro, release, key, arch, lock):
   script_dir = os.path.dirname(os.path.realpath(__file__))
 
   run_script([script_path, 'BuildSysroot' + arch])
@@ -56,6 +56,7 @@ def build_and_upload(script_path, distro, release, arch, lock):
       'Tarball': tarball,
       'Sha1Sum': sha1sum,
       'SysrootDir': sysroot_dir,
+      'Key': key,
   }
   with lock:
     fname = os.path.join(script_dir, 'sysroots.json')
@@ -76,11 +77,12 @@ def main():
     script_path = os.path.join(script_dir, filename)
     distro = get_proc_output([script_path, 'PrintDistro'])
     release = get_proc_output([script_path, 'PrintRelease'])
+    key = get_proc_output([script_path, 'PrintKey'])
     architectures = get_proc_output([script_path, 'PrintArchitectures'])
     for arch in architectures.split('\n'):
-      proc = multiprocessing.Process(
-          target=build_and_upload,
-          args=(script_path, distro, release, arch, lock))
+      proc = multiprocessing.Process(target=build_and_upload,
+                                     args=(script_path, distro, release, key,
+                                           arch, lock))
       procs.append(("%s %s (%s)" % (distro, release, arch), proc))
       proc.start()
   for _, proc in procs:
