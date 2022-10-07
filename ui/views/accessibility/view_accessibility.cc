@@ -205,10 +205,13 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
       data->SetNameExplicitlyEmpty();
   }
 
-  if (custom_data_.HasStringAttribute(
-          ax::mojom::StringAttribute::kDescription)) {
-    data->SetDescription(custom_data_.GetStringAttribute(
-        ax::mojom::StringAttribute::kDescription));
+  std::string description;
+  if (custom_data_.GetStringAttribute(ax::mojom::StringAttribute::kDescription,
+                                      &description)) {
+    if (!description.empty())
+      data->SetDescription(description);
+    else
+      data->SetDescriptionExplicitlyEmpty();
   }
 
   if (custom_data_.GetHasPopup() != ax::mojom::HasPopup::kFalse)
@@ -241,8 +244,8 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     // accessible name. Only use the tooltip as the accessible description if
     // it's different from the name, otherwise users might be puzzled as to why
     // their screen reader is announcing the same thing twice.
-    if (tooltip !=
-        data->GetString16Attribute(ax::mojom::StringAttribute::kName)) {
+    if (!tooltip.empty() && tooltip != data->GetString16Attribute(
+                                           ax::mojom::StringAttribute::kName)) {
       data->SetDescription(base::UTF16ToUTF8(tooltip));
     }
   }
@@ -426,8 +429,8 @@ void ViewAccessibility::OverrideDescription(
       description_from == ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty)
       << "If the description is being removed to improve the user experience, "
          "|description_from| should be set to |kAttributeExplicitlyEmpty|.";
-  custom_data_.SetDescription(description);
   custom_data_.SetDescriptionFrom(description_from);
+  custom_data_.SetDescription(description);
 }
 
 void ViewAccessibility::OverrideDescription(

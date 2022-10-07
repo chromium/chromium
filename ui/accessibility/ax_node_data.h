@@ -190,9 +190,21 @@ struct AX_BASE_EXPORT AXNodeData {
   // practice that should not be applied in production code.
   void SetNameExplicitlyEmpty();
 
-  // Adds the description attribute or replaces it if already present.
+  // Adds the description attribute or replaces it if already present. Also
+  // sets the DescriptionFrom attribute if not already set. Note that
+  // `SetDescription` must only be used to set a non-empty description, a
+  // condition enforced by a DCHECK. If an object should not have an accessible
+  // description in order to improve the user experience, use
+  // `SetDescriptionExplicitlyEmpty`.
   void SetDescription(const std::string& description);
   void SetDescription(const std::u16string& description);
+
+  // Indicates this object should not have an accessible description. One use
+  // case is to prevent screen readers from speaking redundant information, for
+  // instance if a View's description comes from a tooltip whose content is
+  // similar to that View's accessible name, the screen reader presentation may
+  // be overly verbose.
+  void SetDescriptionExplicitlyEmpty();
 
   // Adds the value attribute or replaces it if already present.
   void SetValue(const std::string& value);

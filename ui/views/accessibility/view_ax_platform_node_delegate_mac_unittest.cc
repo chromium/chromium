@@ -28,7 +28,10 @@ class AccessibleView : public View {
     node_data->role = role_;
     node_data->SetNameChecked(name_);
     if (description_) {
-      node_data->SetDescription(*description_);
+      if (description_->empty())
+        node_data->SetDescriptionExplicitlyEmpty();
+      else
+        node_data->SetDescription(*description_);
     }
   }
 

@@ -55,7 +55,8 @@ void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // A valid role must be set prior to setting the name.
   node_data->role = ax::mojom::Role::kImage;
   node_data->SetNameChecked(accessible_name_);
-  node_data->SetDescription(accessible_description_);
+  if (!accessible_description_.empty())
+    node_data->SetDescription(accessible_description_);
 }
 
 std::u16string NetworkTrayView::GetAccessibleNameString() const {

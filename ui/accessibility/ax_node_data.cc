@@ -688,10 +688,36 @@ void AXNodeData::SetNameExplicitlyEmpty() {
 
 void AXNodeData::SetDescription(const std::string& description) {
   AddStringAttribute(ax::mojom::StringAttribute::kDescription, description);
+
+  // It is possible for `SetDescription` to be called after
+  // `SetDescriptionExplicitlyEmpty`.
+  if (!description.empty() &&
+      GetDescriptionFrom() ==
+          ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
+    RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+  }
+
+  DCHECK_EQ(description.empty(),
+            GetDescriptionFrom() ==
+                ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty)
+      << "If the accessible description of Role::" << role << " class: '"
+      << GetStringAttribute(ax::mojom::StringAttribute::kClassName)
+      << "' is being set to an empty string to improve the user experience, "
+         "call SetDescriptionExplicitlyEmpty instead of SetDescription.";
+
+  if (HasIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom))
+    return;
+
+  SetDescriptionFrom(ax::mojom::DescriptionFrom::kAriaDescription);
 }
 
 void AXNodeData::SetDescription(const std::u16string& description) {
   SetDescription(base::UTF16ToUTF8(description));
+}
+
+void AXNodeData::SetDescriptionExplicitlyEmpty() {
+  SetDescriptionFrom(ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  SetDescription(std::string());
 }
 
 void AXNodeData::SetValue(const std::string& value) {
