@@ -7,6 +7,8 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -14,12 +16,18 @@ class Profile;
 
 namespace web_app {
 
+class WebAppProvider;
+class WebApp;
+
 // Runs a series of icon health checks for |app_id|.
 class WebAppIconDiagnostic {
  public:
   struct Result {
     bool has_empty_downloaded_icon_sizes = false;
     bool has_generated_icon_flag = false;
+    bool has_generated_icon_flag_false_negative = false;
+    bool has_generated_icon_bitmap = false;
+    bool has_empty_icon_bitmap = false;
     // TODO(https://crbug.com/1353659): Add more checks.
   };
 
@@ -29,8 +37,28 @@ class WebAppIconDiagnostic {
   void Run(base::OnceCallback<void(absl::optional<Result>)> result_callback);
 
  private:
-  raw_ptr<Profile> profile_ = nullptr;
-  AppId app_id_;
+  base::WeakPtr<WebAppIconDiagnostic> GetWeakPtr();
+
+  void CallResultCallback();
+
+  void LoadIconFromProvider(
+      WebAppIconManager::ReadIconWithPurposeCallback callback);
+  void DiagnoseGeneratedOrEmptyIconBitmap(base::OnceClosure done_callback,
+                                          IconPurpose purpose,
+                                          SkBitmap icon_bitmap);
+
+  const raw_ptr<Profile> profile_;
+  const AppId app_id_;
+
+  const raw_ptr<WebAppProvider> provider_;
+  const raw_ptr<const WebApp> app_;
+
+  absl::optional<SquareSizePx> icon_size_;
+
+  absl::optional<Result> result_;
+  base::OnceCallback<void(absl::optional<Result>)> result_callback_;
+
+  base::WeakPtrFactory<WebAppIconDiagnostic> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app

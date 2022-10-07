@@ -90,12 +90,17 @@ void WebAppIconHealthChecks::RecordDiagnosticResults() {
                               count(&Result::has_empty_downloaded_icon_sizes));
   base::UmaHistogramCounts100("WebApp.Icon.AppsWithGeneratedIconFlag",
                               count(&Result::has_generated_icon_flag));
+  base::UmaHistogramCounts100("WebApp.Icon.AppsWithGeneratedIconBitmap",
+                              count(&Result::has_generated_icon_bitmap));
+  base::UmaHistogramCounts100(
+      "WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
+      count(&Result::has_generated_icon_flag_false_negative));
+  base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconBitmap",
+                              count(&Result::has_empty_icon_bitmap));
   // TODO(https://crbug.com/1353659):
   // Measure:
   // - Bitmap:
-  //   - WebApp.Icon.AppsWithGeneratedIconFlagFalsePositive
   //   - WebApp.Icon.AppsWithFallbackGreyBox
-  //   - WebApp.Icon.AppsWithEmptyBitmap
   //   - WebApp.Icon.AppsWithEmptyBitmapFile
   // - Aggregate:
   //   - WebApp.Icon.AppsWithBrokenState

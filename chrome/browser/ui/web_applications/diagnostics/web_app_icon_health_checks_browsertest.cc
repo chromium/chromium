@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -57,12 +58,19 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
         run_loop.QuitClosure());
     run_loop.Run();
 
-    histogram_tester.ExpectUniqueSample(
-        "WebApp.Icon.AppsWithEmptyDownloadedIconSizes",
-        expected_result.has_empty_downloaded_icon_sizes, 1);
-    histogram_tester.ExpectUniqueSample("WebApp.Icon.AppsWithGeneratedIconFlag",
-                                        expected_result.has_generated_icon_flag,
-                                        1);
+    auto check_histogram = [&](const char* histogram, bool subresult) {
+      histogram_tester.ExpectUniqueSample(histogram, subresult, 1);
+    };
+    check_histogram("WebApp.Icon.AppsWithEmptyDownloadedIconSizes",
+                    expected_result.has_empty_downloaded_icon_sizes);
+    check_histogram("WebApp.Icon.AppsWithGeneratedIconFlag",
+                    expected_result.has_generated_icon_flag);
+    check_histogram("WebApp.Icon.AppsWithGeneratedIconBitmap",
+                    expected_result.has_generated_icon_bitmap);
+    check_histogram("WebApp.Icon.AppsWithGeneratedIconFlagFalseNegative",
+                    expected_result.has_generated_icon_flag_false_negative);
+    check_histogram("WebApp.Icon.AppsWithEmptyIconBitmap",
+                    expected_result.has_empty_icon_bitmap);
   }
 
   AppId InstallWebAppAndAwaitAppService(const char* path) {
@@ -86,12 +94,42 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
   CreateUpdateScope()->UpdateApp(app_id)->SetDownloadedIconSizes(
       IconPurpose::ANY, {});
   RunIconChecksWithMetricExpectations(
-      {.has_empty_downloaded_icon_sizes = true});
+      {.has_empty_downloaded_icon_sizes = true, .has_empty_icon_bitmap = true});
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, GeneratedIcon) {
   InstallWebAppAndAwaitAppService("/web_apps/get_manifest.html?no_icons.json");
-  RunIconChecksWithMetricExpectations({.has_generated_icon_flag = true});
+  RunIconChecksWithMetricExpectations(
+      {.has_generated_icon_flag = true, .has_generated_icon_bitmap = true});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
+                       GeneratedIconFlagFalseNegative) {
+  AppId app_id = InstallWebAppAndAwaitAppService(
+      "/web_apps/get_manifest.html?no_icons.json");
+  // In https://crbug.com/1317922 manifest update erroneously set
+  // is_generated_icon to false.
+  CreateUpdateScope()->UpdateApp(app_id)->SetIsGeneratedIcon(false);
+  RunIconChecksWithMetricExpectations(
+      {.has_generated_icon_flag_false_negative = true,
+       .has_generated_icon_bitmap = true});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_EmptyIconBitmap) {
+  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  RunIconChecksWithMetricExpectations({});
+
+  // Delete the icons.
+  base::RunLoop run_loop;
+  WebAppProvider::GetForTest(profile())->icon_manager().DeleteData(
+      app_id,
+      base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  // Restart to reload the app.
+}
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyIconBitmap) {
+  RunIconChecksWithMetricExpectations({.has_empty_icon_bitmap = true});
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
