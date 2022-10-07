@@ -5,10 +5,19 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_PASSWORD_STORE_BACKEND_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FAKE_PASSWORD_STORE_BACKEND_H_
 
+#include <map>
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace password_manager {
 
@@ -31,9 +40,13 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   // "upsert" mechanism to create non-existing credentials, use the constructor
   // that allows to pass `UpdateAlwaysSucceeds(true)`.
   FakePasswordStoreBackend();
-  explicit FakePasswordStoreBackend(IsAccountStore is_account_store);
-  FakePasswordStoreBackend(IsAccountStore is_account_store,
-                           UpdateAlwaysSucceeds update_always_succeeds);
+  explicit FakePasswordStoreBackend(
+      IsAccountStore is_account_store,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+  FakePasswordStoreBackend(
+      IsAccountStore is_account_store,
+      UpdateAlwaysSucceeds update_always_succeeds,
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
   ~FakePasswordStoreBackend() override;
 
   void Clear();
@@ -81,6 +94,10 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
 
+  // Returns the task runner. Defaults to
+  // `base::SequencedTaskRunner::GetCurrentDefault` if none is injected.
+  const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() const;
+
   LoginsResult GetAllLoginsInternal();
   LoginsResult GetAutofillableLoginsInternal();
   LoginsResult FillMatchingLoginsInternal(
@@ -98,6 +115,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   const UpdateAlwaysSucceeds update_always_succeeds_{false};
 
   PasswordMap stored_passwords_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace password_manager

@@ -106,6 +106,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // saved passwords.
   void Init();
 
+  // Returns whether there are ongoing fetch requests to credential stores.
+  bool IsWaitingForPasswordStore() const;
+
   // Removes the credential and all its duplicates from the store.
   bool RemoveCredential(const CredentialUIEntry& credential);
 
@@ -207,6 +210,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
+
+  // The number of stores from which no updates have been received yet.
+  int pending_store_updates = 0;
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 

@@ -118,6 +118,11 @@ void SavedPasswordsCapabilitiesFetcher::OnEdited(const PasswordForm& form) {
 
 void SavedPasswordsCapabilitiesFetcher::OnSavedPasswordsChanged(
     SavedPasswordsPresenter::SavedPasswordsView passwords) {
+  // If there is still a pending update from the `SavedPasswordsPresenter`,
+  // return early and perform the updates once that is in.
+  if (saved_passwords_presenter_->IsWaitingForPasswordStore())
+    return;
+
   if (is_cache_initialized_) {
     // Request an update only if the updated set of passwords origins differ
     // from the ones in cache.

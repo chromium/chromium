@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
 
 #include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -12,10 +13,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
 #include "components/password_manager/core/browser/capabilities_service.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +41,7 @@ using testing::WithArgs;
 constexpr char kOriginWithScript1[] = "https://example.com";
 constexpr char kOriginWithScript2[] = "https://mobile.example.com";
 constexpr char kOriginWithScript3[] = "https://test.com";
+constexpr char kOriginWithScript4[] = "https://test.co.uk";
 constexpr char kOriginWithoutScript[] = "https://no-script.com";
 constexpr char kExampleApp[] = "android://hash@com.example.app";
 constexpr char kHttpOriginWithScript[] = "http://scheme-example.com";
@@ -60,6 +64,10 @@ url::Origin GetOriginWithScript2() {
 
 url::Origin GetOriginWithScript3() {
   return url::Origin::Create(GURL(kOriginWithScript3));
+}
+
+url::Origin GetOriginWithScript4() {
+  return url::Origin::Create(GURL(kOriginWithScript4));
 }
 
 url::Origin GetOriginWithoutScript() {
@@ -111,52 +119,79 @@ class MockCapabilitiesService : public password_manager::CapabilitiesService {
 class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
  public:
   SavedPasswordsCapabilitiesFetcherTest() {
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
-    FillPasswordStore();
+    profile_store_ = base::MakeRefCounted<PasswordStore>(
+        std::make_unique<FakePasswordStoreBackend>(IsAccountStore(false)));
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+
+    // The account store is on its own task runner to allow simulating delays.
+    account_store_ = base::MakeRefCounted<PasswordStore>(
+        std::make_unique<FakePasswordStoreBackend>(
+            IsAccountStore(true), account_store_backend_runner()));
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+    FillProfileStore();
+    FillAccountStore();
+    CreateFetcher();
+  }
+
+  ~SavedPasswordsCapabilitiesFetcherTest() override {
+    account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+    RunUntilAllThreadsIdle();
+  }
+
+  void CreateFetcher(bool use_account_store = false) {
     auto capabilities_service =
         std::make_unique<NiceMock<MockCapabilitiesService>>();
     mock_capabilities_service_ = capabilities_service.get();
     fetcher_ = std::make_unique<SavedPasswordsCapabilitiesFetcher>(
         std::move(capabilities_service),
-        std::make_unique<SavedPasswordsPresenter>(store_));
+        std::make_unique<SavedPasswordsPresenter>(
+            profile_store_, use_account_store ? account_store_ : nullptr));
     RunUntilIdle();
   }
 
-  ~SavedPasswordsCapabilitiesFetcherTest() override {
-    store_->ShutdownOnUIThread();
-    task_env_.RunUntilIdle();
-  }
-
-  void FillPasswordStore() {
-    store_->AddLogin(
+  void FillProfileStore() {
+    profile_store_->AddLogin(
         MakeSavedPassword(kOriginWithScript1, kUsername1, kPassword1));
-    store_->AddLogin(
+    profile_store_->AddLogin(
         MakeSavedPassword(kOriginWithScript2, kUsername1, kPassword2));
-    store_->AddLogin(
+    profile_store_->AddLogin(
         MakeSavedPassword(kOriginWithScript3, kUsername2, kPassword3));
-    store_->AddLogin(
+    profile_store_->AddLogin(
         MakeSavedPassword(kOriginWithoutScript, kUsername2, kPassword4));
-    store_->AddLogin(MakeSavedAndroidPassword(kExampleApp, kUsername2,
-                                              "Example App", kOriginWithScript1,
-                                              kPassword1));
+    profile_store_->AddLogin(
+        MakeSavedAndroidPassword(kExampleApp, kUsername2, "Example App",
+                                 kOriginWithScript1, kPassword1));
     // Set http url. Should not be made part of the cache.
-    store_->AddLogin(
+    profile_store_->AddLogin(
         MakeSavedPassword(kHttpOriginWithScript, kUsername2, kPassword3));
 
     RunUntilIdle();
   }
 
+  void FillAccountStore() {
+    account_store_->AddLogin(
+        MakeSavedPassword(kOriginWithScript4, kUsername1, kPassword2));
+    RunUntilAllThreadsIdle();
+  }
+
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
+  void RunUntilAllThreadsIdle() {
+    account_store_backend_runner()->RunUntilIdle();
+    RunUntilIdle();
+  }
 
   void CheckScriptAvailabilityDefaultResults() {
-    EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-    EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-    EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-    EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+    EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+    EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+    EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+    EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
   }
 
   void RequestSingleScriptAvailability(const url::Origin& origin) {
-    fetcher_->FetchScriptAvailability(
+    fetcher()->FetchScriptAvailability(
         origin,
         base::BindOnce(&SavedPasswordsCapabilitiesFetcherTest::RecordResponse,
                        base::Unretained(this), origin));
@@ -185,13 +220,28 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
             GetOriginWithScript3()}));
   }
 
+  const scoped_refptr<base::TestMockTimeTaskRunner>&
+  account_store_backend_runner() {
+    return account_store_backend_runner_;
+  }
+
+  SavedPasswordsCapabilitiesFetcher* fetcher() {
+    if (!fetcher_)
+      CreateFetcher();
+    return fetcher_.get();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Used to simulate delayed responses by the account store.
+  scoped_refptr<base::TestMockTimeTaskRunner> account_store_backend_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
   base::flat_map<url::Origin, bool> recorded_responses_;
   raw_ptr<NiceMock<MockCapabilitiesService>> mock_capabilities_service_;
-  scoped_refptr<TestPasswordStore> store_ =
-      base::MakeRefCounted<TestPasswordStore>();
+  scoped_refptr<PasswordStore> profile_store_ = nullptr;
+  scoped_refptr<PasswordStore> account_store_ = nullptr;
   std::unique_ptr<SavedPasswordsCapabilitiesFetcher> fetcher_;
 };
 
@@ -200,33 +250,33 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
       .WillOnce(RunOnceCallback<1>(std::set<url::Origin>()));
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
   base::HistogramTester histogram_tester;
   ExpectCacheRefresh();
-  EXPECT_TRUE(fetcher_->IsCacheStale());
-  fetcher_->PrewarmCache();
-  EXPECT_FALSE(fetcher_->IsCacheStale());
+  EXPECT_TRUE(fetcher()->IsCacheStale());
+  fetcher()->PrewarmCache();
+  EXPECT_FALSE(fetcher()->IsCacheStale());
 
   // The cache is not stale yet. No new request is expected.
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
       .Times(0);
 
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
-  EXPECT_FALSE(fetcher_->IsCacheStale());
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
+  EXPECT_FALSE(fetcher()->IsCacheStale());
   CheckScriptAvailabilityDefaultResults();
 
   // Make cache stale again.
   RunUntilIdle();
   task_env_.AdvanceClock(base::Minutes(10));
-  EXPECT_TRUE(fetcher_->IsCacheStale());
+  EXPECT_TRUE(fetcher()->IsCacheStale());
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability(
                   UnorderedElementsAre(
@@ -234,8 +284,8 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
                       GetOriginWithScript3(), GetOriginWithoutScript()),
                   _))
       .WillOnce(RunOnceCallback<1>(std::set<url::Origin>()));
-  fetcher_->PrewarmCache();
-  EXPECT_FALSE(fetcher_->IsCacheStale());
+  fetcher()->PrewarmCache();
+  EXPECT_FALSE(fetcher()->IsCacheStale());
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
@@ -246,11 +296,42 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PrewarmCache) {
       2u);
 }
 
+TEST_F(SavedPasswordsCapabilitiesFetcherTest, RefreshScriptsWithTwoStores) {
+  // Explicitly force the fetcher creation to ensure it has an account store.
+  CreateFetcher(/*use_account_store=*/true);
+  EXPECT_TRUE(fetcher()->IsCacheStale());
+
+  base::MockCallback<base::OnceClosure> callback;
+  fetcher()->RefreshScriptsIfNecessary(callback.Get());
+  // The cache remains stale while the account store has not answered.
+  RunUntilIdle();
+  EXPECT_TRUE(fetcher()->IsCacheStale());
+
+  EXPECT_CALL(
+      *mock_capabilities_service_,
+      QueryPasswordChangeScriptAvailability(
+          UnorderedElementsAre(GetOriginWithScript1(), GetOriginWithScript2(),
+                               GetOriginWithScript3(), GetOriginWithoutScript(),
+                               GetOriginWithScript4()),
+          _))
+      .WillOnce(RunOnceCallback<1>(
+          std::set<url::Origin>{GetOriginWithScript1(), GetOriginWithScript2(),
+                                GetOriginWithScript3()}));
+  EXPECT_CALL(callback, Run);
+  RunUntilAllThreadsIdle();
+  EXPECT_FALSE(fetcher()->IsCacheStale());
+
+  // The cache is not stale anymore. No new request is expected.
+  EXPECT_CALL(*mock_capabilities_service_,
+              QueryPasswordChangeScriptAvailability)
+      .Times(0);
+}
+
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, NoPrewarmCache) {
   base::HistogramTester histogram_tester;
   // Run bulk check with no cache prewarming. Expect necessary full refresh.
   ExpectCacheRefresh();
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
   CheckScriptAvailabilityDefaultResults();
 
   histogram_tester.ExpectUniqueSample(
@@ -275,14 +356,14 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
                   _))
       .WillOnce(MoveArg<1>(&callback));
 
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // Bulk check started before server's prewarming response. No new request
   // should be triggered if the cache is |kWaiting|.
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
       .Times(0);
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
 
   // Resolve prewarming callback.
   std::move(callback).Run(std::set<url::Origin>{
@@ -304,13 +385,13 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
       .Times(0);
   // |IsScriptAvailable| does not trigger any network requests and returns the
   // default value (false).
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   ExpectCacheRefresh();
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
 
   // Cache is ready.
   CheckScriptAvailabilityDefaultResults();
@@ -322,10 +403,10 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, IsScriptAvailable) {
   // Make cache stale again.
   task_env_.AdvanceClock(base::Minutes(10));
   // |IsScriptAvailable| does not trigger refetching and returns false.
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.SavedPasswordsCapabilitiesFetcher.CacheState",
@@ -340,10 +421,10 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
        EnablePasswordDomainCapabilitiesFlag) {
   // |kEnablePasswordDomainCapabilities| flag is disabled, |IsScriptAvailable|
   // returns the default value (false).
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_FALSE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(
@@ -351,37 +432,37 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 
   // |kEnablePasswordDomainCapabilities| is enabled and all scripts should have
   // capabilities enabled.
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   ExpectCacheRefresh();
-  fetcher_->RefreshScriptsIfNecessary(base::DoNothing());
+  fetcher()->RefreshScriptsIfNecessary(base::DoNothing());
 
   // Cache is ready.
   // All scripts should have capabilities regardless of the server response.
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 
   // Make cache stale again.
   task_env_.AdvanceClock(base::Minutes(10));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript1()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript2()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithScript3()));
-  EXPECT_TRUE(fetcher_->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript2()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript3()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
   ExpectCacheRefresh();
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // Add a new login to the store. Cache should go stale.
   PasswordForm password_form =
       MakeSavedPassword("https://foo.com", kUsername1, kPassword1);
-  store_->AddLogin(password_form);
+  profile_store_->AddLogin(password_form);
   RunUntilIdle();
 
   // Expect refresh of stored creentials including the new one.
@@ -393,17 +474,17 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, PasswordStoreUpdate) {
                                url::Origin::Create(GURL("https://foo.com"))),
           _))
       .WillOnce(RunOnceCallback<1>(std::set<url::Origin>()));
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // Updated a credential, cache should *not* go stale.
   password_form.password_value = kPassword2;
-  store_->UpdateLogin(password_form);
+  profile_store_->UpdateLogin(password_form);
   RunUntilIdle();
 
   EXPECT_CALL(*mock_capabilities_service_,
               QueryPasswordChangeScriptAvailability)
       .Times(0);
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest,
@@ -419,7 +500,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
                   _))
       .WillOnce(MoveArg<1>(&callback));
 
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // FetchScriptAvailability before server's prewarming response. No new request
   // should be triggered if the cache is |kWaiting|. Requests should be answered
@@ -453,13 +534,13 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
   base::HistogramTester histogram_tester;
 
   ExpectCacheRefresh();
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // Add a new login to the store. Cache should go stale and
   // FetchScriptAvailability should trigger single origin requests.
   PasswordForm password_form =
       MakeSavedPassword("https://foo.com", kUsername1, kPassword1);
-  store_->AddLogin(password_form);
+  profile_store_->AddLogin(password_form);
   RunUntilIdle();
 
   url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
@@ -512,7 +593,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 
   // Refresh full cache.
   ExpectCacheRefresh();
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // The cache is not stale. No new request is expected.
   EXPECT_CALL(*mock_capabilities_service_,
@@ -556,7 +637,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest,
 }
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
-  base::Value::Dict debug_info = fetcher_->GetDebugInformationForInternals();
+  base::Value::Dict debug_info = fetcher()->GetDebugInformationForInternals();
   const std::string* engine = debug_info.FindString("engine");
   EXPECT_TRUE(engine);
   EXPECT_EQ("hash-prefix-based lookup", *engine);
@@ -567,9 +648,9 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
   EXPECT_EQ("stale", *cache_state);
 
   ExpectCacheRefresh();
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
-  debug_info = fetcher_->GetDebugInformationForInternals();
+  debug_info = fetcher()->GetDebugInformationForInternals();
   cache_state = debug_info.FindString("cache state");
   EXPECT_TRUE(cache_state);
   EXPECT_EQ("ready", *cache_state);
@@ -578,7 +659,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
   RunUntilIdle();
   task_env_.AdvanceClock(base::Minutes(10));
 
-  debug_info = fetcher_->GetDebugInformationForInternals();
+  debug_info = fetcher()->GetDebugInformationForInternals();
   cache_state = debug_info.FindString("cache state");
   EXPECT_TRUE(cache_state);
   EXPECT_EQ("stale", *cache_state);
@@ -593,8 +674,8 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
                   _))
       .WillOnce(MoveArg<1>(&callback));
 
-  fetcher_->PrewarmCache();
-  debug_info = fetcher_->GetDebugInformationForInternals();
+  fetcher()->PrewarmCache();
+  debug_info = fetcher()->GetDebugInformationForInternals();
   cache_state = debug_info.FindString("cache state");
   EXPECT_TRUE(cache_state);
   EXPECT_EQ("waiting", *cache_state);
@@ -606,10 +687,10 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, DebugInformationForInternals) {
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, CheckCacheEntries) {
   ExpectCacheRefresh();
-  fetcher_->PrewarmCache();
+  fetcher()->PrewarmCache();
 
   // Cache should now contain four entries.
-  base::Value::List cache_entries = fetcher_->GetCacheEntries();
+  base::Value::List cache_entries = fetcher()->GetCacheEntries();
   EXPECT_EQ(cache_entries.size(), 4u);
 
   std::vector<std::string> urls;
@@ -633,7 +714,7 @@ TEST_F(SavedPasswordsCapabilitiesFetcherTest, CheckCacheEntries) {
   features.InitAndEnableFeature(
       password_manager::features::kForceEnablePasswordDomainCapabilities);
   // Now all domains should return available scripts.
-  cache_entries = fetcher_->GetCacheEntries();
+  cache_entries = fetcher()->GetCacheEntries();
   EXPECT_EQ(cache_entries.size(), 4u);
   EXPECT_TRUE(base::ranges::all_of(
       cache_entries.cbegin(), cache_entries.cend(),

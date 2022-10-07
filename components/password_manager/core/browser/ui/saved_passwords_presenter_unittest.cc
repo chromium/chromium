@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,9 +16,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -29,6 +33,7 @@ namespace password_manager {
 
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -1671,6 +1676,131 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, UndoRemoval) {
   presenter().UndoLastRemoval();
   RunUntilIdle();
   EXPECT_THAT(presenter().GetSavedCredentials(), ElementsAre(credential));
+}
+
+namespace {
+
+class SavedPasswordsPresenterInitializationTest : public ::testing::Test {
+ protected:
+  SavedPasswordsPresenterInitializationTest() {
+    profile_store_ = base::MakeRefCounted<PasswordStore>(
+        std::make_unique<FakePasswordStoreBackend>(
+            IsAccountStore(false), profile_store_backend_runner()));
+    profile_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+
+    account_store_ = base::MakeRefCounted<PasswordStore>(
+        std::make_unique<FakePasswordStoreBackend>(
+            IsAccountStore(true), account_store_backend_runner()));
+    account_store_->Init(/*prefs=*/nullptr,
+                         /*affiliated_match_helper=*/nullptr);
+  }
+
+  ~SavedPasswordsPresenterInitializationTest() override {
+    account_store_->ShutdownOnUIThread();
+    profile_store_->ShutdownOnUIThread();
+
+    ProcessBackendTasks(account_store_backend_runner());
+    ProcessBackendTasks(profile_store_backend_runner());
+  }
+
+  void ProcessBackendTasks(scoped_refptr<base::TestMockTimeTaskRunner> runner) {
+    runner->RunUntilIdle();
+    task_env_.RunUntilIdle();
+  }
+
+  scoped_refptr<PasswordStore> profile_store() { return profile_store_; }
+  scoped_refptr<PasswordStore> account_store() { return account_store_; }
+
+  const scoped_refptr<base::TestMockTimeTaskRunner>&
+  profile_store_backend_runner() {
+    return profile_store_backend_runner_;
+  }
+  const scoped_refptr<base::TestMockTimeTaskRunner>&
+  account_store_backend_runner() {
+    return account_store_backend_runner_;
+  }
+
+ private:
+  // `TestMockTimeTaskRunner` is used to simulate different response times
+  // between stores.
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<base::TestMockTimeTaskRunner> profile_store_backend_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  scoped_refptr<base::TestMockTimeTaskRunner> account_store_backend_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  scoped_refptr<PasswordStore> profile_store_ = nullptr;
+  scoped_refptr<PasswordStore> account_store_ = nullptr;
+};
+
+}  // namespace
+
+TEST_F(SavedPasswordsPresenterInitializationTest, InitWithTwoStores) {
+  SavedPasswordsPresenter presenter{profile_store(), account_store()};
+
+  // As long as no `Init` is called, there are no pending requests.
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+
+  presenter.Init();
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+}
+
+TEST_F(SavedPasswordsPresenterInitializationTest, InitWithOneStore) {
+  SavedPasswordsPresenter presenter{profile_store(), nullptr};
+
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+
+  presenter.Init();
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+}
+
+TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesProfileStore) {
+  SavedPasswordsPresenter presenter{profile_store(), account_store()};
+  presenter.Init();
+  ProcessBackendTasks(profile_store_backend_runner());
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+
+  // Adding a new credential to the profile store will cause new pending
+  // updates.
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
+  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
+
+  profile_store()->AddLogin(form);
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
+  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
+  ProcessBackendTasks(profile_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(form));
+}
+
+TEST_F(SavedPasswordsPresenterInitializationTest, PendingUpdatesAccountStore) {
+  SavedPasswordsPresenter presenter{profile_store(), account_store()};
+  presenter.Init();
+  ProcessBackendTasks(profile_store_backend_runner());
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+
+  PasswordForm form =
+      CreateTestPasswordForm(PasswordForm::Store::kAccountStore);
+  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
+  account_store()->AddLogin(form);
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_TRUE(presenter.IsWaitingForPasswordStore());
+  EXPECT_THAT(presenter.GetSavedPasswords(), IsEmpty());
+  ProcessBackendTasks(account_store_backend_runner());
+  EXPECT_FALSE(presenter.IsWaitingForPasswordStore());
+  EXPECT_THAT(presenter.GetSavedPasswords(), Contains(form));
 }
 
 }  // namespace password_manager

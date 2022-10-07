@@ -141,12 +141,18 @@ SavedPasswordsPresenter::~SavedPasswordsPresenter() {
 }
 
 void SavedPasswordsPresenter::Init() {
+  pending_store_updates++;
   profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
   if (account_store_) {
+    pending_store_updates++;
     account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
         weak_ptr_factory_.GetWeakPtr());
   }
+}
+
+bool SavedPasswordsPresenter::IsWaitingForPasswordStore() const {
+  return pending_store_updates != 0;
 }
 
 void SavedPasswordsPresenter::RemoveObservers() {
@@ -469,6 +475,7 @@ void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
 void SavedPasswordsPresenter::OnLoginsChanged(
     PasswordStoreInterface* store,
     const PasswordStoreChangeList& changes) {
+  pending_store_updates++;
   store->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
 }
@@ -476,6 +483,7 @@ void SavedPasswordsPresenter::OnLoginsChanged(
 void SavedPasswordsPresenter::OnLoginsRetained(
     PasswordStoreInterface* store,
     const std::vector<PasswordForm>& retained_passwords) {
+  pending_store_updates++;
   store->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
 }
@@ -492,6 +500,8 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
   bool is_account_store = store == account_store_.get();
+  pending_store_updates--;
+  DCHECK_GE(pending_store_updates, 0);
 
   // Remove cached credentials for current store.
   base::EraseIf(sort_key_to_password_forms_,
