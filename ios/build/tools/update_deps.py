@@ -74,7 +74,7 @@ CANONICAL_PUBLIC_TARGETS = {
 
 
 def gn_format(gn_files):
-    """Format the file |gn_files|."""
+    """Format the file `gn_files`."""
     subprocess.check_call(["gn", "format"] + gn_files)
 
 
@@ -96,6 +96,27 @@ def remove_redundant_target_name(dependant, target_name):
     return target_name
 
 
+def cleanup_redundant_deps(deps):
+    """If the list of `deps` contains only targets redundant with each
+    others, this method will return only one of them. Otherwise, return
+    all targets.
+    """
+    if len(deps) != 2:
+        """Currently only handle the string grit case where gn finds the
+        the string header in <path>:<target>_strings and
+        <path>:<target>_string_grit, so don't check if there is not
+        exactly two targets.
+        """
+        return deps
+    if (deps[1].endswith("_strings") and
+        deps[0] == deps[1] + "_grit"):
+        return [deps[0]]
+    if (deps[0].endswith("_strings") and
+        deps[1] == deps[0] + "_grit"):
+        return [deps[1]]
+    return deps
+
+
 def extract_missing_dependency(error, prefix, patterns, dependant_line,
                              dependee_line):
     """Parse gn error message for missing direct dependency."""
@@ -109,12 +130,16 @@ def extract_missing_dependency(error, prefix, patterns, dependant_line,
     if prefix and not dependant.startswith(prefix):
         return False, None
 
-    dependees = []
+    dependees_with_target = []
     index = dependee_line
     while lines[dependee_line].strip().startswith("//"):
-        dependees.append(remove_redundant_target_name(
-                             dependant, lines[dependee_line].strip()))
+        dependees_with_target.append(lines[dependee_line].strip())
         dependee_line += 1
+    dependees_with_target = cleanup_redundant_deps(dependees_with_target)
+
+    dependees = []
+    for dependee in dependees_with_target:
+        dependees.append(remove_redundant_target_name(dependant, dependee))
 
     return True, (dependant, dependees)
 
