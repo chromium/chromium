@@ -124,7 +124,6 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   AnimateShow();
 
   widget_observation_.Observe(multitask_menu_widget_.get());
-  display_observer_.emplace(this);
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
@@ -202,14 +201,18 @@ void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
                                                         bool active) {
   // `widget` gets deactivated when the window state changes.
   DCHECK(widget_observation_.IsObservingSource(widget));
-  if (!active) {
+  if (!active)
     event_handler_->ResetMultitaskMenu();
-  }
 }
 
 void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
+  // The destruction of `multitask_menu_widget_` causes an activation change
+  // which can send out a work area change.
+  if (!multitask_menu_widget_)
+    return;
+
   // Ignore changes to displays that aren't showing the menu.
   if (display.id() !=
       display::Screen::GetScreen()

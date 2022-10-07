@@ -10,6 +10,7 @@
 #include "ash/style/system_toast_style.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
+#include "base/check_is_test.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/features.h"
@@ -129,9 +130,15 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
     return;
   }
 
-  auto* frame_header = chromeos::FrameHeader::Get(
-      views::Widget::GetWidgetForNativeWindow(window));
-  // Frame might not be in tests.
+  // Some tests create windows without a backing widget (`CreateTestWindow()`),
+  // and some widgets may not have a header, test or custom header.
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  if (!widget) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  auto* frame_header = chromeos::FrameHeader::Get(widget);
   if (!frame_header)
     return;
 
@@ -216,7 +223,11 @@ void MultitaskMenuNudgeController::OnWindowTargetTransformChanging(
 void MultitaskMenuNudgeController::OnWindowStackingChanged(
     aura::Window* window) {
   DCHECK_EQ(window_, window);
-  DCHECK(nudge_widget_);
+
+  // Stacking may change during the construction of the widget, at which
+  // `nudge_widget_` would still be null.
+  if (!nudge_widget_)
+    return;
 
   // Ensure the `nudge_widget_` is always above `window_`. We dont worry about
   // the pulse layer since it is not a window, and won't get stacked on top of

@@ -78,7 +78,7 @@ class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver,
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  display::ScopedOptionalDisplayObserver display_observer_{this};
 
   views::UniqueWidgetPtr multitask_menu_widget_ =
       std::make_unique<views::Widget>();
