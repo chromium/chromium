@@ -161,7 +161,7 @@ def _ValidateExperimentConfig(experiment_config, create_message_fn):
     return create_message_fn('Expecting list for platforms')
   supported_platforms = [
       'android', 'android_weblayer', 'android_webview', 'chromeos',
-      'chromeos_lacros', 'ios', 'linux', 'mac', 'windows'
+      'chromeos_lacros', 'fuchsia', 'ios', 'linux', 'mac', 'windows'
   ]
   experiment_platforms = experiment_config['platforms']
   unsupported_platforms = list(

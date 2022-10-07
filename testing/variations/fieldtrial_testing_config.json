@@ -2,10 +2,11 @@
     "AccuracyTips": [
         {
             "platforms": [
+                "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
-                "windows",
-                "chromeos"
+                "windows"
             ],
             "experiments": [
                 {
@@ -72,6 +73,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -124,6 +126,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -851,6 +854,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -900,6 +904,7 @@
         {
             "platforms": [
                 "android",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -920,6 +925,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1011,6 +1017,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1032,6 +1039,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1053,6 +1061,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1089,6 +1098,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1111,6 +1121,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1134,6 +1145,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1155,6 +1167,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1176,6 +1189,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1197,6 +1211,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1217,6 +1232,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1256,6 +1272,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1278,6 +1295,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1300,6 +1318,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1322,6 +1341,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1344,6 +1364,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1365,6 +1386,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1386,6 +1408,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1413,6 +1436,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1433,6 +1457,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1475,6 +1500,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1548,6 +1574,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -1569,6 +1596,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1643,6 +1671,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1661,6 +1690,7 @@
         {
             "platforms": [
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1713,6 +1743,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1749,6 +1780,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1768,6 +1800,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1787,6 +1820,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1806,6 +1840,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1897,6 +1932,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -1977,6 +2013,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2001,6 +2038,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2033,6 +2071,7 @@
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2053,6 +2092,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2098,6 +2138,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2133,6 +2174,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -2156,6 +2198,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2182,6 +2225,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -2201,6 +2245,7 @@
         {
             "platforms": [
                 "chromeos",
+                "fuchsia",
                 "linux"
             ],
             "experiments": [
@@ -2220,6 +2265,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2257,6 +2303,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2308,11 +2355,12 @@
                 "android",
                 "android_webview",
                 "android_weblayer",
-                "windows",
-                "mac",
                 "chromeos",
                 "chromeos_lacros",
-                "linux"
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -2422,6 +2470,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2457,6 +2506,7 @@
     "ChromeAppsDeprecationWinMacLinux": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2478,6 +2528,7 @@
     "ChromeLabs": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2629,6 +2680,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2647,6 +2699,7 @@
     "ChromeWideEchoCancellation": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2888,6 +2941,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -2986,6 +3040,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3008,6 +3063,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3026,15 +3082,16 @@
     "ConsolidateMetricsServiceInitialLogLogic": [
         {
             "platforms": [
-                "windows",
-                "mac",
-                "linux",
+                "android",
+                "android_webview",
+                "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
-                "android",
+                "fuchsia",
                 "ios",
-                "android_webview",
-                "android_weblayer"
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -3051,6 +3108,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3255,9 +3313,10 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
-                "windows",
+                "fuchsia",
+                "linux",
                 "mac",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
@@ -3457,6 +3516,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3477,6 +3537,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3498,6 +3559,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3548,6 +3610,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3567,6 +3630,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3622,6 +3686,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3651,6 +3716,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3675,8 +3741,9 @@
         {
             "platforms": [
                 "android",
-                "chromeos_lacros",
                 "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3702,8 +3769,9 @@
         {
             "platforms": [
                 "android",
-                "chromeos_lacros",
                 "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3728,8 +3796,9 @@
         {
             "platforms": [
                 "android",
-                "chromeos_lacros",
                 "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -3754,6 +3823,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3778,6 +3848,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3795,6 +3866,7 @@
     "DesktopSharePreview": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3814,6 +3886,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3838,11 +3911,12 @@
     "DesktopViewsWidgetLayering": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros"
+                "windows"
             ],
             "experiments": [
                 {
@@ -3857,9 +3931,10 @@
     "DestroySystemProfiles": [
         {
             "platforms": [
-                "windows",
+                "fuchsia",
                 "linux",
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -3939,6 +4014,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3956,6 +4032,7 @@
     "DisableGles2ForOopR": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -3991,6 +4068,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4027,6 +4105,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4044,6 +4123,7 @@
     "DiscountConsentV2": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4068,6 +4148,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4088,6 +4169,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4108,6 +4190,7 @@
                 "android",
                 "android_weblayer",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4177,6 +4260,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4194,10 +4278,11 @@
     "DownloadUXRedesign": [
         {
             "platforms": [
-                "windows",
-                "mac",
                 "chromeos_lacros",
-                "linux"
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -4250,6 +4335,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4285,6 +4371,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -4321,6 +4408,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -4344,6 +4432,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "windows"
             ],
@@ -4381,6 +4470,7 @@
         {
             "platforms": [
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4400,6 +4490,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4599,6 +4690,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -4620,6 +4712,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4652,10 +4745,11 @@
     "ForwardMemoryPressureEventsToGpuProcess": [
         {
             "platforms": [
-                "mac",
-                "linux",
                 "chromeos",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "fuchsia",
+                "mac",
+                "linux"
             ],
             "experiments": [
                 {
@@ -4719,6 +4813,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4797,6 +4892,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4820,6 +4916,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4839,6 +4936,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -4978,6 +5076,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux"
             ],
             "experiments": [
@@ -5007,6 +5106,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -5027,6 +5127,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -5048,6 +5149,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -5815,13 +5917,14 @@
     "IdentifiabilityStudy": [
         {
             "platforms": [
-                "windows",
-                "mac",
+                "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
-                "android",
-                "android_webview"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -5852,6 +5955,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -5876,6 +5980,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -5912,6 +6017,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -5933,6 +6039,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -5975,6 +6082,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -6081,6 +6189,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6105,6 +6214,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6130,6 +6240,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6152,6 +6263,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6170,6 +6282,7 @@
     "JourneysSearchTermsKeywords": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6195,6 +6308,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6358,6 +6472,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -6379,6 +6494,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -6428,6 +6544,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6448,6 +6565,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6512,6 +6630,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6687,6 +6806,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6706,6 +6826,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6726,6 +6847,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac"
             ],
@@ -6760,6 +6882,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -6780,6 +6903,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6819,6 +6943,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6885,6 +7010,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6905,6 +7031,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6927,6 +7054,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6947,6 +7075,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -6967,6 +7096,7 @@
                 "android",
                 "android_webview",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -6988,6 +7118,7 @@
                 "android",
                 "android_webview",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -7008,6 +7139,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7042,6 +7174,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7073,6 +7206,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7092,6 +7226,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7112,6 +7247,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -7132,6 +7268,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7241,6 +7378,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7274,8 +7412,9 @@
         {
             "platforms": [
                 "android",
-                "chromeos_lacros",
                 "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -7382,6 +7521,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7401,6 +7541,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7466,6 +7607,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7488,6 +7630,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7599,6 +7742,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux"
             ],
             "experiments": [
@@ -7724,6 +7868,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7766,6 +7911,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "windows"
             ],
@@ -7823,6 +7969,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7863,6 +8010,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7899,6 +8047,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -7995,6 +8144,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8062,6 +8212,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8083,6 +8234,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8102,6 +8254,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8128,6 +8281,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -8150,6 +8304,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8176,6 +8331,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8193,11 +8349,12 @@
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
-                "linux",
-                "windows",
                 "chromeos",
                 "chromeos_lacros",
-                "mac"
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -8238,6 +8395,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8256,10 +8414,11 @@
         {
             "platforms": [
                 "windows",
-                "mac",
-                "linux",
                 "chromeos",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "fuchsia",
+                "mac",
+                "linux"
             ],
             "experiments": [
                 {
@@ -8294,6 +8453,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8333,10 +8493,11 @@
     "PrivacyBudgetClockSkewMetrics": [
         {
             "platforms": [
-                "windows",
-                "mac",
+                "android",
+                "fuchsia",
                 "linux",
-                "android"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -8368,11 +8529,12 @@
     "PrivacyGuide2": [
         {
             "platforms": [
-                "linux",
-                "windows",
                 "chromeos",
                 "chromeos_lacros",
-                "mac"
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -8387,6 +8549,7 @@
     "PrivacyGuideHats": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8430,6 +8593,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8540,6 +8704,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8577,6 +8742,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -8679,10 +8845,11 @@
         {
             "platforms": [
                 "windows",
-                "mac",
-                "linux",
                 "chromeos",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "fuchsia",
+                "mac",
+                "linux"
             ],
             "experiments": [
                 {
@@ -8733,6 +8900,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -8756,6 +8924,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -8778,6 +8947,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8800,6 +8970,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8823,6 +8994,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -8873,6 +9045,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -8892,11 +9065,12 @@
     "ReportCertificateErrors": [
         {
             "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
-                "windows",
-                "android",
-                "chromeos"
+                "windows"
             ],
             "experiments": [
                 {
@@ -8914,6 +9088,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows",
@@ -9013,6 +9188,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9050,6 +9226,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9075,6 +9252,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9139,6 +9317,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9210,6 +9389,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -9246,6 +9426,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9385,6 +9566,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9411,6 +9593,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -9431,6 +9614,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9453,6 +9637,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9491,6 +9676,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9540,6 +9726,7 @@
         {
             "platforms": [
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9802,6 +9989,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9824,6 +10012,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -9894,6 +10083,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9932,6 +10122,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -9968,6 +10159,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10040,6 +10232,7 @@
         {
             "platforms": [
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10061,6 +10254,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10081,6 +10275,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10115,6 +10310,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10141,6 +10337,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10166,6 +10363,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10203,6 +10401,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10228,6 +10427,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10265,6 +10465,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10299,6 +10500,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10318,6 +10520,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10338,6 +10541,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10360,6 +10564,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10382,6 +10587,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10416,6 +10622,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10464,6 +10671,7 @@
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10504,6 +10712,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10531,6 +10740,7 @@
                 "ios",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10555,6 +10765,7 @@
                 "ios",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10575,10 +10786,11 @@
     "UnifiedAutoplay": [
         {
             "platforms": [
-                "linux",
-                "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
@@ -10615,6 +10827,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10635,6 +10848,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10656,6 +10870,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10693,6 +10908,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10712,6 +10928,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10732,6 +10949,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10771,6 +10989,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10789,6 +11008,7 @@
     "UserCloudSigninRestrictionPolicyFetcher": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10810,6 +11030,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10827,11 +11048,12 @@
     "V8ConcurrentSparkplug": [
         {
             "platforms": [
-                "linux",
-                "windows",
-                "mac",
                 "chromeos_lacros",
-                "chromeos"
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -10943,6 +11165,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10966,6 +11189,7 @@
                 "android",
                 "android_webview",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -10992,6 +11216,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11020,6 +11245,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11051,6 +11277,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11082,6 +11309,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11135,6 +11363,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11170,6 +11399,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11227,6 +11457,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "ios",
                 "android",
@@ -11357,6 +11588,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11484,6 +11716,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11503,6 +11736,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11523,6 +11757,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11540,9 +11775,10 @@
     "WebRTC-Aec3DelayEstimateSmoothingDelayFoundOverride": [
         {
             "platforms": [
-                "windows",
+                "fuchsia",
+                "linux",
                 "mac",
-                "linux"
+                "windows"
             ],
             "experiments": [
                 {
@@ -11560,6 +11796,7 @@
     "WebRTC-Aec3DelayEstimatorDetectPreEcho": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11574,11 +11811,12 @@
     "WebRTC-Aec3TransparentModeHmm": [
         {
             "platforms": [
-                "windows",
-                "mac",
                 "chromeos",
                 "chromeos_lacros",
-                "linux"
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -11594,6 +11832,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "ios",
                 "android",
@@ -11612,6 +11851,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -11631,6 +11871,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11648,12 +11889,13 @@
     "WebRTC-Bwe-LossBasedBweV2": [
         {
             "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "linux",
                 "android",
-                "android_webview"
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -11674,6 +11916,7 @@
                 "android",
                 "android_webview",
                 "chromeos",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -11693,6 +11936,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "ios",
                 "linux",
                 "mac",
@@ -11715,6 +11959,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "ios",
                 "android",
@@ -11735,6 +11980,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11753,6 +11999,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "android",
                 "android_weblayer",
@@ -11772,6 +12019,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "ios",
                 "android",
@@ -11791,6 +12039,7 @@
                 "mac",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "android",
                 "android_weblayer",
@@ -11830,6 +12079,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "windows"
             ],
@@ -11848,6 +12098,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11867,6 +12118,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11889,6 +12141,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -11914,6 +12167,7 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -12085,6 +12339,7 @@
     "WhatsNewPageExperiment": [
         {
             "platforms": [
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
