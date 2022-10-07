@@ -115,7 +115,12 @@ class CORE_EXPORT NGPhysicalFragment
     return IsBox() && BoxType() == NGBoxType::kColumnBox;
   }
   bool IsPageBox() const { return IsBox() && BoxType() == NGBoxType::kPageBox; }
-  bool IsFragmentainerBox() const { return IsColumnBox() || IsPageBox(); }
+  static bool IsFragmentainerBoxType(NGBoxType type) {
+    return type == NGBoxType::kColumnBox || type == NGBoxType::kPageBox;
+  }
+  bool IsFragmentainerBox() const {
+    return IsBox() && IsFragmentainerBoxType(BoxType());
+  }
   bool IsColumnSpanAll() const {
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsColumnSpanAll();

@@ -652,6 +652,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       may_resume_in_next_outer_fragmentainer = true;
   }
 
+  bool shrink_to_fit_column_block_size = false;
+
   // We balance if block-size is unconstrained, or when we're explicitly told
   // to. Note that the block-size may be constrained by outer fragmentation
   // contexts, not just by a block-size specified on this multicol container.
@@ -667,8 +669,17 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // don't take up more space than there's room for in the outer fragmentation
     // context.
     if (column_size.block_size > available_outer_space ||
-        column_size.block_size == kIndefiniteSize)
+        column_size.block_size == kIndefiniteSize) {
+      // If the block-size of the inner multicol is unconstrained, we'll let the
+      // outer fragmentainer context constrain it. However, if the inner
+      // multicol only has content for one column (in the current row), and only
+      // fills it partially, we need to shrink its block-size, to make room for
+      // any content that follows the inner multicol, rather than eating the
+      // entire fragmentainer.
+      if (column_size.block_size == kIndefiniteSize)
+        shrink_to_fit_column_block_size = true;
       column_size.block_size = available_outer_space;
+    }
   }
 
   DCHECK_GE(column_size.block_size, LayoutUnit());
@@ -700,6 +711,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
   const NGLayoutResult* result = nullptr;
   absl::optional<NGBreakAppeal> min_break_appeal;
+  LayoutUnit intrinsic_block_size_contribution;
 
   do {
     const NGBlockBreakToken* column_break_token = next_column_token;
@@ -720,6 +732,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     LayoutUnit minimal_space_shortage = kIndefiniteSize;
 
     min_break_appeal = absl::nullopt;
+    intrinsic_block_size_contribution = LayoutUnit();
 
     do {
       // Lay out one column. Each column will become a fragment.
@@ -740,6 +753,29 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       result = child_algorithm.Layout();
       const auto& column =
           To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+      intrinsic_block_size_contribution = column_size.block_size;
+      if (shrink_to_fit_column_block_size) {
+        // Shrink-to-fit the row block-size contribution from the first column
+        // if we're nested inside another fragmentation context. The column
+        // block-size that we use in auto-filled (non-balanced) inner multicol
+        // containers with unconstrained block-size is set to the available
+        // block-size in the outer fragmentation context. If we end up with just
+        // one inner column in this row, we should shrink the inner multicol
+        // container fragment, so that it doesn't take up the entire outer
+        // fragmentainer needlessly. So clamp it to the total block-size of the
+        // contents in the column (including overflow).
+        //
+        // TODO(layout-dev): It would be slightly nicer if we actually shrunk
+        // the block-size of the column fragment (in
+        // FinishFragmentationForFragmentainer()) instead of just cropping the
+        // block-size of the multicol container here, but that would cause
+        // trouble for out-of-flow positioned descendants that extend past the
+        // end of in-flow content, which benefit from "full" column block-size.
+        intrinsic_block_size_contribution =
+            std::min(intrinsic_block_size_contribution,
+                     result->BlockSizeForFragmentation());
+        shrink_to_fit_column_block_size = false;
+      }
 
       if (!has_oof_fragmentainer_descendants && balance_columns &&
           NGFragmentedOutOfFlowData::
@@ -973,7 +1009,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // (which will also be used as layout position for subsequent content), and
     // reset the margin strut (it has already been incorporated into the
     // offset).
-    intrinsic_block_size_ = row_offset + column_size.block_size;
+    intrinsic_block_size_ = row_offset + intrinsic_block_size_contribution;
     *margin_strut = NGMarginStrut();
   }
 

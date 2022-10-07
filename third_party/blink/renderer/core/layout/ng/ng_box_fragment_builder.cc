@@ -542,20 +542,26 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
         break_token_ = NGBlockBreakToken::Create(this);
     }
 
-    OverflowClipAxes block_axis =
-        GetWritingDirection().IsHorizontal() ? kOverflowClipY : kOverflowClipX;
-    if ((To<NGBlockNode>(node_).GetOverflowClipAxes() & block_axis) ||
-        is_block_size_for_fragmentation_clamped_) {
-      // If block-axis overflow is clipped, ignore child overflow and just use
-      // the border-box size of the fragment itself. Also do this if the node
-      // was forced to stay in the current fragmentainer. We'll ignore overflow
-      // in such cases, because children are allowed to overflow without
-      // affecting fragmentation then.
-      block_size_for_fragmentation_ = FragmentBlockSize();
-    } else {
-      // Include the border-box size of the fragment itself.
-      block_size_for_fragmentation_ =
-          std::max(block_size_for_fragmentation_, FragmentBlockSize());
+    // Make some final adjustments to block-size for fragmentation, unless this
+    // is a fragmentainer (so that we only include the block-size propagated
+    // from children in that case).
+    if (!NGPhysicalFragment::IsFragmentainerBoxType(box_type_)) {
+      OverflowClipAxes block_axis = GetWritingDirection().IsHorizontal()
+                                        ? kOverflowClipY
+                                        : kOverflowClipX;
+      if ((To<NGBlockNode>(node_).GetOverflowClipAxes() & block_axis) ||
+          is_block_size_for_fragmentation_clamped_) {
+        // If block-axis overflow is clipped, ignore child overflow and just use
+        // the border-box size of the fragment itself. Also do this if the node
+        // was forced to stay in the current fragmentainer. We'll ignore
+        // overflow in such cases, because children are allowed to overflow
+        // without affecting fragmentation then.
+        block_size_for_fragmentation_ = FragmentBlockSize();
+      } else {
+        // Include the border-box size of the fragment itself.
+        block_size_for_fragmentation_ =
+            std::max(block_size_for_fragmentation_, FragmentBlockSize());
+      }
     }
   }
 
