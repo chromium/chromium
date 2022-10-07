@@ -44,63 +44,6 @@ namespace ash {
 
 namespace {
 
-// A layer delegate used for mask layer, with left and right gradient fading out
-// zones.
-class FadeoutLayerDelegate : public ui::LayerDelegate {
- public:
-  FadeoutLayerDelegate() : layer_(ui::LAYER_TEXTURED) {
-    layer_.set_delegate(this);
-    layer_.SetFillsBoundsOpaquely(false);
-  }
-
-  ~FadeoutLayerDelegate() override { layer_.set_delegate(nullptr); }
-
-  ui::Layer* layer() { return &layer_; }
-
- private:
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    const gfx::Size& size = layer()->size();
-    gfx::Rect left_rect(0, 0, kMediaStringGradientWidthDip, size.height());
-    gfx::Rect right_rect(size.width() - kMediaStringGradientWidthDip, 0,
-                         kMediaStringGradientWidthDip, size.height());
-
-    views::PaintInfo paint_info =
-        views::PaintInfo::CreateRootPaintInfo(context, size);
-    const auto& prs = paint_info.paint_recording_size();
-
-    // Pass the scale factor when constructing PaintRecorder so the MaskLayer
-    // size is not incorrectly rounded (see https://crbug.com/921274).
-    ui::PaintRecorder recorder(context, paint_info.paint_recording_size(),
-                               static_cast<float>(prs.width()) / size.width(),
-                               static_cast<float>(prs.height()) / size.height(),
-                               nullptr);
-
-    gfx::Canvas* canvas = recorder.canvas();
-    // Clear the canvas.
-    canvas->DrawColor(SK_ColorBLACK, SkBlendMode::kSrc);
-    // Draw left gradient zone.
-    cc::PaintFlags flags;
-    flags.setBlendMode(SkBlendMode::kSrc);
-    flags.setAntiAlias(false);
-    flags.setShader(gfx::CreateGradientShader(
-        gfx::Point(), gfx::Point(kMediaStringGradientWidthDip, 0),
-        SK_ColorTRANSPARENT, SK_ColorBLACK));
-    canvas->DrawRect(left_rect, flags);
-
-    // Draw right gradient zone.
-    flags.setShader(gfx::CreateGradientShader(
-        gfx::Point(size.width() - kMediaStringGradientWidthDip, 0),
-        gfx::Point(size.width(), 0), SK_ColorBLACK, SK_ColorTRANSPARENT));
-    canvas->DrawRect(right_rect, flags);
-  }
-
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  ui::Layer layer_;
-};
-
 // Typography.
 constexpr char16_t kMiddleDotSeparator[] = u" • ";
 
@@ -289,17 +232,28 @@ void MediaStringView::BindMediaControllerObserver() {
 
 void MediaStringView::UpdateMaskLayer() {
   if (!NeedToAnimate()) {
-    media_text_container_->layer()->SetMaskLayer(nullptr);
+    media_text_container_->layer()->SetGradientMask(
+        gfx::LinearGradient::GetEmpty());
     return;
   }
 
-  if (!fadeout_layer_delegate_) {
-    fadeout_layer_delegate_ = std::make_unique<FadeoutLayerDelegate>();
-    fadeout_layer_delegate_->layer()->SetBounds(
-        media_text_container_->layer()->bounds());
+  // Invalid container width.
+  if (media_text_container_->layer()->size().width() == 0) {
+    media_text_container_->layer()->SetGradientMask(
+        gfx::LinearGradient::GetEmpty());
+    return;
   }
-  media_text_container_->layer()->SetMaskLayer(
-      fadeout_layer_delegate_->layer());
+
+  if (media_text_container_->layer()->gradient_mask().IsEmpty()) {
+    float fade_position = static_cast<float>(kMediaStringGradientWidthDip) /
+                          media_text_container_->layer()->size().width();
+    gfx::LinearGradient gradient_mask(/*angle=*/0);
+    gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(fade_position, 255);
+    gradient_mask.AddStep(1 - fade_position, 255);
+    gradient_mask.AddStep(1, 0);
+    media_text_container_->layer()->SetGradientMask(gradient_mask);
+  }
 }
 
 bool MediaStringView::NeedToAnimate() const {
