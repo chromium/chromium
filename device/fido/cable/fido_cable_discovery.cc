@@ -620,6 +620,17 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
     FIDO_LOG(DEBUG) << "  Service data: <none>";
   }
 
+  if (!uuids.empty()) {
+    FIDO_LOG(DEBUG) << "  UUIDs:";
+    for (const auto& uuid : uuids) {
+      auto eid_result = GetCableDiscoveryDataFromAuthenticatorEid(uuid);
+      FIDO_LOG(DEBUG) << "    " << ResultDebugString(uuid, eid_result);
+      if (!result && eid_result) {
+        result = std::move(eid_result);
+      }
+    }
+  }
+
   std::array<uint8_t, 16 + 4> v2_advert;
   if (advert_callback_ && service_data &&
       service_data->size() == v2_advert.size()) {
