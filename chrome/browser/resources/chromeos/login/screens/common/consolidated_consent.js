@@ -567,16 +567,6 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     return this.i18n('consolidatedConsentHeader');
   }
 
-  getUsageText_(locale, isChildAccount, isArcEnabled, isDemo) {
-    if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
-      return this.i18n('consolidatedConsentUsageOptInArcDisabled');
-    }
-    if (isChildAccount) {
-      return this.i18n('consolidatedConsentUsageOptInChild');
-    }
-    return this.i18n('consolidatedConsentUsageOptIn');
-  }
-
   getUsageLearnMoreText_(locale, isChildAccount, isArcEnabled, isDemo) {
     if (this.isArcOptInsHidden_(isArcEnabled, isDemo)) {
       if (isChildAccount) {

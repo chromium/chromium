@@ -45,10 +45,6 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_TITLE);
   builder->Add("consolidatedConsentUsageOptIn",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_OWNER);
-  builder->Add("consolidatedConsentUsageOptInChild",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_CHILD_OWNER);
-  builder->Add("consolidatedConsentUsageOptInArcDisabled",
-               IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_ARC_DISABLED_OWNER);
   builder->Add("consolidatedConsentUsageOptInLearnMoreLink",
                IDS_CONSOLIDATED_CONSENT_USAGE_OPT_IN_LEARN_MORE_LINK);
   builder->Add("consolidatedConsentBackupOptInTitle",
