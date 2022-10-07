@@ -481,8 +481,7 @@ void ScreenLocker::OnChallengeResponseKeysPrepared(
   ContinueAuthenticate(user_context);
 }
 
-void ScreenLocker::OnPinAttemptDone(const UserContext& user_context,
-                                    bool success) {
+void ScreenLocker::OnPinAttemptDone(UserContext user_context, bool success) {
   if (success) {
     // Mark strong auth if this is cryptohome based pin.
     if (quick_unlock::PinBackend::GetInstance()->ShouldUseCryptohome(
@@ -495,12 +494,14 @@ void ScreenLocker::OnPinAttemptDone(const UserContext& user_context,
     }
     OnAuthSuccess(user_context);
   } else {
+    user_context.SetIsUsingPin(false);
     // PIN authentication has failed; try submitting as a normal password.
     ContinueAuthenticate(user_context);
   }
 }
 
 void ScreenLocker::ContinueAuthenticate(const UserContext& user_context) {
+  DCHECK(!user_context.IsUsingPin());
   if (user_context.GetAccountId().GetAccountType() ==
           AccountType::ACTIVE_DIRECTORY &&
       user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {

@@ -259,7 +259,7 @@ class ScreenLocker
       const AccountId& account_id,
       std::vector<ChallengeResponseKey> challenge_response_keys);
 
-  void OnPinAttemptDone(const UserContext& user_context, bool success);
+  void OnPinAttemptDone(UserContext user_context, bool success);
 
   // Called to select the appropriate Authenticator and perform unlock
   // operation.
