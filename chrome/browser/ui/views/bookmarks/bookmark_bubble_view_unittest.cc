@@ -236,3 +236,61 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
   EXPECT_TRUE(price_tracking_view->IsToggleOn());
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+#if !BUILDFLAG(IS_FUCHSIA)
+class PriceTrackingViewFeatureFlagTest
+    : public BookmarkBubbleViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PriceTrackingViewFeatureFlagTest() {
+    const bool is_feature_enabled = GetParam();
+    if (is_feature_enabled) {
+      test_features_.InitAndEnableFeature(commerce::kShoppingList);
+    } else {
+      test_features_.InitAndDisableFeature(commerce::kShoppingList);
+    }
+  }
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "ShoppingListEnabled" : "ShoppingListDisabled";
+  }
+
+ private:
+  base::test::ScopedFeatureList test_features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PriceTrackingViewFeatureFlagTest,
+                         testing::Bool(),
+                         &PriceTrackingViewFeatureFlagTest::DescribeParams);
+
+TEST_P(PriceTrackingViewFeatureFlagTest, PriceTrackingViewCreation) {
+  commerce::MockShoppingService* mock_shopping_service =
+      static_cast<commerce::MockShoppingService*>(
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetResponseForGetProductInfoForUrl(
+      commerce::ProductInfo());
+
+  MockShoppingListUiTabHelper::CreateForWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  auto* mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
+      MockShoppingListUiTabHelper::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents()));
+  const gfx::Image image = mock_tab_helper_->GetValidProductImage();
+  ON_CALL(*mock_tab_helper_, GetProductImage)
+      .WillByDefault(
+          testing::ReturnRef(mock_tab_helper_->GetValidProductImage()));
+
+  CreateBubbleView();
+
+  auto* price_tracking_view = GetPriceTrackingView();
+
+  const bool is_feature_enabled = GetParam();
+  if (is_feature_enabled) {
+    EXPECT_TRUE(price_tracking_view);
+  } else {
+    EXPECT_FALSE(price_tracking_view);
+  }
+}
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
