@@ -233,7 +233,7 @@ class LocationBarIconOverrideTest
       public ::testing::WithParamInterface<ChipFeatureConfig> {
  public:
   LocationBarIconOverrideTest() {
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         permissions::features::kPermissionChipGestureSensitive,
         permissions::features::kPermissionChipRequestTypeSensitive};
 
@@ -361,7 +361,7 @@ class ConfirmationChipEnabledInteractiveTest
       public ::testing::WithParamInterface<ChipFeatureConfig> {
  public:
   ConfirmationChipEnabledInteractiveTest() {
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         permissions::features::kPermissionChipGestureSensitive,
         permissions::features::kPermissionChipRequestTypeSensitive};
     switch (GetParam()) {

@@ -723,13 +723,6 @@ class AppBannerManagerBrowserTestWithChromeBFCache
   AppBannerManagerBrowserTestWithChromeBFCache() = default;
   ~AppBannerManagerBrowserTestWithChromeBFCache() override = default;
 
-  struct FeatureOperatorOverload {
-    bool operator()(const base::Feature& feature1,
-                    const base::Feature& feature2) const {
-      return std::strcmp(feature1.name, feature2.name) < 0;
-    }
-  };
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
@@ -764,8 +757,8 @@ class AppBannerManagerBrowserTestWithChromeBFCache
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
 
-    for (const auto& feature_param : enabled_features_with_params_) {
-      enabled_features.emplace_back(feature_param.first, feature_param.second);
+    for (const auto& [feature, params] : enabled_features_with_params_) {
+      enabled_features.emplace_back(*feature, params);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -807,9 +800,7 @@ class AppBannerManagerBrowserTestWithChromeBFCache
 
  private:
   std::vector<base::test::FeatureRef> disabled_features_;
-  std::map<base::Feature,
-           std::map<std::string, std::string>,
-           FeatureOperatorOverload>
+  std::map<base::test::FeatureRef, std::map<std::string, std::string>>
       enabled_features_with_params_;
   base::test::ScopedFeatureList feature_list_;
 };

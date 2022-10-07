@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 //
 // These tests assume a default policy of no-referrer-when-downgrade.
 struct ReferrerOverrideParams {
-  absl::optional<base::Feature> feature_to_enable;
+  absl::optional<base::test::FeatureRef> feature_to_enable;
   network::mojom::ReferrerPolicy baseline_policy;
   network::mojom::ReferrerPolicy expected_policy;
 
@@ -848,8 +848,10 @@ class ReferrerOverrideTest
       public ::testing::WithParamInterface<ReferrerOverrideParams> {
  public:
   ReferrerOverrideTest() {
-    if (GetParam().feature_to_enable)
-      scoped_feature_list_.InitAndEnableFeature(*GetParam().feature_to_enable);
+    if (GetParam().feature_to_enable) {
+      scoped_feature_list_.InitAndEnableFeature(
+          *GetParam().feature_to_enable.value());
+    }
   }
 
  protected:
@@ -935,9 +937,10 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(kReferrerOverrideParams),
     [](const ::testing::TestParamInfo<ReferrerOverrideParams>& info)
         -> std::string {
-      if (info.param.feature_to_enable)
+      if (info.param.feature_to_enable) {
         return base::StringPrintf("Param%s",
-                                  info.param.feature_to_enable->name);
+                                  info.param.feature_to_enable.value()->name);
+      }
       return "NoFeature";
     });
 

@@ -45,23 +45,6 @@
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-// hash for std::unordered_map.
-struct FeatureHash {
-  size_t operator()(base::Feature feature) const {
-    return base::FastHash(feature.name);
-  }
-};
-
-// compare operator for std::unordered_map.
-struct FeatureEqualOperator {
-  bool operator()(base::Feature feature1, base::Feature feature2) const {
-    return std::strcmp(feature1.name, feature2.name) == 0;
-  }
-};
-}  // namespace
-
 class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  public:
   ChromeBackForwardCacheBrowserTest() = default;
@@ -126,8 +109,8 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
 
-    for (const auto& feature_param : features_with_params_) {
-      enabled_features.emplace_back(feature_param.first, feature_param.second);
+    for (const auto& [feature, params] : features_with_params_) {
+      enabled_features.emplace_back(*feature, params);
     }
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -135,13 +118,13 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }
 
-  void EnableFeatureAndSetParams(base::Feature feature,
-                                 std::string param_name,
-                                 std::string param_value) {
+  void EnableFeatureAndSetParams(const base::Feature& feature,
+                                 const std::string& param_name,
+                                 const std::string& param_value) {
     features_with_params_[feature][param_name] = param_value;
   }
 
-  void DisableFeature(base::Feature feature) {
+  void DisableFeature(const base::Feature& feature) {
     disabled_features_.push_back(feature);
   }
 
@@ -150,10 +133,7 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   logging::ScopedVmoduleSwitches vmodule_switches_;
-  std::unordered_map<base::Feature,
-                     std::map<std::string, std::string>,
-                     FeatureHash,
-                     FeatureEqualOperator>
+  std::map<base::test::FeatureRef, std::map<std::string, std::string>>
       features_with_params_;
   std::vector<base::test::FeatureRef> disabled_features_;
 };
