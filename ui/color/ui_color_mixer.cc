@@ -151,6 +151,9 @@ void AddUiColorMixer(ColorProvider* provider,
                gfx::kGoogleGreyAlpha500);
   mixer[kColorProgressBarPaused] = {kColorDisabledForeground};
   mixer[kColorProgressBar] = {kColorAccent};
+  mixer[kColorReadAnythingForegroundDark] = {gfx::kGoogleGrey200};
+  mixer[kColorReadAnythingForegroundLight] = {gfx::kGoogleGrey800};
+  mixer[kColorReadAnythingForegroundYellow] = {gfx::kGoogleGrey800};
   mixer[kColorSeparator] = {kColorMidground};
   mixer[kColorShadowBase] = {dark_mode ? SK_ColorBLACK : gfx::kGoogleGrey800};
   mixer[kColorShadowValueAmbientShadowElevationThree] =
