@@ -797,7 +797,15 @@ const gfx::VectorIcon& AuthenticatorPaaskSheetModel::GetStepIllustration(
 std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
+    switch (dialog_model()->cable_ui_type()) {
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+        // caBLEv1 and v2 server-link don't include device names.
+        return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE);
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
+        return l10n_util::GetStringUTF16(
+            IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
+    }
   }
   switch (dialog_model()->experiment_server_link_title_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkTitle::CONTROL:
@@ -811,9 +819,20 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
 std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_WEBAUTHN_CABLE_ACTIVATE_DEVICE_NAME_DESCRIPTION,
-        base::UTF8ToUTF16(dialog_model()->selected_phone_name().value_or("")));
+    switch (dialog_model()->cable_ui_type()) {
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+        // caBLEv1 and v2 server-link don't include device names.
+        return l10n_util::GetStringUTF16(
+            IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
+      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR: {
+        DCHECK(dialog_model()->selected_phone_name());
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_CABLE_ACTIVATE_DEVICE_NAME_DESCRIPTION,
+            base::UTF8ToUTF16(
+                dialog_model()->selected_phone_name().value_or("")));
+      }
+    }
   }
   switch (dialog_model()->cable_ui_type()) {
     case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:

@@ -768,6 +768,13 @@ void AuthenticatorRequestDialogModel::SetCurrentStepForTesting(Step step) {
 }
 
 bool AuthenticatorRequestDialogModel::cable_should_suggest_usb() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    // Offer AoA only for linked caBLEv2 authenticators, not caBLEv1.
+    return cable_ui_type_ != CableUIType::CABLE_V1 &&
+           base::Contains(transport_availability_.available_transports,
+                          AuthenticatorTransport::kAndroidAccessory);
+  }
   switch (experiment_server_link_sheet_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
     case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::ARM_2:

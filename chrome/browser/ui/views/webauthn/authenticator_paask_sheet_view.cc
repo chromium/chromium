@@ -5,9 +5,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_paask_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/grit/generated_resources.h"
+#include "device/fido/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/border.h"
@@ -46,6 +48,16 @@ AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
   // This context is only shown when USB fallback is an option.
   if (!dialog_model->cable_should_suggest_usb()) {
     return std::make_pair(nullptr, AutoFocus::kNo);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return std::make_pair(
+        std::make_unique<LinkLabelButton>(
+            base::BindRepeating(&AuthenticatorPaaskSheetView::OnLinkClicked,
+                                base::Unretained(this)),
+            l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE)),
+        AutoFocus::kNo);
   }
 
   std::u16string link_text;
