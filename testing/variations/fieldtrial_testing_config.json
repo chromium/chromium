@@ -2047,21 +2047,6 @@
             ]
         }
     ],
-    "CCTNewDownloadTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220525",
-                    "enable_features": [
-                        "CCTNewDownloadTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS": [
         {
             "platforms": [
