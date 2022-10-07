@@ -26,6 +26,11 @@ PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
 ResumeHeavyUserModelTest.*
 SearchUserModelTest.*
+SegmentInfoCacheTest.*
+SegmentInfoDatabaseTest.*
+SegmentResultProviderTest.*
+SegmentScoreProviderTest.*
+SegmentSelectorTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*
@@ -33,10 +38,6 @@ SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationPlatformServiceImplTest.*
 SegmentationResultPrefsTest.*
 SegmentationUkmHelperTest.*
-SegmentInfoCacheTest.*
-SegmentResultProviderTest.*
-SegmentScoreProviderTest.*
-SegmentSelectorTest.*
 ServiceProxyImplTest.*
 ShoppingUserModelTest.*
 SignalDatabaseImplTest.*
@@ -46,10 +47,11 @@ SignalKeyTest.*
 SignalStorageConfigTest.*
 SqlFeatureProcessorTest.*
 StatsTest.*
+TrainingDataCacheTest.*
 TrainingDataCollectorImplTest.*
 UkmConfigTest.*
-UkmDatabaseBackendTest.*
 UkmDataManagerImplTest.*
+UkmDatabaseBackendTest.*
 UkmMetricsTableTest.*
 UkmObserverTest.*
 UkmUrlTableTest.*
