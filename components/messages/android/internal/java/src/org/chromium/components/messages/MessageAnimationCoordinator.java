@@ -47,6 +47,9 @@ public class MessageAnimationCoordinator {
     public void updateWithoutStacking(
             @Nullable MessageState candidate, boolean suspended, Runnable onFinished) {
         if (mCurrentDisplayedMessage == candidate) return;
+        if (!suspended && mAnimatorSet.isStarted()) {
+            return;
+        }
         if (mCurrentDisplayedMessage == null) {
             mCurrentDisplayedMessage = candidate;
             mMessageQueueDelegate.onStartShowing(() -> {
