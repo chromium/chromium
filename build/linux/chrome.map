@@ -83,13 +83,6 @@ global:
   localtime64_r;
   localtime_r;
 
-  # getaddrinfo() is exported by the sandbox to ensure the network service and
-  # other sandboxed processes don't try to run system DNS resolution
-  # in-process, which is not supported by the sandbox. This override
-  # uses dlsym(getaddrinfo) to make the real calls in unsandboxed
-  # processes.
-  getaddrinfo;
-
   v8dbg_*;
 
 local:
