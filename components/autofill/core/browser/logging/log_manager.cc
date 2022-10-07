@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 
@@ -93,6 +95,49 @@ void RoutingLogManagerImpl::ProcessLog(base::Value::Dict node,
   log_router_->ProcessLog(std::move(node));
 }
 
+class BufferingLogManagerImpl : public BufferingLogManager {
+ public:
+  BufferingLogManagerImpl() = default;
+
+  BufferingLogManagerImpl(const BufferingLogManagerImpl&) = delete;
+  BufferingLogManagerImpl& operator=(const BufferingLogManagerImpl&) = delete;
+
+  ~BufferingLogManagerImpl() override = default;
+
+  // BufferingLogManager
+  void Flush(LogManager& destination) override;
+  // LogManager
+  bool IsLoggingActive() const override;
+  LogBufferSubmitter Log() override;
+  void ProcessLog(base::Value::Dict node,
+                  base::PassKey<LogBufferSubmitter>) override;
+
+ private:
+  std::vector<base::Value::Dict> nodes_;
+  absl::optional<base::PassKey<LogBufferSubmitter>> pass_key_;
+};
+
+void BufferingLogManagerImpl::Flush(LogManager& destination) {
+  auto nodes = std::exchange(nodes_, {});
+  for (auto& node : nodes)
+    destination.ProcessLog(std::move(node), *pass_key_);
+}
+
+bool BufferingLogManagerImpl::IsLoggingActive() const {
+  return true;
+}
+
+LogBufferSubmitter BufferingLogManagerImpl::Log() {
+  return LogBufferSubmitter(this);
+}
+
+void BufferingLogManagerImpl::ProcessLog(
+    base::Value::Dict node,
+    base::PassKey<LogBufferSubmitter> pass_key) {
+  nodes_.push_back(std::move(node));
+  pass_key_ = pass_key;
+}
+
 }  // namespace
 
 // static
@@ -101,6 +146,11 @@ std::unique_ptr<RoutingLogManager> LogManager::Create(
     base::RepeatingClosure notification_callback) {
   return std::make_unique<RoutingLogManagerImpl>(
       log_router, std::move(notification_callback));
+}
+
+// static
+std::unique_ptr<BufferingLogManager> LogManager::CreateBuffering() {
+  return std::make_unique<BufferingLogManagerImpl>();
 }
 
 }  // namespace autofill

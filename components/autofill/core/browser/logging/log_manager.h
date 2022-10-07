@@ -22,6 +22,7 @@ namespace autofill {
 
 class LogRouter;
 class RoutingLogManager;
+class BufferingLogManager;
 
 // This interface is used by the password management code to receive and display
 // logs about progress of actions like saving a password.
@@ -33,6 +34,8 @@ class LogManager {
   static std::unique_ptr<RoutingLogManager> Create(
       LogRouter* log_router,
       base::RepeatingClosure notification_callback);
+
+  static std::unique_ptr<BufferingLogManager> CreateBuffering();
 
   virtual ~LogManager() = default;
 
@@ -62,6 +65,15 @@ class RoutingLogManager : public LogManager {
   // The owner of the LogManager can call this to start or end suspending the
   // logging, by setting |suspended| to true or false, respectively.
   virtual void SetSuspended(bool suspended) = 0;
+};
+
+// This LogManager subclass stores logs in a buffer, which can eventually be
+// flushed to another LogManager. It facilitates logging across in sequences
+// outside of the main thread in a thread-safe way.
+class BufferingLogManager : public LogManager {
+ public:
+  // Passes the buffering log since the last Flush() to `destination`.
+  virtual void Flush(LogManager& destination) = 0;
 };
 
 inline LogBuffer::IsActive IsLoggingActive(LogManager* log_manager) {

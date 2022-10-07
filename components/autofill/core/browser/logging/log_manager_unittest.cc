@@ -59,6 +59,7 @@ class LogManagerTest : public testing::Test {
         &router_,
         base::BindRepeating(&MockNotifiedObject::NotifyAboutLoggingActivity,
                             base::Unretained(&notified_object_)));
+    buffering_manager_ = LogManager::CreateBuffering();
   }
 
   void TearDown() override {
@@ -70,6 +71,7 @@ class LogManagerTest : public testing::Test {
   LogRouter router_;
   testing::StrictMock<MockNotifiedObject> notified_object_;
   std::unique_ptr<RoutingLogManager> manager_;
+  std::unique_ptr<BufferingLogManager> buffering_manager_;
 };
 
 TEST_F(LogManagerTest, LogTextMessageNoReceiver) {
@@ -104,6 +106,33 @@ TEST_F(LogManagerTest, LogTextMessageDetachReceiver) {
   // After detaching the logger, no text should be passed.
   EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
   LOG_AF(*manager_) << kTestText;
+}
+
+TEST_F(LogManagerTest, LogBufferingEntriesWhenFlushed) {
+  LOG_AF(*buffering_manager_) << kTestText;
+  LOG_AF(*buffering_manager_) << kTestText;
+  EXPECT_FALSE(manager_->IsLoggingActive());
+  EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
+  router_.RegisterReceiver(&receiver_);
+  EXPECT_TRUE(manager_->IsLoggingActive());
+
+  // After flushing the buffering log manager, text should be passed.
+  EXPECT_CALL(receiver_, LogEntry(JsonHasText(kTestText))).Times(2);
+  buffering_manager_->Flush(*manager_);
+
+  // Flushing a second time has no effect because the buffer is now empty.
+  EXPECT_CALL(receiver_, LogEntry(JsonHasText(kTestText))).Times(0);
+  buffering_manager_->Flush(*manager_);
+
+  // After logging to the buffering log manager and flushing it again, text
+  // should be passed.
+  LOG_AF(*buffering_manager_) << kTestText;
+  LOG_AF(*buffering_manager_) << kTestText;
+  EXPECT_CALL(receiver_, LogEntry(JsonHasText(kTestText))).Times(2);
+  buffering_manager_->Flush(*manager_);
+
+  EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());
+  router_.UnregisterReceiver(&receiver_);
 }
 
 TEST_F(LogManagerTest, NullCallbackWillNotCrash) {
