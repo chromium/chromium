@@ -24,6 +24,7 @@ Sample Output:
 from __future__ import print_function
 
 import os
+import plistlib
 import re
 import subprocess
 import sys
@@ -51,6 +52,9 @@ def main():
   parser.add_option("--print_bin_path",
                     action="store_true", dest="print_bin_path", default=False,
                     help="Additionally print the path the toolchain bin dir.")
+  parser.add_option("--print_sdk_build",
+                    action="store_true", dest="print_sdk_build", default=False,
+                    help="Additionally print the build version of the SDK.")
   options, args = parser.parse_args()
   if len(args) != 1:
     parser.error('Please specify a minimum SDK version')
@@ -80,20 +84,30 @@ def main():
   if not sdks:
     raise Exception('No %s+ SDK found' % min_sdk_version)
   best_sdk = sorted(sdks, key=parse_version)[0]
+  sdk_name = 'MacOSX' + best_sdk + '.sdk'
+  sdk_path = os.path.join(sdk_dir, sdk_name)
 
   if options.print_sdk_path:
-    sdk_name = 'MacOSX' + best_sdk + '.sdk'
-    print(os.path.join(sdk_dir, sdk_name))
+    print(sdk_path)
 
   if options.print_bin_path:
     bin_path = 'Toolchains/XcodeDefault.xctoolchain/usr/bin/'
     print(os.path.join(dev_dir, bin_path))
 
-  return best_sdk
+  if options.print_sdk_build:
+    system_version_plist = os.path.join(sdk_path,
+      'System/Library/CoreServices/SystemVersion.plist')
+    with open(system_version_plist, 'rb') as f:
+      system_version_info = plistlib.load(f)
+      if 'ProductBuildVersion' not in system_version_info:
+        raise Exception('Failed to determine ProductBuildVersion' +
+                        'for SDK at path %s' % system_version_plist)
+      print(system_version_info['ProductBuildVersion'])
+
+  print(best_sdk)
 
 
 if __name__ == '__main__':
   if sys.platform != 'darwin':
     raise Exception("This script only runs on Mac")
-  print(main())
-  sys.exit(0)
+  sys.exit(main())

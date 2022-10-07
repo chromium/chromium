@@ -40,6 +40,11 @@ declare_args() {
   # will fail.
   mac_sdk_official_version = "12.3"
 
+  # The SDK build version used when making official builds.  This is a single
+  # exact version found at "System/Library/CoreServices/SystemVersion.plist"
+  # inside the SDK.
+  mac_sdk_official_build_version = "21E226"
+
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
   # Don't set this on any bots.
@@ -103,11 +108,13 @@ if (use_system_xcode) {
   find_sdk_args = [
     "--print_sdk_path",
     "--print_bin_path",
+    "--print_sdk_build",
     mac_sdk_min,
   ]
   find_sdk_lines =
       exec_script("//build/mac/find_sdk.py", find_sdk_args, "list lines")
-  mac_sdk_version = find_sdk_lines[2]
+  mac_sdk_version = find_sdk_lines[3]
+  mac_sdk_build_version = find_sdk_lines[2]
   if (mac_sdk_path == "") {
     mac_sdk_path = find_sdk_lines[0]
     mac_bin_path = find_sdk_lines[1]
@@ -116,6 +123,7 @@ if (use_system_xcode) {
   }
 } else {
   mac_sdk_version = mac_sdk_official_version
+  mac_sdk_build_version = mac_sdk_official_build_version
   _dev = _hermetic_xcode_path + "/Contents/Developer"
   _sdk = "MacOSX${mac_sdk_version}.sdk"
   mac_sdk_path = _dev + "/Platforms/MacOSX.platform/Developer/SDKs/$_sdk"

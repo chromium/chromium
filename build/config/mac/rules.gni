@@ -41,7 +41,7 @@ template("mac_info_plist") {
   apple_info_plist(target_name) {
     format = "xml1"
     extra_substitutions = [
-      "MAC_SDK_BUILD=$mac_sdk_version",
+      "MAC_SDK_BUILD=$mac_sdk_build_version",
       "MAC_SDK_NAME=$mac_sdk_name$mac_sdk_version",
       "MACOSX_DEPLOYMENT_TARGET=$mac_deployment_target",
       "CHROMIUM_MIN_SYSTEM_VERSION=$mac_min_system_version",
