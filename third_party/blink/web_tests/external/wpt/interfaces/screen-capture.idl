@@ -7,6 +7,12 @@ partial interface MediaDevices {
   Promise<MediaStream> getDisplayMedia(optional DisplayMediaStreamOptions options = {});
 };
 
+[Exposed=Window, SecureContext]
+interface CaptureController {
+  constructor();
+  // TODO: Add setFocusBehavior() in a separate PR.
+};
+
 enum SelfCapturePreferenceEnum {
   "include",
   "exclude"
@@ -25,6 +31,7 @@ enum SurfaceSwitchingPreferenceEnum {
 dictionary DisplayMediaStreamOptions {
   (boolean or MediaTrackConstraints) video = true;
   (boolean or MediaTrackConstraints) audio = false;
+  CaptureController controller = null;
   SelfCapturePreferenceEnum selfBrowserSurface;
   SystemAudioPreferenceEnum systemAudio;
   SurfaceSwitchingPreferenceEnum surfaceSwitching;

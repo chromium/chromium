@@ -3345,7 +3345,21 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/1371978 [ Mac12-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Crash ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-background-007.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-background-008.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-root-bg-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-root-bg-002.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-root-bg-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-translate-background-001.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-transforms/transform-translate-background-002.html [ Failure ]
+crbug.com/626703 [ Mac12-arm64 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-background-007.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-background-008.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-root-bg-001.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-root-bg-002.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-root-bg-003.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-translate-background-001.html [ Failure ]
+crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/transform-translate-background-002.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
@@ -5148,7 +5162,7 @@ crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-tim
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-frame-size-changed.html [ Failure ]
 crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-inline-orientation.html [ Failure ]
 crbug.com/1279648 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/css/scroll-timeline-default-iframe.html [ Failure ]
-crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Pass Failure Timeout ]
+crbug.com/1279648 virtual/threaded/external/wpt/scroll-animations/css/view-timeline-inset-animation.html [ Failure Pass Timeout ]
 
 crbug.com/1071189 [ Debug ] editing/selection/programmatic-selection-on-mac-is-directionless.html [ Pass Timeout ]
 

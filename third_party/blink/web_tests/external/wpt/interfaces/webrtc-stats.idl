@@ -230,7 +230,7 @@ dictionary RTCIceCandidateStats : RTCStats {
              required RTCIceCandidateType candidateType;
              long                     priority;
              DOMString                url;
-             DOMString                relayProtocol;
+             RTCIceServerTransportProtocol relayProtocol;
 };
 
 dictionary RTCIceCandidatePairStats : RTCStats {

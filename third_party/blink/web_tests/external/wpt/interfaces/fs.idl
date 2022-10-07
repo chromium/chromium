@@ -24,6 +24,8 @@ dictionary FileSystemCreateWritableOptions {
 interface FileSystemFileHandle : FileSystemHandle {
   Promise<File> getFile();
   Promise<FileSystemWritableFileStream> createWritable(optional FileSystemCreateWritableOptions options = {});
+  [Exposed=DedicatedWorker]
+  Promise<FileSystemSyncAccessHandle> createSyncAccessHandle();
 };
 
 dictionary FileSystemGetFileOptions {
@@ -70,6 +72,23 @@ interface FileSystemWritableFileStream : WritableStream {
   Promise<undefined> write(FileSystemWriteChunkType data);
   Promise<undefined> seek(unsigned long long position);
   Promise<undefined> truncate(unsigned long long size);
+};
+
+dictionary FileSystemReadWriteOptions {
+  [EnforceRange] required unsigned long long at;
+};
+
+[Exposed=DedicatedWorker, SecureContext]
+interface FileSystemSyncAccessHandle {
+  unsigned long long read([AllowShared] BufferSource buffer,
+                          optional FileSystemReadWriteOptions options = {});
+  unsigned long long write([AllowShared] BufferSource buffer,
+                           optional FileSystemReadWriteOptions options = {});
+
+  Promise<undefined> truncate([EnforceRange] unsigned long long newSize);
+  Promise<unsigned long long> getSize();
+  Promise<undefined> flush();
+  Promise<undefined> close();
 };
 
 [SecureContext]

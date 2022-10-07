@@ -3,12 +3,6 @@
 // (https://github.com/w3c/webref)
 // Source: WebRTC Encoded Transform (https://w3c.github.io/webrtc-encoded-transform/)
 
-// New dictionary
-dictionary RTCInsertableStreams {
-    ReadableStream readable;
-    WritableStream writable;
-};
-
 typedef (SFrameTransform or RTCRtpScriptTransform) RTCRtpTransform;
 
 // New methods for RTCRtpSender and RTCRtpReceiver
@@ -76,9 +70,9 @@ dictionary RTCEncodedVideoFrameMetadata {
     unsigned short height;
     long spatialIndex;
     long temporalIndex;
-    long synchronizationSource;
+    unsigned long synchronizationSource;
     octet payloadType;
-    sequence<long> contributingSources;
+    sequence<unsigned long> contributingSources;
 };
 
 // New interfaces to define encoded video and audio frames. Will eventually
@@ -92,9 +86,9 @@ interface RTCEncodedVideoFrame {
 };
 
 dictionary RTCEncodedAudioFrameMetadata {
-    long synchronizationSource;
+    unsigned long synchronizationSource;
     octet payloadType;
-    sequence<long> contributingSources;
+    sequence<unsigned long> contributingSources;
 };
 
 [Exposed=(Window,DedicatedWorker)]

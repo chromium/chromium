@@ -170,7 +170,7 @@ dictionary VideoEncoderConfig {
   [EnforceRange] unsigned long displayWidth;
   [EnforceRange] unsigned long displayHeight;
   [EnforceRange] unsigned long long bitrate;
-  [EnforceRange] double framerate;
+  double framerate;
   HardwareAcceleration hardwareAcceleration = "no-preference";
   AlphaOption alpha = "discard";
   DOMString scalabilityMode;
