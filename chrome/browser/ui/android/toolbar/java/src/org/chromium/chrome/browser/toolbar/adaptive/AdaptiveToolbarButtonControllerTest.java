@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.util.Pair;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -78,6 +81,8 @@ public class AdaptiveToolbarButtonControllerTest {
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock
     private Tab mTab;
+    @Mock
+    private Configuration mConfiguration;
 
     private ButtonDataImpl mButtonData;
 
@@ -92,6 +97,7 @@ public class AdaptiveToolbarButtonControllerTest {
                 /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, /*isEnabled=*/true,
                 AdaptiveToolbarButtonVariant.UNKNOWN);
+        mConfiguration.screenWidthDp = 420;
     }
 
     @After
@@ -300,10 +306,131 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.destroy();
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testButtonOnLargeScreens() {
+        // Screen is wide enough to fit the button, it should appear.
+        mConfiguration.screenWidthDp = 450;
+        mButtonData.setCanShow(true);
+        mButtonData.setEnabled(true);
+        when(mVoiceToolbarButtonController.get(any())).thenReturn(mButtonData);
+
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.VOICE));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        adaptiveToolbarButtonController.onFinishNativeInitialization();
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(mVoiceToolbarButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testButtonNotShownOnSmallScreens() {
+        // Screen too narrow, button shouldn't appear.
+        mConfiguration.screenWidthDp = 320;
+        mButtonData.setCanShow(true);
+        mButtonData.setEnabled(true);
+        when(mVoiceToolbarButtonController.get(any())).thenReturn(mButtonData);
+
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.VOICE));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        adaptiveToolbarButtonController.onFinishNativeInitialization();
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(mVoiceToolbarButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testButtonVisibilityChangeOnConfigurationChange() {
+        // Screen too narrow, button shouldn't appear.
+        mConfiguration.screenWidthDp = 320;
+        mButtonData.setCanShow(true);
+        mButtonData.setEnabled(true);
+        when(mVoiceToolbarButtonController.get(any())).thenReturn(mButtonData);
+        doReturn(true).when(mActivityLifecycleDispatcher).isNativeInitializationFinished();
+
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.VOICE));
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+        adaptiveToolbarButtonController.onFinishNativeInitialization();
+
+        verify(observer).buttonDataChanged(true);
+        Assert.assertEquals(mVoiceToolbarButtonController,
+                adaptiveToolbarButtonController.getSingleProviderForTesting());
+
+        Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
+
+        // New screen configuration is wider, button should be visible.
+        mConfiguration.screenWidthDp = 450;
+
+        adaptiveToolbarButtonController.onConfigurationChanged(mConfiguration);
+
+        verify(observer).buttonDataChanged(false);
+        Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
+    public void testConfigurationChangeIgnoredWhenNativeNotReady() {
+        AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
+        AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
+                new Pair<>(true, AdaptiveToolbarButtonVariant.VOICE));
+        // If native is not done initializing then ignore all configuration changes.
+        doReturn(false).when(mActivityLifecycleDispatcher).isNativeInitializationFinished();
+
+        AdaptiveToolbarButtonController adaptiveToolbarButtonController = buildController();
+
+        ButtonDataObserver observer = mock(ButtonDataObserver.class);
+        adaptiveToolbarButtonController.addObserver(observer);
+
+        // Change configuration, button shouldn't update.
+        mConfiguration.screenWidthDp = 320;
+        adaptiveToolbarButtonController.onConfigurationChanged(mConfiguration);
+
+        verify(observer, never()).buttonDataChanged(true);
+    }
+
     private AdaptiveToolbarButtonController buildController() {
+        Activity mockActivity = mock(Activity.class);
+        Resources mockResources = mock(Resources.class);
+        doReturn(mockResources).when(mockActivity).getResources();
+        doReturn(mConfiguration).when(mockResources).getConfiguration();
+
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                new AdaptiveToolbarButtonController(mock(Activity.class),
-                        mock(SettingsLauncher.class), mActivityLifecycleDispatcher,
+                new AdaptiveToolbarButtonController(mockActivity, mock(SettingsLauncher.class),
+                        mActivityLifecycleDispatcher,
                         mock(AdaptiveButtonActionMenuCoordinator.class), mAndroidPermissionDelegate,
                         SharedPreferencesManager.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(

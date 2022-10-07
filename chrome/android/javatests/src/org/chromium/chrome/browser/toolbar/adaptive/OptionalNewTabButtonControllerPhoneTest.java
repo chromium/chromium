@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -129,9 +130,16 @@ public class OptionalNewTabButtonControllerPhoneTest {
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
 
-        onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
-                              withContentDescription(mButtonDescription)))
-                .perform(click());
+        // Check view exists and is set up correctly.
+        onViewWaiting(withId(R.id.optional_toolbar_button))
+                .check(matches(allOf(
+                        isDisplayed(), isEnabled(), withContentDescription(mButtonDescription))));
+        // Clicking with espresso is flaky, perform click directly.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity()
+                    .findViewById(R.id.optional_toolbar_button)
+                    .performClick();
+        });
 
         // Expected tabs:
         // 1: mTestPageUrl

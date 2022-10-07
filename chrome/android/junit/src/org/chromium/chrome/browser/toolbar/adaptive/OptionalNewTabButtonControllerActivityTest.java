@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.top.OptionalBrowsingModeButtonController;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
@@ -176,85 +174,27 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     @Test
     @MediumTest
-    @Config(qualifiers = "w390dp-h820dp")
-    public void testRotateLandscape() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+land");
-
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Config(qualifiers = "w359dp-h820dp")
-    public void testRotateLandscape_narrow() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            // The button needs width of at least 360dp to be visible.
-            // See OptionalNewTabButtonController#MIN_WIDTH_DP
-            assertFalse(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+land");
-
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
-    }
-
-    @Test
-    @MediumTest
     @Config(qualifiers = "w390dp-h820dp-land")
-    public void testRotatePortrait() {
+    public void testAlwaysShownOnPhone() {
         mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
 
             applyQualifiers(activity, "+port");
 
-            verify(observer).buttonDataChanged(/*canShowHint=*/true);
             assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-        });
-    }
-
-    @Test
-    @MediumTest
-    @Config(qualifiers = "w359dp-h820dp-land")
-    public void testRotatePortrait_narrow() {
-        mActivityScenario.onActivity(activity -> {
-            ButtonDataObserver observer = Mockito.mock(ButtonDataObserver.class);
-            mAdaptiveButtonController.addObserver(observer);
-
-            assertTrue(mAdaptiveButtonController.get(mTab).canShow());
-
-            applyQualifiers(activity, "+port");
-
-            // The button needs width of at least 360dp to be visible.
-            // See OptionalNewTabButtonController#MIN_WIDTH_DP
-            verify(observer).buttonDataChanged(/*canShowHint=*/false);
-            assertFalse(mAdaptiveButtonController.get(mTab).canShow());
         });
     }
 
     @Test
     @MediumTest
     @Config(qualifiers = "w600dp-h820dp")
-    public void testRotateTablet() {
+    public void testNeverShownOnTablet() {
         mActivityScenario.onActivity(activity -> {
             assertFalse(mAdaptiveButtonController.get(mTab).canShow());
 
             // Rotating a tablet should not change canShow.
             applyQualifiers(activity, "+land");
+
 
             assertFalse(mAdaptiveButtonController.get(mTab).canShow());
         });

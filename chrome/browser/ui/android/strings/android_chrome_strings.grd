@@ -4538,18 +4538,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_IDENTITY_DISC_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         To manage your Google account, tap the "Manage account" button
       </message>
-      <message name="IDS_IPH_MIC_TOOLBAR_GENERIC_MESSAGE_TEXT" desc="The in-product-help message encouraging to execute a voice search.">
-        Search with your voice
-      </message>
-      <message name="IDS_IPH_MIC_TOOLBAR_GENERIC_MESSAGE_ACCESSIBILITY_TEXT" desc="The in-product-help message encouraging to execute a voice search.">
-        Tap the mic to search with your voice
-      </message>
-      <message name="IDS_IPH_MIC_TOOLBAR_EXAMPLE_QUERY_TEXT" desc="The in-product-help message encouraging to execute a voice search by giving an example command to try.">
-        Try “What’s the weather today?”
-      </message>
-      <message name="IDS_IPH_MIC_TOOLBAR_EXAMPLE_QUERY_ACCESSIBILITY_TEXT" desc="The in-product-help message encouraging to execute a voice search by giving an example command to try.">
-        To check the weather, tap the mic and say “What’s the weather today?”
-      </message>
       <message name="IDS_IPH_NTP_WITHOUT_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites.">
         See your top sites
       </message>

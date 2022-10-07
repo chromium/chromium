@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.segmentation_platform;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -32,7 +30,6 @@ import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -91,9 +88,8 @@ public class ContextualPageActionControllerTest {
 
     private ContextualPageActionController createContextualPageActionController() {
         ContextualPageActionController contextualPageActionController =
-                new ContextualPageActionController(mProfileSupplier, mTabSupplier,
-                        mMockActivityLifecycleDispatcher, mMockResources,
-                        mMockAdaptiveToolbarController);
+                new ContextualPageActionController(
+                        mProfileSupplier, mTabSupplier, mMockAdaptiveToolbarController);
 
         mProfileSupplier.set(mMockProfile);
 
@@ -166,114 +162,6 @@ public class ContextualPageActionControllerTest {
 
         verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());
         // Even if the UI is disabled segmentation should be called.
-        verify(mMockControllerJni).computeContextualPageAction(any(), any(), any());
-    }
-
-    @Test
-    public void testButtonOnLargeScreens() {
-        mMockConfiguration.screenWidthDp = 450;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
-
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
-
-        mTabSupplier.set(mMockTab);
-
-        verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
-    }
-
-    @Test
-    public void testButtonNotShownOnSmallScreens() {
-        mMockConfiguration.screenWidthDp = 320;
-
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
-
-        mTabSupplier.set(mMockTab);
-
-        verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
-        verify(mMockControllerJni, never()).computeContextualPageAction(any(), any(), any());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING})
-    public void testConfigurationChangeIgnoredWhenFeatureIsDisabled() {
-        mMockConfiguration.screenWidthDp = 600;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
-
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
-
-        // Set tab, no button should be shown because feature is disabled.
-        mTabSupplier.set(mMockTab);
-
-        // Change configuration, no button should be shown still.
-        mMockConfiguration.screenWidthDp = 450;
-        contextualPageActionController.onConfigurationChanged(mMockConfiguration);
-
-        // Button should not be updated.
-        verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());
-        // Segmentation should not be called.
-        verify(mMockControllerJni, never()).computeContextualPageAction(any(), any(), any());
-    }
-
-    @Test
-    public void testConfigurationChangeIgnoredWhenNativeNotReady() {
-        mMockConfiguration.screenWidthDp = 600;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
-        doReturn(false).when(mMockActivityLifecycleDispatcher).isNativeInitializationFinished();
-
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
-
-        mTabSupplier.set(mMockTab);
-
-        // Change configuration, button shouldn't update, and segmentation shouldn't be called.
-        mMockConfiguration.screenWidthDp = 450;
-        contextualPageActionController.onConfigurationChanged(mMockConfiguration);
-
-        // Button should only be updated once when setting the tab.
-        verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
-        // Segmentation should only be called once.
-        verify(mMockControllerJni).computeContextualPageAction(any(), any(), any());
-    }
-
-    @Test
-    public void testButtonShowsOnConfigurationChange() {
-        // Screen is not wide enough to show button.
-        mMockConfiguration.screenWidthDp = 320;
-        setMockSegmentationResult(
-                SegmentId.OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
-
-        ContextualPageActionController contextualPageActionController =
-                createContextualPageActionController();
-
-        mTabSupplier.set(mMockTab);
-
-        // Screen is now wide enough to show button.
-        mMockConfiguration.screenWidthDp = 600;
-        contextualPageActionController.onConfigurationChanged(mMockConfiguration);
-
-        // Return to original screen width.
-        mMockConfiguration.screenWidthDp = 320;
-        contextualPageActionController.onConfigurationChanged(mMockConfiguration);
-
-        InOrder inOrder = inOrder(mMockAdaptiveToolbarController);
-
-        inOrder.verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
-        inOrder.verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
-        inOrder.verify(mMockAdaptiveToolbarController)
-                .showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
-
-        // Segmentation should only be called once.
         verify(mMockControllerJni).computeContextualPageAction(any(), any(), any());
     }
 }

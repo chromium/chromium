@@ -4,68 +4,48 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
-import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
-import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Responsible for providing UI resources for showing price tracking action on optional toolbar
  * button.
  */
-public class PriceTrackingButtonController implements ButtonDataProvider {
-    private final Activity mActivity;
+public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
-    private final ButtonDataImpl mButtonData;
 
     /** Constructor. */
-    public PriceTrackingButtonController(Activity activity, ObservableSupplier<Tab> tabSupplier,
+    public PriceTrackingButtonController(ObservableSupplier<Tab> tabSupplier,
+            ModalDialogManager modalDialogManager, Drawable buttonDrawable,
             Supplier<TabBookmarker> tabBookmarkerSupplier) {
-        mActivity = activity;
+        super(tabSupplier, modalDialogManager, buttonDrawable,
+                R.string.enable_price_tracking_menu_item,
+                /*supportsTinting=*/true, /*iphCommandBuilder*/ null,
+                AdaptiveToolbarButtonVariant.PRICE_TRACKING);
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
-
-        // TODO(shaktisahu): Provide accurate icon and string.
-        mButtonData = new ButtonDataImpl(/*canShow=*/true,
-                AppCompatResources.getDrawable(mActivity, R.drawable.price_tracking_disabled),
-                view
-                -> onPriceTrackingClicked(tabSupplier.get()),
-                R.string.enable_price_tracking_menu_item, /*supportsTinting=*/true,
-                /*iphCommandBuilder*/ null,
-                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.PRICE_TRACKING);
-    }
-
-    @Override
-    public void addObserver(ButtonDataObserver obs) {
-        mObservers.addObserver(obs);
-    }
-
-    @Override
-    public void removeObserver(ButtonDataObserver obs) {
-        mObservers.removeObserver(obs);
     }
 
     @Override
     public ButtonData get(@Nullable Tab tab) {
-        maybeSetIphCommandBuilder(tab);
         maybeSetActionChipResourceId();
-        return mButtonData;
+        return super.get(tab);
     }
 
     private void maybeSetActionChipResourceId() {
@@ -79,24 +59,20 @@ public class PriceTrackingButtonController implements ButtonDataProvider {
     }
 
     @Override
-    public void destroy() {
-        mObservers.clear();
+    public void onClick(View view) {
+        mTabBookmarkerSupplier.get().startOrModifyPriceTracking(mActiveTabSupplier.get());
     }
 
-    private void onPriceTrackingClicked(Tab tab) {
-        mTabBookmarkerSupplier.get().startOrModifyPriceTracking(tab);
-    }
-
-    private void maybeSetIphCommandBuilder(Tab tab) {
-        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
-                || !FeatureList.isInitialized() || AdaptiveToolbarFeatures.shouldShowActionChip()) {
-            return;
+    @Override
+    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+        if (AdaptiveToolbarFeatures.shouldShowActionChip()) {
+            return null;
         }
 
         IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
                 FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
                 /* stringId = */ R.string.iph_price_tracking_menu_item,
                 /* accessibilityStringId = */ R.string.iph_price_tracking_menu_item);
-        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
+        return iphCommandBuilder;
     }
 }

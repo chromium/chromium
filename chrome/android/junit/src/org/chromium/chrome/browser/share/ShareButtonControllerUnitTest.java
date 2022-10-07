@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -106,17 +105,15 @@ public final class ShareButtonControllerUnitTest {
         doReturn(mConfiguration).when(mResources).getConfiguration();
 
         doReturn(mock(WebContents.class)).when(mTab).getWebContents();
+        doReturn("https").when(mMockGurl).getScheme();
         doReturn(mMockGurl).when(mTab).getUrl();
 
         doReturn(mShareDelegate).when(mShareDelegateSupplier).get();
 
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
 
-        mShareButtonController =
-                new ShareButtonController(mContext, mDrawable, mTabProvider, mShareDelegateSupplier,
-                        ()
-                                -> mTracker,
-                        mShareUtils, mActivityLifecycleDispatcher, mModalDialogManager, () -> {});
+        mShareButtonController = new ShareButtonController(mDrawable, mTabProvider,
+                mShareDelegateSupplier, () -> mTracker, mShareUtils, mModalDialogManager, () -> {});
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -148,29 +145,6 @@ public final class ShareButtonControllerUnitTest {
 
         verify(mTracker, times(1))
                 .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDoNotShowWhenTooNarrow() {
-        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP - 1;
-        mShareButtonController.onConfigurationChanged(mConfiguration);
-
-        ButtonData buttonData = mShareButtonController.get(mTab);
-
-        assertFalse(buttonData.canShow());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void testDoShowWhenWideEnough() {
-        doReturn("https").when(mMockGurl).getScheme();
-        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
-        mShareButtonController.onConfigurationChanged(mConfiguration);
-
-        ButtonData buttonData = mShareButtonController.get(mTab);
-
-        assertTrue(buttonData.canShow());
     }
 
     @Test

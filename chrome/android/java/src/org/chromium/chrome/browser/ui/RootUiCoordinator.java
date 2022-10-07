@@ -1108,13 +1108,16 @@ public class RootUiCoordinator
             mIdentityDiscController = new IdentityDiscController(
                     mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
             PriceTrackingButtonController priceTrackingButtonController =
-                    new PriceTrackingButtonController(
-                            mActivity, mActivityTabProvider, mTabBookmarkerSupplier);
-            ShareButtonController shareButtonController = new ShareButtonController(mActivity,
+                    new PriceTrackingButtonController(mActivityTabProvider,
+                            mModalDialogManagerSupplier.get(),
+                            AppCompatResources.getDrawable(
+                                    mActivity, R.drawable.price_tracking_disabled),
+                            mTabBookmarkerSupplier);
+            ShareButtonController shareButtonController = new ShareButtonController(
                     AppCompatResources.getDrawable(
                             mActivity, R.drawable.ic_toolbar_share_offset_24dp),
                     mActivityTabProvider, mShareDelegateSupplier, trackerSupplier, new ShareUtils(),
-                    mActivityLifecycleDispatcher, mModalDialogManagerSupplier.get(),
+                    mModalDialogManagerSupplier.get(),
                     () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
             VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
                     new VoiceToolbarButtonController.VoiceSearchDelegate() {
@@ -1136,15 +1139,15 @@ public class RootUiCoordinator
                         }
                     };
             VoiceToolbarButtonController voiceToolbarButtonController =
-                    new VoiceToolbarButtonController(mActivity,
+                    new VoiceToolbarButtonController(
                             AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
-                            mActivityTabProvider, trackerSupplier, mActivityLifecycleDispatcher,
+                            mActivityTabProvider, trackerSupplier,
                             mModalDialogManagerSupplier.get(), voiceSearchDelegate);
             OptionalNewTabButtonController newTabButtonController =
                     new OptionalNewTabButtonController(mActivity,
                             AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
                             mActivityLifecycleDispatcher, mTabCreatorManagerSupplier,
-                            mTabModelSelectorSupplier, trackerSupplier);
+                            mActivityTabProvider, trackerSupplier);
             AdaptiveToolbarButtonController adaptiveToolbarButtonController =
                     new AdaptiveToolbarButtonController(mActivity, new SettingsLauncherImpl(),
                             mActivityLifecycleDispatcher, new AdaptiveButtonActionMenuCoordinator(),
@@ -1157,9 +1160,8 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
-            mContextualPageActionController = new ContextualPageActionController(mProfileSupplier,
-                    mActivityTabProvider, mActivityLifecycleDispatcher, mActivity.getResources(),
-                    adaptiveToolbarButtonController);
+            mContextualPageActionController = new ContextualPageActionController(
+                    mProfileSupplier, mActivityTabProvider, adaptiveToolbarButtonController);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 

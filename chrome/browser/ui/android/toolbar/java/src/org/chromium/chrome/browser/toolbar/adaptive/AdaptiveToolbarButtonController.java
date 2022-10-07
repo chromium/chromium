@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,9 +40,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
-public class AdaptiveToolbarButtonController implements ButtonDataProvider, ButtonDataObserver,
-                                                        NativeInitObserver,
-                                                        SharedPreferencesManager.Observer {
+public class AdaptiveToolbarButtonController
+        implements ButtonDataProvider, ButtonDataObserver, NativeInitObserver,
+                   SharedPreferencesManager.Observer, ConfigurationChangedObserver {
     private ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
     @Nullable
     private ButtonDataProvider mSingleProvider;
@@ -69,6 +71,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
     private View.OnLongClickListener mMenuHandler;
     private final Callback<Integer> mMenuClickListener;
     private final AdaptiveButtonActionMenuCoordinator mMenuCoordinator;
+    private int mScreenWidthDp;
 
     @AdaptiveToolbarButtonVariant
     private int mSessionButtonVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -101,6 +104,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         mMenuCoordinator = menuCoordinator;
         mSharedPreferencesManager = sharedPreferencesManager;
         mSharedPreferencesManager.addObserver(this);
+        mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
     }
 
     /**
@@ -184,7 +188,7 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
                     AdaptiveToolbarButtonVariant.NUM_ENTRIES);
         }
 
-        mButtonData.setCanShow(receivedButtonData.canShow());
+        mButtonData.setCanShow(receivedButtonData.canShow() && isScreenWideEnoughForButton());
         mButtonData.setEnabled(receivedButtonData.isEnabled());
         final ButtonSpec receivedButtonSpec = receivedButtonData.getButtonSpec();
         // ButtonSpec is immutable, so we keep the previous value when noting changes.
@@ -258,6 +262,10 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         }
     }
 
+    private boolean isScreenWideEnoughForButton() {
+        return mScreenWidthDp >= AdaptiveToolbarFeatures.getDeviceMinimumWidthForShowingButton();
+    }
+
     /** Returns the {@link ButtonDataProvider} used in a single-variant mode. */
     @Nullable
     @VisibleForTesting
@@ -288,5 +296,21 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
         }
         setSingleProvider(actionToShow);
         notifyObservers(true);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (!mLifecycleDispatcher.isNativeInitializationFinished()
+                || mScreenWidthDp == newConfig.screenWidthDp) {
+            return;
+        }
+
+        boolean wasOldScreenWideEnoughForButton = isScreenWideEnoughForButton();
+
+        mScreenWidthDp = newConfig.screenWidthDp;
+
+        if (wasOldScreenWideEnoughForButton != isScreenWideEnoughForButton()) {
+            notifyObservers(mButtonData.canShow());
+        }
     }
 }

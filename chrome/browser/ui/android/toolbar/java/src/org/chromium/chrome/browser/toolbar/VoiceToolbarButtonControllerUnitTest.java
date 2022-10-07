@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -116,30 +115,12 @@ public final class VoiceToolbarButtonControllerUnitTest {
         doReturn(mContext).when(mTab).getContext();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
         // clang-format off
-        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
-                () -> mTab, () -> mTracker, mActivityLifecycleDispatcher, mModalDialogManager,
+        mVoiceToolbarButtonController = new VoiceToolbarButtonController(mDrawable,
+                () -> mTab, () -> mTracker, mModalDialogManager,
                 mVoiceSearchDelegate);
         // clang-format on
 
         TrackerFactory.setTrackerForTests(mTracker);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
-    public void onConfigurationChanged_screenWidthChanged() {
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
-
-        // Screen width shrinks below the threshold (e.g. screen rotated).
-        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP - 1;
-        mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
-
-        assertFalse(mVoiceToolbarButtonController.get(mTab).canShow());
-
-        // Make sure the opposite works as well.
-        mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
-        mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
-
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow());
     }
 
     @Test

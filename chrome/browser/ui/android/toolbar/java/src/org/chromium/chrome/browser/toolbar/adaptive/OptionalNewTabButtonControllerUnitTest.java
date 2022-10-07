@@ -29,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -36,13 +37,13 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link OptionalNewTabButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,7 +69,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock
     TabCreator mTabCreator;
     @Mock
-    private TabModelSelector mTabModelSelector;
+    private Supplier<Tab> mTabSupplier;
     @Mock
     private Tracker mTracker;
 
@@ -80,7 +81,10 @@ public final class OptionalNewTabButtonControllerUnitTest {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
 
+        doReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL)).when(mTab).getUrl();
         doReturn(mContext).when(mTab).getContext();
+
+        doReturn(mTab).when(mTabSupplier).get();
 
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP + WIDTH_DELTA;
         doReturn(mConfiguration).when(mResources).getConfiguration();
@@ -91,7 +95,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
         mOptionalNewTabButtonController = new OptionalNewTabButtonController(mContext, mDrawable,
                 mActivityLifecycleDispatcher,
-                () -> mTabCreatorManager, () -> mTabModelSelector, () -> mTracker);
+                () -> mTabCreatorManager, mTabSupplier, () -> mTracker);
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
