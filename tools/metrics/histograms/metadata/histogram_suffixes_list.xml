@@ -875,6 +875,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
@@ -908,6 +910,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
@@ -941,6 +945,8 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Blink.HitTestDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.ImplCompositorCommit.UpdateTime"/>
   <affected-histogram name="Blink.IntersectionObservation.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationInternalCount.UpdateTime"/>
+  <affected-histogram name="Blink.IntersectionObservationJavascriptCount.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptDocumentUpdate.UpdateTime"/>
   <affected-histogram name="Blink.JavascriptIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Layout.UpdateTime"/>
