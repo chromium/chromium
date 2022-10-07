@@ -1282,7 +1282,7 @@ deps = {
     Var('chromium_git') + '/chromium/deps/flac.git' + '@' + 'af862024c8c8fa0ae07ced05e89013d881b00596',
 
   'src/third_party/flatbuffers/src':
-    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '0fe13cb28ce5a3fb81f654b21cb37c9821194962',
+    Var('chromium_git') + '/external/github.com/google/flatbuffers.git' + '@' + '06c5c7ed0bd987a918cf88caafb094f22cdd1721',
 
   # Used for embedded builds. CrOS & Linux use the system version.
   'src/third_party/fontconfig/src': {
@@ -3101,7 +3101,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_flatbuffers_flatbuffers_java',
-              'version': 'version:2@2.0.3.cr1',
+              'version': 'version:2@2.0.8.cr1',
           },
       ],
       'condition': 'checkout_android',
@@ -3508,7 +3508,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib',
-              'version': 'version:2@1.7.10.cr1',
+              'version': 'version:2@1.7.20.cr1',
           },
       ],
       'condition': 'checkout_android',
@@ -3519,7 +3519,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_stdlib_common',
-              'version': 'version:2@1.7.10.cr1',
+              'version': 'version:2@1.7.20.cr1',
           },
       ],
       'condition': 'checkout_android',
