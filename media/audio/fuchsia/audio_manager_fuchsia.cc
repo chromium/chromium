@@ -14,17 +14,12 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scheduler.h"
-#include "base/time/time.h"
 #include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
-#include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
 
 namespace media {
-
-constexpr base::TimeDelta kMinBufferPeriod = base::kAudioSchedulingPeriod;
-constexpr base::TimeDelta kMaxBufferPeriod = base::Seconds(1);
 
 AudioManagerFuchsia::AudioManagerFuchsia(
     std::unique_ptr<AudioThread> audio_thread,
@@ -109,18 +104,8 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
     const AudioParameters& input_params) {
   if (input_params.IsValid()) {
     AudioParameters params = input_params;
-
-    base::TimeDelta period = AudioTimestampHelper::FramesToTime(
-        input_params.frames_per_buffer(), input_params.sample_rate());
-
-    // Round period to a whole number of the CPU scheduling periods.
-    period = round(period / base::kAudioSchedulingPeriod) *
-             base::kAudioSchedulingPeriod;
-    period = std::min(kMaxBufferPeriod, std::max(period, kMinBufferPeriod));
-
-    params.set_frames_per_buffer(
-        AudioTimestampHelper::TimeToFrames(period, params.sample_rate()));
-
+    params.set_frames_per_buffer(AudioTimestampHelper::TimeToFrames(
+        base::kAudioSchedulingPeriod, params.sample_rate()));
     return params;
   }
 
@@ -128,15 +113,11 @@ AudioParameters AudioManagerFuchsia::GetPreferredOutputStreamParameters(
   // device configuration. Update this method when that functionality is
   // implemented.
   const size_t kSampleRate = 48000;
-  const size_t kMinPeriodFrames =
-      AudioTimestampHelper::TimeToFrames(kMinBufferPeriod, kSampleRate);
-  const size_t kMaxPeriodFrames =
-      AudioTimestampHelper::TimeToFrames(kMaxBufferPeriod, kSampleRate);
+  const size_t kPeriodFrames = AudioTimestampHelper::TimeToFrames(
+      base::kAudioSchedulingPeriod, kSampleRate);
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
-                         kMinPeriodFrames,
-                         AudioParameters::HardwareCapabilities(
-                             kMinPeriodFrames, kMaxPeriodFrames));
+                         kPeriodFrames);
 }
 
 const char* AudioManagerFuchsia::GetName() {
