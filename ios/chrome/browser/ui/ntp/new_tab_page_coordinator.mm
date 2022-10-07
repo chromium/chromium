@@ -407,6 +407,9 @@ const base::Feature kEnableCheckForNewFollowContent{
   self.ntpViewController = nil;
   self.feedHeaderViewController.ntpDelegate = nil;
   self.feedHeaderViewController = nil;
+  self.feedTopSectionCoordinator.ntpDelegate = nil;
+  self.feedTopSectionCoordinator = nil;
+
   self.alertCoordinator = nil;
   self.authService = nil;
   self.templateURLService = nil;
@@ -879,6 +882,7 @@ const base::Feature kEnableCheckForNewFollowContent{
 }
 
 - (BOOL)isStartSurface {
+  DCHECK(self.webState);
   NewTabPageTabHelper* NTPHelper =
       NewTabPageTabHelper::FromWebState(self.webState);
   return NTPHelper && NTPHelper->ShouldShowStartSurface();
