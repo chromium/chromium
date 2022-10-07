@@ -296,7 +296,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2689613560355655046">Skrivebord 8</translation>
 <translation id="2695305337569143674">nett</translation>
 <translation id="2700493154570097719">Velg tastatur</translation>
-<translation id="2704781753052663061">Koble til andre Wi-Fi-nettverk</translation>
+<translation id="2704781753052663061">Koble til andre Wifi-nettverk</translation>
 <translation id="2705001408393684014">Slå av/på mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Opp</translation>
 <translation id="2718395828230677721">Nattlys</translation>
@@ -437,7 +437,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3542066395059568317">Du ser anbefalinger, slik at du kan fortsette der du slapp. Høyreklikk for å fjerne anbefalinger.</translation>
-<translation id="3552189655002856821">Wi-Fi er slått av</translation>
+<translation id="3552189655002856821">Wifi er slått av</translation>
 <translation id="3554637740840164787">Festet <ph name="ITEM_TITLE" /></translation>
 <translation id="3563775809269155755">Slå på wifi-sone</translation>
 <translation id="3566240529365775567">Åpnet nå nettopp</translation>
@@ -467,7 +467,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3659814201068740063">Omtrent <ph name="TIME_LEFT" /> igjen (<ph name="PERCENTAGE" /> %).
 Koble enheten til strøm.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
-<translation id="36813544980941320">Wi-Fi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
+<translation id="36813544980941320">Wifi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Nettsteder</translation>
 <translation id="3702809606464356667">Viser vinduer fra det nåværende skrivebordet. Trykk på oppoverpiltasten for å vise vinduer fra alle skrivebord</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
@@ -552,7 +552,7 @@ Koble enheten til strøm.</translation>
 <translation id="4197790712631116042">Av</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> er ikke tilgjengelig.</translation>
 <translation id="4201051445878709314">Se forrige måned</translation>
-<translation id="4209973997261364186">Wi-Fi er slått på</translation>
+<translation id="4209973997261364186">Wifi er slått på</translation>
 <translation id="4212472694152630271">Bytt til PIN-kode</translation>
 <translation id="4215497585250573029">VPN-innstillinger</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -1226,7 +1226,7 @@ Nylig installert</translation>
 <translation id="7995804128062002838">Kunne ikke ta opp skjermen</translation>
 <translation id="8000066093800657092">Ingen nettverk</translation>
 <translation id="8004512796067398576">Øk</translation>
-<translation id="8029247720646289474">Tilkoblingen til Wi-Fi-sonen mislyktes</translation>
+<translation id="8029247720646289474">Tilkoblingen til wifi-sonen mislyktes</translation>
 <translation id="8029629653277878342">PIN-kode eller passord kreves for mer sikkerhet</translation>
 <translation id="8030169304546394654">Frakoblet</translation>
 <translation id="8036504271468642248">Forrige setning</translation>
@@ -1358,7 +1358,7 @@ Nylig installert</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">«Hjelp»</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">Wifi</translation>
 <translation id="881757059229893486">Innstillinger for inndatametoder</translation>
 <translation id="8818320199597151042">Fjerner profilen. Vent i noen minutter.</translation>
 <translation id="8819728065740986820">Tilpasset lading er på</translation>
@@ -1406,7 +1406,7 @@ Nylig installert</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077404278023321866">Maler</translation>
 <translation id="9077515519330855811">Mediekontroller – <ph name="MEDIA_TITLE" /> spilles nå</translation>
-<translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080073830732419341">Kameraet er festet til øvre venstre hjørne</translation>
 <translation id="9080132581049224423">Sveip opp for å gå til startskjermen</translation>
 <translation id="9080206825613744995">Mikrofonen er i bruk.</translation>

@@ -257,13 +257,13 @@
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
 <translation id="3569407787324516067">Skjermsparer</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
-<translation id="357889014807611375">Wi-Fi med datamåling</translation>
-<translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wi-Fi-signalkilden.</translation>
+<translation id="357889014807611375">Wifi med datamåling</translation>
+<translation id="3583278742022654445">Svakt signal. Prøv å flytte deg nærmere Wifi-signalkilden.</translation>
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
-<translation id="360565022852130722">Wi-Fi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
+<translation id="360565022852130722">Wifi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="361575905210396100">Takk for tilbakemeldingen</translation>
 <translation id="3621202678540785336">Inndata</translation>
@@ -361,7 +361,7 @@
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Trykk på Enter for å avbryte utskriftsjobben.</translation>
 <translation id="463791356324567266">Avbryter skanningen …</translation>
-<translation id="4646949265910132906">Sikker Wi-Fi-tilkobling</translation>
+<translation id="4646949265910132906">Sikker Wifi-tilkobling</translation>
 <translation id="4650608062294027130">Høyre Shift</translation>
 <translation id="4654549501020883054">Endre daglig</translation>
 <translation id="4665014895760275686">Produsent</translation>
@@ -451,7 +451,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5333530671332546086">Ukjent portaltilstand</translation>
 <translation id="5346687412805619883">Lokalt nettverk</translation>
 <translation id="5358174242040570474">Noe gikk galt. Prøv å velge en bakgrunn igjen eller åpne appen på nytt.</translation>
-<translation id="5372659122375744710">Wi-Fi-nettverket er ikke sikkert</translation>
+<translation id="5372659122375744710">Wifi-nettverket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys modus</translation>
 <translation id="5389159777326897627">Bakgrunn og stil</translation>
 <translation id="5389224261615877010">Regnbue</translation>
@@ -573,7 +573,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="650266656685499220">For å opprette album, gå til Google Foto</translation>
 <translation id="6516990319416533844">For å teste ladehastigheten til batteriet, la det tappes i en kort periode</translation>
 <translation id="6517239166834772319">Utforsk</translation>
-<translation id="6527081081771465939">Ukjent Wi-Fi-sikkerhetsprotokoll</translation>
+<translation id="6527081081771465939">Ukjent Wifi-sikkerhetsprotokoll</translation>
 <translation id="6535178685492749208">Du er uten nett. Tilbakemeldingen blir sendt senere.</translation>
 <translation id="65587193855025101">Planskanner</translation>
 <translation id="6564646048574748301">Mislykket – skriveren kan ikke nås</translation>
@@ -755,7 +755,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="844521431886043384">DNS er ikke konfigurert</translation>
 <translation id="8456761643544401578">Automatisk mørk modus</translation>
 <translation id="8461329675984532579">Navn på leverandøren for hjemmeenheten</translation>
-<translation id="8475690821716466388">Wi-Fi-nettverket er sikret med den svake protokollen WEP PSK</translation>
+<translation id="8475690821716466388">Wifi-nettverket er sikret med den svake protokollen WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er noe høyere enn den tillatte grenseverdien</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
 <translation id="8491311378305535241">Kan ikke koble til HTTP-nettsteder fra Android-apper gjennom brannmuren</translation>
@@ -785,7 +785,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="879568662008399081">Det kan hende dette nettverket har en obligatorisk side</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverandørnavn</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Bakgrunn</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
