@@ -49,7 +49,7 @@ void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
 }
 
 void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
-                                    GetFilesSourcesCallback callback) const {
+                                    GetFilesSourcesCallback callback) {
   dlp::GetFilesSourcesResponse response;
   for (const auto& file_inode : request.files_inodes()) {
     auto file_itr = files_database_.find(file_inode);
@@ -65,7 +65,7 @@ void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
 
 void FakeDlpClient::CheckFilesTransfer(
     const dlp::CheckFilesTransferRequest request,
-    CheckFilesTransferCallback callback) const {
+    CheckFilesTransferCallback callback) {
   dlp::CheckFilesTransferResponse response;
   if (check_files_transfer_response_.has_value())
     response = check_files_transfer_response_.value();

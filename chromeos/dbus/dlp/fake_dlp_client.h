@@ -29,9 +29,9 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   void AddFile(const dlp::AddFileRequest request,
                AddFileCallback callback) override;
   void GetFilesSources(const dlp::GetFilesSourcesRequest request,
-                       GetFilesSourcesCallback callback) const override;
+                       GetFilesSourcesCallback callback) override;
   void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
-                          CheckFilesTransferCallback callback) const override;
+                          CheckFilesTransferCallback callback) override;
   void RequestFileAccess(const dlp::RequestFileAccessRequest request,
                          RequestFileAccessCallback callback) override;
   bool IsAlive() const override;

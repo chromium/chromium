@@ -83,10 +83,9 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   virtual void AddFile(const dlp::AddFileRequest request,
                        AddFileCallback callback) = 0;
   virtual void GetFilesSources(const dlp::GetFilesSourcesRequest request,
-                               GetFilesSourcesCallback callback) const = 0;
-  virtual void CheckFilesTransfer(
-      const dlp::CheckFilesTransferRequest request,
-      CheckFilesTransferCallback callback) const = 0;
+                               GetFilesSourcesCallback callback) = 0;
+  virtual void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
+                                  CheckFilesTransferCallback callback) = 0;
   virtual void RequestFileAccess(const dlp::RequestFileAccessRequest request,
                                  RequestFileAccessCallback callback) = 0;
 

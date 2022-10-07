@@ -98,7 +98,7 @@ class DlpClientImpl : public DlpClient {
   }
 
   void GetFilesSources(const dlp::GetFilesSourcesRequest request,
-                       GetFilesSourcesCallback callback) const override {
+                       GetFilesSourcesCallback callback) override {
     dbus::MethodCall method_call(dlp::kDlpInterface,
                                  dlp::kGetFilesSourcesMethod);
     dbus::MessageWriter writer(&method_call);
@@ -119,7 +119,7 @@ class DlpClientImpl : public DlpClient {
   }
 
   void CheckFilesTransfer(const dlp::CheckFilesTransferRequest request,
-                          CheckFilesTransferCallback callback) const override {
+                          CheckFilesTransferCallback callback) override {
     dbus::MethodCall method_call(dlp::kDlpInterface,
                                  dlp::kCheckFilesTransferMethod);
     dbus::MessageWriter writer(&method_call);
