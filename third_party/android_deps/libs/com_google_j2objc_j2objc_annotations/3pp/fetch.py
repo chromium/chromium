@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'com/google/j2objc'
 _MODULE_NAME = 'j2objc-annotations'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '1.3'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

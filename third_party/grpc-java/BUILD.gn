@@ -1,0 +1,35 @@
+# Copyright 2022 Google Inc. All Rights Reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  java_group("grpc_runtime_java") {
+    deps = [
+      "//third_party/android_deps:com_google_guava_listenablefuture_java",
+      "//third_party/android_deps:io_grpc_grpc_api_java",
+      "//third_party/android_deps:io_grpc_grpc_protobuf_lite_java",
+      "//third_party/android_deps:io_grpc_grpc_stub_java",
+      "//third_party/android_deps:javax_annotation_javax_annotation_api_java",
+    ]
+  }
+}
+
+# Only compile the plugin for the host architecture.
+if (current_toolchain == host_toolchain) {
+  config("grpc_java_plugin_internal_config") {
+    cflags = [ "-Wno-implicit-fallthrough" ]
+  }
+  executable("grpc_java_plugin") {
+    sources = [
+      "compiler_plugin/java_generator.cpp",
+      "compiler_plugin/java_generator.h",
+      "compiler_plugin/java_plugin.cpp",
+    ]
+    deps = [ "//third_party/protobuf:protoc_lib" ]
+    configs += [
+      "//third_party/protobuf:protobuf_config",
+      ":grpc_java_plugin_internal_config",
+    ]
+  }
+}

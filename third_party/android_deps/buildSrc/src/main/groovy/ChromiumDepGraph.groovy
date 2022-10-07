@@ -266,25 +266,25 @@ class ChromiumDepGraph {
             resolveVersion: '1.7.10'),
         io_grpc_grpc_binder: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_grpc_grpc_core: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_grpc_grpc_api: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_grpc_grpc_context: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_grpc_grpc_protobuf_lite: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_grpc_grpc_stub: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         io_perfmark_perfmark_api: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0', overrideLatest: true),
+            licenseName: 'Apache 2.0'),
     ]
 
     private static final Set<String> ALLOWED_EMPTY_DEPS = [

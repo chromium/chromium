@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'io/perfmark'
 _MODULE_NAME = 'perfmark-api'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = '0.25.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 

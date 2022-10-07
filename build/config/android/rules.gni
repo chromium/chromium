@@ -4357,6 +4357,10 @@ if (enable_java_templates) {
   #       absolute paths, such as for third_party or generated .proto files.
   #       http://crbug.com/691451 tracks fixing this.
   #
+  #   generator_plugin_label (optional)
+  #       GN label for plugin executable which generates custom cc stubs.
+  #       Don't specify a toolchain, host toolchain is assumed.
+  #
   # Example:
   #  proto_java_library("foo_proto_java") {
   #    proto_path = "src/foo"
@@ -4383,15 +4387,37 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
       outputs = [ _srcjar_path ]
       args = [
-               "--depfile",
-               rebase_path(depfile, root_build_dir),
-               "--protoc",
-               rebase_path(android_protoc_bin, root_build_dir),
-               "--proto-path",
-               rebase_path(invoker.proto_path, root_build_dir),
-               "--srcjar",
-               rebase_path(_srcjar_path, root_build_dir),
-             ] + rebase_path(sources, root_build_dir)
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+        "--protoc",
+        rebase_path(android_protoc_bin, root_build_dir),
+        "--proto-path",
+        rebase_path(invoker.proto_path, root_build_dir),
+        "--srcjar",
+        rebase_path(_srcjar_path, root_build_dir),
+      ]
+
+      if (defined(invoker.generator_plugin_label)) {
+        if (host_os == "win") {
+          _host_executable_suffix = ".exe"
+        } else {
+          _host_executable_suffix = ""
+        }
+
+        _plugin_host_label =
+            invoker.generator_plugin_label + "($host_toolchain)"
+        _plugin_path =
+            get_label_info(_plugin_host_label, "root_out_dir") + "/" +
+            get_label_info(_plugin_host_label, "name") + _host_executable_suffix
+        args += [
+          "--plugin",
+          rebase_path(_plugin_path, root_build_dir),
+        ]
+        deps += [ _plugin_host_label ]
+        inputs = [ _plugin_path ]
+      }
+
+      args += rebase_path(sources, root_build_dir)
 
       if (defined(invoker.import_dirs)) {
         foreach(_import_dir, invoker.import_dirs) {

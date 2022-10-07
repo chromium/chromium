@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'io/grpc'
 _MODULE_NAME = 'grpc-binder'
 _FILE_EXT = 'aar'
-_OVERRIDE_LATEST = '1.49.0'
+_OVERRIDE_LATEST = None
 _PATCH_VERSION = 'cr1'
 
 
