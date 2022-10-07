@@ -1571,6 +1571,18 @@ void ShelfView::ContinueDrag(const ui::LocatedEvent& event) {
 }
 
 void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
+  if (visible_views_indices_.empty()) {
+    DCHECK(model_->in_shelf_party());
+    if (shelf_->IsHorizontalAlignment()) {
+      if (drag_view_->x() != app_icons_layout_offset_)
+        drag_view_->SetX(app_icons_layout_offset_);
+    } else {
+      if (drag_view_->y() != app_icons_layout_offset_)
+        drag_view_->SetY(app_icons_layout_offset_);
+    }
+    return;
+  }
+
   const size_t current_item_index =
       view_model_->GetIndexOfView(drag_view_).value();
   const std::pair<size_t, size_t> indices(GetDragRange(current_item_index));
@@ -1843,6 +1855,11 @@ std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
 bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
   if (!features::IsDragUnpinnedAppToPinEnabled())
     return false;
+
+  if (visible_views_indices_.empty()) {
+    DCHECK(model_->in_shelf_party());
+    return false;
+  }
 
   DCHECK(base::Contains(visible_views_indices_, dragged_view_index));
   bool is_moved_item_pinned =
