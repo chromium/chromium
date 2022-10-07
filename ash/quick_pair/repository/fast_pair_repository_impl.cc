@@ -362,6 +362,7 @@ void FastPairRepositoryImpl::AddDeviceToFootprints(
     return;
   }
 
+  pending_write_store_->AddPairedDevice(mac_address, hex_model_id);
   footprints_fetcher_->AddUserFastPairInfo(
       BuildFastPairInfo(hex_model_id, account_key, mac_address, metadata),
       base::BindOnce(&FastPairRepositoryImpl::OnAddDeviceToFootprintsComplete,
@@ -373,11 +374,28 @@ void FastPairRepositoryImpl::OnAddDeviceToFootprintsComplete(
     const std::vector<uint8_t>& account_key,
     bool success) {
   if (!success) {
-    // TODO(b/221126805): Handle caching to disk + retries.
+    QP_LOG(WARNING)
+        << __func__
+        << ": Failed to add device to Footprints--"
+           "deferring addition to SavedDeviceRegistry until we succeed.";
+    return;
+  }
+  QP_LOG(INFO) << __func__ << ": Successfully added device to Footprints.";
+
+  // Remove pending add on successful Footprints write
+  pending_write_store_->OnPairedDeviceSaved(mac_address);
+
+  // save/update account key in saved device registry
+  saved_device_registry_->SaveAccountKey(mac_address, account_key);
+
+  if (saved_device_registry_->IsAccountKeySavedToRegistry(account_key)) {
+    QP_LOG(INFO) << __func__
+                 << ": Successfully added device to Saved Device Registry.";
     return;
   }
 
-  saved_device_registry_->SaveAccountKey(mac_address, account_key);
+  QP_LOG(WARNING) << __func__
+                  << ": Failed to add device to Saved Device Registry.";
 }
 
 void FastPairRepositoryImpl::CheckOptInStatus(

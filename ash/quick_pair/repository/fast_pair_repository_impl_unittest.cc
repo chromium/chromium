@@ -1158,5 +1158,20 @@ TEST_F(FastPairRepositoryImplTest, IsHashCorrect) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(FastPairRepositoryImplTest,
+       AddDeviceToFootprints_RemoveDeviceFromPendingWriteStore) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairInitial);
+  device->set_classic_address(kTestClassicAddress1);
+  fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_TRUE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
+
+  // After a successful Footprints add, pending adds list should be empty
+  ASSERT_EQ(0u, pending_write_store_->GetPendingAdds().size());
+}
+
 }  // namespace quick_pair
 }  // namespace ash
