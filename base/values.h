@@ -864,7 +864,6 @@ class BASE_EXPORT GSL_OWNER Value {
   //
   // DEPRECATED: Use `Value::Dict::FindBoolByDottedPath()`,
   // `Value::Dict::FindIntByDottedPath()`, et cetera.
-  Value* FindPathOfType(StringPiece path, Type type);
   const Value* FindPathOfType(StringPiece path, Type type) const;
 
   // Convenience accessors used when the expected type of a value is known.

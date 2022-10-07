@@ -1193,10 +1193,6 @@ const Value* Value::FindPath(StringPiece path) const {
   return GetDict().FindByDottedPath(path);
 }
 
-Value* Value::FindPathOfType(StringPiece path, Type type) {
-  return const_cast<Value*>(std::as_const(*this).FindPathOfType(path, type));
-}
-
 const Value* Value::FindPathOfType(StringPiece path, Type type) const {
   const Value* cur = FindPath(path);
   if (!cur || cur->type() != type)
@@ -1229,7 +1225,7 @@ const Value* Value::FindDictPath(StringPiece path) const {
 }
 
 Value* Value::FindDictPath(StringPiece path) {
-  return FindPathOfType(path, Type::DICTIONARY);
+  return const_cast<Value*>(std::as_const(*this).FindDictPath(path));
 }
 
 const Value* Value::FindListPath(StringPiece path) const {
@@ -1237,7 +1233,7 @@ const Value* Value::FindListPath(StringPiece path) const {
 }
 
 Value* Value::FindListPath(StringPiece path) {
-  return FindPathOfType(path, Type::LIST);
+  return const_cast<Value*>(std::as_const(*this).FindListPath(path));
 }
 
 Value* Value::SetPath(StringPiece path, Value&& value) {
