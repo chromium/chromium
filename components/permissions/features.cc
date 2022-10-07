@@ -148,7 +148,7 @@ const base::FeatureParam<double>
     kPermissionOnDeviceNotificationPredictionsHoldbackChance(
         &features::kPermissionOnDeviceNotificationPredictions,
         "holdback_chance",
-        0.3);
+        0.25);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Specifies the `trigger_id` of the HaTS survey to trigger immediately after
