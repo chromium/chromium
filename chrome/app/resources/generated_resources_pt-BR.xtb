@@ -7345,7 +7345,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7953669802889559161">Entradas</translation>
 <translation id="7953955868932471628">Gerenciar atalhos</translation>
 <translation id="7955105108888461311">Perguntar diretamente</translation>
-<translation id="7955177647836564772">Se o Smart Lock estiver ativado e o smartphone desbloqueado, não vai ser necessário digitar uma senha ou um PIN</translation>
+<translation id="7955177647836564772">Se o Smart Lock estiver ativado e o smartphone desbloqueado, você não vai precisar digitar uma senha ou um PIN</translation>
 <translation id="7956373551960864128">Suas impressoras salvas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o número de série ou o ID do recurso</translation>
 <translation id="7959074893852789871">O arquivo continha vários certificados e alguns deles não foram importados:</translation>
@@ -8266,6 +8266,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8838601485495657486">Opaco</translation>
 <translation id="8838770651474809439">Hambúrger</translation>
 <translation id="8838778928843281408">Gerenciar smartphones</translation>
+<translation id="883924185304953854">Pesquisar por imagem</translation>
 <translation id="8841843049738266382">Ler e mudar usuários na lista de permissões</translation>
 <translation id="8842594465773264717">Excluir essa impressão digital</translation>
 <translation id="8845001906332463065">Ajuda</translation>

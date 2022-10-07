@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1113173431709655881">Режим на камера</translation>
 <translation id="1153190633558910465">Исклучи мрежа</translation>
 <translation id="1175958423215084756">Препознаен е линк. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Ништо не е снимено</translation>
 <translation id="1838104802459806957">Навалeте нагоре</translation>
 <translation id="1843105061469674856">Скенирај дополнителна страница</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Полна резолуција</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Видеоснимање за мултипреноси</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Сооднос на фотографија</translation>
 <translation id="5057360777601936059">Камерата е недостапна во моментов.
         Проверете дали камерата е правилно поврзана.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Горен лев агол на документот</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5320594929574852403">Се преместува налево</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Поставете ги сите рабови на документот во рамката. Скенирањето функционира најдобро кога документот и заднината имаат различни бои.</translation>
 <translation id="5662366948659129155">Се скенира страницата <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>

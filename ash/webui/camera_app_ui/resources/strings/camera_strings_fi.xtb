@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skannaa dokumenttisi</translation>
 <translation id="1309250603447638106">Ladataan dokumenttien skannauksen päivityksiä</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Käytä valitsemalla Haku + vasen nuoli.</translation>
+<translation id="1417314334557041815">Muokkaa sivua <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on irrotettu.</translation>
 <translation id="1473110567575736769">3 sekunnin ajastin</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Mitään ei kuvattu</translation>
 <translation id="1838104802459806957">Kallista ylöspäin</translation>
+<translation id="1843105061469674856">Skannaa toinen sivu</translation>
 <translation id="1851169887664797861">Lisää kameran säätimiä käytettävissä</translation>
 <translation id="1851616744363735765">KESKEYTETTY</translation>
 <translation id="1862930711583847113">Vienti epäonnistui: <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Kamera ei voi muuttaa resoluutiota</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="4281620174117014503">Keskitason resoluutio</translation>
+<translation id="428234092390943511">Sivun pikkukuva</translation>
 <translation id="4329152592498422850">Vaihda neliökuviin</translation>
 <translation id="4340659173795395806">Voit nyt luoda monisivuisia PDF-tiedostoja</translation>
 <translation id="4383571725254449280">Tulosta kehityslokit</translation>

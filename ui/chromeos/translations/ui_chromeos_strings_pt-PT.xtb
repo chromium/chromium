@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Birmanês/Mianmar</translation>
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> disponível(eis)</translation>
+<translation id="2417486498593892439">Início de sessão na rede</translation>
 <translation id="2425665904502185219">Tamanho total do ficheiro</translation>
 <translation id="2428749644083375155">A copiar <ph name="NUMBER_OF_ITEMS" /> itens para <ph name="FOLDER_NAME" />…</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Reprodução não disponível</translation>
 <translation id="383652340667548381">Sérvio</translation>
 <translation id="385051799172605136">Anterior</translation>
+<translation id="3851491607336266896">Ligação estabelecida, conetividade limitada</translation>
 <translation id="3855472144336161447">Alemão Neo 2</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrição</translation>
@@ -365,6 +367,7 @@
 <translation id="4290535918735525311">1 pasta partilhada com o Linux.</translation>
 <translation id="4299729908419173967">Português (Brasil)</translation>
 <translation id="4302605047395093221">Qualquer pessoa que utilize este dispositivo tem de introduzir o PIN para estabelecer ligação a esta rede móvel</translation>
+<translation id="4303531889494116116">Esta rede está ocupada. Tente novamente mais tarde.</translation>
 <translation id="4309915981827077375">Informação geral</translation>
 <translation id="432252891123397018">Romeno com teclado padrão</translation>
 <translation id="4325128273762811722">Esloveno</translation>
@@ -939,6 +942,7 @@
 <translation id="8903931173357132290">Graduado</translation>
 <translation id="8912078710089354287">Cão a abanar a cauda</translation>
 <translation id="8919081441417203123">Dinamarquês</translation>
+<translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
 <translation id="8965697826696209160">Não existe espaço suficiente.</translation>
 <translation id="8997962250644902079">Pinyin chinês (tradicional)</translation>
 <translation id="8998871447376656508">Não existe espaço livre suficiente no Google Drive para concluir o carregamento.</translation>

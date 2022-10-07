@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">Chrome-ын зарим онцлог \u2019 цаашид боломжгүй болно</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2871733351037274014">Хуудаснуудыг урьдчилан ачаалах</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> танаас энэ вебсайтыг зөвшөөрөхийг хүсэж байна:</translation>
 <translation id="2886836735871983413">Таныг вебийг үзэж байхад сайтын жагсаалт энд харагдана</translation>
 <translation id="2888126860611144412">Chrome-н тухай</translation>
 <translation id="2891154217021530873">Хуудас ачаалахыг зогсоох</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сан</translation>
 <translation id="2932222164150889403">Таны гар өөрчлөгдөхгүй</translation>
 <translation id="2936980480904111527">Chrome-н мэдэгдэл нь зүйлсийг хялбар болгодог</translation>
+<translation id="2940075786175545812">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголт</translation>
 <translation id="2942036813789421260">Урьдчилан үзэх таб хаалттай байна</translation>
 <translation id="2946420957526726953">Бусад төхөөрөмжид холбогдохын тулд Chrome-г шинэчилж байна</translation>
 <translation id="2951071800649516099">Хуудаснуудыг дараа уншихаар унших жагсаалтдаа нэмээрэй</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">Хуудасны бүх зүйлийг жижиг болгох</translation>
 <translation id="3264124641674805320">Контентыг хэрхэн дараа үзэхээр татаж авах вэ</translation>
 <translation id="3264259168916048410">Таны компьютер энэ төхөөрөмжийг сайтад нэвтрэхийн тулд ашиглахыг хүсэж байна</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" />-н бүх хуудас</translation>
 <translation id="3265534588625245297">Дагадаг сайтуудаа удирдана уу</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
 <translation id="3280562213547448728">Дуут хайлт</translation>
@@ -730,6 +733,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4985248278475639481">Сонирхсон зарын тохируулгын тухай</translation>
 <translation id="4987271110129728827">Тухайн хуудсыг олох боломжгүй. Зөв бичсэн эсэхээ шалгах эсвэл веб хайлтыг туршина уу.</translation>
 <translation id="4988526792673242964">Хуудас</translation>
+<translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
 <translation id="499724277181351974">Шилжих: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Энэ сайтыг энд дагана уу</translation>
 <translation id="500351648694011114">Илүү хялбар үзээрэй</translation>
@@ -1104,6 +1108,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
 <translation id="6903907808598579934">Синк хийхийг асаах</translation>
+<translation id="6908998565271542516">Бүтэн өндөртэйгээр нээсэн вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголт</translation>
 <translation id="6909589135458168665">Хуудаснуудыг урьдчилан ачаалах</translation>
 <translation id="6942665639005891494">Тохиргооны цэсийн сонголтоор таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="694267552845942083">Та одоогоор Синк хийх тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Баталгаажуулах товчлуурыг товшино уу. Дээш шилжих</translation>
@@ -1111,6 +1116,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6955535239952325894">Удирдсан хөтчүүд дээр энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="6963766334940102469">Хавчуургыг устгах</translation>
 <translation id="696447261358045621">Нууцлалтай горимоос гарах</translation>
+<translation id="6971862865055170158">Бүү зөвшөөр</translation>
 <translation id="6979737339423435258">Бүх цаг</translation>
 <translation id="6987047470128880212">Нууцлалтай таб энэ төхөөрөмж дээр боломжгүй</translation>
 <translation id="6995899638241819463">Өгөгдлийн зөрчлийн улмаас нууц үгийг задруулсан бол танд анхааруулах</translation>

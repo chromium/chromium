@@ -12,6 +12,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1131805035311359397">I wirio a yw'ch cyfrineiriau'n ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Ynghylch Chromium</translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Pan fydd ymlaen, mae Chromium yn rhyddhau cof o dabiau anweithredol. Mae hyn yn rhoi mwy o adnoddau cyfrifiadurol i dabiau gweithredol ac apiau eraill ac yn cadw Chromium yn gyflym. Mae eich tabiau anweithredol yn dod yn weithredol eto yn awtomatig pan fyddwch yn dychwelyd atynt. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
 <translation id="1385859895174722837">Google Assistant yn Chromium</translation>
 <translation id="1396446129537741364">Mae Chromium yn ceisio dangos cyfrineiriau.</translation>
@@ -253,6 +254,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6717134281241384636">Ni ellir defnyddio'ch proffil oherwydd ei fod yn dod o fersiwn mwy diweddar o Chromium.
 
 Mae'n bosib na fydd rhai nodweddion ar gael. Rhowch gyfeiriadur proffil gwahanol neu defnyddiwch fersiwn mwy diweddar o Chromium.</translation>
+<translation id="6730677189742196061">Mae Arbedwr Cof wedi gwneud Chromium yn gyflymach</translation>
 <translation id="6734291798041940871">Mae Chromium eisoes wedi'i osod ar gyfer pob defnyddiwr ar eich cyfrifiadur.</translation>
 <translation id="673636774878526923">I gael mynediad at eich holl bethau Chromium ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen.</translation>
 <translation id="6774082503108938489">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium. Ni chaniateir galluogi'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>

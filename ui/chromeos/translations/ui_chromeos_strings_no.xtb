@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Burmesisk/myanmarsk</translation>
 <translation id="2392369802118427583">Aktiver</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> tilgjengelig</translation>
+<translation id="2417486498593892439">Logg på nettverket</translation>
 <translation id="2425665904502185219">Total filstørrelse</translation>
 <translation id="2428749644083375155">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer til <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Type</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Ingen avspillinger er tilgjengelige</translation>
 <translation id="383652340667548381">Serbisk</translation>
 <translation id="385051799172605136">Tilbake</translation>
+<translation id="3851491607336266896">Tilkoblet – begrenset tilkobling</translation>
 <translation id="3855472144336161447">Tysk Neo 2</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
@@ -365,6 +367,7 @@
 <translation id="4290535918735525311">1 mappe er delt med Linux</translation>
 <translation id="4299729908419173967">Brasiliansk</translation>
 <translation id="4302605047395093221">Alle som bruker denne enheten, må oppgi PIN-koden for å koble til dette mobilnettverket</translation>
+<translation id="4303531889494116116">Dette nettverket er utilgjengelig. Prøv på nytt senere.</translation>
 <translation id="4309915981827077375">Generell informasjon</translation>
 <translation id="432252891123397018">Rumensk med standardtastatur</translation>
 <translation id="4325128273762811722">Slovensk</translation>
@@ -939,6 +942,7 @@
 <translation id="8903931173357132290">Avgangselev</translation>
 <translation id="8912078710089354287">Hund som logrer med halen</translation>
 <translation id="8919081441417203123">Dansk</translation>
+<translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8965697826696209160">Du har ikke nok ledig plass.</translation>
 <translation id="8997962250644902079">Kinesisk (tradisjonell) pinyin</translation>
 <translation id="8998871447376656508">Det er ikke nok ledig plass på Google Disk til å fullføre opplastingen.</translation>

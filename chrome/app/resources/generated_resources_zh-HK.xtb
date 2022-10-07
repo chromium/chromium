@@ -1134,6 +1134,7 @@
 <translation id="2034346955588403444">新增其他 Wi-Fi 網絡</translation>
 <translation id="2035211704574173780">灰階</translation>
 <translation id="203574396658008164">從上鎖畫面啟用筆記功能</translation>
+<translation id="2036514476578229158">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
 <translation id="2037445849770872822">您已設定此 Google 帳戶的監控功能。如要設定更多家長監控設定，請選取 [繼續]。
 
 如果不想繼續設定，請立即登出。您對此帳戶作出的變更會在此裝置上反映。
@@ -1255,6 +1256,7 @@
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136372518715274136">輸入新密碼</translation>
 <translation id="2136476978468204130">您輸入的密碼短語不正確</translation>
+<translation id="2137891579555018930">正在等待許可...</translation>
 <translation id="2138398485845393913">仍在連線至「<ph name="DEVICE_NAME" />」</translation>
 <translation id="2139919072249842737">設定按鈕</translation>
 <translation id="2140788884185208305">電池壽命</translation>
@@ -4145,6 +4147,7 @@
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
 <translation id="4863769717153320198">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
+<translation id="486459320933704969">你必須獲得家長或監護人許可，才能造訪這個網站</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4868281708609571334">訓練「Google 助理」識別<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
@@ -8724,6 +8727,7 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="947526284350604411">您的答案</translation>
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
+<translation id="949314938206378263">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>

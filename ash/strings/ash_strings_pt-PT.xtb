@@ -159,6 +159,15 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1797271123677381264">Esqueci-me da palavra-passe</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1812997170047690955">O que está no meu ecrã?</translation>
+<translation id="1823280932251546115">Tabuleiro do estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">O item <ph name="ITEM_TITLE" /> foi solto.</translation>
 <translation id="1836215606488044471">Assistente (a carregar...)</translation>
@@ -414,6 +423,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal do lado direito)</translation>
 <translation id="3375634426936648815">Ligado</translation>
+<translation id="3378438761594387761">Pode encontrar as transferências e as capturas de ecrã recentes aqui</translation>
 <translation id="3378442621503952303">A estabelecer ligação ao perfil. Aguarde alguns minutos.</translation>
 <translation id="3386978599540877378">a lupa em ecrã inteiro</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -457,6 +467,8 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3600061223661453002">Desativado</translation>
 <translation id="3604801046548457007">Foi criado o espaço de trabalho <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Visualização em braille ligada.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">A ativação dos dados móveis ativa o Bluetooth</translation>
 <translation id="3616883743181209306">O menu foi movido para o canto superior direito do ecrã.</translation>
 <translation id="3619536907358025872">Definições da captura de ecrã</translation>
@@ -720,6 +732,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
 <translation id="509790653408515442">Quando fizer stream das apps do telemóvel, as mesmas vão ser apresentadas aqui</translation>
 <translation id="5098537242461068432">O espaço de trabalho e as janelas foram reabertos</translation>
+<translation id="5104236669533825617">Não é possível criar a gravação de ecrã</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mês seguinte</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
@@ -765,6 +778,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5356963482258194581">Alterne entre o tema claro e escuro. Clique com o botão direito do rato no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
+<translation id="536019650977002321">O seu administrador não permite a captura de áudio. Contacte o administrador para obter mais informações.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Aceder a este separador</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
 <translation id="5391307769715781764">Substituir o espaço de trabalho guardado?</translation>

@@ -1137,6 +1137,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="2034346955588403444">Pridėti kitą „WiFi“ tinklą</translation>
 <translation id="2035211704574173780">Pilkumo tonai</translation>
 <translation id="203574396658008164">Įgalinti užrašų rašymą užrakinimo ekrane</translation>
+<translation id="2036514476578229158">Prašėte leidimo apsilankyti šioje svetainėje. Tėvai gali atsakyti programoje „Family Link“.</translation>
 <translation id="2037445849770872822">Šioje „Google“ paskyroje nustatyta priežiūra. Jei norite nustatyti daugiau tėvų kontrolės nustatymų, pasirinkite „Tęsti“.
 
 Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi šiame įrenginyje.
@@ -1258,6 +1259,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2135787500304447609">&amp;Atnaujinti</translation>
 <translation id="2136372518715274136">Įveskite naują slaptažodį</translation>
 <translation id="2136476978468204130">Įvesta slaptafrazė netinka</translation>
+<translation id="2137891579555018930">Laukiama leidimo...</translation>
 <translation id="2138398485845393913">Vis dar bandoma užmegzti ryšį su „<ph name="DEVICE_NAME" />“</translation>
 <translation id="2139919072249842737">Nustatymo mygtukas</translation>
 <translation id="2140788884185208305">Akumuliatoriaus būsena</translation>
@@ -4148,6 +4150,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4858913220355269194">Šemberas</translation>
 <translation id="4862642413395066333">OCSP atsakų pasirašymas</translation>
 <translation id="4863769717153320198">Atrodo kaip <ph name="WIDTH" /> × <ph name="HEIGHT" /> (numatytasis)</translation>
+<translation id="486459320933704969">Vienas iš tėvų ar globėjų turi patvirtinti, kad galite apsilankyti šioje svetainėje</translation>
 <translation id="4864805589453749318">Pasirinkite vieną iš tėvų, kuris suteikia leidimą pridėti mokyklos paskyrą.</translation>
 <translation id="486635084936119914">Automatiškai atidaryti tam tikrų tipų failus, kai jie atsisiunčiami</translation>
 <translation id="4868281708609571334">„Google“ padėjėjo mokymas atpažinti <ph name="SUPERVISED_USER_NAME" /> balsą</translation>
@@ -8311,6 +8314,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8838601485495657486">Neskaidru</translation>
 <translation id="8838770651474809439">Mėsainis</translation>
 <translation id="8838778928843281408">Telefonų valdymas</translation>
+<translation id="883924185304953854">Ieškoti pagal vaizdą</translation>
 <translation id="8841843049738266382">Skaityti ir keisti į leidžiamųjų sąrašą įtrauktus naudotojus</translation>
 <translation id="8842594465773264717">Ištrinti šį kontrolinį kodą</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
@@ -8738,6 +8742,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="947329552760389097">&amp;Tikrinti elementus</translation>
 <translation id="947526284350604411">Jūsų atsakymas</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> negali atidaryti šiame aplanke esančių failų, nes aplanke yra sistemos failų</translation>
+<translation id="949314938206378263">Prašėte leidimo apsilankyti šioje svetainėje. Vienas iš tėvų gali atsakyti programoje „Family Link“.</translation>
 <translation id="950307215746360464">Sąrankos vadovas</translation>
 <translation id="951991426597076286">Atmesti</translation>
 <translation id="952471655966876828">Įrenginys bus automatiškai prijungtas, kai bus įjungtas ar naudojamas</translation>

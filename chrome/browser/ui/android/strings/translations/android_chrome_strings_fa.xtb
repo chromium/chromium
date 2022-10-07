@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2871733351037274014">پیش‌بارگیری صفحات</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> از شما می‌خواهد این وب‌سایت را تأیید کنید:</translation>
 <translation id="2886836735871983413">همان‌طور که وب را مرور می‌کنید، فهرستی از سایت‌ها در اینجا نشان داده خواهد شد</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2891154217021530873">توقف بارگیری صفحه</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">صفحه‌کلیدتان تغییر نخواهد کرد</translation>
 <translation id="2936980480904111527">‏اعلان‌های Chrome انجام کارها را آسان‌تر می‌کند</translation>
+<translation id="2940075786175545812">گزینه تأیید کردن یا نکردن وب‌سایت</translation>
 <translation id="2942036813789421260">برگه پیش‌نمایش بسته است</translation>
 <translation id="2946420957526726953">‏درحال به‌روزرسانی Chrome برای اتصال به دستگاه‌های دیگر</translation>
 <translation id="2951071800649516099">صفحه‌ها را برای خواندن در فرصتی دیگر به فهرست خواندن اضافه کنید</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">کوچک‌تر کردن همه‌چیز در صفحه</translation>
 <translation id="3264124641674805320">نحوه بارگیری محتوا برای فرصتی دیگر</translation>
 <translation id="3264259168916048410">رایانه‌تان می‌خواهد از این دستگاه برای ورود به سیستم سایتی استفاده کند</translation>
+<translation id="3265093782546847662">همه صفحه‌های <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">مدیریت سایت‌هایی که دنبال می‌کنید</translation>
 <translation id="3269093882174072735">بارگیری تصویر</translation>
 <translation id="3280562213547448728">جستجوی گفتاری</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">درباره شخصی‌سازی آگهی</translation>
 <translation id="4987271110129728827">صفحه پیدا نشد. املای واژه‌های تایپ‌شده را بررسی کنید یا جستجوی وب انجام دهید.</translation>
 <translation id="4988526792673242964">صفحات</translation>
+<translation id="4991110219272367918">گزینه تأیید کردن یا نکردن وب‌سایت بسته شد</translation>
 <translation id="499724277181351974">پیمایش: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">این سایت را در اینجا دنبال کنید</translation>
 <translation id="500351648694011114">مرور آسان‌تر</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
+<translation id="6908998565271542516">گزینه تأیید کردن یا نکردن وب‌سایت که به‌طور کامل باز شده است</translation>
 <translation id="6909589135458168665">پیش‌بارگیری صفحات</translation>
 <translation id="6942665639005891494">هرزمان بخواهید می‌توانید با استفاده از منوی «تنظیمات»، محل پیش‌فرض بارگیری را تغییر دهید</translation>
 <translation id="694267552845942083">اکنون درحال سفارشی کردن تنظیمات «همگام‌سازی» هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">این تنظیم در مرورگرهای مدیریت‌شده غیرفعال است</translation>
 <translation id="6963766334940102469">حذف نشانک‌ها</translation>
 <translation id="696447261358045621">خروج از «حالت ناشناس»</translation>
+<translation id="6971862865055170158">تأیید نکردن</translation>
 <translation id="6979737339423435258">از ابتدا تا الآن</translation>
 <translation id="6987047470128880212">«حالت ناشناس» در این دستگاه دردسترس نیست</translation>
 <translation id="6995899638241819463">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لورفته باشند، به شما اطلاع داده شود</translation>

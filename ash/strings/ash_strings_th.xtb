@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">ลืมรหัสผ่าน</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="1812997170047690955">รายการที่อยู่ในหน้าจอของฉัน</translation>
+<translation id="1823280932251546115">ถาดสถานะ เวลา <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">อีเทอร์เน็ต: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">เลิกปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
 <translation id="1836215606488044471">Assistant (กำลังโหลด...)</translation>
@@ -414,6 +423,7 @@
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3371140690572404006">อุปกรณ์ USB-C (พอร์ตด้านหน้าขวา)</translation>
 <translation id="3375634426936648815">เชื่อมต่อแล้ว</translation>
+<translation id="3378438761594387761">คุณจะเห็นการดาวน์โหลดและการจับภาพหน้าจอล่าสุดที่นี่</translation>
 <translation id="3378442621503952303">กำลังเชื่อมต่อโปรไฟล์ รอสักครู่</translation>
 <translation id="3386978599540877378">แว่นขยายแบบเต็มหน้าจอ</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -457,6 +467,8 @@
 <translation id="3600061223661453002">ปิด</translation>
 <translation id="3604801046548457007">สร้างเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
 <translation id="3606978283550408104">เชื่อมต่ออุปกรณ์แสดงผลอักษรเบรลล์แล้ว</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">การเปิดใช้อินเทอร์เน็ตมือถือจะเปิดใช้บลูทูธ</translation>
 <translation id="3616883743181209306">เมนูได้ย้ายไปอยู่ที่มุมขวาบนของหน้าจอ</translation>
 <translation id="3619536907358025872">การตั้งค่าการจับภาพหน้าจอ</translation>
@@ -720,6 +732,7 @@
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
 <translation id="509790653408515442">เมื่อคุณสตรีมแอปของโทรศัพท์ แอปจะปรากฏที่นี่</translation>
 <translation id="5098537242461068432">เดสก์และหน้าต่างเปิดอีกครั้งแล้ว</translation>
+<translation id="5104236669533825617">สร้าง Screencast ไม่ได้</translation>
 <translation id="5107522548814527560">เว็บ</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
@@ -765,6 +778,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ขวา)</translation>
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
 <translation id="5356963482258194581">สลับระหว่างธีมมืดและธีมสว่าง คลิกขวาที่เดสก์ท็อป แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
+<translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ไปที่แท็บนี้</translation>
 <translation id="5379115545237091094">ลองหลายครั้งเกินไป</translation>
 <translation id="5391307769715781764">แทนที่เดสก์ที่บันทึกไว้ใช่ไหม</translation>

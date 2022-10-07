@@ -10,6 +10,8 @@
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้ Chromium<ph name="END_LINK" /> เพื่อตรวจสอบว่ารหัสผ่านของคุณไม่ได้รับผลกระทบจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
+<translation id="1231839967188101156">เมื่อเปิดใช้โหมดนี้ Chromium จะเพิ่มหน่วยความจําจากแท็บที่ไม่ได้ใช้งาน ซึ่งทําให้แท็บที่ใช้งานอยู่และแอปอื่นๆ มีทรัพยากรสําหรับคอมพิวเตอร์เพิ่มขึ้นและช่วยให้ Chrome ทํางานได้เร็ว แท็บที่ไม่มีการใช้งานจะกลับมาทํางานโดยอัตโนมัติเมื่อคุณไปที่แท็บเหล่านั้น <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">โหมดประหยัดหน่วยความจำช่วยให้ Chromium ทำงานได้เร็วขึ้น</translation>
 <translation id="1315551408014407711">ตั้งค่าโปรไฟล์ Chromium ใหม่</translation>
 <translation id="1385859895174722837">Google Assistant ใน Chromium</translation>
 <translation id="1396446129537741364">Chromium กำลังพยายามแสดงรหัสผ่าน</translation>
@@ -208,6 +210,7 @@
 <translation id="6055895534982063517">มี Chromium รุ่นใหม่ให้ใช้งานแล้วและทำงานได้เร็วกว่าเดิม</translation>
 <translation id="6063093106622310249">&amp;เปิดใน Chromium</translation>
 <translation id="6072279588547424923">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chromium แล้ว</translation>
+<translation id="6072463441809498330">ทำให้ Chromium เร็วขึ้น</translation>
 <translation id="608006075545470555">เพิ่มโปรไฟล์งานลงในเบราว์เซอร์นี้</translation>
 <translation id="6096348254544841612">ปรับแต่งและควบคุม Chromium มีการอัปเดต</translation>
 <translation id="6119438414301547735">อนุญาตให้ส่วนขยายแสดงคำขอเข้าถึงในแถบเครื่องมือ Chromium</translation>
@@ -251,6 +254,7 @@
 <translation id="6717134281241384636">โปรไฟล์ของคุณไม่สามารถใช้ได้เนื่องจากมาจาก Chromium รุ่นใหม่
 
 ฟีเจอร์บางประการอาจไม่มี โปรดระบุไดเรกทอรีโปรไฟล์อื่น หรือใช้ Chromium รุ่นใหม่</translation>
+<translation id="6730677189742196061">โหมดประหยัดหน่วยความจําช่วยให้ Chromium ทํางานได้เร็วขึ้น</translation>
 <translation id="6734291798041940871">มีการติดตั้ง Chromium สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="673636774878526923">หากต้องการเข้าถึงข้อมูล Chromium ในอุปกรณ์ทั้งหมด ให้ลงชื่อเข้าใช้แล้วเปิดการซิงค์</translation>
 <translation id="6774082503108938489">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chromium ไม่อนุญาตให้เปิดใช้<ph name="EXTENSION_TYPE_PARAMETER" />นี้</translation>

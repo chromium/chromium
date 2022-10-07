@@ -10,6 +10,8 @@
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Når dette er på, frigjør Chromium minne fra inaktive faner. Dette gir aktive faner og andre apper flere datamaskinressurser og holder Chromium rask. De inaktive fanene dine blir automatisk aktive igjen når du går tilbake til dem. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Minnesparing har gjort Chromium raskere</translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
 <translation id="1385859895174722837">Google-assistenten i Chromium</translation>
 <translation id="1396446129537741364">Chromium prøver å vise passord.</translation>
@@ -208,6 +210,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6055895534982063517">En nyere versjon av Chromium er tilgjengelig, og den er raskere enn noen gang.</translation>
 <translation id="6063093106622310249">&amp;Åpne i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> er lagt til i Chromium</translation>
+<translation id="6072463441809498330">Gjør Chromium raskere</translation>
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6096348254544841612">Tilpass og kontrollér Chromium. Oppdatering er tilgjengelig.</translation>
 <translation id="6119438414301547735">Tillat at utvidelsen viser tilgangsforespørsler på Chromium-verktøylinjen</translation>
@@ -251,6 +254,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6717134281241384636">Profilen din kan ikke brukes fordi den kommer fra en nyere versjon av Chromium.
 
 Det er mulig at enkelte funksjoner ikke er tilgjengelige. Angi en annen profilkatalog eller bruk en nyere versjon av Chromium.</translation>
+<translation id="6730677189742196061">Minnesparing har gjort Chromium raskere</translation>
 <translation id="6734291798041940871">Chromium er allerede installert for alle brukerne på datamaskinen din.</translation>
 <translation id="673636774878526923">For å få tilgang til Chromium-tingene dine på alle enhetene dine, logg på og slå på synkronisering.</translation>
 <translation id="6774082503108938489">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å slå på denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

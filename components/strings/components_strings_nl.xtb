@@ -396,6 +396,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 site}other{# sites}}</translation>
 <translation id="1924727005275031552">Nieuw</translation>
 <translation id="1927439593081478069">De knop Chrome-veiligheidscheck uitvoeren, druk op Enter om een veiligheidscheck uit te voeren in de Chrome-instellingen</translation>
+<translation id="1935995810530254458">Toch kopiëren</translation>
 <translation id="1939175642807587452">Kan vragen of deze site meldingen mag sturen</translation>
 <translation id="1943994668912612445">Ontwerp</translation>
 <translation id="1945968466830820669">Je kunt de toegang tot het account van je organisatie kwijtraken of slachtoffer worden van identiteitsdiefstal. Chromium raadt je aan je wachtwoord nu te wijzigen.</translation>
@@ -449,6 +450,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2085876078937250610">Opslaan…</translation>
 <translation id="2088086323192747268">Knop Synchronisatie beheren, druk op Enter om de informatie die je synchroniseert te beheren in de Chrome-instellingen</translation>
 <translation id="2091887806945687916">Geluid</translation>
+<translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
 <translation id="2094505752054353250">Domeinen komen niet overeen</translation>
 <translation id="2099652385553570808">Drie nietjes links</translation>
 <translation id="2101225219012730419">Versie:</translation>
@@ -712,6 +714,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2803306138276472711">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />malware gedetecteerd<ph name="END_LINK" /> op <ph name="SITE" />. Websites die normaal gesproken veilig zijn, worden soms geïnfecteerd met malware.</translation>
 <translation id="2807052079800581569">Y-positie van afbeelding</translation>
+<translation id="2808278141522721006">Je kunt Windows Hello aan- of uitzetten in <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Scannen…</translation>
 <translation id="2824775600643448204">Adres- en zoekbalk</translation>
 <translation id="2826760142808435982">De verbinding is gecodeerd en geverifieerd met <ph name="CIPHER" /> en gebruikt <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
@@ -879,6 +882,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3288238092761586174"><ph name="URL" /> moet mogelijk aanvullende stappen nemen om je betaling te verifiëren</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
+<translation id="3299098170013242198">Windows Hello staat aan om wachtwoorden in te vullen</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
 <translation id="3304073249511302126">bluetooth-scannen</translation>
 <translation id="33073482541490531">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
@@ -1025,6 +1029,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3678342917559046352">Ongeldige extensie: er wordt verwacht dat de waarde een van de volgende notaties heeft: &lt;extension_id&gt; of &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Pagina openen in een nieuw incognitovenster (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certificaatgegevens</translation>
+<translation id="3699374065820972102">TouchID staat aan om wachtwoorden in te vullen</translation>
 <translation id="3701427423622901115">Reset bevestigd.</translation>
 <translation id="3704162925118123524">Het is mogelijk dat je de inlogpagina moet bezoeken van het netwerk dat je gebruikt.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1138,6 +1143,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{Pdf-document met {COUNT} pagina}other{Pdf-document met {COUNT} pagina's}}</translation>
 <translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
+<translation id="4024923292610332139">TouchID uitzetten voor het invullen van wachtwoorden</translation>
 <translation id="4025913568718019429">De knop Google-privacyinstellingen beheren, druk op Enter om naar de privacyinstellingen van je Google-account te gaan</translation>
 <translation id="4030383055268325496">&amp;Toevoegen ongedaan maken</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
@@ -1254,6 +1260,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4300675098767811073">Meerdere perforaties rechts</translation>
 <translation id="4302514097724775343">Tik op de dino om te spelen</translation>
+<translation id="4304049446746819918">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te verplaatsen naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te verplaatsen naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Je bestand kan niet worden geopend</translation>
 <translation id="4306529830550717874">Adres opslaan?</translation>
 <translation id="4306812610847412719">klembord</translation>
@@ -1484,6 +1491,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4900217275619098670">9e rol</translation>
 <translation id="4901778704868714008">Opslaan…</translation>
 <translation id="4905659621780993806">Je beheerder start het apparaat op <ph name="DATE" /> om <ph name="TIME" /> automatisch opnieuw op. Sla alle geopende items op voordat je apparaat opnieuw wordt opgestart.</translation>
+<translation id="4911007278801291296">Je kunt TouchID aan- of uitzetten in <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforatie linksboven</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> installeren (geen download vereist)</translation>
 <translation id="4923459931733593730">Betaling</translation>
@@ -1629,6 +1637,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5254043433801397071">Afdrukcontent optimaliseren</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Toch vastleggen</translation>
+<translation id="5257739419779698609">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te kopiëren naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te kopiëren naar <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Boven inbinden</translation>
 <translation id="5269225904387178860">Vier perforaties onder</translation>
 <translation id="5269999699920406580">Functies die op het hele systeem van toepassing zijn, kunnen alleen worden ingesteld door de eigenaar: <ph name="OWNER_EMAIL" />.</translation>
@@ -1676,6 +1685,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5357848622083956825">Visuele kunst en visueel ontwerp</translation>
 <translation id="536296301121032821">Opslaan van beleidsinstellingen is mislukt</translation>
 <translation id="5363309033720083897">Seriële poort toegestaan door je beheerder</translation>
+<translation id="5363713372507812442">Trajecten zoeken</translation>
 <translation id="5371425731340848620">Pas updaten</translation>
 <translation id="5377026284221673050">'Je klok loopt achter', 'Je klok loopt voor' of '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5379027395132364855">Knop Presentatie maken, druk op Enter om snel een nieuwe Google-presentatie in Presentaties te maken</translation>
@@ -1691,6 +1701,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5412236728747081950">Deze site krijgt je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stapeleenheid 4</translation>
+<translation id="5414511064953050917">Toch verplaatsen</translation>
 <translation id="5421136146218899937">Browsegegevens wissen</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Geen sites geblokkeerd}=1{1 site geblokkeerd}other{# sites geblokkeerd}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
@@ -2311,6 +2322,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">De server moet worden geüpgraded naar TLS 1.2 of hoger.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Vertrouwelijk bestand kopiëren?}other{Vertrouwelijke bestanden kopiëren?}}</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7174545416324379297">Samengevoegd</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> en nog <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2919,6 +2931,7 @@ Aanvullende informatie:
 <translation id="8763986294015493060">Alle momenteel geopende incognitovensters sluiten</translation>
 <translation id="8766943070169463815">Blad voor beveiligde verificatie van betalingsgegevens is geopend</translation>
 <translation id="8767765348545497220">Hulpballon sluiten</translation>
+<translation id="877348612833018844">{0,plural, =1{Vertrouwelijk bestand verplaatsen?}other{Vertrouwelijke bestanden verplaatsen?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorfietsen</translation>
 <translation id="8790007591277257123">&amp;Opnieuw verwijderen</translation>

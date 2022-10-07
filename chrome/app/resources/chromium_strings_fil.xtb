@@ -12,6 +12,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1131805035311359397">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Kapag naka-on ito, nagbabakante ng memory ang Chromium mula sa mga hindi aktibong tab. Binibigyan nito ang mga aktibong tab at iba pang app ng higit pang resource ng computer at pinapanatili nitong mabilis ang Chromium. Awtomatikong nagiging aktibo ulit ang mga hindi aktibong tab kapag bumalik ka sa mga ito. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">I-set up ang iyong bagong profile sa Chromium</translation>
 <translation id="1385859895174722837">Google Assistant sa Chromium</translation>
 <translation id="1396446129537741364">Sinusubukan ng Chromium na magpakita ng mga password.</translation>
@@ -253,6 +254,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6717134281241384636">Hindi maaaring gamitin ang iyong profile dahil mula ito sa isang mas bagong bersyon ng Chromium.
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chromium.</translation>
+<translation id="6730677189742196061">Pinabilis ng Memory Saver ang Chromium</translation>
 <translation id="6734291798041940871">Naka-install na ang Chromium para sa lahat ng user sa iyong computer.</translation>
 <translation id="673636774878526923">Para ma-access ang iyong mga bagay sa Chromium sa lahat ng device mo, mag-sign in, at pagkatapos ay i-on ang pag-sync.</translation>
 <translation id="6774082503108938489">Na-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium. Hindi pinapayagan ang pag-enable sa <ph name="EXTENSION_TYPE_PARAMETER" /> na ito.</translation>

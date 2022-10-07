@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">burmanščina/mjanmarščina</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="240770291734945588">Na voljo: <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Prijava v omrežje</translation>
 <translation id="2425665904502185219">Skupna velikost datotek</translation>
 <translation id="2428749644083375155">Kopiranje toliko elementov v mapo <ph name="FOLDER_NAME" />: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2448312741937722512">Vrsta</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Predvajanje ni na voljo</translation>
 <translation id="383652340667548381">srbščina</translation>
 <translation id="385051799172605136">Nazaj</translation>
+<translation id="3851491607336266896">Povezana, omejena povezava</translation>
 <translation id="3855472144336161447">nemščina (Neo 2)</translation>
 <translation id="3858860766373142691">Ime</translation>
 <translation id="3866249974567520381">Opis</translation>
@@ -365,6 +367,7 @@
 <translation id="4290535918735525311">1 mapa v skupni rabi z Linuxom</translation>
 <translation id="4299729908419173967">portugalščina (Brazilija)</translation>
 <translation id="4302605047395093221">Kdor koli bo uporabljal to napravo, bo moral vnesti kodo PIN, če se bo želel povezati z mobilnim omrežjem.</translation>
+<translation id="4303531889494116116">To omrežje je zasedeno. Poskusite znova pozneje.</translation>
 <translation id="4309915981827077375">Splošni podatki</translation>
 <translation id="432252891123397018">romunščina s standardno tipkovnico</translation>
 <translation id="4325128273762811722">slovenščina</translation>
@@ -939,6 +942,7 @@
 <translation id="8903931173357132290">Prehod na običajen račun Google</translation>
 <translation id="8912078710089354287">Kuža, ki maha z repom</translation>
 <translation id="8919081441417203123">danščina</translation>
+<translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8965697826696209160">Na voljo ni dovolj prostora.</translation>
 <translation id="8997962250644902079">kitajščina (tradicionalna), pinjin</translation>
 <translation id="8998871447376656508">V Googlu Drive ni dovolj prostora za dokončanje nalaganja.</translation>

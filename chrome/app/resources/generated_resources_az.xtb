@@ -2396,6 +2396,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3188465121994729530">Hərəkətli Ortalama</translation>
 <translation id="3189187154924005138">Böyük kursor</translation>
 <translation id="3190558889382726167">Yadda saxlanılmış Parol</translation>
+<translation id="3192589799003798742">Chromebook'da Steam'in ayarlanması</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3193695589337931419">Sistem Siqnal Utilitləri</translation>
 <translation id="3194786596445804250">Üçüncü tərəf kukilərini bloklamaq haqqında detalları göstərin</translation>
@@ -2535,6 +2536,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3341699307020049241">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalır.</translation>
 <translation id="3341703758641437857">Fayl URL-lərinə girişə icazə verin</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" bu artırmanı silmək istəyir.</translation>
+<translation id="3343977377045378693">Ayarlama icra edilir</translation>
 <translation id="3345135638360864351">Bu sayta giriş sorğunuz <ph name="NAME" /> ünvanına göndərilə bilmədi. Yenidən cəhd edin.</translation>
 <translation id="3345634917232014253">Az öncə təhlükəsizlik yoxlaması icra edildi</translation>
 <translation id="3345886924813989455">Heç bir dəstəklənən brauzer tapılmadı</translation>
@@ -2546,6 +2548,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3354768182971982851">Chrome tətbiqlərinin köhnə versiyaları 2022-ci ilin dekabrından sonra Mac cihazlarında açılmayacaq. Yeni versiyanın əlçatan olub-olmadığını yoxlayın.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> cihazı ilə birləşdirmək mümkün olmadı; yenidən cəhd etmək üçün cihaz seçin</translation>
 <translation id="3355936511340229503">Bağlantı xətası</translation>
+<translation id="3356036636691722598">Chromebook'da oyundan faydalanın</translation>
 <translation id="3356469410714175391">(Virtual kart aktiv edilib)</translation>
 <translation id="3356580349448036450">Tamamlandı</translation>
 <translation id="3359256513598016054">Sertifikat Qaydaları Limitləri</translation>
@@ -3458,6 +3461,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4211904048067111541">Android tətbiqləri ilə istifadəni dayandırın</translation>
 <translation id="42126664696688958">Eksport</translation>
 <translation id="42137655013211669">Bu resursa giriş server tərəfindən qadağan edilib.</translation>
+<translation id="4214192212360095377">İndi deaktiv edin</translation>
 <translation id="4217558091331485702">Açmazdan əvvəl skanlayın</translation>
 <translation id="4217571870635786043">İmla</translation>
 <translation id="4218081191298393750">Bu tabı səssiz etmək üçün dinamik işarəsinə klikləyin</translation>
@@ -4359,6 +4363,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5089763948477033443">Yan Panel Ölçü Dəyişmə Vasitəsi</translation>
 <translation id="5090637338841444533">Kameranızın mövqeyini izləmək icazəsi verilməyib</translation>
 <translation id="5093569275467863761">Anonim Geri/İrəli Keşlənmiş Alt-çərçivə: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Quraşdırma başladılır</translation>
 <translation id="5094176498302660097">Fayllar tətbiqindən və ya digər tətbiqlərdən dəstəklənən faylları bu tətbiqlə aça və redaktə edə bilərsiniz. Defolt olaraq bu tətbiqin hansı faylları açdığına nəzarət etmək üçün <ph name="BEGIN_LINK" />cihazınızda defolt tətbiqlərin necə ayarlanmasını öyrənin<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Nativ tətbiqlərlə əməkdaşlıqla ünsiyyət qurun</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />': <ph name="DETAILS" /> şəbəkəsinə qoşulmaq uğursuz oldu</translation>
@@ -6379,6 +6384,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7014480873681694324">Vurğulamanı Silin</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
+<translation id="7014961128696979283">Steam'i işə salın</translation>
 <translation id="7015088858756332848">Chromebook'da Steam'i işə salmaq mümkün olmadı. Yenidən cəhd edin</translation>
 <translation id="7017004637493394352">Yenidən "Ok Google" deyin</translation>
 <translation id="7017219178341817193">Yeni səhifə əlavə edin</translation>
@@ -6772,6 +6778,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7423425410216218516">Görünmə <ph name="MINUTES" /> dəqiqə ərzində aktiv olacaq</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> silin</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> tətbiqinin işləməsi üçün icazə tələb olunur</translation>
+<translation id="7424153922653300265">Enerjiyə Qənaət aktivdir</translation>
 <translation id="7424818322350938336">Şəbəkə əlavə edilib</translation>
 <translation id="7427315069950454694">bu gün üçün xatirələriniz</translation>
 <translation id="7427348830195639090">Arxa Fon Səhifəsi: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -8012,6 +8019,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="859246725979739260">Bu saytın məkanınıza girişi blok edilib.</translation>
 <translation id="8593121833493516339">İstifadə və diaqnostika datasını göndərin. Google'a diaqnostika, cihaz və tətbiq istifadə datasını avtomatik göndərməklə övladınızın Android təcrübəsini təkmilləşdirin. Bu, övladınızı müəyyən etmək üçün istifadə edilməyəcək, eyni zamanda, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Ümumi data, həmçinin, Google tətbiqləri və Android developerləri kimi partnyorlara kömək edəcək. Övladınız üçün əlavə Veb və Tətbiq Fəaliyyəti aktiv edilərsə, həmin data Google hesabında yadda saxlana bilər. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Fərdi fayllar</translation>
+<translation id="8597404194697561297">Chromebook'da Steam'ə xoş gəlmisiniz</translation>
 <translation id="8597845839771543242">Funksiya formatı:</translation>
 <translation id="8599681327221583254">Bir və ya daha çox siyasət düzgün konfiqurasiya edilməyib. Administratorunuz ilə əlaqə saxlayın</translation>
 <translation id="8599864823732014237">Müəssisənin qeydiyyatı keçilsin?</translation>
@@ -8277,6 +8285,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8838601485495657486">Qeyri-şəffaf</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Telefonların idarə edilməsi</translation>
+<translation id="883924185304953854">Şəkil ilə axtarış edin</translation>
 <translation id="8841843049738266382">İcazə verilənlər siyahısında olan istifadəçiləri oxuyun və dəyişin</translation>
 <translation id="8842594465773264717">Bu barmaq izini silin</translation>
 <translation id="8845001906332463065">Yardım alın</translation>

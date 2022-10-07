@@ -396,6 +396,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="192020519938775529">{COUNT,plural, =0{Nincs}=1{1 webhely}other{# webhely}}</translation>
 <translation id="1924727005275031552">Új</translation>
 <translation id="1927439593081478069">A Chrome biztonsági ellenőrzését futtató gomb. Nyomja le az Enter billentyűt a biztonsági ellenőrzés futtatásához a Chrome beállításaiban.</translation>
+<translation id="1935995810530254458">Másolás mindenképpen</translation>
 <translation id="1939175642807587452">Engedélyt kérhet értesítések küldésére</translation>
 <translation id="1943994668912612445">Dizájn</translation>
 <translation id="1945968466830820669">Elveszítheti a hozzáférést szervezete fiókjához, vagy visszaélhetnek személyes adataival. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát.</translation>
@@ -449,6 +450,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2085876078937250610">Mentés…</translation>
 <translation id="2088086323192747268">Szinkronizálás kezelése gomb. Nyomja le az Enter billentyűt az adatok szinkronizálásának Chrome-beállítások közötti kezeléséhez.</translation>
 <translation id="2091887806945687916">Hang</translation>
+<translation id="2093982008204312032">A Google Chrome megpróbálja kikapcsolni a Windows Hello szolgáltatást a jelszavak kitöltéséhez.</translation>
 <translation id="2094505752054353250">Domainkeveredés</translation>
 <translation id="2099652385553570808">Három kapocs a bal oldalon</translation>
 <translation id="2101225219012730419">Verzió:</translation>
@@ -1141,6 +1143,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} oldalból álló PDF-dokumentum}other{{COUNT} oldalból álló PDF-dokumentum}}</translation>
 <translation id="4022639246993848966">88 × 125 mm</translation>
 <translation id="4023431997072828269">Mivel az űrlap beküldéséhez nem biztonságos kapcsolatot használ, az Ön adatait mások is láthatják majd.</translation>
+<translation id="4024923292610332139">kikapcsolni a TouchID-t a jelszavak kitöltéséhez</translation>
 <translation id="4025913568718019429">A Google-lal kapcsolatos adatvédelmi beállítások kezelése gomb. Nyomja le az Entert a Google-fiók adatvédelmi beállításainak megnyitásához.</translation>
 <translation id="4030383055268325496">&amp;Hozzáadás visszavonása</translation>
 <translation id="4031179711345676612">Mikrofon engedélyezve</translation>
@@ -1257,6 +1260,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="42981349822642051">Kibontás</translation>
 <translation id="4300675098767811073">Több lyuk a jobb oldalon</translation>
 <translation id="4302514097724775343">A játékhoz koppintson a dinóra</translation>
+<translation id="4304049446746819918">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak az áthelyezését a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">A fájlhoz nem sikerült hozzáférni</translation>
 <translation id="4306529830550717874">Menti a címet?</translation>
 <translation id="4306812610847412719">vágólap</translation>
@@ -1632,6 +1636,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5254043433801397071">Nyomattartalom optimalizálása</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Rögzítés mindenképpen</translation>
+<translation id="5257739419779698609">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a másolását a következő helyre: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a másolását a következő helyre: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Kötés felül</translation>
 <translation id="5269225904387178860">Négy lyuk alul</translation>
 <translation id="5269999699920406580">Rendszerszinten érvényes funkciókat csak a tulajdonos (<ph name="OWNER_EMAIL" />) állíthat be</translation>
@@ -1694,6 +1699,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. kötegelő</translation>
+<translation id="5414511064953050917">Áthelyezés mindenképp</translation>
 <translation id="5421136146218899937">Böngészési adatok törlése...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nincs letiltott webhely}=1{1 letiltott webhely}other{# letiltott webhely}}</translation>
 <translation id="5426179911063097041">A(z) <ph name="SITE" /> értesítéseket szeretne küldeni Önnek</translation>
@@ -2315,6 +2321,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Levendula</translation>
 <translation id="7156870133441232244">A szervert a TLS 1.2-es vagy újabb verziójára kell frissíteni.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Biztosan átmásolja a bizalmas fájlt?}other{Biztosan átmásolja a bizalmas fájlokat?}}</translation>
 <translation id="717330890047184534">Gaia-azonosító:</translation>
 <translation id="7174545416324379297">Egyesítve</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2924,6 +2931,7 @@ További részletek:
 <translation id="8763986294015493060">Az összes jelenleg megnyitott inkognitó ablak bezárása</translation>
 <translation id="8766943070169463815">Biztonságos fizetés hitelesítési adatainak hitelesítési űrlapja megnyitva.</translation>
 <translation id="8767765348545497220">Súgóbuborék bezárása</translation>
+<translation id="877348612833018844">{0,plural, =1{Biztosan áthelyezi a bizalmas fájlt?}other{Biztosan áthelyezi a bizalmas fájlokat?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorkerékpárok</translation>
 <translation id="8790007591277257123">&amp;Törlés újra</translation>

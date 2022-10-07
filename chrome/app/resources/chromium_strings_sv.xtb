@@ -12,6 +12,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Tack för att du installerat programmet. Du måste starta om webbläsaren innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chromium. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chromium fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
 <translation id="1385859895174722837">Google Assistent i Chromium</translation>
 <translation id="1396446129537741364">Chromium försöker visa lösenord.</translation>
@@ -253,6 +254,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6717134281241384636">Din profil kan inte användas eftersom den kommer från en nyare version av Chromium.
 
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog eller använd en nyare version av Chromium.</translation>
+<translation id="6730677189742196061">Minnessparläget har gjort Chromium snabbare</translation>
 <translation id="6734291798041940871">Chromium har redan installerats för alla användare på datorn.</translation>
 <translation id="673636774878526923">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
 <translation id="6774082503108938489">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

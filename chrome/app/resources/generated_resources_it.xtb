@@ -1118,6 +1118,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2034346955588403444">Aggiungi un'altra rete Wi-Fi</translation>
 <translation id="2035211704574173780">Scala di grigi</translation>
 <translation id="203574396658008164">Attiva la scrittura di note dalla schermata di blocco</translation>
+<translation id="2036514476578229158">Hai chiesto di poter visitare questo sito. I tuoi genitori possono rispondere in Family Link.</translation>
 <translation id="2037445849770872822">La supervisione è configurata per questo Account Google. Per configurare altre funzioni di Controllo genitori, seleziona Continua.
 
 Altrimenti, esci ora in modo che le modifiche effettuate all'account si riflettano sul dispositivo.
@@ -1238,6 +1239,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2135787500304447609">&amp;Riprendi</translation>
 <translation id="2136372518715274136">Inserisci la nuova password</translation>
 <translation id="2136476978468204130">La passphrase inserita non è corretta</translation>
+<translation id="2137891579555018930">In attesa di autorizzazione…</translation>
 <translation id="2138398485845393913">Connessione a "<ph name="DEVICE_NAME" />" ancora in corso</translation>
 <translation id="2139919072249842737">Pulsante di configurazione</translation>
 <translation id="2140788884185208305">Condizioni batteria</translation>
@@ -4112,6 +4114,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4858913220355269194">Holly</translation>
 <translation id="4862642413395066333">Firma risposte OCSP</translation>
 <translation id="4863769717153320198">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /> (valore predefinito)</translation>
+<translation id="486459320933704969">Un genitore o tutore deve autorizzarti a visitare questo sito web</translation>
 <translation id="4864805589453749318">Seleziona il genitore che sta concedendo l'autorizzazione per aggiungere un account della scuola.</translation>
 <translation id="486635084936119914">Apri automaticamente determinati tipi di file dopo il download</translation>
 <translation id="4868281708609571334">Insegna all'Assistente Google a riconoscere la voce di <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -8668,6 +8671,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="947329552760389097">&amp;Ispeziona elementi</translation>
 <translation id="947526284350604411">La tua risposta</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> non può aprire i file in questa cartella perché contiene file di sistema</translation>
+<translation id="949314938206378263">Hai chiesto di poter visitare questo sito. Uno dei tuoi genitori può rispondere in Family Link.</translation>
 <translation id="950307215746360464">Guida alla configurazione</translation>
 <translation id="951991426597076286">Rifiuta</translation>
 <translation id="952471655966876828">Il dispositivo si connetterà automaticamente quando verrà acceso e sarà in uso</translation>

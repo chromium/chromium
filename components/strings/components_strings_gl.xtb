@@ -307,6 +307,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="168841957122794586">O certificado do servidor contén unha clave criptográfica non segura.</translation>
 <translation id="1697532407822776718">Listo!</translation>
 <translation id="1699570257714336246">Falta información</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Niveis de zoom</translation>
 <translation id="1706954506755087368">{1,plural, =1{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido a partir de mañá. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}other{Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza supostamente é válido dentro de # días. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.}}</translation>
@@ -550,6 +551,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{En menos dun día}=1{Nun día}other{En {NUM_DAYS} días}}</translation>
 <translation id="2359629602545592467">Varias divisas</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú dos botóns do cambio de tamaño</translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1425,6 +1427,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4754461935447132332">Non se permite para os sitios non seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
@@ -2163,6 +2166,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6738516213925468394">Os teus datos encriptáronse coa túa <ph name="BEGIN_LINK" />frase de acceso de sincronización<ph name="END_LINK" /> o <ph name="TIME" />. Introdúcea para comezar a sincronización.</translation>
 <translation id="674375294223700098">Erro de certificado de servidor descoñecido.</translation>
 <translation id="6744009308914054259">Mentres esperas a que se recupere a conexión, podes ler artigos sen conexión en Descargas.</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoconferencias</translation>
 <translation id="6753269504797312559">Valor de política</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2196,6 +2200,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6846340164947227603">Usar un número de conta virtual…</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6857776781123259569">Xestiona os contrasinais…</translation>
+<translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Recursos para consumidores</translation>
 <translation id="6865412394715372076">Esta tarxeta non puido verificarse neste momento</translation>
 <translation id="6869334554832814367">Préstamos persoais</translation>
@@ -2308,6 +2313,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7138472120740807366">Método de entrega</translation>
 <translation id="7139892792842608322">Bandexa principal</translation>
 <translation id="714064300541049402">Desprazamento do lado 2 da imaxe no eixe X</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">O servidor debería actualizarse a TLS 1.2 ou a unha versión posterior.</translation>
@@ -2388,6 +2394,7 @@ Detalles adicionais:
 <translation id="7363096869660964304">Con todo, non es invisible. O modo de incógnito non impide que o teu xefe, o teu fornecedor de servizos de Internet ou os sitios web que visitas obteñan información sobre como navegas.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para engadir e xestionar enderezos na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="7365849542400970216">Queres permitir a detección do uso do dispositivo?</translation>
+<translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Controladores de pago</translation>
 <translation id="7372973238305370288">resultado da busca</translation>
 <translation id="7374461526650987610">Controladores de protocolo</translation>
@@ -2547,6 +2554,7 @@ Detalles adicionais:
 <translation id="7687186412095877299">Cubre os formularios de pago cos teus métodos de pago gardados</translation>
 <translation id="7687305263118037187">Tempo de espera dos reintentos</translation>
 <translation id="7687451951329798396">Que din outras fontes?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki (postal)</translation>
 <translation id="7693583928066320343">Recibiuse a orde das páxinas</translation>
 <translation id="7696089921647603491">Clásicos do rock e do pop</translation>
 <translation id="769721561045429135">Neste momento, tes tarxetas que só se poden utilizar neste dispositivo. Fai clic en Continuar para revisar as tarxetas.</translation>
@@ -2720,6 +2728,7 @@ Detalles adicionais:
 <translation id="8202370299023114387">Conflito</translation>
 <translation id="8210604850413485128">Aloxamento web</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">Os sitios non poden usar cookies para seguirte pola Web. As funcións dalgúns sitios poden quedar bloqueadas.</translation>
 <translation id="8217748145574471584">Recursos humanos</translation>
 <translation id="8218327578424803826">Localización asignada:</translation>
@@ -2932,6 +2941,7 @@ Detalles adicionais:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tab e, a continuación, Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="882338992931677877">Oco manual</translation>
+<translation id="8830320733681313421">Hagaki (postal)</translation>
 <translation id="8834380158646307944">Botón para pechar as ventás do modo de incógnito. se queres pechar todas as ventás do modo de incógnito que estean abertas, preme Introducir</translation>
 <translation id="883848425547221593">Outros marcadores</translation>
 <translation id="884264119367021077">Enderezo de envío</translation>

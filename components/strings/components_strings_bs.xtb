@@ -714,6 +714,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2803306138276472711">Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />otkrilo zlonamjerni softver<ph name="END_LINK" /> na <ph name="SITE" />. Web lokacije koje su inače sigurne, ponekad se zaraze zlonamjernim softverom.</translation>
 <translation id="2807052079800581569">Y položaj slike</translation>
+<translation id="2808278141522721006">Možete uključiti ili isključiti Windows Hello u odjeljku <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Skeniranje...</translation>
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
@@ -884,6 +885,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3288238092761586174"><ph name="URL" /> možda mora poduzeti dodatne korake da potvrdi vaše plaćanje</translation>
 <translation id="3293642807462928945">Saznajte više o pravilu <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u postavkama Chromea</translation>
+<translation id="3299098170013242198">Windows Hello je uključen za popunjavanje lozinki</translation>
 <translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>
 <translation id="3304073249511302126">skeniranje Bluetootha</translation>
 <translation id="33073482541490531">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
@@ -1032,6 +1034,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3678342917559046352">Nevažeća ekstenzija: Očekivana je vrijednost jednog od sljedećih oblika: &lt;extension_id&gt; ili &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Otvorite stranicu u novom anonimnom prozoru (Ctrl – Shift – N)</translation>
 <translation id="3681007416295224113">Informacije o potvrdi</translation>
+<translation id="3699374065820972102">TouchID je uključen za popunjavanje lozinki</translation>
 <translation id="3701427423622901115">Vraćanje na zadano je potvrđeno.</translation>
 <translation id="3704162925118123524">Mreža koju koristite može zahtijevati da posjetite stranicu za prijavu.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1493,6 +1496,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4900217275619098670">Deveta rolna</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4905659621780993806">Vaš administrator će ponovo pokrenuti uređaj automatski u <ph name="TIME" /> <ph name="DATE" />. Sačuvajte sve otvorene stavke prije ponovnog pokretanja uređaja.</translation>
+<translation id="4911007278801291296">Možete uključiti ili isključiti TouchID u odjeljku <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Bušenje gornjeg lijevog ugla</translation>
 <translation id="4918221908152712722">Instalirajte aplikaciju <ph name="APP_NAME" /> (nije potrebno preuzeti)</translation>
 <translation id="4923459931733593730">Plaćanje</translation>
@@ -1686,6 +1690,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5357848622083956825">Vizuelna umjetnost i dizajn</translation>
 <translation id="536296301121032821">Pohranjivanje postavki pravila nije uspjelo</translation>
 <translation id="5363309033720083897">Serijski priključak koji je dozvolio vaš administrator</translation>
+<translation id="5363713372507812442">Pretražite putovanja</translation>
 <translation id="5371425731340848620">Ažuriraj karticu</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat brza" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Dugme Kreiraj prezentaciju, pritisnite Enter da brzo kreirate novu Google prezentaciju u Prezentacijama</translation>

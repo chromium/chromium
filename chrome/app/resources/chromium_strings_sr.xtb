@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Када је укључено, Chromium ослобађа меморију са неактивних картица. То активним картицама и другим апликацијама пружа више рачунарских ресурса и одржава Chromium брзим. Неактивне картице се аутоматски поново активирају када се вратите на њих. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Уштеда меморије је убрзала Chromium</translation>
 <translation id="1315551408014407711">Подесите нов Chromium профил</translation>
 <translation id="1385859895174722837">Google помоћник у Chromium-у</translation>
 <translation id="1396446129537741364">Chromium покушава да прикаже лозинке.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Доступна је нова верзија Chromium-а, бржа него икада пре.</translation>
 <translation id="6063093106622310249">&amp;Отвори у Chromium-у</translation>
 <translation id="6072279588547424923">Додатак <ph name="EXTENSION_NAME" /> је додат у Chromium</translation>
+<translation id="6072463441809498330">Убрзајте Chromium</translation>
 <translation id="608006075545470555">Додајте пословни профил у овај прегледач</translation>
 <translation id="6096348254544841612">Прилагодите и контролишите Chromium. Доступно је ажурирање.</translation>
 <translation id="6119438414301547735">Дозволи додатку да приказује захтеве за приступ на Chromium траци с алаткама</translation>

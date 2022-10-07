@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
 <translation id="1309250603447638106">Dina-download ang mga update para sa pag-scan ng dokumento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
+<translation id="1417314334557041815">I-edit ang page <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1467231725790366244">Hindi nakasaksak ang <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3 segundong timer</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Walang na-record</translation>
 <translation id="1838104802459806957">Mag-tilt pataas</translation>
+<translation id="1843105061469674856">Mag-scan ng karagdagang page</translation>
 <translation id="1851169887664797861">Available ang mga karagdagang kontrol sa camera</translation>
 <translation id="1851616744363735765">NAKA-PAUSE</translation>
 <translation id="1862930711583847113">Hindi ma-export ang <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="4281620174117014503">Katamtamang resolution</translation>
+<translation id="428234092390943511">Thumbnail ng page</translation>
 <translation id="4329152592498422850">Lumipat para kumuha ng parisukat na larawan</translation>
 <translation id="4340659173795395806">Puwede ka na ngayong gumawa ng maraming page na PDF</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>

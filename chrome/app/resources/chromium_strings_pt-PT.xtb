@@ -10,6 +10,8 @@
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1203500561924088507">Agradecemos a instalação. Tem de reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Quando está ativado, o Chromium liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chromium rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa aos mesmos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">A Poupança de memória tornou o Chromium mais rápido</translation>
 <translation id="1315551408014407711">Configure o seu novo perfil do Chromium</translation>
 <translation id="1385859895174722837">Assistente Google no Chromium</translation>
 <translation id="1396446129537741364">O Chromium está a tentar mostrar palavras-passe.</translation>
@@ -208,6 +210,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6055895534982063517">Está disponível uma nova versão do Chromium, mais rápida do que nunca.</translation>
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium.</translation>
+<translation id="6072463441809498330">Torne o Chromium mais rápido</translation>
 <translation id="608006075545470555">Adicione um perfil de trabalho a este navegador</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Está disponível uma atualização.</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre pedidos de acesso na barra de ferramentas do Chromium</translation>
@@ -251,6 +254,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6717134281241384636">O seu perfil não pode ser utilizado porque pertence a uma versão mais recente do Chromium.
 
 Algumas funcionalidades podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Chromium.</translation>
+<translation id="6730677189742196061">A Poupança de memória tornou o Chromium mais rápido</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
 <translation id="673636774878526923">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="6774082503108938489">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido ativar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

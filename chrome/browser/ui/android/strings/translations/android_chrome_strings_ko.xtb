@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">일부 Chrome 기능을 더 이상 사용할 수 없게 됩니다.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2871733351037274014">페이지 미리 로드</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" />님이 다음 웹사이트의 승인을 요청했습니다.</translation>
 <translation id="2886836735871983413">웹을 탐색하면 여기에 사이트 목록이 표시됩니다.</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
 <translation id="2891154217021530873">페이지 로딩 중지</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
 <translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
 <translation id="2936980480904111527">Chrome 알림으로 더 간편하게 작업하세요</translation>
+<translation id="2940075786175545812">웹사이트 승인 또는 비승인 옵션</translation>
 <translation id="2942036813789421260">미리보기 탭 닫힘</translation>
 <translation id="2946420957526726953">다른 기기에 연결하기 위해 Chrome을 업데이트하는 중</translation>
 <translation id="2951071800649516099">나중에 읽을 수 있도록 읽기 목록에 페이지를 추가합니다.</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">페이지의 모든 항목 축소</translation>
 <translation id="3264124641674805320">나중에 보기 위해 콘텐츠를 다운로드하는 방법</translation>
 <translation id="3264259168916048410">컴퓨터가 사이트에 로그인하기 위해 기기를 사용하려고 합니다.</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" />의 모든 페이지</translation>
 <translation id="3265534588625245297">팔로우하는 사이트 관리</translation>
 <translation id="3269093882174072735">이미지 로드</translation>
 <translation id="3280562213547448728">음성 검색</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">광고 개인 최적화 알아보기</translation>
 <translation id="4987271110129728827">페이지를 찾을 수 없습니다. 철자를 확인하거나 웹 검색을 이용해 보세요.</translation>
 <translation id="4988526792673242964">페이지</translation>
+<translation id="4991110219272367918">웹사이트 승인 또는 비승인 옵션 닫힘</translation>
 <translation id="499724277181351974">이동: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">여기에서 사이트를 팔로우하세요</translation>
 <translation id="500351648694011114">더 간편하게 탐색하기</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">복사</translation>
 <translation id="6900532703269623216">향상된 보호 모드</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
+<translation id="6908998565271542516">웹사이트 승인 또는 비승인 옵션이 전체 높이로 열림</translation>
 <translation id="6909589135458168665">페이지 미리 로드</translation>
 <translation id="6942665639005891494">언제든지 설정 메뉴 옵션으로 기본 다운로드 위치 변경 가능</translation>
 <translation id="694267552845942083">현재 동기화 설정을 맞춤설정 중입니다. 동기화 사용 설정을 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">관리 브라우저에서 설정이 사용 중지됨</translation>
 <translation id="6963766334940102469">북마크 삭제</translation>
 <translation id="696447261358045621">시크릿 모드 종료</translation>
+<translation id="6971862865055170158">승인 안함</translation>
 <translation id="6979737339423435258">전체 기간</translation>
 <translation id="6987047470128880212">이 기기에서는 시크릿 모드를 사용할 수 없습니다.</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>

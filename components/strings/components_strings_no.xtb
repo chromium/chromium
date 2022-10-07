@@ -67,7 +67,7 @@
 <translation id="1156303062776767266">Du ser en lokal eller delt fil</translation>
 <translation id="1158211211994409885"><ph name="HOST_NAME" /> avsluttet tilkoblingen uventet.</translation>
 <translation id="115926840831309955">Kontrollér CVC-koden og prøv igjen, eller oppdater utløpsdatoen</translation>
-<translation id="1161325031994447685">Koble til Wi-Fi på nytt</translation>
+<translation id="1161325031994447685">Koble til wifi på nytt</translation>
 <translation id="1165039591588034296">Feil</translation>
 <translation id="1165174597379888365">En nettside besøkes</translation>
 <translation id="1165852471352757509">TV-dokumentarer</translation>
@@ -232,7 +232,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1495677929897281669">Tilbake til fanen</translation>
 <translation id="1501859676467574491">Vis kredittkort fra Google-kontoen din</translation>
 <translation id="150536342253161096">Lokalnyheter</translation>
-<translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wi-Fi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
+<translation id="1507202001669085618">&lt;p&gt;Du ser denne feilmeldingen hvis du bruker en Wifi-portal hvor du må logge på før du kommer deg på nettet.&lt;/p&gt;
     &lt;p&gt;For å fikse feilen, klikk på &lt;strong&gt;Koble til&lt;/strong&gt; på siden du prøver å åpne.&lt;/p&gt;</translation>
 <translation id="1507780850870535225">Landskapsarkitektur</translation>
 <translation id="1513706915089223971">Liste over loggoppføringer</translation>
@@ -396,6 +396,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 nettsted}other{# nettsteder}}</translation>
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927439593081478069">Knappen «Kjør Chrome-sikkerhetssjekk» – trykk på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
+<translation id="1935995810530254458">Kopier likevel</translation>
 <translation id="1939175642807587452">Kan be om å få sende varsler</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du kan miste tilgangen til organisasjonskontoen din eller bli utsatt for identitetstyveri. Chromium anbefaler at du endrer passordet ditt nå.</translation>
@@ -449,6 +450,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2085876078937250610">Lagre …</translation>
 <translation id="2088086323192747268">Knappen «Administrer synkronisering» – trykk på Enter for å administrere hvilken informasjon du synkroniserer, i Chrome-innstillingene</translation>
 <translation id="2091887806945687916">Lyd</translation>
+<translation id="2093982008204312032">Google Chrome prøver å slå av Windows Hello for utfylling av passord.</translation>
 <translation id="2094505752054353250">Domenene samsvarer ikke</translation>
 <translation id="2099652385553570808">Tre stifter venstre</translation>
 <translation id="2101225219012730419">Versjon:</translation>
@@ -712,6 +714,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2799223571221894425">Start på nytt</translation>
 <translation id="2803306138276472711">Google Safe Browsing oppdaget nylig <ph name="BEGIN_LINK" />skadelig programvare<ph name="END_LINK" /> på <ph name="SITE" />. Nettsteder som vanligvis er sikre, kan noen ganger være infisert av skadelig programvare.</translation>
 <translation id="2807052079800581569">Y-posisjon for bilde</translation>
+<translation id="2808278141522721006">Du kan slå Windows Hello av eller på i <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Skanner …</translation>
 <translation id="2824775600643448204">Adresse- og søkefelt</translation>
 <translation id="2826760142808435982">Tilkoblingen er kryptert ved hjelp av <ph name="CIPHER" />, og bruker <ph name="KX" /> som mekanisme for nøkkelutveksling.</translation>
@@ -736,7 +739,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="290376772003165898">Er ikke siden på <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">En nettverksendring ble oppdaget.</translation>
 <translation id="2911973620368911614">Bruker-ID for jobbregnskap</translation>
-<translation id="2914160345369867329"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chrome prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet uvanlig og feil legitimasjon tilbake. Dette kan skje når en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wi-Fi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker, ettersom Chrome stoppet tilkoblingen før det ble utvekslet data.</translation>
+<translation id="2914160345369867329"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chrome prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet uvanlig og feil legitimasjon tilbake. Dette kan skje når en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wifi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker, ettersom Chrome stoppet tilkoblingen før det ble utvekslet data.</translation>
 <translation id="2915068235268646559">Krasj fra <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Maling</translation>
 <translation id="2916038427272391327">Lukk andre programmer</translation>
@@ -822,7 +825,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="315504272643575312">Kontoen din administreres av <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3158539265159265653">Plate</translation>
-<translation id="3162559335345991374">Det kan hende at Wi-Fi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
+<translation id="3162559335345991374">Det kan hende at Wifi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Sjekk innstillingene for proxy-tjeneren eller kontakt nettverksadministratoren
       for å forsikre deg om at den fungerer. Følg disse instruksjonene hvis du
@@ -882,6 +885,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3288238092761586174"><ph name="URL" /> må kanskje utføre flere trinn for å bekrefte betalingen din</translation>
 <translation id="3293642807462928945">Finn ut mer om regelen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
+<translation id="3299098170013242198">Windows Hello er påslått for utfylling av passord</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3304073249511302126">Bluetooth-skanning</translation>
 <translation id="33073482541490531">Passordet du nettopp brukte, er funnet i et databrudd. Passordlagring anbefaler at du endrer dette passordet nå.</translation>
@@ -1030,6 +1034,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3678342917559046352">Ugyldig utvidelse: Forventet en verdi på en av disse formene: &lt;extension_id&gt; eller &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Åpne siden i et nytt inkognitovindu (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Sertifikatinformasjon</translation>
+<translation id="3699374065820972102">TouchID er påslått for utfylling av passord</translation>
 <translation id="3701427423622901115">Tilbakestillingen er godtatt.</translation>
 <translation id="3704162925118123524">Det kan hende at det er et krav for nettverket du bruker, at du besøker påloggingssiden for nettverket.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1042,8 +1047,8 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3712624925041724820">Lisensene er oppbrukt</translation>
 <translation id="3713662424819367124">Parfymer og dufter</translation>
 <translation id="3714633008798122362">nettkalender</translation>
-<translation id="3714780639079136834">Slå på mobildata eller Wi-Fi</translation>
-<translation id="3715597595485130451">Tilkobling til Wi-Fi</translation>
+<translation id="3714780639079136834">Slå på mobildata eller Wifi</translation>
+<translation id="3715597595485130451">Tilkobling til wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sjekk proxy-tjener-, brannmur- og DNS-konfigurasjonen<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Apper som kan forårsake denne feilen, omfatter programvare for antivirus, brannmur og nettfiltrering eller proxy-tjenester.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette en ny Google-presentasjon i Presentasjoner raskt</translation>
@@ -1143,6 +1148,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument som inneholder {COUNT} side}other{PDF-dokument som inneholder {COUNT} sider}}</translation>
 <translation id="4022639246993848966">8,89 cm × 12,7 cm</translation>
 <translation id="4023431997072828269">Siden dette skjemaet blir sendt over en tilkobling som ikke er sikker, kommer informasjonen din til å være synlig for andre.</translation>
+<translation id="4024923292610332139">slå av TouchID for utfylling av passord</translation>
 <translation id="4025913568718019429">«Administrer Google-personverninnstillinger»-knappen – trykk på Enter for å åpne personverninnstillingene for Google-kontoen din</translation>
 <translation id="4030383055268325496">&amp;Angre tilleggingen</translation>
 <translation id="4031179711345676612">Mikrofonen er tillatt</translation>
@@ -1217,7 +1223,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4220128509585149162">Kræsj</translation>
 <translation id="422022731706691852">Angripere på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan prøve å lure deg til å installere programmer som påvirker surfeopplevelsen din (for eksempel ved å endre startsiden eller vise ekstra annonser på nettsteder du går til). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="4221630205957821124">&lt;h4&gt;Trinn 1: Logg på portalen&lt;/h4&gt;
-    &lt;p&gt;Wi-Fi-nettverk på steder som kaféer eller flyplasser krever at du logger på. For å se påloggingssiden, åpne en side som bruker &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
+    &lt;p&gt;Wifi-nettverk på steder som kaféer eller flyplasser krever at du logger på. For å se påloggingssiden, åpne en side som bruker &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
     &lt;li&gt;Gå til et nettsted som begynner på &lt;code&gt;http://&lt;/code&gt;, for eksempel &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;Logg på via påloggingssiden som åpnes, for å bruke Internett.&lt;/li&gt;
@@ -1259,6 +1265,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="42981349822642051">Vis</translation>
 <translation id="4300675098767811073">Flere hull høyre</translation>
 <translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
+<translation id="4304049446746819918">{0,plural, =1{Administratorreglene anbefaler ikke at du flytter denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du flytter disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Kunne ikke åpne filen</translation>
 <translation id="4306529830550717874">Vil du lagre adressen?</translation>
 <translation id="4306812610847412719">utklippstavle</translation>
@@ -1489,6 +1496,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4900217275619098670">Niende rull</translation>
 <translation id="4901778704868714008">Lagre</translation>
 <translation id="4905659621780993806">Administratoren din starter enheten din på nytt automatisk kl. <ph name="TIME" /> <ph name="DATE" />. Lagre eventuelle åpne filer før enheten startes på nytt.</translation>
+<translation id="4911007278801291296">Du kan slå TouchID av eller på i <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Hull oppe til venstre</translation>
 <translation id="4918221908152712722">Installer <ph name="APP_NAME" /> (ingen nedlasting nødvendig)</translation>
 <translation id="4923459931733593730">Betaling</translation>
@@ -1634,6 +1642,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5254043433801397071">Optimaliser utskriftsinnhold</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Ta opp likevel</translation>
+<translation id="5257739419779698609">{0,plural, =1{Administratorreglene anbefaler ikke at du kopierer denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du kopierer disse filene til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Innbinding topp</translation>
 <translation id="5269225904387178860">Fire hull bunn</translation>
 <translation id="5269999699920406580">Funksjoner som gjelder for hele systemet, kan bare angis av eieren: <ph name="OWNER_EMAIL" /></translation>
@@ -1681,6 +1690,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5357848622083956825">Visuell kunst og design</translation>
 <translation id="536296301121032821">Kunne ikke lagre angivelsen for enhetsinnstillinger</translation>
 <translation id="5363309033720083897">Den serielle porten tillates av administratoren din</translation>
+<translation id="5363713372507812442">Søkereiser</translation>
 <translation id="5371425731340848620">Oppdater kortet</translation>
 <translation id="5377026284221673050">«Klokken går for sent», «Klokken går for fort» eller «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379027395132364855">Knappen «Opprett presentasjon» – trykk på Enter for å opprette en ny Google-presentasjon i Presentasjoner raskt</translation>
@@ -1696,6 +1706,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5412236728747081950">Dette nettstedet mottar interessene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Hylle 4</translation>
+<translation id="5414511064953050917">Flytt likevel</translation>
 <translation id="5421136146218899937">Slett nettlesingsdata</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ingen nettsteder er blokkert}=1{1 nettsted er blokkert}other{# nettsteder er blokkert}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil sende deg varsler</translation>
@@ -2317,6 +2328,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Tjeneren bør oppgraderes til TLS 1.2 eller nyere.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Vil du kopiere den konfidensielle filen?}other{Vil du kopiere de konfidensielle filene?}}</translation>
 <translation id="717330890047184534">Gaia-ID:</translation>
 <translation id="7174545416324379297">Slått sammen</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> til}}</translation>
@@ -2464,7 +2476,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7508255263130623398">Den returnerte enhets-ID-en for regelen er tom eller samsvarer ikke med den faktiske enhets-ID-en</translation>
 <translation id="7508870219247277067">Avokadogrønn</translation>
 <translation id="7510269639068718544">Katter</translation>
-<translation id="7511955381719512146">Det kan hende at Wi-Fi-nettverket du bruker, krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="7511955381719512146">Det kan hende at Wifi-nettverket du bruker, krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Denne regelen kan ikke settes til «True» (sann) og være obligatorisk. Derfor ble den endret til anbefalt.</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7517414872996418597">C10-konvolutt</translation>
@@ -2601,7 +2613,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="781440967107097262">Vil du dele utklippstavlen din?</translation>
 <translation id="7815407501681723534">Fant <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> for «<ph name="SEARCH_STRING" />»</translation>
 <translation id="7822320754433038727">Jakt og skyting</translation>
-<translation id="782886543891417279">Det kan hende at Wi-Fi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker en påloggingsside.</translation>
+<translation id="782886543891417279">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker en påloggingsside.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ingen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apper (<ph name="EXAMPLE_APP_1" /> og <ph name="EXAMPLE_APP_2" />)}other{# apper (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Vil du forlate nettstedet?</translation>
@@ -2771,7 +2783,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8294431847097064396">Kilde</translation>
 <translation id="8296205692406981542">Regionale parker og hager</translation>
 <translation id="8297545700510100061">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="SETTINGS" />.</translation>
-<translation id="8298115750975731693">Det kan hende at Wi-Fi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8298115750975731693">Det kan hende at Wifi-nettverket du bruker (<ph name="WIFI_NAME" />), krever at du besøker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8299269255470343364">Japansk</translation>
 <translation id="8303854710873047864">Delen «<ph name="SECTION" />» vises</translation>
 <translation id="830498451218851433">Halvfals</translation>
@@ -2924,6 +2936,7 @@ Mer informasjon:
 <translation id="8763986294015493060">Lukk alle åpne inkognitovinduer</translation>
 <translation id="8766943070169463815">Ark for sikker autentisering av betalingslegitimasjon er åpnet</translation>
 <translation id="8767765348545497220">Lukk hjelpeboble</translation>
+<translation id="877348612833018844">{0,plural, =1{Vil du flytte den konfidensielle filen?}other{Vil du flytte de konfidensielle filene?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorsykler</translation>
 <translation id="8790007591277257123">&amp;Slett likevel</translation>
@@ -3043,7 +3056,7 @@ Mer informasjon:
 <translation id="9101630580131696064">Skuff 1</translation>
 <translation id="9102081333385212048">Filer du kopierer eller flytter, blir sendt til Google Cloud eller tredjeparter for analyse. De kan for eksempel bli skannet for sensitive data eller skadelig programvare.</translation>
 <translation id="9103537084693478942">Videoprogramvare</translation>
-<translation id="9103872766612412690"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chromium prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet tilbake uvanlig og feil legitimasjon. Dette kan skje hvis en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wi-Fi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker fordi Chromium stoppet tilkoblingen før det ble utvekslet noen data.</translation>
+<translation id="9103872766612412690"><ph name="SITE" /> bruker vanligvis kryptering for å beskytte informasjonen din. Da Chromium prøvde å koble til <ph name="SITE" /> denne gangen, sendte nettstedet tilbake uvanlig og feil legitimasjon. Dette kan skje hvis en angriper prøver å utgi seg for å være <ph name="SITE" />, eller hvis en Wifi-påloggingsskjerm har avbrutt tilkoblingen. Informasjonen din er likevel sikker fordi Chromium stoppet tilkoblingen før det ble utvekslet noen data.</translation>
 <translation id="9106062320799175032">Legg til faktureringsadresse</translation>
 <translation id="9107467864910557787">Nettleseren administreres av <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">En administratorregel deaktiverer skjermdeling med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig</translation>

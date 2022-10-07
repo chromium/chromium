@@ -259,7 +259,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
 <translation id="2426051945783024481">Encuadre de cámara centrado automáticamente</translation>
 <translation id="2427507373259914951">Clic con el botón izquierdo</translation>
-<translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la clave de contraseña <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
+<translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la llave de acceso <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="243878895369688216">Abierto ayer</translation>
 <translation id="2441427462554639370">Se ha dejado de grabar porque queda muy poco espacio de almacenamiento</translation>
@@ -985,7 +985,7 @@ Nueva instalación</translation>
 <translation id="6643169293433369663">Deshacer order por nombre</translation>
 <translation id="6649641931981131786">Ajusta la cámara para ponerte en el centro de la pantalla.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
-<translation id="6650933572246256093">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Introduce la clave de contraseña <ph name="PASSKEY" /> en el dispositivo</translation>
+<translation id="6650933572246256093">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Introduce la llave de acceso <ph name="PASSKEY" /> en el dispositivo</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6665545700722362599">Dar permiso a los sitios web, las aplicaciones y las extensiones para usar los servicios de ubicación, el micrófono del dispositivo, la cámara y otras funciones.</translation>
 <translation id="6667908387435388584">Conéctate al punto de acceso de tu teléfono, silencia y localiza tu dispositivo, y visualiza las pestañas de Chrome recientes abiertas en tu teléfono</translation>

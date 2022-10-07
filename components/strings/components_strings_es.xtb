@@ -99,7 +99,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1228893227497259893">Identificador de entidad incorrecto</translation>
 <translation id="1232569758102978740">Sin título</translation>
 <translation id="1236081509407217141">¿Permitir realidad virtual?</translation>
-<translation id="1238915852705750309">Antivirus y software malicioso</translation>
+<translation id="1238915852705750309">Antivirus y malware</translation>
 <translation id="1240347957665416060">El nombre de tu dispositivo</translation>
 <translation id="124116460088058876">Más idiomas</translation>
 <translation id="1243027604378859286">Autor:</translation>
@@ -199,7 +199,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Gestionar buscadores</translation>
-<translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
+<translation id="1435940442311036198">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="1442386063175183758">Plegado en ventana a la derecha</translation>
 <translation id="1442987760062738829">Perforar</translation>
@@ -710,7 +710,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2792012897584536778">Los administradores de este dispositivo han configurado certificados de seguridad que pueden permitirles ver el contenido de los sitios web que visitas.</translation>
 <translation id="2799020568854403057">El sitio web al que vas a acceder contiene aplicaciones dañinas</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
-<translation id="2803306138276472711">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado software malicioso<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen software malicioso.</translation>
+<translation id="2803306138276472711">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado malware<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen malware.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
 <translation id="2820957248982571256">Buscando...</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda </translation>
@@ -1052,7 +1052,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
 <translation id="3740319564441798148">Autobuses y trenes de larga distancia</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
-<translation id="3744286742364977428">Los archivos que descargas se envían a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso y que se almacenen de acuerdo con las políticas de la empresa.</translation>
+<translation id="3744286742364977428">Los archivos que descargas se envían a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o malware y que se almacenen de acuerdo con las políticas de la empresa.</translation>
 <translation id="3744899669254331632">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web ha enviado credenciales codificadas que Chromium no puede procesar. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="3745099705178523657">Una vez que confirmes esta acción, la información de la tarjeta de tu cuenta de Google se compartirá con este sitio web.</translation>
 <translation id="3748148204939282805">Es posible que los atacantes que se encuentren en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices una acción peligrosa, como instalar software o revelar tu información personal (por ejemplo, contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1822,7 +1822,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Selecciona una dirección para ver los métodos de entrega y los requisitos</translation>
 <translation id="57689295674415555">¿No se ha introducido el número de tarjeta virtual?</translation>
-<translation id="5772086939108830423">Usar una clave de acceso en otro dispositivo</translation>
+<translation id="5772086939108830423">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="5776313857861697733">Prioridad</translation>
 <translation id="5781136890105823427">Experimento habilitado</translation>
 <translation id="578305955206182703">Ámbar</translation>
@@ -1881,7 +1881,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5938153366081463283">Añadir tarjeta virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Abriendo <ph name="SITE_NAME" />…</translation>
-<translation id="5947508410139465809">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso y que se almacenen de acuerdo con las políticas de la empresa.</translation>
+<translation id="5947508410139465809">Los archivos que subas o adjuntes se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o malware y que se almacenen de acuerdo con las políticas de la empresa.</translation>
 <translation id="5951495562196540101">No te puedes registrar con una cuenta de consumidor (hay una licencia asociada disponible).</translation>
 <translation id="5953516610448771166">Subtítulos automáticos no está disponible en este contenido multimedia. Para ver subtítulos, bloquea <ph name="CONTENT_SETTINGS" /> en este sitio.</translation>
 <translation id="5955063559762970069">Hoteles y alojamiento</translation>
@@ -1978,7 +1978,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6203231073485539293">Comprueba tu conexión a Internet</translation>
 <translation id="6218753634732582820">¿Quitar dirección de Chromium?</translation>
 <translation id="622039917539443112">Plegado en paralelo</translation>
-<translation id="6221345481584921695">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado software malicioso<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen software malicioso. Este contenido malintencionado procede de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de software malicioso.</translation>
+<translation id="6221345481584921695">Recientemente, la función de Navegación segura de Google <ph name="BEGIN_LINK" />ha detectado malware<ph name="END_LINK" /> en <ph name="SITE" />. En ocasiones, los sitios web que normalmente son seguros contienen malware. Este contenido malintencionado procede de <ph name="SUBRESOURCE_HOST" />, un conocido distribuidor de malware.</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para personalizar las herramientas de accesibilidad desde la configuración de Chrome</translation>
 <translation id="6229649258872345286">Viajes familiares</translation>
 <translation id="6232271601416750929">Belleza con productos sostenibles</translation>
@@ -2285,7 +2285,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7068733155164172741">Introduce el código de <ph name="OTP_LENGTH" /> dígitos</translation>
 <translation id="70705239631109039">Tu conexión no es completamente segura</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
-<translation id="7079718277001814089">Este sitio web contiene software malicioso</translation>
+<translation id="7079718277001814089">Este sitio web contiene malware</translation>
 <translation id="7081308185095828845">Esta función no está disponible en tu dispositivo</translation>
 <translation id="7083258188081898530">Bandeja 9</translation>
 <translation id="7086090958708083563">Subida solicitada por el usuario</translation>
@@ -2350,7 +2350,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7240120331469437312">Nombre alternativo de la entidad receptora del certificado</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# coincidencia}other{# coincidencias}}</translation>
-<translation id="724691107663265825">El sitio web al que vas a acceder contiene software malicioso</translation>
+<translation id="724691107663265825">El sitio web al que vas a acceder contiene malware</translation>
 <translation id="724975217298816891">Introduce la fecha de caducidad y el código CVC de la tarjeta <ph name="CREDIT_CARD" /> para actualizar sus detalles. Cuando la confirmes, su información se compartirá con este sitio web.</translation>
 <translation id="7251437084390964440">La configuración de red no cumple el estándar ONC. Es posible que no se importen algunas partes de la configuración.
 Más información:
@@ -3042,7 +3042,7 @@ Más información:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para establecer Chrome como navegador predeterminado del sistema en los ajustes de iOS</translation>
 <translation id="9096679202588811390">Series y programas de televisión</translation>
 <translation id="9101630580131696064">Bandeja 1</translation>
-<translation id="9102081333385212048">Los archivos que copies o muevas se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso.</translation>
+<translation id="9102081333385212048">Los archivos que copies o muevas se enviarán a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o malware.</translation>
 <translation id="9103537084693478942">Software para vídeos</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> utiliza normalmente el cifrado para proteger tu información. Cuando Chromium intentó establecer conexión con <ph name="SITE" />, el sitio web devolvió unas credenciales inusuales e incorrectas. Esto puede ocurrir si un atacante intenta suplantar la identidad de <ph name="SITE" /> o si una pantalla de inicio de sesión Wi-Fi interrumpe la conexión. Tu información sigue estando protegida, ya que Chromium detuvo la conexión antes de que se intercambiaran datos.</translation>
 <translation id="9106062320799175032">Añade una dirección de facturación</translation>

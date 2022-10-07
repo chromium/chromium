@@ -396,6 +396,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 website}one{# website}other{# websites}}</translation>
 <translation id="1924727005275031552">Ny</translation>
 <translation id="1927439593081478069">Knappen "Kør Chrome-sikkerhedstjek" – tryk på Enter for at køre sikkerhedstjekket i Chrome-indstillingerne</translation>
+<translation id="1935995810530254458">Kopiér alligevel</translation>
 <translation id="1939175642807587452">Websitet kan anmode om tilladelse til at sende notifikationer</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du kan miste adgangen til din organisations konto eller udsættes for identitetstyveri. Chromium anbefaler, at du skifter din adgangskode nu.</translation>
@@ -449,6 +450,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2085876078937250610">Gem…</translation>
 <translation id="2088086323192747268">Knappen Administrer synkronisering – tryk på Enter for at administrere, hvilke oplysninger der skal synkroniseres, i Chrome-indstillingerne</translation>
 <translation id="2091887806945687916">Lyd</translation>
+<translation id="2093982008204312032">Google Chrome forsøger at deaktivere udfyldning af adgangskoder via Windows Hello.</translation>
 <translation id="2094505752054353250">Uoverensstemmelse mellem domæner</translation>
 <translation id="2099652385553570808">Trehæftning i venstre side</translation>
 <translation id="2101225219012730419">Version:</translation>
@@ -1143,6 +1145,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokument, der indeholder {COUNT} side}one{PDF-dokument, der indeholder {COUNT} side}other{PDF-dokument, der indeholder {COUNT} sider}}</translation>
 <translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Da denne formular indsendes via en forbindelse, som ikke er sikker, bliver dine oplysninger synlige for andre.</translation>
+<translation id="4024923292610332139">deaktivere udfyldning af adgangskoder via TouchID</translation>
 <translation id="4025913568718019429">Knappen Administrer Google-privatlivsindstillinger – tryk på Enter for at gå til privatlivsindstillingerne for din Google-konto</translation>
 <translation id="4030383055268325496">&amp;Fortryd tilføjelse</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
@@ -1259,6 +1262,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="42981349822642051">Udvid</translation>
 <translation id="4300675098767811073">Flere huller i højre side</translation>
 <translation id="4302514097724775343">Tryk på dinoen for at spille</translation>
+<translation id="4304049446746819918">{0,plural, =1{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at flytte disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Din fil kunne ikke tilgås</translation>
 <translation id="4306529830550717874">Vil du gemme adressen?</translation>
 <translation id="4306812610847412719">udklipsholder</translation>
@@ -1634,6 +1638,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5254043433801397071">Optimer udskriftsindhold</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Tag screenshot alligevel</translation>
+<translation id="5257739419779698609">{0,plural, =1{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at flytte denne fil til <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at flytte disse filer til <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Bind øverst</translation>
 <translation id="5269225904387178860">Fire huller nederst</translation>
 <translation id="5269999699920406580">Funktioner, der gælder for hele systemet, kan kun angives af ejeren: <ph name="OWNER_EMAIL" />.</translation>
@@ -1696,6 +1701,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5412236728747081950">Dette website henter dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stabler 4</translation>
+<translation id="5414511064953050917">Flyt alligevel</translation>
 <translation id="5421136146218899937">Ryd browserdata...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ingen websites er blokeret}=1{1 website er blokeret}one{# website er blokeret}other{# websites er blokeret}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vil gerne sende notifikationer til dig</translation>
@@ -2317,6 +2323,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}one{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> anden}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andre}}</translation>
 <translation id="7153618581592392745">Lavendelblå</translation>
 <translation id="7156870133441232244">Serveren skal opgraderes til TLS 1.2 eller nyere.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Vil du kopiere den fortrolige fil?}one{Vil du kopiere den fortrolige fil?}other{Vil du kopiere de fortrolige filer?}}</translation>
 <translation id="717330890047184534">Gaia-id:</translation>
 <translation id="7174545416324379297">Flettet</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> anden}one{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> anden}other{<ph name="SHIPPING_OPTION_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> andre}}</translation>
@@ -2926,6 +2933,7 @@ Yderligere oplysninger:
 <translation id="8763986294015493060">Luk alle inkognitovinduer, der i øjeblikket er åbne</translation>
 <translation id="8766943070169463815">Arket til godkendelse af loginoplysninger til sikker betaling er åbnet</translation>
 <translation id="8767765348545497220">Luk hjælp-boble</translation>
+<translation id="877348612833018844">{0,plural, =1{Vil du flytte den fortrolige fil?}one{Vil du flytte den fortrolige fil?}other{Vil du flytte de fortrolige filer?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorcykler</translation>
 <translation id="8790007591277257123">&amp;Annuller fortryd sletning</translation>

@@ -340,6 +340,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="2861923151411510142">Tilteknir Chrome eiginleikar verða ekki tiltækir lengur</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2871733351037274014">Forhlaða síðum</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> biður þig um að samþykkja þetta vefsvæði:</translation>
 <translation id="2886836735871983413">Listi yfir vefsvæði mun birtast hér þegar þú vafrar um vefinn</translation>
 <translation id="2888126860611144412">Um Chrome</translation>
 <translation id="2891154217021530873">Stöðva hleðslu síðu</translation>
@@ -355,6 +356,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> geymslurými</translation>
 <translation id="2932222164150889403">Lyklaborðið þitt breytist ekki</translation>
 <translation id="2936980480904111527">Chrome tilkynningar auðvelda málin</translation>
+<translation id="2940075786175545812">Valkostur til að samþykkja eða samþykkja ekki vefsvæði</translation>
 <translation id="2942036813789421260">Forskoðunarflipi er lokaður</translation>
 <translation id="2946420957526726953">Uppfærir Chrome til að tengjast öðrum tækjum</translation>
 <translation id="2951071800649516099">Bæta síðum á leslistann þinn til síðari nota</translation>
@@ -422,6 +424,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="3259831549858767975">Minnka allt á síðunni</translation>
 <translation id="3264124641674805320">Svona sækirðu efni til að nota síðar</translation>
 <translation id="3264259168916048410">Tölvan vill nota þetta tæki til að skrá inn á vefsvæði</translation>
+<translation id="3265093782546847662">Allar síður á <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Stjórna vefsvæðunum sem þú fylgir</translation>
 <translation id="3269093882174072735">Hlaða mynd</translation>
 <translation id="3280562213547448728">Raddleit</translation>
@@ -731,6 +734,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4985248278475639481">Um sérsniðnar auglýsingar</translation>
 <translation id="4987271110129728827">Finn ekki síðuna. Athugaðu stafsetninguna eða prófaðu vefleit.</translation>
 <translation id="4988526792673242964">Síður</translation>
+<translation id="4991110219272367918">Valkosti til að samþykkja eða samþykkja ekki vefsvæði lokað</translation>
 <translation id="499724277181351974">Opna: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Fylgja þessu vefsvæði hér</translation>
 <translation id="500351648694011114">Auðveldari vefskoðun</translation>
@@ -1105,6 +1109,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
+<translation id="6908998565271542516">Valkostur til að samþykkja eða samþykkja ekki vefsvæði opnaður í fullri hæð</translation>
 <translation id="6909589135458168665">Forhlaða síðum</translation>
 <translation id="6942665639005891494">Þú getur breytt staðsetningu niðurhals hvenær sem er með því að nota valkostinn í stillingavalmyndinni</translation>
 <translation id="694267552845942083">Þú ert að sérstilla samstillingu. Til að ljúka við að kveikja á samstillingu skaltu ýta á hnappinn „Staðfesta“ neðarlega á skjánum. Fara upp</translation>
@@ -1112,6 +1117,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="6955535239952325894">Slökkt er á þessari stillingu í stýrðum vöfrum</translation>
 <translation id="6963766334940102469">Eyða bókamerkjum</translation>
 <translation id="696447261358045621">Slökkva á huliðsstillingu</translation>
+<translation id="6971862865055170158">Ekki samþykkja</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>
 <translation id="6987047470128880212">Huliðsstilling er ekki í boði í þessu tæki</translation>
 <translation id="6995899638241819463">Láta vita ef aðgangsorðin þín eru afhjúpuð vegna öryggisbrots</translation>

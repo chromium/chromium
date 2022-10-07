@@ -159,6 +159,15 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1797271123677381264">Şifrəni unutmuşam</translation>
 <translation id="181103072419391116">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="1812997170047690955">Ekranımda nə var?</translation>
+<translation id="1823280932251546115">Status bölməsi, vaxt: <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> çıxarıldı</translation>
 <translation id="1836215606488044471">Assistent (yüklənir...)</translation>
@@ -458,6 +467,8 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3600061223661453002">Deaktiv</translation>
 <translation id="3604801046548457007">Masa <ph name="DESK_TITILE" /> yaradıldı</translation>
 <translation id="3606978283550408104">Brayl displeyi qoşuludur.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mobil datanın aktiv edilməsi ilə Bluetooh da aktiv ediləcək</translation>
 <translation id="3616883743181209306">Menyu ekranın yuxarı sağ küncünə köçürülüb.</translation>
 <translation id="3619536907358025872">Ekran çəkilişi ayarları</translation>

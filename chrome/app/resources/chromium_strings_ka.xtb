@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
 <translation id="1203500561924088507">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="1231839967188101156">ჩართვის შემთხვევაში, Chromium გამოათავისუფლებს მეხსიერებას არააქტიური ჩანართებიდან. აქტიურ ჩანართებსა და სხვა აპებს კომპიუტერის მეტი რესურსის გამოყენების საშუალება მიეცემა, რაც დააჩქარებს Chromium-საც. თქვენი არააქტიური ჩანართები ავტომატურად გააქტიურდება, როცა მათ დაუბრუნდებით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">მეხსიერების დამზოგმა ააჩქარა Chromium</translation>
 <translation id="1315551408014407711">შექმენით ახალი Chromium პროფილი</translation>
 <translation id="1385859895174722837">Google ასისტენტი Chromium-ში</translation>
 <translation id="1396446129537741364">Chromium ცდილობს პაროლების ჩვენებას.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">ხელმისაწვდომია Chromium-ის ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>
 <translation id="6063093106622310249">Chromium-ში &amp;გახსნა</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> დაემატა Chromium-ს</translation>
+<translation id="6072463441809498330">ააჩქარეთ Chromium-ის მუშაობა</translation>
 <translation id="608006075545470555">დაამატეთ სამსახურის პროფილი ამ ბრაუზერს</translation>
 <translation id="6096348254544841612">მოირგეთ და გააკონტროლეთ Chromium. ხელმისაწვდომია განახლება.</translation>
 <translation id="6119438414301547735">გაფართოებისთვის Chromium-ის ხელსაწყოთა ზოლში წვდომის მოთხოვნების ჩვენების დაშვება</translation>

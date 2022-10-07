@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">burma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> käytettävissä</translation>
+<translation id="2417486498593892439">Kirjaudu verkkoon</translation>
 <translation id="2425665904502185219">Tiedostokoko yhteensä</translation>
 <translation id="2428749644083375155">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tyyppi</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Toistoa ei ole saatavilla.</translation>
 <translation id="383652340667548381">serbia</translation>
 <translation id="385051799172605136">Takaisin</translation>
+<translation id="3851491607336266896">Yhdistetty, rajoitettu yhteys</translation>
 <translation id="3855472144336161447">saksa, Neo 2</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3866249974567520381">Kuvaus</translation>
@@ -939,6 +941,7 @@
 <translation id="8903931173357132290">Valmistunut</translation>
 <translation id="8912078710089354287">Häntää heiluttava koira</translation>
 <translation id="8919081441417203123">tanska</translation>
+<translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
 <translation id="8965697826696209160">Tallennustila ei riitä.</translation>
 <translation id="8997962250644902079">kiina (perinteinen, pinyin)</translation>
 <translation id="8998871447376656508">Google Drivessasi ei ole tarpeeksi tilaa latausta varten.</translation>

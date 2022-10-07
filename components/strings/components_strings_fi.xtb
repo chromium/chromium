@@ -396,6 +396,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="192020519938775529">{COUNT,plural, =0{Ei mitään}=1{1 sivusto}other{# sivustoa}}</translation>
 <translation id="1924727005275031552">Uusi</translation>
 <translation id="1927439593081478069">Tee Chromen turvatarkistus ‑painike, tee turvatarkistus Chromen asetuksissa painamalla Enter</translation>
+<translation id="1935995810530254458">Kopioi silti</translation>
 <translation id="1939175642807587452">Saa pyytää lupaa ilmoitusten lähettämiseen</translation>
 <translation id="1943994668912612445">Suunnittelu</translation>
 <translation id="1945968466830820669">Voit menettää organisaatiosi tilin käyttöoikeuden tai joutua identiteettivarkauden uhriksi. Chromium suosittelee vaihtamaan salasanan välittömästi.</translation>
@@ -449,6 +450,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2085876078937250610">Tallenna…</translation>
 <translation id="2088086323192747268">Muuta synkronointivalintoja ‑painike, paina Enter, niin voit valita synkronoitavat tiedot Chromen asetuksista</translation>
 <translation id="2091887806945687916">Ääni</translation>
+<translation id="2093982008204312032">Google Chrome yrittää laittaa Windows Hellon pois päältä salasanojen täyttämistä varten.</translation>
 <translation id="2094505752054353250">Verkkotunnukset eivät ole yhteensopivat</translation>
 <translation id="2099652385553570808">Kolme niittiä vasemmalla</translation>
 <translation id="2101225219012730419">Versio:</translation>
@@ -1144,6 +1146,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-dokumentti, jossa on {COUNT} sivu}other{PDF-dokumentti, jossa on {COUNT} sivua}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">Koska lomake lähetetään suojaamattomalla yhteydellä, tietosi näkyvät muille.</translation>
+<translation id="4024923292610332139">laittaa TouchID:n pois päältä salasanojen täyttämistä varten</translation>
 <translation id="4025913568718019429">Tarkista Googlen yksityisyysasetukset ‑painike, siirry Google-tilisi yksityisyysasetuksiin painamalla Enter</translation>
 <translation id="4030383055268325496">K&amp;umoa lisäys</translation>
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
@@ -1260,6 +1263,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="42981349822642051">Laajenna</translation>
 <translation id="4300675098767811073">Useita reikiä oikealla</translation>
 <translation id="4302514097724775343">Pelaa napauttamalla dinosaurusta</translation>
+<translation id="4304049446746819918">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston siirtämistä tänne: <ph name="DESTINATION_NAME" />}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen siirtämistä tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Tiedostoa ei voi käyttää</translation>
 <translation id="4306529830550717874">Tallennetaanko osoite?</translation>
 <translation id="4306812610847412719">leikepöytä</translation>
@@ -1635,6 +1639,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5254043433801397071">Optimoi tulostussisältö</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Ota kuvakaappaus silti</translation>
+<translation id="5257739419779698609">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston kopioimista tänne: <ph name="DESTINATION_NAME" />}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen kopioimista tänne: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Sidottu yläreunassa</translation>
 <translation id="5269225904387178860">Neljä reikää alareunassa</translation>
 <translation id="5269999699920406580">Koko järjestelmään vaikuttavat ominaisuudet voi tehdä vain omistaja: <ph name="OWNER_EMAIL" /></translation>
@@ -1697,6 +1702,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5412236728747081950">Tämä sivusto saa kiinnostuksen kohteesi Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Pinoaja 4</translation>
+<translation id="5414511064953050917">Siirrä silti</translation>
 <translation id="5421136146218899937">Poista selaustiedot...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Ei estettyjä sivustoja}=1{1 sivusto estetty}other{# sivustoa estetty}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
@@ -2318,6 +2324,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> toinen}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> muuta}}</translation>
 <translation id="7153618581592392745">Laventeli</translation>
 <translation id="7156870133441232244">Palvelin pitäisi päivittää TLS 1.2:een tai uudempaan versioon.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Kopioidaanko luottamuksellinen tiedosto?}other{Kopioidaanko luottamukselliset tiedostot?}}</translation>
 <translation id="717330890047184534">Gaia-tunnus:</translation>
 <translation id="7174545416324379297">Yhdistetty</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> toinen}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ja <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> muuta}}</translation>
@@ -2927,6 +2934,7 @@ Lisätietoja:
 <translation id="8763986294015493060">Sulje kaikki tällä hetkellä avoinna olevat incognito-ikkunat</translation>
 <translation id="8766943070169463815">Suojatun maksun kirjautumistietojen todennuspaneeli on avattu</translation>
 <translation id="8767765348545497220">Sulje ohjekupla</translation>
+<translation id="877348612833018844">{0,plural, =1{Siirretäänkö luottamuksellinen tiedosto?}other{Siirretäänkö luottamukselliset tiedostot?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Moottoripyörät</translation>
 <translation id="8790007591277257123">&amp;Toista poisto</translation>

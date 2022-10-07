@@ -263,6 +263,7 @@
 <translation id="6554732001434021288">Síðast opnað fyrir <ph name="NUM_DAYS" /> dögum</translation>
 <translation id="6561560012278703671">Nota hljóðlátari skilaboð (útilokar truflun af tilkynningum)</translation>
 <translation id="6593061639179217415">Tölvuvefsvæði</translation>
+<translation id="6608211702542341247">Þetta vefsvæði er í hópi vefsvæða <ph name="FPS_OWNER" /> sem geta séð virkni þína í hópnum</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Varið efni</translation>
 <translation id="662080504995468778">Vera áfram</translation>

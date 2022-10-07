@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
-<translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google పాస్‌వర్డ్ మేనేజర్‌కు సేవ్ చేయబడుతుంది.</translation>
+<translation id="1143896152279775643">మీ పాస్‌వర్డ్ <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది.</translation>
 <translation id="1282031177488366470">Chrome ఫీచర్‌లు మరియు పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="1462727070346936664">Chrome నుండి మరిన్ని ప్రయోజనాలను పొందడానికి సైన్ ఇన్ చేయండి.</translation>
 <translation id="1479202195792305274">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు, Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయగలదు.</translation>
@@ -27,7 +27,7 @@
 <translation id="2574249610672786438">Chromeను ఎక్కడ ఉపయోగించినా మీ ట్యాబ్‌లను చూసేందుకు, మీ పరికరాలన్నింటిలో సైన్ ఇన్ చేయండి</translation>
 <translation id="2576431527583832481">Chrome ఇప్పుడే మెరుగుపరచబడింది! కొత్త వెర్షన్ అందుబాటులో ఉంది.</translation>
 <translation id="257708665678654955">ఈ సైట్‌లోని <ph name="LANGUAGE_NAME" /> పేజీలను మీరు తర్వాతిసారి సందర్శించినప్పుడు, వాటిని అనువదించే సదుపాయాన్ని Google Chrome అందించాలని కోరుకుంటున్నారా?</translation>
-<translation id="2671426118752779020">మీరు మీ iPhoneలోని ఇతర యాప్‌లలో Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
+<translation id="2671426118752779020">మీరు మీ iPhoneలోని ఇతర యాప్‌లలో Google Password Managerలో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="2689064829982324496">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chrome నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2732745070297234559">Chromeకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి.</translation>
@@ -98,7 +98,7 @@
 <translation id="7165736900384873061">Google Chrome QR స్కానర్‌ని వినియోగించండి</translation>
 <translation id="7173660919484573146">Chrome మీ పాస్‌వర్డ్‌లను ప్రమాణీకరణ ఉన్న వారు మాత్రమే యాక్సెస్ చేస్తున్నట్లు నిర్ధారించడం కోసం ఫేస్ IDని ఉపయోగిస్తుంది.</translation>
 <translation id="7187993566681480880">Chromeలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది, మీరు సైన్ ఇన్ చేసినప్పుడు ఇతర Google యాప్‌లలో మీ భద్రతను మెరుగుపరచడానికి ఉపయోగించబడవచ్చు.</translation>
-<translation id="72119412072970160">మీరు మీ iPadలోని ఇతర యాప్‌లలో Google పాస్‌వర్డ్ మేనేజర్‌లో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
+<translation id="72119412072970160">మీరు మీ iPadలోని ఇతర యాప్‌లలో Google Password Managerలో సేవ్ చేసిన పాస్‌వర్డ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="7261678641327190792">Chrome మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది</translation>
 <translation id="7272930098487145294">ఇమేజ్‌లను సేవ్ చేయడానికి, మీ ఫోటోలకు జోడించడం కోసం Chromeని అనుమతించడానికి సెట్టింగ్‌లపై ట్యాప్ చేయండి</translation>
 <translation id="7275945473750112644">మీ ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, కాబట్టి మీ Chrome డేటా ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది</translation>
@@ -127,7 +127,7 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chromeతో సురక్షితంగా ఉండండి</translation>
 <translation id="8772179140489533211">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపండి.</translation>
-<translation id="8788269841521769222">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="EMAIL" /> కోసం Google పాస్‌వర్డ్ మేనేజర్‌కు సేవ్ చేయబడుతుంది</translation>
+<translation id="8788269841521769222">మీరు ఈ పాస్‌వర్డ్‌ను గుర్తుపెట్టుకోవాల్సిన అవసరం లేదు. ఇది <ph name="EMAIL" /> కోసం Google Password Managerకు సేవ్ చేయబడుతుంది</translation>
 <translation id="8897749957032330183">పాస్‌వర్డ్‌లు ఈ పరికరంలోని Google Password Managerలో సేవ్ చేయబడతాయి.</translation>
 <translation id="8969290730818637510">ఆన్‌లో ఉన్నప్పుడు:
 <ph name="BEGIN_INDENT" />  • మీకు లాగానే Chromeను ఉపయోగించే వ్యక్తుల కోసం, దానిని మెరుగుపరచడంలో సహాయపడండి.<ph name="END_INDENT" />

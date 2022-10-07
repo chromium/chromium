@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Escaneja el document</translation>
 <translation id="1309250603447638106">S'estan baixant les actualitzacions per a l'escaneig de documents</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Cerca+fletxa esquerra per accedir-hi.</translation>
+<translation id="1417314334557041815">Edita la pàgina <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> no està endollada.</translation>
 <translation id="1473110567575736769">Temporitzador de 3 segons</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">No s'ha gravat res</translation>
 <translation id="1838104802459806957">Inclina cap amunt</translation>
+<translation id="1843105061469674856">Escaneja una pàgina més</translation>
 <translation id="1851169887664797861">Controls de càmera addicionals disponibles</translation>
 <translation id="1851616744363735765">EN PAUSA</translation>
 <translation id="1862930711583847113">No es pot exportar <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Aquesta càmera no pot canviar la resolució</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="4281620174117014503">Resolució mitjana</translation>
+<translation id="428234092390943511">Miniatura de la pàgina</translation>
 <translation id="4329152592498422850">Botó per fer una foto quadrada</translation>
 <translation id="4340659173795395806">Ara pots crear fitxers PDF de diverses pàgines</translation>
 <translation id="4383571725254449280">Registres de rendiment d'impressió</translation>

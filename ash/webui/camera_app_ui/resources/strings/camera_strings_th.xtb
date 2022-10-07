@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">สแกนเอกสาร</translation>
 <translation id="1309250603447638106">กำลังดาวน์โหลดอัปเดตของฟีเจอร์การสแกนเอกสาร</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" /> กดค้นหา + ลูกศรซ้ายเพื่อเข้าถึง</translation>
+<translation id="1417314334557041815">แก้ไขหน้า <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1467231725790366244">ถอดปลั๊ก <ph name="CAMERA" /> แล้ว</translation>
 <translation id="1473110567575736769">ตัวจับเวลา 3 วินาที</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ไม่ได้บันทึกข้อมูลใด</translation>
 <translation id="1838104802459806957">เอียงขึ้น</translation>
+<translation id="1843105061469674856">สแกนหน้าเพิ่มเติม</translation>
 <translation id="1851169887664797861">มีตัวควบคุมกล้องให้ใช้งานเพิ่มเติม</translation>
 <translation id="1851616744363735765">หยุดชั่วคราว</translation>
 <translation id="1862930711583847113">ส่งออก <ph name="FILE" /> ไม่ได้</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">เปลี่ยนความละเอียดของกล้องนี้ไม่ได้</translation>
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
 <translation id="4281620174117014503">ความละเอียดปานกลาง</translation>
+<translation id="428234092390943511">ภาพขนาดย่อของหน้า</translation>
 <translation id="4329152592498422850">เปลี่ยนเป็นถ่ายภาพแบบสี่เหลี่ยมจัตุรัส</translation>
 <translation id="4340659173795395806">คุณสร้าง PDF แบบหลายหน้าได้แล้ว</translation>
 <translation id="4383571725254449280">พิมพ์บันทึกประสิทธิภาพ</translation>

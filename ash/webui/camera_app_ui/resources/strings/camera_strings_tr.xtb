@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Dokümanınızı tarayın</translation>
 <translation id="1309250603447638106">Doküman taramayla ilgili güncellemeler indiriliyor</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Erişmek için Arama + Sol ok tuşlarına basın.</translation>
+<translation id="1417314334557041815">Sayfayı düzenle <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />, cihaza takılı değil.</translation>
 <translation id="1473110567575736769">3 saniye zamanlayıcı</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Hiçbir şey kaydedilmedi</translation>
 <translation id="1838104802459806957">Kaldır</translation>
+<translation id="1843105061469674856">Başka sayfa tara</translation>
 <translation id="1851169887664797861">Ek kamera kontrolleri bulunuyor</translation>
 <translation id="1851616744363735765">DURAKLATILDI</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> dışa aktarılamıyor</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Bu kamera, çözünürlüğü değiştiremez</translation>
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
 <translation id="4281620174117014503">Orta düzey çözünürlük</translation>
+<translation id="428234092390943511">Sayfa küçük resmi</translation>
 <translation id="4329152592498422850">Kare fotoğraf çekme moduna geç</translation>
 <translation id="4340659173795395806">Artık çok sayfalı PDF oluşturabilirsiniz</translation>
 <translation id="4383571725254449280">Performans günlüklerini yazdır</translation>

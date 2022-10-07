@@ -414,6 +414,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
 <translation id="3375634426936648815">Yhdistetty</translation>
+<translation id="3378438761594387761">Löydät viimeaikaiset lataukset ja kuvakaappaukset täältä</translation>
 <translation id="3378442621503952303">Muodostetaan yhteyttä profiiliin. Odota muutama minuutti.</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
@@ -720,6 +721,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
 <translation id="509790653408515442">Kun striimaat puhelimen sovelluksia, ne näkyvät täällä</translation>
 <translation id="5098537242461068432">Työpöytä ja ikkunat avattu uudelleen</translation>
+<translation id="5104236669533825617">Ruutukaappausvideota ei voi luoda</translation>
 <translation id="5107522548814527560">Verkko</translation>
 <translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
@@ -765,6 +767,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (oikea)</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
+<translation id="536019650977002321">Järjestelmänvalvoja ei salli äänen tallentamista. Pyydä lisätietoa järjestelmänvalvojalta.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> – Siirry tälle välilehdelle</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
 <translation id="5391307769715781764">Korvataanko tallennettu työpöytä?</translation>

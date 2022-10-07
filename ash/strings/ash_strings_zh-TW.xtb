@@ -414,6 +414,7 @@
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右前方連接埠)</translation>
 <translation id="3375634426936648815">已連線</translation>
+<translation id="3378438761594387761">你可在這裡找到最近的下載內容和螢幕畫面擷取項目</translation>
 <translation id="3378442621503952303">正在連線至設定檔，請稍後片刻。</translation>
 <translation id="3386978599540877378">全螢幕放大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -720,6 +721,7 @@
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式會顯示在這裡</translation>
 <translation id="5098537242461068432">已重新開啟桌面和視窗</translation>
+<translation id="5104236669533825617">無法建立螢幕側錄工作階段</translation>
 <translation id="5107522548814527560">網頁</translation>
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
@@ -765,6 +767,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="5352250171825660495">深色主題已開啟</translation>
 <translation id="5356963482258194581">在深色和淺色主題之間切換。在桌面上按一下滑鼠右鍵，並選取桌布和樣式。</translation>
+<translation id="536019650977002321">管理員不允許擷取音訊，詳情請洽管理員。</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往這個分頁</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>

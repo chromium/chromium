@@ -133,6 +133,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3360895254066713204">Pomočnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
+<translation id="3426646014273736870">Varčevanje s pomnilnikom je pospešilo Chrome</translation>
 <translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3434246496373299699">Chrome lahko preveri vaša gesla, ko se prijavite z računom Google</translation>
 <translation id="3451115285585441894">Dodajanje v Chrome ...</translation>
@@ -234,6 +235,7 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="5524761631371622910">Če so preizkusi vklopljeni in vas je Chrome naključno prijavil za aktivni preizkus, zgodovina brskanja vpliva na oglase, ki so prikazani, in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti izbriše vaša zanimanja.</translation>
+<translation id="5530733413481476019">Pospešite Chrome</translation>
 <translation id="556024056938947818">Google Chrome poskuša prikazati gesla.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je morda nevarna, zato jo je Chrome blokiral.</translation>
@@ -260,6 +262,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>
 <translation id="6113794647360055231">Chrome je pravkar postal še boljši</translation>
 <translation id="6145313976051292476">Odpiranje datotek PDF v Chromu</translation>
+<translation id="6155960517327665396">Varčevanje s pomnilnikom je pospešilo Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
 <translation id="6235018212288296708">Pravilo za dohodni promet za Google Chrome, ki omogoča promet mDNS.</translation>
@@ -360,6 +363,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="828798499196665338">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome se je zrušil. Ga želite znova zagnati?</translation>
+<translation id="8341646175450781745">Če je vklopljeno, Chrome sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chrome pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje. <ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> ali <ph name="BEGIN_LINK_2" />pošljite povratne informacije<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Ta datoteka je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>

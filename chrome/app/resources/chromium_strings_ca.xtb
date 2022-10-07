@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Quan aquesta opció està activada, Chromium allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chromium. Les pestanyes inactives s'activen de nou automàticament quan hi tornes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
 <translation id="1385859895174722837">L'Assistent de Google a Chromium</translation>
 <translation id="1396446129537741364">Chromium està provant de mostrar les contrasenyes.</translation>
@@ -251,6 +252,7 @@
 <translation id="6717134281241384636">El vostre perfil no es pot utilitzar perquè es va crear amb una versió més recent de Chromium.
 
 És possible que algunes funcions no estiguin disponibles. Especifiqueu un altre directori de perfil o utilitzeu una versió més nova de Chromium.</translation>
+<translation id="6730677189742196061">L'estalvi de memòria ha fet que Chromium sigui més ràpid</translation>
 <translation id="6734291798041940871">Ja tens instal·lat Chromium per a tots els usuaris de l'ordinador.</translation>
 <translation id="673636774878526923">Per accedir al teu contingut de Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització.</translation>
 <translation id="6774082503108938489">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium. No es permet activar aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Кога е вклучена, Chromium ослободува меморија од неактивните картички. Ова им овозможува на активните картички и другите апликации да имаат повеќе компјутерски ресурси и ја одржува брзината на Chromium. Вашите неактивни картички автоматски стануваат активни повторно кога ќе се вратите на нив. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">„Штедачот на меморија“ го направи Chromium побрз</translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
 <translation id="1385859895174722837">„Помошникот на Google“ во Chromium</translation>
 <translation id="1396446129537741364">Chromium се обидува да покаже лозинки.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Достапна е нова верзија на Chromium и побрза е од кога било.</translation>
 <translation id="6063093106622310249">&amp;Отвори во Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> беше додадена на Chromium</translation>
+<translation id="6072463441809498330">Имајте побрз Chromium</translation>
 <translation id="608006075545470555">Додајте работен профил во овој прелистувач</translation>
 <translation id="6096348254544841612">Приспособете го и контролирајте го Chromium. Достапно е ажурирање.</translation>
 <translation id="6119438414301547735">Дозволете екстензијата да прикажува барања за пристап во алатникот на Chromium</translation>

@@ -340,6 +340,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2861923151411510142">Sesetengah ciri Chrome tidak akan tersedia lagi</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2871733351037274014">Halaman pramuat</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> mahu anda meluluskan laman web ini:</translation>
 <translation id="2886836735871983413">Senarai laman akan dipaparkan di sini semasa anda menyemak imbas web</translation>
 <translation id="2888126860611144412">Perihal Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
@@ -355,6 +356,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2932150158123903946">Storan Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Papan kekunci anda tidak akan berubah</translation>
 <translation id="2936980480904111527">Pemberitahuan Chrome memudahkan segalanya</translation>
+<translation id="2940075786175545812">Pilihan untuk meluluskan atau tidak meluluskan laman web</translation>
 <translation id="2942036813789421260">Tab pratonton ditutup</translation>
 <translation id="2946420957526726953">Mengemas kini Chrome untuk menyambung kepada peranti lain</translation>
 <translation id="2951071800649516099">Tambahkan halaman pada senarai bacaan anda untuk kemudian</translation>
@@ -422,6 +424,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="3259831549858767975">Jadikan semua yang ada pada halaman lebih kecil</translation>
 <translation id="3264124641674805320">Cara memuat turun kandungan untuk dilihat kemudian</translation>
 <translation id="3264259168916048410">Komputer anda mahu menggunakan peranti ini untuk log masuk ke laman</translation>
+<translation id="3265093782546847662">Semua halaman <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Urus laman yang anda ikuti</translation>
 <translation id="3269093882174072735">Muatkan imej</translation>
 <translation id="3280562213547448728">Carian suara</translation>
@@ -731,6 +734,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4985248278475639481">Perihal pemeribadian iklan</translation>
 <translation id="4987271110129728827">Tidak menemukan halaman itu. Semak ejaan anda atau cuba carian web.</translation>
 <translation id="4988526792673242964">Halaman</translation>
+<translation id="4991110219272367918">Pilihan untuk meluluskan atau tidak meluluskan laman web yang ditutup</translation>
 <translation id="499724277181351974">Navigasi: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ikuti laman ini di sini</translation>
 <translation id="500351648694011114">Semak imbas dengan lebih mudah</translation>
@@ -1105,6 +1109,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6900532703269623216">Perlindungan dipertingkat</translation>
 <translation id="6903907808598579934">Hidupkan penyegerakan</translation>
+<translation id="6908998565271542516">Pilihan untuk meluluskan atau tidak meluluskan laman web yang dibuka pada ketinggian penuh</translation>
 <translation id="6909589135458168665">Halaman Pramuat</translation>
 <translation id="6942665639005891494">Tukar lokasi muat turun lalai pada bila-bila masa menggunakan pilihan menu Tetapan</translation>
 <translation id="694267552845942083">Anda sedang menyesuaikan tetapan Penyegerakan anda. Untuk menyelesaikan tindakan menghidupkan penyegerakan, ketik butang Sahkan berdekatan bahagian bawah skrin. Navigasi ke atas</translation>
@@ -1112,6 +1117,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="6955535239952325894">Tetapan ini dilumpuhkan pada penyemak imbas terurus</translation>
 <translation id="6963766334940102469">Padamkan penanda halaman</translation>
 <translation id="696447261358045621">Tinggalkan mod Inkognito</translation>
+<translation id="6971862865055170158">Jangan luluskan</translation>
 <translation id="6979737339423435258">Sepanjang masa</translation>
 <translation id="6987047470128880212">Inkognito tidak tersedia pada peranti ini</translation>
 <translation id="6995899638241819463">Beri amaran kepada anda jika kata laluan terdedah dalam pelanggaran data</translation>

@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Du kan tjekke, om dine adgangskoder er beskyttet mod brud på datasikkerheden og andre sikkerhedsproblemer ved at <ph name="BEGIN_LINK" />logge ind på Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Når indstillingen er aktiveret, frigør Chromium hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chromium hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
 <translation id="1385859895174722837">Google Assistent i Chromium</translation>
 <translation id="1396446129537741364">Chromium forsøger at vise adgangskoder.</translation>
@@ -251,6 +252,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6717134281241384636">Din profil kan ikke bruges, da den stammer fra en nyere version af Chromium.
 
 Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller brug en nyere version af Chromium.</translation>
+<translation id="6730677189742196061">Hukommelsessparefunktion har gjort Chromium hurtigere</translation>
 <translation id="6734291798041940871">Chromium er allerede installeret for alle brugere på computeren.</translation>
 <translation id="673636774878526923">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="6774082503108938489">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

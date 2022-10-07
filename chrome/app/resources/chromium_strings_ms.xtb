@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Untuk menyemak sama ada kata laluan anda selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Mengenai Chromium</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Apabila dihidupkan, Chromium mengosongkan memori daripada tab yang tidak aktif. Ini memberikan tab aktif dan apl lain lebih banyak sumber komputer dan memastikan Chromium pantas. Tab anda yang tidak aktif menjadi aktif semula secara automatik apabila anda kembali kepada tab tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Sediakan profil Chromium baharu anda</translation>
 <translation id="1385859895174722837">Google Assistant dalam Chromium</translation>
 <translation id="1396446129537741364">Chromium sedang cuba memaparkan kata laluan.</translation>
@@ -251,6 +252,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6717134281241384636">Profil anda tidak boleh digunakan kerana profil anda dihasilkan dari versi Chromium yang lebih baharu.
 
 Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbeza atau gunakan versi Chromium yang lebih baharu.</translation>
+<translation id="6730677189742196061">Penjimat Memori menjadikan Chromium lebih pantas</translation>
 <translation id="6734291798041940871">Chromium telah dipasang untuk semua pengguna pada komputer anda.</translation>
 <translation id="673636774878526923">Untuk mengakses bahan Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan.</translation>
 <translation id="6774082503108938489">Ibu/bapa anda telah mematikan "Kebenaran untuk laman web, apl dan sambungan" untuk Chromium. Tindakan mendayakan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak dibenarkan.</translation>

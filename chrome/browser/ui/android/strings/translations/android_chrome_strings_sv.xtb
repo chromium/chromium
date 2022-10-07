@@ -340,6 +340,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2861923151411510142">Vissa funktioner i Chrome kommer inte längre att vara tillgängliga</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871733351037274014">Läs in sidor i förväg</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> vill att du godkänner följande webbplats:</translation>
 <translation id="2886836735871983413">En lista över webbplatser visas här allt eftersom du surfar på webben</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2891154217021530873">Avbryt inläsningen av sidan</translation>
@@ -355,6 +356,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2932150158123903946">Lagring för Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tangentbordet ändras inte</translation>
 <translation id="2936980480904111527">Chrome-aviseringar gör saker enklare</translation>
+<translation id="2940075786175545812">Alternativ för att godkänna eller inte godkänna en webbplats</translation>
 <translation id="2942036813789421260">Fliken Förhandsgranskning har stängts</translation>
 <translation id="2946420957526726953">Uppdatera Chrome för att ansluta till andra enheter</translation>
 <translation id="2951071800649516099">Lägg till sidor som du vill läsa senare i läslistan</translation>
@@ -422,6 +424,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3259831549858767975">Gör allt på sidan mindre</translation>
 <translation id="3264124641674805320">Så här laddar du ned innehåll att spara till senare</translation>
 <translation id="3264259168916048410">Datorn vill använda den här enheten för att logga in på en webbplats</translation>
+<translation id="3265093782546847662">Alla sidor på <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Hantera de webbplatser du följer</translation>
 <translation id="3269093882174072735">Läs in bild</translation>
 <translation id="3280562213547448728">Röstsökning</translation>
@@ -732,6 +735,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4985248278475639481">Om annonsanpassning</translation>
 <translation id="4987271110129728827">Sidan hittades inte. Kontrollera stavningen eller testa att söka på webben.</translation>
 <translation id="4988526792673242964">Sidor</translation>
+<translation id="4991110219272367918">Alternativ för att godkänna eller inte godkänna en webbplats har stängts</translation>
 <translation id="499724277181351974">Navigera till: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
 <translation id="500351648694011114">Surfa enklare</translation>
@@ -1106,6 +1110,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
+<translation id="6908998565271542516">Alternativ för att godkänna eller inte godkänna en webbplats som öppnas i full höjd</translation>
 <translation id="6909589135458168665">Läs in sidor i förväg</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
@@ -1113,6 +1118,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="6955535239952325894">Inställningen är inaktiverad för hanterade webbläsare</translation>
 <translation id="6963766334940102469">Radera bokmärken</translation>
 <translation id="696447261358045621">Inaktivera inkognitoläge</translation>
+<translation id="6971862865055170158">Godkänn inte</translation>
 <translation id="6979737339423435258">Sedan kontot skapades</translation>
 <translation id="6987047470128880212">Inkognito är inte tillgängligt på den här enheten</translation>
 <translation id="6995899638241819463">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>

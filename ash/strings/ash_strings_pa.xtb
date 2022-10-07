@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ</translation>
 <translation id="181103072419391116">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="1812997170047690955">ਮੇਰੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕਿਹੜੀ ਸਮੱਗਰੀ ਮੌਜੂਦ ਹੈ?</translation>
+<translation id="1823280932251546115">ਸਥਿਤੀ ਟ੍ਰੇ, ਸਮਾਂ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ਈਥਰਨੈੱਟ: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ਨੂੰ ਅਨਪਿੰਨ ਕੀਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="1836215606488044471">Assistant ਨੂੰ (ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...)</translation>
@@ -457,6 +466,8 @@
 <translation id="3600061223661453002">ਬੰਦ ਕਰੋ</translation>
 <translation id="3604801046548457007">ਡੈਸਕ <ph name="DESK_TITILE" /> ਬਣਾਇਆ ਗਿਆ</translation>
 <translation id="3606978283550408104">ਬ੍ਰੇਲ ਡਿਸਪਲੇ ਕਨੈਕਟ ਕੀਤਾ।</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ਮੋਬਾਈਲ ਡਾਟਾ ਚਾਲੂ ਕਰਨ ਨਾਲ ਬਲੂਟੁੱਥ ਵੀ ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3616883743181209306">ਮੀਨੂ ਨੂੰ ਸਕ੍ਰੀਨ ਦੇ ਉੱਪਰਲੇ ਸੱਜੇ ਕੋਨੇ ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ।</translation>
 <translation id="3619536907358025872">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਸੈਟਿੰਗਾਂ</translation>

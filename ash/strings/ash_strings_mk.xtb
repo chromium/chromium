@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">Ја заборавивте лозинката</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1812997170047690955">Што има на мојот екран?</translation>
+<translation id="1823280932251546115">Фиока за статусот, време <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
 <translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
@@ -458,6 +467,8 @@
 <translation id="3600061223661453002">Исклучи</translation>
 <translation id="3604801046548457007">Работниот простор <ph name="DESK_TITILE" /> е создаден</translation>
 <translation id="3606978283550408104">Поврзан екран за брајово писмо.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Ако овозможите мобилен интернет, ќе се овозможи и Bluetooth</translation>
 <translation id="3616883743181209306">Менито е преместено во горниот десен агол на екранот.</translation>
 <translation id="3619536907358025872">Поставки за снимање на екранот</translation>

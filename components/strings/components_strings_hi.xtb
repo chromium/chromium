@@ -307,6 +307,7 @@
 <translation id="168841957122794586">सर्वर प्रमाणपत्र में कमज़ोर क्रिप्टोग्राफ़िक कुंजी है.</translation>
 <translation id="1697532407822776718">आप बिलकुल तैयार हैं!</translation>
 <translation id="1699570257714336246">जानकारी मौजूद नहीं है</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706625117072057435">ज़ूम स्तर</translation>
 <translation id="1706954506755087368">{1,plural, =1{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र कल से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}one{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}other{यह सर्वर प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र # दिन बाद से माना जाएगा. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन को बाधित करने के कारण हो सकता है.}}</translation>
@@ -551,6 +552,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{एक दिन से भी पहले}=1{एक दिन में}one{{NUM_DAYS} दिन में}other{{NUM_DAYS} दिनों में}}</translation>
 <translation id="2359629602545592467">एक से ज़्यादा</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
+<translation id="2361263712565360498">275 x 395 मि॰मी॰</translation>
 <translation id="236340516568226369">टॉगल मेन्यू का साइज़ बदलें</translation>
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="2380886658946992094">कानूनी</translation>
@@ -1425,6 +1427,7 @@
 <translation id="4751476147751820511">गति या लाइट सेंसर</translation>
 <translation id="4754461935447132332">सिर्फ़ सुरक्षित साइटों को ही अनुमति है</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
@@ -2163,6 +2166,7 @@
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="674375294223700098">अज्ञात सर्वर प्रमाणपत्र गड़बड़ी.</translation>
 <translation id="6744009308914054259">कनेक्शन का इंतज़ार करते समय, ऑफ़लाइन लेख पढ़ने के लिए आप 'डाउनलोड' पर जा सकते हैं.</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेली कॉन्फ़्रेंसिंग</translation>
 <translation id="6753269504797312559">नीति मान</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2196,6 +2200,7 @@
 <translation id="6846340164947227603">वर्चुअल कार्ड संख्या का इस्तेमाल करें...</translation>
 <translation id="6852204201400771460">ऐप्लिकेशन फिर लोड करें?</translation>
 <translation id="6857776781123259569">पासवर्ड मैनेज करें...</translation>
+<translation id="6864189428899665393">267 x 389 मि॰मी॰</translation>
 <translation id="686485648936420384">उपभोक्ता संसाधन</translation>
 <translation id="6865412394715372076">इस कार्ड की पुष्टि अभी नहीं की जा सकती</translation>
 <translation id="6869334554832814367">निजी क़र्ज़</translation>
@@ -2308,6 +2313,7 @@
 <translation id="7138472120740807366">वितरण का तरीका</translation>
 <translation id="7139892792842608322">प्राइमरी ट्रे</translation>
 <translation id="714064300541049402">साइड 2 इमेज X शिफ़्ट</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7153618581592392745">हल्का बैंगनी</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
@@ -2388,6 +2394,7 @@
 <translation id="7363096869660964304">हालांकि, गुप्त मोड का मतलब यह नहीं है कि आपको कोई नहीं देख सकता. गुप्त मोड में आप जो भी ब्राउज़ करते हैं उसे ये देख सकते हैं: आप जिस कंपनी में काम करते हैं, इंटरनेट सेवा देने वाली कंपनी या वे वेबसाइटें जिन पर आप जाते हैं.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में पते जोड़ने और मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="7365849542400970216">क्या आप जानते हैं कि आपका डिवाइस किस काम आता है?</translation>
+<translation id="7366117520888504990">198 x 275 मि॰मी॰</translation>
 <translation id="7366362069757178916">पेमेंट हैंडलर</translation>
 <translation id="7372973238305370288">खोज नतीजे</translation>
 <translation id="7374461526650987610">प्रोटोकॉल हैंडलर</translation>
@@ -2547,6 +2554,7 @@
 <translation id="7687186412095877299">आपके सेव किए गए पैसे चुकाने के तरीकों से पेमेंट फ़ॉर्म भरा जाता है</translation>
 <translation id="7687305263118037187">दोबारा कोशिश करने का समय खत्म</translation>
 <translation id="7687451951329798396">किसी दूसरे सोर्स में क्या बताया गया है?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पेज के लिए ऑर्डर मिला</translation>
 <translation id="7696089921647603491">पुराना रॉक म्यूज़िक और गाने</translation>
 <translation id="769721561045429135">फ़िलहाल आपके पास सिर्फ़ इसी डिवाइस पर इस्तेमाल किए जा सकने वाले कार्ड हैं. कार्ड देखने के लिए जारी रखें पर क्लिक करें.</translation>
@@ -2720,6 +2728,7 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8210604850413485128">वेब होस्टिंग</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">साइटें उन कुकी का इस्तेमाल नहीं कर सकतीं जिनसे वेब पर आपको ट्रैक किया जा सकता है. हो सकता है कि कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="8217748145574471584">मानव संसाधन</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
@@ -2933,6 +2942,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मैन्युअल स्लॉट</translation>
+<translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8834380158646307944">'गुप्त विंडो बंद करें' बटन. सभी खुली हुई गुप्त विंडो बंद करने के लिए, Enter दबाएं</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>
 <translation id="884264119367021077">शिपिंग पता</translation>
@@ -3053,7 +3063,7 @@
 <translation id="9138037198177304356">सूचनाएं भेजने की अनुमति है</translation>
 <translation id="9139318394846604261">खरीदारी</translation>
 <translation id="9141013498910525015">पते प्रबंधित करें</translation>
-<translation id="9144951720726881238">समय समाप्ति तारीख:</translation>
+<translation id="9144951720726881238">खत्म होने की तारीख:</translation>
 <translation id="9148088599418889305">शिपिंग का तरीका चुनें</translation>
 <translation id="9148507642005240123">&amp;बदलाव को पहले जैसा करें</translation>
 <translation id="9150045010208374699">अपना कैमरा उपयोग करें</translation>

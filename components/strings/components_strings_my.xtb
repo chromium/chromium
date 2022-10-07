@@ -397,6 +397,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခု}other{ဝဘ်ဆိုက် # ခု}}</translation>
 <translation id="1924727005275031552">အသစ်</translation>
 <translation id="1927439593081478069">Chrome လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန်ခလုတ်၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် Enter နှိပ်ပါ</translation>
+<translation id="1935995810530254458">မည်သို့ပင်ဖြစ်စေ မိတ္တူကူးရန်</translation>
 <translation id="1939175642807587452">အကြောင်းကြားချက်များ ပို့ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1943994668912612445">ဒီဇိုင်း</translation>
 <translation id="1945968466830820669">သင်သည် သင့်အဖွဲ့အစည်း၏ အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည် သို့မဟုတ် အထောက်အထား အခိုးခံရနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းလဲရန် Chromium က အကြံပြုပါသည်။</translation>
@@ -450,6 +451,7 @@
 <translation id="2085876078937250610">သိမ်းရန်…</translation>
 <translation id="2088086323192747268">စင့်ခ်လုပ်ခြင်းကို စီမံရန် ခလုတ်၊ Chrome ဆက်တင်များတွင် သင်စင့်ခ်လုပ်သော အချက်အလက်များကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="2091887806945687916">အသံ</translation>
+<translation id="2093982008204312032">Google Chrome က စကားဝှက်ဖြည့်ရန်အတွက် Windows Hello ကိုပိတ်လိုသည်။</translation>
 <translation id="2094505752054353250">ဒိုမိန်း မတိုက်ဆိုင်မှု</translation>
 <translation id="2099652385553570808">ဘယ်ဘက်တွင် ချုပ်စက်ဖြင့် သုံးချက်ချုပ်ရန်</translation>
 <translation id="2101225219012730419">ဗားရှင်း:</translation>
@@ -1143,6 +1145,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{စာမျက်နှာ {COUNT} မျက်နှာ ပါဝင်သော PDF မှတ်တမ်း}other{စာမျက်နှာ {COUNT} မျက်နှာ ပါဝင်သော PDF မှတ်တမ်း}}</translation>
 <translation id="4022639246993848966">၃.၅x၅</translation>
 <translation id="4023431997072828269">မလုံခြုံသောချိတ်ဆက်မှုကို အသုံးပြုပြီး ဤဖောင်ကိုပေးပို့ထားသဖြင့် အခြားသူများက သင့်အချက်အလက်များကို မြင်နိုင်သည်။</translation>
+<translation id="4024923292610332139">စကားဝှက်များဖြည့်ရန်အတွက် TouchID ကိုပိတ်လိုသည်</translation>
 <translation id="4025913568718019429">Google ကိုယ်ရေးအချက်အလက်လုံခြုံရေး ဆက်တင်များ စီမံရန်ခလုတ်၊ သင်၏ Google Account ကိုယ်ရေးအချက်အလက်လုံခြုံရေး ဆက်တင်များကို ဝင်ကြည့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="4030383055268325496">&amp;ထည့်ပေးမှုကို ပြန်လုပ်ရန်</translation>
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
@@ -1260,6 +1263,7 @@
 <translation id="42981349822642051">တိုးချဲ့</translation>
 <translation id="4300675098767811073">ညာဘက်တွင် အများအပြားဖောက်ရန်</translation>
 <translation id="4302514097724775343">ကစားရန် ဒိုင်နိုကိုတို့ပါ</translation>
+<translation id="4304049446746819918">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
 <translation id="4305666528087210886">သင့်ဖိုင်ကို သုံး၍မရနိုင်ပါ</translation>
 <translation id="4306529830550717874">လိပ်စာ သိမ်းမလား။</translation>
 <translation id="4306812610847412719">ကလစ်ဘုတ်</translation>
@@ -1635,6 +1639,7 @@
 <translation id="5254043433801397071">ပုံနှိပ်ရန် အကြောင်းအရာကို အကောင်းဆုံးလုပ်ရန်</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">မည်သို့ပင်ဖြစ်စေ ဖမ်းယူရန်</translation>
+<translation id="5257739419779698609">{0,plural, =1{ဤဖိုင်အား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}other{ဤဖိုင်များအား <ph name="DESTINATION_NAME" /> သို့ မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ}}</translation>
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="5269999699920406580">စနစ်တွင်ကျင့်သုံးသော ဝန်ဆောင်မှုများကို ပိုင်ရှင်ကသာလျှင် သတ်မှတ်ပေးနိုင်သည်− <ph name="OWNER_EMAIL" /></translation>
@@ -1697,6 +1702,7 @@
 <translation id="5412236728747081950">နောက်ထပ်သက်ဆိုင်ရာ ကြော်ငြာများ ပြရန် Chrome မှ သင့်စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က ရယူပါသည်</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">စီထည့်သည့်ပုံး ၄</translation>
+<translation id="5414511064953050917">မည်သို့ပင်ဖြစ်စေ ရွှေ့ရန်</translation>
 <translation id="5421136146218899937">ဘရောင်ဇာ ဒေတာကို ရှင်းရန်...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{မည်သည့်ဝဘ်ဆိုက်မျှ ပိတ်မထားပါ}=1{ဝဘ်ဆိုက် ၁ ခု ပိတ်ထားသည်}other{ဝဘ်ဆိုက် # ခု ပိတ်ထားသည်}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
@@ -2317,6 +2323,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7153618581592392745">လာဗင်ဒါ</translation>
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
+<translation id="7163295244162773898">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို မိတ္တူကူးမလား။}other{လျှို့ဝှက်ဖိုင်များကို မိတ္တူကူးမလား။}}</translation>
 <translation id="717330890047184534">Gaia ID−</translation>
 <translation id="7174545416324379297">ပေါင်းစည်းထားသည်</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
@@ -2927,6 +2934,7 @@
 <translation id="8763986294015493060">လက်ရှိဖွင့်ထားသော ရုပ်ဖျက်ဝင်းဒိုးအားလုံးကို ပိတ်နိုင်သည်</translation>
 <translation id="8766943070169463815">လုံခြုံသောပေးချေမှု အထောက်အထား စိစစ်ခြင်းစာရွက် ဖွင့်ထားသည်</translation>
 <translation id="8767765348545497220">အကူအညီ ပူဖောင်းကွက်ကို ပိတ်ရန်</translation>
+<translation id="877348612833018844">{0,plural, =1{လျှို့ဝှက်ဖိုင်ကို ရွှေ့မလား။}other{လျှို့ဝှက်ဖိုင်များကို ရွှေ့မလား။}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">မော်တော်ဆိုင်ကယ်များ</translation>
 <translation id="8790007591277257123">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>

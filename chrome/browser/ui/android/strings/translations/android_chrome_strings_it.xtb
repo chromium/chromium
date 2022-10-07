@@ -340,6 +340,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2861923151411510142">Alcune funzionalità di Chrome non saranno più disponibili</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2871733351037274014">Precarica le pagine</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> ha chiesto la tua approvazione per il seguente sito web:</translation>
 <translation id="2886836735871983413">Qui verrà visualizzato un elenco di siti quando navighi sul Web</translation>
 <translation id="2888126860611144412">Informazioni su Chrome</translation>
 <translation id="2891154217021530873">Interrompe il caricamento della pagina</translation>
@@ -355,6 +356,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2932150158123903946">Spazio di archiviazione di Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">La tua tastiera resterà invariata</translation>
 <translation id="2936980480904111527">Le notifiche di Chrome semplificano le cose</translation>
+<translation id="2940075786175545812">Opzione per approvare o meno un sito web</translation>
 <translation id="2942036813789421260">La scheda di anteprima è chiusa</translation>
 <translation id="2946420957526726953">Aggiornamento di Chrome per la connessione ad altri dispositivi</translation>
 <translation id="2951071800649516099">Aggiungi pagine al tuo Elenco di lettura per consultarle in un secondo momento</translation>
@@ -422,6 +424,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3259831549858767975">Rimpicciolisci i contenuti della pagina</translation>
 <translation id="3264124641674805320">Come scaricare contenuti da usare in un secondo momento</translation>
 <translation id="3264259168916048410">Il computer chiede di usare questo dispositivo per accedere a un sito</translation>
+<translation id="3265093782546847662">Tutte le pagine di <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Gestisci i siti che segui</translation>
 <translation id="3269093882174072735">Carica immagine</translation>
 <translation id="3280562213547448728">Ricerca vocale</translation>
@@ -731,6 +734,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4985248278475639481">Informazioni sulla personalizzazione degli annunci</translation>
 <translation id="4987271110129728827">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca web.</translation>
 <translation id="4988526792673242964">Pagine</translation>
+<translation id="4991110219272367918">Opzione per approvare o meno un sito web chiuso</translation>
 <translation id="499724277181351974">Vai: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segui questo sito qui</translation>
 <translation id="500351648694011114">Naviga più facilmente</translation>
@@ -1105,6 +1109,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6900532703269623216">Protezione avanzata</translation>
 <translation id="6903907808598579934">Attiva la sincronizzazione</translation>
+<translation id="6908998565271542516">Opzione per approvare o meno un sito web aperto a schermo intero</translation>
 <translation id="6909589135458168665">Precarica le pagine</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
 <translation id="694267552845942083">Stai personalizzando le impostazioni di sincronizzazione. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
@@ -1112,6 +1117,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
 <translation id="6963766334940102469">Elimina Preferiti</translation>
 <translation id="696447261358045621">Esci dalla modalità di navigazione in incognito</translation>
+<translation id="6971862865055170158">Non approvare</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
 <translation id="6987047470128880212">La modalità in incognito non è disponibile su questo dispositivo.</translation>
 <translation id="6995899638241819463">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>

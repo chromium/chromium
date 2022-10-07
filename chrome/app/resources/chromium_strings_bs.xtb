@@ -13,6 +13,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Kada je uključen, Chromium oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chromiuma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Ušteda memorije ubrzava rad Chromiuma</translation>
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
 <translation id="1385859895174722837">Google Asistent u Chromiumu</translation>
 <translation id="1396446129537741364">Chromium pokušava prikazati lozinke.</translation>
@@ -211,6 +212,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6055895534982063517">Dostupna je nova verzija Chromiuma, brža nego ikad.</translation>
 <translation id="6063093106622310249">&amp;Otvori u Chromiumu</translation>
 <translation id="6072279588547424923">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana u Chromium</translation>
+<translation id="6072463441809498330">Ubrzajte Chromium</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6096348254544841612">Prilagodite i kontrolirajte Chromium. Dostupno je ažuriranje.</translation>
 <translation id="6119438414301547735">Dozvoli ekstenziju za prikaz zahtjeva za pristup na alatnoj traci Chromiuma</translation>

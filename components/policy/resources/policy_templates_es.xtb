@@ -653,7 +653,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Si esta política se inhabilita o no se define, se mostrarán advertencias en sistemas no compatibles.</translation>
 <translation id="1634989431648355062">Permitir el complemento <ph name="FLASH_PLUGIN_NAME" /> en estos sitios web</translation>
-<translation id="1635748761015837179">Permitir la escritura en dispositivos de memoria externa</translation>
+<translation id="1635748761015837179">Permitir la escritura en dispositivos de almacenamiento externo</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1641394008743444477">Te permite establecer una lista con funciones de <ph name="PRODUCT_OS_NAME" /> para inhabilitarlas.
 
@@ -1224,7 +1224,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
       Si se establece la opción <ph name="CRITICAL_VARIATIONS_ONLY_OPTION_NAME" /> (valor 1), solo se permitirá que se apliquen a <ph name="PRODUCT_OS_NAME" /> las variaciones que se consideren correcciones críticas de seguridad o de estabilidad.
 
       Si se establece la opción <ph name="VARIATIONS_DISABLED_OPTION_NAME" /> (valor 2), no se permitirá aplicar ninguna variación al navegador en la pantalla de inicio de sesión. Ten en cuenta que este modo puede evitar que los desarrolladores de <ph name="PRODUCT_OS_NAME" /> proporcionen correcciones críticas de seguridad a su debido tiempo y, por lo tanto, no se recomienda su uso.</translation>
-<translation id="2217931577484185673">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si contienen recursos peligrosos, como suplantación de identidad, software malicioso o software no deseado. El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+<translation id="2217931577484185673">Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si contienen recursos peligrosos, como suplantación de identidad, malware o software no deseado. El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
 
       Si no se define la política, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
 
@@ -1564,7 +1564,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se inhabilita la política o se deja sin definir, la configuración de restauración completa determinará qué debe abrirse al iniciar sesión.</translation>
 <translation id="2517466659416174529">Permite inmovilizar las pestañas que están en segundo plano</translation>
 <translation id="2518231489509538392">Permitir reproducción de audio</translation>
-<translation id="2519578205567666653">Permitir dispositivos de memoria externa</translation>
+<translation id="2519578205567666653">Permitir dispositivos de almacenamiento externo</translation>
 <translation id="2520551905471951523">Utiliza la prioridad alta para el proceso de audio</translation>
 <translation id="2521581787935130926">Mostrar el acceso directo de aplicaciones en la barra de marcadores</translation>
 <translation id="2522304491589804974">Configura la lista de extensiones de instalación permitidas</translation>
@@ -3207,7 +3207,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4147818922357566987">Habilitar variaciones referentes solo a correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
-<translation id="4154221011709068799">No permitir dispositivos de memoria externa</translation>
+<translation id="4154221011709068799">No permitir dispositivos de almacenamiento externo</translation>
 <translation id="415445772247959702">Web Store (compatible a partir de la versión 89)</translation>
 <translation id="4157003184375321727">Informar de la versión del firmware y del sistema operativo</translation>
 <translation id="4157594634940419685">Permitir el acceso a impresoras CUPS nativas</translation>
@@ -4499,7 +4499,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5526184558582921522">Permitir que se realicen consultas a Quirks Server y que potencialmente se descarguen archivos de configuración de hardware concreto</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
-<translation id="5534235660122271432">No permitir la escritura en dispositivos de memoria externa</translation>
+<translation id="5534235660122271432">No permitir la escritura en dispositivos de almacenamiento externo</translation>
 <translation id="5535256585099022933">Definir el intervalo de tiempo para el reinicio</translation>
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
@@ -5649,7 +5649,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6704445641918520643">Habilita la carga en diferido de la WebUI de inicio de sesión.</translation>
 <translation id="6704515759227307131">Esta política está obsoleta y se ha sustituido por la política AdvancedProtectionAllowed.
 
-      Esta política controla si a los usuarios registrados en el Programa de Protección Avanzada se les permite enviar a Google el contenido descargado para realizar un análisis de software malicioso. Si se asigna el valor "True" a esta política o no se le asigna ningún valor, se le pedirá al usuario que envíe los archivos descargados a Google para realizar un análisis profundo. Si el usuario selecciona "Analizar", los archivos descargados se enviarán a Google. Si se le asigna el valor "False", no se le pedirá nada al usuario y los archivos descargados no se enviarán a Google.</translation>
+      Esta política controla si a los usuarios registrados en el Programa de Protección Avanzada se les permite enviar a Google el contenido descargado para realizar un análisis de malware. Si se asigna el valor "True" a esta política o no se le asigna ningún valor, se le pedirá al usuario que envíe los archivos descargados a Google para realizar un análisis profundo. Si el usuario selecciona "Analizar", los archivos descargados se enviarán a Google. Si se le asigna el valor "False", no se le pedirá nada al usuario y los archivos descargados no se enviarán a Google.</translation>
 <translation id="6704994003174661159">Esta política controla el tratamiento de formularios no seguros (formularios que se envían mediante HTTP) insertados en sitios web seguros (HTTPS) en el navegador.
        Si se habilita esta política o no se le asigna ningún valor, se mostrará una advertencia a pantalla completa cuando se envíe un formulario no seguro. Además, aparecerá un cuadro de advertencia al lado de los campos del formulario cuando estén seleccionados y se inhabilitará la función Autocompletar en dichos formularios.
        Si se inhabilita esta política, no se mostrará ninguna advertencia en los formularios no seguros y la opción Autocompletar funcionará con normalidad.</translation>
@@ -5710,7 +5710,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda se enviarán mediante el método GET.</translation>
 <translation id="6757613329154374267">Copia de seguridad y restauración habilitada</translation>
-<translation id="6758659208493449452">Esta política controla si los usuarios registrados en el Programa de Protección Avanzada tienen acceso a funciones de protección adicionales. Puede que algunas de estas funciones impliquen compartir datos con Google (por ejemplo, los usuarios de Protección Avanzada podrán enviar sus descargas a Google para que realice un análisis de software malicioso). Si se asigna el valor "True" a esta política o no se le asigna ningún valor, los usuarios registrados tendrán acceso a funciones de protección adicionales. Si se le asigna el valor "False", los usuarios de Protección Avanzada solo tendrán acceso a las funciones estándar.</translation>
+<translation id="6758659208493449452">Esta política controla si los usuarios registrados en el Programa de Protección Avanzada tienen acceso a funciones de protección adicionales. Puede que algunas de estas funciones impliquen compartir datos con Google (por ejemplo, los usuarios de Protección Avanzada podrán enviar sus descargas a Google para que realice un análisis de malware). Si se asigna el valor "True" a esta política o no se le asigna ningún valor, los usuarios registrados tendrán acceso a funciones de protección adicionales. Si se le asigna el valor "False", los usuarios de Protección Avanzada solo tendrán acceso a las funciones estándar.</translation>
 <translation id="6763023079133439068">Permitir certificados que no tengan una extensión subjectAlternativeName cuando los emitan anclas de confianza locales</translation>
 <translation id="6766216162565713893">Permitir que los sitios le pidan permiso al usuario para acceder a dispositivos Bluetooth cercanos</translation>
 <translation id="6770454900105963262">Informar sobre sesiones del kiosco activas</translation>
@@ -5951,7 +5951,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6986172482189158664">Ajustes del periodo de vida de los datos de navegación</translation>
 <translation id="6986838929449128437">Esta política está obsoleta. Usa <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" /> en su lugar.
 
-      Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo, si incluyen suplantación de identidad, software malicioso o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
+      Si se habilita esta política, Navegación segura confiará en los dominios que indiques. No comprobará si los recursos son peligrosos (por ejemplo, si incluyen suplantación de identidad, malware o software no deseado). El servicio de protección de descargas de Navegación segura no comprobará las descargas alojadas en estos dominios. Su servicio de protección de contraseñas no comprobará si se reutilizan contraseñas.
 
       Si se inhabilita la política o se deja sin definir, se aplicará la protección predeterminada de Navegación segura a todos los recursos.
 
@@ -6100,7 +6100,7 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
       Si se habilita la política, la función Navegación segura de Chrome permanecerá activada. Si la política se inhabilita, Navegación segura seguirá desactivada.
 
-      Si se define esta política, los usuarios no podrán cambiarla ni anular el ajuste "Habilitar protección contra phishing y software malicioso" en Chrome. Si no se define, se asignará el valor "True" a "Habilitar protección contra phishing y software malicioso", pero el usuario podrá cambiarlo.
+      Si se define esta política, los usuarios no podrán cambiarla ni anular el ajuste "Habilitar protección contra phishing y malware" en Chrome. Si no se define, se asignará el valor "True" a "Habilitar protección contra phishing y malware", pero el usuario podrá cambiarlo.
 
       Consulta más información sobre Navegación segura en la siguiente página: https://developers.google.com/safe-browsing .
 
@@ -7075,7 +7075,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Las solicitudes para unirse a diferentes hosts mediante conexiones que utilizan certificados de cliente pueden dar lugar a problemas de seguridad y privacidad, ya que la autoridad de certificación se vinculará a todas las solicitudes, aunque el usuario no lo autorice de forma explícita. Esta política es temporal y se retirará en versiones posteriores. Consulta https://crbug.com/855690
 
       Si no se establece esta política, se realizará la acción predeterminada: no permitir la unión de ninguna conexión HTTP/2 en conexiones que utilicen certificados de cliente.</translation>
-<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios puedan pasar de la página de advertencia que muestra el servicio Navegación segura antes de acceder a un sitio web malicioso. Esta política solo evita que los usuarios continúen si aparece una advertencia de Navegación segura (por ejemplo, por software malicioso o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL (por ejemplo, si no es válido o ha caducado).
+<translation id="8197373549462388216">Si se habilita esta política, se evita que los usuarios puedan pasar de la página de advertencia que muestra el servicio Navegación segura antes de acceder a un sitio web malicioso. Esta política solo evita que los usuarios continúen si aparece una advertencia de Navegación segura (por ejemplo, por malware o suplantación de identidad), pero no si se trata de un problema relacionado con un certificado SSL (por ejemplo, si no es válido o ha caducado).
 
       Si se inhabilita o no se le asigna ningún valor, los usuarios podrán decidir si quieren acceder al sitio web denunciado después de ver la advertencia.
 
@@ -7130,7 +7130,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8257863622304579015">Habilitar el entorno aislado del servicio de red</translation>
 <translation id="8259375588339409826">Tanto Chromium como Google Chrome admiten el mismo conjunto de políticas. Ten en cuenta que en este documento se pueden incluir políticas no publicadas (es decir, cuya entrada "Compatible con" hace referencia a una versión no publicada de <ph name="PRODUCT_NAME" />), que pueden modificarse o retirarse sin previo aviso y que no tienen ningún tipo de garantía, ni siquiera las referentes a las propiedades de privacidad y seguridad.
 
-Estas políticas están destinadas exclusivamente a la configuración de instancias de <ph name="PRODUCT_NAME" /> internas de tu organización. El uso de estas políticas fuera de tu organización (por ejemplo, en un programa distribuido públicamente) se considera software malicioso y es probable que Google y los proveedores de antivirus lo designen como tal.
+Estas políticas están destinadas exclusivamente a la configuración de instancias de <ph name="PRODUCT_NAME" /> internas de tu organización. El uso de estas políticas fuera de tu organización (por ejemplo, en un programa distribuido públicamente) se considera malware y es probable que Google y los proveedores de antivirus lo designen como tal.
 
 No es necesario configurar estas opciones manualmente. En la página <ph name="POLICY_TEMPLATE_DOWNLOAD_URL" />, puedes encontrar plantillas fáciles de utilizar para Windows, Mac y Linux.
 

@@ -396,6 +396,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="192020519938775529">{COUNT,plural, =0{Tiada}=1{1 tapak}other{# tapak}}</translation>
 <translation id="1924727005275031552">Baharu</translation>
 <translation id="1927439593081478069">Butang Jalankan semakan keselamatan Chrome, tekan Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
+<translation id="1935995810530254458">Salin juga</translation>
 <translation id="1939175642807587452">Boleh meminta untuk menghantar pemberitahuan</translation>
 <translation id="1943994668912612445">Reka bentuk</translation>
 <translation id="1945968466830820669">Anda boleh kehilangan akses kepada akaun organisasi anda atau mengalami kecurian identiti. Chromium mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
@@ -449,6 +450,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2085876078937250610">Simpan…</translation>
 <translation id="2088086323192747268">Butang urus penyegerakan, tekan Enter untuk mengurus maklumat yang anda segerakkan dalam tetapan Chrome</translation>
 <translation id="2091887806945687916">Bunyi</translation>
+<translation id="2093982008204312032">Google Chrome cuba mematikan Windows Hello untuk mengisikan kata laluan.</translation>
 <translation id="2094505752054353250">Domain tidak padan</translation>
 <translation id="2099652385553570808">Tiga kokot kiri</translation>
 <translation id="2101225219012730419">Versi:</translation>
@@ -1144,6 +1146,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF mengandungi {COUNT} halaman}other{Dokumen PDF mengandungi {COUNT} halaman}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">Oleh sebab borang ini diserahkan menggunakan sambungan yang tidak selamat, maklumat anda akan dapat dilihat oleh orang lain.</translation>
+<translation id="4024923292610332139">matikan TouchID untuk mengisikan kata laluan</translation>
 <translation id="4025913568718019429">Butang urus tetapan Google Privacy, tekan Enter untuk melawati tetapan privasi Google Account anda</translation>
 <translation id="4030383055268325496">&amp;Buat asal tambahkan</translation>
 <translation id="4031179711345676612">Mikrofon dibenarkan</translation>
@@ -1260,6 +1263,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="42981349822642051">Kembangkan</translation>
 <translation id="4300675098767811073">Berbilang tebukan kanan</translation>
 <translation id="4302514097724775343">Ketik dinosaur itu untuk bermain</translation>
+<translation id="4304049446746819918">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda memindahkan fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda memindahkan fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Fail anda tidak dapat diakses</translation>
 <translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4306812610847412719">papan keratan</translation>
@@ -1635,6 +1639,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5254043433801397071">Optimumkan kandungan cetak</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Tangkap juga</translation>
+<translation id="5257739419779698609">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda menyalin fail ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Ikatan atas</translation>
 <translation id="5269225904387178860">Empat tebukan bawah</translation>
 <translation id="5269999699920406580">Ciri yang diguna pakai di seluruh sistem hanya boleh ditetapkan oleh pemilik: <ph name="OWNER_EMAIL" /></translation>
@@ -1697,6 +1702,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5412236728747081950">Laman ini mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Petak 4</translation>
+<translation id="5414511064953050917">Alihkan juga</translation>
 <translation id="5421136146218899937">Kosongkan data semakan imbas...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tiada laman disekat}=1{1 laman disekat}other{# laman disekat}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
@@ -2318,6 +2324,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>
 <translation id="7153618581592392745">Gandaria</translation>
 <translation id="7156870133441232244">Pelayan harus dikemas kini kepada TLS 1.2 atau yang lebih baharu.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Salin fail sulit?}other{Salin fail sulit?}}</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7174545416324379297">Digabungkan</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
@@ -2927,6 +2934,7 @@ Butiran tambahan:
 <translation id="8763986294015493060">Tutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
 <translation id="8766943070169463815">Helaian pengesahan bukti kelayakan pembayaran selamat dibuka</translation>
 <translation id="8767765348545497220">Tutup gelembung bantuan</translation>
+<translation id="877348612833018844">{0,plural, =1{Alihkan fail sulit?}other{Alihkan fail sulit?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motosikal</translation>
 <translation id="8790007591277257123">&amp;Buat semula pemadaman</translation>

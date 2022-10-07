@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Κανένας}=1{1 ιστότοπος}other{# ιστότοποι}}</translation>
 <translation id="1924727005275031552">Νέο</translation>
 <translation id="1927439593081478069">Κουμπί Εκτέλεση ελέγχου ασφαλείας Chrome, πατήστε το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
+<translation id="1935995810530254458">Αντιγραφή ούτως ή άλλως</translation>
 <translation id="1939175642807587452">Μπορεί να ζητά να στέλνει ειδοποιήσεις.</translation>
 <translation id="1943994668912612445">Σχέδιο</translation>
 <translation id="1945968466830820669">Υπάρχει κίνδυνος να χάσετε την πρόσβαση στον λογαριασμό της επιχείρησής σας ή να σας κλέψουν τη διαδικτυακή σας ταυτότητα. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">Αποθήκευση…</translation>
 <translation id="2088086323192747268">Κουμπί διαχείρισης συγχρονισμού, πατήστε Enter για να διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις του Chrome</translation>
 <translation id="2091887806945687916">Ήχος</translation>
+<translation id="2093982008204312032">Το Google Chrome επιχειρεί να απενεργοποιήσει το Windows Hello για τη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="2094505752054353250">Αναντιστοιχία τομέα</translation>
 <translation id="2099652385553570808">Τριπλή συρραφή αριστερά</translation>
 <translation id="2101225219012730419">Έκδοση:</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{Έγγραφο PDF που περιέχει {COUNT} σελίδα}other{Έγγραφο PDF που περιέχει {COUNT} σελίδες}}</translation>
 <translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Επειδή αυτή η φόρμα υποβάλλεται χρησιμοποιώντας μια σύνδεση που δεν είναι ασφαλής, οι πληροφορίες σας θα είναι ορατές σε άλλους χρήστες.</translation>
+<translation id="4024923292610332139">απενεργοποιήσει το TouchID για τη συμπλήρωση κωδικών πρόσβασης.</translation>
 <translation id="4025913568718019429">Κουμπί Διαχείριση ρυθμίσεων απορρήτου Google, πατήστε Enter για να επισκεφτείτε τις ρυθμίσεις απορρήτου του Λογαριασμού σας Google.</translation>
 <translation id="4030383055268325496">&amp;Αναίρεση προσθήκης</translation>
 <translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
@@ -1261,6 +1264,7 @@
 <translation id="42981349822642051">Επέκταση</translation>
 <translation id="4300675098767811073">Πολλαπλό τρύπημα στα δεξιά</translation>
 <translation id="4302514097724775343">Πατήστε τον δεινόσαυρο για να παίξετε.</translation>
+<translation id="4304049446746819918">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά τη μετακίνηση αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά τη μετακίνηση αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="4305666528087210886">Δεν ήταν δυνατή η πρόσβαση στο αρχείο σας</translation>
 <translation id="4306529830550717874">Αποθήκευση διεύθυνσης;</translation>
 <translation id="4306812610847412719">πρόχειρο</translation>
@@ -1637,6 +1641,7 @@
 <translation id="5254043433801397071">Βελτιστοποίηση περιεχομένου εκτύπωσης</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Λήψη ούτως ή άλλως</translation>
+<translation id="5257739419779698609">{0,plural, =1{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτού του αρχείου σε <ph name="DESTINATION_NAME" />.}other{Η πολιτική διαχειριστή δεν συνιστά την αντιγραφή αυτών των αρχείων σε <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="5269999699920406580">Οι λειτουργίες που ισχύουν για ολόκληρο το σύστημα μπορούν να οριστούν μόνο από τον κάτοχο: <ph name="OWNER_EMAIL" />.</translation>
@@ -1699,6 +1704,7 @@
 <translation id="5412236728747081950">Αυτός ο ιστότοπος λαμβάνει πληροφορίες για τα ενδιαφέροντά σας από το Chrome για να εμφανίσει πιο συναφείς διαφημίσεις.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Μονάδα στοίβαξης 4</translation>
+<translation id="5414511064953050917">Μετακίνηση ούτως ή άλλως</translation>
 <translation id="5421136146218899937">Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Κανένας αποκλεισμένος ιστότοπος}=1{1 αποκλεισμένος ιστότοπος}other{# αποκλεισμένοι ιστότοποι}}</translation>
 <translation id="5426179911063097041">Η διεύθυνση <ph name="SITE" /> θέλει να σας στείλει ειδοποιήσεις</translation>
@@ -2321,6 +2327,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7156870133441232244">Ο διακομιστής θα πρέπει να αναβαθμιστεί σε έκδοση TLS 1.2 ή μεταγενέστερη.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Αντιγραφή εμπιστευτικού αρχείου;}other{Αντιγραφή εμπιστευτικών αρχείων;}}</translation>
 <translation id="717330890047184534">Αναγνωριστικό Gaia:</translation>
 <translation id="7174545416324379297">Έγινε συγχώνευση</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
@@ -2932,6 +2939,7 @@
 <translation id="8763986294015493060">Κλείστε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="8766943070169463815">Το φύλλο ελέγχου ταυτότητας διαπιστευτηρίων για ασφαλείς πληρωμές είναι ανοιχτό</translation>
 <translation id="8767765348545497220">Κλείστε το συννεφάκι βοήθειας</translation>
+<translation id="877348612833018844">{0,plural, =1{Μετακίνηση εμπιστευτικού αρχείου;}other{Μετακίνηση εμπιστευτικών αρχείων;}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Μοτοσικλέτες</translation>
 <translation id="8790007591277257123">&amp;Επανάληψη διαγραφής</translation>

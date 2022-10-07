@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Бирмански</translation>
 <translation id="2392369802118427583">Активиране</translation>
 <translation id="240770291734945588">Свободно място: <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Вход в мрежата</translation>
 <translation id="2425665904502185219">Общ размер на файловете</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> елемента се копират в(ъв) „<ph name="FOLDER_NAME" />“</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Възпроизвеждането не е възможно</translation>
 <translation id="383652340667548381">сръбски</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851491607336266896">Установена е връзка – свързаността е ограничена</translation>
 <translation id="3855472144336161447">Немска (Neo 2) клавиатура</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -939,6 +941,7 @@
 <translation id="8903931173357132290">Абитуриент</translation>
 <translation id="8912078710089354287">Куче, което маха с опашка</translation>
 <translation id="8919081441417203123">датски</translation>
+<translation id="8949925099261528566">Установена е връзка – няма достъп до интернет</translation>
 <translation id="8965697826696209160">Няма достатъчно място.</translation>
 <translation id="8997962250644902079">Китайски (традиционен, пинин)</translation>
 <translation id="8998871447376656508">Няма достатъчно свободно място в Google Диск за завършване на качването.</translation>

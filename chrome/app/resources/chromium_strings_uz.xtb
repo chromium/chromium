@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
 <translation id="1231839967188101156">Yoniq boʻlsa, Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Xotirani tejash funksiyasi Chromiumni tezlashtirdi</translation>
 <translation id="1315551408014407711">Yangi Chromium profilini sozlang</translation>
 <translation id="1385859895174722837">Chromiumda Google Assistent</translation>
 <translation id="1396446129537741364">Kirtilgan parollar Chromium brauzerida ko‘rsatiladi.</translation>
@@ -207,6 +208,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6055895534982063517">Chromium brauzerining yanada tezroq ishlaydigan yangi versiyasi chiqdi.</translation>
 <translation id="6063093106622310249">&amp;Chromiumda ochish</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> kengaytmasi Chromiumga o‘rnatildi</translation>
+<translation id="6072463441809498330">Chromiumni tezlashtirish</translation>
 <translation id="608006075545470555">Bu brauzerga ish profilini kiritish</translation>
 <translation id="6096348254544841612">Chromium uchun yangilanish chiqdi.</translation>
 <translation id="6119438414301547735">Kengaytma Chromium asboblar panelida ruxsat soʻrovlarini chiqarishiga ruxsat bering</translation>

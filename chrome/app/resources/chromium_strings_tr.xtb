@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
+<translation id="1231839967188101156">Bu ayar açık olduğunda Chromium, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chromium hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
 <translation id="1385859895174722837">Chromium'da Google Asistan</translation>
 <translation id="1396446129537741364">Chromium, şifreleri göstermeye çalışıyor.</translation>
@@ -249,6 +250,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6717134281241384636">Profiliniz daha yeni bir Chromium sürümünden olduğundan kullanılamıyor.
 
 Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirtin veya daha yeni bir Chromium sürümünü kullanın.</translation>
+<translation id="6730677189742196061">Bellek Tasarrufu sayesinde Chromium artık daha hızlı</translation>
 <translation id="6734291798041940871">Chromium zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="673636774878526923">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
 <translation id="6774082503108938489">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">gradering</translation>
 <translation id="3291470810748040983">Jy sal 'n opletberig kry wanneer daar 'n laer prys in 'n oop oortjie is</translation>
 <translation id="3328308545011660196">Voorstel: <ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
+<translation id="3499853001094440183">Ongroepeer oortjies</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
 <translation id="3882834874697329510">Skakel kennisgewings in Instellings aan om 'n kennisgewing te kry wanneer daar 'n laer prys in 'n oop oortjie is.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="6510648526783655549">Maak oortjiestrook toe</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>

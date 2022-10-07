@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">የተወሰኑ የChrome ባህሪዎች ከአሁን በኋላ \u2019 አይገኙም</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2871733351037274014">ገጾችን ቅድሚያ ጫን</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> ይህን ድር ጣቢያ እንዲያጸድቁ ይፈልጋሉ፦</translation>
 <translation id="2886836735871983413">ድሩን ሲያስሱ የጣቢያዎች ዝርዝር እዚህ ይታያል</translation>
 <translation id="2888126860611144412">ስለChrome</translation>
 <translation id="2891154217021530873">ገጹን መጫን አቁም</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">የGoogle <ph name="APP_NAME" /> ማከማቻ</translation>
 <translation id="2932222164150889403">የእርስዎ የቁልፍ ሰሌዳ አይለወጥም</translation>
 <translation id="2936980480904111527">የChrome ማሳወቂያዎች ነገሮችን ይበልጥ ቀላል ያደርጋሉ።</translation>
+<translation id="2940075786175545812">ድር ጣቢያን የማጽደቅ ወይም ያለማጽደቅ አማራጭ</translation>
 <translation id="2942036813789421260">የቅድመ-እይታ ትር ተዘግቷል</translation>
 <translation id="2946420957526726953">ከሌሎች መሣሪያዎች ጋር ለመገናኘት Chromeን በማዘመን ላይ።</translation>
 <translation id="2951071800649516099">ለበኋላ ወደ ንባብ ዝርዝርዎ ገጾችን ያክሉ</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">በገጹ ላይ ያለውን ሁሉንም ነገር ይበልጥ አሳንስ</translation>
 <translation id="3264124641674805320">ለበኋላ ይዘትን እንዴት ማውረድ እንደሚቻል</translation>
 <translation id="3264259168916048410">ኮምፒተርዎ ወደ አንድ ጣቢያ ለመግባት ይህንን መሣሪያ መጠቀም ይፈልጋል</translation>
+<translation id="3265093782546847662">የ<ph name="DOMAIN" /> ሁሉም ገጾች</translation>
 <translation id="3265534588625245297">የሚከተሏቸውን ጣቢያዎች ያቀናብሩ</translation>
 <translation id="3269093882174072735">ምስል ጫን</translation>
 <translation id="3280562213547448728">የድምፅ ፍለጋ</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">ግላዊነት ስለማላበስ</translation>
 <translation id="4987271110129728827">ያንን ገጽ ማግኘት አልተቻለም። የፊደል አጻጻፍዎን ይመልከቱ ወይም የድር ፍለጋ ይሞክሩ።</translation>
 <translation id="4988526792673242964">ገፆች</translation>
+<translation id="4991110219272367918">ድር ጣቢያን የማጽደቅ ወይም ያለማጽደቅ አማራጭ ተዘግቷል</translation>
 <translation id="499724277181351974">ይዳስሱ፦ <ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ይህንን ጣቢያ እዚህ ይከተሉ</translation>
 <translation id="500351648694011114">ይበልጥ በቀላሉ ያስሱ</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">ቅዳ</translation>
 <translation id="6900532703269623216">የላቀ ጥበቃ</translation>
 <translation id="6903907808598579934">ስምረትን አብራ</translation>
+<translation id="6908998565271542516">በሙሉ ቁመት የተከፈተን ድር ጣቢያ የማጽደቅ ወይም ያለማጽደቅ አማራጭ</translation>
 <translation id="6909589135458168665">ገጾችን ቅድሚያ ጫን</translation>
 <translation id="6942665639005891494">የቅንብሮች ምናሌ አማራጩን በመጠቀም ነባሪውን የማውረጃ ቦታ ይጠቀሙ</translation>
 <translation id="694267552845942083">በአሁኑ ጊዜ የስንረት ቅንብሮችዎን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">ይህ ቅንብር በሚተዳደሩ አሳሾች ላይ ተሰናክሏል</translation>
 <translation id="6963766334940102469">ዕልባቶችን ሰርዝ</translation>
 <translation id="696447261358045621">ከማንነት የማያሳውቅ ሁነታ ይውጡ</translation>
+<translation id="6971862865055170158">አታጽድቅ</translation>
 <translation id="6979737339423435258">የምንጊዜም</translation>
 <translation id="6987047470128880212">ማንነት የማያሳውቅ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="6995899638241819463">የይለፍ ቃላት በውሂብ ደንብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎት</translation>

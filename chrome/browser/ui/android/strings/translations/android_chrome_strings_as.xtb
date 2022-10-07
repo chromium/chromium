@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">Chromeৰ কিছুমান সুবিধা আৰু উপলব্ধ হৈ নাথাকিব</translation>
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" />এ আপুনি এই ৱেবছাইটটো অনুমোদন জনোৱাটো বিচাৰে:</translation>
 <translation id="2886836735871983413">আপুনি ৱেব ব্ৰাউজ কৰিলে ইয়াত ছাইটসমূহৰ এখন সূচী প্ৰদৰ্শিত হ’ব</translation>
 <translation id="2888126860611144412">Chromeৰ বিষয়ে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা ল’ড হোৱা কার্যটো বন্ধ কৰক</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ষ্ট'ৰেজ</translation>
 <translation id="2932222164150889403">আপোনাৰ কীব’ৰ্ড সলনি নহ’ব</translation>
 <translation id="2936980480904111527">Chromeৰ জাননীয়ে কথাবোৰ সহজ কৰি তোলে</translation>
+<translation id="2940075786175545812">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প</translation>
 <translation id="2942036813789421260">পূৰ্বদৰ্শন টেবটো বন্ধ কৰা আছে</translation>
 <translation id="2946420957526726953">অন্য ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ Chrome আপডে’ট কৰি থকা হৈছে</translation>
 <translation id="2951071800649516099">পৰৱৰ্তী সময়ৰ বাবে আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠাসমূহ যোগ দিয়ক</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">পৃষ্ঠাটোৰ সকলো সমলৰ আকাৰ সৰু কৰক</translation>
 <translation id="3264124641674805320">পৰৱৰ্তী সময়ৰ বাবে সমল কেনেকৈ ডাউনল'ড কৰিব লাগে</translation>
 <translation id="3264259168916048410">আপোনাৰ কম্পিউটাৰটোৱে এটা ছাইটত ছাইন ইন কৰিবলৈ এই ডিভাইচটো ব্যৱহাৰ কৰিব বিচাৰে</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" />ৰ আটাইবোৰ পৃষ্ঠা</translation>
 <translation id="3265534588625245297">আপুনি ফ'ল' কৰা ছাইটসমূহ পৰিচালনা কৰক</translation>
 <translation id="3269093882174072735">ছবি ল’ড কৰক</translation>
 <translation id="3280562213547448728">কণ্ঠধ্বনিৰ দ্বাৰা সন্ধান</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">বিজ্ঞাপনৰ ব্যক্তিগতকৃত কৰাৰ বিষয়ে</translation>
 <translation id="4987271110129728827">সেই পৃষ্ঠাখন বিচাৰি পোৱা নাই। আপোনাৰ বানান পৰীক্ষা কৰক অথবা ৱেবত সন্ধান কৰি চাওক।</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
+<translation id="4991110219272367918">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প বন্ধ কৰা হৈছে</translation>
 <translation id="499724277181351974">নেভিগে’ট কৰক: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ইয়াত এই ছাইটটো ফ’ল’ কৰক</translation>
 <translation id="500351648694011114">অধিক সহজে ব্ৰাউজ কৰক</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">প্ৰতিলিপি কৰক</translation>
 <translation id="6900532703269623216">বৰ্ধিত সুৰক্ষা</translation>
 <translation id="6903907808598579934">ছিংক অন কৰক</translation>
+<translation id="6908998565271542516">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="6909589135458168665">পৃষ্ঠা আগতীয়াকৈ ল’ড কৰক</translation>
 <translation id="6942665639005891494">ছেটিংসমূহ-ৰ মেনুৰ বিকল্পটো ব্যৱহাৰ কৰি ডিফ’ল্ট ডাউনল’ডৰ অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="694267552845942083">আপুনি বৰ্তমান আপোনাৰ ছিংক কৰাৰ ছেটিং কাষ্টমাইজ কৰি আছে। ছিংক কৰাৰ সুবিধাটো অন কৰাটো সম্পূৰ্ণ কৰিবলৈ স্ক্ৰীনখনৰ একেবাৰে তলিৰ কাষত থকা নিশ্চিত কৰক বুটামটো টিপক। ওপৰলৈ যাওক</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">পৰিচালিত ব্ৰাউজাৰসমূহত এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
 <translation id="6963766334940102469">বুকমার্ক মচক</translation>
 <translation id="696447261358045621">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="6971862865055170158">অনুমোদন নজনাব</translation>
 <translation id="6979737339423435258">সকলো সময়তে</translation>
 <translation id="6987047470128880212">এই ডিভাইচটোত ইনক’গনিট’ উপলব্ধ নহয়</translation>
 <translation id="6995899638241819463">ডেটা উলংঘনৰ ফলত পাছৱৰ্ডসমূহ ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>

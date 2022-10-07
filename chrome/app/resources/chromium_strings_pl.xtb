@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
+<translation id="1261119230216066228">Oszczędzanie pamięci przyspieszyło działanie Chromium</translation>
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
 <translation id="1385859895174722837">Asystent Google w Chromium</translation>
 <translation id="1396446129537741364">Chromium próbuje pokazać hasła.</translation>
@@ -206,6 +207,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6055895534982063517">Dostępna jest nowa, szybsza niż kiedykolwiek wersja Chromium.</translation>
 <translation id="6063093106622310249">&amp;Otwórz w Chromium</translation>
 <translation id="6072279588547424923">Rozszerzenie <ph name="EXTENSION_NAME" /> zostało dodane do Chromium</translation>
+<translation id="6072463441809498330">Przyspiesz działanie Chromium</translation>
 <translation id="608006075545470555">Dodaj profil służbowy w tej przeglądarce</translation>
 <translation id="6096348254544841612">Dostosowywanie i kontrolowanie Chromium. Dostępna jest aktualizacja.</translation>
 <translation id="6119438414301547735">Zezwalaj rozszerzeniu na wyświetlanie próśb o dostęp na pasku narzędzi Chromium</translation>

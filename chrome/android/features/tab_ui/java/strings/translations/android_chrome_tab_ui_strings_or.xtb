@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ରେଟିଂ</translation>
 <translation id="3291470810748040983">ଖୋଲା ଥିବା ଏକ ଟାବରେ ମୂଲ୍ୟରେ ହ୍ରାସ ହେବାର ସୂଚନା ଉପଲବ୍ଧ ହେଲେ ଆପଣ ଏକ ଆଲର୍ଟ ପାଇବେ</translation>
 <translation id="3328308545011660196">ପରାମର୍ଶ: <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଜଣାପଡ଼ୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
+<translation id="3499853001094440183">ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TITLE_OF_GROUP" />ଟି ଟାବ୍ ଥିବା <ph name="TABS_COUNT_MANY" /> ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="3882834874697329510">ଖୋଲା ଥିବା ଏକ ଟାବରେ କମ୍ ମୂଲ୍ୟ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ହେଲେ ଆଲର୍ଟ ପାଇବାକୁ ସେଟିଂସରେ "ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ" ଚାଲୁ କରନ୍ତୁ।</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ}}</translation>
 <translation id="6510648526783655549">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6549021453810473782">ଷ୍ଟୋର୍ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="6562820390860419811">ଟାବ୍‍କୁ ବାମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>

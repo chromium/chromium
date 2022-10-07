@@ -252,6 +252,7 @@
 <translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>
 <translation id="6113794647360055231">Chrome on nyt entistä parempi</translation>
 <translation id="6145313976051292476">Avaa PDF-tiedostot Chromessa</translation>
+<translation id="6155960517327665396">Muistinsäästö nopeuttaa Chromea</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Google Chromen saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
@@ -352,6 +353,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="828798499196665338">Vanhempasi ovat laittaneet Chromen sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8290100596633877290">Hups! Google Chrome kaatui. Käynnistetäänkö uudelleen?</translation>
+<translation id="8341646175450781745">Kun tämä on päällä, Chrome vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> tai <ph name="BEGIN_LINK_2" />lähetä palautetta<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>

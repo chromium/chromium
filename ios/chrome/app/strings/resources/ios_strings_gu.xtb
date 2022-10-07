@@ -19,6 +19,7 @@
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1076785341346483463">મેનેજ કરેલા એકાઉન્ટ સાથે સિંક કરો</translation>
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
+<translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="1104948393051856124">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="110724200315609752">ખુલ્લી વિંડો પર સ્વિચ કરો</translation>
@@ -34,6 +35,7 @@
 <translation id="1165039591588034296">ભૂલ</translation>
 <translation id="1172898394251786223">આગલું ફીલ્ડ</translation>
 <translation id="1176932207622159128">ફોટા સાચવી શકતું નથી</translation>
+<translation id="1177414119866731261">Chrome મેનૂ ખોલો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1207113853726624428">નવી શોધ</translation>
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
@@ -110,6 +112,7 @@
 <translation id="1740468249224277719">ઇન્સ્ટૉલ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1752547299766512813">પાસવર્ડ સાચવો</translation>
 <translation id="1753905327828125965">સૌથી વધુ જોવાયેલ</translation>
+<translation id="1789803444939621101">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" /></translation>
 <translation id="1803264062614276815">કાર્ડધારકનું નામ</translation>
 <translation id="1809939268435598390">ફોલ્ડર ડિલીટ કરો</translation>
 <translation id="1813414402673211292">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
@@ -163,6 +166,7 @@
 <translation id="2302742851632557585">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
+<translation id="2328842561016935977">પાસવર્ડ પર ટૅપ કરો પછી ઉમેરો પર ટૅપ કરો</translation>
 <translation id="2351097562818989364">તમારા અનુવાદ સેટિંગ રીસેટ કરવામાં આવ્યા છે.</translation>
 <translation id="235789365079050412">Google પ્રાઇવસી પૉલિસી</translation>
 <translation id="2359043044084662842">અનુવાદ કરો</translation>
@@ -221,6 +225,7 @@
 <translation id="2781331604911854368">ચાલુ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783054063075604403">લિંક બનાવી શકાતી નથી</translation>
+<translation id="2786701870377699570">સિંક કરેલા તમામ ડિવાઇસ પર ટૅબ શોધો</translation>
 <translation id="2800683595868705743">ટેબ સ્વિચર છોડી દો</translation>
 <translation id="2815198996063984598">2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="2820289420301699633">તમારા વ્યવસ્થાપક Chrome પર નિયંત્રણ ધરાવે છે અને તેનો ડેટા ઍક્સેસ કરી શકે છે</translation>
@@ -244,6 +249,7 @@
 <translation id="2923448633003185837">પેસ્ટ કરો અને જાઓ</translation>
 <translation id="292639812446257861">વાંચ્યા વગરની તરીકે ચિહ્નિત કરો</translation>
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
+<translation id="2932765531295814441">પાસવર્ડ મેન્યુઅલી દાખલ કરો</translation>
 <translation id="2952581218264071393">1. Chrome સેટિંગ ખોલો</translation>
 <translation id="2958718410589002129">પાસવર્ડ</translation>
 <translation id="2961210776189273067">શીર્ષક</translation>
@@ -279,6 +285,7 @@
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે અનલૉક કરો</translation>
 <translation id="3207960819495026254">બુકમાર્ક કરેલ</translation>
+<translation id="3214379938835224220">તમારા iPadની રીસેટ પ્રક્રિયાને કારણે તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="3224641773458703735">પાસવર્ડના નિકાસ માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
@@ -296,6 +303,7 @@
 <translation id="3329904751041170572">સર્વરથી કનેક્ટ કરી શક્યું નથી.</translation>
 <translation id="3335947283844343239">બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
 <translation id="3371831930909698441">અનુવાદ ઉપલબ્ધ છે. વિકલ્પો સ્ક્રીનની નીચેની બાજુએ ઉપલબ્ધ રહે છે.</translation>
+<translation id="3377063233124932127">હવે તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું સૌથી ઉપર રહે છે.</translation>
 <translation id="3393920035788932672">પૉપ-અપ્સ મંજૂર છે</translation>
 <translation id="3399930248910934354">Chrome સેટિંગ ખોલો</translation>
 <translation id="3404744938087714423">સાઇન આઉટ કરવાથી સિંકની સુવિધા બંધ થઈ જાય છે.</translation>
@@ -318,11 +326,13 @@
 <translation id="3519193562722059437">વેબ બ્રાઉઝ કરવા ટેબ ખોલો.</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
+<translation id="3530206579861815432">તમારા સિંક કરેલા બધા ડિવાઇસ પર ખુલ્લા અને તાજેતરમાં બંધ કરેલા બધા ટૅબને ઝડપથી શોધો.</translation>
 <translation id="3533202363250687977">બધાં છૂપા ટૅબ બંધ કરો</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
+<translation id="3595252146048399851">શું સિંક કરવું, તે તમે <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જઈને કોઈપણ સમયે પસંદ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="3603009562372709545">લિંક URL કૉપિ કરો</translation>
 <translation id="3607167657931203000">સ્વતઃભરણ ડેટા</translation>
 <translation id="3609785682760573515">સમન્વય કરી રહ્યું છે...</translation>
@@ -371,6 +381,7 @@
 <translation id="4018310736049373830">પ્રવૃત્તિને મેનેજ કરો</translation>
 <translation id="4038354071007134711">આ ઉપકરણ પર કોઈ ઍપ્લિકેશન ફાઇલને ખોલી શકતી નથી.</translation>
 <translation id="4042870976416480368">પેજમાં શોધો</translation>
+<translation id="40433179647657191">તમે હાઇલાઇટ કરેલા પેજના ભાગની ડાયરેક્ટ લિંક બનાવો અને શેર કરો.</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="4063300985191096908">ફીડ પર જાઓ</translation>
 <translation id="408404951701638773">શોધ બાર સુધી પહોંચવું હવે વધુ સરળ છે</translation>
@@ -388,11 +399,13 @@
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4187450337729239226">પેસ્ટ કરો અને શોધો</translation>
 <translation id="4223967053752765281">તમારી સંસ્થાએ સાઇન ઇન કરવાનું બંધ કર્યું છે. તમે હજુ પણ આ ડિવાઇસ પરના તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ જોઈ શકો છો. જો તમે ફેરફારો કરશો, તો તે તમારા એકાઉન્ટ સાથે સિંક કરવામાં આવશે નહીં.</translation>
+<translation id="4232900911558558076">નવા મેનૂ વિશે શોધખોળ કરો</translation>
 <translation id="4233831822770018312">ફેરફાર કરવાની પરવાનગીઓ</translation>
 <translation id="4236584471598725073">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ડિફૉલ્ટ બ્રાઉઝર ઍપ<ph name="END_BOLD" /> પર ટૅપ કરો</translation>
 <translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4249955472157341256">નવીનતમ મુજબ સૉર્ટ કરો</translation>
+<translation id="42618743927498729">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો અલર્ટ મેળવો.</translation>
 <translation id="4263576668337963058">પેજ માટે ઉપલબ્ધ ક્રિયાઓ બતાવો</translation>
 <translation id="4267380167363222949">આગલી ટૅબ</translation>
 <translation id="4272631900155121838">QR કોડને સ્કૅન કરવા માટે, સેટિંગમાંથી કૅમેરા ચાલુ કરો</translation>
@@ -535,6 +548,7 @@
 <translation id="5388358297987318779">છબી ખોલો</translation>
 <translation id="5407969256130905701">ફેરફારો કાઢી નાખો</translation>
 <translation id="5416022985862681400">છેલ્લા 7 દિવસ</translation>
+<translation id="5423269318075950257">કિંમત ટ્રૅક કરો</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
 <translation id="5439599923922718668">વારંવાર મુલાકાત લેવાયેલી વેબસાઇટ</translation>
@@ -554,11 +568,15 @@
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
 <translation id="5580834567471114021">પછીથી વાંચવા માટેની વાંચન સૂચિમાં ઉમેરીએ?</translation>
+<translation id="5597915316964418992">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="560322036295180549">તમારી સંસ્થા દ્વારા આ સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
 <translation id="5626245204502895507">ફાઇલ આ સમયે ડાઉનલોડ કરી શકાઈ નથી.</translation>
 <translation id="5631164295104953411">ચુકવણીની પદ્ધતિ ઉમેરો</translation>
+<translation id="5636282538000367086">Chromeમાં નવું શું છે તે શોધો</translation>
+<translation id="5652623411397330904">તમે ટ્રૅક કરો તે પ્રોડક્ટ અહીં બતાવવામાં આવશે.</translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
+<translation id="5669335982068190158">તમારા iPhoneની રીસેટ પ્રક્રિયાને કારણે તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">વર્ઝન <ph name="PRODUCT_VERSION" /></translation>
 <translation id="5690398455483874150">{count,plural, =1{હમણાં 1 Chrome વિન્ડો બતાવવામાં આવી રહી છે}one{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}other{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}}</translation>
@@ -569,6 +587,7 @@
 <translation id="5724941645893276623">વેબને ખાનગી રીતે બ્રાઉઝ કરવા માટે, નવી ટૅબ ઉમેરો</translation>
 <translation id="5728700505257787410">માફ કરશો, તમારા એકાઉન્ટમાં સાઇન ઇન કરવામાં સમસ્યા હતી.</translation>
 <translation id="5731784586962650619">અન્ય ઍપમાંના પાસવર્ડ</translation>
+<translation id="5733084997078800044">Chrome વિશેની ટિપ</translation>
 <translation id="5737974891429562743">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે. સિંકને પ્રારંભ કરવા માટે અપડેટ કરો.</translation>
 <translation id="5738385766833540397">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવવાની રીત મેનેજ કરો</translation>
 <translation id="5738887413654608789">આ તમને તમારી આસપાસના વાતાવરણના આધારે સુસંગત વેબ પેજને શોધવા દે છે.</translation>
@@ -582,6 +601,7 @@
 <translation id="5812974770859303494">આમાં ઉમેરો...</translation>
 <translation id="581659025233126501">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવેલું બ્રાઉઝર. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="5833643789537100742">Chrome માટે પાસવર્ડ, ચુકવણી પદ્ધતિઓ અને સરનામા સાચવો કે જેથી પછીથી ઑટોમૅટિક રીતે ભરી શકાય.</translation>
 <translation id="5846482154967366008">શોધ એન્જિન</translation>
 <translation id="5854790677617711513">30 દિવસ કરતા જૂનો</translation>
 <translation id="5857090052475505287">નવું ફોલ્ડર</translation>
@@ -597,6 +617,7 @@
 <translation id="5913600720976431809">પેજનો અનુવાદ કરવા માટેના વિકલ્પો</translation>
 <translation id="5938160824633642847">તમારું ઉપકરણ લગભગ ભરાઈ ગયું છે. સ્પેસ બનાવો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="5948291296578561264">આ તમને તમારી ફોટો લાઇબ્રેરીમાં ફોટો સાચવવા દે છે.</translation>
+<translation id="5951816930277761335">લિંક શેર કરો</translation>
 <translation id="5955891643922670672">ઑફલાઇન વર્ઝન જોઈ રહ્યા છે</translation>
 <translation id="5957613098218939406">વધુ વિકલ્પો</translation>
 <translation id="5963939892571022323">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક બનાવી શકાતી નથી.</translation>
@@ -636,6 +657,7 @@
 <translation id="6189413832092199491">વાંચ્યા વગરની</translation>
 <translation id="6196207969502475924">વૉઇસ શોધ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
+<translation id="6219550825416862075">આપનું ફરી સ્વાગત છે</translation>
 <translation id="6219688215832490856">ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="6223816392543092032">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવો.</translation>
 <translation id="6231782223312638214">સૂચવેલા</translation>
@@ -723,6 +745,7 @@
 જ્યારે છૂપા મોડમાં હો, ત્યારે વિભિન્ન સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે, સાઇટ કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે.</translation>
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="667999046851023355">દસ્તાવેજ</translation>
+<translation id="6684906340059221832">ટ્રૅક કરવામાં આવી રહેલી કિંમતો</translation>
 <translation id="6710079714193676716">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે. અમુક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
 <translation id="6730682669179532099">બધા પાસવર્ડ નિકાસ કરી શકાતાં નથી</translation>
@@ -756,6 +779,7 @@
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
+<translation id="6975148662438928529">તમારી iPad રીસેટ પ્રક્રિયાના ભાગ તરીકે તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">તમારા Google એકાઉન્ટને મેનેજ કરો</translation>
 <translation id="6989674195860388998">સેટિંગ પર સ્વિચ કરો…</translation>
@@ -789,12 +813,16 @@
 <translation id="7265758999917665941">આ સાઇટ માટે ક્યારેય નહીં</translation>
 <translation id="7272437679830969316">તમારી ઓળખની ચકાસણી કરી શકાતી નથી. પાસવર્ડ કૉપિ કરેલો નથી.</translation>
 <translation id="7291368939935408496">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
+<translation id="730958329302570991">Google Password Managerમાં કોઈપણ સમયે સાઇટના પાસવર્ડ સરળતાથી ઉમેરો.</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
+<translation id="7315813263062036945">ઉપર ડાબી બાજુએ, શોધો આઇકન પર ટૅપ કરો</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7340958967809483333">Discover માટેના વિકલ્પો</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
 <translation id="734758817008927353">કાર્ડ સાચવવા માટેના વિકલ્પો</translation>
+<translation id="7351537303876921605">સંદર્ભ મેનૂમાં લિંક બનાવો પર ટૅપ કરો</translation>
 <translation id="7353432112255316844">આ તમે જ છો તેની ચકાસણી કરો</translation>
+<translation id="7356359962760467032">કિંમત ટ્રૅક કરવાનું રોકો</translation>
 <translation id="7383797227493018512">વાંચન સૂચિ</translation>
 <translation id="7398893703713203428">લિંક બનાવો</translation>
 <translation id="739941347996872055">પાછલી ટૅબ</translation>
@@ -815,6 +843,7 @@
 <translation id="750493650310597496">0 પસંદ કર્યાં</translation>
 <translation id="7508728395076009983">તમારી છુપી ટૅબને લૉક કરવા માટે, ટચ ID, ચહેરાના ID કે પાસકોડનું સેટઅપ કરો.</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
+<translation id="7531345132340165516">વર્તમાન સાઇટ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
@@ -825,6 +854,7 @@
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
 <translation id="7646263789464975852">મેનૂ → સેટિંગ → સલામતી માટે તપાસ</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
+<translation id="764827086632467055">ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7671141431838911305">ઇન્સ્ટોલ કરો</translation>
@@ -847,6 +877,7 @@
 <translation id="784551991304901159">કન્ટેન્ટ જોવા માટે, મેનૂમાંથી 'ચાલુ કરો' પસંદ કરો</translation>
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
+<translation id="785938070103630874">પાસવર્ડ, ચુકવણી પદ્ધતિઓ અથવા સરનામું વગેરે ખોલો</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="7884694604461143138">શોધ ઇતિહાસ (<ph name="COUNT" /> મળ્યાં)</translation>
 <translation id="7887198238286927132">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડ સ્વતઃ નહીં ભરે.</translation>
@@ -866,6 +897,7 @@
 <translation id="7971521879845308059">પૉપ-અપ્સ અવરોધિત કરો</translation>
 <translation id="797413074872316787">એકથી વધુ ડિવાઇસને સિંક અને મનગમતા બનાવવા માટે, સિંકની સુવિધા ચાલુ કરો.</translation>
 <translation id="7978018860671536736">3. પાસવર્ડ માટે ઑટોમૅટિક રીતે ભરવાની સુવિધા પર ટૅપ કરો</translation>
+<translation id="7981908678811807838">આ સાઇટ માટે કિંમત ટ્રૅક કરવાની સુવિધા ઉપલબ્ધ નથી.</translation>
 <translation id="7982789257301363584">નેટવર્ક</translation>
 <translation id="7987685713885608670">વધારાની સલામતી માટે, તમારા પાસવર્ડ Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં એમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરો.</translation>
 <translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
@@ -901,11 +933,13 @@
 <translation id="8237382152611443140">પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધાનાં સેટિંગ ખોલો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8271720166617117963">સ્વીકારો અને સાઇન ઇન કરો</translation>
+<translation id="8278938988428169257">શબ્દ અથવા શબ્દસમૂહ દાખલ કરો</translation>
 <translation id="8281781826761538115">ડિફૉલ્ટ - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">છોડો</translation>
 <translation id="8283172974887967105">સેટ કરો…</translation>
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8299613349954694191">ખાનગી રૂપે વેબ બ્રાઉઝ કરવા છૂપી ટૅબ ખોલો.</translation>
+<translation id="8316944564970119719">સાઇટ અને પાસવર્ડ દાખલ કરો, પછી સાચવો</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
@@ -933,6 +967,7 @@
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8534481786647257214">Google+ પોસ્ટ પૂર્ણ કરેલ છે.</translation>
 <translation id="8548878600947630424">પેજમાં શોધો...</translation>
+<translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590913940444621808">ક્યારેય પૂછશો નહીં</translation>
 <translation id="8591976964826315682">ત્રીજા પક્ષની કુકીને છૂપા મોડમાં બ્લૉક કરો</translation>
@@ -950,6 +985,8 @@
 <translation id="8721297211384281569">સાધન મેનૂ</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
+<translation id="8731388423028622182">તમારી iPhone રીસેટ પ્રક્રિયાના ભાગ તરીકે તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
+<translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="8750037785291841318">તમને તમારી ટૅબ અહીં મળશે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
@@ -967,10 +1004,13 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} ટૅબ}one{{count} ટૅબ}other{{count} ટૅબ}}</translation>
 <translation id="8870413625673593573">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="8876882697946675716">તમારા ડિવાઇસને સિંક કરેલું રાખો</translation>
+<translation id="8877287418679067891">સેટિંગમાં ડિફૉલ્ટ બનાવો…</translation>
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>
 <translation id="8891935667620843985">તમે Chromeને તમારી ડિફૉલ્ટ બ્રાઉઝર ઍપ બનાવીને ઑટોમૅટિક રીતે તેમાં લિંક ખોલી શકો છો.</translation>
 <translation id="8898822736010347272">વેબ પરના નવા જોખમો શોધી કાઢવા અને દરેક વ્યક્તિની સુરક્ષિતતામાં સહાય કરવા માટે, તમે મુલાકાત લેતા અમુક પેજના URLs, સિસ્ટમની મર્યાદિત માહિતી અને પેજનું અમુક કન્ટેન્ટ Googleને મોકલે છે.</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
+<translation id="8911759861431145525">ઉમેરો પર ટૅપ કરો અને પછી તમારી માહિતી દાખલ કરો</translation>
+<translation id="891658175948553296">સાઇટ પરની ટેક્સ્ટને હાઇલાઇટ કરો</translation>
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
 <translation id="8928133177108699615">ડેસ્કટૉપ</translation>
 <translation id="8952559610785099500">પાસવર્ડ ઉમેરો</translation>
@@ -1008,6 +1048,7 @@
 <translation id="9203116392574189331">હેન્ડઓફ</translation>
 <translation id="9223358826628549784">ક્રૅશ રિપોર્ટ મોકલ્યો.</translation>
 <translation id="952704832371081537">રદ કરો</translation>
+<translation id="953008885340860025">Chromeમાંથી સાઇન આઉટ થયા</translation>
 <translation id="959066944189734975">તમે <ph name="CHANNEL_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>
 <translation id="981498610235328462">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે.</translation>
 <translation id="984509647832111802">સિંકની સુવિધા કામ કરી રહી નથી.</translation>

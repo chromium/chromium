@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="1231839967188101156">Kun tämä on päällä, Chromium vapauttaa muistia ei-aktiivisilta välilehdiltä. Näin aktiiviset välilehdet ja muut sovellukset voivat käyttää enemmän tietokoneen resursseja ja Chromium pysyy nopeana. Ei-aktiiviset välilehdet aktivoituvat automaattisesti, kun palaat niihin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Luo uusi Chromium-profiili</translation>
 <translation id="1385859895174722837">Google Assistant Chromiumissa</translation>
 <translation id="1396446129537741364">Chromium yrittää näyttää salasanat.</translation>
@@ -251,6 +252,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="6717134281241384636">Profiiliasi ei voi käyttää, sillä se on peräisin Chromiumin uudemmasta versiosta.
 
 Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu profiilihakemisto tai käytä Chromiumin uudempaa versiota.</translation>
+<translation id="6730677189742196061">Muistinsäästö nopeuttaa Chromiumia</translation>
 <translation id="6734291798041940871">Chromium on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
 <translation id="673636774878526923">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="6774082503108938489">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>

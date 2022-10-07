@@ -307,6 +307,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="168841957122794586">Serverio sertifikate yra nesudėtingas kriptografinis raktas.</translation>
 <translation id="1697532407822776718">Viskas nustatyta!</translation>
 <translation id="1699570257714336246">Trūksta informacijos</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706625117072057435">Mastelio keitimo lygiai</translation>
 <translation id="1706954506755087368">{1,plural, =1{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas įsigalios nuo rytojaus. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuoliko.}one{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas įsigalios po # dienos. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuoliko.}few{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas įsigalios po # dienų. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuoliko.}many{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas įsigalios po # dienos. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuoliko.}other{Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas įsigalios po # dienų. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užpuoliko.}}</translation>
@@ -552,6 +553,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Mažiau nei per dieną}=1{Per dieną}one{Per {NUM_DAYS} dieną}few{Per {NUM_DAYS} dienas}many{Per {NUM_DAYS} dienos}other{Per {NUM_DAYS} dienų}}</translation>
 <translation id="2359629602545592467">Kelios</translation>
 <translation id="2359808026110333948">Tęskite</translation>
+<translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Perjungimo meniu dydžio keitimas</translation>
 <translation id="2367567093518048410">Lygis</translation>
 <translation id="2380886658946992094">Teisinis</translation>
@@ -1430,6 +1432,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4751476147751820511">Judesio arba šviesos jutikliai</translation>
 <translation id="4754461935447132332">Neleidžiama nesaugiose svetainėse</translation>
 <translation id="4756388243121344051">&amp;Istorija</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. Kad apsaugotumėte paskyras, „Chromium“ rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="4758311279753947758">Pridėti kontaktinę informaciją</translation>
 <translation id="4761104368405085019">Naudoti mikrofoną</translation>
@@ -2170,6 +2173,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6738516213925468394"><ph name="TIME" /> duomenys buvo užšifruoti naudojant <ph name="BEGIN_LINK" />sinchronizavimo slaptafrazę<ph name="END_LINK" />. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="674375294223700098">Nežinoma serverio sertifikato klaida.</translation>
 <translation id="6744009308914054259">Laukdami ryšio galite apsilankyti skiltyje „Atsisiuntimai“ ir perskaityti neprisijungus pasiekiamus straipsnius.</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferencijos</translation>
 <translation id="6753269504797312559">Politikos vertė</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2203,6 +2207,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6846340164947227603">Naudoti virtualų kortelės numerį...</translation>
 <translation id="6852204201400771460">Įkelti programą iš naujo?</translation>
 <translation id="6857776781123259569">Tvarkykite slaptažodžius...</translation>
+<translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Klientų ištekliai</translation>
 <translation id="6865412394715372076">Šiuo metu kortelės patvirtinti nepavyksta</translation>
 <translation id="6869334554832814367">Asmeninės paskolos</translation>
@@ -2315,6 +2320,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7138472120740807366">Pristatymo metodas</translation>
 <translation id="7139892792842608322">Pagrindinis dėklas</translation>
 <translation id="714064300541049402">2 pusė: sukti vaizdą pagal X ašį</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ir dar <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Levandų spalva</translation>
 <translation id="7156870133441232244">Serverį reikia naujovinti į 1.2 ar naujesnės versijos TLS.</translation>
@@ -2396,6 +2402,7 @@ Papildoma išsami informacija:
 <translation id="7363096869660964304">Tačiau nesate nematomi. Įjungus inkognito režimą, naršymo veiksmai vis tiek matomi darbdaviui, interneto paslaugų teikėjui ar svetainėms, kuriose lankotės.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite pridėti ir tvarkyti adresus „Chrome“ nustatymuose</translation>
 <translation id="7365849542400970216">Leisti žinoti, kada naudojamas įrenginys?</translation>
+<translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Mokėjimų doroklės</translation>
 <translation id="7372973238305370288">paieškos rezultatas</translation>
 <translation id="7374461526650987610">Protokolų doroklės</translation>
@@ -2555,6 +2562,7 @@ Papildoma išsami informacija:
 <translation id="7687186412095877299">Užpildomos mokėjimo formos naudojant išsaugotus mokėjimo metodus</translation>
 <translation id="7687305263118037187">Baigėsi pakartotinio bandymo laikas</translation>
 <translation id="7687451951329798396">Kas sakoma kituose šaltiniuose?</translation>
+<translation id="7690647519407127574">„Oufuku Hagaki“ atvirukas</translation>
 <translation id="7693583928066320343">Puslapių tvarka gauta</translation>
 <translation id="7696089921647603491">Klasikinis rokas ir „Oldies“</translation>
 <translation id="769721561045429135">Šiuo metu turite kortelių, kurias galima naudoti tik šiuo įrenginiu. Jei norite peržiūrėti korteles, spustelėkite „Tęsti“.</translation>
@@ -2728,6 +2736,7 @@ Papildoma išsami informacija:
 <translation id="8202370299023114387">Konfliktas</translation>
 <translation id="8210604850413485128">Žiniatinklio išteklių priegloba</translation>
 <translation id="8211406090763984747">Ryšys saugus</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">Svetainės negali naudoti slapukų, stebinčių jus žiniatinklyje. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="8217748145574471584">Žmogiškieji ištekliai</translation>
 <translation id="8218327578424803826">Priskirta vieta:</translation>
@@ -2942,6 +2951,7 @@ Papildoma išsami informacija:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad „Chrome“ nustatymuose būtų atnaujinta naršyklė „Chrome“</translation>
 <translation id="8820817407110198400">Žymės</translation>
 <translation id="882338992931677877">Neautomatinė dėtuvė</translation>
+<translation id="8830320733681313421">„Hagaki“ atvirukas</translation>
 <translation id="8834380158646307944">Mygtukas „Uždaryti inkognito langus“; paspauskite „Enter“, jei norite uždaryti visus šiuo metu atidarytus inkognito langus</translation>
 <translation id="883848425547221593">Kitos žymės</translation>
 <translation id="884264119367021077">Siuntimo adresas</translation>

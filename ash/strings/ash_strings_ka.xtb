@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">პაროლი დამავიწყდა</translation>
 <translation id="181103072419391116">სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="1812997170047690955">რა არის ჩემს ეკრანზე?</translation>
+<translation id="1823280932251546115">სტატუსის პანელი, დრო <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> აღარ არის ჩამაგრებული</translation>
 <translation id="1836215606488044471">ასისტენტი (იტვირთება...)</translation>
@@ -458,6 +467,8 @@
 <translation id="3600061223661453002">გამორთვა</translation>
 <translation id="3604801046548457007">სამუშაო მაგიდა <ph name="DESK_TITILE" /> შექმნილია</translation>
 <translation id="3606978283550408104">ბრაილის დისპლეი შეერთებულია.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">მობილური ინტერნეტის ჩართვის შემთხვევაში, ჩაირთვება Bluetooth</translation>
 <translation id="3616883743181209306">მენიუ გადატანილია ეკრანის ზედა მარჯვენა კუთხეში.</translation>
 <translation id="3619536907358025872">ეკრანის აღბეჭდვის პარამეტრები</translation>

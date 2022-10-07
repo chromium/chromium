@@ -1126,6 +1126,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="2034346955588403444">Ongeza mtandao mwingine wa WiFi</translation>
 <translation id="2035211704574173780">Kichujio cha kijivu</translation>
 <translation id="203574396658008164">Washa kipengele cha kuandika vidokezo kutoka kwenye skrini iliyofungwa</translation>
+<translation id="2036514476578229158">Uliomba kutembelea tovuti hii. Mzazi wako anaweza kujibu kwenye Family Link.</translation>
 <translation id="2037445849770872822">Mipangilio ya usimamizi ya Akaunti hii ya Google imewekwa. Ili uweke vidhibiti zaidi vya wazazi, bofya 'Endelea'.
 
 Vinginevyo, ondoka katika akaunti sasa ili mabadiliko uliyofanya katika akauntii hii yaonekane kwenye kifaa hiki.
@@ -1246,6 +1247,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2135787500304447609">&amp;Endelea</translation>
 <translation id="2136372518715274136">Weka nenosiri jipya</translation>
 <translation id="2136476978468204130">Kauli ya siri uliyoweka si sahihi</translation>
+<translation id="2137891579555018930">Inasubiri ruhusa...</translation>
 <translation id="2138398485845393913">Muunganisho kwenye "<ph name="DEVICE_NAME" />" bado unaendelea</translation>
 <translation id="2139919072249842737">Kitufe cha kuweka mipangilio</translation>
 <translation id="2140788884185208305">Muda wa Kudumu wa Betri</translation>
@@ -4123,6 +4125,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Kuweka Sahihi Majibu ya OCSP</translation>
 <translation id="4863769717153320198">Inaonekana kama <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Chaguomsingi)</translation>
+<translation id="486459320933704969">Ni lazima mzazi au mlezi akuruhusu kutembelea tovuti hii</translation>
 <translation id="4864805589453749318">Chagua mzazi anayetoa ruhusa ya kuweka akaunti ya shuleni.</translation>
 <translation id="486635084936119914">Fungua baadhi ya aina za faili kiotomatiki baada ya kupakua</translation>
 <translation id="4868281708609571334">Ifundishe programu ya Mratibu wa Google kutambua sauti ya <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -8683,6 +8686,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="947329552760389097">&amp;Kagua Vipengee</translation>
 <translation id="947526284350604411">Jibu lako</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> haiwezi kufungua faili kwenye folda hii kwa sababu ina faili za mfumo</translation>
+<translation id="949314938206378263">Uliomba kutembelea tovuti hii. Mzazi wako anaweza kujibu kwenye Family Link.</translation>
 <translation id="950307215746360464">Mwongozo wa mipangilio</translation>
 <translation id="951991426597076286">Kataa</translation>
 <translation id="952471655966876828">Kifaa kitaunganishwa kiotomatiki kinapokuwa kimewashwa na wakati kinatumiwa</translation>

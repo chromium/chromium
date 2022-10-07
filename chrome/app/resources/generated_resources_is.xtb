@@ -1135,6 +1135,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2034346955588403444">Bæta við öðru Wi-Fi neti</translation>
 <translation id="2035211704574173780">Grátóna</translation>
 <translation id="203574396658008164">Virkja glósur af lásskjá</translation>
+<translation id="2036514476578229158">Þú baðst um að opna þetta vefsvæði. Foreldrar þínir geta svarað í Family Link.</translation>
 <translation id="2037445849770872822">Eftirlit er sett upp fyrir þennan Google reikning. Til að setja upp fleiri barnalæsingar skaltu velja „Halda áfram“.
 
 Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki gildi í þessu tæki.
@@ -1256,6 +1257,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2135787500304447609">Halda áf&amp;ram</translation>
 <translation id="2136372518715274136">Sláðu inn nýtt aðgangsorð</translation>
 <translation id="2136476978468204130">Innslegið aðgangsorð er rangt</translation>
+<translation id="2137891579555018930">Bíður heimildar…</translation>
 <translation id="2138398485845393913">Tenging við „<ph name="DEVICE_NAME" />“ er enn í vinnslu</translation>
 <translation id="2139919072249842737">Hnappur til að setja upp</translation>
 <translation id="2140788884185208305">Ástand rafhlöðu</translation>
@@ -4146,6 +4148,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4858913220355269194">Falur</translation>
 <translation id="4862642413395066333">Undirritar OCSP-svör</translation>
 <translation id="4863769717153320198">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /> (sjálfgefið)</translation>
+<translation id="486459320933704969">Foreldri eða forráðamaður verður að samþykkja að þú opnir þetta vefsvæði</translation>
 <translation id="4864805589453749318">Veldu foreldrið sem gefur heimild til að bæta við skólareikningi.</translation>
 <translation id="486635084936119914">Opna tilteknar tegundir skráa sjálfkrafa að niðurhali loknu</translation>
 <translation id="4868281708609571334">Kenna Google hjálpara að þekkja röddina í: <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -8729,6 +8732,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="947329552760389097">&amp;Kanna einingar</translation>
 <translation id="947526284350604411">Svar þitt</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> getur ekki opnað skrár í þessari möppu vegna þess að hún inniheldur kerfisskrár</translation>
+<translation id="949314938206378263">Þú baðst um að opna þetta vefsvæði. Foreldri þitt getur svarað í Family Link.</translation>
 <translation id="950307215746360464">Uppsetningarleiðbeiningar</translation>
 <translation id="951991426597076286">Hafna</translation>
 <translation id="952471655966876828">Tækið tengist sjálfkrafa þegar kveikt er á því og það notað</translation>

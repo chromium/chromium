@@ -252,6 +252,7 @@
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
 <translation id="6145313976051292476">PDF-fájlok megnyitása a Chrome-ban</translation>
+<translation id="6155960517327665396">A memóriatakarékos mód felgyorsította a Chrome-ot</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
 <translation id="6235018212288296708">Bejövő szabály a Google Chrome-hoz az mDNS forgalom engedélyezése céljából.</translation>
@@ -352,6 +353,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8286862437124483331">A Google Chrome megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="828798499196665338">Szülőd kikapcsolta a Chrome „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem engedélyezhető.</translation>
 <translation id="8290100596633877290">Hmm. A Google Chrome összeomlott. Újraindítja most?</translation>
+<translation id="8341646175450781745">Ha be van kapcsolva, a Chrome memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, a Chrome pedig gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> vagy <ph name="BEGIN_LINK_2" />visszajelzés küldése<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Ez a fájl veszélyes, ezért a Chrome letiltotta.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chrome-ban. Ha például felkeres egy webhelyet, ahol maratonfutáshoz való cipőt vásárol, akkor a webhely meghatározhatja a maratonfutást az Ön egyik érdeklődési köreként. Ha később felkeres egy másik webhelyet, hogy jelentkezzen egy versenyre, ezen a webhelyen megjelenhet egy futócipőket reklámozó hirdetés az Ön érdeklődési köre alapján.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>

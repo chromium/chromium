@@ -712,6 +712,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2803306138276472711">Bezpieczne przeglądanie Google <ph name="BEGIN_LINK" />wykryło ostatnio złośliwe oprogramowanie<ph name="END_LINK" /> na <ph name="SITE" />. Strony, które zazwyczaj są bezpieczne, zostają czasem zainfekowane destrukcyjnym oprogramowaniem.</translation>
 <translation id="2807052079800581569">Pozycja Y obrazu</translation>
+<translation id="2808278141522721006">Jeśli chcesz włączyć lub wyłączyć Windows Hello, otwórz <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Skanuję…</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
@@ -882,6 +883,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3288238092761586174">Weryfikacja Twojej płatności może wymagać od <ph name="URL" /> podjęcia dodatkowych działań</translation>
 <translation id="3293642807462928945">Więcej informacji o zasadzie <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Wyświetl hasła i zarządzaj nimi w ustawieniach Chrome</translation>
+<translation id="3299098170013242198">Funkcja Windows Hello jest włączona w celu wypełniania haseł</translation>
 <translation id="3303855915957856445">Brak wyników wyszukiwania</translation>
 <translation id="3304073249511302126">skanowanie Bluetooth</translation>
 <translation id="33073482541490531">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
@@ -1030,6 +1032,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3678342917559046352">Nieprawidłowe rozszerzenie: ta wartość powinna mieć 1 z tych formatów: &lt;extension_id&gt; lub &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Otwórz stronę w nowym oknie incognito (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Informacje o certyfikacie</translation>
+<translation id="3699374065820972102">Funkcja TouchID jest włączona w celu wypełniania haseł</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
 <translation id="3704162925118123524">Sieć, której używasz, może wymagać otwarcia strony logowania.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1489,6 +1492,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4900217275619098670">Rolka 9</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4905659621780993806">Administrator automatycznie uruchomi Twoje urządzenie ponownie <ph name="DATE" /> o <ph name="TIME" />. Zanim to się stanie, zapisz wszystkie otwarte elementy.</translation>
+<translation id="4911007278801291296">Jeśli chcesz włączyć lub wyłączyć TouchID, otwórz <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Otwór w lewym górnym rogu</translation>
 <translation id="4918221908152712722">Zainstaluj aplikację <ph name="APP_NAME" /> (nie wymaga pobrania)</translation>
 <translation id="4923459931733593730">Płatność</translation>
@@ -1681,6 +1685,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5357848622083956825">Sztuki wizualne i projektowanie</translation>
 <translation id="536296301121032821">Zapisanie ustawień zasady nie powiodło się</translation>
 <translation id="5363309033720083897">Port szeregowy, na który zezwala administrator</translation>
+<translation id="5363713372507812442">Serie czynności w wyszukiwarce</translation>
 <translation id="5371425731340848620">Zaktualizuj dane karty</translation>
 <translation id="5377026284221673050">„Twój zegar się spóźnia” lub „Twój zegar się śpieszy” lub „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379027395132364855">Przycisk Utwórz prezentację; naciśnij Enter, aby szybko utworzyć nową prezentację w Prezentacjach Google</translation>

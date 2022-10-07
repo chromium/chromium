@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ocjena</translation>
 <translation id="3291470810748040983">Kad niža cijena bude dostupna, primit ćete obavijest u otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
+<translation id="3499853001094440183">Poništi grupiranje kartica</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da biste primili obavijest u otvorenoj kartici kad niža cijena bude dostupna, uključite obavijesti u postavkama.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6228793724645064692">(ocjena trgovine)</translation>
 <translation id="6333260925957816943">Informacije o ovoj trgovini</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Poništite grupiranje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="6510648526783655549">Zatvorite vrpcu kartica</translation>
 <translation id="6549021453810473782">Prikaži podatke o trgovini</translation>
 <translation id="6562820390860419811">Pomakni karticu ulijevo</translation>

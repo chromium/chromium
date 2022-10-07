@@ -307,6 +307,7 @@
 <translation id="168841957122794586">সার্ভার সার্টিফিকেটে একটি দুর্বল ক্রিপ্টোগ্রাফিক কী আছে৷</translation>
 <translation id="1697532407822776718">আপনার সমস্ত সেট আছে!</translation>
 <translation id="1699570257714336246">সম্পূর্ণ তথ্য দেওয়া হয়নি</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">জুম লেভেল</translation>
 <translation id="1706954506755087368">{1,plural, =1{এই সার্ভার যে <ph name="DOMAIN" /> তা এটি প্রমাণ করতে পারেনি; এর নিরাপত্তা সার্টিফিকেটটি আগামীকালের বলে মনে হচ্ছে। কোনও ভুল কনফিগারেশনের কারণে অথবা আপনার সংযোগে বাধাপ্রদানকারী কোনও আক্রমণকারীর কারণে এমনটি হতে পারে।}one{এই সার্ভার যে <ph name="DOMAIN" /> তা এটি প্রমাণ করতে পারেনি; এর নিরাপত্তা সার্টিফিকেটটি আগামী # দিন পরের বলে মনে হচ্ছে। কোনও ভুল কনফিগারেশনের কারণে অথবা আপনার সংযোগে বাধাপ্রদানকারী কোনও আক্রমণকারীর কারণে এমনটি হতে পারে।}other{এই সার্ভার যে <ph name="DOMAIN" /> তা এটি প্রমাণ করতে পারেনি; এর নিরাপত্তা সার্টিফিকেটটি আগামী # দিন পরের বলে মনে হচ্ছে। কোনও ভুল কনফিগারেশনের কারণে অথবা আপনার সংযোগে বাধাপ্রদানকারী কোনও আক্রমণকারীর কারণে এমনটি হতে পারে।}}</translation>
@@ -551,6 +552,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{এক দিনের থেকে কম সময়ের মধ্যে}=1{এক দিনের মধ্যে}one{{NUM_DAYS} দিনের মধ্যে}other{{NUM_DAYS} দিনের মধ্যে}}</translation>
 <translation id="2359629602545592467">একাধিক</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
+<translation id="2361263712565360498">২৭৫ x ৩৯৫ মিমি</translation>
 <translation id="236340516568226369">টগল মেনু উইন্ডোর সাইজ পরিবর্তন করুন</translation>
 <translation id="2367567093518048410">স্তর</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1426,6 +1428,7 @@
 <translation id="4751476147751820511">মোশন বা হালকা সেন্সর</translation>
 <translation id="4754461935447132332">শুধুমাত্র সুরক্ষিত সাইটের ক্ষেত্রেই অনুমতি দেওয়া আছে</translation>
 <translation id="4756388243121344051">&amp;ইতিহাস</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chromium আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
 <translation id="4758311279753947758">পরিচিতির তথ্য জুড়ুন</translation>
 <translation id="4761104368405085019">আপনার মাইক্রোফোন ব্যবহার করুন</translation>
@@ -2163,6 +2166,7 @@
 <translation id="6738516213925468394"><ph name="TIME" />-এ আপনার <ph name="BEGIN_LINK" />সিঙ্ক পাসফ্রেজ<ph name="END_LINK" /> দিয়ে ডেটা এনক্রিপ্ট করা হয়েছিল। সিঙ্ক শুরু করতে সেটি লিখুন।</translation>
 <translation id="674375294223700098">অজানা সার্ভার সার্টিফিকেট ত্রুটি৷</translation>
 <translation id="6744009308914054259">কানেকশনের জন্য অপেক্ষা করার সময়, আপনি ডাউনলোডে গিয়ে অফলাইন নিবন্ধগুলি পড়তে পারেন।</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফারেন্সিং</translation>
 <translation id="6753269504797312559">নীতি মান</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2196,6 +2200,7 @@
 <translation id="6846340164947227603">কোনও একটি ভার্চুয়াল কার্ড নম্বর ব্যবহার করুন...</translation>
 <translation id="6852204201400771460">আবার অ্যাপ লোড করতে চান?</translation>
 <translation id="6857776781123259569">পাসওয়ার্ড ম্যানেজ করুন…</translation>
+<translation id="6864189428899665393">২৬৭ x ৩৮৯ মিমি</translation>
 <translation id="686485648936420384">কনজিউমার রিসোর্স</translation>
 <translation id="6865412394715372076">এই কার্ডটি এখনই যাচাই করা যাবে না</translation>
 <translation id="6869334554832814367">পার্সোনাল লোন</translation>
@@ -2308,6 +2313,7 @@
 <translation id="7138472120740807366">ডেলিভারির পদ্ধতি</translation>
 <translation id="7139892792842608322">প্রাইমারি ট্রে</translation>
 <translation id="714064300541049402">সাইড 2 ছবি X শিফ্ট</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}one{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}other{<ph name="PAYMENT_METHOD_PREVIEW" /> এবং আরও <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />টি}}</translation>
 <translation id="7153618581592392745">ল্যাভেণ্ডার</translation>
 <translation id="7156870133441232244">সার্ভারটিকে TLS 1.2 বা এর পরবর্তী যেকোনও ভার্সনে আপগ্রেড করতে হবে।</translation>
@@ -2388,6 +2394,7 @@
 <translation id="7363096869660964304">তবে, আপনি অদৃশ্য থাকবেন না। ছদ্মবেশী মোড ব্যবহার করলেও আপনার ব্রাউজিং ইতিহাস নিয়োগকর্তা, ইন্টারনেট পরিষেবা প্রদানকারী বা আপনার দেখা ওয়েবসাইটের থেকে লুকানো যাবে না।</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে ঠিকানা যোগ ও ম্যানেজ করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="7365849542400970216">আপনি জানেন আপনার ডিভাইস কী কাজে ব্যবহার হয়?</translation>
+<translation id="7366117520888504990">১৯৮ x ২৭৫ মিমি</translation>
 <translation id="7366362069757178916">পেমেন্ট হ্যান্ডলার</translation>
 <translation id="7372973238305370288">ফলাফল খুঁজুন</translation>
 <translation id="7374461526650987610">প্রোটোকল পরিচালনাকারী</translation>
@@ -2547,6 +2554,7 @@
 <translation id="7687186412095877299">আপনার সেভ করা পেমেন্ট পদ্ধতি দিয়ে পেমেন্ট ফর্ম পূরণ করে</translation>
 <translation id="7687305263118037187">আর চেষ্টা করতে পারবেন না</translation>
 <translation id="7687451951329798396">অন্য সোর্সগুলি কি বলছে?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki পোস্টকার্ড</translation>
 <translation id="7693583928066320343">পৃষ্ঠার অর্ডার রিসিভ করা হয়েছে</translation>
 <translation id="7696089921647603491">ক্লাসিক রক ও পুরানো দিনের</translation>
 <translation id="769721561045429135">এই মুহূর্তে, আপনার কাছে থাকা কার্ডগুলি শুধুমাত্র এই ডিভাইসে ব্যবহার করা যেতে পারে। কার্ডগুলির পর্যালোচনা চালিয়ে যেতে ক্লিক করুন।</translation>
@@ -2720,6 +2728,7 @@
 <translation id="8202370299023114387">দ্বন্দ্ব</translation>
 <translation id="8210604850413485128">ওয়েব হোস্টিং</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">যেসব কুকি ওয়েব জুড়ে আপনার অ্যাক্টিভিটি ট্র্যাক করে, সাইট সেগুলি ব্যবহার করতে পারবে না। কিছু সাইটের ফিচার কাজ নাও করতে পারে।</translation>
 <translation id="8217748145574471584">হিডম্যান রিসোর্স</translation>
 <translation id="8218327578424803826">নির্ধারিত লোকেশন:</translation>
@@ -2932,6 +2941,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপনার Chrome সেটিংসে Chrome আপডেট করতে, প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">ম্যানুয়াল স্লট</translation>
+<translation id="8830320733681313421">Hagaki পোস্টকার্ড</translation>
 <translation id="8834380158646307944">'ছদ্মবেশী উইন্ডো বন্ধ করুন' বোতাম, বর্তমানে খোলা আছে এমন সব 'ছদ্মবেশী' উইন্ডো বন্ধ করতে Enter প্রেস করুন</translation>
 <translation id="883848425547221593">অন্যান্য বুকমার্ক</translation>
 <translation id="884264119367021077">শিপিং ঠিকানা</translation>

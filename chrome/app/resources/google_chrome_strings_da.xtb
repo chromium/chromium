@@ -252,6 +252,7 @@
 <translation id="608006075545470555">Føj arbejdsprofilen til denne browser</translation>
 <translation id="6113794647360055231">Chrome er blevet bedre</translation>
 <translation id="6145313976051292476">Åbn PDF-filer i Chrome</translation>
+<translation id="6155960517327665396">Hukommelsessparefunktion har gjort Chrome hurtigere</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6235018212288296708">Indgående regel for Google Chrome om at tillade mDNS-trafik.</translation>
@@ -352,6 +353,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="828798499196665338">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hovsa! Google Chrome er gået ned. Vil du genstarte nu?</translation>
+<translation id="8341646175450781745">Når indstillingen er aktiveret, frigør Chrome hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>

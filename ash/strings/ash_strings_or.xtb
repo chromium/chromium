@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">ପାସୱାର୍ଡ ଭୁଲି ଯାଇଛନ୍ତି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="1812997170047690955">ମୋ ସ୍କ୍ରିନ୍‌ରେ କ’ଣ ଅଛି?</translation>
+<translation id="1823280932251546115">ସ୍ଥିତି ଟ୍ରେ, ସମୟ <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ଇଥର୍ନେଟ୍: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />କୁ ଅନ୍‌ପିନ୍ କରାଯାଇଛି</translation>
 <translation id="1836215606488044471">ଆସିଷ୍ଟାଣ୍ଟ (ଲୋଡ୍‌ ହେଉଛି...)</translation>
@@ -458,6 +467,8 @@
 <translation id="3600061223661453002">ବନ୍ଦ ଅଛି</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ଡେସ୍କ ତିଆରି କରାଯାଇଛି</translation>
 <translation id="3606978283550408104">ବ୍ରେଲିର ଡିସ୍‌ପ୍ଲେ ସଂଯୋଗ କରାଯାଇଛି।</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ମୋବାଇଲ ଡାଟା ସକ୍ଷମ କରିବା ଫଳରେ ବ୍ଲୁଟୁଥ୍ ସକ୍ଷମ ହେବ</translation>
 <translation id="3616883743181209306">ସ୍କ୍ରିନର ଶୀର୍ଷ ଡାହାଣ କୋଣକୁ ମେନୁ ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="3619536907358025872">ସ୍କ୍ରିନ କ୍ୟାପଚର ସେଟିଂସ</translation>

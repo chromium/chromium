@@ -83,11 +83,13 @@
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review from Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}}</translation>
 <translation id="7559245342362162951">Show group's tabs in full-screen grid</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Share <ph name="TABS_COUNT_ONE" /> selected tab}other{Share <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="7792771145871471484">Review the suggestions.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Group <ph name="TABS_COUNT_ONE" /> selected tab}other{Group <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Move tab right</translation>
 <translation id="7966321538264951561">Dismiss the suggestions.</translation>
+<translation id="8018192911041116887">Share tabs</translation>
 <translation id="8029301326595421733">Information about this shop opened at full height</translation>
 <translation id="814503310257431685">View all</translation>
 <translation id="8205266828577616993">Move tab up</translation>

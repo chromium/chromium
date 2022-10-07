@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3291470810748040983">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
+<translation id="3499853001094440183">Өтмөктөрдү топтон ажыратуу</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TITLE_OF_GROUP" /> өтмөктөр тобундагы <ph name="TABS_COUNT_MANY" /> өтмөк жыйыштырылсын.}}</translation>
 <translation id="3882834874697329510">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрүү үчүн Жөндөөлөрдөн билдирмелерди күйгүзүңүз.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
 <translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
 <translation id="6333260925957816943">Бул дүкөн тууралуу маалымат</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Тандалган <ph name="TABS_COUNT_ONE" /> өтмөктү топтон ажыратуу}other{Тандалган <ph name="TABS_COUNT_MANY" /> өтмөктү топтон ажыратуу}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="6510648526783655549">Өтмөк тасмасын жабуу</translation>
 <translation id="6549021453810473782">Дүкөн жөнүндө маалыматты көрүү</translation>
 <translation id="6562820390860419811">Өтмөктү солго жылдыруу</translation>

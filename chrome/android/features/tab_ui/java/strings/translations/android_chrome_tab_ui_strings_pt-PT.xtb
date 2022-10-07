@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3291470810748040983">Receberá um alerta quando existir um preço inferior num separador aberto.</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
+<translation id="3499853001094440183">Desagrupar separadores</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="3882834874697329510">Para receber um alerta quando existir um preço inferior num separador aberto, ative as notificações nas Definições.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="6510648526783655549">Fechar Faixa de separadores</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
 <translation id="6562820390860419811">Mover o separador para a esquerda</translation>

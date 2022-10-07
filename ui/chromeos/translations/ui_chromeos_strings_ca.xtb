@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Birmà (Birmània)</translation>
 <translation id="2392369802118427583">Activa</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> disponibles</translation>
+<translation id="2417486498593892439">Inicia la sessió a la xarxa</translation>
 <translation id="2425665904502185219">Mida total dels fitxers</translation>
 <translation id="2428749644083375155">S'estan copiant <ph name="NUMBER_OF_ITEMS" /> elements a la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipus</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">No hi ha cap reproducció disponible</translation>
 <translation id="383652340667548381">Serbi</translation>
 <translation id="385051799172605136">Enrere</translation>
+<translation id="3851491607336266896">Connectat, connectivitat limitada</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3866249974567520381">Descripció</translation>
@@ -939,6 +941,7 @@
 <translation id="8903931173357132290">Graduat</translation>
 <translation id="8912078710089354287">Gos remenant la cua</translation>
 <translation id="8919081441417203123">Danès</translation>
+<translation id="8949925099261528566">Connectat, sense Internet</translation>
 <translation id="8965697826696209160">No hi ha prou espai.</translation>
 <translation id="8997962250644902079">Xinès tradicional (pinyin)</translation>
 <translation id="8998871447376656508">No hi ha prou espai lliure a Google Drive per completar la pujada.</translation>

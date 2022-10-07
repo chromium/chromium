@@ -2396,6 +2396,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3188465121994729530">Pokretni prosek</translation>
 <translation id="3189187154924005138">Veliki kursor</translation>
 <translation id="3190558889382726167">Lozinka je sačuvana</translation>
+<translation id="3192589799003798742">Podešavanje Steam-a na Chromebook-u</translation>
 <translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3193695589337931419">Uslužne aplikacije za sistemske signale</translation>
 <translation id="3194786596445804250">Prikazuj detalje o blokiranju kolačića trećih strana</translation>
@@ -2535,6 +2536,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3341699307020049241">Netačan PIN. Imate još <ph name="RETRIES" /> pokušaja.</translation>
 <translation id="3341703758641437857">Dozvoli pristup URL adresama datoteka</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ želi da ukloni ovaj dodatak.</translation>
+<translation id="3343977377045378693">Podešavanje se obavlja</translation>
 <translation id="3345135638360864351">Slanje zahteva za pristup ovom sajtu korisniku <ph name="NAME" /> nije uspelo. Probajte ponovo.</translation>
 <translation id="3345634917232014253">Bezbednosna provera je upravo pokrenuta</translation>
 <translation id="3345886924813989455">Nije pronađen nijedan podržani pregledač</translation>
@@ -2546,6 +2548,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3354768182971982851">Stare verzije Chrome aplikacija neće se otvarati na Mac uređajima posle decembra 2022. Možete da proverite da li je dostupna nova verzija.</translation>
 <translation id="3354972872297836698">Uparivanje sa uređajem <ph name="DEVICE_NAME" /> nije uspelo; izaberite uređaj da biste probali ponovo</translation>
 <translation id="3355936511340229503">Greška pri povezivanju</translation>
+<translation id="3356036636691722598">Uživajte u igranju igara na Chromebook-u</translation>
 <translation id="3356469410714175391">(Virtuelna kartica je omogućena)</translation>
 <translation id="3356580349448036450">Završeno</translation>
 <translation id="3359256513598016054">Ograničenja smernica sertifikata</translation>
@@ -3460,6 +3463,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4211904048067111541">Prestani da koristiš sa Android aplikacijama</translation>
 <translation id="42126664696688958">Izvezi</translation>
 <translation id="42137655013211669">Server je zabranio pristup ovom resursu.</translation>
+<translation id="4214192212360095377">Isključi</translation>
 <translation id="4217558091331485702">Skenirajte pre otvaranja</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4218081191298393750">Kliknite na ikonu zvučnika da biste isključili zvuk za ovu karticu</translation>
@@ -4361,6 +4365,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5089763948477033443">Regulator za promenu veličine bočne table</translation>
 <translation id="5090637338841444533">Nije im dozvoljeno da prate položaj kamere</translation>
 <translation id="5093569275467863761">Ceo keširani podokvir bez arhiviranja: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Instalacija se pokreće</translation>
 <translation id="5094176498302660097">Pomoću ove aplikacije možete da otvarate i menjate podržane fajlove iz aplikacije Fajlovi ili drugih aplikacija. Da biste kontrolisali koji fajlovi podrazumevano otvaraju ovu aplikaciju, <ph name="BEGIN_LINK" />saznajte kako da podesite podrazumevane aplikacije na uređaju<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komunikacija sa osnovnim aplikacijama za saradnju</translation>
 <translation id="5097002363526479830">Povezivanje sa mrežom „<ph name="NAME" />“ nije uspelo: <ph name="DETAILS" /></translation>
@@ -6387,6 +6392,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7014174261166285193">Instalacija nije uspela.</translation>
 <translation id="7014480873681694324">Ukloni isticanje</translation>
 <translation id="7014741021609395734">Nivo zumiranja</translation>
+<translation id="7014961128696979283">Pokreni Steam</translation>
 <translation id="7015088858756332848">Pokretanje Steam-a na Chromebook-u nije uspelo. Probajte ponovo</translation>
 <translation id="7017004637493394352">Kažite ponovo „Hej Google“</translation>
 <translation id="7017219178341817193">Dodajte novu stranicu</translation>
@@ -6780,6 +6786,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7423425410216218516">Vidljivost je uključena <ph name="MINUTES" /> minut/a</translation>
 <translation id="7423513079490750513">Uklonite metod unosa <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">Za pokretanje aplikacije <ph name="APP_NAME" /> je potrebna dozvola</translation>
+<translation id="7424153922653300265">Ušteda energije je uključena</translation>
 <translation id="7424818322350938336">Mreža je dodata</translation>
 <translation id="7427315069950454694">vaše uspomene za danas</translation>
 <translation id="7427348830195639090">Stranica u pozadini: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -8021,6 +8028,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="859246725979739260">Ovom sajtu je zabranjeno da pristupa lokaciji.</translation>
 <translation id="8593121833493516339">Šaljite podatke o korišćenju i dijagnostičke podatke. Pomozite nam da poboljšamo Android doživljaj za dete tako što ćete automatski slati Google-u podatke o dijagnostici i korišćenju uređaja i aplikacija. Te informacije se neće koristiti za identifikaciju deteta i pomoći će u održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. Ako za dete uključite dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu deteta. <ph name="BEGIN_LINK1" />Saznajte više<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Prilagođene datoteke</translation>
+<translation id="8597404194697561297">Dobro došli u Steam na Chromebook-u</translation>
 <translation id="8597845839771543242">Format svojstva:</translation>
 <translation id="8599681327221583254">Jedna ili više smernica nisu pravilno konfigurisane. Obratite se administratoru</translation>
 <translation id="8599864823732014237">Želite da preskočite registraciju za preduzeća?</translation>

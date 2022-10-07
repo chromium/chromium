@@ -1131,6 +1131,7 @@
 <translation id="2034346955588403444">‏افزودن شبکه WiFi دیگر</translation>
 <translation id="2035211704574173780">سیاه‌وسفید</translation>
 <translation id="203574396658008164">فعال کردن یادداشت‌برداری از صفحه درحالت قفل</translation>
+<translation id="2036514476578229158">‏درخواست کرده‌اید از این سایت بازدید کنید. والدینتان می‌توانند در Family Link پاسخ دهند.</translation>
 <translation id="2037445849770872822">‏برای این «حساب Google» نظارت تنظیم شده است. برای تنظیم کنترل‌های والدین بیشتر، «ادامه» را انتخاب کنید.
 
 درغیر این‌صورت، همین‌الان از سیستم خارج شوید تا تغییرات این حساب در این دستگاه نشان داده شود.
@@ -1252,6 +1253,7 @@
 <translation id="2135787500304447609">&amp;ازسرگیری</translation>
 <translation id="2136372518715274136">گذرواژه جدید را وارد کنید</translation>
 <translation id="2136476978468204130">گذرعبارتی که وارد کردید نادرست است</translation>
+<translation id="2137891579555018930">درانتظار اجازه…</translation>
 <translation id="2138398485845393913">اتصال به «<ph name="DEVICE_NAME" />» همچنان در جریان است</translation>
 <translation id="2139919072249842737">دکمه راه‌اندازی</translation>
 <translation id="2140788884185208305">سلامت باتری</translation>
@@ -4142,6 +4144,7 @@
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="4862642413395066333">‏امضا کردن پاسخ‌های OCSP</translation>
 <translation id="4863769717153320198">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (پیش‌فرض)</translation>
+<translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4864805589453749318">ولی‌ای را که می‌خواهید به او اجازه دهید حساب محل تحصیل اضافه کند، انتخاب کنید.</translation>
 <translation id="486635084936119914">باز شدن خودکار برخی از انواع فایل بعد از بارگیری</translation>
 <translation id="4868281708609571334">‏آموزش دادن به «دستیار Google» برای تشخیص صدای <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -8725,6 +8728,7 @@
 <translation id="947329552760389097">&amp;بازرسی عناصر</translation>
 <translation id="947526284350604411">پاسخ شما</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> نمی‌تواند فایل‌های این پوشه را باز کند زیرا فایل‌های سیستم در آن وجود دارد</translation>
+<translation id="949314938206378263">‏درخواست کرده‌اید از این سایت بازدید کنید. ولی‌تان می‌تواند در Family Link پاسخ دهد.</translation>
 <translation id="950307215746360464">راهنمای راه‌اندازی</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="952471655966876828">وقتی دستگاه روشن شود و از آن استفاده شود، به‌طور خودکار وصل می‌شود</translation>

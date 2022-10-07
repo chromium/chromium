@@ -307,6 +307,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="168841957122794586">Servera sertifikāts ietver vāju kriptogrāfisko atslēgu.</translation>
 <translation id="1697532407822776718">Gatavs!</translation>
 <translation id="1699570257714336246">Trūkst informācijas</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Tālummaiņas līmeņi</translation>
 <translation id="1706954506755087368">{1,plural, =1{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties rīt. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}zero{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}one{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienas. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}other{Šis serveris nevarēja pierādīt, ka ir <ph name="DOMAIN" />; šķiet, ka tā drošības sertifikāts sāks darboties pēc # dienām. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.}}</translation>
@@ -550,6 +551,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{Pēc nepilnas dienas}=1{Pēc vienas dienas}zero{Pēc {NUM_DAYS} dienām}one{Pēc {NUM_DAYS} dienas}other{Pēc {NUM_DAYS} dienām}}</translation>
 <translation id="2359629602545592467">Vairākas</translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Pārslēgšanas izvēlnes lieluma maiņa</translation>
 <translation id="2367567093518048410">Līmenis</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1424,6 +1426,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756388243121344051">Vēsture</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
 <translation id="4758311279753947758">Pievienot kontaktinformāciju</translation>
 <translation id="4761104368405085019">Izmantot jūsu mikrofonu</translation>
@@ -2162,6 +2165,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6738516213925468394">Jūsu dati tika šifrēti, izmantojot jūsu <ph name="BEGIN_LINK" />sinhronizācijas ieejas frāzi<ph name="END_LINK" />šādā datumā: <ph name="TIME" />. Lai sāktu sinhronizāciju, ievadiet ieejas frāzi.</translation>
 <translation id="674375294223700098">Nezināma servera sertifikāta kļūda.</translation>
 <translation id="6744009308914054259">Kamēr tiek gaidīts savienojums, varat apmeklēt Lejupielādes, lai lasītu rakstu bezsaistē.</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonferences</translation>
 <translation id="6753269504797312559">Politikas vērtība</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2195,6 +2199,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6846340164947227603">Izmantot virtuālās kartes numuru...</translation>
 <translation id="6852204201400771460">Vai atkārtoti ielādēt lietotni?</translation>
 <translation id="6857776781123259569">Pārvaldīt paroles…</translation>
+<translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="686485648936420384">Patērētāju resursi</translation>
 <translation id="6865412394715372076">Pašlaik nevar verificēt šo karti.</translation>
 <translation id="6869334554832814367">Aizdevumi privātpersonām</translation>
@@ -2307,6 +2312,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="7138472120740807366">Piegādes veids</translation>
 <translation id="7139892792842608322">Galvenā paplāte</translation>
 <translation id="714064300541049402">2. puses attēla nobīde uz X ass</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}zero{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> un vēl <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lavandas krāsa</translation>
 <translation id="7156870133441232244">Serveris ir jājaunina uz protokolu TLS 1.2 vai jaunāku versiju.</translation>
@@ -2387,6 +2393,7 @@ Papildu informācija:
 <translation id="7363096869660964304">Tomēr jūs neesat neredzams. Izmantojot inkognito režīmu, jūsu pārlūkošanas darbības netiek slēptas no jūsu darba devēja, interneta pakalpojumu sniedzēja vai apmeklētajām vietnēm.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pievienotu un pārvaldītu adreses.</translation>
 <translation id="7365849542400970216">Vai rādīt, kad jūs lietojat ierīci?</translation>
+<translation id="7366117520888504990">198 x 275 mm</translation>
 <translation id="7366362069757178916">Maksājumu apdarinātāji</translation>
 <translation id="7372973238305370288">meklēšanas rezultāts</translation>
 <translation id="7374461526650987610">Protokolu apdarinātāji</translation>
@@ -2546,6 +2553,7 @@ Papildu informācija:
 <translation id="7687186412095877299">Aizpilda maksājumu veidlapas, izmantojot saglabātos maksājuma veidus</translation>
 <translation id="7687305263118037187">Atkārtota mēģinājuma noildze</translation>
 <translation id="7687451951329798396">Kas teikts citos avotos?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki (pastkarte)</translation>
 <translation id="7693583928066320343">Saņemtā lapu secība</translation>
 <translation id="7696089921647603491">Klasiskais roks un “vecie gabali”</translation>
 <translation id="769721561045429135">Pašlaik dažas kartes varat izmantot tikai šajā ierīcē. Lai pārskatītu kartes, noklikšķiniet uz Turpināt.</translation>
@@ -2719,6 +2727,7 @@ Papildu informācija:
 <translation id="8202370299023114387">Konflikts</translation>
 <translation id="8210604850413485128">Tīmekļa mitināšana</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">Vietnes nevar izmantot sīkfailus, kas izseko jūsu darbības tīmeklī. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8217748145574471584">Cilvēkresursi</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>
@@ -2932,6 +2941,7 @@ Papildu informācija:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome iestatījumos atjauninātu pārlūkprogrammu Chrome, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="882338992931677877">Manuālais slots</translation>
+<translation id="8830320733681313421">Hagaki (pastkarte)</translation>
 <translation id="8834380158646307944">Poga inkognito režīma logu aizvēršanai. Lai aizvērtu visus atvērtos inkognito režīma logus, nospiediet taustiņu Enter.</translation>
 <translation id="883848425547221593">Citas grāmatzīmes</translation>
 <translation id="884264119367021077">Piegādes adrese</translation>

@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skann dokumentet</translation>
 <translation id="1309250603447638106">Laster ned oppdateringer for dokumentskanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Trykk på søketasten + venstrepil for å se dem.</translation>
+<translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er koblet fra.</translation>
 <translation id="1473110567575736769">Tre sekunders nedtelling</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ingenting er tatt opp</translation>
 <translation id="1838104802459806957">Vipp opp</translation>
+<translation id="1843105061469674856">Skann en side til</translation>
 <translation id="1851169887664797861">Flere kamerakontroller er tilgjengelige</translation>
 <translation id="1851616744363735765">SATT PÅ PAUSE</translation>
 <translation id="1862930711583847113">Kan ikke eksportere <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@ Apper med lagringstillatelser har tilgang til bildene og videoene dine.</transla
 <translation id="414641094616694804">Dette kameraet kan ikke endre oppløsning</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
 <translation id="4281620174117014503">Middels oppløsning</translation>
+<translation id="428234092390943511">Miniatyrbilde av siden</translation>
 <translation id="4329152592498422850">Bytt til kvadratisk bilde</translation>
 <translation id="4340659173795395806">Nå kan du lage flersiders PDF-filer</translation>
 <translation id="4383571725254449280">Logger over utskriftsytelse</translation>

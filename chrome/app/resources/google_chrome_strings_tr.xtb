@@ -253,6 +253,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
 <translation id="6113794647360055231">Chrome daha da iyi bir hale geldi</translation>
 <translation id="6145313976051292476">PDF'leri Chrome'da aç</translation>
+<translation id="6155960517327665396">Bellek Tasarrufu sayesinde Chrome artık daha hızlı</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Google Chrome'un mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
@@ -353,6 +354,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="828798499196665338">Ebeveyniniz, Chrome'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısının etkinleştirilmesine izin verilmiyor.</translation>
 <translation id="8290100596633877290">Of! Google Chrome kilitlendi. Şimdi yeniden başlatılsın mı?</translation>
+<translation id="8341646175450781745">Bu ayar açık olduğunda Chrome, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chrome hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /> veya <ph name="BEGIN_LINK_2" />geri bildirim gönderin<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Bu dosya tehlikeli olduğu için Chrome tarafından engellendi.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
 <translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3291470810748040983">თქვენ მიიღებთ გაფრთხილებას, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>
+<translation id="3499853001094440183">ჩანართების დაჯგუფების გაუქმება</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{<ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}}</translation>
 <translation id="3882834874697329510">იმისთვის, რომ მიიღოთ გაფრთხილება, როცა გახსნილ ჩანართში უფრო დაბალი ფასი იქნება, ჩართეთ შეტყობინების ფუნქცია პარამეტრებიდან.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="6333260925957816943">ინფორმაცია ამ მაღაზიის შესახებ</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{გააუქმეთ <ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{გააუქმეთ <ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="6510648526783655549">ჩანართების ზოლის დახურვა</translation>
 <translation id="6549021453810473782">მაღაზიის ინფორმაციის ნახვა</translation>
 <translation id="6562820390860419811">ჩანართის მარცხნივ გადატანა</translation>

@@ -159,6 +159,15 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1797271123677381264">Zaboravljena lozinka</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
+<translation id="1823280932251546115">Statusna traka, vrijeme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Stavka <ph name="ITEM_TITLE" /> je otkačena</translation>
 <translation id="1836215606488044471">Asistent (učitavanje...)</translation>
@@ -458,6 +467,8 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3600061223661453002">Isključeno</translation>
 <translation id="3604801046548457007">Radna površina <ph name="DESK_TITILE" /> je kreirana</translation>
 <translation id="3606978283550408104">Brajev je redak povezan.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Omogućavanjem prijenosa podataka na mobilnoj mreži omogućit će se Bluetooth</translation>
 <translation id="3616883743181209306">Meni je pomjeren u gornji desni ugao ekrana.</translation>
 <translation id="3619536907358025872">Postavke snimanja ekrana</translation>

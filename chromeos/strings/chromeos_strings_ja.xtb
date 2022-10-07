@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
+<translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>

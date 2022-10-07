@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Untuk memeriksa apakah sandi Anda aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1231839967188101156">Jika diaktifkan, Chromium akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chromium tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
 <translation id="1385859895174722837">Asisten Google di Chromium</translation>
 <translation id="1396446129537741364">Chromium mencoba menampilkan sandi.</translation>
@@ -251,6 +252,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6717134281241384636">Profil Anda tidak dapat digunakan karena berasal dari Chromium versi yang lebih baru.
 
 Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chromium yang lebih baru.</translation>
+<translation id="6730677189742196061">Penghemat Memori membuat Chromium lebih cepat</translation>
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="673636774878526923">Untuk mengakses aktivitas Chromium di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="6774082503108938489">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>

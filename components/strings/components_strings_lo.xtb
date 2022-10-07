@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ເວັບໄຊ}other{# ເວັບໄຊ}}</translation>
 <translation id="1924727005275031552">ໃໝ່</translation>
 <translation id="1927439593081478069">ເປີດໃຊ້ກວດສອບຄວາມປອດໄພ Chrome, ກົດ Enter ເພື່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chrome</translation>
+<translation id="1935995810530254458">ຢືນຢັນການສຳເນົາ</translation>
 <translation id="1939175642807587452">ສາມາດຂໍສົ່ງການແຈ້ງເຕືອນ</translation>
 <translation id="1943994668912612445">ການອອກແບບ</translation>
 <translation id="1945968466830820669">ທ່ານອາດຈະສູນເສຍການເຂົ້າເຖິງບັນຊີຂອງອົງການຂອງທ່ານ ຫຼື ປະສົບກັບການລັກໃຊ້ຕົວຕົນ.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">ບັນທຶກ…</translation>
 <translation id="2088086323192747268">ຈັດການປຸ່ມຊິ້ງຂໍ້ມູນ, ກົດ Enter ເພື່ອຈັດການວ່າຂໍ້ມູນໃດທີ່ທ່ານຈະຊິ້ງຂໍ້ມູນໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2091887806945687916">ສຽງ</translation>
+<translation id="2093982008204312032">Google Chrome ກຳລັງພະຍາຍາມປິດ Windows Hello ສຳລັບການຕື່ມລະຫັດຜ່ານ.</translation>
 <translation id="2094505752054353250">ໂດເມນບໍ່ເຂົ້າຄູ່ກັນ</translation>
 <translation id="2099652385553570808">ໜີບກະຫຼັບເຟີເບື້ອງຊ້າຍສາມເທື່ອ</translation>
 <translation id="2101225219012730419">ລຸ້ນ:</translation>
@@ -1143,6 +1145,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}other{ເອກະສານ PDF ທີ່ປະກອບມີ {COUNT} ໜ້າ}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">ເພາະວ່າແບບຟອມນີ້ກຳລັງຖືກສົ່ງໂດຍໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ, ຄົນອື່ນຈຶ່ງສາມາດເຫັນຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
+<translation id="4024923292610332139">ປິດ TouchID ສຳລັບການຕື່ມລະຫັດຜ່ານ</translation>
 <translation id="4025913568718019429">ປຸ່ມຈັດການການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ Google, ກົດ Enter ເພື່ອເຂົ້າເບິ່ງການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="4030383055268325496">ປ່ຽນ​ກັບ​ຄືນຄໍາສັ່ງເພີ່ມ</translation>
 <translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
@@ -1259,6 +1262,7 @@
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
 <translation id="4300675098767811073">ເຈາະຮູເບື້ອງຂວາຫຼາຍຮູ</translation>
 <translation id="4302514097724775343">ແຕະ dino ເພື່ອຫຼິ້ນ</translation>
+<translation id="4304049446746819918">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ຍ້າຍໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">ບໍ່ສາມາດເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໄດ້</translation>
 <translation id="4306529830550717874">ບັນທຶກທີ່ຢູ່ບໍ?</translation>
 <translation id="4306812610847412719">ຄລິບບອດ</translation>
@@ -1634,6 +1638,7 @@
 <translation id="5254043433801397071">ເພີ່ມປະສິດທິພາບເນື້ອຫາທີ່ພິມ</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">ຢືນຢັນການບັນທຶກ</translation>
+<translation id="5257739419779698609">{0,plural, =1{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ສຳເນົາໄຟລ໌ນີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ສຳເນົາໄຟລ໌ເຫຼົ່ານີ້ໄປໃສ່ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">ຫຍິບເຫຼັ້ມຢູ່ເທິງສຸດ</translation>
 <translation id="5269225904387178860">ເຈາະຮູຢູ່ລຸ່ມສຸດສີ່ຮູ</translation>
 <translation id="5269999699920406580">ຄຸນສົມບັດທີ່ນຳໃຊ້ໃນທົ່ວລະບົບສາມາດຕັ້ງຄ່າໄດ້ໂດຍເຈົ້າຂອງເທົ່ານັ້ນ: <ph name="OWNER_EMAIL" /></translation>
@@ -1696,6 +1701,7 @@
 <translation id="5412236728747081950">ເວັບໄຊນີ້ໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ສະແຕັກເກີ້ 4</translation>
+<translation id="5414511064953050917">ຢືນຢັນການຍ້າຍ</translation>
 <translation id="5421136146218899937">ລຶບຂໍ້ມູນການທ່ອງເນັດ...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ບໍ່ມີເວັບໄຊທີ່ຖືກບລັອກ}=1{ບລັອກ 1 ເວັບໄຊແລ້ວ}other{ບລັອກ # ເວັບໄຊແລ້ວ}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
@@ -2317,6 +2323,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ທີ່ຢູ່}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ທີ່ຢູ່}}</translation>
 <translation id="7153618581592392745">ສີມ່ວງລາເວນເດີ</translation>
 <translation id="7156870133441232244">ເຊີບເວີຄວນອັບເກຣດເປັນ TLS 1.2 ຫຼື ໃໝ່ກວ່າ.</translation>
+<translation id="7163295244162773898">{0,plural, =1{ສຳເນົາໄຟລ໌ຄວາມລັບບໍ?}other{ສຳເນົາໄຟລ໌ຄວາມລັບບໍ?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">ຮວມເຂົ້າກັນແລ້ວ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທີ່ຢູ່}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທີ່ຢູ່}}</translation>
@@ -2925,6 +2932,7 @@
 <translation id="8763986294015493060">ປິດໜ້າ​ຈໍ​ທີ່ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດທີ່ກຳລັງເປີດຢູ່ຕອນນີ້</translation>
 <translation id="8766943070169463815">ເປີດຊີດການພິສູດຢືນຢັນຂໍ້ມູນການເຂົ້າສູ່ລະບົບການຈ່າຍເງິນແບບປອດໄພແລ້ວ</translation>
 <translation id="8767765348545497220">ປິດຟອງຊ່ວຍເຫຼືອ</translation>
+<translation id="877348612833018844">{0,plural, =1{ຍ້າຍໄຟລ໌ຄວາມລັບບໍ?}other{ຍ້າຍໄຟລ໌ຄວາມລັບບໍ?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">ລົດຈັກ</translation>
 <translation id="8790007591277257123">ເຮັດຄືນຄໍາສັ່ງລຶບ</translation>

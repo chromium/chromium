@@ -414,6 +414,7 @@
 <translation id="3368922792935385530">Kapcsolódva</translation>
 <translation id="3371140690572404006">C típusú USB-vel kompatibilis eszköz (jobb első port)</translation>
 <translation id="3375634426936648815">Csatlakozva</translation>
+<translation id="3378438761594387761">Itt találja a legutóbbi letöltéseket és képernyőfelvételeket</translation>
 <translation id="3378442621503952303">Csatlakozás a profilhoz. Várjon néhány percet.</translation>
 <translation id="3386978599540877378">teljes képernyős nagyító</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -721,6 +722,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
 <translation id="509790653408515442">Telefonja alkalmazásai itt jelennek majd meg streameléskor</translation>
 <translation id="5098537242461068432">Asztal és ablakok újra megnyitva</translation>
+<translation id="5104236669533825617">Nem sikerült létrehozni a képernyőfelvételt</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
@@ -766,6 +768,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (jobb)</translation>
 <translation id="5352250171825660495">Sötét téma bekapcsolva.</translation>
 <translation id="5356963482258194581">Válthat a sötét és a világos téma között. Kattintson jobb egérgombbal az asztalon, majd válassza a Háttérkép és stílus elemet.</translation>
+<translation id="536019650977002321">A rendszergazda nem engedélyezi hangfelvételek rögzítését. További információért forduljon a rendszergazdához.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ugrás erre a lapra</translation>
 <translation id="5379115545237091094">Túl sok próbálkozás</translation>
 <translation id="5391307769715781764">Lecseréli a mentett asztalt?</translation>

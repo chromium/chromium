@@ -712,6 +712,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2799223571221894425">Begin weer</translation>
 <translation id="2803306138276472711">Google Veiligblaai het onlangs <ph name="BEGIN_LINK" />wanware bespeur<ph name="END_LINK" /> op <ph name="SITE" />. Webwerwe wat gewoonlik veilig is, word soms met wanware besmet.</translation>
 <translation id="2807052079800581569">Prent se posisie op Y-as</translation>
+<translation id="2808278141522721006">Jy kan Windows Hello in <ph name="SETTINGS" /> aan- of afskakel</translation>
 <translation id="2820957248982571256">Skandeer tans …</translation>
 <translation id="2824775600643448204">Adres- en soekbalk</translation>
 <translation id="2826760142808435982">Die verbinding is geënkripteer en gestaaf deur <ph name="CIPHER" /> te gebruik, en gebruik <ph name="KX" /> as die sleuteluitruilmeganisme.</translation>
@@ -882,6 +883,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3288238092761586174"><ph name="URL" /> sal dalk bykomende stappe moet doen om jou betaling te verifieer</translation>
 <translation id="3293642807462928945">Kom meer te wete oor <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
+<translation id="3299098170013242198">Windows Hello is aan om wagwoorde in te vul</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3304073249511302126">bluetooth-opsporing</translation>
 <translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
@@ -1030,6 +1032,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3678342917559046352">Ongeldige uitbreiding: daar word verwag dat die waarde een van die volgende vorms sal hê: &lt;extension_id&gt; of &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Maak bladsy in 'n nuwe incognitovenster oop (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Sertifikaatinligting</translation>
+<translation id="3699374065820972102">TouchID is aan om wagwoorde in te vul</translation>
 <translation id="3701427423622901115">Terugstelling erken.</translation>
 <translation id="3704162925118123524">Die netwerk wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1489,6 +1492,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4900217275619098670">Negende rol</translation>
 <translation id="4901778704868714008">Stoor …</translation>
 <translation id="4905659621780993806">Jou admin sal jou toestel op <ph name="DATE" /> om <ph name="TIME" /> outomaties herbegin. Stoor enige oop items voordat jou toestel herbegin.</translation>
+<translation id="4911007278801291296">Jy kan TouchID in <ph name="SETTINGS" /> aan- of afskakel</translation>
 <translation id="4913987521957242411">Pons links bo</translation>
 <translation id="4918221908152712722">Installeer <ph name="APP_NAME" /> (geen aflaai word vereis nie)</translation>
 <translation id="4923459931733593730">Betaling</translation>
@@ -1681,6 +1685,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5357848622083956825">Visuele kuns en ontwerp</translation>
 <translation id="536296301121032821">Kon nie beleidinstellings stoor nie</translation>
 <translation id="5363309033720083897">Reekspoort deur jou administrateur toegelaat</translation>
+<translation id="5363713372507812442">Deursoek reise</translation>
 <translation id="5371425731340848620">Dateer kaart op</translation>
 <translation id="5377026284221673050">"Jou horlosie is agter" of "Jou horlosie is voor" of "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Skep Aanbieding-knoppie; druk Enter om vinnig 'n nuwe Google-aanbieding in Skyfies te skep</translation>

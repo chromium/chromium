@@ -307,6 +307,7 @@
 <translation id="168841957122794586">सर्व्हर सर्टिफिकेटमध्ये एक कमकुवत क्रिप्टोग्राफिक की आहे.</translation>
 <translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1699570257714336246">माहिती नाही आहे</translation>
+<translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">झूम स्तर</translation>
 <translation id="1706954506755087368">{1,plural, =1{हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षा सर्टिफिकेट उद्यापासून मानले जाईल. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.}other{हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षा सर्टिफिकेट पुढील # दिवसांपासून मानले जाईल. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.}}</translation>
@@ -395,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{काहीही नाही}=1{1 साइट}other{# साइट}}</translation>
 <translation id="1924727005275031552">नवीन</translation>
 <translation id="1927439593081478069">Chrome सुरक्षितता तपासणी रन करा बटण, Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करण्यासाठी एंटर दाबा</translation>
+<translation id="1935995810530254458">तरीही कॉपी करा</translation>
 <translation id="1939175642807587452">सूचना पाठवण्याची विनंती करू शकते</translation>
 <translation id="1943994668912612445">डिझाइन</translation>
 <translation id="1945968466830820669">तुम्ही तुमच्या संस्थेच्या खात्याचा ॲक्सेस गमावू शकता किंवा तुमची संवेदनशील माहिती चोरीला जाऊ शकते. Chromium तुमचा पासवर्ड लगेच बदलण्याची शिफारस करत आहे.</translation>
@@ -448,6 +450,7 @@
 <translation id="2085876078937250610">सेव्ह करा…</translation>
 <translation id="2088086323192747268">सिंक व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
 <translation id="2091887806945687916">ध्वनी</translation>
+<translation id="2093982008204312032">Google Chrome पासवर्ड एंटर करण्यासाठी Windows Hello बंद करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2094505752054353250">डोमेन जुळत नाही</translation>
 <translation id="2099652385553570808">ट्रिपल स्टेपल लेफ्ट</translation>
 <translation id="2101225219012730419">आवृत्ती:</translation>
@@ -550,6 +553,7 @@
 <translation id="2359347814217202136">{NUM_DAYS,plural, =0{In less than a day}=1{एका दिवसामध्ये}other{{NUM_DAYS} दिवसांमध्ये}}</translation>
 <translation id="2359629602545592467">अनेक</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
+<translation id="2361263712565360498">२७५ x ३९५ मिमी</translation>
 <translation id="236340516568226369">आकार बदलण्याच्या टॉगलचा मेनू</translation>
 <translation id="2367567093518048410">दर्जा</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1140,6 +1144,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF दस्तऐवजामध्ये {COUNT} पेज आहे}other{PDF दस्तऐवजामध्ये {COUNT} पेज आहेत}}</translation>
 <translation id="4022639246993848966">३.५x५</translation>
 <translation id="4023431997072828269">हा फॉर्म सुरक्षित नसलेले कनेक्शन वापरून सबमिट केल्यामुळे, तुमची माहिती इतरांना दिसू शकते.</translation>
+<translation id="4024923292610332139">पासवर्ड एंटर करताना TouchID बंद करा</translation>
 <translation id="4025913568718019429">Google गोपनीयता सेटिंग्ज व्यवस्थापित करा बटण, तुमच्या Google खाते गोपनीयता सेटिंग्जना भेट देण्यासाठी एंटर दाबा</translation>
 <translation id="4030383055268325496">&amp;जोडा पूर्ववत करा</translation>
 <translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
@@ -1256,6 +1261,7 @@
 <translation id="42981349822642051">विस्तृत करा</translation>
 <translation id="4300675098767811073">मल्टिपल पंच राइट</translation>
 <translation id="4302514097724775343">खेळण्यासाठी डायनासोरवर टॅप करा</translation>
+<translation id="4304049446746819918">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर हलवण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> वर हलवण्याची शिफारस करत नाही}}</translation>
 <translation id="4305666528087210886">तुमची फाइल अ‍ॅक्सेस करता आली नाही</translation>
 <translation id="4306529830550717874">पत्ता सेव्ह करायचा आहे का?</translation>
 <translation id="4306812610847412719">क्लिपबोर्ड</translation>
@@ -1424,6 +1430,7 @@
 <translation id="4751476147751820511">मोशन किंवा प्रकाश सेन्सर</translation>
 <translation id="4754461935447132332">सुरक्षित नसलेल्या साइटसाठी अनुमती नाही</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
+<translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757993714154412917">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chromium तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
 <translation id="4758311279753947758">संपर्क माहिती जोडा</translation>
 <translation id="4761104368405085019">तुमचा मायक्रोफोन वापरा</translation>
@@ -1630,6 +1637,7 @@
 <translation id="5254043433801397071">प्रिंट आशय ऑप्टिमाइझ करा</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">तरीही कॅप्चर करा</translation>
+<translation id="5257739419779698609">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> वर कॉपी करण्याची शिफारस करत नाही}}</translation>
 <translation id="5266128565379329178">बाइंड टॉप</translation>
 <translation id="5269225904387178860">क्वाड पंच बॉटम</translation>
 <translation id="5269999699920406580">संपूर्ण सिस्टमला लागू होणारी वैशिष्‍ट्ये फक्त मालकाद्वारे सेट केली जाऊ शकतात: <ph name="OWNER_EMAIL" /></translation>
@@ -1692,6 +1700,7 @@
 <translation id="5412236728747081950">तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमची स्वारस्ये मिळवते</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टॅकर ४</translation>
+<translation id="5414511064953050917">तरीही हलवा</translation>
 <translation id="5421136146218899937">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{एक साइट ब्लॉक केली आहे}other{# साइट ब्लॉक केल्या आहेत}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
@@ -2163,6 +2172,7 @@
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="674375294223700098">अज्ञात सर्व्हर सर्टिफिकेट एरर.</translation>
 <translation id="6744009308914054259">कनेक्शनची वाट पाहत असताना, तुम्ही ऑफलाइन लेख वाचण्यासाठी डाउनलोडवर जाऊ शकता.</translation>
+<translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलीकॉंफरन्सिंग</translation>
 <translation id="6753269504797312559">धोरण मूल्य</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
@@ -2196,6 +2206,7 @@
 <translation id="6846340164947227603">व्हर्च्युअल कार्ड नंबर वापरा...</translation>
 <translation id="6852204201400771460">ॲप रीलोड करायचे?</translation>
 <translation id="6857776781123259569">पासवर्ड व्यवस्थापित करा…</translation>
+<translation id="6864189428899665393">२६७ x ३८९ मिमी</translation>
 <translation id="686485648936420384">ग्राहक संसाधने</translation>
 <translation id="6865412394715372076">या कार्डची पडताळणी आता करू शकत नाही</translation>
 <translation id="6869334554832814367">वैयक्तिक कर्ज</translation>
@@ -2308,9 +2319,11 @@
 <translation id="7138472120740807366">वितरण पद्धत</translation>
 <translation id="7139892792842608322">प्राथमिक ट्रे</translation>
 <translation id="714064300541049402">साइड २ इमेज X शिफ्ट</translation>
+<translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
 <translation id="7153618581592392745">फिकट जांभळा</translation>
 <translation id="7156870133441232244">सर्व्हर TLS 1.2 किंवा त्यापुढील आवृत्तीवर अपग्रेड करणे आवश्यक आहे.</translation>
+<translation id="7163295244162773898">{0,plural, =1{गोपनीय फाइल कॉपी करायची आहे का?}other{गोपनीय फाइल कॉपी करायच्या आहेत का?}}</translation>
 <translation id="717330890047184534">Gaia आयडी:</translation>
 <translation id="7174545416324379297">मर्ज केले</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> आणखी}other{<ph name="SHIPPING_OPTION_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> आणखी}}</translation>
@@ -2388,6 +2401,7 @@
 <translation id="7363096869660964304">मात्र, तुम्ही अदृश्य नाही. गुप्त मोडमध्ये तुमचे ब्राउझिंग हे तुमचा नियोक्ता, तुमचा इंटरनेट सेवा पुरवठादार किंवा तुम्ही भेट देता त्या वेबसाइटपासून लपत नाही.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome सेटिंग्जमध्ये ॲड्रेस जोडण्यासाठी आणि व्यवस्थापित करण्यासाठी टॅब व त्यानंतर एंटर दाबा</translation>
 <translation id="7365849542400970216">तुमच्या डिव्हाइसचा वापर माहीत आहे का?</translation>
+<translation id="7366117520888504990">१९८ x २७५ मिमी</translation>
 <translation id="7366362069757178916">पेमेंट हँडलर</translation>
 <translation id="7372973238305370288">शोध परिणाम</translation>
 <translation id="7374461526650987610">प्रोटोकॉल हँडलर</translation>
@@ -2547,6 +2561,7 @@
 <translation id="7687186412095877299">तुमच्या सेव्ह केलेल्या पेमेंट पद्धतींसह पेमेंट फॉर्म भरते</translation>
 <translation id="7687305263118037187">पुन्हा प्रयत्न करण्याची वेळ संपली</translation>
 <translation id="7687451951329798396">इतर स्रोत काय सांगतात?</translation>
+<translation id="7690647519407127574">Oufuku Hagaki पोस्टकार्ड</translation>
 <translation id="7693583928066320343">पेजचा क्रम मिळाला</translation>
 <translation id="7696089921647603491">क्लासिक रॉक आणि जुनी गाणी</translation>
 <translation id="769721561045429135">सध्या, तुमच्याकडे अशी कार्डे आहेत जी फक्त या डिव्हाइसवर वापरली जाऊ शकतात. कार्डांचे पुनरावलोकन करण्यासाठी सुरू ठेवा क्लिक करा.</translation>
@@ -2720,6 +2735,7 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8210604850413485128">वेब होस्टिंग</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित आहे</translation>
+<translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8217240300496046857">साइट या तुमचा संपूर्ण वेबवर माग ठेवणाऱ्या कुकी वापरू शकत नाहीत. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="8217748145574471584">मानव संसाधने</translation>
 <translation id="8218327578424803826">नियुक्त केलेले स्थान:</translation>
@@ -2916,6 +2932,7 @@
 <translation id="8763986294015493060">सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करा</translation>
 <translation id="8766943070169463815">सुरक्षित पेमेंट क्रेडेंशियल ची ऑथेंटिकेशन शीट उघडी आहे</translation>
 <translation id="8767765348545497220">मदतीसंबंधित बबल बंद करा</translation>
+<translation id="877348612833018844">{0,plural, =1{गोपनीय फाइल हलवायची आहे का?}other{गोपनीय फाइल हलवायच्या आहेत का?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">मोटरसायकल</translation>
 <translation id="8790007591277257123">&amp;पुन्हा करा हटवा</translation>
@@ -2932,6 +2949,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुमच्या Chrome सेटिंग्जमधून Chrome अपडेट करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="882338992931677877">मॅन्‍युअल स्लॉट</translation>
+<translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8834380158646307944">गुप्त विंडो बंद करा बटण, सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करण्यासाठी एंटर दाबा</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>
 <translation id="884264119367021077">वहनावळ पत्ता</translation>

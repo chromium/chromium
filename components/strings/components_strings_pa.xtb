@@ -712,6 +712,7 @@
 <translation id="2799223571221894425">ਰੀਲੌਂਚ ਕਰੋ</translation>
 <translation id="2803306138276472711">Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੇ <ph name="SITE" /> 'ਤੇ ਹੁਣੇ ਹੀ<ph name="BEGIN_LINK" /> ਮਲਵੇਅਰ ਖੋਜਿਆ<ph name="END_LINK" /> ਸੀ। ਜੋ ਵੈੱਬਸਾਈਟਾਂ ਆਮ ਤੌਰ ਤੇ ਸੁਰੱਖਿਅਤ ਹੁੰਦੀਆਂ ਹਨ, ਉਹ ਵੀ ਕਦੇ-ਕਦੇ ਮਲਵੇਅਰ ਨਾਲ ਸੰਕ੍ਰਮਿਤ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="2807052079800581569">ਚਿੱਤਰ Y ਸਥਿਤੀ</translation>
+<translation id="2808278141522721006">ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ Windows Hello ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2824775600643448204">ਪਤਾ ਅਤੇ ਖੋਜ ਬਾਰ</translation>
 <translation id="2826760142808435982">ਕਨੈਕਸ਼ਨ <ph name="CIPHER" /> ਵਰਤਦੇ ਹੋਏ ਐਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ <ph name="KX" /> ਨੂੰ ਮੁੱਖ ਐਕਸਚੇਂਜ ਬਣਤਰ ਦੇ ਤੌਰ 'ਤੇ ਵਰਤਦਾ ਹੈ।</translation>
@@ -880,6 +881,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ਨੂੰ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਵਧੀਕ ਕਦਮ ਚੁੱਕਣ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ਨੀਤੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3295444047715739395">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="3299098170013242198">Windows Hello ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3304073249511302126">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="33073482541490531">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। Password Manager ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਹੁਣੇ ਬਦਲਣ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
@@ -1027,6 +1029,7 @@
 <translation id="3678342917559046352">ਅਵੈਧ ਐਕਸਟੈਂਸ਼ਨ: ਮੁੱਲ ਅੱਗੇ ਦਿੱਤੇ ਕਿਸੇ ਇੱਕ ਰੂਪ ਵਿੱਚ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ: &lt;extension_id&gt; ਜਾਂ &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">ਕਿਸੇ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਪੰਨਾ ਖੋਲ੍ਹੋ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
+<translation id="3699374065820972102">TouchID ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="3701427423622901115">ਰੀਸੈੱਟ ਪ੍ਰਵਾਨ ਹੋਇਆ।</translation>
 <translation id="3704162925118123524">ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਨੈੱਟਵਰਕ ਇਹ ਚਾਹ ਸਕਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਦੇ ਲੌਗ-ਇਨ ਪੰਨੇ 'ਤੇ ਜਾਓ।</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1486,6 +1489,7 @@
 <translation id="4900217275619098670">ਨੌਵਾਂ ਰੋਲ</translation>
 <translation id="4901778704868714008">ਰੱਖਿਅਤ ਕਰੋ...</translation>
 <translation id="4905659621780993806">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ <ph name="DATE" /> ਨੂੰ <ph name="TIME" /> ਵਜੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੇਗਾ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਮੁੜ-ਸ਼ੁਰੂ ਹੋਣ ਤੋਂ ਪਹਿਲਾਂ, ਖੁੱਲੀ ਹੋਈ ਕਿਸੇ ਵੀ ਆਈਟਮ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ।</translation>
+<translation id="4911007278801291296">ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ TouchID ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="4913987521957242411">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ਸਥਾਪਤ ਕਰੋ (ਕੋਈ ਡਾਊਨਲੋਡ ਲੋੜੀਂਦਾ ਨਹੀਂ ਹੈ)</translation>
 <translation id="4923459931733593730">ਭੁਗਤਾਨ ਵਿਧੀ</translation>
@@ -1678,6 +1682,7 @@
 <translation id="5357848622083956825">ਦ੍ਰਿਸ਼ ਕਲਾ ਅਤੇ ਡਿਜ਼ਾਈਨ</translation>
 <translation id="536296301121032821">ਨੀਤੀ ਸੈਟਿੰਗਾਂ ਸਟੋਰ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
 <translation id="5363309033720083897">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਇਜਾਜ਼ਤਸ਼ੁਦਾ ਸੀਰੀਅਲ ਪੋਰਟ</translation>
+<translation id="5363713372507812442">ਖੋਜ ਸਫ਼ਰ</translation>
 <translation id="5371425731340848620">ਕਾਰਡ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5377026284221673050">"ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ" ਜਾਂ "ਤੁਹਾਡੀ ਘੜੀ ਅੱਗੇ ਹੈ" ਜਾਂ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">'ਪੇਸ਼ਕਾਰੀ ਬਣਾਓ' ਬਟਨ, Slides ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵੀਂ Google ਪੇਸ਼ਕਾਰੀ ਬਣਾਉਣ ਲਈ Enter ਦਬਾਓ</translation>

@@ -12,6 +12,8 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1131805035311359397">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
+<translation id="1231839967188101156">Als deze functie aanstaat, maakt Chromium geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer computerbronnen en blijft Chromium snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Geheugenbesparing heeft Chromium sneller gemaakt</translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
 <translation id="1385859895174722837">De Google Assistent in Chromium</translation>
 <translation id="1396446129537741364">Chromium probeert wachtwoorden te bekijken.</translation>
@@ -210,6 +212,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6055895534982063517">Er is een nieuwe versie van Chromium beschikbaar, en deze is sneller dan ooit.</translation>
 <translation id="6063093106622310249">&amp;Openen in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> is toegevoegd aan Chromium</translation>
+<translation id="6072463441809498330">Maak Chromium sneller</translation>
 <translation id="608006075545470555">Werkprofiel toevoegen aan deze browser</translation>
 <translation id="6096348254544841612">Chromium aanpassen en beheren. Update is beschikbaar</translation>
 <translation id="6119438414301547735">Toestaan dat de extensie toegangsverzoeken toont op de Chromium-werkbalk</translation>
@@ -253,6 +256,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6717134281241384636">Je profiel kan niet worden gebruikt, omdat dit is gemaakt in een recentere versie van Chromium.
 
 Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirectory op of gebruik een recentere versie van Chromium.</translation>
+<translation id="6730677189742196061">Geheugenbesparing heeft Chromium sneller gemaakt</translation>
 <translation id="6734291798041940871">Chromium is al geïnstalleerd voor alle gebruikers op je computer.</translation>
 <translation id="673636774878526923">Log in en zet synchronisatie aan voor toegang tot je Chromium-gegevens op al je apparaten</translation>
 <translation id="6774082503108938489">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>

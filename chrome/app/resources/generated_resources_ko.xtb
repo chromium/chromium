@@ -1130,6 +1130,7 @@
 <translation id="2034346955588403444">다른 Wi-Fi 네트워크 추가</translation>
 <translation id="2035211704574173780">그레이스케일</translation>
 <translation id="203574396658008164">잠금 화면에서 메모 작성 사용</translation>
+<translation id="2036514476578229158">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="2037445849770872822">이 Google 계정에 감독 기능이 설정되었습니다. 더 많은 자녀 보호 기능을 설정하려면 계속을 선택하세요.
 
 그럴 필요가 없다면 계정의 변경사항이 기기에 반영되도록 지금 로그아웃합니다.
@@ -1250,6 +1251,7 @@
 <translation id="2135787500304447609">다시 시작(&amp;R)</translation>
 <translation id="2136372518715274136">새 비밀번호 입력</translation>
 <translation id="2136476978468204130">입력한 암호가 잘못되었습니다.</translation>
+<translation id="2137891579555018930">권한을 기다리는 중…</translation>
 <translation id="2138398485845393913"><ph name="DEVICE_NAME" />에 연결 중입니다.</translation>
 <translation id="2139919072249842737">설정 버튼</translation>
 <translation id="2140788884185208305">배터리 상태</translation>
@@ -4127,6 +4129,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4858913220355269194">축구왕</translation>
 <translation id="4862642413395066333">OCSP 응답 서명</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" />x<ph name="HEIGHT" />(권장)처럼 보입니다.</translation>
+<translation id="486459320933704969">부모님 또는 보호자가 이 웹사이트를 방문해도 괜찮다고 말해야 합니다.</translation>
 <translation id="4864805589453749318">학교 계정을 추가할 수 있도록 권한을 부여할 부모님을 선택하세요.</translation>
 <translation id="486635084936119914">다운로드 후에 특정 파일 형식을 자동으로 열기</translation>
 <translation id="4868281708609571334">Google 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 음성을 인식하도록 학습시키세요</translation>
@@ -8687,6 +8690,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="947329552760389097">요소 검사(&amp;I)</translation>
 <translation id="947526284350604411">답변</translation>
 <translation id="947667444780368238">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 폴더의 파일을 열 수 없습니다.</translation>
+<translation id="949314938206378263">이 사이트의 방문을 요청했습니다. 부모님이 Family Link에서 답장을 보낼 수 있습니다.</translation>
 <translation id="950307215746360464">설정 가이드</translation>
 <translation id="951991426597076286">거부</translation>
 <translation id="952471655966876828">기기가 켜져 있고 사용 중일 때 자동으로 연결됩니다.</translation>

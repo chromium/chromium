@@ -252,6 +252,7 @@
 <translation id="608006075545470555">Tambahkan Profil Kerja ke browser ini</translation>
 <translation id="6113794647360055231">Chrome menjadi lebih baik</translation>
 <translation id="6145313976051292476">Buka PDF di Chrome</translation>
+<translation id="6155960517327665396">Penghemat Memori membuat Chrome lebih cepat</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
@@ -352,6 +353,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8286862437124483331">Google Chrome mencoba menampilkan sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="828798499196665338">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chrome. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
+<translation id="8341646175450781745">Jika diaktifkan, Chrome akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chrome tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />kirim masukan<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chrome. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>

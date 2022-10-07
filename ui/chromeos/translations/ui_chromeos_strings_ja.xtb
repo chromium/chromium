@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> 個のファイルを選択</translation>
+<translation id="2383454254762599978">ゴミ箱に移動</translation>
 <translation id="2387458720915042159">プロキシ接続タイプ</translation>
 <translation id="2389832672041313158">ビルマ語 / ミャンマー語</translation>
 <translation id="2392369802118427583">有効にする</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> をゴミ箱に移動しています</translation>
 <translation id="3567221313191587603">ファイルにオフラインでアクセスするには、ファイルを選択し、[<ph name="OFFLINE_CHECKBOX_NAME" />] をオンに切り替えます。</translation>
 <translation id="357479282490346887">リトアニア語</translation>
 <translation id="3587482841069643663">すべて</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ベンガル語（表音）</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
+<translation id="4019998208269143058">クイック ファイルに固定</translation>
 <translation id="4040753847560036377">PUK が正しくありません</translation>
 <translation id="4057991113334098539">有効にしています...</translation>
 <translation id="4092890906744441904">アイルランド語</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">管理者のポリシーでは、次のことは推奨されていません。</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
 <translation id="4176286497474237543">ゴミ箱を今すぐ空にする</translation>
+<translation id="4179621117429069925">このアイテムはゴミ箱にあります</translation>
 <translation id="4186579485882418952">オフラインを有効にする</translation>
 <translation id="4193154014135846272">Google ドキュメント</translation>
 <translation id="4197674956721858839">zip 圧縮</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">認証証明書がリモートで拒否されました</translation>
 <translation id="4394214039309501350">外部リンク</translation>
 <translation id="4394980935660306080">今週</translation>
+<translation id="4398096759193130964">アイテムを復元するか、ゴミ箱から新しいフォルダにドラッグしてください</translation>
 <translation id="4401287888955153199">すべて解凍</translation>
 <translation id="4410695710508688828">抽出操作が失敗しました。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ファイルのショートカットを作成</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ヒンディー語（字母）キーボード</translation>
 <translation id="4801956050125744859">両方を保持</translation>
 <translation id="4804827417948292437">アボカド</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> 個のアイテムを復元しています</translation>
 <translation id="4823651846660089135">デバイスは読み取り専用です</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> 個のアイテムを選択</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">花</translation>
 <translation id="4943368462779413526">フットボール</translation>
 <translation id="4961158930123534723">1 個のフォルダが Parallels Desktop と共有されています</translation>
+<translation id="496656650103537022">「<ph name="FILE_NAME" />」を復元しました</translation>
 <translation id="4969785127455456148">アルバム</translation>
 <translation id="4973523518332075481">名前は <ph name="MAX_LENGTH" /> 文字以内で指定してください</translation>
 <translation id="4973970068702235170">圧縮できませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> が存在しません。</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />、ロックを解除</translation>
 <translation id="5700087501958648444">オーディオ情報</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> をゴミ箱に移動しました</translation>
 <translation id="5724172041621205163">タイ語（Pattachote）キーボード</translation>
 <translation id="5756666464756035725">ハンガリー語 QWERTY</translation>
 <translation id="5763377084591234761">ドイツ語（スイス）</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> アーカイブ</translation>
 <translation id="6321303798550928047">手を振る</translation>
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
+<translation id="6337014272874260727">クイック ファイルへの固定を解除</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
 <translation id="6346310558342052870">アクセスが制限されています</translation>
 <translation id="6356685157277930264">ファイルのフィードバック ウィンドウ</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6755827872271341378">ChromeOS Flex デバイス</translation>
 <translation id="6790428901817661496">再生</translation>
+<translation id="6794539005637808366">アイテムを復元するか、ゴミ箱から新しいフォルダにドラッグしてください</translation>
 <translation id="6795884519221689054">パンダ</translation>
 <translation id="6806699711453372963">Linux との共有を管理</translation>
 <translation id="6806796368146926706">英数字（日本語）キーボード</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
+<translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> 個のフォルダを選択しました</translation>
 <translation id="7008426324576352165">アップロードを完了するには、組織で追加のストレージが必要です。</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />（<ph name="ROOT_SUMMARY" />）</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">チェコ語</translation>
 <translation id="7417453074306512035">エチオピア語キーボード</translation>
 <translation id="7417705661718309329">Google マップ</translation>
+<translation id="7419668828140929293">「<ph name="FILENAME" />」を復元しています</translation>
 <translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7460898608667578234">ウクライナ語</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google フォトに簡単アクセス</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7663224033570512922">ヒンディー語</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをゴミ箱に移動しました</translation>
 <translation id="7693909743393669729">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが消去され、既存のパーティションは非表示のパーティションを含めすべて削除されます。この操作は元に戻せません。</translation>
 <translation id="7695430100978772476">「<ph name="DRIVE_NAME" />」をフォーマットできませんでした</translation>
 <translation id="76959938259365003">ゴミ箱を空にできませんでした。</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">中国語（五筆）</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7774365994322694683">鳥</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを復元しました</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7788080748068240085">「<ph name="FILE_NAME" />」をオフラインで保存するには、あと <ph name="TOTAL_FILE_SIZE" /> の空き領域が必要です。次をお試しください:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />オフライン アクセスが不要になったファイルの固定を解除する<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
 <translation id="954194396377670556">管理者のポリシーで禁止されていること:</translation>
 <translation id="965477715979482472">英語（南アフリカ）</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをゴミ箱に移動しています</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>
 <translation id="992401651319295351">入力できるのはあと <ph name="RETRIES" /> 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>

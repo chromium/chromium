@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">掃描你的文件</translation>
 <translation id="1309250603447638106">正在下載文件掃描功能更新</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按下搜尋鍵 + 向左鍵即可使用。</translation>
+<translation id="1417314334557041815">編輯第 <ph name="INDEX" /> 頁</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1467231725790366244">已解除連接「<ph name="CAMERA" />」。</translation>
 <translation id="1473110567575736769">3 秒計時器</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未錄製任何內容</translation>
 <translation id="1838104802459806957">向上傾斜</translation>
+<translation id="1843105061469674856">掃描其他頁面</translation>
 <translation id="1851169887664797861">已推出新的相機控制項</translation>
 <translation id="1851616744363735765">已暫停</translation>
 <translation id="1862930711583847113">無法匯出「<ph name="FILE" />」</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">這部攝影機無法變更解析度</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4281620174117014503">中等解析度</translation>
+<translation id="428234092390943511">頁面縮圖</translation>
 <translation id="4329152592498422850">切換為正方形相片拍攝模式</translation>
 <translation id="4340659173795395806">你現在可以建立多頁 PDF 檔案</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>

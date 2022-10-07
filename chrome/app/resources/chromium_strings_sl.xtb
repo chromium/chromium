@@ -12,6 +12,8 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1131805035311359397">Če želite preveriti, ali so gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
+<translation id="1231839967188101156">Če je vklopljeno, Chromium sprosti pomnilnik z neaktivnih zavihkov. Tako imajo aktivni zavihki in druge aplikacije več računalniških sredstev, Chromium pa je še naprej hiter. Neaktivni zavihki znova postanejo aktivni, ko se vrnete nanje. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Varčevanje s pomnilnikom je pospešilo Chromium</translation>
 <translation id="1315551408014407711">Nastavitev novega profila v Chromiumu</translation>
 <translation id="1385859895174722837">Pomočnik Google v Chromiumu</translation>
 <translation id="1396446129537741364">Chromium poskuša prikazati gesla.</translation>
@@ -210,6 +212,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6055895534982063517">Na voljo je nova različica Chromiuma, ki je najhitrejša doslej.</translation>
 <translation id="6063093106622310249">&amp;Odpri v Chromiumu</translation>
 <translation id="6072279588547424923">Razširitev <ph name="EXTENSION_NAME" /> je dodana v Chromium</translation>
+<translation id="6072463441809498330">Pospešite Chromium</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>
 <translation id="6096348254544841612">Prilagodite in nadzirajte Chromium. Posodobitev je na voljo.</translation>
 <translation id="6119438414301547735">Omogočanje razširitve za prikaz zahtev za dostop v orodni vrstici Chromiuma</translation>
@@ -253,6 +256,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="6717134281241384636">Vašega profila ni mogoče uporabiti, ker je iz novejše različice Chromiuma.
 
 Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali uporabite novejšo različico Chromiuma.</translation>
+<translation id="6730677189742196061">Varčevanje s pomnilnikom je pospešilo Chromium</translation>
 <translation id="6734291798041940871">Chromium je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="673636774878526923">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="6774082503108938489">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>

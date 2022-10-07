@@ -396,6 +396,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="192020519938775529">{COUNT,plural, =0{Tidak ada}=1{1 situs}other{# situs}}</translation>
 <translation id="1924727005275031552">Baru</translation>
 <translation id="1927439593081478069">Tombol Jalankan pemeriksaan keamanan Chrome, tekan Enter untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
+<translation id="1935995810530254458">Tetap salin</translation>
 <translation id="1939175642807587452">Dapat meminta untuk mengirimkan notifikasi</translation>
 <translation id="1943994668912612445">Desain</translation>
 <translation id="1945968466830820669">Anda dapat kehilangan akses ke akun organisasi atau mengalami pencurian identitas. Chromium menyarankan Anda untuk mengubah sandi sekarang.</translation>
@@ -449,6 +450,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2085876078937250610">Simpan…</translation>
 <translation id="2088086323192747268">Tombol Kelola sinkronisasi, tekan Enter untuk mengelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="2091887806945687916">Suara</translation>
+<translation id="2093982008204312032">Google Chrome mencoba menonaktifkan Windows Hello untuk mengisi sandi.</translation>
 <translation id="2094505752054353250">Ketidakcocokan domain</translation>
 <translation id="2099652385553570808">Tiga jepretan di kiri</translation>
 <translation id="2101225219012730419">Versi:</translation>
@@ -1142,6 +1144,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4014128326099193693">{COUNT,plural, =1{Dokumen PDF berisi {COUNT} halaman}other{Dokumen PDF berisi {COUNT} halaman}}</translation>
 <translation id="4022639246993848966">3,5x5</translation>
 <translation id="4023431997072828269">Karena formulir ini dikirim menggunakan koneksi yang tidak aman, informasi Anda akan dapat dilihat oleh pengguna lain.</translation>
+<translation id="4024923292610332139">menonaktifkan TouchID untuk mengisi sandi</translation>
 <translation id="4025913568718019429">Tombol Kelola setelan Privasi Google, tekan Enter untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="4030383055268325496">&amp;Urungkan penambahan</translation>
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
@@ -1258,6 +1261,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4300675098767811073">Beberapa lubang di kanan</translation>
 <translation id="4302514097724775343">Ketuk dinosaurus untuk bermain</translation>
+<translation id="4304049446746819918">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk memindahkan file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">File Anda tidak dapat diakses</translation>
 <translation id="4306529830550717874">Simpan alamat?</translation>
 <translation id="4306812610847412719">papan klip</translation>
@@ -1633,6 +1637,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5254043433801397071">Optimalkan konten cetak</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Tetap ambil screenshot</translation>
+<translation id="5257739419779698609">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk menyalin file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk menyalin file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Jilid di atas</translation>
 <translation id="5269225904387178860">Empat lubang di bawah</translation>
 <translation id="5269999699920406580">Fitur yang berlaku di seluruh sistem hanya dapat disetel oleh pemilik: <ph name="OWNER_EMAIL" /></translation>
@@ -1695,6 +1700,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5412236728747081950">Situs ini mendapatkan minat Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Tempat kertas 4</translation>
+<translation id="5414511064953050917">Tetap pindahkan</translation>
 <translation id="5421136146218899937">Hapus data penjelajahan...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tidak ada situs yang diblokir}=1{1 situs diblokir}other{# situs diblokir}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ingin mengirimkan notifikasi kepada Anda</translation>
@@ -2316,6 +2322,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}}</translation>
 <translation id="7153618581592392745">Lembayung Muda</translation>
 <translation id="7156870133441232244">Sebaiknya server diupgrade ke TLS 1.2 atau yang lebih baru.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Salin file rahasia?}other{Salin file rahasia?}}</translation>
 <translation id="717330890047184534">ID GAIA:</translation>
 <translation id="7174545416324379297">Digabung</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}other{<ph name="SHIPPING_OPTION_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lainnya}}</translation>
@@ -2920,6 +2927,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8763986294015493060">Tutup semua jendela Samaran yang saat ini terbuka</translation>
 <translation id="8766943070169463815">Sheet autentikasi kredensial pembayaran aman dibuka</translation>
 <translation id="8767765348545497220">Tutup balon bantuan</translation>
+<translation id="877348612833018844">{0,plural, =1{Pindahkan file rahasia?}other{Pindahkan file rahasia?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Sepeda motor</translation>
 <translation id="8790007591277257123">&amp;Ulangi penghapusan</translation>

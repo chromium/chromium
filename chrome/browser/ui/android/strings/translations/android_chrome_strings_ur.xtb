@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">‏Chrome کی کچھ خصوصیات اب دستیاب نہیں ہوں گی۔</translation>
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2871733351037274014">پیشگی لوڈ والے صفحات</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> آپ سے اس ویب سائٹ کی منظوری چاہتی ہے:</translation>
 <translation id="2886836735871983413">آپ کے ویب براؤز کرتے ہی سائٹس کی ایک فہرست یہاں ظاہر ہوگی</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
 <translation id="2891154217021530873">صفحہ لوڈ کرنا بند کریں</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">‏Google <ph name="APP_NAME" /> اسٹوریج</translation>
 <translation id="2932222164150889403">آپ کا کی بورڈ تبدیل نہیں ہوگا</translation>
 <translation id="2936980480904111527">‏Chrome کی اطلاعات چیزوں کو آسان بناتی ہیں</translation>
+<translation id="2940075786175545812">کسی ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
 <translation id="2942036813789421260">پیش منظر ٹیب بند ہے</translation>
 <translation id="2946420957526726953">‏دیگر آلات سے منسلک ہونے کیلئے Chrome کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="2951071800649516099">بعد کیلئے اپنی پڑھنے کی فہرست میں صفحات شامل کریں</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">صفحہ پر موجود ہر چیز کو اور چھوٹا کریں</translation>
 <translation id="3264124641674805320">بعد میں دیکھنے کیلئے مواد ڈاؤن لوڈ کرنے کا طریقہ</translation>
 <translation id="3264259168916048410">آپ کا کمپیوٹر اس آلے کو کسی سائٹ میں سائن ان کرنے کیلئے استعمال کرنا چاہتا ہے</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" /> کے سبھی صفحات</translation>
 <translation id="3265534588625245297">ان سائٹس کا نظم کریں جن کی آپ پیروی کرتے ہیں</translation>
 <translation id="3269093882174072735">تصویر لوڈ کریں</translation>
 <translation id="3280562213547448728">صوتی تلاش</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">اشتہارات کی ذاتی نوعیت سازی کے بارے میں</translation>
 <translation id="4987271110129728827">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا ویب تلاش کی کوشش کریں۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
+<translation id="4991110219272367918">کسی بند ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
 <translation id="499724277181351974">نیویگیٹ کریں: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="500351648694011114">زیادہ آسانی سے براؤز کریں</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">کاپی کریں</translation>
 <translation id="6900532703269623216">بہتر کردہ حفاظت</translation>
 <translation id="6903907808598579934">مطابقت پذیری آن کریں</translation>
+<translation id="6908998565271542516">مکمل اونچائی پر کھلی ہوئی کسی ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
 <translation id="6909589135458168665">پیشگی لوڈ والے صفحات</translation>
 <translation id="6942665639005891494">ترتیبات کا مینو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="694267552845942083">آپ فی الحال اپنی مطابقت پذیری کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن پر تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">یہ ترتیب نظم کردہ براؤزرز پر غیر فعال ہے</translation>
 <translation id="6963766334940102469">بُک مارکس حذف کریں</translation>
 <translation id="696447261358045621">پوشیدگی وضع ترک کریں</translation>
+<translation id="6971862865055170158">منظوری نہ دیں</translation>
 <translation id="6979737339423435258">ہر وقت</translation>
 <translation id="6987047470128880212">اس آلے پر پوشیدگی دستیاب نہیں ہے</translation>
 <translation id="6995899638241819463">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>

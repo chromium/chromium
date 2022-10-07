@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Digitalize o seu documento</translation>
 <translation id="1309250603447638106">A transferir atualizações para a digitalização de documentos</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pesquisa + seta para a esquerda para aceder.</translation>
+<translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">A <ph name="CAMERA" /> está desligada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nada foi gravado.</translation>
 <translation id="1838104802459806957">Inclinar para cima</translation>
+<translation id="1843105061469674856">Digitalizar página adicional</translation>
 <translation id="1851169887664797861">Controlos da câmara adicionais disponíveis</translation>
 <translation id="1851616744363735765">EM PAUSA</translation>
 <translation id="1862930711583847113">Não foi possível exportar o ficheiro <ph name="FILE" />.</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Não é possível alterar a resolução desta câmara</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4281620174117014503">Resolução média</translation>
+<translation id="428234092390943511">Miniatura da página</translation>
 <translation id="4329152592498422850">Mudar para tirar foto quadrada</translation>
 <translation id="4340659173795395806">Agora, pode criar um PDF de várias páginas</translation>
 <translation id="4383571725254449280">Imprimir registos de desempenho</translation>

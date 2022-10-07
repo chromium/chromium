@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Scan dit dokument</translation>
 <translation id="1309250603447638106">Downloader opdateringer til dokumentscanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tryk på søgetasten+venstrepil for at få adgang til dem.</translation>
+<translation id="1417314334557041815">Rediger side <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
 <translation id="1838104802459806957">Drej opad</translation>
+<translation id="1843105061469674856">Scan ekstra side</translation>
 <translation id="1851169887664797861">Yderligere styringselementer til kameraet er tilgængelige</translation>
 <translation id="1851616744363735765">SAT PÅ PAUSE</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> kan ikke eksporteres</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Dette kamera kan ikke ændre opløsning</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4281620174117014503">Medium opløsning</translation>
+<translation id="428234092390943511">Miniature for side</translation>
 <translation id="4329152592498422850">Skift for at tage et kvadratisk billede</translation>
 <translation id="4340659173795395806">Du kan nu oprette PDF-filer med flere sider</translation>
 <translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>

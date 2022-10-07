@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">如要檢查你的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1231839967188101156">這項設定開啟時，Chromium 會釋出閒置分頁占用的記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chromium 快速運作。當你切換回閒置分頁時，這些分頁會自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1385859895174722837">Chromium 版 Google 助理</translation>
 <translation id="1396446129537741364">Chromium 即將顯示密碼。</translation>
@@ -251,6 +252,7 @@
 <translation id="6717134281241384636">由於你的設定檔是來自較新版本的 Chromium，所以系統無法使用該檔案。
 
 這表示你可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chromium。</translation>
+<translation id="6730677189742196061">記憶體節省模式可以提升 Chromium 運作速度</translation>
 <translation id="6734291798041940871">電腦上的所有使用者都已經安裝 Chromium 了。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取你的 Chromium 資料，請登入並開啟同步處理功能。</translation>
 <translation id="6774082503108938489">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法啟用這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>

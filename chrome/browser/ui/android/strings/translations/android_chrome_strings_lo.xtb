@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">ຄຸນສົມບັດ Chrome ບາງຢ່າງບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="2870560284913253234">ເວັບ​ໄຊທ໌</translation>
 <translation id="2871733351037274014">ໂຫຼດໜ້າກ່ອນລ່ວງໜ້າ</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> ຕ້ອງການໃຫ້ທ່ານອະນຸມັດເວັບໄຊນີ້:</translation>
 <translation id="2886836735871983413">ລາຍຊື່ຂອງເວັບໄຊຈະປາກົດຢູ່ບ່ອນນີ້ໃນເວລາທີ່ທ່ານທ່ອງເວັບ</translation>
 <translation id="2888126860611144412">ກ່ຽວ​ກັບ Chrome</translation>
 <translation id="2891154217021530873">ຢຸດ​ການໂຫຼດ​ຫນ້າ</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">ບ່ອນເກັບຂໍ້ມູນ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">ແປ້ນພິມຂອງທ່ານຈະບໍ່ປ່ຽນແປງ</translation>
 <translation id="2936980480904111527">ການແຈ້ງເຕືອນ Chrome ເຮັດໃຫ້ສິ່ງຕ່າງໆງ່າຍຂຶ້ນ</translation>
+<translation id="2940075786175545812">ຕົວເລືອກເພື່ອອະນຸມັດ ຫຼື ບໍ່ອະນຸມັດ</translation>
 <translation id="2942036813789421260">ແຖບສະແດງຕົວຢ່າງປິດຢູ່</translation>
 <translation id="2946420957526726953">ກຳລັງອັບເດດ Chrome ເພື່ອເຊື່ອມຕໍ່ຫາອຸປະກອນອື່ນ</translation>
 <translation id="2951071800649516099">ເພີ່ມໜ້າໃສ່ລາຍຊື່ການອ່ານສຳລັບພາຍຫຼັງ</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">ເຮັດໃຫ້ທຸກຢ່າງໃນໜ້ານ້ອຍລົງ</translation>
 <translation id="3264124641674805320">ວິທີດາວໂຫຼດເນື້ອຫາສຳລັບພາຍຫຼັງ</translation>
 <translation id="3264259168916048410">ຄອມພິວເຕີຂອງທ່ານຕ້ອງການໃຊ້ອຸປະກອນນີ້ເພື່ອເຂົ້າສູ່ລະບົບຫາເວັບໄຊ</translation>
+<translation id="3265093782546847662">ໜ້າທັງໝົດຂອງ <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">ຈັດການເວັບໄຊທີ່ທ່ານຕິດຕາມ</translation>
 <translation id="3269093882174072735">ໂຫຼດ​ຮູບ</translation>
 <translation id="3280562213547448728">ຊອກຫາດ້ວຍສຽງ</translation>
@@ -731,6 +734,7 @@
 <translation id="4985248278475639481">ກ່ຽວກັບການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="4987271110129728827">ບໍ່ສາມາດຊອກເຫັນໜ້ານັ້ນໄດ້. ກະລຸນາກວດສອບການສະກົດຄຳຂອງທ່ານ ຫຼື ລອງຊອກຫາໃນເວັບໄຊ.</translation>
 <translation id="4988526792673242964">ໜ້າ</translation>
+<translation id="4991110219272367918">ຕົວເລືອກເພື່ອອະນຸມັດ ຫຼື ບໍ່ອະນຸມັດເວັບໄຊປິດຢູ່</translation>
 <translation id="499724277181351974">ນຳທາງ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ຕິດຕາມເວັບໄຊນີ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="500351648694011114">ທ່ອງເວັບໄດ້ງ່າຍຂຶ້ນ</translation>
@@ -1105,6 +1109,7 @@
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6900532703269623216">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="6903907808598579934">ເປີດການຊິ້ງຂໍ້ມູນ</translation>
+<translation id="6908998565271542516">ຕົວເລືອກເພື່ອອະນຸມັດ ຫຼື ບໍ່ອະນຸມັດເວັບໄຊເປີດຢູ່ໃນແບບຄວາມສູງເຕັມ</translation>
 <translation id="6909589135458168665">ໂຫຼດໜ້າກ່ອນລ່ວງໜ້າ</translation>
 <translation id="6942665639005891494">ປ່ຽນບ່ອນຈັດເກັບການດາວໂຫຼດເລີ່ມຕົ້ນໄດ້ທຸກເວລາ ໂດຍໃຊ້ຕົວເລືອກເມນູການຕັ້ງຄ່າ</translation>
 <translation id="694267552845942083">ທ່ານກຳລັງປັບແຕ່ງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນຂອງທ່ານໃນຂະນະນີ້. ເພື່ອສຳເລັດການເປີດການຊິ້ງຂໍ້ມູນ, ກະລຸນາແຕະປຸ່ມຢືນຢັນຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ. ເລື່ອນຂຶ້ນ</translation>
@@ -1112,6 +1117,7 @@
 <translation id="6955535239952325894">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
 <translation id="6963766334940102469">ລຶບ​ບຸກ​ມາກ​ສ໌</translation>
 <translation id="696447261358045621">ອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="6971862865055170158">ບໍ່ອະນຸມັດ</translation>
 <translation id="6979737339423435258">ທຸກເວລາ</translation>
 <translation id="6987047470128880212">ບໍ່ສາມາດໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຢູ່ອຸປະກອນນີ້ໄດ້</translation>
 <translation id="6995899638241819463">ເຕືອນບອກທ່ານຖ້າລະຫັດຜ່ານຮົ່ວໄຫຼໃນການລະເມີດຂໍ້ມູນ</translation>

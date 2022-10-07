@@ -133,6 +133,7 @@
 <translation id="3360895254066713204">Chrome помоћник</translation>
 <translation id="3379938682270551431">{0,plural, =0{Поново ћемо покренути Chrome}=1{Поново ћемо покренути Chrome за 1 секунду}one{Поново ћемо покренути Chrome за # секунду}few{Поново ћемо покренути Chrome за # секунде}other{Поново ћемо покренути Chrome за # секунди}}</translation>
 <translation id="3396977131400919238">Током инсталације је дошло до грешке у оперативном систему. Преузмите Google Chrome поново.</translation>
+<translation id="3426646014273736870">Уштеда меморије је убрзала Chrome</translation>
 <translation id="3428747202529429621">Штити вас у Chrome-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени</translation>
 <translation id="3434246496373299699">Chrome може да вам проверава лозинке када се пријавите помоћу Google налога</translation>
 <translation id="3451115285585441894">Додавање у Chrome...</translation>
@@ -234,6 +235,7 @@
 
 Google Chrome не може да врати подешавања.</translation>
 <translation id="5524761631371622910">Док пробни периоди трају и ако вас је Chrome насумично поставио у активни пробни период, историја прегледања утиче на огласе које видите и интересовања процењена у наставку. Ради заштите приватности Chrome брише интересовања сваког месеца чим постану доступна.</translation>
+<translation id="5530733413481476019">Убрзајте Chrome</translation>
 <translation id="556024056938947818">Google Chrome покушава да прикаже лозинке.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Датотека <ph name="FILE_NAME" /> је можда опасна, па ју је Chrome блокирао.</translation>

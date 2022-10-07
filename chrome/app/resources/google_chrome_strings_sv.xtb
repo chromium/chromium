@@ -260,6 +260,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
 <translation id="6113794647360055231">Vi har gjort Chrome ännu bättre</translation>
 <translation id="6145313976051292476">Öppna PDF-filer i Chrome</translation>
+<translation id="6155960517327665396">Minnessparläget har gjort Chrome snabbare</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Regel som tillåter inkommande mDNS-trafik för Google Chrome.</translation>
@@ -360,6 +361,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8286862437124483331">Skriv ditt Windows-lösenord om du vill tillåta att lösenord visas i Google Chrome.</translation>
 <translation id="828798499196665338">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chrome. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hoppsan! Google Chrome har kraschat. Vill du starta om nu?</translation>
+<translation id="8341646175450781745">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chrome. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Filen är farlig och har blockerats av Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>

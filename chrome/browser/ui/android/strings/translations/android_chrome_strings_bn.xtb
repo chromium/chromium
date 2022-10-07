@@ -340,6 +340,7 @@
 <translation id="2861923151411510142">কিছু Chrome-এর ফিচার আর ব্যবহার করা যাবে না</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2871733351037274014">পৃষ্ঠা প্রিলোড করা</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> চায় যে আপনি এই ওয়েবসাইট অনুমোদন করুন:</translation>
 <translation id="2886836735871983413">আপনি ওয়েবে ব্রাউজ করলে সাইটের একটি তালিকা এখানে দেখা যাবে</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2891154217021530873">পৃষ্ঠা লোড করা বন্ধ করুন</translation>
@@ -355,6 +356,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> স্টোরেজ</translation>
 <translation id="2932222164150889403">আপনার কীবোর্ড পরিবর্তন হবে না</translation>
 <translation id="2936980480904111527">Chrome-এর বিজ্ঞপ্তিগুলি জিনিসকে আরও সহজ করে তোলে</translation>
+<translation id="2940075786175545812">একটি ওয়েবসাইটে অনুমোদন দেওয়ার বা না দেওয়ার বিকল্প</translation>
 <translation id="2942036813789421260">প্রিভিউ ট্যাব বন্ধ করা আছে</translation>
 <translation id="2946420957526726953">অন্য ডিভাইসে কানেক্ট করার জন্য Chrome আপডেট করা হচ্ছে</translation>
 <translation id="2951071800649516099">পরে পড়ার জন্য পড়ার তালিকায় পৃষ্ঠা যোগ করুন</translation>
@@ -422,6 +424,7 @@
 <translation id="3259831549858767975">পৃষ্ঠাতে থাকা সবকিছুকে ছোট করুন</translation>
 <translation id="3264124641674805320">পরে দেখার জন্য কন্টেন্ট কীভাবে ডাউনলোড করবেন</translation>
 <translation id="3264259168916048410">কোনও সাইটে সাইন-ইন করার জন্য আপনার কম্পিউটার এই ডিভাইসটি ব্যবহার করতে চায়</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" />-এর সব পৃষ্ঠা</translation>
 <translation id="3265534588625245297">আপনার ফলো করা সাইটগুলি ম্যানেজ করুন</translation>
 <translation id="3269093882174072735">ছবি লোড করুন</translation>
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
@@ -733,6 +736,7 @@
 <translation id="4985248278475639481">পছন্দমতো বিজ্ঞাপন সম্পর্কে</translation>
 <translation id="4987271110129728827">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা ওয়েব সার্চ করুন।</translation>
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
+<translation id="4991110219272367918">ওয়েবসাইট বন্ধ করা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
 <translation id="499724277181351974">নেভিগেট করুন: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">এই সাইট এখানে ফলো করুন</translation>
 <translation id="500351648694011114">আরও সহজে ব্রাউজ করুন</translation>
@@ -1107,6 +1111,7 @@
 <translation id="6896758677409633944">কপি</translation>
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6903907808598579934">সিঙ্ক চালু করুন</translation>
+<translation id="6908998565271542516">ওয়েবসাইট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
 <translation id="6909589135458168665">পৃষ্ঠা প্রিলোড করা</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
 <translation id="694267552845942083">এখন আপনার সিঙ্ক সেটিংস কাস্টমাইজ করছেন। স্ক্রিনের নিচের দিকে থাকা "কনফার্ম করুন" বোতামে ট্যাপ করে সিঙ্ক চালু করুন। উপরের দিকে নেভিগেট করুন</translation>
@@ -1114,6 +1119,7 @@
 <translation id="6955535239952325894">ম্যানেজ করা ব্রাউজারে এই সেটিং কাজ করে না</translation>
 <translation id="6963766334940102469">বুকমার্কগুলি মুছুন</translation>
 <translation id="696447261358045621">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসুন</translation>
+<translation id="6971862865055170158">অনুমোদন দেবেন না</translation>
 <translation id="6979737339423435258">শুরু থেকে</translation>
 <translation id="6987047470128880212">এই ডিভাইসে ছদ্মবেশী ট্যাব উপলভ্য নেই</translation>
 <translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>

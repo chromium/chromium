@@ -132,6 +132,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome wordt nu opnieuw gestart}=1{Chrome wordt over één seconde opnieuw gestart}other{Chrome wordt over # seconden opnieuw gestart}}</translation>
 <translation id="3396977131400919238">Er is tijdens de installatie een probleem opgetreden met het besturingssysteem. Download Google Chrome opnieuw.</translation>
+<translation id="3426646014273736870">Geheugenbesparing maakt Chrome sneller</translation>
 <translation id="3428747202529429621">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd</translation>
 <translation id="3434246496373299699">Chrome kan je wachtwoorden checken als je inlogt met je Google-account</translation>
 <translation id="3451115285585441894">Toevoegen aan Chrome...</translation>
@@ -231,6 +232,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5412485296464121825">Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
 <translation id="5524761631371622910">Tijdens actieve proeven en als Chrome je willekeurig in een actieve proef heeft geplaatst, heeft je browsegeschiedenis invloed op de advertenties die je te zien krijgt en de interesses zoals hieronder geschat. Ter bescherming van je privacy verwijdert Chrome je interesses elke maand op voortschrijdende basis.</translation>
+<translation id="5530733413481476019">Maak Chrome sneller</translation>
 <translation id="556024056938947818">Google Chrome probeert wachtwoorden te bekijken.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan gevaarlijk zijn en is daarom door Chrome geblokkeerd.</translation>
@@ -257,6 +259,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="608006075545470555">Werkprofiel toevoegen aan deze browser</translation>
 <translation id="6113794647360055231">Chrome is nu nog beter</translation>
 <translation id="6145313976051292476">Pdf's openen in Chrome</translation>
+<translation id="6155960517327665396">Geheugenbesparing maakte Chrome sneller</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Bèta</translation>
 <translation id="6235018212288296708">Inkomende regel zodat Google Chrome mDNS-verkeer toestaat.</translation>
@@ -357,6 +360,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="828798499196665338">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chrome. Je mag deze <ph name="EXTENSION_TYPE_PARAMETER" /> niet aanzetten.</translation>
 <translation id="8290100596633877290">Oeps! Google Chrome is vastgelopen. Nu opnieuw starten?</translation>
+<translation id="8341646175450781745">Als deze functie aanstaat, maakt Chrome geheugen van inactieve tabbladen vrij. Zo krijgen actieve tabbladen en andere apps meer resources en blijft Chrome snel. Je inactieve tabbladen worden automatisch weer actief als je ernaar terugkeert. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Dit bestand is gevaarlijk en is daarom door Chrome geblokkeerd.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>

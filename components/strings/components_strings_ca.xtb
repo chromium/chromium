@@ -396,6 +396,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="192020519938775529">{COUNT,plural, =0{Cap}=1{1 lloc}other{# llocs}}</translation>
 <translation id="1924727005275031552">Nous</translation>
 <translation id="1927439593081478069">Botó Executa la comprovació de seguretat de Chrome: prem Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
+<translation id="1935995810530254458">Copia igualment</translation>
 <translation id="1939175642807587452">Pot demanar permís per enviar notificacions</translation>
 <translation id="1943994668912612445">Disseny</translation>
 <translation id="1945968466830820669">Podries perdre l'accés al compte de la teva organització o ser víctima d'un robatori d'identitat. Chromium et recomana que canviïs la contrasenya ara.</translation>
@@ -449,6 +450,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2085876078937250610">Desa…</translation>
 <translation id="2088086323192747268">Botó Gestiona la sincronització: prem Retorn per gestionar la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="2091887806945687916">So</translation>
+<translation id="2093982008204312032">Google Chrome està provant de desactivar Windows Hello per emplenar contrasenyes.</translation>
 <translation id="2094505752054353250">Els dominis no coincideixen.</translation>
 <translation id="2099652385553570808">Grapat triple a l'esquerra</translation>
 <translation id="2101225219012730419">Versió:</translation>
@@ -1143,6 +1145,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4014128326099193693">{COUNT,plural, =1{Document PDF que conté {COUNT} pàgina}other{Document PDF que conté {COUNT} pàgines}}</translation>
 <translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Com que el formulari s'està enviant mitjançant una connexió que no és segura, altres persones podran veure la teva informació.</translation>
+<translation id="4024923292610332139">desactivar TouchID per emplenar contrasenyes</translation>
 <translation id="4025913568718019429">Botó Gestiona la configuració de privadesa de Chrome: prem Retorn per visitar la configuració de privadesa del teu Compte de Google</translation>
 <translation id="4030383055268325496">&amp;Desfés l'addició</translation>
 <translation id="4031179711345676612">El micròfon es pot utilitzar</translation>
@@ -1259,6 +1262,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="42981349822642051">Desplega</translation>
 <translation id="4300675098767811073">Encunyació múltiple a la dreta</translation>
 <translation id="4302514097724775343">Toca el dinosaure per jugar</translation>
+<translation id="4304049446746819918">{0,plural, =1{La política de l'administrador no recomana moure aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana moure aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">No s'ha pogut accedir al fitxer</translation>
 <translation id="4306529830550717874">Vols desar l'adreça?</translation>
 <translation id="4306812610847412719">porta-retalls</translation>
@@ -1634,6 +1638,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5254043433801397071">Optimitza el contingut d'impressió</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Captura igualment</translation>
+<translation id="5257739419779698609">{0,plural, =1{La política de l'administrador no recomana copiar aquest fitxer a <ph name="DESTINATION_NAME" />}other{La política de l'administrador no recomana copiar aquests fitxers a <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Enquadernació per la part superior</translation>
 <translation id="5269225904387178860">Encunyació quàdruple a la part inferior</translation>
 <translation id="5269999699920406580">Les funcions que s'apliquen a tot el sistema només les pot definir l'usuari: <ph name="OWNER_EMAIL" /></translation>
@@ -1696,6 +1701,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5412236728747081950">Aquest lloc web obté els teus interessos de Chrome per mostrar-te anuncis més rellevants</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apiladora 4</translation>
+<translation id="5414511064953050917">Mou igualment</translation>
 <translation id="5421136146218899937">Esborra dades de navegació...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No s'ha bloquejat cap lloc web}=1{S'ha bloquejat 1 lloc web}other{S'han bloquejat # llocs web}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> et vol enviar notificacions</translation>
@@ -2317,6 +2323,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">El servidor s'ha d'actualitzar a TLS 1.2 o una versió posterior.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Vols copiar el fitxer confidencial?}other{Vols copiar els fitxers confidencials?}}</translation>
 <translation id="717330890047184534">Identificador de Gaia:</translation>
 <translation id="7174545416324379297">Combinats</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}other{<ph name="SHIPPING_OPTION_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> més}}</translation>
@@ -2925,6 +2932,7 @@ Detalls addicionals:
 <translation id="8763986294015493060">Tanca totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="8766943070169463815">El full d'autenticació de credencials de pagament segur està obert</translation>
 <translation id="8767765348545497220">Tanca el quadre d'ajuda</translation>
+<translation id="877348612833018844">{0,plural, =1{Vols moure el fitxer confidencial?}other{Vols moure els fitxers confidencials?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motocicletes</translation>
 <translation id="8790007591277257123">&amp;Refés la supressió</translation>

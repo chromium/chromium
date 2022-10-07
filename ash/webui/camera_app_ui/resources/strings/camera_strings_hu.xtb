@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Dokumentum beolvasása</translation>
 <translation id="1309250603447638106">Frissítések letöltése a dokumentumbeolvasáshoz…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Megtekintésükhöz nyomja le a Keresés + Balra nyíl billentyűparancsot.</translation>
+<translation id="1417314334557041815"><ph name="INDEX" />. oldal szerkesztése</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> nincs csatlakoztatva.</translation>
 <translation id="1473110567575736769">Három másodperces időzítő</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">A kamera semmit sem rögzített</translation>
 <translation id="1838104802459806957">Billentés felfelé</translation>
+<translation id="1843105061469674856">További oldal beolvasása</translation>
 <translation id="1851169887664797861">Újabb kameravezérlők állnak rendelkezésre</translation>
 <translation id="1851616744363735765">SZÜNETEL</translation>
 <translation id="1862930711583847113">Nem lehet exportálni: <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">A kamera felbontását nem lehet módosítani</translation>
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4281620174117014503">Közepes felbontás</translation>
+<translation id="428234092390943511">Oldal indexképe</translation>
 <translation id="4329152592498422850">Váltás négyzet alakú fotó készítésére</translation>
 <translation id="4340659173795395806">Most már többoldalas PDF-fájlt is létrehozhat</translation>
 <translation id="4383571725254449280">Teljesítménynaplók nyomtatása</translation>

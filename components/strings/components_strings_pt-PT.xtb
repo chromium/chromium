@@ -396,6 +396,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="192020519938775529">{COUNT,plural, =0{Nenhum}=1{1 site}other{# sites}}</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Botão Executar verificação de segurança do Chrome, prima Enter para executar a verificação de segurança nas definições do Chrome</translation>
+<translation id="1935995810530254458">Copiar mesmo assim</translation>
 <translation id="1939175642807587452">Pode solicitar o envio de notificações</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Pode perder o acesso à conta da sua entidade ou ser vítima de roubo de identidade. O Chromium recomenda a alteração da palavra-passe agora.</translation>
@@ -449,6 +450,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2085876078937250610">Guardar…</translation>
 <translation id="2088086323192747268">Botão Gerir sincronização. Prima Enter para gerir as informações que sincroniza nas Definições do Chrome.</translation>
 <translation id="2091887806945687916">Som</translation>
+<translation id="2093982008204312032">O Google Chrome está a tentar desativar o Windows Hello para preencher palavras-passe.</translation>
 <translation id="2094505752054353250">Falta de correspondência de domínio</translation>
 <translation id="2099652385553570808">Agrafo triplo à esquerda</translation>
 <translation id="2101225219012730419">Versão:</translation>
@@ -712,6 +714,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803306138276472711">A Navegação Segura do Google <ph name="BEGIN_LINK" />detetou software malicioso<ph name="END_LINK" /> recentemente em <ph name="SITE" />. Os Sites que normalmente são seguros por vezes são infetados com software malicioso.</translation>
 <translation id="2807052079800581569">Posição Y da imagem</translation>
+<translation id="2808278141522721006">Pode ativar ou desativar o Windows Hello em <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">A analisar...</translation>
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
@@ -882,6 +885,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3288238092761586174"><ph name="URL" /> pode ter de efetuar passos adicionais para validar o seu pagamento</translation>
 <translation id="3293642807462928945">Saiba mais acerca da política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e efetue a gestão das suas palavras-passe nas definições do Chrome.</translation>
+<translation id="3299098170013242198">O Windows Hello está ativado para preencher palavras-passe</translation>
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
 <translation id="3304073249511302126">procura de bluetooth</translation>
 <translation id="33073482541490531">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe recomenda que altere esta palavra-passe agora.</translation>
@@ -1030,6 +1034,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3678342917559046352">Extensão inválida: esperava-se que o valor tivesse um dos seguintes formatos: &lt;extension_id&gt; ou &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abrir a página numa nova janela de navegação anónima (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informações do certificado</translation>
+<translation id="3699374065820972102">O TouchID está ativado para preencher palavras-passe</translation>
 <translation id="3701427423622901115">Reposição confirmada.</translation>
 <translation id="3704162925118123524">A rede que está a utilizar pode exigir que visite a respetivapágina de início de sessão.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1143,6 +1148,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF com {COUNT} página}other{Documento PDF com {COUNT} páginas}}</translation>
 <translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
+<translation id="4024923292610332139">desativar o Touch ID para preencher palavras-passe</translation>
 <translation id="4025913568718019429">Botão Gerir definições de privacidade do Google, prima Enter para visitar as definições de privacidade da sua Conta Google</translation>
 <translation id="4030383055268325496">&amp;Anular adição</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
@@ -1259,6 +1265,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4300675098767811073">Perfuração múltipla à direita</translation>
 <translation id="4302514097724775343">Toque no dinossauro para jogar.</translation>
+<translation id="4304049446746819918">{0,plural, =1{A política do administrador não recomenda mover este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda mover estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Não foi possível aceder ao seu ficheiro</translation>
 <translation id="4306529830550717874">Pretende guardar o endereço?</translation>
 <translation id="4306812610847412719">área de transferência</translation>
@@ -1489,6 +1496,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4900217275619098670">Nono rolo</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4905659621780993806">O seu administrador vai reiniciar o dispositivo à(s) <ph name="TIME" /> de <ph name="DATE" />. Guarde os itens abertos antes de o dispositivo ser reiniciado.</translation>
+<translation id="4911007278801291296">Pode ativar ou desativar o TouchID em <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perfurar na parte superior esquerda</translation>
 <translation id="4918221908152712722">Instale a aplicação <ph name="APP_NAME" /> (não é necessária qualquer transferência).</translation>
 <translation id="4923459931733593730">Pagamento</translation>
@@ -1634,6 +1642,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5254043433801397071">Otimizar conteúdo para impressão</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Capturar mesmo assim</translation>
+<translation id="5257739419779698609">{0,plural, =1{A política do administrador não recomenda copiar este ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda copiar estes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Encadernar parte superior</translation>
 <translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>
 <translation id="5269999699920406580">As funcionalidades que se aplicam a todo o sistema apenas podem ser definidas pelo proprietário: <ph name="OWNER_EMAIL" /></translation>
@@ -1681,6 +1690,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5357848622083956825">Arte visual e design</translation>
 <translation id="536296301121032821">Falha ao armazenar as definições da política</translation>
 <translation id="5363309033720083897">Porta de série permitida pelo seu administrador</translation>
+<translation id="5363713372507812442">Pesquise percursos</translation>
 <translation id="5371425731340848620">Atualizar cartão</translation>
 <translation id="5377026284221673050">"O seu relógio está atrasado" ou "O seu relógio está adiantado" ou "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Botão Criar apresentação, prima Enter para criar rapidamente uma nova apresentação Google no Slides</translation>
@@ -1696,6 +1706,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5412236728747081950">Este site obtém os seus interesses do Chrome para lhe mostrar anúncios mais relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empilhador 4</translation>
+<translation id="5414511064953050917">Mover mesmo assim</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nenhum site bloqueado}=1{1 site bloqueado}other{# sites bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> pretende enviar-lhe notificações.</translation>
@@ -2317,6 +2328,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Lilás</translation>
 <translation id="7156870133441232244">É necessário atualizar o servidor para a versão TLS 1.2 ou posterior.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Copiar o ficheiro confidencial?}other{Copiar os ficheiros confidenciais?}}</translation>
 <translation id="717330890047184534">ID Gaia:</translation>
 <translation id="7174545416324379297">Unida</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2925,6 +2937,7 @@ Detalhes adicionais:
 <translation id="8763986294015493060">Feche todas as janelas de navegação anónima atualmente abertas</translation>
 <translation id="8766943070169463815">A página de autenticação das credenciais de pagamento seguro está aberta</translation>
 <translation id="8767765348545497220">Fechar balão de ajuda</translation>
+<translation id="877348612833018844">{0,plural, =1{Mover o ficheiro confidencial?}other{Mover os ficheiros confidenciais?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motos</translation>
 <translation id="8790007591277257123">&amp;Refazer eliminação</translation>

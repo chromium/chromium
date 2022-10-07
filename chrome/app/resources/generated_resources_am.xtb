@@ -1126,6 +1126,7 @@
 <translation id="2034346955588403444">ሌላ የWiFi አውታረ መረብ አክል</translation>
 <translation id="2035211704574173780">ግርጥነት</translation>
 <translation id="203574396658008164">ከማያ ገጽ ቁልፍ ሆነህ ማስታወሻ መውሰድን አንቃ</translation>
+<translation id="2036514476578229158">ይህን ጣቢያ ለመጎብኘት ጠይቀዋል። የእርስዎ ወላጆች በFamily Link ውስጥ ምላሽ መስጠት ይችላሉ።</translation>
 <translation id="2037445849770872822">ለዚህ የ Google መለያ ክትትል ተቀናብሯል። ተጨማሪ የወላጅ ቁጥጥሮችን ለማቀናበር፣ ቀጥል የሚለውን ይምረጡ።
 
 አለበለዚያ፣ በዚህ መለያ ላይ የተደረጉ ለውጦች በዚህ መሣሪያ ላይ እንዲታይ አሁኑኑ ዘግተው ይውጡ።
@@ -1246,6 +1247,7 @@
 <translation id="2135787500304447609">&amp;ከቆመበት ቀጥል</translation>
 <translation id="2136372518715274136">አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="2136476978468204130">ያስገቡት የይለፍ ሐረግ ትክክል አይደለም</translation>
+<translation id="2137891579555018930">ፈቃድን በመጠበቅ ላይ...</translation>
 <translation id="2138398485845393913">ከ«<ph name="DEVICE_NAME" />» ጋር የሚደረገው ግንኙነት አሁንም በሂደት ላይ ነው</translation>
 <translation id="2139919072249842737">አዝራርን አቀናብር</translation>
 <translation id="2140788884185208305">የባትሪ ጤንነት</translation>
@@ -4119,6 +4121,7 @@
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">OCSP ምላሾችን መፈረም</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ነባሪ)</translation>
+<translation id="486459320933704969">ወላጅ ወይም አሳዳጊ ይህን ድር ጣቢያ ቢጎበኙ ምንም ችግር የለውም ማለት አለባቸው</translation>
 <translation id="4864805589453749318">የትምህርት ቤት መለያ ለማከል ፈቃድ እየሰጠ ያለውን ወላጅ ይምረጡ።</translation>
 <translation id="486635084936119914">ካወረዱ በኋላ የተወሰኑ የፋይል አይነቶችን ክፈት</translation>
 <translation id="4868281708609571334">Google ረዳት የ<ph name="SUPERVISED_USER_NAME" /> ድምፅ እንዲለይ ያስተምሩት</translation>
@@ -8259,6 +8262,7 @@ nil</translation>
 <translation id="8838601485495657486">ብርሃን-ከል</translation>
 <translation id="8838770651474809439">ሃምበርገር</translation>
 <translation id="8838778928843281408">ስልኮችን ያቀናብሩ</translation>
+<translation id="883924185304953854">በምስል ይፈልጉ</translation>
 <translation id="8841843049738266382">በተፈቀደላቸው ዝርዝር ውስጥ ያሉ ተጠቃሚዎችን ማንበብ እና መቀየር</translation>
 <translation id="8842594465773264717">ይህን የጣት አሻራ ይሰርዙ</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
@@ -8685,6 +8689,7 @@ nil</translation>
 <translation id="947329552760389097">&amp;አባለ ነገሮችን መርምር</translation>
 <translation id="947526284350604411">የእርስዎ መልስ</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> የስርዓት ፋይሎችን ስለያዘ ፋይሎችን በዚህ አቃፊ ውስጥ መክፈት አይችልም</translation>
+<translation id="949314938206378263">ይህን ጣቢያ ለመጎብኘት ጠይቀዋል። የእርስዎ ወላጅ በFamily Link ውስጥ ምላሽ መስጠት ይችላሉ።</translation>
 <translation id="950307215746360464">የማዋቀሪያ መመሪያ</translation>
 <translation id="951991426597076286">አትቀበል</translation>
 <translation id="952471655966876828">መሣሪያው ሲበራ እና ስራ ላይ ሲውል በራስ-ሰር ይገናኛል</translation>

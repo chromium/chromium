@@ -209,6 +209,7 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
+<translation id="1209096923317019235">指定したファイル拡張子のデフォルト ハンドラとしてアプリを割り当てます</translation>
 <translation id="120937472976628837">ファン情報を報告する</translation>
 <translation id="1212233008927724662">ログイン WebUI の遅延読み込みを無効にする。</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange（SXG）のサポートを有効にします</translation>
@@ -695,6 +696,7 @@
 <translation id="1700811900332333712">デバイスに Powerwash のリクエストを許可する</translation>
 <translation id="1708496595873025510">バリエーション シードの取得に制限を設定する</translation>
 <translation id="1709154322133526432">起動時のデフォルト ブラウザ チェックを有効にする</translation>
+<translation id="1710245398478550276">Desk API の使用を許可するサードパーティのドメインリストを指定します</translation>
 <translation id="1713829924716792485">このポリシーを有効に設定するか未設定のままにした場合、リモート アクセス ホストに接続しているユーザーは、クライアントとホスト間でファイルを転送できます。これは、ファイル転送がサポートされていないリモート サポート接続には適用されません。
 
       このポリシーを無効に設定した場合、ファイル転送は許可されません。</translation>
@@ -2203,6 +2205,15 @@
       <ph name="PRODUCT_NAME" /> が正常に終了しなかった場合（ブラウザや OS がクラッシュした場合など）は、次回プロファイルが読み込まれたときに閲覧データが削除されます。</translation>
 <translation id="3264793472749429012">デフォルトの検索プロバイダのエンコード</translation>
 <translation id="3273221114520206906">デフォルトのJavaScript 設定</translation>
+<translation id="3282240846541032181">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> で各ファイル拡張子のデフォルト ハンドラとして動作するアプリを指定できます。ユーザーはこの動作を変更できません。
+      このポリシーで指定されていないファイル拡張子については、ユーザーが通常のワークフローに合わせて独自のデフォルトをすべて設定できます。
+
+      Chrome アプリの場合は ID（<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" /> など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（<ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" /> など）を指定します。
+
+      なお、ポリシーの項目を機能させるには、マニフェストで該当のファイル拡張子に対してアプリをファイル ハンドラとして宣言する必要があります（このポリシーは既存のアプリ機能を拡張するものではありません）。
+
+      ポリシーを未設定のままにした場合、<ph name="PRODUCT_OS_NAME" /> は内部ロジックに沿ってデフォルト ハンドラを選択します。
+      </translation>
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3288595667065905535">リリース チャンネル</translation>
@@ -3959,6 +3970,37 @@
 <translation id="5330684698007383292">次のコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> のクラウド ポリシーはプラットフォーム ポリシーに優先します。</translation>
 <translation id="5346587320074666194">センサーへのアクセスをブロックするサイトを指定します</translation>
+<translation id="5357039649371478544"><ph name="PRODUCT_OS_NAME" /> でデータ漏洩を防止するルールのリストを設定します。
+      データ漏洩は、データのコピーと貼り付け、ファイルの転送、印刷、画面の共有、スクリーンショットの撮影などで起こる可能性があります。
+
+      ルールは次の項目で構成されます。
+      - 参照元の URL のリスト。データを機密として扱い、制限を適用する参照元を指定します。
+      - 参照先の URL またはコンポーネントのリスト。機密データの共有を許可または禁止する参照先を指定します。
+      - 参照元のデータに適用する制限のリスト。
+
+      ルールでは次の項目を管理できます。
+      - 参照元と参照先の間で共有するクリップボード データ。
+      - 参照元のデータのスクリーンショット撮影。
+      - 参照元のデータの印刷。
+      - 参照元のデータが表示されるプライバシー画面。
+      - 参照元のデータの画面共有。
+      - 参照先に転送する際に参照元からダウンロードできるファイル。<ph name="PRODUCT_OS_NAME" /> バージョン 108 以降でサポートされます。
+
+      制限レベルは「BLOCK」、「ALLOW」、「REPORT」、「WARN」に設定できます。
+      - 制限レベルを「BLOCK」に設定した場合、該当の項目は許可されません。
+      <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、ブロックされた項目操作は管理者に報告されます。
+      - 制限レベルを「ALLOW」に設定した場合、該当の項目が許可されます。
+
+      - 制限レベルを「REPORT」に設定し、<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> を True に設定した場合、該当の項目は管理者に報告されます。
+      - 制限レベルを「WARN」に設定した場合、警告が表示され、項目によっては、実行するかキャンセルするか選択を求められます。<ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />を True に設定した場合、警告の表示が管理者に報告されます。該当の項目を実行した場合も報告されます。
+
+      注:
+      - 「PRIVACY_SCREEN」の制限を設定しても、プライバシー画面はオンにできますが、制限クラスを「BLOCK」に設定した場合はオンにできなくなります。
+      - 「CLIPBOARD」または「FILES」の制限を設定した場合、参照先を空白にすることはできませんが、他の制限については参照先を空白にできます。
+      - 「DRIVE」と「USB」の参照先は「CLIPBOARD」の制限では無視されます。
+      - URL のパターンは https://www.chromium.org/administrators/url-blocklist-filter-format の形式で指定します。
+
+      ポリシーを未設定のままにした場合、制限は適用されません。</translation>
 <translation id="5362531528507578966">背景のグラフィックのデフォルト印刷モードをオーバーライドします。</translation>
 <translation id="5365476955714838841">代替ブラウザに渡すコマンドラインのパラメータ。</translation>
 <translation id="5365946944967967336">ツールバーにホーム ボタンを表示する</translation>
@@ -6358,6 +6400,7 @@
 
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。</translation>
 <translation id="7992613144342460685">ウィンドウの配置に関する権限を許可するサイトを指定する</translation>
+<translation id="7994034037344330969">Desk API を使用して ChromeOS のデスクを管理できるサードパーティのウェブ アプリケーションのドメインリストを指定します。URL のパターンは、https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference の「matches」プロパティで定義されている形式で指定する必要があります。</translation>
 <translation id="7995610550667275367">スキャン（バージョン 87 以降でサポート）</translation>
 <translation id="7999023147219236247">アプリへの権限付与のリクエストに関するポリシーです。PERMISSION_POLICY_UNSPECIFIED: ポリシーを指定しません。権限に関するポリシーがどのレベルでも指定されていなければ、デフォルトで「PROMPT」の動作が適用されます。PROMPT: 権限を付与するよう促すメッセージをユーザーに表示します。GRANT: 自動的に権限を付与します。DENY: 自動的に権限の付与を拒否します。</translation>
 <translation id="7999336306414770162">デバイスの VPD 情報レポートを無効にする</translation>

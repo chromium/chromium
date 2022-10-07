@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
+<translation id="1231839967188101156">Ha be van kapcsolva, a Chromium memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, és a Chromium gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1385859895174722837">Google Segéd a Chromiumban</translation>
 <translation id="1396446129537741364">A Chromium megpróbálja megjeleníteni a jelszavakat.</translation>
@@ -249,6 +250,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="668175097507315160">A ChromiumOS egy bejelentkezési hiba miatt nem tudta szinkronizálni az adatokat.</translation>
 <translation id="6709350901466051922">A Chromiumnak mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="6717134281241384636">A profilja nem használható, mert az a Chromium egy újabb verziójából származik. Előfordulhat, hogy egyes funkciók nem érhetők el. Kérjük, adjon meg egy másik profilmappát, vagy használja a Chromium újabb verzióját.</translation>
+<translation id="6730677189742196061">A memóriatakarékos mód felgyorsította a Chromiumot</translation>
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="6774082503108938489">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem engedélyezhető.</translation>

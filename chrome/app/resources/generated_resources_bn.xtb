@@ -1131,6 +1131,7 @@
 <translation id="2034346955588403444">অন্য ওয়াই ফাই নেটওয়ার্ক যোগ করুন</translation>
 <translation id="2035211704574173780">গ্রেস্কেল</translation>
 <translation id="203574396658008164">লক স্ক্রিন থেকেই নোট নেওয়া সক্ষম করুন</translation>
+<translation id="2036514476578229158">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
 <translation id="2037445849770872822">এই Google অ্যাকাউন্টের জন্য তত্ত্বাবধান সেট-আপ করা আছে। আরও অভিভাবকীয় নিয়ন্ত্রণ সেট-আপ করতে, 'চালিয়ে যান' বিকল্পটি বেছে নিন।
 
 অন্যথা, এখনই ডিভাইস থেকে সাইন-আউট করে আবার সাইন-ইন করুন, এটি করলে এই অ্যাকাউন্টে করা পরিবর্তনগুলি ডিভাইসে দেখতে পাবেন।
@@ -1251,6 +1252,7 @@
 <translation id="2135787500304447609">&amp;পুনঃসূচনা</translation>
 <translation id="2136372518715274136">নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="2136476978468204130">আপনার লেখা পাসফ্রেজটি ভুল</translation>
+<translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2138398485845393913">"<ph name="DEVICE_NAME" />" এর সাথে এখনও সংযোগ করা হচ্ছে</translation>
 <translation id="2139919072249842737">সেট-আপ করার বোতাম</translation>
 <translation id="2140788884185208305">ব্যাটারির স্বাস্থ্য</translation>
@@ -4130,6 +4132,7 @@
 <translation id="4858913220355269194">ফ্রিটজ</translation>
 <translation id="4862642413395066333">OCSP টি প্রতিক্রিয়া স্বাক্ষরিত হচ্ছে</translation>
 <translation id="4863769717153320198">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (সাধারণ)</translation>
+<translation id="486459320933704969">একজন প্যারেন্ট বা অভিভাবককে বলতে হবে যে এই ওয়েবসাইটটি দেখার জন্য আপনার পক্ষে ঠিক আছে</translation>
 <translation id="4864805589453749318">সেই অভিভাবককে বেছে নিন যিনি স্কুল অ্যাকাউন্ট যোগ করার জন্য অনুমতি দিয়েছেন।</translation>
 <translation id="486635084936119914">নির্দিষ্ট কিছু প্রকারের ফাইল ডাউনলোডের পরে স্বয়ংক্রিয়ভাবে খুলুন</translation>
 <translation id="4868281708609571334">Google Assistant যাতে <ph name="SUPERVISED_USER_NAME" />-এর ভয়েস শনাক্ত করতে পারে, তা শেখান</translation>
@@ -8266,6 +8269,7 @@
 <translation id="8838601485495657486">অস্বচ্ছ</translation>
 <translation id="8838770651474809439">হ্যামবার্গার</translation>
 <translation id="8838778928843281408">ফোন ম্যানেজ করুন</translation>
+<translation id="883924185304953854">ছবি দিয়ে সার্চ করুন</translation>
 <translation id="8841843049738266382">সাদা তালিকাভুক্ত ব্যবহারকারীদের তালিকা পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="8842594465773264717">এই ফিঙ্গারপ্রিন্ট মুছুন</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
@@ -8692,6 +8696,7 @@
 <translation id="947329552760389097">&amp;এলিমেন্ট ইন্সপেক্ট করুন</translation>
 <translation id="947526284350604411">আপনার উত্তর</translation>
 <translation id="947667444780368238">এই ফোল্ডারে সিস্টেম ফাইল আছে তাই <ph name="ORIGIN" /> ফাইল খুলতে পারছে না</translation>
+<translation id="949314938206378263">তুমি এই সাইট দেখার অনুমতি চেয়েছ। আপনার অভিভাবক Family Link-এ উত্তর দিতে পারেন।</translation>
 <translation id="950307215746360464">সেটআপ করার নির্দেশিকা</translation>
 <translation id="951991426597076286">প্রত্যাখ্যান</translation>
 <translation id="952471655966876828">ডিভাইসটি চালু হলে এবং ব্যবহার করা হলে অটোমেটিক ডিসকানেক্ট হয়ে যাবে</translation>

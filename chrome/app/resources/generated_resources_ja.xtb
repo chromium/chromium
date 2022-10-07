@@ -71,6 +71,7 @@
 <translation id="1067661089446014701">セキュリティ強化のため、Google アカウントに保存する前にデバイス上でパスワードを暗号化できます。</translation>
 <translation id="1067922213147265141">他の Google サービス</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルを削除します</translation>
+<translation id="1069814191880976658">別の画面を選択</translation>
 <translation id="1070377999570795893">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のある拡張機能が追加されました。
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -226,6 +227,7 @@
 <translation id="120069043972472860">視聴不能</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1201564082781748151">パスワードを忘れてもローカルデータを復元できます</translation>
+<translation id="1202116106683864634">このパスキーを削除してもよろしいですか？</translation>
 <translation id="1202596434010270079">キオスクアプリを更新しました。USB スティックを取り外してください。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共有ワーカー: <ph name="SCRIPT_URL" /></translation>
@@ -249,6 +251,7 @@
 <translation id="1223853788495130632">この設定には管理者が特定の値を推奨しています。</translation>
 <translation id="1225177025209879837">リクエストを処理しています...</translation>
 <translation id="1227507814927581609">「<ph name="DEVICE_NAME" />」への接続中に、認証に失敗しました。</translation>
+<translation id="1227660082540388410">パスキーの編集</translation>
 <translation id="1227993798763400520">キャストできませんでした。もう一度お試しください。</translation>
 <translation id="1230417814058465809">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
 <translation id="1231733316453485619">同期を有効にしますか？</translation>
@@ -766,6 +769,7 @@
 <translation id="1709106626015023981"><ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
 <translation id="1709217939274742847">認証に使用するチケットを選択します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">ネットワーク設定</translation>
+<translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1709972045049031556">共有できません</translation>
 <translation id="1711935594505774770"><ph name="SITE_GROUP_NAME" /> とその下位のすべてのサイトにより保存されたすべてのデータと Cookie、インストールされたアプリが削除されます</translation>
 <translation id="1714644264617423774">ユーザー補助機能を有効にするとデバイスが使いやすくなります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -1088,6 +1092,7 @@
 <translation id="2007404777272201486">問題の報告...</translation>
 <translation id="2009590708342941694">絵文字ツール</translation>
 <translation id="2010501376126504057">対応デバイス</translation>
+<translation id="2010888903612390044">マイクが接続されていません</translation>
 <translation id="2015232545623037616">PC と Chromecast が同じ Wi-Fi ネットワークに接続している</translation>
 <translation id="2016473077102413275">画像を必要とする機能は動作しなくなります</translation>
 <translation id="2016574333161572915">Google Meet ハードウェアの準備ができました</translation>
@@ -3014,6 +3019,7 @@
 <translation id="3813296892522778813">探しているものが見つからない場合は、<ph name="BEGIN_LINK_CHROMIUM" />Google Chrome のヘルプ<ph name="END_LINK_CHROMIUM" />をご覧ください。</translation>
 <translation id="3813358687923336574">ページの翻訳とクイック アンサーに使用する言語</translation>
 <translation id="3814529970604306954">学校用アカウント</translation>
+<translation id="3814792775883886759">カメラが接続されていません</translation>
 <translation id="3816118180265633665">Chrome の色</translation>
 <translation id="3817524650114746564">パソコンのプロキシ設定を開く</translation>
 <translation id="3819164369574292143">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。拡大した状態で移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
@@ -4254,6 +4260,7 @@
 <translation id="5017643436812738274">テキスト カーソルを使ってページ間を移動できます。オフにするには Ctrl+検索+7 キーを押します。</translation>
 <translation id="5018207570537526145">拡張機能のウェブサイトを開く</translation>
 <translation id="5018526990965779848">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、Android の機能向上にご協力ください。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
+<translation id="5020008942039547742">別のウィンドウを選択</translation>
 <translation id="5021750053540820849">まだ更新されていません</translation>
 <translation id="5024511550058813796">同期しているすべてのデバイスから履歴にアクセスして、作業の続きを行うことができます</translation>
 <translation id="5026492829171796515">ログインして Google アカウントを追加</translation>
@@ -4478,6 +4485,7 @@
 <translation id="5252653240322147470">PIN は <ph name="MAXIMUM" /> 桁未満で指定してください</translation>
 <translation id="5254368820972107711">削除されるファイルを表示</translation>
 <translation id="52550593576409946">キオスク アプリケーションを起動できませんでした。</translation>
+<translation id="5255726914791076208">パスキーを編集しても、<ph name="RP_ID" /> のアカウントは変更されません</translation>
 <translation id="5255859108402770436">もう一度ログインする</translation>
 <translation id="52566111838498928">フォントを読み込んでいます...</translation>
 <translation id="5256861893479663409">すべてのサイト</translation>
@@ -6005,6 +6013,7 @@
 <translation id="672609503628871915">新機能を確認する</translation>
 <translation id="67269783048918309">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
+<translation id="6729192290958770680">ユーザー名を入力してください</translation>
 <translation id="6731320427842222405">数分かかることがあります</translation>
 <translation id="6733620523445262364">「<ph name="BOOKMARK_TITLE" />」を作成しました。</translation>
 <translation id="6735304988756581115">Cookie と他のサイトのデータを表示...</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Ko bo na odprtem zavihku nižja cena, boste prejeli opozorilo.</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
+<translation id="3499853001094440183">Razdruži zavihke</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Strni <ph name="TABS_COUNT_ONE" /> zavihek.}one{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="3882834874697329510">Če želite prejeti opozorilo, ko bo na odprtem zavihku nižja cena, v nastavitvah vklopite obvestila.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Izberite zavihke</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="6333260925957816943">Informacije o tej trgovini</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Razdruži <ph name="TABS_COUNT_ONE" /> izbrani zavihek}one{Razdruži <ph name="TABS_COUNT_MANY" /> izbrani zavihek}two{Razdruži <ph name="TABS_COUNT_MANY" /> izbrana zavihka}few{Razdruži <ph name="TABS_COUNT_MANY" /> izbrane zavihke}other{Razdruži <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="6510648526783655549">Zapri trak z zavihki</translation>
 <translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>

@@ -1125,6 +1125,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="2034346955588403444">Muu WiFi-võrgu lisamine</translation>
 <translation id="2035211704574173780">Hallskaala</translation>
 <translation id="203574396658008164">Luba lukustuskuval märkmete tegemine</translation>
+<translation id="2036514476578229158">Küsisid selle saidi külastamiseks luba. Sinu vanemad saavad Family Linkis vastata.</translation>
 <translation id="2037445849770872822">Selle Google'i konto jaoks on seadistatud järelevalve. Kui soovite veel vanemliku järelevalve funktsioone seadistada, valige käsk Jätka.
 
 Muul juhul logige nüüd välja, et selle konto muudatused kajastuksid ka selles seadmes.
@@ -1246,6 +1247,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2135787500304447609">&amp;Taasta</translation>
 <translation id="2136372518715274136">Sisestage uus parool</translation>
 <translation id="2136476978468204130">Sisestatud parool on vale</translation>
+<translation id="2137891579555018930">Heakskiidu ootel …</translation>
 <translation id="2138398485845393913">Ühenduse loomine seadmega „<ph name="DEVICE_NAME" />” on pooleli</translation>
 <translation id="2139919072249842737">Seadistusnupp</translation>
 <translation id="2140788884185208305">Aku seisukord</translation>
@@ -4135,6 +4137,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4862642413395066333">Signeerimise OCSP vastused</translation>
 <translation id="4863769717153320198">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /> (vaikeseade)</translation>
+<translation id="486459320933704969">Vanem või eestkostja peab andma sulle loa selle veebisaidi külastamiseks</translation>
 <translation id="4864805589453749318">Vali vanem, kes annab kooli konto lisamiseks loa.</translation>
 <translation id="486635084936119914">Teatud failitüübid avatakse pärast allalaadimist automaatselt</translation>
 <translation id="4868281708609571334">Õpetage Google'i assistenti kasutaja <ph name="SUPERVISED_USER_NAME" /> häält ära tundma</translation>
@@ -8716,6 +8719,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="947329552760389097">&amp;Elementide uurimine</translation>
 <translation id="947526284350604411">Teie vastus</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> ei saa selles kaustas olevaid faile avada, kuna see sisaldab süsteemifaile</translation>
+<translation id="949314938206378263">Küsisid selle saidi külastamiseks luba. Sinu vanem saab Family Linkis vastata.</translation>
 <translation id="950307215746360464">Seadistusjuhend</translation>
 <translation id="951991426597076286">Keeldu</translation>
 <translation id="952471655966876828">Kui seade on sisse lülitatud ja seda kasutatakse, ühendatakse seade automaatselt</translation>

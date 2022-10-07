@@ -414,6 +414,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
 <translation id="3375634426936648815">Connectat</translation>
+<translation id="3378438761594387761">Aquí trobaràs les captures de pantalla i les baixades recents</translation>
 <translation id="3378442621503952303">S'està connectant a un perfil. Espera uns minuts.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -720,6 +721,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
 <translation id="509790653408515442">Quan reprodueixis en continu aplicacions del telèfon, apareixeran aquí</translation>
 <translation id="5098537242461068432">S'han tornat a obrir l'escriptori i les finestres</translation>
+<translation id="5104236669533825617">No es pot crear la captura de pantalla de vídeo</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
@@ -765,6 +767,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (auricular dret)</translation>
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5356963482258194581">Canvia entre els temes clar i fosc. Fes clic amb el botó dret a l'escriptori i selecciona Estil i fons de pantalla.</translation>
+<translation id="536019650977002321">L'administrador no permet la captura d'àudio. Contacta-hi per obtenir més informació.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ves a aquesta pestanya</translation>
 <translation id="5379115545237091094">Massa intents</translation>
 <translation id="5391307769715781764">Vols substituir l'escriptori desat?</translation>

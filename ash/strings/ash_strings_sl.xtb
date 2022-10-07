@@ -159,6 +159,15 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1797271123677381264">Pozabljeno geslo</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="1812997170047690955">Kaj je na zaslonu?</translation>
+<translation id="1823280932251546115">Vrstica stanja, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />,
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />,
+        <ph name="NOTIFICATION" />
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Element <ph name="ITEM_TITLE" /> je bil odpet</translation>
 <translation id="1836215606488044471">Pomočnik (nalaganje ...)</translation>
@@ -414,6 +423,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3371140690572404006">Naprava USB-C (vrata desno spredaj)</translation>
 <translation id="3375634426936648815">Povezano</translation>
+<translation id="3378438761594387761">Tukaj so prikazani nedavni prenosi in zajemi zaslonske slike.</translation>
 <translation id="3378442621503952303">Povezovanje s profilom. Počakajte nekaj minut.</translation>
 <translation id="3386978599540877378">celozaslonska lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -457,6 +467,8 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3600061223661453002">Izklop</translation>
 <translation id="3604801046548457007">Namizje <ph name="DESK_TITILE" /> je bilo ustvarjeno</translation>
 <translation id="3606978283550408104">Povezava z braillovo vrstico je vzpostavljena.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Če omogočite prenos podatkov v mobilnem omrežju, bo omogočen Bluetooth.</translation>
 <translation id="3616883743181209306">Meni je bil premaknjen v zgornji desni kot zaslona.</translation>
 <translation id="3619536907358025872">Nastavitve Zaslonskega posnetka</translation>
@@ -720,6 +732,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
 <translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj.</translation>
 <translation id="5098537242461068432">Namizje in okna so znova odprti</translation>
+<translation id="5104236669533825617">Snemanja zaslona ni mogoče ustvariti</translation>
 <translation id="5107522548814527560">Splet</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
@@ -765,6 +778,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (desna)</translation>
 <translation id="5352250171825660495">Temna tema je vklopljena</translation>
 <translation id="5356963482258194581">Preklopite med temno in svetlo temo. Z desnim gumbom kliknite namizje in izberite Zaslonsko ozadje in slog.</translation>
+<translation id="536019650977002321">Skrbnik ne dovoli zajemanja zvoka. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pomik na ta zavihek</translation>
 <translation id="5379115545237091094">Preveč poskusov</translation>
 <translation id="5391307769715781764">Želite zamenjati shranjeno namizje?</translation>

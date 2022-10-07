@@ -133,6 +133,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3360895254066713204">Chrome pomoćnik</translation>
 <translation id="3379938682270551431">{0,plural, =0{Ponovo ćemo pokrenuti Chrome}=1{Ponovo ćemo pokrenuti Chrome za 1 sekundu}one{Ponovo ćemo pokrenuti Chrome za # sekundu}few{Ponovo ćemo pokrenuti Chrome za # sekunde}other{Ponovo ćemo pokrenuti Chrome za # sekundi}}</translation>
 <translation id="3396977131400919238">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Google Chrome ponovo.</translation>
+<translation id="3426646014273736870">Ušteda memorije je ubrzala Chrome</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3434246496373299699">Chrome može da vam proverava lozinke kada se prijavite pomoću Google naloga</translation>
 <translation id="3451115285585441894">Dodavanje u Chrome...</translation>
@@ -234,6 +235,7 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 
 Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="5524761631371622910">Dok probni periodi traju i ako vas je Chrome nasumično postavio u aktivni probni period, istorija pregledanja utiče na oglase koje vidite i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome briše interesovanja svakog meseca čim postanu dostupna.</translation>
+<translation id="5530733413481476019">Ubrzajte Chrome</translation>
 <translation id="556024056938947818">Google Chrome pokušava da prikaže lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Datoteka <ph name="FILE_NAME" /> je možda opasna, pa ju je Chrome blokirao.</translation>

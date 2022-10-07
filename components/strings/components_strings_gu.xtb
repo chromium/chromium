@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટ}one{# સાઇટ}other{# સાઇટ}}</translation>
 <translation id="1924727005275031552">નવું</translation>
 <translation id="1927439593081478069">Chromeની સલામતી માટે તપાસ ચલાવવાનું બટન, Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવવા માટે Enter કી દબાવો</translation>
+<translation id="1935995810530254458">કોઈપણ રીતે કૉપિ કરો</translation>
 <translation id="1939175642807587452">નોટિફિકેશન મોકલવાનું પૂછી શકે છે</translation>
 <translation id="1943994668912612445">ડિઝાઇન</translation>
 <translation id="1945968466830820669">તમે તમારી સંસ્થાના એકાઉન્ટ માટે ઍક્સેસ ગુમાવી શકો છો અથવા તમને ઓળખ ચોરીનો અનુભવ થઈ શકે છે. Chromium તમને હમણાં જ તમારો પાસવર્ડ બદલવાની ભલામણ કરે છે.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">સાચવો…</translation>
 <translation id="2088086323192747268">સિંક બટન મેનેજ કરો, તેમજ Chrome સેટિંગમાં તમે જે માહિતી સિંક કરવા ઇચ્છતા હો, તે મેનેજ કરવા માટે Enter કી દબાવો</translation>
 <translation id="2091887806945687916">ધ્વનિ</translation>
+<translation id="2093982008204312032">Google Chrome પાસવર્ડ ભરવા માટે Windows Hello બંધ કરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="2094505752054353250">ડોમેન મેળ ખાતું નથી</translation>
 <translation id="2099652385553570808">ડાબી બાજુએ ત્રણ સ્ટેપલ લગાવો</translation>
 <translation id="2101225219012730419">વર્ઝન:</translation>
@@ -1143,6 +1145,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}one{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}other{{COUNT} પેજ ધરાવતો PDF દસ્તાવેજ}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને આ ફોર્મ સબમિટ કરવામાં આવી રહ્યું હોવાથી, તમારી માહિતી અન્ય લોકોને દેખાઈ શકે છે.</translation>
+<translation id="4024923292610332139">પાસવર્ડ ભરવા માટે TouchID બંધ કરો</translation>
 <translation id="4025913568718019429">Google પ્રાઇવસી સેટિંગ મેનેજ કરવા માટેનું બટન, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગની મુલાકાત લેવા માટે Enter કી દબાવો</translation>
 <translation id="4030383055268325496">&amp;ઉમેરવું પૂર્વવત્ કરો</translation>
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
@@ -1259,6 +1262,7 @@
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
 <translation id="4300675098767811073">જમણી બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="4302514097724775343">રમવા માટે, ડાયનાસોર પર ટૅપ કરો</translation>
+<translation id="4304049446746819918">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર ખસેડવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="4305666528087210886">તમારી ફાઇલ ઍક્સેસ કરી શકાઈ નથી</translation>
 <translation id="4306529830550717874">સરનામું સાચવીએ?</translation>
 <translation id="4306812610847412719">ક્લિપબોર્ડ</translation>
@@ -1634,6 +1638,7 @@
 <translation id="5254043433801397071">પ્રિન્ટ કન્ટેન્ટને ઑપ્ટિમાઇઝ કરો</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">તેમ છતાં કૅપ્ચર કરો</translation>
+<translation id="5257739419779698609">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" /> પર કૉપિ કરવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="5266128565379329178">ઉપરની બાજુએ જોડો</translation>
 <translation id="5269225904387178860">નીચે ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="5269999699920406580">સુવિધાઓ કે જે સિસ્ટમ-વ્યાપી લાગુ છે તે ફક્ત માલિક દ્વારા જ સેટ કરી શકાય છે: <ph name="OWNER_EMAIL" /></translation>
@@ -1696,6 +1701,7 @@
 <translation id="5412236728747081950">તમને વધુ સંબંધિત હોય તેવી જાહેરાતો બતાવી શકાય તે માટે આ સાઇટ Chromeમાંથી તમારી રુચિઓ મેળવે છે</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
+<translation id="5414511064953050917">કોઈપણ રીતે ખસેડો</translation>
 <translation id="5421136146218899937">બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{કોઈ સાઇટને બ્લૉક કરી નથી}=1{1 સાઇટને બ્લૉક કરી}one{# સાઇટને બ્લૉક કરી}other{# સાઇટને બ્લૉક કરી}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" />તમને નોટિફિકેશનો મોકલવા માગે છે</translation>
@@ -2317,6 +2323,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}}</translation>
 <translation id="7153618581592392745">આછો જાંબલી</translation>
 <translation id="7156870133441232244">સર્વરને TLS 1.2 અથવા તે પછીના વર્ઝન પર અપગ્રેડ કરવું જોઈએ.</translation>
+<translation id="7163295244162773898">{0,plural, =1{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}one{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}other{શું ગોપનીય ફાઇલો કૉપિ કરીએ?}}</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">મર્જ કર્યાં</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}one{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}}</translation>
@@ -2925,6 +2932,7 @@
 <translation id="8763986294015493060">હાલમાં ખુલ્લી બધી છૂપી વિન્ડો બંધ કરો</translation>
 <translation id="8766943070169463815">સુરક્ષિત ચુકવણી માટે લૉગ ઇન વિગતના પ્રમાણીકરણની શીટ ખુલ્લી છે</translation>
 <translation id="8767765348545497220">સહાયનું બબલ બંધ કરો</translation>
+<translation id="877348612833018844">{0,plural, =1{શું ગોપનીય ફાઇલ ખસેડીએ?}one{શું ગોપનીય ફાઇલ ખસેડીએ?}other{શું ગોપનીય ફાઇલો ખસેડીએ?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">મોટરસાઇકલ</translation>
 <translation id="8790007591277257123">&amp;ફરી ડિલીટ કરો</translation>

@@ -2407,6 +2407,7 @@
 <translation id="3188465121994729530">ਮੂਵ ਕਰਨ ਦੀ ਔਸਤ</translation>
 <translation id="3189187154924005138">ਵੱਡਾ ਕਰਸਰ</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="3192589799003798742">Chromebook 'ਤੇ Steam ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3192947282887913208">ਆਡੀਓ ਫਾਈਲ</translation>
 <translation id="3193695589337931419">ਸਿਸਟਮ ਸਿਗਨਲਾਂ ਦੀਆਂ ਉਪਯੋਗਤਾਵਾਂ</translation>
 <translation id="3194786596445804250">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕਰਨ ਬਾਰੇ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
@@ -2546,6 +2547,7 @@
 <translation id="3341699307020049241">ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="3341703758641437857">ਫਾਈਲ URL ਤੱਕ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ਇਸ ਐਕਟੈਂਸ਼ਨ ਨੂੰ ਹਟਾਉਣਾ ਚਾਹੁੰਦੀ ਹੈ।</translation>
+<translation id="3343977377045378693">ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3345135638360864351">ਇਸ ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਲਈ ਤੁਹਾਡੀ ਬੇਨਤੀ <ph name="NAME" /> ਨੂੰ ਨਹੀਂ ਭੇਜੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3345634917232014253">ਸੁਰੱਖਿਆ ਜਾਂਚ ਕੁਝ ਸਮਾਂ ਪਹਿਲਾਂ ਚਲਾਈ ਗਈ</translation>
 <translation id="3345886924813989455">ਕੋਈ ਸਮਰਥਿਤ ਬ੍ਰਾਊਜ਼ਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
@@ -2557,6 +2559,7 @@
 <translation id="3354768182971982851">ਦਸੰਬਰ 2022 ਤੋਂ ਬਾਅਦ Chrome ਐਪਾਂ ਦੇ ਪੁਰਾਣੇ ਵਰਜ਼ਨ Mac ਡੀਵਾਈਸਾਂ 'ਤੇ ਨਹੀਂ ਖੁੱਲ੍ਹਣਗੇ। ਤੁਸੀਂ ਜਾਂਚ ਕਰ ਸਕਦੇ ਹੋ ਕਿ ਕੋਈ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ਡੀਵਾਈਸ ਨਾਲ ਜੋੜਾਬੱਧ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ; ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਡੀਵਾਈਸ ਚੁਣੋ</translation>
 <translation id="3355936511340229503">ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
+<translation id="3356036636691722598">ਆਪਣੀ Chromebook 'ਤੇ ਗੇਮਿੰਗ ਦਾ ਅਨੰਦ ਮਾਣੋ</translation>
 <translation id="3356469410714175391">(ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਹੈ)</translation>
 <translation id="3356580349448036450">ਪੂਰਾ</translation>
 <translation id="3359256513598016054">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੀਤੀ ਪਾਬੰਦੀਆਂ</translation>
@@ -3471,6 +3474,7 @@
 <translation id="4211904048067111541">Android ਐਪਾਂ ਨਾਲ ਵਰਤਣਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="42126664696688958">ਨਿਰਯਾਤ ਕਰੋ</translation>
 <translation id="42137655013211669">ਇਸ ਸਾਧਨ ਤੱਕ ਪਹੁੰਚ ਸਰਵਰ ਵੱਲੋਂ ਵਰਜਿਤ ਸੀ।</translation>
+<translation id="4214192212360095377">ਹੁਣੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="4217558091331485702">ਖੋਲ੍ਹਣ ਤੋਂ ਪਹਿਲਾਂ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
 <translation id="4218081191298393750">ਇਸ ਟੈਬ ਨੂੰ ਮਿਊਟ ਕਰਨ ਲਈ ਸਪੀਕਰ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -4370,6 +4374,7 @@
 <translation id="5089763948477033443">ਸਾਈਡ ਪੈਨਲ ਦਾ ਆਕਾਰ ਬਦਲਣ ਵਾਲਾ ਹੈਂਡਲ</translation>
 <translation id="5090637338841444533">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">ਸਥਾਪਨਾ ਨੂੰ ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5094176498302660097">ਤੁਸੀਂ ਆਪਣੇ ਫ਼ਾਈਲ ਐਪ ਜਾਂ ਹੋਰ ਐਪਾਂ ਤੋਂ ਇਸ ਐਪ ਨਾਲ ਸਮਰਥਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਕਿ ਕਿਹੜੀਆਂ ਫ਼ਾਈਲਾਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ, ਇਸ ਲਈ <ph name="BEGIN_LINK" />ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ<ph name="END_LINK" />।</translation>
 <translation id="5094721898978802975">ਨੇਟਿਵ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨਾਲ ਸਹਿਯੋਗ ਕਰਦੇ ਹੋਏ ਸੰਚਾਰ ਕਰੋੇ</translation>
 <translation id="5097002363526479830">'<ph name="NAME" />' ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਹੋ ਗਿਆ: <ph name="DETAILS" /></translation>
@@ -6391,6 +6396,7 @@
 <translation id="7014174261166285193">ਇੰਸਟੌਲੇਸ਼ਨ ਅਸਫਲ।</translation>
 <translation id="7014480873681694324">ਹਾਈਲਾਈਟ ਹਟਾਓ</translation>
 <translation id="7014741021609395734">ਜ਼ੂਮ ਪੱਧਰ</translation>
+<translation id="7014961128696979283">Steam ਨੂੰ ਲਾਂਚ ਕਰੋ</translation>
 <translation id="7017004637493394352">ਦੁਬਾਰਾ "Ok Google" ਕਹੋ</translation>
 <translation id="7017219178341817193">ਇੱਕ ਨਵਾਂ ਸਫ਼ਾ ਜੋੜੋ</translation>
 <translation id="7017354871202642555">window ਦੇ ਸੈਟ ਹੋਣ ਤੋਂ ਬਾਅਦ ਮੋਡ ਸੈਟ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
@@ -6783,6 +6789,7 @@
 <translation id="7423425410216218516">ਦਿਖਣਯੋਗਤਾ <ph name="MINUTES" /> ਮਿੰਟ ਲਈ ਚਾਲੂ ਹੈ</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ਨੂੰ ਹਟਾਓ</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ਨੂੰ ਚਲਾਉਣ ਲਈ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="7424153922653300265">ਊਰਜਾ ਸੇਵਰ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7424818322350938336">ਨੈੱਟਵਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7427315069950454694">ਅੱਜ ਦੇ ਲਈ ਤੁਹਾਡੀਆਂ ਯਾਦਾਂ</translation>
 <translation id="7427348830195639090">ਪਿਛੋਕੜ ਸਫ਼ਾ: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -8019,6 +8026,7 @@
 <translation id="859246725979739260">ਇਸ ਸਾਈਟ ਨੂੰ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8593121833493516339">ਵਰਤੋਂ ਅਤੇ ਤਸ਼ਖੀਸ ਡਾਟਾ ਭੇਜੋ। Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ, ਡੀਵਾਈਸ ਅਤੇ ਐਪ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜ ਕੇ ਆਪਣੇ ਬੱਚੇ ਦਾ Android ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ। ਇਸਦੀ ਵਰਤੋਂ ਤੁਹਾਡੇ ਬੱਚੇ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਸਿਸਟਮ ਅਤੇ ਐਪ ਸਥਿਰਤਾ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਮਿਲੇਗੀ। ਕੁਝ ਏਕੀਕ੍ਰਿਤ ਜਾਣਕਾਰੀ Google ਐਪਾਂ ਅਤੇ ਪਾਰਟਨਰਾਂ, ਜਿਵੇਂ ਕਿ Android ਵਿਕਾਸਕਾਰਾਂ, ਦੀ ਵੀ ਮਦਦ ਕਰੇਗੀ। ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਉਸਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK1" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">ਵਿਉਂਤਬੱਧ ਫਾਈਲਾਂ</translation>
+<translation id="8597404194697561297">Chromebook 'ਤੇ Steam ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
 <translation id="8597845839771543242">ਪ੍ਰਾਪਰਟੀ ਫੌਰਮੈਟ:</translation>
 <translation id="8599681327221583254">ਇੱਕ ਜਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਨੀਤੀਆਂ ਦਾ ਸਹੀ ਤਰੀਕੇ ਨਾਲ ਸੰਰੂਪਣ ਨਹੀਂ ਕੀਤਾ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ</translation>
 <translation id="8599864823732014237">ਕੀ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਦਰਜ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਛੱਡਣੀ ਹੈ?</translation>

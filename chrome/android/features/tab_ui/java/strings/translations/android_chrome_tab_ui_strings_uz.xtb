@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">reyting</translation>
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
+<translation id="3499853001094440183">Varaqlar guruhini yechish</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
 <translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
 <translation id="6228793724645064692">(doʻkon reytingi)</translation>
 <translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
 <translation id="6510648526783655549">Varaqlar panelini yopish</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
@@ -80,11 +83,13 @@
 <translation id="753732157349120914">Varaq almashtirgich</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ta sharh Googledan}other{<ph name="REVIEWS_COUNT_MANY" /> ta sharh Googledan}}</translation>
 <translation id="7559245342362162951">Guruh varaqlarini butun ekranga jadval shaklida chiqarish</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni ulashish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni ulashish}}</translation>
 <translation id="7792771145871471484">Batafsil.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Belgilangan <ph name="TABS_COUNT_ONE" /> ta varaqni guruhlash}other{Belgilangan <ph name="TABS_COUNT_MANY" /> ta varaqni guruhlash}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_ONE" /> ta sharh}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_MANY" /> ta sharh}}</translation>
 <translation id="7885132941432959125">Varaqni oʻngga siljitish</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
+<translation id="8018192911041116887">Varaqlarni ulashish</translation>
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
 <translation id="814503310257431685">Hammasi</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>

@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">ブルース</translation>
 <translation id="3218181027817787318">相対的</translation>
 <translation id="3223287115535306850">アプリ起動スロバー</translation>
+<translation id="3223425961342298674">位置情報は許可されていません</translation>
 <translation id="3225347164936328585">拍手</translation>
 <translation id="3225919329040284222">サーバーの提示した証明書が、組み込まれている想定の証明書と一致しません。これらの想定の証明書は、ユーザー保護のため、特定の安全性の高いウェブサイトについて用意されています。</translation>
 <translation id="3226128629678568754">ページの読み込みに必要なデータを再送信するには、再読み込みボタンを押してください。</translation>
@@ -1182,6 +1183,7 @@
 <translation id="4127575959421463246">ChromeOS のフラグをお探しですか？次にアクセスしてください:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="4130226655945681476">ネットワーク ケーブル、モデム、ルーターを確認する</translation>
+<translation id="4132448310531350254">アプリ「<ph name="POLICY_IDS_LIST" />」で参照されている file_extension「<ph name="FILE_EXTENSION" />」のハンドラが重複しています。</translation>
 <translation id="4134123981501319574">ドキュメントを作成</translation>
 <translation id="413544239732274901">詳細</translation>
 <translation id="4142935452406587478">トレイ 10</translation>
@@ -1204,6 +1206,7 @@
 <translation id="4194250254487269611">現在、カードを保存できません</translation>
 <translation id="4196861286325780578">移動のやり直し（&amp;R）</translation>
 <translation id="4202554117186904723">ロール 5</translation>
+<translation id="4203769790323223880">カメラは許可されていません</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ファイアウォールとウイルス対策の設定を確認する<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">確認コードの有効期限が切れています。新しいコードをリクエストしてください</translation>
@@ -1230,6 +1233,7 @@
     &lt;p&gt;サイトの利用が終わったら、ウィルス対策ソフトウェアを有効にします。&lt;/p&gt;
     &lt;h4&gt;ステップ 5: サポートを依頼する&lt;/h4&gt;
     &lt;p&gt;引き続きエラーが表示される場合は、ウェブサイトの所有者にお問い合わせください。&lt;/p&gt;</translation>
+<translation id="4223404254440398437">マイクは許可されていません</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ネットワーク診断ツールを実行してみてください<ph name="END_LINK" />。</translation>
 <translation id="4230204356098880324">カメラの使用と移動を要求できる</translation>
 <translation id="4235360514405112390">有効</translation>
@@ -1601,6 +1605,7 @@
 <translation id="5177076414499237632">このページのソースとトピックについて</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
 <translation id="518639307526414276">ペットフード、ペットケア用品</translation>
+<translation id="5190072300954988691">カメラとマイクは許可されていません</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="5191315092027169558">お使いのプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
@@ -1621,6 +1626,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">閉じる</translation>
+<translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5242889659037569123">旅行バッグ、旅行用品</translation>
 <translation id="5250209940322997802">「ネットワークに接続してください」</translation>
 <translation id="52517543715119994">Chrome の機能を確認します</translation>
@@ -2500,6 +2506,7 @@
 <translation id="7581199239021537589">2 面の画像の Y 軸移動</translation>
 <translation id="7582602800368606489">Google カレンダーで新しいイベントをすばやく作成します</translation>
 <translation id="7583969447617676942">司法サービス</translation>
+<translation id="7586676035079382730">通知は許可されていません</translation>
 <translation id="7591288787774558753">機密コンテンツを共有しますか？</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> から <ph name="TOP_LEVEL_URL" /> での Cookie とサイトデータの使用許可を求められています</translation>
 <translation id="7592362899630581445">サーバーの証明書が名前の制約に違反しています。</translation>
@@ -3053,6 +3060,7 @@
 <translation id="9131119348384879525">機密コンテンツをキャプチャしますか？</translation>
 <translation id="9136861683332321024">高級車</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
+<translation id="9138037198177304356">通知が許可されています</translation>
 <translation id="9139318394846604261">ショッピング</translation>
 <translation id="9141013498910525015">住所を管理</translation>
 <translation id="9144951720726881238">有効期限:</translation>

@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skanna dokumentet</translation>
 <translation id="1309250603447638106">Laddar ned uppdateringar för dokumentskanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Sök + vänsterpil för att få åtkomst.</translation>
+<translation id="1417314334557041815">Redigera sida <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> är inte ansluten.</translation>
 <translation id="1473110567575736769">Timer för 3 sekunder</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Ingenting spelades in</translation>
 <translation id="1838104802459806957">Vrid uppåt</translation>
+<translation id="1843105061469674856">Skanna ytterligare en sida</translation>
 <translation id="1851169887664797861">Ytterligare kamerakontroller tillgängliga</translation>
 <translation id="1851616744363735765">PAUSAD</translation>
 <translation id="1862930711583847113">Det gick inte att exportera <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Det går inte att ändra upplösning för den här kameran</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4281620174117014503">Medelhög upplösning</translation>
+<translation id="428234092390943511">Sidminiatyr</translation>
 <translation id="4329152592498422850">Byt till att ta kvadratiskt foto</translation>
 <translation id="4340659173795395806">Nu kan du skapa PDF:er med flera sidor</translation>
 <translation id="4383571725254449280">Skriva ut resultatloggar</translation>

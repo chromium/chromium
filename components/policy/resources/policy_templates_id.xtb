@@ -102,6 +102,7 @@
       Device Attributes API adalah daftar API web; harap lihat https://wicg.github.io/WebApiDevice/device_attributes. API ini hanya tersedia untuk asal yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau aplikasi web yang dikonfigurasi dalam sesi Kios.</translation>
 <translation id="1079801999187584280">Larang penggunaan Developer Tools</translation>
 <translation id="1082802595100075771">Izinkan pengguna memilih menggunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
+<translation id="1087057100912843460">Izinkan update</translation>
 <translation id="1087437665304381368">Kebijakan ini hanya mengontrol mode developer<ph name="PRODUCT_OS_NAME" />. Jika ingin mencegah akses ke Opsi Developer Android, Anda perlu menetapkan kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">Daftar kebijakan Chrome Enterprise berpindah! Update bookmark ke <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Mengisi otomatis nama pengguna di halaman IdP SAML</translation>
@@ -270,6 +271,7 @@
       Kebijakan ini tidak berlaku untuk pengguna kios.
 
       Peringatan: Wipe dan MinimalMigrate akan menghapus data lokal.</translation>
+<translation id="1248955696540150266">Izinkan download update otomatis peer to peer</translation>
 <translation id="1250597158212586309">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan memiliki opsi untuk menutup/memulihkan notifikasi sandi yang telah dibobol.
 
       Jika Anda menonaktifkan setelan ini, pengguna tidak akan dapat menutup notifikasi sandi yang telah dibobol. Jika Anda mengaktifkan setelan ini, pengguna akan dapat menutup notifikasi sandi yang telah dibobol.</translation>
@@ -501,6 +503,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Catatan: Pisahkan beberapa nama server dengan koma. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.</translation>
 <translation id="1488724823347505879">Mengaktifkan berbagi dari aplikasi Android ke aplikasi Web</translation>
+<translation id="1494138678487405397">Nonaktifkan kontras tinggi di layar login</translation>
 <translation id="1502843533062797703">Aktifkan pemblokiran injeksi software pihak ketiga</translation>
 <translation id="1503969899251962413">Menyetel kebijakan akan menentukan kunci lisensi <ph name="PLUGIN_VM_NAME" /> untuk perangkat ini.
 
@@ -928,6 +931,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Sebelum peluncuran, kebijakan perusahaan ini tidak akan berlaku. Setelah peluncuran, ketika kebijakan perusahaan ini diaktifkan, kebijakan perujuk default Chrome akan disetel ke nilai sebelumnya, yaitu no-referrer-when-downgrade.
 
       Kebijakan perusahaan ini dinonaktifkan secara default.</translation>
+<translation id="1947848925128084608">Nonaktifkan kontras tinggi di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="1949584741547056205">Jawaban Instan</translation>
 <translation id="1951288262199783797">Anda dapat mengaktifkan kebijakan ini untuk membuat kamus ekstensi jenis file beserta daftar domain yang sesuai yang tidak akan muncul di peringatan download berbasis ekstensi jenis file. Kebijakan ini memungkinkan administrator perusahaan memblokir peringatan download berbasis ekstensi jenis file untuk file yang dikaitkan dengan domain yang tercantum. Misalnya, jika ekstensi "jnlp" dikaitkan dengan "website1.com", pengguna tidak akan melihat peringatan saat mendownload file "jnlp" dari "website1.com", tetapi akan melihat peringatan download saat mendownload file "jnlp" dari "website2.com".
 
@@ -953,6 +957,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Perhatikan bahwa jika contoh sebelumnya menunjukkan penekanan pada peringatan download berbasis ekstensi jenis file untuk file "swf" bagi semua domain, sebaiknya Anda tidak menerapkan penekanan pada peringatan tersebut bagi semua domain untuk ekstensi jenis file berbahaya demi alasan keamanan. Contoh ini diberikan hanya untuk mendemonstrasikan bahwa hal tersebut dapat dilakukan.
 
       Jika kebijakan ini diaktifkan bersama <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> dan DownloadRestrictions disetel untuk memblokir jenis file berbahaya, pemblokiran download yang ditentukan oleh DownloadRestrictions akan diprioritaskan. Misalnya, jika kebijakan ini disetel untuk mengizinkan download ekstensi "exe" dari "website1.com", dan DownloadRestrictions disetel untuk memblokir download dan jenis file berbahaya, download ekstensi "exe" akan tetap diblokir di semua domain. Jika DownloadRestrictions tidak disetel untuk memblokir jenis file berbahaya, jenis file yang ditentukan di kebijakan ini tidak akan muncul di peringatan download berbasis ekstensi jenis file pada domain yang ditentukan. Baca selengkapnya tentang DownloadRestrictions (https://chromeenterprise.google/policies/?policy=DownloadRestrictions).</translation>
+<translation id="1954612656043024615">Aktifkan fitur papan klip bersama</translation>
 <translation id="1960416154405676350">Aktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Kebijakan ini hanya berlaku untuk sesi tamu terkelola.
       Menyetel kebijakan akan menentukan daftar ID ekstensi yang dikecualikan dari prosedur pembersihan sesi tamu terkelola yang dibatasi (lihat <ph name="DEVICE_RESTRICTED_MANAGED_GUEST_SESSION_ENABLED_POLICY_NAME" />).
@@ -1018,6 +1023,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="2004382785802837840">Nonaktifkan penutupan notifikasi sandi yang telah dibobol</translation>
 <translation id="2005506794355327448">Tindakan yang harus diambil saat penutup ditutup.</translation>
 <translation id="2006530844219044261">Pengelolaan daya</translation>
+<translation id="2006954055163088863">Anggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
 <translation id="2008514891623783266">Kebijakan penanganan IP WebRTC</translation>
 <translation id="2013285471046373727">Menentukan bagaimana aplikasi diinstal. OPTIONAL: Aplikasi tidak otomatis diinstal, tetapi pengguna dapat menginstalnya. Ini adalah setelan default jika kebijakan tidak ditentukan. PRELOAD: Aplikasi otomatis diinstal, tetapi pengguna dapat meng-uninstal. FORCE_INSTALLED: Aplikasi otomatis diinstal dan pengguna tidak dapat meng-uninstal. BLOCKED: Aplikasi diblokir dan tidak dapat diinstal. Jika aplikasi diinstal berdasarkan kebijakan sebelumnya, aplikasi akan di-uninstal.</translation>
 <translation id="2014757022750736514">Mengontrol perilaku layar login tempat pengguna login ke akun. Setelan mencakup siapa saja yang dapat login, jenis akun yang diizinkan, metode autentikasi yang harus digunakan, serta aksesibilitas umum, metode masukan, dan setelan lokal.</translation>
@@ -1151,6 +1157,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Jika kebijakan ini ditetapkan, browser akan mulai menghapus tab untuk menghemat memori setelah melampaui batas. Namun, tidak ada jaminan bahwa browser selalu berjalan di bawah batas. Setiap nilai yang kurang dari 1024 akan dibulatkan ke 1024.
 
       Jika kebijakan ini tidak ditetapkan, browser hanya akan mulai mencoba menghemat memori setelah mendeteksi bahwa perangkatnya memiliki jumlah memori fisik yang rendah.</translation>
+<translation id="2161348910646846717">Izinkan pengguna mengubah saluran rilis</translation>
 <translation id="2165567959657265531">Cookie yang disetel untuk domain yang sesuai dengan pola ini akan kembali ke perilaku <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama. Pengembalian ke perilaku lama akan menyebabkan cookie yang tidak menentukan atribut <ph name="ATTRIBUTE_SAMESITE_NAME" /> dianggap sebagai "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", menghapus persyaratan bagi cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" untuk membawa atribut "<ph name="ATTRIBUTE_SECURE_NAME" />", dan melewati perbandingan skema saat evaluasi jika dua situs adalah situs yang sama. Lihat penjelasan lengkapnya di https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Untuk cookie pada domain yang tidak tercakup oleh pola yang ditentukan di sini, atau untuk semua cookie jika kebijakan ini tidak disetel, nilai default global-nya adalah konfigurasi pribadi pengguna.
@@ -1316,6 +1323,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Catatan: Untuk Android, gunakan kebijakan <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="2306505001667207184">Minta pengguna memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.</translation>
 <translation id="2307496301287881990">Melaporkan status tampilan dan grafis</translation>
+<translation id="2309284543927494965">Blokir update</translation>
 <translation id="2309341709647905294">Jangan laporkan informasi tentang periferal yang dicolokkan ke perangkat</translation>
 <translation id="2309390639296060546">Setelan geolokasi default</translation>
 <translation id="2331354174913096226">Template URI pada resolver DNS-over-HTTPS yang diinginkan. Untuk menentukan beberapa resolver DNS-over-HTTPS, pisahkan template URI terkait dengan spasi.
@@ -1359,6 +1367,7 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Dukungan untuk penyetelan kebijakan ini ke "tls1" atau "tls1.1" dihapus di versi 91. Menyembunyikan peringatan TLS 1.0/1.1 tidak lagi didukung.</translation>
 <translation id="2364639863953745682">Mode pengalaman aktivasi Asisten</translation>
 <translation id="2366301887862414321">Izinkan host pesan native tingkat pengguna dan tingkat sistem</translation>
+<translation id="2376134474855349829">Nonaktifkan keyboard virtual di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="2382672620906337383">setTimeout() JavaScript tidak akan dikunci hingga batas bertingkat yang lebih tinggi.</translation>
 <translation id="2384233438419344179">Jika kebijakan disetel ke Aktif, elemen halaman web yang tidak berasal dari domain di kolom URL browser tidak dapat menyetel cookie. Jika kebijakan disetel ke Nonaktif, elemen tersebut akan dapat menyetel cookie dan pengguna tidak dapat mengubah setelan ini.
 
@@ -1422,6 +1431,7 @@ Jika kebijakan ini ditetapkan ke False, layar privasi akan selalu dinonaktifkan.
 Jika kebijakan ini ditetapkan, pengguna tidak dapat mengganti nilainya.
 
 Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan tetapi dapat dikontrol oleh pengguna.</translation>
+<translation id="2413899611035194909">Tampilkan opsi aksesibilitas di menu baki sistem layar login</translation>
 <translation id="2415715982424988916">Jelajahi (didukung sejak versi 91)</translation>
 <translation id="2421677964966613267">Kebijakan ini tidak digunakan lagi di M88, Flash tidak lagi didukung oleh Chrome. Jika kebijakan disetel, Anda akan dapat menetapkan daftar pola URL yang menentukan situs yang tidak dapat menjalankan plugin <ph name="FLASH_PLUGIN_NAME" />.
 
@@ -1481,6 +1491,10 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika Anda menonaktifkan setelan ini, <ph name="PRODUCT_NAME" /> tidak akan mendeteksi saat jendela tertutup oleh jendela lain.
 
       Jika kebijakan ini tidak disetel, deteksi penghalangan akan diaktifkan.</translation>
+<translation id="2462606868915618110">Mulai M108, semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara sinkron.
+      Hingga M110, kebijakan ini akan mengaktifkan kembali pemanggilan metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> asinkron.
+      Jika kebijakan ini disetel ke Aktif, metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara asinkron.
+      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara sinkron.</translation>
 <translation id="2463034609187171371">Mengaktifkan paket penyandian DHE di TLS</translation>
 <translation id="2463365186486772703">Lokal aplikasi</translation>
 <translation id="2463832514638083341">Kebijakan ini mengontrol jangka waktu penyimpanan metadata pekerjaan cetak di perangkat, dalam hari.
@@ -1550,6 +1564,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2520551905471951523">Gunakan prioritas tinggi untuk proses audio</translation>
 <translation id="2521581787935130926">Tampilkan pintasan aplikasi di bilah bookmark</translation>
 <translation id="2522304491589804974">Mengonfigurasi daftar penginstalan ekstensi yang diizinkan</translation>
+<translation id="2523511232831599126">Aktifkan pintasan aksesibilitas di layar login</translation>
 <translation id="2529880111512635313">Mengonfigurasi daftar aplikasi dan ekstensi yang dipasang secara paksa</translation>
 <translation id="253135976343875019">Menunda peringatan waktu menganggur saat menggunakan daya AC</translation>
 <translation id="2535370400681639351">Jika kebijakan disetel ke Aktif, permintaan autentikasi gnubby akan diteruskan lewat proxy di seluruh koneksi host jarak jauh.
@@ -1600,6 +1615,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan memuat semua host pesan native yang terinstal.</translation>
 <translation id="2568488785376704318">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="REMOTE_ACCESS_HOST_DOMAIN_LIST_POLICY_NAME" />.</translation>
+<translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
 <translation id="2576324725151524912">Mengizinkan Mode Developer Aplikasi Terisolasi.</translation>
 <translation id="257788512393330403">Sandi harus dimasukkan setiap enam jam</translation>
@@ -1694,6 +1710,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707873794476722903">Safe Browsing aktif dalam mode standar.</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
+<translation id="2713977837384407666">Selalu kirim metrik ke Google</translation>
 <translation id="2714359695399346815">Jika kebijakan disetel ke Aktif atau tidak disetel, penggunaan server STUN akan diizinkan sehingga klien jarak jauh dapat menemukan serta terhubung ke perangkat ini, meskipun dipisahkan oleh firewall.
 
       Jika kebijakan disetel ke Nonaktif saat koneksi UDP keluar difilter oleh firewall, perangkat hanya akan mengizinkan koneksi dari perangkat klien dalam jaringan lokal.</translation>
@@ -1735,6 +1752,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Kebijakan ini memerlukan penyiapan tambahan agar dapat berlaku. Buka https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting untuk informasi selengkapnya.</translation>
 <translation id="2731627323327011390">Menonaktifkan penggunaan sertifikat <ph name="PRODUCT_OS_NAME" /> untuk aplikasi ARC</translation>
+<translation id="2737917415184832294">Gunakan HTTPS untuk download update</translation>
 <translation id="2742843273354638707">Menyembunyikan aplikasi Chrome Webstore serta link footer dari Halaman Tab Baru dan peluncur aplikasi <ph name="PRODUCT_OS_NAME" />.
 
       Jika kebijakan ini disetel ke true, ikon akan disembunyikan.
@@ -1765,6 +1783,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan ini disetel ke salah (false), penampil PDF tidak akan dapat menganotasi PDF.</translation>
 <translation id="2769952903507981510">Mengonfigurasi nama domain yang dibutuhkan untuk hosting akses jarak jauh</translation>
+<translation id="2772231477628401250">Gunakan HTTP untuk download update</translation>
 <translation id="2772650717382565415">Menyetel kebijakan akan menentukan daftar aplikasi web yang diinstal otomatis, tanpa interaksi pengguna, dan yang tidak dapat di-uninstal atau dinonaktifkan pengguna.
 
       Setiap item daftar kebijakan adalah objek yang berisi satu elemen wajib:
@@ -1864,8 +1883,10 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2835686964326214400">Menyetel jadwal kustom untuk memulai ulang perangkat</translation>
 <translation id="2838830882081735096">Jangan izinkan migrasi data dan ARC</translation>
 <translation id="2839294585867804686">Pengaturan Berbagi File Jaringan</translation>
+<translation id="2841911109921764691">Tombol kanan menjadi tombol utama di layar login</translation>
 <translation id="284288632677954003">URL file XML yang berisi URL yang tidak akan memicu pengalihan browser.</translation>
 <translation id="2846689894646472396">Interval pemeriksaan aktivitas jaringan dalam milidetik.</translation>
+<translation id="2849275596224278787">Sembunyikan opsi aksesibilitas di menu baki sistem layar login</translation>
 <translation id="2853649500575897584">Jangan blokir titik ekstensi lama dalam Proses browser</translation>
 <translation id="285480231336205327">Aktifkan mode kontras tinggi</translation>
 <translation id="285627849510728211">Menetapkan konfigurasi hari mode pengisian daya baterai lanjutan</translation>
@@ -2162,6 +2183,7 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="3118552207903834734">Mengizinkan pengguna mengonfigurasi nama host perangkatnya</translation>
 <translation id="3122082892722698079">Mengontrol penggunaan pengecualian konten tidak aman</translation>
+<translation id="3126748868885248792">Tombol kanan menjadi tombol utama</translation>
 <translation id="3128072319047570212">Setelan keygen</translation>
 <translation id="3131703464330936425">Jangan izinkan roaming data seluler</translation>
 <translation id="3135820765957090754">Jika setelan ini diaktifkan, pengguna akan diizinkan untuk menyinkronkan konfigurasi jaringan Wi-Fi antara perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung. Sebelum konfigurasi jaringan Wi-Fi dapat disinkronkan, pengguna harus secara eksplisit memilih untuk menggunakan fitur ini dengan menyelesaikan alur penyiapan.
@@ -2279,6 +2301,7 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
 <translation id="3211426942294667684">Setelan login browser</translation>
 <translation id="3219421230122020860">Mode samaran tersedia</translation>
 <translation id="3220624000494482595">Jika aplikasi kios adalah aplikasi Android, aplikasi tersebut tidak akan memiliki kontrol terhadap versi <ph name="PRODUCT_OS_NAME" />, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
+<translation id="3222088741899353813">Tombol kiri menjadi tombol utama di layar login</translation>
 <translation id="322359555555487980">Menentukan ketersediaan variasi di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3229163415739929305">Jika kebijakan disetel ke Aktif atau tidak disetel, pengambilan metadata pemuatan halaman dan model machine learning yang meningkatkan pengalaman penjelajahan akan diaktifkan.
       Jika kebijakan disetel ke Nonaktif, beberapa fitur mungkin tidak berfungsi dengan benar.</translation>
@@ -2358,6 +2381,7 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
       Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser atau OS mengalami error), data penjelajahan akan dihapus saat berikutnya profil dimuat.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
+<translation id="3278042410658310805">Nonaktifkan respons lisan di layar login dan izinkan pengguna mengaktifkannya untuk sementara</translation>
 <translation id="3282240846541032181">Kebijakan ini memungkinkan admin menentukan aplikasi yang bertindak sebagai pengendali default untuk setiap ekstensi file di <ph name="PRODUCT_OS_NAME" /> yang tidak dapat diubah pengguna.
       Untuk semua ekstensi file yang tidak ditentukan dalam kebijakan, pengguna bebas menetapkan setelan default mereka sendiri sesuai dengan alur kerja biasa.
 
@@ -2453,6 +2477,7 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
       Lihat https://support.google.com/chrome/a?p=Supported_directory_variables untuk mengetahui daftar variabel yang dapat digunakan.
 
       Jika kebijakan ini tidak disetel, jalur profil default akan digunakan dan pengguna akan dapat menggantinya dengan tanda command line '--user-data-dir'.</translation>
+<translation id="338149029069528354">Jangan hapus data pengguna lokal</translation>
 <translation id="3381968327636295719">Gunakan browser host jika tidak diubah</translation>
 <translation id="3387211681524224831">Jika kebijakan disetel ke Aktif, histori penjelajahan tidak akan disimpan, sinkronisasi tab akan dinonaktifkan, dan pengguna tidak dapat mengubah setelan ini.
 
@@ -2638,6 +2663,7 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
 
           Jika kebijakan ini tidak ditetapkan, fitur klik untuk diucapkan mula-mula dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3587482841069643663">Semua</translation>
+<translation id="3587766503874071316">Nonaktifkan pintasan aksesibilitas</translation>
 <translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
@@ -2983,6 +3009,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
           Jika kebijakan ini tidak ditetapkan, tombol lekat mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3927291637826333102">Mengizinkan tangkapan Desktop, Jendela, dan Tab berdasarkan asal berikut</translation>
 <translation id="3928726028264020458">Aktifkan pelaporan info VPD perangkat</translation>
+<translation id="3941289958028934630">Nonaktifkan respons lisan di layar login</translation>
 <translation id="3943930334592166130">Kebijakan ini mengontrol apakah pengguna akan diminta memilih sertifikat klien saat lebih dari satu sertifikat cocok dengan <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" />.
       Jika kebijakan ini disetel ke Aktif, pengguna akan diminta memilih sertifikat klien setiap kali kebijakan pemilihan otomatis cocok dengan beberapa sertifikat.
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin hanya diminta saat tidak ada sertifikat yang cocok dengan pemilihan otomatis.</translation>
@@ -3070,6 +3097,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
       Jika kebijakan tidak disetel, Chrome akan menggunakan direktori download default, dan pengguna dapat mengubahnya.
 
       Catatan: Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
+<translation id="4030152268425532846">Nonaktifkan pembatalan login otomatis</translation>
 <translation id="4041577849977347218">Jika kebijakan ini disetel ke Aktif atau tidak disetel, file yang didownload akan dikirim untuk dianalisis oleh Safe Browsing, meskipun jika file berasal dari sumber tepercaya.
 
       Jika kebijakan disetel ke Nonaktif, file yang didownload tidak akan dikirim untuk dianalisis oleh Safe Browsing jika file berasal dari sumber tepercaya.
@@ -3081,6 +3109,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4051723201852944592">Mengaktifkan Penghalangan Jendela</translation>
 <translation id="4052529125939620019">Memuat ekstensi komponen CryptoToken saat browser dimulai</translation>
 <translation id="4053157306171963473">Nonaktifkan pelaporan waktu aktivitas perangkat</translation>
+<translation id="4053612967614057854">Nonaktifkan keyboard virtual</translation>
 <translation id="4056910949759281379">Nonaktifkan protokol SPDY</translation>
 <translation id="4061107397839125009">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang tidak dapat menampilkan notifikasi.
 
@@ -3088,6 +3117,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="4061590579642538878">Laporkan informasi tentang laporan kerusakan.</translation>
+<translation id="4072225853834793549">Nonaktifkan pintasan aksesibilitas di layar login</translation>
 <translation id="4075675819066819571">Posisikan rak di sisi kiri layar</translation>
 <translation id="408029843066770167">Izinkan kueri ke layanan waktu Google</translation>
 <translation id="408076456549153854">Aktifkan login browser</translation>
@@ -3257,6 +3287,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4203879074082863035">Hanya printer yang diizinkan yang ditampilkan kepada pengguna</translation>
 <translation id="4204327073692415353">Jangan minta pengguna memilih sertifikat klien di layar login</translation>
 <translation id="4205316772333487392">Paksa penggunaan SafeSearch di Google Penelusuran</translation>
+<translation id="4206464220361823768">Nonaktifkan kursor besar di layar login</translation>
 <translation id="4209297478239988291">Mengaktifkan fitur aksesibilitas klik otomatis.
 
           Fitur ini berfungsi untuk mengklik tanpa perlu menekan mouse atau touchpad secara langsung, cukup arahkan kursor ke objek yang ingin Anda klik.
@@ -3340,6 +3371,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Kebijakan ini akan diabaikan dan notifikasi akan selalu ditampilkan jika perangkat tidak dikelola atau hanya terdapat satu pengguna.
 
       Jika terdapat beberapa akun pengguna di perangkat terkelola, notifikasi hanya akan ditampilkan saat kebijakan ini diaktifkan.</translation>
+<translation id="4303167373847512281">Izinkan mode developer</translation>
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4313767483634435271">Alamat MAC dok yang ditetapkan untuk perangkat</translation>
 <translation id="4314538398999793073">Nonaktifkan pencarian CNAME selama autentikasi Kerberos</translation>
@@ -3378,6 +3410,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4369307906396795087">Skrip untuk pekerja (Pekerja Web, Pekerja Layanan, dll.) menggunakan pemeriksaan jenis MIME longgar. Skrip pekerja dengan jenis MIME lama, seperti <ph name="MIMETYPE_TEXT_ASCII" />, akan berfungsi.</translation>
 <translation id="4370937370030117032">Nonaktifkan pengiriman nama pengguna dan nama file ke printer native</translation>
 <translation id="4372704773119750918">Jangan izinkan pengguna perusahaan untuk menjadi bagian dari multiprofil (primer atau sekunder)</translation>
+<translation id="4373332965635821723">Aktifkan pintasan aksesibilitas</translation>
 <translation id="4377599627073874279">Izinkan semua situs menampilkan semua gambar</translation>
 <translation id="437791893267799639">Kebijakan tidak disetel, jangan izinkan migrasi data dan ARC</translation>
 <translation id="4380159792986204036">Mengizinkan Kios Web membuka lebih dari satu jendela browser di layar mana pun</translation>
@@ -3722,6 +3755,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 
       Jika Anda menetapkan kebijakan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, pengguna akan menentukan untuk menyembunyikan rak secara otomatis atau tidak.</translation>
 <translation id="4812714598405913256">Mengonfigurasi pesan batas akhir update otomatis untuk kebijakan DeviceMinimumVersion</translation>
+<translation id="4815581264328351694">Tampilkan opsi aksesibilitas di menu baki sistem</translation>
 <translation id="4816674326202173458">Memungkinkan pengguna perusahaan menjadi primer dan sekunder (Perilaku default untuk pengguna yang tidak dikelola)</translation>
 <translation id="4820432864264617413">Cegah <ph name="BOREALIS_NAME" /> berjalan untuk pengguna</translation>
 <translation id="4821987881803903281">Memblokir izin Penempatan Jendela di situs ini</translation>
@@ -4198,6 +4232,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5293044154216294358">Jika kebijakan ditetapkan ke Benar (True), pengguna akan diizinkan untuk memainkan game dinosaurus. Jika kebijakan ditetapkan ke Salah (False), pengguna tidak dapat memainkan game dinosaurus sebagai fitur tersembunyi saat perangkat offline.
 
       Jika kebijakan tidak ditetapkan, pengguna tidak dapat memainkan game di <ph name="PRODUCT_OS_NAME" /> yang terdaftar, tetapi dapat memainkannya dalam kondisi lain.</translation>
+<translation id="5293285950307241933">Hapus semua data pengguna lokal</translation>
 <translation id="529457411593078576">Menampilkan Persyaratan Layanan (ToS) saat CCT pertama kali dijalankan</translation>
 <translation id="5297948043665200363">Izinkan pengguna tetap login setelah akunnya menjadi tidak terautentikasi</translation>
 <translation id="5298949392804966105">Tidak ada batasan di akun terkelola</translation>
@@ -4208,8 +4243,10 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5306186200045823863">Mengaktifkan kepercayaan pada Infrastruktur IKP Lama milik Symantec Corporation</translation>
 <translation id="5307432759655324440">Ketersediaan mode samaran</translation>
 <translation id="5308551343115571396">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, kami akan mencoba menyimpan data pengguna sebanyak mungkin, sekaligus menghapus semua data browser.</translation>
+<translation id="530949964068726932">Sembunyikan opsi aksesibilitas di menu baki sistem</translation>
 <translation id="5311275381462687162">Setelan default perilaku cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> lama</translation>
 <translation id="5312253627576569499">Persentase yang digunakan untuk menskalakan penundaan peredupan layar ketika terdapat aktivitas pengguna saat layar redup atau segera setelah layar dimatikan.</translation>
+<translation id="5316856058059940708">Nonaktifkan kursor besar</translation>
 <translation id="5317852436044398288">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang dapat menggunakan Tangkapan Jendela dan Tab.
 
       Jika kebijakan tidak disetel, situs tidak akan dianggap sebagai penggantian pada tingkat Tangkapan ini.
@@ -4221,11 +4258,13 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
 <translation id="5318185076587284965">Aktifkan penggunaan server relay oleh hosting akses jarak jauh</translation>
 <translation id="5323200200131319468">Mengaktifkan respons lisan di layar login</translation>
+<translation id="5323355956693037267">Aktifkan keyboard virtual di layar login</translation>
 <translation id="532848608876725157">Aktifkan DNS-over-HTTPS dengan fallback yang tidak aman</translation>
 <translation id="5328965694451556034">Melaporkan login/logout</translation>
 <translation id="5329018127554115226">Mode Efisiensi Tinggi akan dinonaktifkan.</translation>
 <translation id="5330684698007383292">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut</translation>
 <translation id="5331746669335642668">Kebijakan cloud <ph name="PRODUCT_NAME" /> menggantikan kebijakan Platform.</translation>
+<translation id="5334501839642146593">Jangan pernah kirim metrik ke Google</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
 <translation id="5357039649371478544">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
       Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
@@ -4270,6 +4309,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5371152055157582429">Pengguna dapat menyesuaikan latar belakang halaman Tab Baru</translation>
 <translation id="5377606826822211923">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk pengguna</translation>
 <translation id="537786648513450280">Mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya untuk perangkat</translation>
+<translation id="5378885577701865339">Nonaktifkan fitur papan klip bersama</translation>
 <translation id="5379858577608862519">Menentukan apakah penerusan port ke penampung Crostini diizinkan.
 
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, pengguna akan dapat mengonfigurasi port penerusan ke penampung Crostini.
@@ -4469,6 +4509,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika tidak ditentukan, tidak akan mengubah URL bibit Variasi.</translation>
 <translation id="5561811616825571914">Memilih sertifikat klien untuk situs ini secara otomatis di layar login</translation>
+<translation id="5561893881195372931">Nonaktifkan kontras tinggi</translation>
 <translation id="5563240289883266691">Aktifkan pelaporan penggunaan aplikasi Linux</translation>
 <translation id="5565178130821694365">Sandi harus dimasukkan setiap dua hari (48 jam)</translation>
 <translation id="5566210228171064229">Izinkan pencetakan dengan dan tanpa PIN</translation>
@@ -4501,6 +4542,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak ditetapkan, tindakan defaultnya adalah tidak diizinkan untuk pengguna yang dikelola perusahaan dan diizinkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="5584132346604748282">Mengontrol layanan lokasi Google di Android</translation>
+<translation id="5584609869321980122">Mulai penundaan pengelolaan daya dan batas durasi sesi setelah aktivitas awal pengguna</translation>
 <translation id="5586942249556966598">Tidak melakukan apa-apa</translation>
 <translation id="5598417829613725146">Canvas (didukung sejak versi 90)</translation>
 <translation id="5599461642204007579">Setelan pengelolaan <ph name="MS_AD_NAME" /></translation>
@@ -4688,6 +4730,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5776485039795852974">Tanyakan setiap kali situs ingin menampilkan pemberitahuan desktop</translation>
 <translation id="5783009211970309878">Cetak Header dan Footer</translation>
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
+<translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="5806128552675651249">Izinkan pencetakan hanya tanpa grafis latar belakang</translation>
 <translation id="5809210507920527553">Mengontrol setelan untuk container Linux (Crostini).</translation>
@@ -4699,6 +4742,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5830196507442186669">Izinkan perangkat untuk menggunakan <ph name="BOREALIS_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5831286647961890695">Aktifkan model pengisian daya adaptif di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Kebijakan yang tidak digunakan lagi</translation>
+<translation id="5834583755928064072">Cegah pengguna mengubah saluran rilis</translation>
 <translation id="5835253272509953988">Jika kebijakan disetel ke Aktif, pengguna dapat membuat <ph name="PRODUCT_NAME" /> memeriksa apakah nama pengguna dan sandi yang dimasukkan adalah bagian dari kebocoran.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />. Jika tidak disetel, pemeriksaan kebocoran kredensial akan diizinkan, tetapi pengguna dapat menonaktifkannya. 
@@ -4824,6 +4868,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5958746038080720143">Aktifkan pengoptimalan Web Proxy Auto-Discovery (WPAD)</translation>
 <translation id="5961137303188584693">Alamat MAC NIC bawaan perangkat</translation>
 <translation id="5963752574792883406">port 990 (blokir dapat dibatalkan hingga 01/02/2022)</translation>
+<translation id="5964583455815172553">Menyetel kebijakan ini akan menentukan daftar aplikasi web terisolasi (IWA) yang diinstal secara otomatis.
+      IWA adalah aplikasi yang memiliki properti keamanan yang berguna dan tidak tersedia untuk halaman web normal. Aplikasi tersebut dikemas dalam Paket Web Bertanda Tangan. Kunci publik Paket Web Bertanda Tangan digunakan untuk membuat ID Paket Web yang mengidentifikasi IWA.
+      Sejauh ini, kebijakan ini hanya berfungsi untuk Sesi Tamu Terkelola.
+
+      Setiap item daftar kebijakan merupakan objek dengan <ph name="URL_LABEL" /> manifes update dan ID Paket Web Aplikasi Web Terisolasi. Kedua kolom wajib diisi.</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
 <translation id="596732417280023843">Nama profil sertifikat.</translation>
 <translation id="5972538402066550344">Izinkan kontrol pelaporan terperinci</translation>
@@ -4879,6 +4928,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6046615715547751255">Jangan izinkan kontrol pelaporan terperinci</translation>
 <translation id="6048199181629830227">Mengaktifkan fitur manajemen pengaktifan daya baterai</translation>
 <translation id="6049117606554031363">Aktifkan pelaporan status board perangkat</translation>
+<translation id="6050796253724099706">Aktifkan respons lisan di layar login</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
 <translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
 
@@ -5200,6 +5250,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak disetel atau daftar kosong, semua skema akan dapat diakses di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="6338982178236723271">Melaporkan info sistem</translation>
+<translation id="6339355882150329269">Jangan menganggap pengguna sebagai tidak ada aktivitas saat video diputar</translation>
 <translation id="6352714113109004581">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta izin kepada pengguna untuk mengakses perangkat HID.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan berlaku.
@@ -5715,6 +5766,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6841254611279513739">Menyetel kebijakan pencetakan ke hanya warna, hanya monokrom, atau tanpa batasan mode warna. Jika kebijakan tidak disetel, artinya tidak ada batasan.</translation>
 <translation id="6843008643303282259">Kecepatan upload yang diinginkan dalam kbit/dtk.</translation>
 <translation id="6843296367238757293">Kebijakan ini tidak digunakan lagi. Penggunaannya tidak disarankan. Baca selengkapnya di https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="6845162369344636241">Nonaktifkan keyboard virtual di layar login</translation>
 <translation id="6846126863870444592">Kebijakan ini menentukan ekstensi yang diizinkan untuk melewati dialog konfirmasi tugas pencetakan ketika menggunakan fungsi <ph name="PRINTING_API" /> <ph name="SUBMIT_JOB_FUNCTION" /> untuk mengirimkan tugas pencetakan.
 
       Jika ekstensi tidak ada dalam daftar, atau daftar tidak ditetapkan, dialog konfirmasi tugas pencetakan akan ditampilkan ke pengguna untuk setiap panggilan fungsi <ph name="SUBMIT_JOB_FUNCTION" />.
@@ -6217,6 +6269,7 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini disetel ke 'RemoveLRUIfDormant', pembersihan otomatis akan tetap membuang pengguna yang tidak melakukan proses masuk minimal selama 3 bulan dalam urutan yang paling lama tidak diakses hingga terdapat ruang kosong yang memadai.
 
       Jika kebijakan ini tidak disetel, pembersihan otomatis menggunakan strategi yang tertanam secara default. Saat ini, itu adalah strategi 'RemoveLRUIfDormant'.</translation>
+<translation id="733381360015511815">Mengonfigurasi daftar Aplikasi Web Terisolasi yang diinstal otomatis</translation>
 <translation id="7334517274921831425">Mengizinkan pengguna untuk menggunakan <ph name="BOREALIS_NAME" /> di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7336785017449297672">Mengontrol setelan jam dan zona waktu.</translation>
 <translation id="7336878834592315572">Menyimpan cookie selama durasi sesi</translation>
@@ -6673,6 +6726,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
           Jika kebijakan ini diaktifkan, fungsi Kerberos akan diaktifkan. Akun Kerberos dapat ditambahkan melalui kebijakan 'Konfigurasikan akun Kerberos' atau melalui Setelan akun Kerberos di halaman setelan Kerberos.
 
           Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan dinonaktifkan. Tidak ada akun Kerberos yang dapat ditambahkan dan autentikasi Kerberos tidak dapat digunakan. Semua akun Kerberos yang ada dan sandi yang disimpan telah dihapus.</translation>
+<translation id="7853140303943875314">Aktifkan pembatalan login otomatis</translation>
 <translation id="7863947545897944083">Mengaktifkan fitur aksesibilitas kontras tinggi di layar login.
 
           Jika kebijakan ini ditetapkan ke true, kontras tinggi akan selalu diaktifkan di layar login.
@@ -6869,6 +6923,12 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8078297389450285582">Jika kebijakan disetel ke Aktif atau tidak disetel, model redup smart akan diaktifkan dan dapat memperpanjang waktu hingga layar diredupkan. Jika model tersebut menunda waktu peredupan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 
       Jika kebijakan disetel ke Nonaktif, model redup smart tidak akan memengaruhi peredupan layar.</translation>
+<translation id="8079544387901313374">Perlu diperhatikan bahwa kebijakan ini tidak digunakan lagi dan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 88. Sesi publik tidak lagi didukung. Sebagai gantinya, gunakan <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> untuk mengonfigurasi sesi tamu terkelola.
+      Jika kebijakan ini disetel ke salah (false), sesi tamu terkelola akan berperilaku seperti yang didokumentasikan di https://support.google.com/chrome/a/answer/3017014 - "Sesi Publik" standar.
+
+      Jika kebijakan ini disetel ke benar (true) atau tidak disetel, sesi tamu terkelola akan melakukan perilaku "Sesi Terkelola" yang menghilangkan banyak batasan yang berlaku untuk "Sesi Publik" reguler.
+
+      Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="8080200590486938727">Nonaktifkan pencari plugin</translation>
 <translation id="8089200718228084417">Aktifkan pencetakan privet yang tidak digunakan lagi</translation>
 <translation id="8089236320223488328">Gunakan perilaku default saat menentukan apakah situs yang tidak aman dapat membuat permintaan ke endpoint jaringan mana pun</translation>
@@ -6906,6 +6966,7 @@ Cara yang diharapkan terkait penggunaan kebijakan ini adalah merotasi konfiguras
 <translation id="8133152694354699657">Jika kebijakan ditetapkan ke Benar (True) atau tidak ditetapkan, fitur Sentuh untuk Menelusuri akan tersedia bagi pengguna, dan mereka dapat mengaktifkan atau menonaktifkannya.
 
       Jika kebijakan ditetapkan ke Salah (False), fitur Sentuh untuk Menelusuri akan dinonaktifkan sepenuhnya.</translation>
+<translation id="81354521512895891">Aktifkan kontras tinggi di layar login</translation>
 <translation id="8136345780578030573">Mengaktifkan Set Pihak Pertama.</translation>
 <translation id="8136906469922284163">Jika kebijakan disetel ke Benar (True), halaman akan menampilkan pop-up saat halaman menghapus muatan.
 
@@ -6960,8 +7021,10 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, paket tidak akan dikirim.</translation>
 <translation id="8169452762291746260">Nonaktifkan pemantauan kondisi perangkat</translation>
+<translation id="8171262216089271568">Aktifkan kursor besar di layar login</translation>
 <translation id="8171924760436219650">Mengalihkan tombol mouse utama ke tombol kanan pada layar login</translation>
 <translation id="8173864651667424191">Opsi Cetak sebagai gambar akan disetel sebagai default untuk pratinjau cetak dokumen PDF jika tersedia.</translation>
+<translation id="8175922758834816585">Aktifkan respons lisan di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>
 <translation id="8176035528522326671">Memungkinkan pengguna perusahaan menjadi pengguna banyak profil primer saja (Perilaku default untuk pengguna yang dikelola perusahaan)</translation>
 <translation id="8179161412673077784">Cegah situs dengan pengalaman yang menyesatkan pengguna untuk membuka jendela atau tab baru</translation>
 <translation id="8183108371184777472">Sembunyikan peluncuran jendela browser</translation>
@@ -7399,6 +7462,7 @@ Kebijakan akan dihapus pada M75.</translation>
           Jika kebijakan ini tidak ditetapkan, durasi waktu default akan digunakan.
 
           Nilai kebijakan harus ditentukan dalam milidetik.</translation>
+<translation id="859937827887158048">Jangan izinkan download update otomatis peer to peer</translation>
 <translation id="8603454805657060638">Menyetel kebijakan memungkinkan administrator mengubah alamat MAC (kontrol akses media) saat menghubungkan perangkat ke dok. Jika dok dihubungkan ke beberapa model perangkat, alamat MAC dok yang ditetapkan untuk perangkat akan membantu mengidentifikasi perangkat di Ethernet secara default.
 
       Jika 'DeviceDockMacAddress' dipilih atau kebijakan ini tidak disetel, alamat MAC dok yang ditetapkan untuk perangkat akan digunakan.
@@ -7447,6 +7511,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8656110680728938054">Aktifkan fitur klik untuk diucapkan</translation>
 <translation id="8659843732895043951">Mengizinkan papan klip di situs ini</translation>
 <translation id="8661297125441579970">Jangan izinkan migrasi data dan ARC.</translation>
+<translation id="8661980316738569557">Aktifkan kontras tinggi</translation>
 <translation id="8664285601317301180">Kebijakan ini mengontrol nilai <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="IPP_PROTOCOL" /> (<ph name="INTERNET_PRINTING_PROTOCOL" />) dalam tugas pencetakan.
 
       Menyetel kebijakan ke string akan mengakibatkan penambahan item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> tambahan ke setiap tugas pencetakan. Anggota <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dari item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> yang ditambahkan akan disetel ke nilai kebijakan setelah substitusi variabel.
@@ -7512,6 +7577,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke benar (true), informasi Bluetooth perangkat akan dilaporkan.</translation>
+<translation id="8700633400000170881">Tombol kiri menjadi tombol utama</translation>
 <translation id="8703378568562190813">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan aplikasi web mana yang diberikan akses ke berbagai jenis file.
 
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME" /> akan berlaku untuk semua aplikasi web, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
@@ -7543,6 +7609,7 @@ Kebijakan akan dihapus pada M75.</translation>
       "http://notexample.com/", "http://example.com.invalid.com/", "http://example.comabc/" hanya cocok dalam mode 'Default'.
 
       "http://acme.com/ABC" hanya cocok dalam mode 'IESiteListMode'.</translation>
+<translation id="8734543507835977857">Mulai penundaan pengelolaan daya dan batas durasi sesi pada awal sesi</translation>
 <translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
 <translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
       Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
@@ -7679,6 +7746,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8880294585549584028">Izinkan akses tulis ke file dan direktori di situs ini</translation>
 <translation id="8882006618241293596">Blokir plugin <ph name="FLASH_PLUGIN_NAME" /> di situs ini</translation>
 <translation id="8882255181490012651">Melarang pengguna yang telah mengizinkan Phone Hub mengakses foto dan video yang terakhir diambil di ponselnya</translation>
+<translation id="8882307005437314052">Aktifkan keyboard virtual di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>
 <translation id="8887709920496070892">Durasi waktu tanpa input pengguna sebelum dialog peringatan ditampilkan, dalam milidetik.</translation>
 <translation id="8890438048579188548">Sembunyikan peringatan <ph name="CLOUD_PRINT_NAME" /> tidak digunakan lagi</translation>
 <translation id="8891334958985336685">Nonaktifkan pelaporan info sistem perangkat</translation>
@@ -7955,6 +8023,7 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9185963199234034321">Aktifkan kontras tinggi di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>
 <translation id="9187743794267626640">Menonaktifkan pemasangan penyimpanan eksternal</translation>
 <translation id="9190456586252617675">Kebijakan ini mengontrol mode pengalaman aktivasi Asisten.
 

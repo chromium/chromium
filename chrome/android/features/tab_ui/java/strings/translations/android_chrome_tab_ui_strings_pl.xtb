@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Otrzymasz alert, gdy cena na otwartej karcie będzie niższa</translation>
 <translation id="3328308545011660196">Sugestia: liczba prawdopodobnie powiązanych kart wynosi <ph name="NUMBER_OF_TABS" />. Czy chcesz je pogrupować?</translation>
+<translation id="3499853001094440183">Rozgrupuj karty</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="3882834874697329510">Aby otrzymywać alert, gdy na otwartej karcie cena będzie niższa, włącz powiadomienia w ustawieniach.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6228793724645064692">(ocena sklepu)</translation>
 <translation id="6333260925957816943">Informacje o tym sklepie</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Rozgrupuj <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
 <translation id="6510648526783655549">Zamknij pasek kart</translation>
 <translation id="6549021453810473782">Wyświetl informacje o sklepie</translation>
 <translation id="6562820390860419811">Przenieś kartę w lewo</translation>

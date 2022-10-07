@@ -159,6 +159,15 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1797271123677381264">Zaboravljena zaporka</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
 <translation id="1812997170047690955">Što je na mojem zaslonu?</translation>
+<translation id="1823280932251546115">Traka statusa, vrijeme <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Otkvačena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Asistent (učitavanje...)</translation>
@@ -457,6 +466,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3600061223661453002">Isključi</translation>
 <translation id="3604801046548457007">Izrađena je radna površina <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Brajev je redak povezan.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />, <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Omogućivanjem mobilnih podataka omogućit će se Bluetooth</translation>
 <translation id="3616883743181209306">Izbornik je premješten u gornji desni kut zaslona.</translation>
 <translation id="3619536907358025872">Postavke snimanja zaslona</translation>
