@@ -174,7 +174,7 @@ ExtensionFunction::ResponseAction SocketsTcpServerListenFunction::Work() {
 
   SocketPermissionRequest param(
       SocketPermissionRequest::TCP_LISTEN, params_->address, params_->port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 

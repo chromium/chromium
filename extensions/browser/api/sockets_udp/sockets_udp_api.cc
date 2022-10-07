@@ -199,7 +199,7 @@ ExtensionFunction::ResponseAction SocketsUdpBindFunction::Work() {
 
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_BIND, params_->address, params_->port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
   socket->Bind(params_->address, params_->port,
@@ -259,7 +259,7 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
 
   content::SocketPermissionRequest param(
       SocketPermissionRequest::UDP_SEND_TO, params_->address, params_->port);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
@@ -389,7 +389,7 @@ ExtensionFunction::ResponseAction SocketsUdpJoinGroupFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
@@ -425,7 +425,7 @@ ExtensionFunction::ResponseAction SocketsUdpLeaveGroupFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
   socket->LeaveGroup(
@@ -510,7 +510,7 @@ ExtensionFunction::ResponseAction SocketsUdpGetJoinedGroupsFunction::Work() {
       SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP,
       kWildcardAddress,
       kWildcardPort);
-  if (!SocketsManifestData::CheckRequest(extension(), param)) {
+  if (!CheckRequest(param)) {
     return RespondNow(Error(kPermissionError));
   }
 
