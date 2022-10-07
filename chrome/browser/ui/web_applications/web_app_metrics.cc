@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -32,6 +35,8 @@ using content::WebContents;
 namespace web_app {
 
 namespace {
+
+bool g_disable_automatic_icon_health_checks_for_testing = false;
 
 // Max amount of time to record as a session. If a session exceeds this length,
 // treat it as invalid (0 time).
@@ -67,14 +72,28 @@ WebAppMetrics* WebAppMetrics::Get(Profile* profile) {
   return WebAppMetricsFactory::GetForProfile(profile);
 }
 
+// static
+void WebAppMetrics::DisableAutomaticIconHealthChecksForTesting() {
+  g_disable_automatic_icon_health_checks_for_testing = true;
+}
+
 WebAppMetrics::WebAppMetrics(Profile* profile)
     : SiteEngagementObserver(
           site_engagement::SiteEngagementService::Get(profile)),
       profile_(profile),
+      icon_health_checks_(profile),
       browser_tab_strip_tracker_(this, nullptr) {
   browser_tab_strip_tracker_.Init();
   base::PowerMonitor::AddPowerSuspendObserver(this);
   BrowserList::AddObserver(this);
+
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsIconHealthChecks) &&
+      !g_disable_automatic_icon_health_checks_for_testing) {
+    AfterStartupTaskUtils::PostTask(
+        FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
+        base::BindOnce(&WebAppIconHealthChecks::Start,
+                       icon_health_checks_.GetWeakPtr(), base::DoNothing()));
+  }
 
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
   DCHECK(provider);

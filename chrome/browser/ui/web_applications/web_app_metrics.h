@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_health_checks.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
@@ -36,6 +37,8 @@ class WebAppMetrics : public KeyedService,
                       public base::PowerSuspendObserver {
  public:
   static WebAppMetrics* Get(Profile* profile);
+
+  static void DisableAutomaticIconHealthChecksForTesting();
 
   explicit WebAppMetrics(Profile* profile);
   WebAppMetrics(const WebAppMetrics&) = delete;
@@ -78,6 +81,10 @@ class WebAppMetrics : public KeyedService,
   void RemoveBrowserListObserverForTesting();
   void CountUserInstalledAppsForTesting();
 
+  WebAppIconHealthChecks& icon_health_checks_for_testing() {
+    return icon_health_checks_;
+  }
+
  private:
   void CountUserInstalledApps();
   enum class TabSwitching {
@@ -98,6 +105,8 @@ class WebAppMetrics : public KeyedService,
   GURL last_recorded_web_app_start_url_;
 
   const raw_ptr<Profile> profile_;
+
+  WebAppIconHealthChecks icon_health_checks_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 

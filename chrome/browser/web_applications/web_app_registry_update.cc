@@ -73,8 +73,11 @@ std::unique_ptr<RegistryUpdateData> WebAppRegistryUpdate::TakeUpdateData() {
 ScopedRegistryUpdate::ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge)
     : update_(sync_bridge->BeginUpdate()), sync_bridge_(sync_bridge) {}
 
+ScopedRegistryUpdate::ScopedRegistryUpdate(ScopedRegistryUpdate&&) = default;
+
 ScopedRegistryUpdate::~ScopedRegistryUpdate() {
-  sync_bridge_->CommitUpdate(std::move(update_), base::DoNothing());
+  if (update_)
+    sync_bridge_->CommitUpdate(std::move(update_), base::DoNothing());
 }
 
 }  // namespace web_app

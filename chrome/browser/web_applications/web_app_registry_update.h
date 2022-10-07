@@ -67,6 +67,7 @@ class WebAppRegistryUpdate {
 class ScopedRegistryUpdate {
  public:
   explicit ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge);
+  ScopedRegistryUpdate(ScopedRegistryUpdate&&);
   ScopedRegistryUpdate(const ScopedRegistryUpdate&) = delete;
   ScopedRegistryUpdate& operator=(const ScopedRegistryUpdate&) = delete;
   ~ScopedRegistryUpdate();
