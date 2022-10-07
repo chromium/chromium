@@ -16,7 +16,7 @@
 <div id="parentElement"></div>
 <script>
 
-function testElementReflectAttribute(jsAttributeName, contentAttributeName, validValue1, contentValue1, validValue2, contentValue2, name, getParentElement) {
+function testElementReflectAttribute(jsAttributeName, contentAttributeName, validValue1, validValue2, name, getParentElement) {
     test(function () {
         let element = define_new_custom_element([contentAttributeName]);
         let instance = document.createElement(element.name);
@@ -27,7 +27,7 @@ function testElementReflectAttribute(jsAttributeName, contentAttributeName, vali
         let logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
 
-        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: null, newValue: contentValue1, namespace: null});
+        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: null, newValue: "", namespace: null});
     }, name + ' must enqueue an attributeChanged reaction when adding ' + contentAttributeName + ' content attribute');
 
     test(function () {
@@ -39,7 +39,7 @@ function testElementReflectAttribute(jsAttributeName, contentAttributeName, vali
         instance[jsAttributeName] = validValue2;
         var logEntries = element.takeLog();
         assert_array_equals(logEntries.types(), ['attributeChanged']);
-        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: contentValue1, newValue: contentValue2, namespace: null});
+        assert_attribute_log_entry(logEntries.last(), {name: contentAttributeName, oldValue: "", newValue: "", namespace: null});
     }, name + ' must enqueue an attributeChanged reaction when replacing an existing attribute');
 }
 
@@ -51,14 +51,14 @@ const dummy2 = document.createElement('div');
 dummy2.id = 'dummy2';
 document.body.appendChild(dummy2);
 
-testElementReflectAttribute('ariaActiveDescendantElement', 'aria-activedescendant', dummy1, 'dummy1', dummy2, 'dummy2', 'ariaActiveDescendantElement in Element');
-testElementReflectAttribute('ariaControlsElements', 'aria-controls', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaControlsElements in Element');
-testElementReflectAttribute('ariaDescribedByElements', 'aria-describedby', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaDescribedByElements in Element');
-testElementReflectAttribute('ariaDetailsElements', 'aria-details', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaDetailsElements in Element');
-testElementReflectAttribute('ariaErrorMessageElement', 'aria-errormessage', dummy1, 'dummy1', dummy2, 'dummy2', 'ariaErrorMessageElement in Element');
-testElementReflectAttribute('ariaFlowToElements', 'aria-flowto', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaFlowToElements in Element');
-testElementReflectAttribute('ariaLabelledByElements', 'aria-labelledby', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaLabelledByElements in Element')
-testElementReflectAttribute('ariaOwnsElements', 'aria-owns', [dummy1], 'dummy1', [dummy2], 'dummy2', 'ariaOwnsElements in Element')
+testElementReflectAttribute('ariaActiveDescendantElement', 'aria-activedescendant', dummy1, dummy2, 'ariaActiveDescendantElement in Element');
+testElementReflectAttribute('ariaControlsElements', 'aria-controls', [dummy1], [dummy2], 'ariaControlsElements in Element');
+testElementReflectAttribute('ariaDescribedByElements', 'aria-describedby', [dummy1], [dummy2], 'ariaDescribedByElements in Element');
+testElementReflectAttribute('ariaDetailsElements', 'aria-details', [dummy1], [dummy2], 'ariaDetailsElements in Element');
+testElementReflectAttribute('ariaErrorMessageElement', 'aria-errormessage', dummy1, dummy2, 'ariaErrorMessageElement in Element');
+testElementReflectAttribute('ariaFlowToElements', 'aria-flowto', [dummy1], [dummy2], 'ariaFlowToElements in Element');
+testElementReflectAttribute('ariaLabelledByElements', 'aria-labelledby', [dummy1], [dummy2], 'ariaLabelledByElements in Element')
+testElementReflectAttribute('ariaOwnsElements', 'aria-owns', [dummy1], [dummy2], 'ariaOwnsElements in Element')
 
 </script>
 </body>
