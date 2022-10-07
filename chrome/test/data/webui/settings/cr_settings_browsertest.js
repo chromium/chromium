@@ -421,6 +421,27 @@ TEST_F('CrSettingsSiteDetailsTest', 'MAYBE_SiteDetails', function() {
   mocha.run();
 });
 
+var CrSettingsPerformanceMenuTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/settings_performance_menu_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {
+      enabled: [
+        'performance_manager::features::kHighEfficiencyModeAvailable',
+        'performance_manager::features::kBatterySaverModeAvailable',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsPerformanceMenuTest', 'All', function() {
+  mocha.run();
+});
+
 var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {

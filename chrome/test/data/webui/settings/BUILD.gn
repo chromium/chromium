@@ -113,6 +113,7 @@ non_preprocessed_files = [
   "settings_main_test.ts",
   "settings_menu_interactive_ui_test.ts",
   "settings_page_test_util.ts",
+  "settings_performance_menu_test.ts",
   "settings_slider_tests.ts",
   "settings_subpage_test.ts",
   "settings_textarea_tests.ts",

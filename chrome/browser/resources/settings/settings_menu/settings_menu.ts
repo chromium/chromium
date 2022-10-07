@@ -19,9 +19,10 @@ import '../settings_shared.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PageVisibility} from '../page_visibility.js';
+import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
@@ -64,8 +65,24 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   pageVisibility: PageVisibility;
+  private performanceFeaturesAvailable_: boolean;
 
   override currentRouteChanged(newRoute: Route) {
+    if (this.performanceFeaturesAvailable_ && newRoute === routes.PERFORMANCE) {
+      // Add special handling for the Performance section, since the
+      // corresponding menu entry resides in a dom-if and is normally not
+      // present in the DOM during initial load. Force-render the dom-if
+      // instead.
+      const anchor = this.shadowRoot!.querySelector('#performance');
+      if (anchor === null) {
+        const domIf =
+            this.shadowRoot!.querySelector<DomIf>('#performanceDomIf');
+        assert(domIf);
+        assert(domIf.if);
+        domIf.render();
+      }
+    }
+
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {

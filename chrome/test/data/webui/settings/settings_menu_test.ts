@@ -7,14 +7,9 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
-
-function getPerformanceMenuItem(settingsMenu: SettingsMenuElement) {
-  return settingsMenu.shadowRoot!.querySelector<HTMLElement>('#performance');
-}
 
 suite('SettingsMenu', function() {
   let settingsMenu: SettingsMenuElement;
@@ -50,47 +45,9 @@ suite('SettingsMenu', function() {
   });
 
   test('performanceFeatureNotAvailableTest', function() {
-    // performance menu item should not exist when high efficiency mode and
-    // battery saver mode features are not available
-    assertFalse(!!getPerformanceMenuItem(settingsMenu));
-  });
-});
-
-suite('SettingsMenuPerformance', function() {
-  let settingsMenu: SettingsMenuElement;
-
-  setup(function() {
-    loadTimeData.overrideValues({
-      highEfficiencyModeAvailable: true,
-      batterySaverModeAvailable: true,
-    });
-    document.body.innerHTML = '';
-    settingsMenu = document.createElement('settings-menu');
-    settingsMenu.pageVisibility = pageVisibility;
-    document.body.appendChild(settingsMenu);
-    flush();
-  });
-
-  teardown(function() {
-    settingsMenu.remove();
-  });
-
-  test('performanceFeatureAvailableTest', function() {
-    // performance menu item should exist when high efficiency mode and battery
-    // saver mode features are available
-    assertTrue(!!getPerformanceMenuItem(settingsMenu));
-  });
-
-  test('performanceVisibilityTestDefault', function() {
-    // performance menu item should not be hidden under default pageVisibility
-    assertFalse(getPerformanceMenuItem(settingsMenu)!.hidden);
-  });
-
-  test('performanceVisibilityTestFalse', function() {
-    // performance menu item should be hidden when pageVisibility is false
-    settingsMenu.pageVisibility =
-        Object.assign(settingsMenu.pageVisibility || {}, {performance: false});
-    assertTrue(getPerformanceMenuItem(settingsMenu)!.hidden);
+    assertFalse(
+        !!settingsMenu.shadowRoot!.querySelector<HTMLElement>('#performance'),
+        'performance menu item should not exist when features are unavailable');
   });
 });
 

@@ -79,7 +79,8 @@
             $i18n{privacyPageTitle}
             <paper-ripple></paper-ripple>
           </a>
-          <template is="dom-if" if="[[performanceFeaturesAvailable_]]">
+          <template is="dom-if" id="performanceDomIf"
+              if="[[performanceFeaturesAvailable_]]">
             <a role="menuitem" id="performance" href="/performance"
                 class="cr-nav-menu-item"
                 hidden="[[!pageVisibility.performance]]">
