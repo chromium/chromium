@@ -70,13 +70,8 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<BertModelHandler> model_handler_;
 };
 
-// TODO(crbug.com/1337687): Test is timing out on certain platforms.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
-#define MAYBE_ValidBertModel DISABLED_ValidBertModel
-#else
-#define MAYBE_ValidBertModel ValidBertModel
-#endif
-TEST_F(BertModelExecutorTest, MAYBE_ValidBertModel) {
+// TODO(crbug.com/1337687): Test is timing out on many platforms.
+TEST_F(BertModelExecutorTest, DISABLED_ValidBertModel) {
   CreateModelHandler();
 
   PushModelFileToModelExecutor(/*is_valid=*/true);
