@@ -12,6 +12,10 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1364499
   "documentscanapi.Scan",
 
+  # b/251833060
+  "graphics.KmsvncConnect",
+  "graphics.Smoke.chrome",
+
   # crbug.com/1364560
   "inputs.InputMethodShelfInputs",
 
@@ -23,6 +27,15 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardAutocorrectAccentKey",
   "inputs.PhysicalKeyboardKoreanTyping",
 
+  # b/251833060
+  "peripherals.LaunchAppFromGuestSession.diagnostics",
+
+  # b/251877133
+  "policy.DisableScreenshotsHotkey",
+
+  # b/251877700
+  "policy.DefaultSearchProviderEnabled",
+
   # https://crbug.com/1252352
   "quicksettings.SignInScreen.battery",
   "quicksettings.SignInScreen.noaudio_nobattery",
@@ -30,6 +43,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1263234
   "quicksettings.ManagedDeviceInfo",
+
+  # b/251833060
+  "ui.GuestModeExtension",
 
   # crbug.com/1259127
   "ui.TabletOperations",
