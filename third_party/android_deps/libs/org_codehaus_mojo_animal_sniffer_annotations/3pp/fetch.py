@@ -16,7 +16,7 @@ _REPO_URL = 'https://repo.maven.apache.org/maven2'
 _GROUP_NAME = 'org/codehaus/mojo'
 _MODULE_NAME = 'animal-sniffer-annotations'
 _FILE_EXT = 'jar'
-_OVERRIDE_LATEST = None
+_OVERRIDE_LATEST = '1.21'
 _PATCH_VERSION = 'cr1'
 
 

@@ -117,6 +117,11 @@ dependencies {
     compile 'com.android.tools:desugar_jdk_libs:1.1.5'
     compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
 
+    compile 'io.grpc:grpc-binder:1.49.0'
+    compile 'io.grpc:grpc-protobuf-lite:1.49.0'
+    compile 'io.grpc:grpc-stub:1.49.0'
+    compile 'io.grpc:grpc-api:1.49.0'
+
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1"

@@ -1,0 +1,14 @@
+Name: io.grpc:grpc-protobuf-lite
+Short Name: grpc-protobuf-lite
+URL: https://github.com/grpc/grpc-java
+Version: 1.49.0
+License: Apache 2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+
+Description:
+gRPC: Protobuf Lite
+
+Local Modifications:
+No modifications.
