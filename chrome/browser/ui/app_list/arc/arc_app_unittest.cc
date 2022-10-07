@@ -2611,9 +2611,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
 }
 
 // Test that icon is correctly updated for suspended/non-suspended app.
-//
-// TODO(https://crbug.com/1211227): The test is flaky.
-TEST_P(ArcAppModelBuilderTest, DISABLED_IconLoaderForSuspendedApps) {
+TEST_P(ArcAppModelBuilderTest, IconLoaderForSuspendedApps) {
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.emplace_back(fake_apps()[0]->Clone());
   const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
@@ -2640,8 +2638,7 @@ TEST_P(ArcAppModelBuilderTest, DISABLED_IconLoaderForSuspendedApps) {
   // is loaded and we only apply gray effect.
   apps[0]->suspended = true;
   SendPackageAppListRefreshed(apps[0]->package_name, apps);
-  EXPECT_EQ(update_count + 1, delegate.update_image_count());
-  // No futher updates.
+  // One more update as suspended app icon turned grey.
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(update_count + 1, delegate.update_image_count());
 
