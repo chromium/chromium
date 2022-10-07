@@ -67,7 +67,7 @@ ShoppingListUiTabHelper::ShoppingListUiTabHelper(
   if (image_fetcher_service) {
     // TODO(1360846): Consider using the in-memory cache instead.
     image_fetcher_ = image_fetcher_service->GetImageFetcher(
-        image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+        image_fetcher::ImageFetcherConfig::kNetworkOnly);
   } else {
     CHECK_IS_TEST();
   }
