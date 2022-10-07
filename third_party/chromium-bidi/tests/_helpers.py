@@ -97,9 +97,11 @@ async def before_each_test(websocket):
     assert True
 
 
-async def subscribe(websocket, event_names, context_ids=None):
+async def subscribe(websocket, event_names, context_ids=None, channel=None):
     if isinstance(event_names, str):
         event_names = [event_names]
+    if isinstance(context_ids, str):
+        context_ids = [context_ids]
     command = {
         "method": "session.subscribe",
         "params": {
@@ -107,6 +109,8 @@ async def subscribe(websocket, event_names, context_ids=None):
 
     if context_ids is not None:
         command["params"]["contexts"] = context_ids
+    if channel is not None:
+        command["channel"] = channel
 
     await execute_command(websocket, command)
 

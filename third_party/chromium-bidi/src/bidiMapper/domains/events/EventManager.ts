@@ -1,5 +1,23 @@
+/**
+ * Copyright 2022 Google LLC.
+ * Copyright (c) Microsoft Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { CommonDataTypes, Message } from '../protocol/bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
+import { SubscriptionManager } from './SubscriptionManager';
 
 export interface IEventManager {
   sendEvent(
@@ -9,99 +27,63 @@ export interface IEventManager {
 
   subscribe(
     events: string[],
-    contextIds: CommonDataTypes.BrowsingContext[] | null
+    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    channel: string | null
   ): Promise<void>;
 
   unsubscribe(
     event: string[],
-    contextIds: CommonDataTypes.BrowsingContext[] | null
+    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    channel: string | null
   ): Promise<void>;
 }
 
 export class EventManager implements IEventManager {
-  // `null` means the event has a global subscription.
-  #subscriptions: Map<CommonDataTypes.BrowsingContext | null, Set<string>> =
-    new Map();
-
+  #subscriptionManager: SubscriptionManager;
   #bidiServer: IBidiServer;
 
   constructor(bidiServer: IBidiServer) {
     this.#bidiServer = bidiServer;
+    this.#subscriptionManager = new SubscriptionManager();
   }
 
   async sendEvent(
     event: Message.EventMessage,
     contextId: CommonDataTypes.BrowsingContext | null
   ): Promise<void> {
-    if (
-      // Check if the event is allowed globally.
-      this.#shouldSendEvent(event.method, null) ||
-      // Check if the event is allowed for a given context.
-      (contextId !== null && this.#shouldSendEvent(event.method, contextId))
-    ) {
-      await this.#bidiServer.sendMessage(event);
-    }
-  }
+    const sortedChannels =
+      this.#subscriptionManager.getChannelsSubscribedToEvent(
+        event.method,
+        contextId
+      );
 
-  #shouldSendEvent(
-    eventMethod: string,
-    contextId: CommonDataTypes.BrowsingContext | null
-  ): boolean {
-    return (
-      this.#subscriptions.has(contextId) &&
-      this.#subscriptions.get(contextId)!.has(eventMethod)
-    );
+    // Send events to channels in the subscription priority.
+    for (const channel of sortedChannels) {
+      await this.#bidiServer.sendMessage(event, channel);
+    }
   }
 
   async subscribe(
     events: string[],
-    contextIds: CommonDataTypes.BrowsingContext[] | null
+    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    channel: string | null
   ): Promise<void> {
-    // Global subscription
     for (let event of events) {
-      if (contextIds === null) {
-        this.#subscribe(event, null);
-      } else {
-        for (let contextId of contextIds) {
-          this.#subscribe(event, contextId);
-        }
+      for (let contextId of contextIds) {
+        this.#subscriptionManager.subscribe(event, contextId, channel);
       }
     }
-  }
-
-  #subscribe(
-    event: string,
-    contextId: CommonDataTypes.BrowsingContext | null
-  ): void {
-    if (!this.#subscriptions.has(contextId)) {
-      this.#subscriptions.set(contextId, new Set());
-    }
-    this.#subscriptions.get(contextId)!.add(event);
   }
 
   async unsubscribe(
     events: string[],
-    contextIds: CommonDataTypes.BrowsingContext[] | null
+    contextIds: (CommonDataTypes.BrowsingContext | null)[],
+    channel: string | null
   ): Promise<void> {
     for (let event of events) {
-      if (contextIds === null) {
-        this.#unsubscribe(event, null);
-      } else {
-        for (let contextId of contextIds) {
-          this.#unsubscribe(event, contextId);
-        }
+      for (let contextId of contextIds) {
+        this.#subscriptionManager.unsubscribe(event, contextId, channel);
       }
-    }
-  }
-
-  #unsubscribe(
-    event: string,
-    contextId: CommonDataTypes.BrowsingContext | null
-  ): void {
-    const subscription = this.#subscriptions.get(contextId);
-    subscription?.delete(event);
-    if (subscription?.size === 0) {
-      this.#subscriptions.delete(contextId);
     }
   }
 }

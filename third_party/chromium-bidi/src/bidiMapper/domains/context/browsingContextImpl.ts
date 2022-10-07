@@ -181,7 +181,7 @@ export class BrowsingContextImpl {
       this.#contextId,
       this.#cdpClient,
       this.#cdpSessionId,
-      this.#bidiServer
+      this.#eventManager
     );
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();

@@ -95,6 +95,21 @@ export class Realm {
     });
   }
 
+  static findRealm(filter: {
+    realmId?: string;
+    browsingContextId?: string;
+    executionContextId?: Protocol.Runtime.ExecutionContextId;
+    type?: string;
+    sandbox?: string;
+    cdpSessionId?: string;
+  }): Realm | undefined {
+    const maybeRealms = Realm.findRealms(filter);
+    if (maybeRealms.length !== 1) {
+      return undefined;
+    }
+    return maybeRealms[0];
+  }
+
   static getRealm(filter: {
     realmId?: string;
     browsingContextId?: string;
@@ -103,16 +118,13 @@ export class Realm {
     sandbox?: string;
     cdpSessionId?: string;
   }): Realm {
-    const maybeRealms = Realm.findRealms(filter);
-    if (maybeRealms.length > 1) {
-      throw Error(`Multiple realms found. Filter: ${JSON.stringify(filter)}.`);
-    }
-    if (maybeRealms.length < 1) {
+    const maybeRealm = Realm.findRealm(filter);
+    if (maybeRealm === undefined) {
       throw new NoSuchFrameException(
         `Realm ${JSON.stringify(filter)} not found`
       );
     }
-    return maybeRealms[0];
+    return maybeRealm;
   }
 
   static clearBrowsingContext(browsingContextId: string) {

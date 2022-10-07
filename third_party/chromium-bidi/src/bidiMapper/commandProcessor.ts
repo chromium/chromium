@@ -81,18 +81,25 @@ export class CommandProcessor {
   }
 
   async #process_session_subscribe(
-    params: Session.SubscribeParameters
+    params: Session.SubscribeParameters,
+    channel: string | null
   ): Promise<Session.SubscribeResult> {
-    await this.#eventManager.subscribe(params.events, params.contexts ?? null);
+    await this.#eventManager.subscribe(
+      params.events,
+      params.contexts ?? [null],
+      channel
+    );
     return { result: {} };
   }
 
   async #process_session_unsubscribe(
-    params: Session.SubscribeParameters
+    params: Session.SubscribeParameters,
+    channel: string | null
   ): Promise<Session.UnsubscribeResult> {
     await this.#eventManager.unsubscribe(
       params.events,
-      params.contexts ?? null
+      params.contexts ?? [null],
+      channel
     );
     return { result: {} };
   }
@@ -105,11 +112,13 @@ export class CommandProcessor {
         return await this.#process_session_status();
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          Session.parseSubscribeParams(commandData.params)
+          Session.parseSubscribeParams(commandData.params),
+          commandData.channel ?? null
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          Session.parseSubscribeParams(commandData.params)
+          Session.parseSubscribeParams(commandData.params),
+          commandData.channel ?? null
         );
 
       case 'browsingContext.create':
@@ -173,24 +182,25 @@ export class CommandProcessor {
 
       const response = {
         id: command.id,
-        ...(command.channel !== undefined ? { channel: command.channel } : {}),
         ...result,
       };
 
-      await this.#bidiServer.sendMessage(response);
+      await this.#bidiServer.sendMessage(response, command.channel ?? null);
     } catch (e) {
       if (e instanceof ErrorResponseClass) {
         const errorResponse = e as ErrorResponseClass;
 
         await this.#bidiServer.sendMessage(
-          errorResponse.toErrorResponse(command.id)
+          errorResponse.toErrorResponse(command.id),
+          command.channel ?? null
         );
       } else {
         const error = e as Error;
         console.error(error);
 
         await this.#bidiServer.sendMessage(
-          new UnknownException(error.message).toErrorResponse(command.id)
+          new UnknownException(error.message).toErrorResponse(command.id),
+          command.channel ?? null
         );
       }
     }

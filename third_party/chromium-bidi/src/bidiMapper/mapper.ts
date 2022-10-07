@@ -73,7 +73,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   logSystem('launched');
 
-  bidiServer.sendMessage({ launched: true });
+  bidiServer.sendMessage({ launched: true }, null);
 })();
 
 function _createCdpConnection() {

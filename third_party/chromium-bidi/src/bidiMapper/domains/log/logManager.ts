@@ -16,42 +16,41 @@
  */
 
 import { CdpClient } from '../../../cdp';
-import { IBidiServer } from '../../utils/bidiServer';
 import { Log, Script } from '../protocol/bidiProtocolTypes';
 import { getRemoteValuesText } from './logHelper';
-import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Protocol } from 'devtools-protocol';
 import { Realm } from '../script/realm';
+import { IEventManager } from '../events/EventManager';
 
 export class LogManager {
   readonly #contextId: string;
   readonly #cdpClient: CdpClient;
-  readonly #bidiServer: IBidiServer;
   readonly #cdpSessionId: string;
+  readonly #eventManager: IEventManager;
 
   private constructor(
     contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    bidiServer: IBidiServer
+    eventManager: IEventManager
   ) {
     this.#cdpSessionId = cdpSessionId;
-    this.#bidiServer = bidiServer;
     this.#cdpClient = cdpClient;
     this.#contextId = contextId;
+    this.#eventManager = eventManager;
   }
 
   public static create(
     contextId: string,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    bidiServer: IBidiServer
+    eventManager: IEventManager
   ) {
     const logManager = new LogManager(
       contextId,
       cdpClient,
       cdpSessionId,
-      bidiServer
+      eventManager
     );
 
     logManager.#initialize();
@@ -70,22 +69,28 @@ export class LogManager {
     this.#cdpClient.Runtime.on(
       'consoleAPICalled',
       async (params: Protocol.Runtime.ConsoleAPICalledEvent) => {
-        const realm = Realm.getRealm({
+        // Try to find realm by `cdpSessionId` and `executionContextId`,
+        // if provided.
+        const realm: Realm | undefined = Realm.findRealm({
           cdpSessionId: this.#cdpSessionId,
           executionContextId: params.executionContextId,
         });
-        const args = await Promise.all(
-          params.args.map(async (arg) => {
-            return realm.serializeCdpObject(arg, 'none');
-          })
-        );
+        const args =
+          realm === undefined
+            ? params.args
+            : // Properly serialize arguments if possible.
+              await Promise.all(
+                params.args.map(async (arg) => {
+                  return realm.serializeCdpObject(arg, 'none');
+                })
+              );
 
-        await this.#bidiServer.sendMessage(
+        await this.#eventManager.sendEvent(
           new Log.LogEntryAddedEvent({
             level: LogManager.#getLogLevel(params.type),
             source: {
-              realm: params.executionContextId.toString(),
-              context: this.#contextId,
+              realm: realm?.realmId ?? 'UNKNOWN',
+              context: realm?.browsingContextId ?? 'UNKNOWN',
             },
             text: getRemoteValuesText(args, true),
             timestamp: Math.round(params.timestamp),
@@ -94,7 +99,8 @@ export class LogManager {
             // Console method is `warn`, not `warning`.
             method: params.type === 'warning' ? 'warn' : params.type,
             args: args,
-          })
+          }),
+          realm?.browsingContextId ?? 'UNKNOWN'
         );
       }
     );
@@ -104,15 +110,10 @@ export class LogManager {
       async (params: Protocol.Runtime.ExceptionThrownEvent) => {
         // Try to find realm by `cdpSessionId` and `executionContextId`,
         // if provided.
-        const realm: Realm | undefined = (() => {
-          if (params.exceptionDetails.executionContextId !== undefined) {
-            return Realm.getRealm({
-              cdpSessionId: this.#cdpSessionId,
-              executionContextId: params.exceptionDetails.executionContextId,
-            });
-          }
-          return undefined;
-        })();
+        const realm: Realm | undefined = Realm.findRealm({
+          cdpSessionId: this.#cdpSessionId,
+          executionContextId: params.exceptionDetails.executionContextId,
+        });
 
         // Try all the best to get the exception text.
         const text = await (async () => {
@@ -128,7 +129,7 @@ export class LogManager {
           );
         })();
 
-        await this.#bidiServer.sendMessage(
+        await this.#eventManager.sendEvent(
           new Log.LogEntryAddedEvent({
             level: 'error',
             source: {
@@ -141,7 +142,8 @@ export class LogManager {
               params.exceptionDetails.stackTrace
             ),
             type: 'javascript',
-          })
+          }),
+          realm?.browsingContextId ?? 'UNKNOWN'
         );
       }
     );

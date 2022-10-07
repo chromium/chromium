@@ -18,6 +18,8 @@ from _helpers import *
 
 @pytest.mark.asyncio
 async def test_consoleLog_textAndArgs(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
+
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
@@ -100,6 +102,7 @@ async def test_consoleLog_textAndArgs(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     # Send command.
     await send_JSON_command(websocket, {
         "method": "script.evaluate",
@@ -119,6 +122,7 @@ async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     # Send command.
     await send_JSON_command(websocket, {
         "method": "script.evaluate",
@@ -138,6 +142,7 @@ async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     # Send command.
     await send_JSON_command(websocket, {
         "method": "script.evaluate",
@@ -158,6 +163,7 @@ async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     # Send command.
     await send_JSON_command(websocket, {
         "method": "script.evaluate",
@@ -177,6 +183,7 @@ async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     format_string = "format specifier, string: %s, integer: %d, " \
                     "negative: %i, float: %f, %o, %O, %c EOL"
     string_arg = "'SOME_STRING'"
@@ -216,6 +223,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
+    await subscribe(websocket, "log.entryAdded")
     # Send command.
     command = {
         "id": 14,

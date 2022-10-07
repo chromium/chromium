@@ -29,7 +29,10 @@ export interface IBidiServer {
     handler: (messageObj: Message.RawCommandRequest) => void
   ): void;
 
-  sendMessage: (messageObj: Message.OutgoingMessage) => Promise<void>;
+  sendMessage: (
+    messageObj: Message.OutgoingMessage,
+    channel: string | null
+  ) => Promise<void>;
 
   close(): void;
 }
@@ -60,7 +63,12 @@ export class BidiServer extends EventEmitter implements IBidiServer {
   /**
    * Sends BiDi message.
    */
-  async sendMessage(messageObj: object): Promise<void> {
+  async sendMessage(messageObj: any, channel: string | null): Promise<void> {
+    // Add `channel` to response if needed.
+    if (channel !== null) {
+      messageObj['channel'] = channel;
+    }
+
     const messageStr = JSON.stringify(messageObj);
     logBidi('sent > ' + messageStr);
     this._transport.sendMessage(messageStr);
@@ -77,7 +85,8 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     try {
       messageObj = this.#parseBidiMessage(messageStr);
     } catch (e: any) {
-      this.#respondWithError(messageStr, 'invalid argument', e.message);
+      // Transport-level error does not provide channel.
+      this.#respondWithError(messageStr, 'invalid argument', e.message, null);
       return;
     }
     this.emit('message', messageObj);
@@ -86,14 +95,15 @@ export class BidiServer extends EventEmitter implements IBidiServer {
   #respondWithError(
     plainCommandData: string,
     errorCode: string,
-    errorMessage: string
+    errorMessage: string,
+    channel: string | null
   ) {
     const errorResponse = this.#getErrorResponse(
       plainCommandData,
       errorCode,
       errorMessage
     );
-    this.sendMessage(errorResponse);
+    this.sendMessage(errorResponse, channel);
   }
 
   #getJsonType(value: any) {
