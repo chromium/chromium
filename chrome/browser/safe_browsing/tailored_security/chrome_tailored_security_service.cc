@@ -115,9 +115,9 @@ void ChromeTailoredSecurityService::DisplayDesktopDialog(
     Browser* browser,
     bool show_enable_modal) {
   if (show_enable_modal) {
-    ShowEnabledDialogForBrowser(browser);
+    dialog_manager_.ShowEnabledDialogForBrowser(browser);
   } else {
-    ShowDisabledDialogForBrowser(browser);
+    dialog_manager_.ShowDisabledDialogForBrowser(browser);
   }
 }
 #endif

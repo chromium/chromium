@@ -11,13 +11,14 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"
+#else
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog.h"
 #endif
 
 class Browser;
 class Profile;
 
 namespace safe_browsing {
-
 class ChromeTailoredSecurityService : public TailoredSecurityService {
  public:
   explicit ChromeTailoredSecurityService(Profile* profile);
@@ -40,6 +41,8 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   void MessageDismissed();
 
   std::unique_ptr<TailoredSecurityConsentedModalAndroid> message_;
+#else
+  TailoredSecurityDesktopDialogManager dialog_manager_;
 #endif
 
   raw_ptr<Profile> profile_;

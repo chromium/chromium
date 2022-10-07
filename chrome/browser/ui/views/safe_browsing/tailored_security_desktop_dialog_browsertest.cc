@@ -32,24 +32,6 @@ namespace {
 const char kEnhancedProtectionSettingsUrl[] =
     "chrome://settings/security?q=enhanced";
 
-views::Widget* ShowTailoredSecurityEnabledDialog(Browser* browser) {
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      safe_browsing::kTailoredSecurityNoticeDialog);
-  safe_browsing::ShowEnabledDialogForBrowser(browser);
-
-  return waiter.WaitIfNeededAndGet();
-}
-
-views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
-  views::NamedWidgetShownWaiter waiter(
-      views::test::AnyWidgetTestPasskey{},
-      safe_browsing::kTailoredSecurityNoticeDialog);
-  safe_browsing::ShowDisabledDialogForBrowser(browser);
-
-  return waiter.WaitIfNeededAndGet();
-}
-
 // A struct of test parameters that can be used by parameterized tests.
 struct TestParam {
   // The suffix for the test name.
@@ -83,11 +65,13 @@ void ClickButton(views::BubbleDialogDelegate* bubble_delegate,
 
 }  // namespace
 
-class TailoredSecurityDesktopDialogTest
+class TailoredSecurityDesktopDialogManagerTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<TestParam> {
  public:
-  TailoredSecurityDesktopDialogTest() {
+  TailoredSecurityDesktopDialogManagerTest() {
+    dialog_manager_ =
+        std::make_unique<safe_browsing::TailoredSecurityDesktopDialogManager>();
     if (GetParam().use_dark_theme) {
       features_.InitAndEnableFeature(features::kWebUIDarkMode);
     } else {
@@ -95,10 +79,10 @@ class TailoredSecurityDesktopDialogTest
     }
   }
 
-  TailoredSecurityDesktopDialogTest(const TailoredSecurityDesktopDialogTest&) =
-      delete;
-  TailoredSecurityDesktopDialogTest& operator=(
-      const TailoredSecurityDesktopDialogTest&) = delete;
+  TailoredSecurityDesktopDialogManagerTest(
+      const TailoredSecurityDesktopDialogManagerTest&) = delete;
+  TailoredSecurityDesktopDialogManagerTest& operator=(
+      const TailoredSecurityDesktopDialogManagerTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -107,9 +91,9 @@ class TailoredSecurityDesktopDialogTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     const std::string& actual_name = name.substr(0, name.find("/"));
     if (actual_name == "enabledDialog") {
-      safe_browsing::ShowEnabledDialogForBrowser(browser());
+      dialog_manager_->ShowEnabledDialogForBrowser(browser());
     } else if (actual_name == "disabledDialog") {
-      safe_browsing::ShowDisabledDialogForBrowser(browser());
+      dialog_manager_->ShowDisabledDialogForBrowser(browser());
     } else {
       FAIL() << "No dialog case defined for this string: " << name;
     }
@@ -121,21 +105,41 @@ class TailoredSecurityDesktopDialogTest
     }
   }
 
+  views::Widget* ShowTailoredSecurityEnabledDialog(Browser* browser) {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        safe_browsing::kTailoredSecurityNoticeDialog);
+    dialog_manager_->ShowEnabledDialogForBrowser(browser);
+
+    return waiter.WaitIfNeededAndGet();
+  }
+
+  views::Widget* ShowTailoredSecurityDisabledDialog(Browser* browser) {
+    views::NamedWidgetShownWaiter waiter(
+        views::test::AnyWidgetTestPasskey{},
+        safe_browsing::kTailoredSecurityNoticeDialog);
+    dialog_manager_->ShowDisabledDialogForBrowser(browser);
+
+    return waiter.WaitIfNeededAndGet();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
+  std::unique_ptr<safe_browsing::TailoredSecurityDesktopDialogManager>
+      dialog_manager_;
 };
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        InvokeUi_enabledDialog) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        InvokeUi_disabledDialog) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        EnabledDialogOkButtonIncrementsAcknowledgedHistogram) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
@@ -147,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                                TailoredSecurityOutcome::kAccepted, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        EnabledDialogCancelButtonIncrementsSettingsHistogram) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
@@ -160,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                                TailoredSecurityOutcome::kSettings, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        EnabledDialogCancelButtonNavigatesToSettings) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
@@ -176,7 +180,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
             GURL(kEnhancedProtectionSettingsUrl));
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        EnabledDialogCancelButtonRecordsUserAction) {
   base::UserActionTester uat;
   auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
@@ -191,7 +195,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        DisabledDialogOkButtonIncrementsAcknowledgedHistogram) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
@@ -203,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                                TailoredSecurityOutcome::kAccepted, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        DisabledDialogCancelButtonIncrementsSettingsHistogram) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
@@ -216,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
                                TailoredSecurityOutcome::kSettings, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        DisabledDialogCancelButtonNavigatesToSettings) {
   base::HistogramTester histograms;
   auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
@@ -232,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
             GURL(kEnhancedProtectionSettingsUrl));
 }
 
-IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        DisabledDialogCancelButtonRecordsUserAction) {
   base::UserActionTester uat;
   auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
@@ -247,7 +251,63 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogTest,
             1);
 }
 
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       OpeningANewEnableDialogWillCloseAnyOpenDisableDialogs) {
+  auto* disabled_dialog = ShowTailoredSecurityDisabledDialog(browser());
+  auto* enabled_dialog = ShowTailoredSecurityEnabledDialog(browser());
+  EXPECT_TRUE(disabled_dialog->IsClosed());
+  EXPECT_FALSE(enabled_dialog->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       ClosingDisabledByOpeningEnabledLogsCloseReason) {
+  base::HistogramTester histograms;
+  ShowTailoredSecurityDisabledDialog(browser());
+  histograms.ExpectBucketCount(safe_browsing::kDisabledDialogOutcome,
+                               TailoredSecurityOutcome::kSettings, 0);
+  histograms.ExpectBucketCount(safe_browsing::kDisabledDialogOutcome,
+                               TailoredSecurityOutcome::kAccepted, 0);
+
+  ShowTailoredSecurityEnabledDialog(browser());
+
+  histograms.ExpectBucketCount(safe_browsing::kDisabledDialogOutcome,
+                               TailoredSecurityOutcome::kSettings, 0);
+  histograms.ExpectBucketCount(safe_browsing::kDisabledDialogOutcome,
+                               TailoredSecurityOutcome::kAccepted, 0);
+  histograms.ExpectBucketCount(safe_browsing::kDisabledDialogOutcome,
+                               TailoredSecurityOutcome::kClosedByAnotherDialog,
+                               1);
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       OpeningANewDisableDialogWillCloseAnyOpenEnableDialogs) {
+  auto* enabled_dialog = ShowTailoredSecurityEnabledDialog(browser());
+  auto* disabled_dialog = ShowTailoredSecurityDisabledDialog(browser());
+  EXPECT_TRUE(enabled_dialog->IsClosed());
+  EXPECT_FALSE(disabled_dialog->IsClosed());
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       ClosingEnabledByOpeningDisabledLogsCloseReason) {
+  base::HistogramTester histograms;
+  ShowTailoredSecurityEnabledDialog(browser());
+  histograms.ExpectBucketCount(safe_browsing::kEnabledDialogOutcome,
+                               TailoredSecurityOutcome::kSettings, 0);
+  histograms.ExpectBucketCount(safe_browsing::kEnabledDialogOutcome,
+                               TailoredSecurityOutcome::kAccepted, 0);
+
+  ShowTailoredSecurityDisabledDialog(browser());
+
+  histograms.ExpectBucketCount(safe_browsing::kEnabledDialogOutcome,
+                               TailoredSecurityOutcome::kSettings, 0);
+  histograms.ExpectBucketCount(safe_browsing::kEnabledDialogOutcome,
+                               TailoredSecurityOutcome::kAccepted, 0);
+  histograms.ExpectBucketCount(safe_browsing::kEnabledDialogOutcome,
+                               TailoredSecurityOutcome::kClosedByAnotherDialog,
+                               1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         TailoredSecurityDesktopDialogTest,
+                         TailoredSecurityDesktopDialogManagerTest,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);

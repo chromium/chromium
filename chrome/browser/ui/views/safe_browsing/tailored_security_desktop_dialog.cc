@@ -59,9 +59,23 @@ class TailoredSecurityDialogModelDelegate : public ui::DialogModelDelegate {
     chrome::ShowSafeBrowsingEnhancedProtection(browser);
   }
 
+  void CloseDialog() {
+    if (this->dialog_model() && this->dialog_model()->host()) {
+      base::UmaHistogramEnumeration(
+          kOutcomeMetricName_, TailoredSecurityOutcome::kClosedByAnotherDialog);
+      this->dialog_model()->host()->Close();
+    }
+  }
+
+  base::OnceCallback<void()> GetCloseDialogCallback() {
+    return base::BindOnce(&TailoredSecurityDialogModelDelegate::CloseDialog,
+                          weak_factory_.GetWeakPtr());
+  }
+
  private:
   const std::string kOutcomeMetricName_;
   const base::UserMetricsAction settings_user_action_;
+  base::WeakPtrFactory<TailoredSecurityDialogModelDelegate> weak_factory_{this};
 };
 
 class DisabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
@@ -82,7 +96,13 @@ class EnabledDialogModelDelegate : public TailoredSecurityDialogModelDelegate {
                                     "EnabledDialog.SettingsButtonClicked")) {}
 };
 
-void ShowEnabledDialogForBrowser(Browser* browser) {
+TailoredSecurityDesktopDialogManager::TailoredSecurityDesktopDialogManager() =
+    default;
+TailoredSecurityDesktopDialogManager::~TailoredSecurityDesktopDialogManager() =
+    default;
+
+void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
+    Browser* browser) {
   auto model_delegate = std::make_unique<EnabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -117,11 +137,17 @@ void ShowEnabledDialogForBrowser(Browser* browser) {
   // `window` should always be non-null unless this is called before
   // CreateBrowserWindow().
   DCHECK(browser->window());
+
+  if (close_dialog_callback_) {
+    std::move(close_dialog_callback_).Run();
+  }
+  close_dialog_callback_ = model_delegate_ptr->GetCloseDialogCallback();
   constrained_window::ShowBrowserModal(std::move(dialog_model),
                                        browser->window()->GetNativeWindow());
 }
 
-void ShowDisabledDialogForBrowser(Browser* browser) {
+void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
+    Browser* browser) {
   auto model_delegate = std::make_unique<DisabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -151,6 +177,11 @@ void ShowDisabledDialogForBrowser(Browser* browser) {
   // `window` should always be non-null unless this is called before
   // CreateBrowserWindow().
   DCHECK(browser->window());
+
+  if (close_dialog_callback_) {
+    std::move(close_dialog_callback_).Run();
+  }
+  close_dialog_callback_ = model_delegate_ptr->GetCloseDialogCallback();
   constrained_window::ShowBrowserModal(std::move(dialog_model),
                                        browser->window()->GetNativeWindow());
 }
