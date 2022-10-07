@@ -36,6 +36,7 @@ source_set("unit_tests") {
     ":form_parsing",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",

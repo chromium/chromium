@@ -5937,19 +5937,19 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   AutofillQueryResponse::FormSuggestion* form_suggestion;
   // Set suggestions for form 1.
   form_suggestion = response.add_form_suggestions();
-  autofill::test::AddFieldSuggestionToForm(form.fields[0], ADDRESS_HOME_CITY,
+  autofill::test::AddFieldPredictionToForm(form.fields[0], ADDRESS_HOME_CITY,
                                            form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(form.fields[1], ADDRESS_HOME_STATE,
+  autofill::test::AddFieldPredictionToForm(form.fields[1], ADDRESS_HOME_STATE,
                                            form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(form.fields[2], ADDRESS_HOME_ZIP,
+  autofill::test::AddFieldPredictionToForm(form.fields[2], ADDRESS_HOME_ZIP,
                                            form_suggestion);
   // Set suggestions for form 2.
   form_suggestion = response.add_form_suggestions();
-  autofill::test::AddFieldSuggestionToForm(form2.fields[0], NAME_LAST,
+  autofill::test::AddFieldPredictionToForm(form2.fields[0], NAME_LAST,
                                            form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(form2.fields[1], NAME_MIDDLE,
+  autofill::test::AddFieldPredictionToForm(form2.fields[1], NAME_MIDDLE,
                                            form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(form2.fields[2], ADDRESS_HOME_ZIP,
+  autofill::test::AddFieldPredictionToForm(form2.fields[2], ADDRESS_HOME_ZIP,
                                            form_suggestion);
 
   std::string response_string;
@@ -6066,15 +6066,15 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  autofill::test::AddFieldSuggestionToForm(
+  autofill::test::AddFieldPredictionToForm(
       form.fields[0], CREDIT_CARD_NAME_FIRST, form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(
+  autofill::test::AddFieldPredictionToForm(
       form.fields[1], CREDIT_CARD_NAME_LAST, form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(form.fields[2], CREDIT_CARD_NUMBER,
+  autofill::test::AddFieldPredictionToForm(form.fields[2], CREDIT_CARD_NUMBER,
                                            form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(
+  autofill::test::AddFieldPredictionToForm(
       form.fields[3], CREDIT_CARD_EXP_MONTH, form_suggestion);
-  autofill::test::AddFieldSuggestionToForm(
+  autofill::test::AddFieldPredictionToForm(
       form.fields[4], CREDIT_CARD_EXP_4_DIGIT_YEAR, form_suggestion);
 
   std::string response_string;
@@ -6586,10 +6586,9 @@ TEST_F(BrowserAutofillManagerTest, DisambiguateUploadTypes) {
     // Assign the specified predicted type for each field in the test case.
     FormStructure form_structure(form);
     for (size_t i = 0; i < test_fields.size(); ++i) {
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-          prediction;
-      prediction.set_type(test_fields[i].predicted_type);
-      form_structure.field(i)->set_server_predictions({prediction});
+      form_structure.field(i)->set_server_predictions(
+          {::autofill::test::CreateFieldPrediction(
+              test_fields[i].predicted_type)});
     }
 
     BrowserAutofillManager::DeterminePossibleFieldTypesForUploadForTest(

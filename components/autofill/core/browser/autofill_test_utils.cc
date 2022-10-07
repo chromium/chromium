@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 
 #include <cstdint>
+#include <iterator>
 #include <string>
 
 #include "base/guid.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,6 +44,8 @@
 #include "ui/gfx/geometry/rect.h"
 
 using base::ASCIIToUTF16;
+using FieldPrediction = ::autofill::AutofillQueryResponse::FormSuggestion::
+    FieldSuggestion::FieldPrediction;
 
 namespace autofill {
 
@@ -1047,38 +1051,56 @@ std::vector<FormSignature> GetEncodedSignatures(
   return all_signatures;
 }
 
-void AddFieldSuggestionToForm(
+FieldPrediction CreateFieldPrediction(ServerFieldType type,
+                                      FieldPrediction::Source source) {
+  FieldPrediction field_prediction;
+  field_prediction.set_type(type);
+  field_prediction.set_source(source);
+  if (source == FieldPrediction::SOURCE_OVERRIDE)
+    field_prediction.set_override(true);
+  return field_prediction;
+}
+
+FieldPrediction CreateFieldPrediction(ServerFieldType type) {
+  if (type == NO_SERVER_DATA)
+    return CreateFieldPrediction(type, FieldPrediction::SOURCE_UNSPECIFIED);
+  return CreateFieldPrediction(
+      type, GroupTypeOfServerFieldType(type) == FieldTypeGroup::kPasswordField
+                ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
+                : FieldPrediction::SOURCE_AUTOFILL_DEFAULT);
+}
+
+void AddFieldPredictionToForm(
     const FormFieldData& field_data,
     ServerFieldType field_type,
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->add_predictions()->set_type(field_type);
-}
-
-void AddFieldPredictionsToForm(
-    const FormFieldData& field_data,
-    const std::vector<int>& field_types,
-    AutofillQueryResponse_FormSuggestion* form_suggestion) {
-  std::vector<ServerFieldType> types;
-  for (auto type : field_types) {
-    types.emplace_back(ToSafeServerFieldType(type, UNKNOWN_TYPE));
-  }
-  AddFieldPredictionsToForm(field_data, types, form_suggestion);
+  *field_suggestion->add_predictions() = CreateFieldPrediction(field_type);
 }
 
 void AddFieldPredictionsToForm(
     const FormFieldData& field_data,
     const std::vector<ServerFieldType>& field_types,
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  std::vector<FieldPrediction> field_predictions(field_types.size());
+  base::ranges::transform(field_types, std::back_inserter(field_predictions),
+                          static_cast<FieldPrediction (*)(ServerFieldType)>(
+                              &CreateFieldPrediction));
+  return AddFieldPredictionsToForm(field_data, field_predictions,
+                                   form_suggestion);
+}
+
+void AddFieldPredictionsToForm(
+    const FormFieldData& field_data,
+    const std::vector<FieldPrediction>& field_predictions,
+    AutofillQueryResponse_FormSuggestion* form_suggestion) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
       CalculateFieldSignatureForField(field_data).value());
-  for (auto field_type : field_types) {
-    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction*
-        prediction = field_suggestion->add_predictions();
-    prediction->set_type(field_type);
+  for (const auto& prediction : field_predictions) {
+    *field_suggestion->add_predictions() = prediction;
   }
 }
 

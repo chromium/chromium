@@ -25,9 +25,6 @@ using testing::UnorderedElementsAre;
 
 namespace autofill {
 
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
-
 namespace {
 
 class MockSuggestionsHandler
@@ -85,10 +82,8 @@ class MerchantPromoCodeManagerTest : public testing::Test {
 
   // Adds a promo code focused field to the suggestions context.
   void AddPromoCodeFocusedFieldToSuggestionsContext(SuggestionsContext* out) {
-    FieldPrediction merchant_promo_code_field_prediction;
-    merchant_promo_code_field_prediction.set_type(MERCHANT_PROMO_CODE);
     autofill_field_.set_server_predictions(
-        {merchant_promo_code_field_prediction});
+        {::autofill::test::CreateFieldPrediction(MERCHANT_PROMO_CODE)});
     out->focused_field = &autofill_field_;
   }
 

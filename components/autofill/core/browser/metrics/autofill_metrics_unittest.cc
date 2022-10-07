@@ -85,6 +85,7 @@
 #endif
 
 using ::autofill::metrics::kTestGuid;
+using ::autofill::test::AddFieldPredictionToForm;
 using ::base::ASCIIToUTF16;
 using ::base::Bucket;
 using ::base::BucketsAre;
@@ -1447,18 +1448,6 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
          false}}});
 }
 
-namespace {
-void AddFieldSuggestionToForm(
-    AutofillQueryResponse_FormSuggestion* form_suggestion,
-    FormFieldData field_data,
-    ServerFieldType field_type) {
-  auto* field_suggestion = form_suggestion->add_field_suggestions();
-  field_suggestion->set_field_signature(
-      CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->add_predictions()->set_type(field_type);
-}
-}  // namespace
-
 // Test that we log the address line fields whose server types are rationalized
 TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
   FormData form = CreateEmptyForm();
@@ -1494,11 +1483,11 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], NAME_FULL);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1],
-                           ADDRESS_HOME_STREET_ADDRESS);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2],
-                           ADDRESS_HOME_STREET_ADDRESS);
+  AddFieldPredictionToForm(form.fields[0], NAME_FULL, form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], ADDRESS_HOME_STREET_ADDRESS,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields[2], ADDRESS_HOME_STREET_ADDRESS,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
@@ -1601,13 +1590,13 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0],
-                           ADDRESS_HOME_COUNTRY);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], NAME_FULL);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2],
-                           ADDRESS_HOME_COUNTRY);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3],
-                           ADDRESS_HOME_COUNTRY);
+  AddFieldPredictionToForm(form.fields[0], ADDRESS_HOME_COUNTRY,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], NAME_FULL, form_suggestion);
+  AddFieldPredictionToForm(form.fields[2], ADDRESS_HOME_COUNTRY,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields[3], ADDRESS_HOME_COUNTRY,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(
@@ -2265,13 +2254,13 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
   // Server response will match with autocomplete.
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], NAME_LAST);
+  AddFieldPredictionToForm(form.fields[0], NAME_LAST, form_suggestion);
   // Server response will NOT match with autocomplete.
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], NAME_FIRST);
+  AddFieldPredictionToForm(form.fields[1], NAME_FIRST, form_suggestion);
   // Server response will have no data.
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2], NO_SERVER_DATA);
+  AddFieldPredictionToForm(form.fields[2], NO_SERVER_DATA, form_suggestion);
   // Not logged.
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3], NAME_MIDDLE);
+  AddFieldPredictionToForm(form.fields[3], NAME_MIDDLE, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
@@ -8407,29 +8396,17 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
   std::vector<FormStructure*> forms_;
 };
 
-namespace {
-void AddFieldSuggestionToForm(
-    AutofillQueryResponse_FormSuggestion* form_suggestion,
-    FieldSignature field_signature,
-    int field_type) {
-  auto* field_suggestion = form_suggestion->add_field_suggestions();
-  field_suggestion->set_field_signature(field_signature.value());
-  field_suggestion->add_predictions()->set_type(field_type);
-}
-}  // namespace
-
 TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(0)->GetFieldSignature(), 7);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(1)->GetFieldSignature(), 30);
+  AddFieldPredictionToForm(*forms_[0]->field(0), NAME_FULL, form_suggestion);
+  AddFieldPredictionToForm(*forms_[0]->field(1), ADDRESS_HOME_LINE1,
+                           form_suggestion);
   form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(0)->GetFieldSignature(), 9);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(1)->GetFieldSignature(), 0);
+  AddFieldPredictionToForm(*forms_[1]->field(0), EMAIL_ADDRESS,
+                           form_suggestion);
+  AddFieldPredictionToForm(*forms_[1]->field(1), NO_SERVER_DATA,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
@@ -8446,15 +8423,15 @@ TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
 TEST_F(AutofillMetricsParseQueryResponseTest, OneFormNoServerData) {
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(0)->GetFieldSignature(), 0);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(1)->GetFieldSignature(), 0);
+  AddFieldPredictionToForm(*forms_[0]->field(0), NO_SERVER_DATA,
+                           form_suggestion);
+  AddFieldPredictionToForm(*forms_[0]->field(1), NO_SERVER_DATA,
+                           form_suggestion);
   form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(0)->GetFieldSignature(), 9);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(1)->GetFieldSignature(), 0);
+  AddFieldPredictionToForm(*forms_[1]->field(0), EMAIL_ADDRESS,
+                           form_suggestion);
+  AddFieldPredictionToForm(*forms_[1]->field(1), NO_SERVER_DATA,
+                           form_suggestion);
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;
   FormStructure::ParseApiQueryResponse(response_string, forms_,
@@ -8472,9 +8449,8 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
   for (int form_idx = 0; form_idx < 2; ++form_idx) {
     auto* form_suggestion = response.add_form_suggestions();
     for (int field_idx = 0; field_idx < 2; ++field_idx) {
-      AddFieldSuggestionToForm(
-          form_suggestion,
-          forms_[form_idx]->field(field_idx)->GetFieldSignature(), 0);
+      AddFieldPredictionToForm(*forms_[form_idx]->field(field_idx),
+                               NO_SERVER_DATA, form_suggestion);
     }
   }
 
@@ -8493,15 +8469,15 @@ TEST_F(AutofillMetricsParseQueryResponseTest, AllFormsNoServerData) {
 TEST_F(AutofillMetricsParseQueryResponseTest, PartialNoServerData) {
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(0)->GetFieldSignature(), 0);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[0]->field(1)->GetFieldSignature(), 10);
+  AddFieldPredictionToForm(*forms_[0]->field(0), NO_SERVER_DATA,
+                           form_suggestion);
+  AddFieldPredictionToForm(*forms_[0]->field(1), PHONE_HOME_NUMBER,
+                           form_suggestion);
   form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(0)->GetFieldSignature(), 0);
-  AddFieldSuggestionToForm(form_suggestion,
-                           forms_[1]->field(1)->GetFieldSignature(), 11);
+  AddFieldPredictionToForm(*forms_[1]->field(0), NO_SERVER_DATA,
+                           form_suggestion);
+  AddFieldPredictionToForm(*forms_[1]->field(1), PHONE_HOME_CITY_CODE,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   base::HistogramTester histogram_tester;

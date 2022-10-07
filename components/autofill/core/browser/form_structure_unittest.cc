@@ -41,11 +41,14 @@
 
 using ::base::ASCIIToUTF16;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
@@ -53,9 +56,14 @@ using ::version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
 
+using FieldPrediction = ::autofill::AutofillQueryResponse::FormSuggestion::
+    FieldSuggestion::FieldPrediction;
 using autofill::features::kAutofillLabelAffixRemoval;
 using autofill::mojom::SubmissionIndicatorEvent;
 using autofill::mojom::SubmissionSource;
+using autofill::test::AddFieldPredictionsToForm;
+using autofill::test::AddFieldPredictionToForm;
+using autofill::test::CreateFieldPrediction;
 
 namespace {
 
@@ -70,29 +78,14 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   return response_string;
 }
 
-// Sets |field_type| suggestion for |field_data|'s signature.
-void AddFieldSuggestionToForm(
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
-    const autofill::FormFieldData& field_data,
-    ServerFieldType field_type) {
-  auto* field_suggestion = form_suggestion->add_field_suggestions();
-  field_suggestion->set_field_signature(
-      CalculateFieldSignatureForField(field_data).value());
-  field_suggestion->add_predictions()->set_type(field_type);
-}
-
 void AddFieldOverrideToForm(
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
     autofill::FormFieldData field_data,
-    ServerFieldType field_type) {
-  AddFieldSuggestionToForm(form_suggestion, field_data, field_type);
-
-  DCHECK_GT(form_suggestion->field_suggestions().size(), 0);
-  form_suggestion
-      ->mutable_field_suggestions(form_suggestion->field_suggestions().size() -
-                                  1)
-      ->mutable_predictions(0)
-      ->set_override(true);
+    ServerFieldType field_type,
+    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion) {
+  AddFieldPredictionsToForm(
+      field_data,
+      {CreateFieldPrediction(field_type, FieldPrediction::SOURCE_OVERRIDE)},
+      form_suggestion);
 }
 
 // Matches any protobuf `actual` whose serialization is equal to the
@@ -130,6 +123,10 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
       PatternSource::kNextGen
 #endif
 };
+
+Matcher<FieldPrediction> EqualsPrediction(ServerFieldType type) {
+  return Property(&FieldPrediction::type, type);
+}
 
 }  // namespace
 
@@ -5040,8 +5037,8 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
   // name.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldOverrideToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
+  AddFieldOverrideToForm(form_data.fields[0], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[1], NAME_LAST, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5153,10 +5150,10 @@ TEST_F(FormStructureTestImpl,
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
+  AddFieldPredictionToForm(form_data.fields[0], NAME_FIRST, form_suggestion);
   // Simulate a NAME_LAST classification for the two last name fields.
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2], NAME_LAST);
+  AddFieldPredictionToForm(form_data.fields[1], NAME_LAST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], NAME_LAST, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5218,12 +5215,12 @@ TEST_F(FormStructureTestImpl,
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FULL);
+  AddFieldPredictionToForm(form_data.fields[0], NAME_FULL, form_suggestion);
   // Simulate ADDRESS_LINE classifications for the two last name fields.
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1],
-                           ADDRESS_HOME_LINE1);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2],
-                           ADDRESS_HOME_LINE2);
+  AddFieldPredictionToForm(form_data.fields[1], ADDRESS_HOME_LINE1,
+                           form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], ADDRESS_HOME_LINE2,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5269,10 +5266,10 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2],
-                           ADDRESS_HOME_LINE1);
+  AddFieldPredictionToForm(form_data.fields[0], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[1], NAME_LAST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], ADDRESS_HOME_LINE1,
+                           form_suggestion);
   form_suggestion->add_field_suggestions()->add_predictions()->set_type(
       EMAIL_ADDRESS);
   form_suggestion->add_field_suggestions()->add_predictions()->set_type(
@@ -5337,11 +5334,11 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], UNKNOWN_TYPE);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1],
-                           NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2],
-                           ADDRESS_HOME_LINE1);
+  AddFieldPredictionToForm(form_data.fields[0], UNKNOWN_TYPE, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[1], NO_SERVER_DATA,
+                           form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], ADDRESS_HOME_LINE1,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5451,26 +5448,26 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWithDifferentRendererForms) {
       test::GetEncodedSignatures(forms);
   {
     auto* form_suggestion = api_response.add_form_suggestions();
-    AddFieldSuggestionToForm(form_suggestion, fields[0], expected_types[0]);
-    AddFieldSuggestionToForm(form_suggestion, fields[1], NO_SERVER_DATA);
-    AddFieldSuggestionToForm(form_suggestion, fields[2], NO_SERVER_DATA);
-    AddFieldSuggestionToForm(form_suggestion, fields[3], expected_types[3]);
-    AddFieldSuggestionToForm(form_suggestion, fields[4], expected_types[4]);
+    AddFieldPredictionToForm(fields[0], expected_types[0], form_suggestion);
+    AddFieldPredictionToForm(fields[1], NO_SERVER_DATA, form_suggestion);
+    AddFieldPredictionToForm(fields[2], NO_SERVER_DATA, form_suggestion);
+    AddFieldPredictionToForm(fields[3], expected_types[3], form_suggestion);
+    AddFieldPredictionToForm(fields[4], expected_types[4], form_suggestion);
   }
   // Response for the FormFieldData::host_form_signature 12345.
   encoded_signatures.push_back(FormSignature(12345));
   {
     auto* form_suggestion = api_response.add_form_suggestions();
-    AddFieldSuggestionToForm(form_suggestion, fields[0], NO_SERVER_DATA);
-    AddFieldSuggestionToForm(form_suggestion, fields[1], expected_types[1]);
-    AddFieldSuggestionToForm(form_suggestion, fields[2], expected_types[2]);
+    AddFieldPredictionToForm(fields[0], NO_SERVER_DATA, form_suggestion);
+    AddFieldPredictionToForm(fields[1], expected_types[1], form_suggestion);
+    AddFieldPredictionToForm(fields[2], expected_types[2], form_suggestion);
   }
   // Response for the FormFieldData::host_form_signature 67890.
   encoded_signatures.push_back(FormSignature(67890));
   {
     auto* form_suggestion = api_response.add_form_suggestions();
-    AddFieldSuggestionToForm(form_suggestion, fields[4], ADDRESS_HOME_CITY);
-    AddFieldSuggestionToForm(form_suggestion, fields[5], expected_types[5]);
+    AddFieldPredictionToForm(fields[4], ADDRESS_HOME_CITY, form_suggestion);
+    AddFieldPredictionToForm(fields[5], expected_types[5], form_suggestion);
   }
 
   // Serialize API response.
@@ -5546,18 +5543,15 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   AutofillQueryResponse api_response;
   // Make form 1 suggestions.
   auto* form_suggestion = api_response.add_form_suggestions();
-  auto* field0 = form_suggestion->add_field_suggestions();
-  field0->set_field_signature(
-      CalculateFieldSignatureForField(form.fields[0]).value());
-  auto* field_prediction0 = field0->add_predictions();
-  field_prediction0->set_type(NAME_FULL);
-  auto* field_prediction1 = field0->add_predictions();
-  field_prediction1->set_type(PHONE_HOME_COUNTRY_CODE);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], ADDRESS_HOME_LINE1);
+  AddFieldPredictionsToForm(form.fields[0],
+                            {CreateFieldPrediction(NAME_FULL),
+                             CreateFieldPrediction(PHONE_HOME_COUNTRY_CODE)},
+                            form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], ADDRESS_HOME_LINE1, form_suggestion);
   // Make form 2 suggestions.
   form_suggestion = api_response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form2.fields[0], EMAIL_ADDRESS);
-  AddFieldSuggestionToForm(form_suggestion, form2.fields[1], NO_SERVER_DATA);
+  AddFieldPredictionToForm(form2.fields[0], EMAIL_ADDRESS, form_suggestion);
+  AddFieldPredictionToForm(form2.fields[1], NO_SERVER_DATA, form_suggestion);
   // Serialize API response.
   std::string response_string;
   std::string encoded_response_string;
@@ -5572,21 +5566,23 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {
   // the query.
   ASSERT_GE(forms[0]->field_count(), 2U);
   ASSERT_GE(forms[1]->field_count(), 2U);
+
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
-  ASSERT_EQ(2U, forms[0]->field(0)->server_predictions().size());
-  EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_predictions()[0].type());
-  EXPECT_EQ(PHONE_HOME_COUNTRY_CODE,
-            forms[0]->field(0)->server_predictions()[1].type());
+  EXPECT_THAT(forms[0]->field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(NAME_FULL),
+                          EqualsPrediction(PHONE_HOME_COUNTRY_CODE)));
+
   EXPECT_EQ(ADDRESS_HOME_LINE1, forms[0]->field(1)->server_type());
-  ASSERT_EQ(1U, forms[0]->field(1)->server_predictions().size());
-  EXPECT_EQ(ADDRESS_HOME_LINE1,
-            forms[0]->field(1)->server_predictions()[0].type());
+  EXPECT_THAT(forms[0]->field(1)->server_predictions(),
+              ElementsAre(EqualsPrediction(ADDRESS_HOME_LINE1)));
+
   EXPECT_EQ(EMAIL_ADDRESS, forms[1]->field(0)->server_type());
-  ASSERT_EQ(1U, forms[1]->field(0)->server_predictions().size());
-  EXPECT_EQ(EMAIL_ADDRESS, forms[1]->field(0)->server_predictions()[0].type());
+  EXPECT_THAT(forms[1]->field(0)->server_predictions(),
+              ElementsAre(EqualsPrediction(EMAIL_ADDRESS)));
+
   EXPECT_EQ(NO_SERVER_DATA, forms[1]->field(1)->server_type());
-  ASSERT_EQ(1U, forms[1]->field(1)->server_predictions().size());
-  EXPECT_EQ(0, forms[1]->field(1)->server_predictions()[0].type());
+  EXPECT_THAT(forms[1]->field(1)->server_predictions(),
+              ElementsAre(EqualsPrediction(NO_SERVER_DATA)));
 }
 
 // Tests ParseApiQueryResponse when the payload cannot be parsed to an
@@ -5605,10 +5601,8 @@ TEST_F(FormStructureTestImpl,
 
   // Add form to the vector needed by the response parsing function.
   FormStructure form_structure(form);
-  AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-      prediction;
-  prediction.set_type(NAME_FULL);
-  form_structure.field(0)->set_server_predictions({prediction});
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(NAME_FULL)});
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
@@ -5638,10 +5632,8 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWhenPayloadNotBase64) {
 
   // Add form to the vector needed by the response parsing function.
   FormStructure form_structure(form);
-  AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-      prediction;
-  prediction.set_type(NAME_FULL);
-  form_structure.field(0)->set_server_predictions({prediction});
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(NAME_FULL)});
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
 
@@ -5654,7 +5646,7 @@ TEST_F(FormStructureTestImpl, ParseApiQueryResponseWhenPayloadNotBase64) {
   // is no issue when parsing the query response. In this test case there is an
   // issue with the encoding of the data, hence EMAIL_ADDRESS should not be
   // applied because of early exit of the parsing function.
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], EMAIL_ADDRESS);
+  AddFieldPredictionToForm(form.fields[0], EMAIL_ADDRESS, form_suggestion);
 
   // Serialize API response.
   std::string response_string;
@@ -5689,9 +5681,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], EMAIL_ADDRESS);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1],
-                           ACCOUNT_CREATION_PASSWORD);
+  AddFieldPredictionToForm(form.fields[0], EMAIL_ADDRESS, form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], ACCOUNT_CREATION_PASSWORD,
+                           form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
   FormStructure::ParseApiQueryResponse(response_string, forms,
@@ -5751,10 +5743,10 @@ TEST_F(FormStructureTestImpl,
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2], NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3], NO_SERVER_DATA);
+  AddFieldPredictionToForm(form.fields[0], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields[2], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields[3], NO_SERVER_DATA, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5814,10 +5806,10 @@ TEST_F(FormStructureTestImpl, NoServerDataCCFields_CVC_NoOverwrite) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0], NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2], NO_SERVER_DATA);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3], NO_SERVER_DATA);
+  AddFieldPredictionToForm(form.fields[0], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields[2], NO_SERVER_DATA, form_suggestion);
+  AddFieldPredictionToForm(form.fields[3], NO_SERVER_DATA, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5881,12 +5873,12 @@ TEST_F(FormStructureTestImpl, WithServerDataCCFields_CVC_NoOverwrite) {
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form.fields[0],
-                           CREDIT_CARD_NAME_FULL);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[1], CREDIT_CARD_NUMBER);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[2],
-                           CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
-  AddFieldSuggestionToForm(form_suggestion, form.fields[3], NO_SERVER_DATA);
+  AddFieldPredictionToForm(form.fields[0], CREDIT_CARD_NAME_FULL,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields[1], CREDIT_CARD_NUMBER, form_suggestion);
+  AddFieldPredictionToForm(form.fields[2], CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                           form_suggestion);
+  AddFieldPredictionToForm(form.fields[3], NO_SERVER_DATA, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5944,9 +5936,9 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RankEqualSignatures) {
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[1], NAME_LAST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2], EMAIL_ADDRESS);
+  AddFieldPredictionToForm(form_data.fields[0], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[1], NAME_LAST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], EMAIL_ADDRESS, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 
@@ -5989,8 +5981,8 @@ TEST_F(FormStructureTestImpl,
   // Setup the query response.
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[0], NAME_FIRST);
-  AddFieldSuggestionToForm(form_suggestion, form_data.fields[2], EMAIL_ADDRESS);
+  AddFieldPredictionToForm(form_data.fields[0], NAME_FIRST, form_suggestion);
+  AddFieldPredictionToForm(form_data.fields[2], EMAIL_ADDRESS, form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
 

@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -35,6 +36,7 @@ using base::ASCIIToUTF16;
 
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
+using ::autofill::test::CreateFieldPrediction;
 
 namespace password_manager {
 
@@ -85,14 +87,10 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     AutofillField* field = form_structure.field(i);
 
     std::vector<FieldPrediction> predictions;
-    FieldPrediction prediction;
-    prediction.set_type(test_fields[i].input_type);
-    predictions.push_back(prediction);
+    predictions.push_back(CreateFieldPrediction(test_fields[i].input_type));
 
     for (ServerFieldType type : test_fields[i].additional_types) {
-      FieldPrediction additional_prediction;
-      additional_prediction.set_type(type);
-      predictions.push_back(additional_prediction);
+      predictions.push_back(CreateFieldPrediction(type));
     }
     field->set_server_predictions(predictions);
     field->set_may_use_prefilled_placeholder(
@@ -164,9 +162,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     // Set server predictions and create expected votes.
     for (size_t i = 0; i < test_form.size(); ++i) {
       AutofillField* field = form_structure.field(i);
-      FieldPrediction prediction;
-      prediction.set_type(test_form[i].input_type);
-      field->set_server_predictions({prediction});
+      field->set_server_predictions(
+          {CreateFieldPrediction(test_form[i].input_type)});
     }
 
     FormPredictions actual_predictions =

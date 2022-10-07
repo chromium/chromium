@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/form_data.h"
@@ -74,6 +75,7 @@ using autofill::NOT_USERNAME;
 using autofill::PasswordFormFillData;
 using autofill::ServerFieldType;
 using autofill::SINGLE_USERNAME;
+using ::autofill::test::CreateFieldPrediction;
 using base::ASCIIToUTF16;
 using base::Feature;
 using base::TestMockTimeTaskRunner;
@@ -90,9 +92,6 @@ using testing::Return;
 using testing::ReturnRef;
 using testing::SaveArg;
 using testing::WithArg;
-
-using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
-    FieldSuggestion::FieldPrediction;
 
 namespace password_manager {
 
@@ -3047,9 +3046,8 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
   // Server predictions says that this is a sign-in form. Since they have higher
   // priority than autocomplete attributes then the form should be filled.
   FormStructure form_structure(form.form_data);
-  FieldPrediction prediction;
-  prediction.set_type(autofill::PASSWORD);
-  form_structure.field(1)->set_server_predictions({prediction});
+  form_structure.field(1)->set_server_predictions(
+      {CreateFieldPrediction(autofill::PASSWORD)});
 #if !BUILDFLAG(IS_IOS)
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 #else  // On iOS predictions are propagated with nullptr driver.
@@ -3082,14 +3080,13 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), form2)));
 
   FormStructure form_structure1(form1.form_data);
-  FieldPrediction prediction;
-  prediction.set_type(autofill::SINGLE_USERNAME);
-  form_structure1.field(0)->set_server_predictions({prediction});
+  form_structure1.field(0)->set_server_predictions(
+      {CreateFieldPrediction(autofill::SINGLE_USERNAME)});
   // Server predictions says that this is a sign-in form. Since they have higher
   // priority than autocomplete attributes then the form should be filled.
   FormStructure form_structure2(form2.form_data);
-  prediction.set_type(autofill::PASSWORD);
-  form_structure2.field(1)->set_server_predictions({prediction});
+  form_structure2.field(1)->set_server_predictions(
+      {CreateFieldPrediction(autofill::PASSWORD)});
 
 #if !BUILDFLAG(IS_IOS)
   manager()->ProcessAutofillPredictions(&driver_,
@@ -3489,9 +3486,8 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
 
   // Set SINGLE_USERNAME predictions for the field.
   FormStructure form_structure(form_data);
-  FieldPrediction prediction;
-  prediction.set_type(autofill::SINGLE_USERNAME);
-  form_structure.field(0)->set_server_predictions({prediction});
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(SINGLE_USERNAME)});
 
 #if !BUILDFLAG(IS_IOS)
   PasswordFormFillData fill_data;
@@ -3542,9 +3538,8 @@ TEST_P(PasswordManagerTest,
 
   // Set ACCOUNT_CREATION_PASSWORD predictions for the field.
   FormStructure form_structure(form_data);
-  FieldPrediction prediction;
-  prediction.set_type(autofill::ACCOUNT_CREATION_PASSWORD);
-  form_structure.field(1)->set_server_predictions({prediction});
+  form_structure.field(1)->set_server_predictions(
+      {CreateFieldPrediction(autofill::ACCOUNT_CREATION_PASSWORD)});
 
   autofill::PasswordFormGenerationData form_generation_data;
   EXPECT_CALL(driver_, FormEligibleForGenerationFound(_))
@@ -3573,9 +3568,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
 
   // Setup a server prediction for the single username field.
   FormStructure form_structure(username_form.form_data);
-  FieldPrediction prediction;
-  prediction.set_type(SINGLE_USERNAME);
-  form_structure.field(0)->set_server_predictions({prediction});
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(SINGLE_USERNAME)});
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
   // Simulate that a form which contains only 1 password field is added
@@ -3674,9 +3668,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
   // Setup a server prediction for the single username field to
   // allow using possible username value for pending credentials.
   FormStructure form_structure(username_form.form_data);
-  FieldPrediction prediction;
-  prediction.set_type(SINGLE_USERNAME);
-  form_structure.field(0)->set_server_predictions({prediction});
+  form_structure.field(0)->set_server_predictions(
+      {CreateFieldPrediction(SINGLE_USERNAME)});
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
   // Simulate navigation to a single password form that cannot be a result of a
@@ -3736,9 +3729,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
       non_password_form.name += u"1";  // for iOS.
 
       FormStructure form_structure(non_password_form);
-      FieldPrediction prediction;
-      prediction.set_type(server_type);
-      form_structure.field(0)->set_server_predictions({prediction});
+      form_structure.field(0)->set_server_predictions(
+          {CreateFieldPrediction(server_type)});
 
       bool should_be_filled =
           server_type == SINGLE_USERNAME || local_type == SINGLE_USERNAME;
@@ -3941,11 +3933,10 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
 
   // Server predictions may arrive before the form is parsed by PasswordManager.
   FormStructure form_structure(form_data);
-  FieldPrediction prediction;
-  prediction.set_type(autofill::ACCOUNT_CREATION_PASSWORD);
-  form_structure.field(1)->set_server_predictions({prediction});
-  prediction.set_type(autofill::CONFIRMATION_PASSWORD);
-  form_structure.field(2)->set_server_predictions({prediction});
+  form_structure.field(1)->set_server_predictions(
+      {CreateFieldPrediction(autofill::ACCOUNT_CREATION_PASSWORD)});
+  form_structure.field(2)->set_server_predictions(
+      {CreateFieldPrediction(autofill::CONFIRMATION_PASSWORD)});
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
   autofill::PasswordFormGenerationData form_generation_data;
