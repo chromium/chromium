@@ -61,6 +61,24 @@ TEST_F(ChromeAndroidMetricsProviderTest,
 }
 
 TEST_F(ChromeAndroidMetricsProviderTest,
+       ProvideCurrentSessionData_HasMultipleUserProfiles) {
+  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
+  // Caches value, test a second time.
+  metrics_provider_.ProvideCurrentSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 2);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       ProvidePreviousSessionData_HasMultipleUserProfiles) {
+  metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 1);
+  // Caches value, test a second time.
+  metrics_provider_.ProvidePreviousSessionData(&uma_proto_);
+  histogram_tester_.ExpectTotalCount("Android.MultipleUserProfilesState", 2);
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
        ProvideCurrentSessionData_DarkModeState) {
   ASSERT_FALSE(uma_proto_.system_profile().os().has_dark_mode_state());
 

@@ -67928,6 +67928,12 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Unified mode"/>
 </enum>
 
+<enum name="MultipleUserProfilesState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Single user profile"/>
+  <int value="2" label="Multiple user profiles"/>
+</enum>
+
 <enum name="MultiProfileSessionMode">
   <obsolete>
     Deprecated 09/2017. See histogram MultiProfile.SessionMode.

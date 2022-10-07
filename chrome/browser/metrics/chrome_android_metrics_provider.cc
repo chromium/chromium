@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/android/customtabs/custom_tab_session_state_tracker.h"
 #include "chrome/browser/android/locale/locale_manager.h"
@@ -29,6 +30,14 @@ void EmitAppNotificationStatusHistogram() {
       base::android::AttachCurrentThread());
   UMA_HISTOGRAM_ENUMERATION("Android.AppNotificationStatus", status,
                             kAppNotificationStatusBoundary);
+}
+
+void EmitMultipleUserProfilesHistogram() {
+  const chrome::android::MultipleUserProfilesState
+      multiple_user_profiles_state =
+          chrome::android::GetMultipleUserProfilesState();
+  base::UmaHistogramEnumeration("Android.MultipleUserProfilesState",
+                                multiple_user_profiles_state);
 }
 
 metrics::SystemProfileProto::OS::DarkModeState ToProtoDarkModeState(
@@ -82,6 +91,10 @@ void ChromeAndroidMetricsProvider::ProvidePreviousSessionData(
       chrome::android::GetActivityTypeFromLocalState(local_state_);
   if (activity_type.has_value())
     chrome::android::EmitActivityTypeHistograms(activity_type.value());
+
+  // Save whether multiple user profiles are present in Android. This is
+  // unlikely to change across sessions.
+  EmitMultipleUserProfilesHistogram();
 }
 
 void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
@@ -106,5 +119,6 @@ void ChromeAndroidMetricsProvider::ProvideCurrentSessionData(
 
   UmaSessionStats::GetInstance()->ProvideCurrentSessionData();
   EmitAppNotificationStatusHistogram();
+  EmitMultipleUserProfilesHistogram();
   LocaleManager::RecordUserTypeMetrics();
 }
