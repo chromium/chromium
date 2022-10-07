@@ -414,6 +414,10 @@ def main():
 
 if __name__ == "__main__":
   with crbug_1001171.DumpStateOnLookupError():
+    ret = main()
     # Exit without running GC, which can save multiple seconds due to the large
-    # number of object created.
-    os._exit(main())
+    # number of object created. But flush is necessary as os._exit doesn't do
+    # that.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(ret)

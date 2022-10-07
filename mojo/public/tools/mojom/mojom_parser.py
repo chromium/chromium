@@ -495,5 +495,8 @@ already present in the provided output root.""")
 if __name__ == '__main__':
   Run(sys.argv[1:])
   # Exit without running GC, which can save multiple seconds due to the large
-  # number of object created.
+  # number of object created. But flush is necessary as os._exit doesn't do
+  # that.
+  sys.stdout.flush()
+  sys.stderr.flush()
   os._exit(0)
