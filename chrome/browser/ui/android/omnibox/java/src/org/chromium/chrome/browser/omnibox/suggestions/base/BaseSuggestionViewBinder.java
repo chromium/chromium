@@ -69,7 +69,9 @@ public final class BaseSuggestionViewBinder<T extends View>
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
         } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            updateBackgroundAndMargin(model, view);
+            updateBackground(model, view);
+        } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
+            updateMargin(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTIONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {
@@ -280,9 +282,17 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param model A property model to look up relevant properties.
      * @param view A view that need to be updated.
      */
-    public static void updateBackgroundAndMargin(PropertyModel model, View view) {
+    public static void updateBackground(PropertyModel model, View view) {
         view.setBackground(getBackgroundDrawable(model, view));
+    }
 
+    /**
+     * Update the margin for the view.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param view A view that need to be updated.
+     */
+    public static void updateMargin(PropertyModel model, View view) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
         if (layoutParams == null) {
             layoutParams =
@@ -290,12 +300,12 @@ public final class BaseSuggestionViewBinder<T extends View>
         }
 
         if (layoutParams instanceof MarginLayoutParams) {
-            int verticalSpacing = view.getContext().getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_vertical_spacing);
+            int topSpacing = model.get(DropdownCommonProperties.TOP_MARGIN);
+            int bottomSpacing = model.get(DropdownCommonProperties.BOTTOM_MARGIN);
             int sideSpacing = view.getContext().getResources().getDimensionPixelOffset(
                     R.dimen.omnibox_suggestion_side_spacing);
             ((MarginLayoutParams) layoutParams)
-                    .setMargins(sideSpacing, verticalSpacing, sideSpacing, 0);
+                    .setMargins(sideSpacing, topSpacing, sideSpacing, bottomSpacing);
         }
         view.setLayoutParams(layoutParams);
     }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /**
  * The set of common properties associated with dropdown suggestions.
@@ -17,7 +18,11 @@ public class DropdownCommonProperties {
     /** Whether the suggestion background's bottom corners should be rounded. */
     public static final WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED =
             new WritableBooleanPropertyKey();
+    /** The top margin of the suggestion. */
+    public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
+    /** The bottom margin of the suggestion. */
+    public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {BG_TOP_CORNER_ROUNDED, BG_BOTTOM_CORNER_ROUNDED};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
+            BG_TOP_CORNER_ROUNDED, BG_BOTTOM_CORNER_ROUNDED, TOP_MARGIN, BOTTOM_MARGIN};
 }

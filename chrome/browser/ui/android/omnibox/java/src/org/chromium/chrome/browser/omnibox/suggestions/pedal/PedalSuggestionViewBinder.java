@@ -70,7 +70,9 @@ public final class PedalSuggestionViewBinder<T extends View>
             ViewCompat.setLayoutDirection(
                     view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            BaseSuggestionViewBinder.updateBackgroundAndMargin(model, view);
+            BaseSuggestionViewBinder.updateBackground(model, view);
+        } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
+            BaseSuggestionViewBinder.updateMargin(model, view);
         }
     }
 }

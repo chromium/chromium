@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -440,5 +441,62 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 mSuggestionModels.get(3).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
         Assert.assertTrue(mSuggestionModels.get(3).model.get(
                 DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+    }
+
+    @Test
+    @SmallTest
+    public void suggestionsListSpacing() {
+        int groupVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_group_vertical_margin);
+        int suggestionVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_vertical_margin);
+
+        final int groupId = 1;
+        when(mHeaderProcessor.allowBackgroundRounding()).thenReturn(false);
+        when(mBasicSuggestionProcessor.allowBackgroundRounding()).thenReturn(true);
+
+        List<DropdownItemViewInfo> list = Arrays.asList(
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mHeaderProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId),
+                new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupId));
+
+        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        verifyModelEquals(list);
+
+        //
+        // ******************** <--- very first one, no margin.
+        // * basic suggestion *
+        // ******************** <--- last one in a group, group margin.
+        //                      <--- no background, no margin
+        //  header suggestion
+        //                      <--- no background, no margin
+        // ******************** <--- first one in a group, group margin.
+        // * basic suggestion *
+        // ******************** <--- normal bottom, no margin.
+        // ******************** <--- normal top, suggestion margin.
+        // * basic suggestion *
+        // ******************** <--- very last one, no margin.
+        //
+        Assert.assertEquals(
+                0, mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(groupVerticalSpacing,
+                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(groupVerticalSpacing,
+                mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
+        Assert.assertEquals(suggestionVerticalSpacing,
+                mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
+        Assert.assertEquals(
+                0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
     }
 }

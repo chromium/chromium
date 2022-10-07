@@ -285,24 +285,28 @@ public class BaseSuggestionViewBinderUnitTest {
     }
 
     @Test
-    public void suggestionBackgroundAndMargin() {
+    public void suggestionBackground() {
         mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
         mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
 
         verify(mBaseView).setBackground(any());
         Assert.assertNotNull(mBaseView.getBackground());
+    }
+
+    @Test
+    public void suggestionMargin() {
+        mModel.set(DropdownCommonProperties.BOTTOM_MARGIN, 17);
+        mModel.set(DropdownCommonProperties.TOP_MARGIN, 13);
 
         verify(mBaseView).setLayoutParams(any());
-        int verticalSpacing = mBaseView.getContext().getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_vertical_spacing);
         int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
                 R.dimen.omnibox_suggestion_side_spacing);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
         Assert.assertNotNull(layoutParams);
         Assert.assertEquals(sideSpacing, layoutParams.leftMargin);
-        Assert.assertEquals(verticalSpacing, layoutParams.topMargin);
+        Assert.assertEquals(13, layoutParams.topMargin);
         Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
-        Assert.assertEquals(0, layoutParams.bottomMargin);
+        Assert.assertEquals(17, layoutParams.bottomMargin);
     }
 
     @Test
