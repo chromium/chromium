@@ -1637,7 +1637,7 @@ BASE_FEATURE(kFastPathPaintPropertyUpdates,
 
 BASE_FEATURE(kWildcardSubdomainsInPermissionsPolicy,
              "WildcardSubdomainsInPermissionsPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDocumentEventNodePathCaching,
              "DocumentEventNodePathCaching",

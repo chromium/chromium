@@ -698,10 +698,10 @@
     "args": ["--disable-features=PrefersReducedMotionClientHintHeader"]
   },
   {
-    "prefix": "wildcard-subdomains-in-permissions-policy",
+    "prefix": "disable-wildcard-subdomains-in-permissions-policy",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/permissions-policy/"],
-    "args": ["--enable-features=WildcardSubdomainsInPermissionsPolicy"]
+    "args": ["--disable-features=WildcardSubdomainsInPermissionsPolicy"]
   },
   {
     "prefix": "storage-access-api",
