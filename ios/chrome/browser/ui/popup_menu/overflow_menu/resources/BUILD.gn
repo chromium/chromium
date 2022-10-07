@@ -238,6 +238,16 @@ imageset("overflow_menu_destination_settings") {
   ]
 }
 
+imageset("overflow_menu_destination_whats_new") {
+  sources = [
+    "overflow_menu_destination_whats_new.imageset/Contents.json",
+    "overflow_menu_destination_whats_new.imageset/overflow_menu_destination_whats_new@2x.png",
+    "overflow_menu_destination_whats_new.imageset/overflow_menu_destination_whats_new@3x.png",
+    "overflow_menu_destination_whats_new.imageset/overflow_menu_destination_whats_new_dark@2x.png",
+    "overflow_menu_destination_whats_new.imageset/overflow_menu_destination_whats_new_dark@3x.png",
+  ]
+}
+
 imageset("overflow_menu_destination_site_info") {
   sources = [
     "overflow_menu_destination_site_info.imageset/Contents.json",

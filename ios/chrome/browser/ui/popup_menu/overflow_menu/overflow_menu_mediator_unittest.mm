@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -492,4 +493,48 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
   browserStatePrefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
                                  false);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/NO));
+}
+
+// Tests that WhatsNew destination was added to the OverflowMenuModel when
+// What's New is enabled.
+TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
+  base::test::ScopedFeatureList feature_on;
+  feature_on.InitAndEnableFeature(kWhatsNewIOS);
+
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  CreateBrowserStatePrefs();
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      browser_.get(), OverlayModality::kWebContentArea);
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
+
+  // Force creation of the model.
+  [mediator_ overflowMenuModel];
+
+  EXPECT_TRUE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
+}
+
+// Tests that WhatsNew destination was not added to the OverflowMenuModel when
+// What's New is disabled.
+TEST_F(OverflowMenuMediatorTest, TestWhatsNewDisabled) {
+  base::test::ScopedFeatureList feature_off;
+  feature_off.InitAndDisableFeature(kWhatsNewIOS);
+
+  const GURL kUrl("https://chromium.test");
+  web_state_->SetCurrentURL(kUrl);
+  CreateBrowserStatePrefs();
+  CreateMediator(/*is_incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      browser_.get(), OverlayModality::kWebContentArea);
+  mediator_.browserStatePrefs = browserStatePrefs_.get();
+
+  // Force creation of the model.
+  [mediator_ overflowMenuModel];
+
+  EXPECT_FALSE(HasItem(kToolsMenuWhatsNewId, /*enabled=*/NO));
 }

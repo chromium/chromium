@@ -114,7 +114,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/whats_new:feature_flags",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice",

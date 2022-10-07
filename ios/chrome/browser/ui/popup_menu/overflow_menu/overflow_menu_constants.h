@@ -17,6 +17,7 @@ enum class Destination {
   RecentTabs = 5,
   SiteInfo = 6,
   Settings = 7,
+  WhatsNew = 8,
 };
 
 // Ingests `destination` string representation and returns corresponding

@@ -28,6 +28,8 @@ Destination DestinationForStringName(std::string destination) {
     return overflow_menu::Destination::SiteInfo;
   } else if (destination == "overflow_menu::Destination::Settings") {
     return overflow_menu::Destination::Settings;
+  } else if (destination == "overflow_menu::Destination::WhatsNew") {
+    return overflow_menu::Destination::WhatsNew;
   } else {
     NOTREACHED();
     // Randomly chosen destination which should never be returned due to
@@ -54,6 +56,8 @@ std::string StringNameForDestination(Destination destination) {
       return "overflow_menu::Destination::SiteInfo";
     case overflow_menu::Destination::Settings:
       return "overflow_menu::Destination::Settings";
+    case overflow_menu::Destination::WhatsNew:
+      return "overflow_menu::Destination::WhatsNew";
   }
 }
 
@@ -83,6 +87,9 @@ void RecordUmaActionForDestination(Destination destination) {
       break;
     case Destination::Settings:
       base::RecordAction(base::UserMetricsAction("MobileMenuSettings"));
+      break;
+    case Destination::WhatsNew:
+      base::RecordAction(base::UserMetricsAction("MobileMenuWhatsNew"));
       break;
   }
 }

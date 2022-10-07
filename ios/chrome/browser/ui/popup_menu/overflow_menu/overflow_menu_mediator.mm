@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
@@ -206,6 +207,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuDestination* recentTabsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* settingsDestination;
 @property(nonatomic, strong) OverflowMenuDestination* siteInfoDestination;
+@property(nonatomic, strong) OverflowMenuDestination* whatsNewDestination;
 
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
@@ -586,6 +588,29 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   if (UseSymbols()) {
+    // WhatsNew destination.
+    self.whatsNewDestination = [self
+        createOverflowMenuDestination:IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW
+                          destination:overflow_menu::Destination::WhatsNew
+                           symbolName:kCheckmarkSealSymbol
+                         systemSymbol:YES
+                      accessibilityID:kToolsMenuWhatsNewId
+                              handler:^{
+                                [weakSelf openWhatsNew];
+                              }];
+  } else {
+    // WhatsNew destination.
+    self.whatsNewDestination = [self
+        createOverflowMenuDestination:IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW
+                          destination:overflow_menu::Destination::WhatsNew
+                            imageName:@"overflow_menu_destination_whats_new"
+                      accessibilityID:kToolsMenuWhatsNewId
+                              handler:^{
+                                [weakSelf openWhatsNew];
+                              }];
+  }
+
+  if (UseSymbols()) {
     // Site Info destination.
     self.siteInfoDestination =
         [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
@@ -933,6 +958,26 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return result;
 }
 
+// Adds What's New to the OverflowMenuDestination to be displayed in the
+// destinations carousel.
+- (NSArray<OverflowMenuDestination*>*)insertWhatsNewToDestinations:
+    (NSArray<OverflowMenuDestination*>*)destinations {
+  NSMutableArray<OverflowMenuDestination*>* newDestinations =
+      [[NSMutableArray alloc] init];
+
+  if (IsWhatsNewOverflowMenuUsed()) {
+    // Place What's New at the bottom of the overflow menu carousel.
+    [newDestinations addObjectsFromArray:destinations];
+    [newDestinations addObject:self.whatsNewDestination];
+    return newDestinations;
+  }
+
+  // Place What's New at the top of the overflow menucarousel.
+  [newDestinations addObject:self.whatsNewDestination];
+  [newDestinations addObjectsFromArray:destinations];
+  return newDestinations;
+}
+
 // Make sure the model to match the current page state.
 - (void)updateModel {
   // If the model hasn't been created, there's no need to update.
@@ -954,6 +999,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   if (self.destinationUsageHistory && IsSmartSortingNewOverflowMenuEnabled()) {
     baseDestinations = [self.destinationUsageHistory
         generateDestinationsList:baseDestinations];
+  }
+
+  // What's New defy the smart sorting rules of the overflow menu to appear
+  // either at the front of the carousel or the back. Thus, What's New is
+  // inserted after smart sorting returns the sorted destinations.
+  if (IsWhatsNewEnabled()) {
+    baseDestinations = [self insertWhatsNewToDestinations:baseDestinations];
   }
 
   self.overflowMenuModel.destinations = [baseDestinations
@@ -1633,6 +1685,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)openSiteInformation {
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.pageInfoCommandsHandler showPageInfo];
+}
+
+// Dismisses the menu and opens What's New.
+- (void)openWhatsNew {
+  SetWhatsNewOverflowMenuUsed();
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.dispatcher showWhatsNew];
 }
 
 // Dismisses the menu and opens settings.

@@ -18724,6 +18724,12 @@ should be able to be added at any place in this file.
   <description>User pressed 'Voice Search' in the app menu.</description>
 </action>
 
+<action name="MobileMenuWhatsNew">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <description>User pressed 'What's New' in the app menu.</description>
+</action>
+
 <action name="MobileMenuWindowManager">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>

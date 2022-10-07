@@ -39,3 +39,16 @@ source_set("feature_flags") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "whats_new_util.h",
+    "whats_new_util.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    "//base",
+    "//ios/chrome/browser/ui:feature_flags",
+  ]
+}
