@@ -55,8 +55,9 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
     return false;
   }
 
+  // TODO(sstan): Use different launch id.
   auto* arc_app_launch_handler =
-      arc_task_handler->window_predictor_arc_app_launch_handler();
+      arc_task_handler->GetWindowPredictorArcAppLaunchHandler(0);
   if (!arc_app_launch_handler) {
     base::UmaHistogramEnumeration(
         kWindowPredictorLaunchHistogram,

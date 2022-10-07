@@ -1412,10 +1412,8 @@ class FullRestoreAppLaunchHandlerArcAppBrowserTest
         app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
     ASSERT_TRUE(arc_task_handler);
 
-    arc_task_handler->CreateFullRestoreHandlerForTest();
-
     arc_app_launch_handler_ =
-        arc_task_handler->full_restore_arc_app_launch_handler();
+        arc_task_handler->GetFullRestoreArcAppLaunchHandler();
     DCHECK(arc_app_launch_handler_);
     arc_app_launch_handler_->is_app_connection_ready_ = false;
 
@@ -2348,7 +2346,7 @@ class ArcAppLaunchHandlerArcAppBrowserTest
     if (!arc_app_launch_handler_) {
       arc_app_launch_handler_ =
           app_restore::AppRestoreArcTaskHandler::GetForProfile(profile())
-              ->full_restore_arc_app_launch_handler();
+              ->GetFullRestoreArcAppLaunchHandler();
     }
     arc_app_launch_handler_->OnAppConnectionReady();
   }
