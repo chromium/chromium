@@ -384,6 +384,14 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
     return document_load_state_;
   }
 
+  int GetContentRestrictionsForTesting() const {
+    return GetContentRestrictions();
+  }
+
+  AccessibilityDocInfo GetAccessibilityDocInfoForTesting() const {
+    return GetAccessibilityDocInfo();
+  }
+
  protected:
   // PdfViewPluginBase:
   const PDFiumEngine* engine() const override;

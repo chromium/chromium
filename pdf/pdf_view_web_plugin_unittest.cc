@@ -35,7 +35,6 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_accessibility_data_handler.h"
-#include "pdf/pdf_view_plugin_base.h"
 #include "pdf/test/mock_web_associated_url_loader.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
@@ -594,7 +593,7 @@ TEST_F(PdfViewWebPluginTest, CreateUrlLoader) {
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
   plugin_->CreateUrlLoader();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kLoading,
             plugin_->document_load_state_for_testing());
   pdf_receiver_.FlushForTesting();
 }
@@ -606,7 +605,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, CreateUrlLoader) {
                                         kContentRestrictionPrint));
   plugin_->CreateUrlLoader();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kLoading,
             plugin_->document_load_state_for_testing());
   pdf_receiver_.FlushForTesting();
 }
@@ -646,7 +645,7 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadComplete) {
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
             plugin_->document_load_state_for_testing());
   pdf_receiver_.FlushForTesting();
 }
@@ -678,7 +677,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadComplete) {
                                                       kContentRestrictionCopy));
   plugin_->DocumentLoadComplete();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
             plugin_->document_load_state_for_testing());
   pdf_receiver_.FlushForTesting();
 }
@@ -690,7 +689,7 @@ TEST_F(PdfViewWebPluginTest, DocumentLoadFailed) {
   EXPECT_CALL(*client_ptr_, DidStopLoading).Times(0);
   plugin_->DocumentLoadFailed();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kFailed,
             plugin_->document_load_state_for_testing());
 }
 
@@ -701,7 +700,7 @@ TEST_F(PdfViewWebPluginFullFrameTest, DocumentLoadFailed) {
   EXPECT_CALL(*client_ptr_, DidStopLoading);
   plugin_->DocumentLoadFailed();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kFailed,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kFailed,
             plugin_->document_load_state_for_testing());
 }
 
@@ -834,7 +833,7 @@ TEST_F(PdfViewWebPluginTest,
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithNoPermissions) {
   EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
                 kContentRestrictionPaste | kContentRestrictionPrint,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
   EXPECT_FALSE(plugin_->CanCopy());
 }
 
@@ -845,7 +844,7 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAllowed) {
 
   EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste |
                 kContentRestrictionPrint,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
   EXPECT_TRUE(plugin_->CanCopy());
 }
 
@@ -856,7 +855,7 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintLowQualityAllowed) {
 
   EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
                 kContentRestrictionPaste,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
 }
 
 TEST_F(PdfViewWebPluginTest,
@@ -868,7 +867,7 @@ TEST_F(PdfViewWebPluginTest,
       .WillRepeatedly(Return(true));
 
   EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
 }
 
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintAllowed) {
@@ -881,7 +880,7 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithPrintAllowed) {
 
   EXPECT_EQ(kContentRestrictionCopy | kContentRestrictionCut |
                 kContentRestrictionPaste,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
 }
 
 TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAndPrintAllowed) {
@@ -895,11 +894,11 @@ TEST_F(PdfViewWebPluginTest, GetContentRestrictionsWithCopyAndPrintAllowed) {
       .WillRepeatedly(Return(true));
 
   EXPECT_EQ(kContentRestrictionCut | kContentRestrictionPaste,
-            plugin_->GetContentRestrictions());
+            plugin_->GetContentRestrictionsForTesting());
 }
 
 TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithNoPermissions) {
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
 
   EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_FALSE(doc_info.text_accessible);
@@ -911,7 +910,7 @@ TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAllowed) {
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopy))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
 
   EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_FALSE(doc_info.text_accessible);
@@ -923,7 +922,7 @@ TEST_F(PdfViewWebPluginTest, GetAccessibilityDocInfoWithCopyAccessibleAllowed) {
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
 
   EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_TRUE(doc_info.text_accessible);
@@ -938,7 +937,7 @@ TEST_F(PdfViewWebPluginTest,
   EXPECT_CALL(*engine_ptr_, HasPermission(DocumentPermission::kCopyAccessible))
       .WillRepeatedly(Return(true));
 
-  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfo();
+  AccessibilityDocInfo doc_info = plugin_->GetAccessibilityDocInfoForTesting();
 
   EXPECT_EQ(TestPDFiumEngine::kPageNumber, doc_info.page_count);
   EXPECT_TRUE(doc_info.text_accessible);
@@ -2256,7 +2255,7 @@ TEST_F(PdfViewWebPluginPrintPreviewTest, DocumentLoadComplete) {
   EXPECT_CALL(pdf_service_, UpdateContentRestrictions).Times(0);
   plugin_->DocumentLoadComplete();
 
-  EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
+  EXPECT_EQ(PdfViewWebPlugin::DocumentLoadState::kComplete,
             plugin_->document_load_state_for_testing());
   pdf_receiver_.FlushForTesting();
 }

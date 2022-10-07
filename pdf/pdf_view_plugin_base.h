@@ -61,12 +61,6 @@ class PdfViewPluginBase : public PDFEngine::Client {
   void DocumentLoadFailed() override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
 
-  // Gets the content restrictions based on the permissions which `engine_` has.
-  int GetContentRestrictions() const;
-
-  // Gets the accessibility doc info based on the information from `engine_`.
-  AccessibilityDocInfo GetAccessibilityDocInfo() const;
-
  protected:
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
@@ -152,6 +146,12 @@ class PdfViewPluginBase : public PDFEngine::Client {
 
   // Starts loading accessibility information.
   void LoadAccessibility();
+
+  // Gets the content restrictions based on the permissions which `engine_` has.
+  int GetContentRestrictions() const;
+
+  // Gets the accessibility doc info based on the information from `engine_`.
+  AccessibilityDocInfo GetAccessibilityDocInfo() const;
 };
 
 }  // namespace chrome_pdf
