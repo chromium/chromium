@@ -138,7 +138,7 @@ WebEngineMemoryInspector::ResolveMemoryDumpPromise(fpromise::context& context) {
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
       base::trace_event::MemoryDumpDeterminism::NONE, AllocatorDumpNames(),
       base::BindOnce(&WebEngineMemoryInspector::OnMemoryDumpComplete,
-                     weak_this_.GetWeakPtr(), base::TimeTicks::Now(),
+                     weak_this_.GetMutableWeakPtr(), base::TimeTicks::Now(),
                      context.suspend_task()));
 
   return fpromise::pending();
