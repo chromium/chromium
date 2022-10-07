@@ -6,11 +6,13 @@
 
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -21,6 +23,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -417,6 +420,25 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
   // Expects promo code offer specifics without promo code to be invalid.
   specifics.mutable_promo_code_offer_data()->clear_promo_code();
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+}
+
+// Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
+// converted to AutofillWalletUsageSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
+  sync_pb::AutofillWalletUsageSpecifics usage_specifics;
+  AutofillWalletUsageData usage_data =
+      test::GetAutofillWalletUsageDataForVirtualCard();
+  SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(usage_data,
+                                                             &usage_specifics);
+
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().instrument_id(),
+            usage_data.virtual_card_usage_data().instrument_id.value());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().virtual_card_last_four(),
+            usage_data.virtual_card_usage_data().virtual_card_last_four);
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_url(),
+            usage_data.virtual_card_usage_data().merchant_origin.Serialize());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_app_package(),
+            usage_data.virtual_card_usage_data().merchant_app_package);
 }
 
 }  // namespace

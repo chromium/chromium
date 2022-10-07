@@ -137,6 +137,8 @@ static_library("browser") {
     "data_model/autofill_structured_address_regex_provider.h",
     "data_model/autofill_structured_address_utils.cc",
     "data_model/autofill_structured_address_utils.h",
+    "data_model/autofill_wallet_usage_data.cc",
+    "data_model/autofill_wallet_usage_data.h",
     "data_model/autofillable_data.cc",
     "data_model/autofillable_data.h",
     "data_model/birthdate.cc",
@@ -909,6 +911,7 @@ source_set("unit_tests") {
     "webdata/autofill_wallet_metadata_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_offer_sync_bridge_unittest.cc",
     "webdata/autofill_wallet_sync_bridge_unittest.cc",
+    "webdata/autofill_wallet_usage_data_sync_bridge_unittest.cc",
     "webdata/web_data_service_unittest.cc",
   ]
 

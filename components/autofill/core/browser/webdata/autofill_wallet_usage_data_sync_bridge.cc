@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/strings/string_util.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 
@@ -15,6 +17,9 @@ namespace {
 
 // Address to this variable used as the user data key.
 const int kAutofillWalletUsageDataSyncBridgeUserDataKey = 0;
+
+// Prefix used as the client tag for Virtual Card Usage Data.
+constexpr char kVirtualCardUsageDataClientTagPrefix[] = "VirtualCardUsageData";
 
 }  // namespace
 
@@ -85,14 +90,25 @@ void AutofillWalletUsageDataSyncBridge::GetAllDataForDebugging(
 
 std::string AutofillWalletUsageDataSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  DCHECK(entity_data.specifics.has_autofill_wallet_usage());
+  sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
+      virtual_card_usage_data = entity_data.specifics.autofill_wallet_usage()
+                                    .virtual_card_usage_data();
+
+  return base::JoinString(
+      {kVirtualCardUsageDataClientTagPrefix,
+       base::NumberToString(virtual_card_usage_data.instrument_id()),
+       virtual_card_usage_data.merchant_url(),
+       virtual_card_usage_data.merchant_app_package()},
+      "|");
 }
 
 std::string AutofillWalletUsageDataSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  DCHECK(entity_data.specifics.has_autofill_wallet_usage());
+
+  // Use client tag as the storage key.
+  return GetClientTag(entity_data);
 }
 
 void AutofillWalletUsageDataSyncBridge::ApplyStopSyncChanges(

@@ -19,14 +19,14 @@ namespace autofill {
 class AutofillWebDataBackend;
 class AutofillWebDataService;
 
-// Sync bridge responsible for applying remote changes of autofill wallet susage
-// data to the local database.
+// Sync bridge responsible for applying remote changes of usage data to the
+// local database.
 class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
                                           public syncer::ModelTypeSyncBridge {
  public:
   // Factory method that hides dealing with change_processor and also stores the
-  // created bridge within |web_data_service|. This method should only be
-  // called on |web_data_service|'s DB thread.
+  // created bridge within `web_data_service`. This method should only be
+  // called on `web_data_service`'s DB thread.
   static void CreateForWebDataServiceAndBackend(
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
@@ -62,8 +62,8 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
                                 delete_metadata_change_list) override;
 
  private:
-  // AutofillWalletUsageSyncBridge is owned by |web_data_backend_| through
-  // SupportsUserData, so it's guaranteed to outlive |this|.
+  // AutofillWalletUsageSyncBridge is owned by `web_data_backend_` through
+  // SupportsUserData, so it's guaranteed to outlive `this`.
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 };
 

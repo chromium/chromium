@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -321,6 +322,10 @@ AutofillOfferData GetPromoCodeOfferData(
     GURL origin = GURL("http://www.example.com"),
     bool is_expired = false,
     int64_t offer_id = 333);
+
+// Return an Autofill Wallet Usage Data with dummy info specifically for a
+// Virtual Card.
+AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard();
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with

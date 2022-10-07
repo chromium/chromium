@@ -765,6 +765,18 @@ AutofillOfferData GetPromoCodeOfferData(GURL origin,
       promo_code);
 }
 
+AutofillWalletUsageData GetAutofillWalletUsageDataForVirtualCard() {
+  VirtualCardUsageData virtual_card_usage_data;
+  virtual_card_usage_data.instrument_id =
+      VirtualCardUsageData::InstrumentId(12345);
+  virtual_card_usage_data.virtual_card_last_four = "1234";
+  virtual_card_usage_data.merchant_origin =
+      url::Origin::Create(GURL("https://www.google.com"));
+  virtual_card_usage_data.merchant_app_package = "google";
+
+  return AutofillWalletUsageData::ForVirtualCard(virtual_card_usage_data);
+}
+
 void SetProfileInfo(AutofillProfile* profile,
                     const char* first_name,
                     const char* middle_name,

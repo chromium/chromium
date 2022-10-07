@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -337,6 +338,34 @@ void SetAutofillWalletSpecificsFromCreditCardCloudTokenData(
       cloud_token_data.instrument_token);
 }
 
+void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
+    const AutofillWalletUsageData& wallet_usage_data,
+    sync_pb::AutofillWalletUsageSpecifics* wallet_usage_specifics) {
+  if (wallet_usage_data.usage_data_type() ==
+      AutofillWalletUsageData::UsageDataType::kVirtualCard) {
+    // Ensure the Virtual Card Usage Data fields are set before transferring to
+    // `wallet_usage_specifics`.
+    DCHECK(
+        IsVirtualCardUsageDataSet(wallet_usage_data.virtual_card_usage_data()));
+
+    wallet_usage_specifics->mutable_virtual_card_usage_data()
+        ->set_instrument_id(
+            wallet_usage_data.virtual_card_usage_data().instrument_id.value());
+
+    wallet_usage_specifics->mutable_virtual_card_usage_data()
+        ->set_virtual_card_last_four(
+            wallet_usage_data.virtual_card_usage_data().virtual_card_last_four);
+
+    wallet_usage_specifics->mutable_virtual_card_usage_data()->set_merchant_url(
+        wallet_usage_data.virtual_card_usage_data()
+            .merchant_origin.Serialize());
+
+    wallet_usage_specifics->mutable_virtual_card_usage_data()
+        ->set_merchant_app_package(
+            wallet_usage_data.virtual_card_usage_data().merchant_app_package);
+  }
+}
+
 void SetAutofillOfferSpecificsFromOfferData(
     const AutofillOfferData& offer_data,
     sync_pb::AutofillOfferSpecifics* offer_specifics) {
@@ -640,6 +669,17 @@ bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
 
   return (has_instrument_id && has_fixed_or_percentage_reward) ||
          has_promo_code;
+}
+
+bool IsVirtualCardUsageDataSet(
+    const VirtualCardUsageData& virtual_card_usage_data) {
+  // Check for all fields except instrument_id as the integer value can be
+  // anything. Last four and either the merchant_origin or merchant_app_package
+  // must be present.
+  return virtual_card_usage_data.instrument_id.value() != 0 &&
+         !virtual_card_usage_data.virtual_card_last_four.empty() &&
+         (!virtual_card_usage_data.merchant_origin.opaque() ||
+          !virtual_card_usage_data.merchant_app_package.empty());
 }
 
 }  // namespace autofill
