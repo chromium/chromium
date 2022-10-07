@@ -6,7 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
 
@@ -22,10 +21,7 @@ void PresentationAvailabilityState::RequestAvailability(
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-    Microtask::EnqueueMicrotask(WTF::BindOnce(
-        &PresentationAvailabilityCallbacks::RejectAvailabilityNotSupported,
-        WrapPersistent(callback)));
-    // Do not listen to urls if we reject the promise.
+    callback->RejectAvailabilityNotSupported();
     return;
   }
 
@@ -36,9 +32,8 @@ void PresentationAvailabilityState::RequestAvailability(
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
-    Microtask::EnqueueMicrotask(WTF::BindOnce(
-        &PresentationAvailabilityCallbacks::Resolve, WrapPersistent(callback),
-        screen_availability == mojom::blink::ScreenAvailability::AVAILABLE));
+    callback->Resolve(screen_availability ==
+                      mojom::blink::ScreenAvailability::AVAILABLE);
   } else {
     listener->availability_callbacks.push_back(callback);
   }
