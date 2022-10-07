@@ -124,33 +124,33 @@
   <!-- TODO(crbug.com/1347507): Implement this as an element?-->
   <div id="signInPromo" slot="view">
 
-    <!-- TODO(crbug.com/1347507): Don't hardcode strings-->
     <div id="central-view-container">
       <div class="placeholder-color" id="chrome-logo-placeholder"></div>
-      <h1>Sign in for more benefits</h1>
-      <h3>You can enjoy the most out of Chrome</h3>
+      <h1>$i18n{pageTitle}</h1>
+      <h3>$i18n{pageSubtitle}</h3>
       <div id="cards">
         <div class="card">
           <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>Across devices</h6>
-          <p id="card-description">Pick up what you left off on any device</p>
+          <h6>$i18n{devicesCardTitle}</h6>
+          <p id="card-description">$i18n{devicesCardDescription}</p>
         </div>
         <div class="card">
           <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>Stronger security</h6>
-          <p id="card-description">Extra protection to your passwords and more</p>
+          <h6>$i18n{securityCardTitle}</h6>
+          <p id="card-description">$i18n{securityCardDescription}</p>
         </div>
         <div class="card">
           <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>Back up your stuff</h6>
-          <p id="card-description">Store your bookmarks and more with sync</p>
+          <h6>$i18n{backupCardTitle}</h6>
+          <p id="card-description">$i18n{backupCardDescription}</p>
         </div>
       </div>
     </div>
 
     <div id="button-container">
-      <cr-button on-click="onContinueWithoutAccountClick_">Don't sign in</cr-button>
-      <cr-button id="sign-in" on-click="onContinueWithAccountClick_">Sign in</cr-button>
+      <cr-button on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
+      <cr-button id="sign-in" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+      </cr-button>
     </div>
   </div>
 </cr-view-manager>

@@ -729,5 +729,36 @@
       </message>
     </if>
 
+    <!-- First Run Experience strings -->
+    <if expr="not chromeos_lacros">
+      <message name="IDS_FRE_SIGN_IN_TITLE" desc="The title for the sign in page explaining to the users the benefits of signing in to Chrome">
+        Sign in for more benefits
+      </message>
+      <message name="IDS_FRE_DEVICES_CARD_TITLE" desc="The title of the benefits card explaining to the the users that they can continue their work on any of their signed in devices">
+        Across devices
+      </message>
+      <message name="IDS_FRE_DEVICES_CARD_DESCRIPTION" desc="The description of the benefits card explaining to the users that they can continue their work on any of their signed in devices">
+        Pick up where you left off on any device
+      </message>
+      <message name="IDS_FRE_SECURITY_CARD_TITLE" desc="The title of the benefits card explaining to the users that signing in to Chrome offers strong security features">
+        Stronger security
+      </message>
+      <message name="IDS_FRE_SECURITY_CARD_DESCRIPTION" desc="The description of the benefits card explaining to the users that signing in to Chrome will grant them more security thus protecting their passwords and more">
+        Extra protection to your passwords and more
+      </message>
+      <message name="IDS_FRE_BACKUP_CARD_TITLE" desc="The title of the benefits card explaining to the users that they can back up their stuff and use them across all signed in devices">
+        Back up your stuff
+      </message>
+      <message name="IDS_FRE_BACKUP_CARD_DESCRIPTION" desc="The description of the benefits card giving users examples of data they can back up when they sign in">
+        Store your bookmarks and more with sync
+      </message>
+      <message name="IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice not to sign in to Chrome">
+        Don't sign in
+      </message>
+      <message name="IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE" desc="The title of the button giving the users the choice to sign in to Chrome">
+        Sign in
+      </message>
+    </if>
+
   </if>
 </grit-part>

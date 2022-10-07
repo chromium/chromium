@@ -1500,6 +1500,11 @@ Permissions you've already given to websites and apps may apply to this account.
             Your account is managed by <ph name="MANAGER_NAME">$1<ex>example.com</ex></ph>. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history, and passwords.
           </message>
         </if>
+        <if expr="not chromeos_lacros">
+          <message name="IDS_FRE_SIGN_IN_SUBTITLE" desc="The subtitle for the sign in page explaining to the users the benefits of signing in to Chrome">
+            You can enjoy the most out of Chrome
+          </message>
+        </if>
 
         <!-- Profile switch IPH -->
         <message name="IDS_PROFILE_SWITCH_PROMO" desc="Text of the In-Product-Help bubble for profile switching.">
