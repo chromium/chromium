@@ -177,7 +177,7 @@ MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
   const base::Value* outputs =
       arg[0].FindKeyOfType("outputs", base::Value::Type::LIST);
   EXPECT_TRUE(outputs) << "The outputs field is not available on the event";
-  EXPECT_GT(static_cast<int>((*outputs).GetList().size()), index)
+  EXPECT_GT((*outputs).GetList().size(), index)
       << "The supplied index on outputs is not available, size: "
       << (*outputs).GetList().size() << ", index: " << index;
   const std::string* actual_value =
@@ -217,10 +217,10 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
       observer,
       OnBroadcastEvent(Field(
           &extensions::Event::event_args,
-          AllOf(ExpectEventArgString(0, "fileFullPath", "/bar.txt"),
-                ExpectEventArgString(0, "fileSystemName", "Downloads"),
+          AllOf(ExpectEventArgString(0u, "fileFullPath", "/bar.txt"),
+                ExpectEventArgString(0u, "fileSystemName", "Downloads"),
                 ExpectEventArgString(
-                    0, "fileSystemRoot",
+                    0u, "fileSystemRoot",
                     "filesystem:chrome-extension://abc/external/Downloads/")))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 

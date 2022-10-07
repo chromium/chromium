@@ -59,12 +59,6 @@ absl::uint128 GenerateRandom(unsigned int* seed) {
   Uint64 lo = GenerateRandom<Uint64>(seed);
   return absl::MakeUint128(hi, lo);
 }
-template <>
-uint256 GenerateRandom(unsigned int* seed) {
-  absl::uint128 hi = GenerateRandom<absl::uint128>(seed);
-  absl::uint128 lo = GenerateRandom<absl::uint128>(seed);
-  return uint256(hi, lo);
-}
 
 template <typename T>
 class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryTest : public ::testing::Test {};
@@ -728,7 +722,6 @@ TYPED_TEST(MontgomeryTest, ImportRandomWithPrngWithDifferentKeys) {
 // Verifies that Barrett reductions functions properly.
 TYPED_TEST(MontgomeryTest, VerifyBarrett) {
   using Int = typename TypeParam::Int;
-  using BigInt = typename internal::BigInt<Int>::value_type;
 
   for (const auto& params :
        rlwe::testing::ContextParameters<TypeParam>::Value()) {

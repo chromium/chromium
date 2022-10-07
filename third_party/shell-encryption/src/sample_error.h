@@ -57,7 +57,7 @@ static rlwe::StatusOr<std::vector<ModularInt>> SampleFromErrorDistribution(
   Uint64 k;
   typename ModularInt::Int coefficient;
 
-  for (int i = 0; i < num_coeffs; i++) {
+  for (unsigned int i = 0; i < num_coeffs; i++) {
     coefficient = modulus_params->modulus;
     k = variance << 1;
 

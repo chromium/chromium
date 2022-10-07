@@ -630,9 +630,9 @@ class SymmetricRlweKey {
   const typename ModularInt::Params* ModulusParams() const {
     return modulus_params_;
   }
-  const unsigned int BitsPerCoeff() const { return log_t_; }
-  const Uint64 Variance() const { return variance_; }
-  const unsigned int LogT() const { return log_t_; }
+  unsigned int BitsPerCoeff() const { return log_t_; }
+  Uint64 Variance() const { return variance_; }
+  unsigned int LogT() const { return log_t_; }
   const ModularInt& PlaintextModulus() const { return t_mod_; }
   const typename ModularInt::Params* PlaintextModulusParams() const {
     return plaintext_modulus_params_;
@@ -941,7 +941,7 @@ rlwe::StatusOr<std::vector<typename ModularInt::Int>> Decrypt(
   Polynomial<ModularInt> key_powers = key.Key();
   unsigned int ciphertext_len = ciphertext.Len();
 
-  for (int i = 0; i < ciphertext_len; i++) {
+  for (unsigned int i = 0; i < ciphertext_len; i++) {
     // Extract component i.
     RLWE_ASSIGN_OR_RETURN(Polynomial<ModularInt> ci, ciphertext.Component(i));
 

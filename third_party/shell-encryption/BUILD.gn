@@ -6,15 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-config("shell_encryption_config1") {
-  # TODO(crbug.com/1095122) Reenable the warning for unused functions and typedef.
-  cflags = [
-    "-Wno-unused-local-typedef",
-    "-Wno-unused-function",
-    "-Wno-sign-compare",
-    "-Wno-ignored-qualifiers",
-  ]
-
+config("shell_encryption_internal_config") {
   defines = []
   if (is_component_build) {
     defines = [
@@ -25,7 +17,9 @@ config("shell_encryption_config1") {
       "SHELL_ENCRYPTION_ENABLE_SYMBOL_EXPORT",
     ]
   }
+}
 
+config("shell_encryption_config") {
   include_dirs = [
     # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
     # immediate subdirectory of the top-level.
@@ -68,9 +62,12 @@ proto_library("coefficient_polynomial_proto") {
 # SHELL lib.
 if (is_chromeos_ash) {
   component("shell_encryption") {
-    public_configs = [ ":shell_encryption_config1" ]
+    public_configs = [ ":shell_encryption_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":shell_encryption_internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
     public = [
       "base/shell_encryption_export.h",
       "base/shell_encryption_export_template.h",
@@ -120,9 +117,12 @@ if (is_chromeos_ash) {
 if (is_chromeos_ash) {
   source_set("shell_encryption_test_library") {
     testonly = true
-    public_configs = [ ":shell_encryption_config1" ]
+    public_configs = [ ":shell_encryption_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":shell_encryption_internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
     public = [
       "src/prng/integral_prng_testing_types.h",
       "src/testing/coefficient_polynomial.h",
@@ -145,9 +145,11 @@ if (is_chromeos_ash) {
 
   test("shell_encryption_unittests") {
     testonly = true
-    public_configs = [ ":shell_encryption_config1" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [
+      ":shell_encryption_internal_config",
+      "//build/config/compiler:no_chromium_code",
+    ]
     sources = [
       "src/bits_util_test.cc",
       "src/context_test.cc",
