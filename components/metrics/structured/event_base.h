@@ -59,10 +59,6 @@ class EventBase {
     std::string string_value;
   };
 
-  // Returns when the key for |project_name_hash| was last rotated, in days
-  // since epoch. Returns nullopt if the information is not available.
-  absl::optional<int> LastKeyRotation();
-
   std::vector<Metric> metrics() const { return metrics_; }
 
   uint64_t name_hash() const { return event_name_hash_; }

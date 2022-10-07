@@ -6,8 +6,6 @@
 
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
-#include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -25,16 +23,7 @@ void StructuredMetricsServiceAsh::BindReceiver(
 void StructuredMetricsServiceAsh::Record(
     const std::vector<::metrics::structured::Event>& events) {
   for (const auto& event : events) {
-    auto event_base = metrics::structured::EventBase::FromEvent(event);
-
-    // Only record the event if it is valid.
-    if (event_base.has_value()) {
-      metrics::structured::Recorder::GetInstance()->Record(
-          std::move(event_base.value()));
-    } else {
-      metrics::structured::LogInternalError(
-          metrics::structured::StructuredMetricsError::kInvalidEventParsed);
-    }
+    metrics::structured::Recorder::GetInstance()->RecordEvent(event.Clone());
   }
 }
 

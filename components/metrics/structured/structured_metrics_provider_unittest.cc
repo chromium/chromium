@@ -6,21 +6,14 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/json/json_reader.h"
-#include "base/logging.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/values.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_events.h"
@@ -111,9 +104,7 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   ~TestRecorder() override = default;
 
   void RecordEvent(Event&& event) override {
-    auto event_base = EventBase::FromEvent(std::move(event));
-    if (event_base.has_value())
-      Recorder::GetInstance()->Record(std::move(event_base.value()));
+    Recorder::GetInstance()->RecordEvent(std::move(event));
   }
 
   bool IsReadyToRecord() const override { return true; }
@@ -974,13 +965,13 @@ TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
   Init();
 
   events::v2::test_project_one::TestEventOne event;
-  auto event_base = EventBase::FromEvent(event);
 
   // Record a metric so that the key is created.
   event.Record();
 
   const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  const absl::optional<int> last_rotation = event_base->LastKeyRotation();
+  const absl::optional<int> last_rotation =
+      Recorder::GetInstance()->LastKeyRotation(event);
 
   // The last rotation should be a random day between today and 90 days in the
   // past, ie. the rotation period for this project.

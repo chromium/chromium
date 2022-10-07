@@ -34,10 +34,6 @@ EventBase::EventBase(uint64_t event_name_hash,
 EventBase::EventBase(const EventBase& other) = default;
 EventBase::~EventBase() = default;
 
-absl::optional<int> EventBase::LastKeyRotation() {
-  return Recorder::GetInstance()->LastKeyRotation(project_name_hash_);
-}
-
 void EventBase::AddHmacMetric(uint64_t name_hash, const std::string& value) {
   Metric metric(name_hash, MetricType::kHmac);
   metric.hmac_value = value;

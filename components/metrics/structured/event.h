@@ -16,10 +16,6 @@
 // Builder classes for sending events are generated in
 // //components/metrics/structured/structured_events.h based on XML
 // configuration.
-//
-// Note that |EventBase| is only be used by the central service to record
-// events. TODO(jongahn): Investigate whether it's even necessary to convert to
-// EventBase when persisting events.
 
 namespace metrics::structured {
 

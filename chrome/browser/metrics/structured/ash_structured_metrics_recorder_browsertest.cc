@@ -7,13 +7,11 @@
 #include <memory>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
 #include "content/public/test/browser_test.h"
@@ -21,18 +19,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 namespace {
 
-using EventDelegate = base::RepeatingCallback<void(const EventBase& event)>;
+using EventDelegate = base::RepeatingCallback<void(const Event& event)>;
 
 using testing::Eq;
-
-// Hash of test project to be used.
-constexpr uint64_t kProjectOneHash = UINT64_C(16881314472396226433);
-constexpr uint64_t kEventOneHash = UINT64_C(13593049295042080097);
 
 }  // namespace
 
@@ -55,14 +48,12 @@ class AshStructuredMetricsRecorderTest : public MixinBasedInProcessBrowserTest,
   }
 
   // RecorderImpl:
-  void OnRecord(const EventBase& event) override {
-    // If a delegate has not been assigned, do nothing.
+  void OnEventRecord(const Event& event) override {
     if (!event_delegate_)
       return;
     event_delegate_.Run(event);
   }
-  // TODO(crbug/1350322): Implement this when doing test migration.
-  void OnEventRecord(const Event& event) override {}
+
   // Tests do not care about these.
   void OnProfileAdded(const base::FilePath& profile_path) override {}
   void OnReportingStateChanged(bool enabled) override {}
@@ -85,9 +76,9 @@ IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
   // Wait for the test messages to have been received.
   base::RunLoop run_loop;
   EventDelegate event_handler =
-      base::BindLambdaForTesting([&run_loop](const EventBase& event_base) {
-        EXPECT_THAT(event_base.project_name_hash(), Eq(kProjectOneHash));
-        EXPECT_THAT(event_base.name_hash(), Eq(kEventOneHash));
+      base::BindLambdaForTesting([&run_loop](const Event& event) {
+        EXPECT_THAT(event.project_name(), Eq("TestProjectOne"));
+        EXPECT_THAT(event.event_name(), Eq("TestEventOne"));
         run_loop.Quit();
       });
   SetTestMessageReceivedClosure(event_handler);
@@ -97,6 +88,4 @@ IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
 
 // TODO(jongahn): Add a test that verifies behavior if an invalid event is sent.
 
-}  // namespace structured
-
-}  // namespace metrics
+}  // namespace metrics::structured

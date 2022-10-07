@@ -126,7 +126,6 @@ void StructuredMetricsProvider::Purge() {
   events_->Purge();
   profile_key_data_->Purge();
   device_key_data_->Purge();
-  unhashed_events_base_.clear();
 }
 
 void StructuredMetricsProvider::OnProfileAdded(
@@ -177,33 +176,6 @@ void StructuredMetricsProvider::OnProfileAdded(
     Purge();
     purge_state_on_init_ = false;
   }
-}
-
-void StructuredMetricsProvider::OnRecord(const EventBase& event) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  // One more state for the EventRecordingState exists: kMetricsProviderMissing.
-  // This is recorded in Recorder::Record.
-  if (!recording_enabled_) {
-    // Events should be ignored if recording is disabled.
-    LogEventRecordingState(EventRecordingState::kRecordingDisabled);
-    return;
-  } else if (init_state_ != InitState::kInitialized) {
-    // If keys have not loaded yet, then hold the data in memory until the keys
-    // have been loaded.
-    LogEventRecordingState(EventRecordingState::kProviderUninitialized);
-    RecordEventBaseBeforeInitialization(event);
-    return;
-  } else {
-    LogEventRecordingState(EventRecordingState::kRecorded);
-  }
-
-  DCHECK(profile_key_data_->is_initialized());
-  DCHECK(device_key_data_->is_initialized());
-
-  RecordEventFromEventBase(event);
-
-  events_->QueueWrite();
 }
 
 void StructuredMetricsProvider::OnEventRecord(const Event& event) {
@@ -408,105 +380,10 @@ void StructuredMetricsProvider::SetDeviceKeyDataPathForTest(
   device_key_data_path_for_test_ = path;
 }
 
-void StructuredMetricsProvider::RecordEventBaseBeforeInitialization(
-    const EventBase& event) {
-  DCHECK(init_state_ != InitState::kInitialized);
-  unhashed_events_base_.emplace_back(event);
-}
-
 void StructuredMetricsProvider::RecordEventBeforeInitialization(
     const Event& event) {
   DCHECK_NE(init_state_, InitState::kInitialized);
   unhashed_events_.emplace_back(event.Clone());
-}
-
-void StructuredMetricsProvider::RecordEventFromEventBase(
-    const EventBase& event) {
-  // The |events_| persistent proto contains two repeated fields, uma_events
-  // and non_uma_events. uma_events is added to the ChromeUserMetricsExtension
-  // on a call to ProvideCurrentSessionData, which is the standard UMA upload
-  // and contains the UMA client_id. non_uma_events is added to the proto on
-  // a call to ProvideIndependentMetrics, which is a separate upload that does
-  // _not_ contain the UMA client_id.
-  //
-  // We decide which field to add this event to based on the event's IdType.
-  // kUmaId events should go in the UMA upload, and all others in the non-UMA
-  // upload.
-  StructuredEventProto* event_proto;
-  if (event.id_type() == IdType::kUmaId ||
-      !IsIndependentMetricsUploadEnabled()) {
-    event_proto = events_.get()->get()->add_uma_events();
-  } else {
-    event_proto = events_.get()->get()->add_non_uma_events();
-  }
-
-  // Choose which KeyData to use for this event.
-  KeyData* key_data;
-  switch (event.id_scope()) {
-    case IdScope::kPerProfile:
-      key_data = profile_key_data_.get();
-      break;
-    case IdScope::kPerDevice:
-      key_data = device_key_data_.get();
-      break;
-    default:
-      // In case id_scope is uninitialized.
-      NOTREACHED();
-  }
-
-  // Set the ID for this event, if any.
-  switch (event.id_type()) {
-    case IdType::kProjectId:
-      event_proto->set_profile_event_id(
-          key_data->Id(event.project_name_hash(), event.key_rotation_period()));
-      break;
-    case IdType::kUmaId:
-      // TODO(crbug.com/1148168): Unimplemented.
-      break;
-    case IdType::kUnidentified:
-      // Do nothing.
-      break;
-    default:
-      // In case id_type is uninitialized.
-      NOTREACHED();
-      break;
-  }
-
-  // Set the event type. Do this with a switch statement to catch when the event
-  // type is UNKNOWN or uninitialized.
-  switch (event.event_type()) {
-    case StructuredEventProto_EventType_REGULAR:
-    case StructuredEventProto_EventType_RAW_STRING:
-      event_proto->set_event_type(event.event_type());
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  // Set the event name hash and project name hash
-  event_proto->set_event_name_hash(event.name_hash());
-  event_proto->set_project_name_hash(event.project_name_hash());
-
-  // Set each metric's name hash and value.
-  for (const auto& metric : event.metrics()) {
-    StructuredEventProto::Metric* metric_proto = event_proto->add_metrics();
-    metric_proto->set_name_hash(metric.name_hash);
-
-    switch (metric.type) {
-      case EventBase::MetricType::kHmac:
-        metric_proto->set_value_hmac(key_data->HmacMetric(
-            event.project_name_hash(), metric.name_hash, metric.hmac_value,
-            event.key_rotation_period()));
-        break;
-      case EventBase::MetricType::kInt:
-        metric_proto->set_value_int64(metric.int_value);
-        break;
-      case EventBase::MetricType::kRawString:
-        metric_proto->set_value_string(metric.string_value);
-        break;
-    }
-  }
 }
 
 void StructuredMetricsProvider::RecordEvent(const Event& event) {
@@ -546,6 +423,8 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
   } else {
     event_proto = events_.get()->get()->add_non_uma_events();
   }
+
+  event_proto->set_project_name_hash(project_validator->project_hash());
 
   // Choose which KeyData to use for this event.
   KeyData* key_data;
@@ -608,7 +487,7 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
     // Checks that the metrics defined are valid. If not valid, then the metric
     // will be ignored.
     bool is_valid =
-        !metadata.has_value() || metadata->metric_type != metric_value.type;
+        metadata.has_value() && metadata->metric_type == metric_value.type;
     DCHECK(is_valid);
     if (!is_valid) {
       continue;
@@ -643,18 +522,12 @@ void StructuredMetricsProvider::RecordEvent(const Event& event) {
 }
 
 void StructuredMetricsProvider::HashUnhashedEventsAndPersist() {
-  LogNumEventsRecordedBeforeInit(unhashed_events_base_.size());
-
-  for (const EventBase& event : unhashed_events_base_) {
-    RecordEventFromEventBase(event);
-  }
+  LogNumEventsRecordedBeforeInit(unhashed_events_.size());
 
   while (!unhashed_events_.empty()) {
     RecordEvent(unhashed_events_.front());
     unhashed_events_.pop_front();
   }
-
-  unhashed_events_base_.clear();
 }
 
 }  // namespace structured

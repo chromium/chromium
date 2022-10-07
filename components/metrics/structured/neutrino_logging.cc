@@ -5,7 +5,7 @@
 #include "components/metrics/structured/neutrino_logging.h"
 
 #include "base/time/time.h"
-#include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
 
 namespace {
@@ -67,14 +67,14 @@ void NeutrinoDevicesLogClientIdChanged(
     int64_t metrics_reporting_enabled_timestamp,
     NeutrinoDevicesLocation location) {
   events::v2::neutrino_devices::ClientIdChanged client_id_changed;
-  auto event_base = EventBase::FromEvent(client_id_changed);
 
   if (!initial_client_id.empty())
     client_id_changed.SetInitialClientId(initial_client_id);
   if (!client_id.empty())
     client_id_changed.SetFinalClientId(client_id);
 
-  const absl::optional<int> last_key_rotation = event_base->LastKeyRotation();
+  const absl::optional<int> last_key_rotation =
+      Recorder::GetInstance()->LastKeyRotation(client_id_changed);
 
   if (last_key_rotation.has_value()) {
     int days_since_rotation =

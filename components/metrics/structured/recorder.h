@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,8 +43,6 @@ class Recorder {
   class RecorderImpl : public base::CheckedObserver {
    public:
     // Called on a call to Record.
-    virtual void OnRecord(const EventBase& event) = 0;
-    // Called on a call to Record.
     virtual void OnEventRecord(const Event& event) = 0;
     // Called on a call to ProfileAdded.
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
@@ -63,13 +61,6 @@ class Recorder {
 
   // This signals to StructuredMetricsProvider that the event should be
   // recorded.
-  void Record(EventBase&& event);
-
-  // This signals to StructuredMetricsProvider that the event should be
-  // recorded.
-  //
-  // TODO(crbug/1350322): A refactor migrating away from EventBase is in
-  // progress. Remove references to EventBase later.
   void RecordEvent(Event&& event);
 
   // Notifies the StructuredMetricsProvider that a profile has been added with
@@ -81,9 +72,9 @@ class Recorder {
   // investigate whether initialization can be simplified for Chrome.
   void ProfileAdded(const base::FilePath& profile_path);
 
-  // Returns when the key for |project_name_hash| was last rotated, in days
-  // since epoch. Returns nullopt if the information is not available.
-  absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
+  // Returns when the key for |event| was last rotated, in days since epoch.
+  // Returns nullopt if the information is not available.
+  absl::optional<int> LastKeyRotation(const Event& event);
 
   // Notifies observers that metrics reporting has been enabled or disabled.
   void OnReportingStateChanged(bool enabled);

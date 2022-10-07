@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/key_data.h"
 #include "components/metrics/structured/recorder.h"
 
@@ -49,7 +48,7 @@ class ExternalMetrics;
 //
 // After initialization, this class accepts events to record from
 // StructuredMetricsProvider::OnRecord via Recorder::Record via
-// EventBase::Record. These events are not uploaded immediately, and are cached
+// Event::Record. These events are not uploaded immediately, and are cached
 // in ready-to-upload form.
 //
 // On a call to ProvideCurrentSessionData, the cache of unsent logs is added to
@@ -88,9 +87,6 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   // Recorder::RecorderImpl:
   void OnProfileAdded(const base::FilePath& profile_path) override;
-  void OnRecord(const EventBase& event) override;
-  // TODO(crbug/1350322): A refactor migrating away from EventBase is in
-  // progress. Remove references to EventBase later.
   void OnEventRecord(const Event& event) override;
   void OnReportingStateChanged(bool enabled) override;
   void OnSystemProfileInitialized() override;
@@ -111,11 +107,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void SetDeviceKeyDataPathForTest(const base::FilePath& path);
 
   // Records events before |init_state_| is kInitialized.
-  void RecordEventBaseBeforeInitialization(const EventBase& event);
   void RecordEventBeforeInitialization(const Event& event);
-
-  // Hashes data from |event| to be persisted to disk and eventually sent.
-  void RecordEventFromEventBase(const EventBase& event);
 
   // Records |event| to persistent disk to be eventually sent.
   void RecordEvent(const Event& event);
@@ -188,9 +180,6 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
 
   // On-device storage within the user's cryptohome for unsent logs.
   std::unique_ptr<PersistentProto<EventsProto>> events_;
-
-  // Store for events that were recorded before user/device keys are loaded.
-  std::vector<EventBase> unhashed_events_base_;
 
   // Store for events that were recorded before user/device keys are loaded.
   std::deque<Event> unhashed_events_;
