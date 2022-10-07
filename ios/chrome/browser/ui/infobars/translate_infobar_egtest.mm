@@ -900,8 +900,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the "Never Translate this site" option dismisses the infobar and
 // updates the prefs accordingly.
-// TODO(crbug.com/1352108): Re-enable
-- (void)DISABLED_testInfobarNeverTranslateSite {
+- (void)testInfobarNeverTranslateSite {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
