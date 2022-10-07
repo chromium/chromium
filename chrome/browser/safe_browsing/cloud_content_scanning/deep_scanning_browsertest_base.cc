@@ -41,12 +41,13 @@ class UnresponsiveFilesRequestHandler
       GURL url,
       const std::string& source,
       const std::string& destination,
+      const std::string& user_action_id,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       enterprise_connectors::FilesRequestHandler::CompletionCallback callback) {
     return base::WrapUnique(new UnresponsiveFilesRequestHandler(
         upload_service, profile, analysis_settings, url, source, destination,
-        access_point, paths, std::move(callback)));
+        user_action_id, access_point, paths, std::move(callback)));
   }
 
  private:

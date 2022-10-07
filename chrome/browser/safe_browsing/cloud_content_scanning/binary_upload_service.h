@@ -155,6 +155,8 @@ class BinaryUploadService : public KeyedService {
     void set_client_metadata(enterprise_connectors::ClientMetadata metadata);
     void set_content_type(const std::string& type);
     void set_tab_title(const std::string& tab_title);
+    void set_user_action_id(const std::string& user_action_id);
+    void set_user_action_requests_count(uint64_t user_action_requests_count);
 
     std::string SetRandomRequestToken();
 
@@ -166,6 +168,8 @@ class BinaryUploadService : public KeyedService {
     const std::string& filename() const;
     const std::string& digest() const;
     const std::string& content_type() const;
+    const std::string& user_action_id() const;
+    uint64_t user_action_requests_count() const;
 
     // Finish the request, with the given `result` and `response` from the
     // server.

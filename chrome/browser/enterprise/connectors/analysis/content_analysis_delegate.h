@@ -293,6 +293,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // The title corresponding to the WebContents triggering the scan.
   std::string title_;
 
+  // The unique ID for keeping track of each user action.
+  std::string user_action_id_;
+
   // Description of the data being scanned and the results of the scan.
   Data data_;
   Result result_;

@@ -14,6 +14,8 @@ RequestHandlerBase::RequestHandlerBase(
     GURL url,
     const std::string& source,
     const std::string& destination,
+    const std::string& user_action_id,
+    uint64_t user_action_requests_count,
     safe_browsing::DeepScanAccessPoint access_point)
     : upload_service_(upload_service),
       profile_(profile),
@@ -21,6 +23,8 @@ RequestHandlerBase::RequestHandlerBase(
       url_(url),
       source_(source),
       destination_(destination),
+      user_action_id_(user_action_id),
+      user_action_requests_count_(user_action_requests_count),
       access_point_(access_point) {}
 
 RequestHandlerBase::~RequestHandlerBase() = default;
@@ -45,6 +49,11 @@ void RequestHandlerBase::PrepareRequest(
     request->set_device_token(
         analysis_settings_.cloud_or_local_settings.dm_token());
   }
+  if (analysis_settings_.cloud_or_local_settings.is_local_analysis()) {
+    request->set_user_action_id(user_action_id_);
+    request->set_user_action_requests_count(user_action_requests_count_);
+  }
+
   request->set_analysis_connector(connector);
   request->set_email(safe_browsing::GetProfileEmail(profile_));
   request->set_url(url_.spec());

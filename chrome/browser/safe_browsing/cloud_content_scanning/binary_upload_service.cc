@@ -174,6 +174,17 @@ void BinaryUploadService::Request::set_tab_title(const std::string& tab_title) {
   content_analysis_request_.mutable_request_data()->set_tab_title(tab_title);
 }
 
+void BinaryUploadService::Request::set_user_action_id(
+    const std::string& user_action_id) {
+  content_analysis_request_.set_user_action_id(user_action_id);
+}
+
+void BinaryUploadService::Request::set_user_action_requests_count(
+    uint64_t user_action_requests_count) {
+  content_analysis_request_.set_user_action_requests_count(
+      user_action_requests_count);
+}
+
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
   DCHECK(request_token().empty());
 
@@ -211,6 +222,14 @@ const std::string& BinaryUploadService::Request::digest() const {
 
 const std::string& BinaryUploadService::Request::content_type() const {
   return content_analysis_request_.request_data().content_type();
+}
+
+const std::string& BinaryUploadService::Request::user_action_id() const {
+  return content_analysis_request_.user_action_id();
+}
+
+uint64_t BinaryUploadService::Request::user_action_requests_count() const {
+  return content_analysis_request_.user_action_requests_count();
 }
 
 void BinaryUploadService::Request::FinishRequest(

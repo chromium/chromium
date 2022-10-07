@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -354,6 +355,9 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
   title_ = base::UTF16ToUTF8(web_contents->GetTitle());
+  std::string user_action_token = base::RandBytesAsString(128);
+  user_action_id_ =
+      base::HexEncode(user_action_token.data(), user_action_token.size());
   result_.text_results.resize(data_.text.size(), false);
   result_.paths_results.resize(data_.paths.size(), false);
   result_.page_result = false;
@@ -493,7 +497,7 @@ bool ContentAnalysisDelegate::UploadData() {
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
         GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
-        access_point_, data_.paths,
+        user_action_id_, access_point_, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();
@@ -558,6 +562,9 @@ void ContentAnalysisDelegate::PreparePageRequest() {
   }
 }
 
+// This method only prepares requests for print and paste events. File events
+// are handled by
+// chrome/browser/enterprise/connectors/analysis/files_request_handler.h
 void ContentAnalysisDelegate::PrepareRequest(
     enterprise_connectors::AnalysisConnector connector,
     BinaryUploadService::Request* request) {
@@ -566,9 +573,15 @@ void ContentAnalysisDelegate::PrepareRequest(
         data_.settings.cloud_or_local_settings.dm_token());
   }
 
-  // Include tab page title in local content analysis requests.
+  // Include tab page title, user action id, and count of requests per user
+  // action in local content analysis requests.
   if (data_.settings.cloud_or_local_settings.is_local_analysis()) {
     request->set_tab_title(title_);
+    request->set_user_action_id(user_action_id_);
+    // Set request count to 1 for print/paste event. Request count for file
+    // events are set in
+    // chrome/browser/enterprise/connectors/analysis/request_handler_base.cc
+    request->set_user_action_requests_count(1);
   }
 
   request->set_analysis_connector(connector);

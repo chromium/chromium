@@ -58,6 +58,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       GURL url,
       const std::string& source,
       const std::string& destination,
+      const std::string& user_action_id,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback)>;
@@ -74,6 +75,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       GURL url,
       const std::string& source,
       const std::string& destination,
+      const std::string& user_action_id,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);
@@ -95,6 +97,7 @@ class FilesRequestHandler : public RequestHandlerBase {
       GURL url,
       const std::string& source,
       const std::string& destination,
+      const std::string& user_action_id,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
       CompletionCallback callback);

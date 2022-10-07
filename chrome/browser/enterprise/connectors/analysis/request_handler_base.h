@@ -35,6 +35,8 @@ class RequestHandlerBase {
       GURL url,
       const std::string& source,
       const std::string& destination,
+      const std::string& user_action_id,
+      uint64_t user_action_requests_count,
       safe_browsing::DeepScanAccessPoint access_point);
 
   virtual ~RequestHandlerBase();
@@ -81,6 +83,8 @@ class RequestHandlerBase {
   GURL url_;
   std::string source_;
   std::string destination_;
+  std::string user_action_id_;
+  uint64_t user_action_requests_count_;
   safe_browsing::DeepScanAccessPoint access_point_;
 
   // The request tokens of all the requests that make up the user action
