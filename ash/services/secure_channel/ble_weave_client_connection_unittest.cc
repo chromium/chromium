@@ -440,7 +440,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
     }
 
     // Preparing |connection| for a CreateGattConnection call.
-    EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection_(_))
+    EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
         .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
 
     connection->Connect();
@@ -1370,7 +1370,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
                   device::BluetoothDevice::CONNECTION_LATENCY_LOW, _, _))
       .WillOnce(DoAll(MoveArg<1>(&connection_latency_callback_),
                       MoveArg<2>(&connection_latency_error_callback_)));
-  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection_(_))
+  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
       .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
 
   // No GATT connection should be created before the delay.
@@ -1427,7 +1427,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   connection->Connect();
   ASSERT_FALSE(connection_latency_error_callback_.is_null());
 
-  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection_(_))
+  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
       .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
   std::move(connection_latency_error_callback_).Run();
   ASSERT_FALSE(create_gatt_connection_callback_.is_null());
@@ -1475,7 +1475,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(connection_latency_callback_.is_null());
   ASSERT_FALSE(connection_latency_error_callback_.is_null());
 
-  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection_(_))
+  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
       .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
 
   // Simulate a timeout.
@@ -1525,7 +1525,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
                       MoveArg<2>(&connection_latency_error_callback_)));
 
   // Preparing |connection| for a CreateGattConnection call.
-  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection_(_))
+  EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
       .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
 
   connection->Connect();

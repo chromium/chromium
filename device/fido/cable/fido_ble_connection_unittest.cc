@@ -145,8 +145,9 @@ class FidoBleConnectionTest : public ::testing::Test {
   }
 
   void SetupConnectingFidoDevice(const std::string& device_address) {
-    ON_CALL(*fido_device_, CreateGattConnection_)
-        .WillByDefault(Invoke([this, &device_address](auto& callback) {
+    ON_CALL(*fido_device_, CreateGattConnection)
+        .WillByDefault(Invoke([this, &device_address](auto callback,
+                                                      auto service_uuid) {
           connection_ =
               new NiceMockBluetoothGattConnection(adapter_, device_address);
           std::move(callback).Run(
@@ -193,8 +194,8 @@ class FidoBleConnectionTest : public ::testing::Test {
   }
 
   void SimulateGattConnectionError() {
-    EXPECT_CALL(*fido_device_, CreateGattConnection_)
-        .WillOnce(Invoke([](auto&& callback) {
+    EXPECT_CALL(*fido_device_, CreateGattConnection)
+        .WillOnce(Invoke([](auto callback, auto service_uuid) {
           base::ThreadTaskRunnerHandle::Get()->PostTask(
               FROM_HERE, base::BindOnce(std::move(callback),
                                         /*connection=*/nullptr,

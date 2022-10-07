@@ -113,13 +113,9 @@ class MockBluetoothDevice : public BluetoothDevice {
                void(const BluetoothUUID& uuid,
                     ConnectToServiceCallback callback,
                     ConnectToServiceErrorCallback error_callback));
-  void CreateGattConnection(
-      GattConnectionCallback callback,
-      absl::optional<BluetoothUUID> service_uuid) override {
-    CreateGattConnection_(callback);
-  }
-  MOCK_METHOD1(CreateGattConnection_, void(GattConnectionCallback& callback));
-
+  MOCK_METHOD2(CreateGattConnection,
+               void(GattConnectionCallback callback,
+                    absl::optional<BluetoothUUID> service_uuid));
   MOCK_CONST_METHOD0(IsGattServicesDiscoveryComplete, bool());
 
   MOCK_CONST_METHOD0(GetGattServices,
