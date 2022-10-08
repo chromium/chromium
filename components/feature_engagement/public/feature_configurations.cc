@@ -134,7 +134,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->trigger = EventConfig("battery_saver_info_triggered",
                                   Comparator(EQUAL, 0), 360, 360);
     config->used =
-        EventConfig("battery_saver_info_shown", Comparator(EQUAL, 0), 360, 360);
+        EventConfig("battery_saver_info_shown", Comparator(EQUAL, 0), 7, 360);
     return config;
   }
 
@@ -143,11 +143,12 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    // Show the promo once a year if the page action chip was not opened.
+    // Show the promo once a year if the page action chip was not opened
+    // within the last week
     config->trigger = EventConfig("high_efficiency_info_trigger",
                                   Comparator(EQUAL, 0), 360, 360);
-    config->used = EventConfig("high_efficiency_info_shown",
-                               Comparator(EQUAL, 0), 360, 360);
+    config->used =
+        EventConfig("high_efficiency_info_shown", Comparator(EQUAL, 0), 7, 360);
     return config;
   }
 
