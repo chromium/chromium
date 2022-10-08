@@ -73,9 +73,8 @@ std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
       base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  auto url_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request), annotation);
-  return url_loader;
+  return network::SimpleURLLoader::Create(std::move(resource_request),
+                                          annotation);
 }
 
 }  // namespace
@@ -205,7 +204,8 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
-  if (url_loader->NetError() != net::OK) {
+  // Check for network or HTTP errors.
+  if (url_loader->NetError() != net::OK || !response_body) {
     if (response_code) {
       LOG(ERROR) << "SecondaryGoogleAccountUsage request "
                     "failed with HTTP code: "
@@ -219,11 +219,17 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
                  << url_loader->NetError();
       status = Status::kNetworkError;
     }
-  } else if (error.state() == GoogleServiceAuthError::NONE) {
+    std::move(callback_).Run(status, restriction, hosted_domain_);
+    return;
+  }
+
+  if (error.state() == GoogleServiceAuthError::NONE) {
     auto result = base::JSONReader::Read(*response_body, base::JSON_PARSE_RFC);
-    constexpr base::StringPiece policy_value_key = "policyValue";
-    if (response_body && result && result->FindStringKey(policy_value_key)) {
-      restriction = *result->FindStringKey(policy_value_key);
+    const std::string* policy_value =
+        result ? result->FindStringKey("policyValue") : nullptr;
+
+    if (policy_value) {
+      restriction = *policy_value;
       status = Status::kSuccess;
     } else {
       LOG(ERROR) << "Failed to parse SecondaryGoogleAccountUsage response";
