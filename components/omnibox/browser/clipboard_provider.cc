@@ -42,9 +42,9 @@ namespace {
 
 const size_t kMaxClipboardSuggestionShownNumTimesSimpleSize = 20;
 
-// Clipboard suggestion is placed in a dedicated SECTION_MOBILE_VERBATIM
-// The section is shared with Verbatim Match, and Clipboard should be
-// placed directly below, so its relative relevance score must be lower.
+// Clipboard suggestion is placed in a dedicated SECTION_MOBILE_CLIPBOARD.
+// It is the only occupant of this section, making its relevance score not
+// important.
 const int kClipboardMatchRelevanceScore = 1;
 
 bool IsMatchDeletionEnabled() {
@@ -124,7 +124,7 @@ void RecordDeletingClipboardSuggestionMetrics(
 // suggestions.
 omnibox::GroupConfig BuildGroupConfig() {
   omnibox::GroupConfig group_config;
-  group_config.set_section(omnibox::SECTION_MOBILE_VERBATIM);
+  group_config.set_section(omnibox::SECTION_MOBILE_CLIPBOARD);
   return group_config;
 }
 }  // namespace

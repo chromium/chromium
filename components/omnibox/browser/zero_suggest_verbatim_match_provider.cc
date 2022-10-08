@@ -14,9 +14,9 @@
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
-// Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM
-// This section may be occupied only by Clipboard suggestion on
-// so the relevance score here must outrank this of the Clipboard.
+// Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM.
+// There are no other occupants of this section, making the Relevance score
+// unimportant.
 const int kVerbatimMatchRelevanceScore = 2;
 
 // Returns whether specific context is eligible for a verbatim match.

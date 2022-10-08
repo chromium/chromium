@@ -94,26 +94,33 @@ enum GroupSection {
   // Mobile-specific auxiliary suggestions. These suggestions are sourced on
   // device, and appear above any other content.
   // SECTION_MOBILE_VERBATIM hosts:
-  // - Search Ready Omnibox / Verbatim match
-  // - Clipboard suggestions
+  // Search Ready Omnibox / Verbatim match
   SECTION_MOBILE_VERBATIM = 1;
+
+  // SECTION_MOBILE_CLIPBOARD hosts:
+  // - Text you copied
+  // - Link you copied
+  // - Image you copied
+  SECTION_MOBILE_CLIPBOARD = 2;
+
+  // Clipboard suggestions
   // SECTION_MOBILE_MOST_VISITED hosts a horizontal carousel with:
   // - Most Visited Tiles
   // - Organic Repeatable Queries
-  SECTION_MOBILE_MOST_VISITED = 2;
+  SECTION_MOBILE_MOST_VISITED = 3;
 
   // A contiguous range reserved for remote zero-prefix suggestions.
   // The sections are dynamically assigned to the groups found in the server
   // response based on the order in which they appear in the results.
   // Accommodates up to 10 distinct suggestion groups in the server response.
-  SECTION_REMOTE_ZPS_1 = 3;
-  SECTION_REMOTE_ZPS_2 = 4;
-  SECTION_REMOTE_ZPS_3 = 5;
-  SECTION_REMOTE_ZPS_4 = 6;
-  SECTION_REMOTE_ZPS_5 = 7;
-  SECTION_REMOTE_ZPS_6 = 8;
-  SECTION_REMOTE_ZPS_7 = 9;
-  SECTION_REMOTE_ZPS_8 = 10;
-  SECTION_REMOTE_ZPS_9 = 11;
-  SECTION_REMOTE_ZPS_10 = 12;
+  SECTION_REMOTE_ZPS_1 = 4;
+  SECTION_REMOTE_ZPS_2 = 5;
+  SECTION_REMOTE_ZPS_3 = 6;
+  SECTION_REMOTE_ZPS_4 = 7;
+  SECTION_REMOTE_ZPS_5 = 8;
+  SECTION_REMOTE_ZPS_6 = 9;
+  SECTION_REMOTE_ZPS_7 = 10;
+  SECTION_REMOTE_ZPS_8 = 11;
+  SECTION_REMOTE_ZPS_9 = 12;
+  SECTION_REMOTE_ZPS_10 = 13;
 }
