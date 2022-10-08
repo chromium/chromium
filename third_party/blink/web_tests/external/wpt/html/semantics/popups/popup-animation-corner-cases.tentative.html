@@ -94,7 +94,7 @@ promise_test(async (t) => {
   assert_true(isElementVisible(popUp));
   assert_equals(popUp.getAnimations({subtree: true}).length,0);
   let animation;
-  popUp.addEventListener('hide', () => {
+  popUp.addEventListener('popuphide', () => {
     animation = popUp.animate([{opacity: 1},{opacity: 0}],1000000);
   });
   assert_equals(popUp.getAnimations({subtree: true}).length,0,'There should be no animations yet');
@@ -105,7 +105,7 @@ promise_test(async (t) => {
   animation.finish();
   await waitForRender();
   assert_false(isElementVisible(popUp),'Once the animation ends, the popup is hidden');
-},'It should be possible to use the "hide" event handler to animate the hide');
+},'It should be possible to use the "popuphide" event handler to animate the hide');
 
 
 promise_test(async (t) => {
@@ -115,7 +115,7 @@ promise_test(async (t) => {
   popUp.showPopUp();
   assert_true(isElementVisible(popUp));
   assert_equals(popUp.getAnimations({subtree: true}).length,0);
-  popUp.addEventListener('hide', () => {
+  popUp.addEventListener('popuphide', () => {
     popUp.animate([{opacity: 1},{opacity: 0}],1000000);
   });
   assert_equals(popUp.getAnimations({subtree: true}).length,0,'There should be no animations yet');
@@ -123,13 +123,13 @@ promise_test(async (t) => {
   await waitForRender();
   assert_equals(popUp.getAnimations({subtree: true}).length,1,'the hide animation should now be running');
   assert_false(isElementVisible(popUp),'But the animation should *not* keep the popup visible in this case');
-},'It should *not* be possible to use the "hide" event handler to animate the hide, if the hide is due to dialog.showModal');
+},'It should *not* be possible to use the "popuphide" event handler to animate the hide, if the hide is due to dialog.showModal');
 
 promise_test(async (t) => {
   const {popUp, descendent} = createPopUp(t,'');
   popUp.showPopUp();
   assert_true(isElementVisible(popUp));
-  popUp.addEventListener('hide', (e) => {
+  popUp.addEventListener('popuphide', (e) => {
     e.preventDefault();
   });
   popUp.hidePopUp();

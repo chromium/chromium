@@ -2468,14 +2468,14 @@ void Element::showPopUp(ExceptionState& exception_state) {
         "Invalid on already-showing or disconnected popup elements");
   }
 
-  // Fire the show event (bubbles, cancelable).
-  Event* event = Event::CreateCancelableBubble(event_type_names::kShow);
+  // Fire the popupshow event (bubbles, cancelable).
+  Event* event = Event::CreateCancelableBubble(event_type_names::kPopupshow);
   event->SetTarget(this);
   if (DispatchEvent(*event) != DispatchEventResult::kNotCanceled)
     return;
 
-  // The 'show' event handler could have changed this pop-up, e.g. by changing
-  // its type, removing it from the document, or calling showPopUp().
+  // The 'popupshow' event handler could have changed this pop-up, e.g. by
+  // changing its type, removing it from the document, or calling showPopUp().
   if (!HasPopupAttribute() || !isConnected() || popupOpen())
     return;
 
@@ -2510,8 +2510,8 @@ void Element::showPopUp(ExceptionState& exception_state) {
                          HidePopupIndependence::kHideUnrelated);
     }
 
-    // The 'hide' event handlers could have changed this popup, e.g. by changing
-    // its type, removing it from the document, or calling showPopUp().
+    // The 'popuphide' event handlers could have changed this popup, e.g. by
+    // changing its type, removing it from the document, or calling showPopUp().
     if (!HasPopupAttribute() || !isConnected() || popupOpen())
       return;
 
@@ -2646,7 +2646,7 @@ void Element::hidePopUp(ExceptionState& exception_state) {
 // 1. Capture any already-running animations via getAnimations(), including
 //    animations on descendant elements.
 // 2. Remove the `:open` pseudo class.
-// 3. Fire the 'hide' event.
+// 3. Fire the 'popuphide' event.
 // 4. If the hidePopup() call is *not* the result of the pop-up being "forced
 //    out" of the top layer, e.g. by a modal dialog or fullscreen element:
 //   a. Restore focus to the previously-focused element.
@@ -2667,8 +2667,8 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
     HideAllPopupsUntil(this, document, focus_behavior, forcing_level,
                        HidePopupIndependence::kLeaveUnrelated);
 
-    // The 'hide' event handlers could have changed this popup, e.g. by changing
-    // its type, removing it from the document, or calling hidePopUp().
+    // The 'popuphide' event handlers could have changed this popup, e.g. by
+    // changing its type, removing it from the document, or calling hidePopUp().
     if (!HasPopupAttribute() || !isConnected() ||
         GetPopupData()->visibilityState() != PopupVisibilityState::kShowing) {
       DCHECK(!GetDocument().PopupStack().Contains(this));
@@ -2702,8 +2702,8 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
 
-  // Fire the hide event (bubbles, not cancelable).
-  Event* event = Event::CreateBubble(event_type_names::kHide);
+  // Fire the popuphide event (bubbles, not cancelable).
+  Event* event = Event::CreateBubble(event_type_names::kPopuphide);
   event->SetTarget(this);
   if (force_hide) {
     // We will be force-hidden when the pop-up element is being removed from
@@ -2715,8 +2715,8 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
   auto result = DispatchEvent(*event);
   DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
 
-  // The 'hide' event handler could have changed this popup, e.g. by changing
-  // its type, removing it from the document, or calling showPopUp().
+  // The 'popuphide' event handler could have changed this popup, e.g. by
+  // changing its type, removing it from the document, or calling showPopUp().
   if (!isConnected() || !HasPopupAttribute() ||
       GetPopupData()->visibilityState() !=
           PopupVisibilityState::kTransitioning) {

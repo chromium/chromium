@@ -239,6 +239,8 @@
     "onpointerrawupdate",
     "onpointerup",
     "onpopstate",
+    "onpopuphide",
+    "onpopupshow",
     "onportalactivate",
     "onprogress",
     "onratechange",

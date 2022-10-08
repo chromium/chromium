@@ -175,8 +175,8 @@ const popUp = document.querySelector('[popup]');
 const button = document.querySelector('button');
 let showCount = 0;
 let hideCount = 0;
-popUp.addEventListener('show',() => ++showCount);
-popUp.addEventListener('hide',() => ++hideCount);
+popUp.addEventListener('popupshow',() => ++showCount);
+popUp.addEventListener('popuphide',() => ++hideCount);
 
 async function assertState(expectOpen,expectShow,expectHide) {
   assert_equals(popUp.matches(':open'),expectOpen,'Popup open state is incorrect');

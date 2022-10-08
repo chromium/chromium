@@ -46,14 +46,14 @@
   const afterp1 = document.querySelector('#after_p1');
 
   let popup1HideCount = 0;
-  popup1.addEventListener('hide',(e) => {
+  popup1.addEventListener('popuphide',(e) => {
     ++popup1HideCount;
-    e.preventDefault(); // 'hide' should not be cancellable.
+    e.preventDefault(); // 'popuphide' should not be cancellable.
   });
   let popup2HideCount = 0;
-  popup2.addEventListener('hide',(e) => {
+  popup2.addEventListener('popuphide',(e) => {
     ++popup2HideCount;
-    e.preventDefault(); // 'hide' should not be cancellable.
+    e.preventDefault(); // 'popuphide' should not be cancellable.
   });
   promise_test(async () => {
     assert_false(popup1.matches(':open'));

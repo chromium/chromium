@@ -44,7 +44,7 @@
   }
   async_test(t => {
     for(let popup of popups) {
-      popup.addEventListener('hide',e => {
+      popup.addEventListener('popuphide',e => {
         assert_unreached('Scrolling should not light-dismiss a popup');
       });
     }

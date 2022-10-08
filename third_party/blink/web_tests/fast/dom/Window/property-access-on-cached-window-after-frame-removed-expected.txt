@@ -125,6 +125,8 @@ PASS childWindow.onpointerover is null
 PASS childWindow.onpointerrawupdate is null
 PASS childWindow.onpointerup is null
 PASS childWindow.onpopstate is null
+PASS childWindow.onpopuphide is null
+PASS childWindow.onpopupshow is null
 PASS childWindow.onprogress is null
 PASS childWindow.onratechange is null
 PASS childWindow.onrejectionhandled is null

@@ -1873,6 +1873,8 @@ interface Document : Node
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
+    getter onpopuphide
+    getter onpopupshow
     getter onprerenderingchange
     getter onprogress
     getter onratechange
@@ -2085,6 +2087,8 @@ interface Document : Node
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
+    setter onpopuphide
+    setter onpopupshow
     setter onprerenderingchange
     setter onprogress
     setter onratechange
@@ -3298,6 +3302,8 @@ interface HTMLElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
+    getter onpopuphide
+    getter onpopupshow
     getter onprogress
     getter onratechange
     getter onreset
@@ -3427,6 +3433,8 @@ interface HTMLElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
+    setter onpopuphide
+    setter onpopupshow
     setter onprogress
     setter onratechange
     setter onreset
@@ -5252,6 +5260,8 @@ interface MathMLElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
+    getter onpopuphide
+    getter onpopupshow
     getter onprogress
     getter onratechange
     getter onreset
@@ -5362,6 +5372,8 @@ interface MathMLElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
+    setter onpopuphide
+    setter onpopupshow
     setter onprogress
     setter onratechange
     setter onreset
@@ -7501,6 +7513,8 @@ interface SVGElement : Element
     getter onpointerover
     getter onpointerrawupdate
     getter onpointerup
+    getter onpopuphide
+    getter onpopupshow
     getter onprogress
     getter onratechange
     getter onreset
@@ -7613,6 +7627,8 @@ interface SVGElement : Element
     setter onpointerover
     setter onpointerrawupdate
     setter onpointerup
+    setter onpopuphide
+    setter onpopupshow
     setter onprogress
     setter onratechange
     setter onreset
@@ -11795,6 +11811,8 @@ namespace CSS
     getter onpointerrawupdate
     getter onpointerup
     getter onpopstate
+    getter onpopuphide
+    getter onpopupshow
     getter onprogress
     getter onratechange
     getter onrejectionhandled
@@ -12016,6 +12034,8 @@ namespace CSS
     setter onpointerrawupdate
     setter onpointerup
     setter onpopstate
+    setter onpopuphide
+    setter onpopupshow
     setter onprogress
     setter onratechange
     setter onrejectionhandled

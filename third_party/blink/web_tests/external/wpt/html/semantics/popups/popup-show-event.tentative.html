@@ -14,7 +14,7 @@ test(() => {
   requestAnimationFrame(() => {++frameCount;});
   const popUp = document.querySelector('[popup]');
   const testText = 'Show Event Occurred';
-  popUp.addEventListener('show',() => {
+  popUp.addEventListener('popupshow',() => {
     popUp.textContent = testText;
   })
   popUp.offsetHeight;

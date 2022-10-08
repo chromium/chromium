@@ -83,6 +83,8 @@
     attribute EventHandler onpause;
     attribute EventHandler onplay;
     attribute EventHandler onplaying;
+    [RuntimeEnabled=HTMLPopupAttribute] attribute EventHandler onpopuphide;
+    [RuntimeEnabled=HTMLPopupAttribute] attribute EventHandler onpopupshow;
     attribute EventHandler onprogress;
     attribute EventHandler onratechange;
     attribute EventHandler onreset;
