@@ -7,7 +7,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_model_observer.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
