@@ -130,10 +130,6 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
-void AddCsrfHeader(network::ResourceRequest* request) {
-  request->headers.SetHeader(kSecFedCmCsrfHeader, kSecFedCmCsrfHeaderValue);
-}
-
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account,
     const std::string& client_id) {
@@ -776,7 +772,6 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
                                       kResponseBodyContentType);
   resource_request->destination =
       network::mojom::RequestDestination::kWebIdentity;
-  AddCsrfHeader(resource_request.get());
   if (send_referrer) {
     resource_request->referrer = relying_party_origin_.GetURL();
     // Since referrer_policy only affects redirects and we never send a
@@ -809,7 +804,6 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
-  AddCsrfHeader(resource_request.get());
   // We set the initiator to nullopt to denote browser-initiated so that this
   // request is considered first-party. We want to send first-party cookies
   // because this is not a real third-party request as it is mediated by the
