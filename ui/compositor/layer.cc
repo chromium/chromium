@@ -646,14 +646,24 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
   DCHECK(!layer_mask || layer_mask->content_layer_);
   // We need to de-reference the currently linked object so that no problem
   // arises if the mask layer gets deleted before this object.
-  if (layer_mask_)
+  if (layer_mask_) {
+    // Changing the layer mask while it's in the middle of painting is likely
+    // to lead to very unusual behavior, and not supported.
+    CHECK(!layer_mask_->in_send_damaged_rects_);
     layer_mask_->layer_mask_back_link_ = nullptr;
+  }
   layer_mask_ = layer_mask;
   cc_layer_->SetMaskLayer(layer_mask ? layer_mask->content_layer_.get()
                                      : nullptr);
   // We need to reference the linked object so that it can properly break the
   // link to us when it gets deleted.
   if (layer_mask) {
+    // Changing the layer mask while it's in the middle of painting is likely
+    // to lead to very unusual behavior, and not supported.
+    CHECK(!layer_mask->in_send_damaged_rects_);
+    // TODO(https://crbug.com/1242749): temporary while tracking down crash.
+    // A `layer_mask` of this would lead to recursion.
+    CHECK(layer_mask != this);
     layer_mask->layer_mask_back_link_ = this;
     layer_mask->OnDeviceScaleFactorChanged(device_scale_factor_);
   }
