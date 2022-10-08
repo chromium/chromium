@@ -100,7 +100,6 @@ source_set("unit_tests") {
     ":cells",
     "//base",
     "//ios/chrome/browser/ui/collection_view",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/favicon",
     "//testing/gtest",
     "//third_party/ocmock",

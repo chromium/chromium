@@ -8,7 +8,6 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
