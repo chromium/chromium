@@ -36,6 +36,11 @@ class IsolatedWebAppUrlInfo {
   static base::expected<IsolatedWebAppUrlInfo, std::string> Create(
       const GURL& url);
 
+  // Wraps Create() but accepts a SignedWebBundleId object.
+  static base::expected<IsolatedWebAppUrlInfo, std::string>
+  CreateFromSignedWebBundleId(
+      const web_package::SignedWebBundleId& web_bundle_id);
+
   // Returns the origin of the IWA that this URL refers to.
   const url::Origin& origin() const;
 

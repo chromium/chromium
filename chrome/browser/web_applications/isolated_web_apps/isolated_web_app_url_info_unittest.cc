@@ -59,6 +59,16 @@ TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithInvalidUrl) {
   EXPECT_THAT(url_info.error(), Eq("Invalid URL"));
 }
 
+TEST_F(IsolatedWebAppUrlInfoTest,
+       CreateFromSignedWebBundleIdSucceedsWithRandomId) {
+  web_package::SignedWebBundleId random_id =
+      web_package::SignedWebBundleId::CreateRandomForDevelopment();
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(random_id);
+
+  EXPECT_THAT(url_info.has_value(), IsTrue());
+}
+
 TEST_F(IsolatedWebAppUrlInfoTest, ParseSignedWebBundleIdSucceedWithValidUrl) {
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedAppUrl));

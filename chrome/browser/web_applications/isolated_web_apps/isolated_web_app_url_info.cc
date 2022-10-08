@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -38,6 +39,16 @@ IsolatedWebAppUrlInfo::Create(const GURL& url) {
          url.IsStandard());
 
   return IsolatedWebAppUrlInfo(url);
+}
+
+// static
+base::expected<IsolatedWebAppUrlInfo, std::string>
+IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  const GURL url =
+      GURL(base::StrCat({chrome::kIsolatedAppScheme,
+                         url::kStandardSchemeSeparator, web_bundle_id.id()}));
+  return IsolatedWebAppUrlInfo::Create(url);
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(const GURL& url)
