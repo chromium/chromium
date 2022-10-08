@@ -390,7 +390,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nenhuma palavra-passe comprometida.}=1{1 palavra-passe comprometida.}other{{NUM_COMPROMISED} palavras-passe comprometidas.}}</translation>
 <translation id="1380028686461971526">Ligar automaticamente à rede</translation>
 <translation id="1381567580865186407">A voz em <ph name="LANGUAGE" /> é enviada para a Google para processamento</translation>
-<translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente novamente mais tarde.</translation>
+<translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente mais tarde.</translation>
 <translation id="1383861834909034572">Abrir quando concluído</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384849755549338773">Disponibilizar o Google Tradutor para Websites noutros idiomas</translation>
@@ -1766,7 +1766,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="26224892172169984">Não permitir que os Web sites processem protocolos</translation>
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624142942574147739">Esta página está a aceder à sua câmara e microfone.</translation>
-<translation id="2626799779920242286">Tente novamente mais tarde.</translation>
+<translation id="2626799779920242286">Tente mais tarde.</translation>
 <translation id="2627424346328942291">Não é possível partilhar</translation>
 <translation id="2628770867680720336">Tem de efetuar a reposição de dados de fábrica deste Chromebook para ativar a depuração do adb. <ph name="BEGIN_LINK_LEARN_MORE" />Saber mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Programar aplicações para Android</translation>
@@ -1835,7 +1835,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2690024944919328218">Mostrar opções de idioma</translation>
 <translation id="2691385045260836588">Modelo</translation>
 <translation id="2691440343905273290">Altere as definições de introdução</translation>
-<translation id="2693176596243495071">Ups! Ocorreu um erro desconhecido. Tente novamente mais tarde ou contacte o gestor se o problema persistir.</translation>
+<translation id="2693176596243495071">Ups! Ocorreu um erro desconhecido. Tente mais tarde ou contacte o gestor se o problema persistir.</translation>
 <translation id="2699911226086014512">Falha na definição do PIN com o código <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Partilhado a partir do <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Inicie sessão, <ph name="EMAIL" /></translation>
@@ -1917,7 +1917,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2765217105034171413">Pequeno</translation>
 <translation id="2766006623206032690">Co&amp;lar e ir</translation>
 <translation id="2766161002040448006">Pedir ao pai/mãe</translation>
-<translation id="2767077837043621282">Não foi possível atualizar o seu Chromebook. Tente novamente mais tarde.</translation>
+<translation id="2767077837043621282">Não foi possível atualizar o seu Chromebook. Tente mais tarde.</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> poderá editar o ficheiro <ph name="FILENAME" /> até fechar todos os separadores deste site.</translation>
 <translation id="2770465223704140727">Remover da lista</translation>
 <translation id="2770690685823456775">Exportar as palavras-passe para outra pasta</translation>
@@ -2782,7 +2782,7 @@ Pretende pará-lo?</translation>
 <translation id="3615596877979647433">A tecla está em falta. Prima uma tecla do teclado para personalizar</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3616741288025931835">&amp;Limpar Dados de Navegação...</translation>
-<translation id="3617891479562106823">Os fundos não estão disponíveis. Tente novamente mais tarde.</translation>
+<translation id="3617891479562106823">Os fundos não estão disponíveis. Tente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="3619962278978697442">Escolha um sempre que iniciar sessão</translation>
 <translation id="3621807901162200696">Ajudar a melhorar as funcionalidades e o desempenho do ChromeOS</translation>
@@ -2831,7 +2831,7 @@ Pretende pará-lo?</translation>
 <translation id="3654045516529121250">Ler definições de acessibilidade</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tem acesso permanente a um ficheiro.}other{Tem acesso permanente a # ficheiros.}}</translation>
 <translation id="3658871634334445293">Aceleração do TrackPoint</translation>
-<translation id="3659929705630080526">Introduziu um código de acesso incorreto demasiadas vezes. Tente novamente mais tarde</translation>
+<translation id="3659929705630080526">Introduziu um código de acesso incorreto demasiadas vezes. Tente mais tarde</translation>
 <translation id="3660234220361471169">Não fidedigno</translation>
 <translation id="3664511988987167893">Ícone da extensão</translation>
 <translation id="3665589677786828986">O Chrome detetou que algumas das suas definições foram danificadas por outro programa e repôs as respetivas predefinições originais.</translation>
@@ -2894,7 +2894,7 @@ Pretende pará-lo?</translation>
 <translation id="3719826155360621982">Página inicial</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">O utilizador e a Google</translation>
-<translation id="3722108462506185496">Não foi possível iniciar o serviço da máquina virtual. Tente novamente mais tarde.</translation>
+<translation id="3722108462506185496">Não foi possível iniciar o serviço da máquina virtual. Tente mais tarde.</translation>
 <translation id="3727144509609414201">Redes Wi-Fi disponíveis</translation>
 <translation id="3727187387656390258">Inspeccionar pop-up</translation>
 <translation id="372722114124766626">Só uma vez</translation>
@@ -2967,7 +2967,7 @@ Pretende pará-lo?</translation>
 <translation id="3788331399335602504">estes ficheiros</translation>
 <translation id="3788401245189148511">Esta poderia:</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3790417903123637354">Ocorreu um erro. Tente novamente mais tarde.</translation>
+<translation id="3790417903123637354">Ocorreu um erro. Tente mais tarde.</translation>
 <translation id="379082410132524484">O seu cartão de crédito expirou</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensões</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{O Chrome não encontrou software prejudicial no seu computador • Última verificação há 1 dia}other{O Chrome não encontrou software prejudicial no seu computador • Última verificação há {NUM_DAYS} dias}}</translation>
@@ -4094,7 +4094,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4876895919560854374">Bloquear e desbloquear o ecrã</translation>
 <translation id="4877276003880815204">Inspecionar elementos</translation>
 <translation id="4877652723592270843">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex? Em caso afirmativo, prima sem soltar ambas as teclas de volume durante cinco segundos.</translation>
-<translation id="4878634973244289103">Não foi possível enviar feedback. Tente novamente mais tarde.</translation>
+<translation id="4878634973244289103">Não foi possível enviar feedback. Tente mais tarde.</translation>
 <translation id="4878653975845355462">Os fundos personalizados foram desativados pelo seu administrador.</translation>
 <translation id="4878718769565915065">A adição de uma impressão digital a esta chave de segurança falhou.</translation>
 <translation id="4879491255372875719">Automático (predefinição)</translation>
@@ -4336,7 +4336,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5127881134400491887">Gerir ligações de rede</translation>
 <translation id="512903556749061217">ligação estabelecida</translation>
 <translation id="5130080518784460891">Eten</translation>
-<translation id="5130675701626084557">Não foi possível transferir o perfil. Tente novamente mais tarde ou contacte o operador para obter ajuda.</translation>
+<translation id="5130675701626084557">Não foi possível transferir o perfil. Tente mais tarde ou contacte o operador para obter ajuda.</translation>
 <translation id="5131591206283983824">Arrastamento através do toque do touchpad</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
 <translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -4529,7 +4529,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5319359161174645648">A Google recomenda o Chrome</translation>
 <translation id="5319712128756744240">Sincronizar novo dispositivo</translation>
 <translation id="5320135788267874712">Nome do dispositivo novo</translation>
-<translation id="532247166573571973">O servidor pode estar inacessível. Tente novamente mais tarde.</translation>
+<translation id="532247166573571973">O servidor pode estar inacessível. Tente mais tarde.</translation>
 <translation id="5324300749339591280">Lista de apps</translation>
 <translation id="5324780743567488672">Definir automaticamente o fuso horário com base na localização</translation>
 <translation id="5327248766486351172">Nome</translation>
@@ -5676,7 +5676,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6438475350605608554">Já está a importar palavras-passe noutro separador</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – áudio em reprodução</translation>
 <translation id="6442187272350399447">Fantástico</translation>
-<translation id="6442445294758185945">Não foi possível transferir a atualização. Tente novamente mais tarde.</translation>
+<translation id="6442445294758185945">Não foi possível transferir a atualização. Tente mais tarde.</translation>
 <translation id="6444070574980481588">Definir data e hora</translation>
 <translation id="6444147596556711162">Utilize "Seguinte" ou "Anterior" para se mover entre os itens no ecrã</translation>
 <translation id="6444909401984215022"><ph name="WINDOW_TITLE" /> – Procura de Bluetooth ativa</translation>
@@ -6398,7 +6398,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7114054701490058191">As palavras-passe não coincidem</translation>
 <translation id="7114648273807173152">Para utilizar o Smart Lock para iniciar sessão na sua Conta Google, aceda a Definições &gt; Dispositivos ligados &gt; O seu telemóvel &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Nenhum contacto alcançável</translation>
-<translation id="7117228822971127758">Tente novamente mais tarde.</translation>
+<translation id="7117228822971127758">Tente mais tarde.</translation>
 <translation id="711840821796638741">Mostrar marcadores geridos</translation>
 <translation id="711985611146095797">Esta página permite-lhe gerir Contas Google com sessão iniciada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">O navegador Chrome e o tráfego do Android serão bloqueados, exceto se tiver ligação a uma VPN</translation>
@@ -6897,7 +6897,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7632948528260659758">A atualização das seguintes aplicações quiosque falhou:</translation>
 <translation id="7633724038415831385">Esta é a única altura em que terá de aguardar por uma atualização. Nos Chromebooks, as atualizações de software ocorrem em segundo plano.</translation>
 <translation id="7634280112532283638">Redução de spam e fraudes</translation>
-<translation id="7634566076839829401">Algo correu mal. Tente novamente mais tarde.</translation>
+<translation id="7634566076839829401">Algo correu mal. Tente mais tarde.</translation>
 <translation id="7635048370253485243">Afixada pelo seu administrador.</translation>
 <translation id="7636919061354591437">Instalar neste dispositivo</translation>
 <translation id="7637253234491814483">Toque no sensor de impressões digitais no canto superior direito do teclado, junto ao botão ligar/desligar. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
@@ -8272,7 +8272,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8933960630081805351">Mo&amp;strar no Finder</translation>
 <translation id="8934732568177537184">Continuar</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta traseira direita)</translation>
-<translation id="8940081510938872932">O seu computador está a executar demasiadas operações neste momento. Tente novamente mais tarde.</translation>
+<translation id="8940081510938872932">O seu computador está a executar demasiadas operações neste momento. Tente mais tarde.</translation>
 <translation id="8940381019874223173">A partir do Google Fotos</translation>
 <translation id="8941173171815156065">Revogar a autorização "<ph name="PERMISSION" />"</translation>
 <translation id="894360074127026135">Step-Up Internacional Netscape</translation>
