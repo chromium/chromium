@@ -1,3 +1,7 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #ifndef CRDTP_CHROMIUM_PROTOCOL_TYPE_TRAITS_H_
 #define CRDTP_CHROMIUM_PROTOCOL_TYPE_TRAITS_H_
 
