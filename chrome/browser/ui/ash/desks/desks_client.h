@@ -228,6 +228,13 @@ class DesksClient : public ash::SessionObserver {
   // Get the pointer to the window by `browser_session_id`.
   aura::Window* GetWindowByBrowserSessionId(SessionID browser_session_id);
 
+  // Creates a new desk and switch to it. If `customized_desk_name` is
+  // provided, desk name will be `customized_desk_name` or `customized_desk_name
+  // ({counter})` to resolve naming conflicts. CanCreateDesks() must be checked
+  // before calling this.
+  const ash::Desk* CreateEmptyDeskAndActivate(
+      const std::u16string& customized_desk_name);
+
   // Convenience pointer to ash::DesksController. Guaranteed to be not null for
   // the duration of `this`.
   ash::DesksController* const desks_controller_;

@@ -365,6 +365,14 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Fires the timer used for recording desk traversals immediately.
   void FireMetricsTimerForTesting();
 
+  // Resets the animation if there is any ongiong one.
+  void ResetAnimation();
+
+  // Generates a unique desk name. If `base` already existed, returns a
+  // desk name with format of `base({counter})` to resolve naming conflicts.
+  // Otherwise returns `base`.
+  std::u16string CreateUniqueDeskName(const std::u16string& base) const;
+
  private:
   class DeskTraversalsMetricsHelper;
   class RemovedDeskData;

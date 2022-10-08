@@ -7,14 +7,17 @@
 #include <memory>
 #include <string>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -44,6 +47,7 @@
 #include "components/sessions/core/session_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -354,8 +358,7 @@ void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
     return;
   }
 
-  const ash::Desk* new_desk = desks_controller_->CreateNewDeskForTemplate(
-      ash::DeskTemplateType::kTemplate, customized_desk_name);
+  const ash::Desk* new_desk = CreateEmptyDeskAndActivate(customized_desk_name);
   std::move(callback).Run(/*error=*/"", new_desk->uuid());
 }
 
@@ -536,7 +539,9 @@ std::string DesksClient::SwitchDesk(const base::GUID& desk_uuid) {
   if (!desk) {
     return kNoSuchDeskError;
   }
-  desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApi);
+  // Clear the current animation if there is any before activate desk.
+  desks_controller_->ResetAnimation();
+  desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApiSwitch);
   return {};
 }
 
@@ -709,4 +714,38 @@ aura::Window* DesksClient::GetWindowByBrowserSessionId(
       return browser->window()->GetNativeWindow();
   }
   return nullptr;
+}
+
+const ash::Desk* DesksClient::CreateEmptyDeskAndActivate(
+    const std::u16string& customized_desk_name) {
+  DCHECK(desks_controller_->CanCreateDesks());
+
+  // If there is an ongoing animation, we should stop it before creating and
+  // activating the new desk, which triggers its own animation.
+  desks_controller_->ResetAnimation();
+
+  // Desk name was set to a default name upon creation. If
+  // `customized_desk_name` is provided, override desk name to be
+  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
+  // naming conflicts.
+  std::u16string desk_name =
+      desks_controller_->CreateUniqueDeskName(customized_desk_name);
+
+  desks_controller_->NewDesk(ash::DesksCreationRemovalSource::kApi);
+  ash::Desk* desk = desks_controller_->desks().back().get();
+
+  if (!desk_name.empty()) {
+    desk->SetName(desk_name, /*set_by_user=*/true);
+    ash::Shell::Get()
+        ->accessibility_controller()
+        ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+            IDS_ASH_VIRTUAL_DESKS_ALERT_NEW_DESK_CREATED, desk_name));
+  }
+
+  // Force update user prefs because `SetName()` does not trigger it.
+  ash::desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApiLaunch);
+
+  return desk;
 }

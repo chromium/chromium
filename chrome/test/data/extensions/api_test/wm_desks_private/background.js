@@ -18,28 +18,6 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  // Tests List all desks.
-  async function testGetAllDesks() {
-    await chrome.wmDesksPrivate.launchDesk({ deskName: "test" });
-    // Launch invalid template Uuid.
-    const allDesks = await chrome.wmDesksPrivate.getAllDesks();
-    chrome.test.assertEq(2, allDesks.length);
-    chrome.test.succeed();
-  },
-
-  // Tests launching empty desk with a desk name.
-  async function testLaunchEmptyDeskWithNameAndRemoveDesk() {
-    // Launch empty desk with `deskName`.
-    const deskUuid = await
-      chrome.wmDesksPrivate.launchDesk({ deskName: "test" });
-    // Desk uuid should be returned.
-    chrome.test.assertTrue(uuidRegex.test(deskUuid));
-
-    // Clean Up.
-    await chrome.wmDesksPrivate.removeDesk(deskUuid, { combineDesks: false });
-    chrome.test.succeed();
-  },
-
   // Tests setting window to show up on all desks.
   async function testSetToAllDeskWindowWithValidID() {
     // Create a new window.
@@ -100,32 +78,6 @@ chrome.test.runTests([
     const newDeskUuid = await chrome.wmDesksPrivate.recallSavedDesk(
       savedDesk.deskUuid);
     chrome.test.assertTrue(uuidRegex.test(newDeskUuid));
-    chrome.test.succeed();
-  },
-
-  // Tests switches to current desk.
-  async function testSwitchToCurrentDesk() {
-    const activeDesk = await chrome.wmDesksPrivate.getActiveDesk();
-    await chrome.wmDesksPrivate.switchDesk(
-      activeDesk);
-    const activeDesk1 = await chrome.wmDesksPrivate.getActiveDesk();
-    chrome.test.assertEq(activeDesk, activeDesk1);
-    chrome.test.succeed();
-  },
-
-  // Tests switches to a different desk.
-  async function testSwitchToDifferentDesk() {
-    const activeDesk = await chrome.wmDesksPrivate.getActiveDesk();
-    await chrome.windows.create();
-
-    // Launch a new desk.
-    await chrome.wmDesksPrivate.launchDesk({ deskName: "test" });
-    await chrome.windows.create();
-
-    // Wait for launch Desk animation to settle.
-    chrome.wmDesksPrivate.switchDesk(activeDesk);
-    const activeDesk1 = await chrome.wmDesksPrivate.getActiveDesk();
-    chrome.test.assertEq(activeDesk, activeDesk1);
     chrome.test.succeed();
   },
 ]);

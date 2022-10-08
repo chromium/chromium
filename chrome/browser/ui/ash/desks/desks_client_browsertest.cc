@@ -2303,11 +2303,11 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
                         }));
   loop.Run();
 
+  ash::DeskSwitchAnimationWaiter waiter;
   DesksClient::Get()->RemoveDesk(
       desk_id, false, base::BindLambdaForTesting([](std::string error) {
         EXPECT_TRUE(error.empty());
       }));
-  ash::DeskSwitchAnimationWaiter waiter;
   waiter.Wait();
   EXPECT_EQ(1u, desks_controller->desks().size());
 }
@@ -2395,6 +2395,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
   base::RunLoop loop;
   std::u16string desk_name(u"test");
+  ash::DeskSwitchAnimationWaiter waiter;
   DesksClient::Get()->LaunchEmptyDesk(
       base::BindLambdaForTesting(
           [&](std::string error, const base::GUID& desk_uuid) {
@@ -2409,6 +2410,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
           }),
       desk_name);
   loop.Run();
+  waiter.Wait();
 }
 
 // Tests launch an empty desk with default name.
@@ -2419,6 +2421,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(1u, desks_controller->desks().size());
 
   base::RunLoop loop;
+  ash::DeskSwitchAnimationWaiter waiter;
   DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
       [&](std::string error, const base::GUID& desk_uuid) {
         EXPECT_TRUE(error.empty());
@@ -2431,6 +2434,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
         loop.Quit();
       }));
   loop.Run();
+
+  waiter.Wait();
 }
 
 // Tests setting first window to show on all desk and then unset it.
@@ -2579,13 +2584,17 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SwitchToDifferentDesk) {
         EXPECT_TRUE(error.empty());
       }));
 
+  // Wait for launch desk animation to settle.
+  ash::DeskSwitchAnimationWaiter waiter;
+  waiter.Wait();
+
   // Switches to previous desk.
   std::string error = DesksClient::Get()->SwitchDesk(desk_uuid);
   EXPECT_TRUE(error.empty());
 
   // Wait for desk switch animation.
-  ash::DeskSwitchAnimationWaiter waiter;
-  waiter.Wait();
+  ash::DeskSwitchAnimationWaiter waiter_;
+  waiter_.Wait();
   base::GUID desk_uuid_ = DesksClient::Get()->GetActiveDesk();
   EXPECT_EQ(desk_uuid_, desk_uuid);
 }

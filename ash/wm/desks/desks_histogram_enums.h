@@ -49,8 +49,9 @@ enum class DesksSwitchSource {
   kLaunchTemplate = 8,
   kIndexedDeskSwitchShortcut = 9,
   kRemovalUndone = 10,
-  kApi = 11,
-  kMaxValue = kApi,
+  kApiSwitch = 11,
+  kApiLaunch = 12,
+  kMaxValue = kApiLaunch,
 };
 
 constexpr char kNewDeskHistogramName[] = "Ash.Desks.NewDesk2";

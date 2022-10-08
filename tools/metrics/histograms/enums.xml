@@ -24901,7 +24901,8 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="User switch by launching a template"/>
   <int value="9" label="User switch via indexed keyboard shorcuts"/>
   <int value="10" label="User switch by restoring removed desk"/>
-  <int value="11" label="Desk switch by API"/>
+  <int value="11" label="Desk switch by invoking a switch desk API"/>
+  <int value="12" label="Desk switch by invoking a launch desk API"/>
 </enum>
 
 <enum name="DesktopCaptureCounters">

@@ -1078,19 +1078,10 @@ const Desk* DesksController::CreateNewDeskForTemplate(
     animation_.reset();
 
   // Desk name was set to a default name upon creation. If
-  // `customized_desk_name` is provided, override desk name to be
+  // `customized_desk_name` is not empty, override desk name to be
   // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
   // naming conflicts.
-  std::u16string desk_name;
-  if (!customized_desk_name.empty()) {
-    int count = 1;
-    desk_name = customized_desk_name;
-    while (HasDeskWithName(desk_name)) {
-      desk_name = std::u16string(customized_desk_name)
-                      .append(u" (" + base::FormatNumber(count) + u")");
-      count++;
-    }
-  }
+  std::u16string desk_name = CreateUniqueDeskName(customized_desk_name);
 
   switch (template_type) {
     case DeskTemplateType::kTemplate:
@@ -1422,6 +1413,25 @@ void DesksController::OnFirstSessionStarted() {
 
 void DesksController::FireMetricsTimerForTesting() {
   metrics_helper_->FireTimerForTesting();
+}
+
+void DesksController::ResetAnimation() {
+  animation_.reset();
+}
+
+std::u16string DesksController::CreateUniqueDeskName(
+    const std::u16string& base) const {
+  std::u16string desk_name;
+  if (!base.empty()) {
+    int count = 1;
+    desk_name = base;
+    while (HasDeskWithName(desk_name)) {
+      desk_name =
+          std::u16string(base).append(u" (" + base::FormatNumber(count) + u")");
+      count++;
+    }
+  }
+  return desk_name;
 }
 
 void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {

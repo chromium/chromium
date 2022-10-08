@@ -3,8 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_test_util.h"
+#include "base/guid.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace extensions {
@@ -24,6 +30,9 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
+// General API test for desk API.
+// API test is flaky when involves animation. For APIs involving animation use
+// browser test instead.
 // TODO(crbug.com/1370233): Re-enable this test
 IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_WmDesksPrivateApiTest) {
   // This loads and runs an extension from
@@ -31,4 +40,161 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, DISABLED_WmDesksPrivateApiTest) {
   ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
 }
 
+// Tests launch and close a desk.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndCloseDeskTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  // The RunFunctionAndReturnSingleResult already asserts no error
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          launch_desk_function.get(), R"([{"deskName":"test"}])", new_browser);
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  // Waiting for desk launch animation to settle
+  // The check is necessary as both desk animation and extension function is
+  // async. There is no guarantee which ones execute first.
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter remove_waiter;
+  // Remove a desk.
+  auto remove_desk_function =
+      base::MakeRefCounted<WmDesksPrivateRemoveDeskFunction>();
+  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      remove_desk_function.get(),
+      R"([")" + desk_id->GetString() + R"(", { "combineDesks": false }])",
+      new_browser);
+
+  // Waiting for desk removal animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    remove_waiter.Wait();
+  }
+}
+
+// Tests launch and list all desk.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, ListDesksTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  ash::DeskSwitchAnimationWaiter waiter;
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  // Asserts no error.
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          launch_desk_function.get(), R"([{"deskName":"test"}])", new_browser);
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    waiter.Wait();
+  }
+
+  // List All Desks.
+  auto list_desks_function =
+      base::MakeRefCounted<WmDesksPrivateGetAllDesksFunction>();
+  auto all_desks =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          list_desks_function.get(), "[]", new_browser);
+  EXPECT_TRUE(all_desks->is_list());
+  EXPECT_EQ(2u, all_desks->GetList().size());
+}
+
+// Tests switch to different desk show trigger animation.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchToDifferentDeskTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Get the active desk.
+  auto get_active_desk_function =
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
+  // Asserts no error.
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_active_desk_function.get(), "[]", new_browser);
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  // Launch a desk.
+  auto launch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateLaunchDeskFunction>();
+
+  ash::DeskSwitchAnimationWaiter launch_waiter;
+  // Asserts no error.
+  auto desk_id_1 =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          launch_desk_function.get(), R"([{"deskName":"test"}])", new_browser);
+  EXPECT_TRUE(desk_id_1->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id_1->GetString()).is_valid());
+
+  // Waiting for desk launch animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    launch_waiter.Wait();
+  }
+
+  ash::DeskSwitchAnimationWaiter switch_waiter;
+  // Switches to the previous desk.
+  auto switch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateSwitchDeskFunction>();
+
+  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      switch_desk_function.get(), R"([")" + desk_id->GetString() + R"("])",
+      new_browser);
+
+  // Waiting for desk launch animation to settle
+  if (ash::DesksController::Get()->AreDesksBeingModified()) {
+    switch_waiter.Wait();
+  }
+
+  auto get_active_desk_function_ =
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
+  // Asserts no error.
+  auto desk_id_2 =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_active_desk_function_.get(), "[]", new_browser);
+  EXPECT_TRUE(desk_id_2->is_string());
+  EXPECT_EQ(desk_id->GetString(), desk_id_2->GetString());
+}
+
+// Tests switch to current desk should skip animation.
+IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, SwitchToCurrentDeskTest) {
+  Browser* new_browser = CreateBrowser(browser()->profile());
+
+  // Get the desk desk.
+  auto get_active_desk_function =
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
+  // Asserts no error.
+  auto desk_id =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_active_desk_function.get(), "[]", new_browser);
+  EXPECT_TRUE(desk_id->is_string());
+  EXPECT_TRUE(
+      base::GUID::ParseCaseInsensitive(desk_id->GetString()).is_valid());
+
+  // Switches to the current desk.
+  auto switch_desk_function =
+      base::MakeRefCounted<WmDesksPrivateSwitchDeskFunction>();
+  extension_function_test_utils::RunFunctionAndReturnSingleResult(
+      switch_desk_function.get(), R"([")" + desk_id->GetString() + R"("])",
+      new_browser);
+
+  // Get the current desk.
+  auto get_active_desk_function_ =
+      base::MakeRefCounted<WmDesksPrivateGetActiveDeskFunction>();
+  auto desk_id_1 =
+      extension_function_test_utils::RunFunctionAndReturnSingleResult(
+          get_active_desk_function_.get(), "[]", new_browser);
+  EXPECT_TRUE(desk_id_1->is_string());
+  EXPECT_EQ(desk_id->GetString(), desk_id_1->GetString());
+}
 }  // namespace extensions
