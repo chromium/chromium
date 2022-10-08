@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skeniranje dokumenta</translation>
 <translation id="1309250603447638106">Preuzimanje ažuriranja za skeniranje dokumenata</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pretraživanje + strelica lijevo za pristup.</translation>
+<translation id="1417314334557041815">Uredi stranicu <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> nije priključena.</translation>
 <translation id="1473110567575736769">Odbrojavanje od 3 sekunde</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nije snimljeno ništa</translation>
 <translation id="1838104802459806957">Nagni gore</translation>
+<translation id="1843105061469674856">Skeniraj dodatnu stranicu</translation>
 <translation id="1851169887664797861">Dostupne su dodatne kontrole kamere</translation>
 <translation id="1851616744363735765">PAUZIRANO</translation>
 <translation id="1862930711583847113">Izvoz datoteke <ph name="FILE" /> nije moguć</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Za ovu se kameru ne može promijeniti razlučivost</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="4281620174117014503">Razlučivost za medije</translation>
+<translation id="428234092390943511">Minijatura stranice</translation>
 <translation id="4329152592498422850">Prijeđi na snimanje kvadratne fotografije</translation>
 <translation id="4340659173795395806">Sada možete izrađivati PDF s više stranica</translation>
 <translation id="4383571725254449280">Ispis zapisnika o izvedbi</translation>

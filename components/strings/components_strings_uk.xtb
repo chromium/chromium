@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Немає}=1{1 сайт}one{# сайт}few{# сайти}many{# сайтів}other{# сайту}}</translation>
 <translation id="1924727005275031552">Нові дані</translation>
 <translation id="1927439593081478069">Кнопка "Виконати перевірку безпеки Chrome"; натисніть Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
+<translation id="1935995810530254458">Усе одно скопіювати</translation>
 <translation id="1939175642807587452">Може просити дозвіл надсилати сповіщення</translation>
 <translation id="1943994668912612445">Дизайн</translation>
 <translation id="1945968466830820669">Ви можете втратити доступ до облікового запису організації, або хтось може викрасти вашу особисту інформацію. Chromium радить змінити пароль.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">Зберегти…</translation>
 <translation id="2088086323192747268">Кнопка "Керувати синхронізацією"; натисніть Enter, щоб вибрати в налаштуваннях Chrome, яку інформацію синхронізувати</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2093982008204312032">Google Chrome намагається вимкнути Windows Hello для заповнення паролів.</translation>
 <translation id="2094505752054353250">Невідповідність домену</translation>
 <translation id="2099652385553570808">Скріпити тричі ліворуч</translation>
 <translation id="2101225219012730419">Версія:</translation>
@@ -1143,6 +1145,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{Документ PDF містить {COUNT} сторінку}one{Документ PDF містить {COUNT} сторінку}few{Документ PDF містить {COUNT} сторінки}many{Документ PDF містить {COUNT} сторінок}other{Документ PDF містить {COUNT} сторінки}}</translation>
 <translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Вашу інформацію бачитимуть інші користувачі, оскільки форма надсилається через незахищене з'єднання.</translation>
+<translation id="4024923292610332139">вимкнути TouchID для заповнення паролів</translation>
 <translation id="4025913568718019429">Кнопка "Керувати налаштуваннями конфіденційності Google"; натисніть Enter, щоб перейти в налаштування конфіденційності облікового запису Google.</translation>
 <translation id="4030383055268325496">&amp;Відмінити додавання</translation>
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
@@ -1204,6 +1207,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Не відстежувати ціну</translation>
 <translation id="4194250254487269611">Не вдається зберегти картку</translation>
+<translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>
 <translation id="4202554117186904723">П’ятий рулон</translation>
 <translation id="4203769790323223880">Користуватися камерою заборонено</translation>
@@ -1259,6 +1263,7 @@
 <translation id="42981349822642051">Розгорнути</translation>
 <translation id="4300675098767811073">Пробити кілька отворів праворуч</translation>
 <translation id="4302514097724775343">Щоб почати гру, торкніться динозавра</translation>
+<translation id="4304049446746819918">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано переміщувати цей файл у розташування "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано переміщувати ці файли в розташування "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано переміщувати ці файли в розташування "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано переміщувати ці файли в розташування "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано переміщувати ці файли в розташування "<ph name="DESTINATION_NAME" />"}}</translation>
 <translation id="4305666528087210886">Не вдалося отримати доступ до файлу</translation>
 <translation id="4306529830550717874">Зберегти адресу?</translation>
 <translation id="4306812610847412719">буфер обміну</translation>
@@ -1634,6 +1639,7 @@
 <translation id="5254043433801397071">Оптимізувати контент для друку</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Усе одно записати</translation>
+<translation id="5257739419779698609">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано копіювати цей файл у розташування "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}}</translation>
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
 <translation id="5269999699920406580">Функції, які застосовуються до всієї системи, може налаштовувати лише власник: <ph name="OWNER_EMAIL" /></translation>
@@ -1696,6 +1702,7 @@
 <translation id="5412236728747081950">Цей сайт використовує дані про ваші інтереси з Chrome, щоб показувати вам доречнішу рекламу</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Накопичувач 4</translation>
+<translation id="5414511064953050917">Усе одно перемістити</translation>
 <translation id="5421136146218899937">Очистити історію…</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Не заблоковано на жодному сайті}=1{Заблоковано на 1 сайті}one{Заблоковано на # сайті}few{Заблоковано на # сайтах}many{Заблоковано на # сайтах}other{Заблоковано на # сайту}}</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
@@ -2317,6 +2324,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Лавандовий</translation>
 <translation id="7156870133441232244">На сервері має бути встановлено протокол TLS 1.2 або новішої версії.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Скопіювати конфіденційний файл?}one{Скопіювати конфіденційні файли?}few{Скопіювати конфіденційні файли?}many{Скопіювати конфіденційні файли?}other{Скопіювати конфіденційні файли?}}</translation>
 <translation id="717330890047184534">Ідентифікатор GAIA:</translation>
 <translation id="7174545416324379297">Об'єднано</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}many{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2926,6 +2934,7 @@
 <translation id="8763986294015493060">Закрийте всі відкриті вікна в режимі анонімного перегляду</translation>
 <translation id="8766943070169463815">Екран автентифікації облікових даних для безпечних платежів відкрито</translation>
 <translation id="8767765348545497220">Закрити спливаючу підказку</translation>
+<translation id="877348612833018844">{0,plural, =1{Перемістити конфіденційний файл?}one{Перемістити конфіденційні файли?}few{Перемістити конфіденційні файли?}many{Перемістити конфіденційні файли?}other{Перемістити конфіденційні файли?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Мотоцикли</translation>
 <translation id="8790007591277257123">&amp;Повторити видалення</translation>

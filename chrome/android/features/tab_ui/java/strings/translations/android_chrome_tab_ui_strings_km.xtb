@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ការវាយតម្លៃដោយដាក់ផ្កាយ</translation>
 <translation id="3291470810748040983">អ្នកនឹងទទួលបាន​ការជូនដំណឹង នៅពេលមានតម្លៃទាបជាងមុននៅក្នុងផ្ទាំងដែលកំពុងបើក</translation>
 <translation id="3328308545011660196">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
+<translation id="3499853001094440183">បំបែក​ក្រុម​ផ្ទាំង</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
 <translation id="3882834874697329510">ដើម្បី​ទទួលបាន​ការជូនដំណឹង នៅពេល​មានតម្លៃទាបជាងមុន​នៅក្នុងផ្ទាំងដែល​កំពុងបើក សូមបើក​ការជូនដំណឹង​នៅក្នុងការកំណត់។</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">ជ្រើសរើសផ្ទាំង</translation>
 <translation id="6228793724645064692">(ការវាយ​តម្លៃហាង)</translation>
 <translation id="6333260925957816943">ព័ត៌មានអំពី​ហាងនេះ</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បំបែកក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6510648526783655549">បិទរបារផ្ទាំង</translation>
 <translation id="6549021453810473782">មើលព័ត៌មានអំពីហាង</translation>
 <translation id="6562820390860419811">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងឆ្វេង</translation>
@@ -80,11 +83,13 @@
 <translation id="753732157349120914">មុខងារប្ដូរផ្ទាំង</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{ការវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" /> ពី Google}other{ការវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" /> ពី Google}}</translation>
 <translation id="7559245342362162951">បង្ហាញផ្ទាំង​របស់ក្រុមនៅក្នុងក្រឡា​ពេញ​អេក្រង់</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{ចែករំលែក​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{ចែករំលែក​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="7792771145871471484">ពិនិត្យមើល​ការណែនាំ​។</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{បញ្ចូលផ្ទាំង​ដែលបានជ្រើសរើស <ph name="TABS_COUNT_ONE" /> ​ទៅក្នុងក្រុម}other{បញ្ចូលផ្ទាំង​ដែលបានជ្រើសរើស <ph name="TABS_COUNT_MANY" /> ​ទៅក្នុងក្រុម}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" />}other{ការវាយតម្លៃដោយដាក់ផ្កាយ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" />}}</translation>
 <translation id="7885132941432959125">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងស្ដាំ</translation>
 <translation id="7966321538264951561">ច្រានចោល​ការណែនាំ​។</translation>
+<translation id="8018192911041116887">ចែករំលែក​ផ្ទាំង</translation>
 <translation id="8029301326595421733">បានបើក​ព័ត៌មានអំពី​ហាងនេះ​ពេញអេក្រង់</translation>
 <translation id="814503310257431685">មើលទាំងអស់</translation>
 <translation id="8205266828577616993">រំកិល​ផ្ទាំង​ឡើងលើ</translation>

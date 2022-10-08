@@ -257,6 +257,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
 <translation id="2412593942846481727">Det finns en uppdatering</translation>
+<translation id="2417486498593892439">Logga in på nätverket</translation>
 <translation id="2426051945783024481">Kameraramen har centrerats automatiskt</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
@@ -497,7 +498,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="383058930331066723">Batterisparläget är aktiverat</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="384082539148746321">Vill du radera mallen?</translation>
-<translation id="3842239759367498783">Fortsätt att läsa på din mobila enhet <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
@@ -998,7 +998,6 @@ Nyligen installerad</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
 <translation id="6707693040195709527">Bytet till en tidigare version av enheten är försenat</translation>
 <translation id="6710213216561001401">Föregående</translation>
-<translation id="6713285437468012787">Bluetooth-enheten <ph name="DEVICE_NAME" /> har kopplats och är nu tillgänglig för alla användare. Du kan ta bort kopplingen i Inställningar.</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="6727969043791803658">Ansluten, <ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1388,6 +1387,7 @@ Nyligen installerad</translation>
 <translation id="8936501819958976551">inaktiverad</translation>
 <translation id="8938800817013097409">USB-C-enhet (högra porten på baksidan)</translation>
 <translation id="8940956008527784070">Låg batterinivå (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8949925099261528566">Ansluten, inget internet</translation>
 <translation id="8951539504029375108">Endast godkända Thunderbolt-enheter är kompatibla med din Chromebook</translation>
 <translation id="8982906748181120328">Synl. i närheten</translation>
 <translation id="8983038754672563810">HSPA</translation>

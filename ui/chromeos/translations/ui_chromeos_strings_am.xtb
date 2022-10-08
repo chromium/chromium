@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">በርማኛ/ማያንማር</translation>
 <translation id="2392369802118427583">አግብር</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ይገኛል</translation>
+<translation id="2417486498593892439">ወደ አውታረ መረብ በመለያ ይግቡ</translation>
 <translation id="2425665904502185219">ጠቅላላ የፋይል መጠን</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" />ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
 <translation id="2448312741937722512">አይነት</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">መልሶ ማጫወት አይገኝም</translation>
 <translation id="383652340667548381">ሰርቢኛ</translation>
 <translation id="385051799172605136">ተመለስ</translation>
+<translation id="3851491607336266896">ተገናኝቷል፣ የተገደበ ግንኙነት</translation>
 <translation id="3855472144336161447">ጀርመንኛ ኒዮ 2</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
@@ -697,7 +699,6 @@
 <translation id="6935521024859866267">ወደ ታች የተገለበጠ</translation>
 <translation id="6943836128787782965">ኤችቲቲፒ ማግኘት አልተሳካም</translation>
 <translation id="6949408524333579394">በሰርቢያኛ ቋንቋ ፊደል መጻፍ</translation>
-<translation id="6954309393500027528">ይህን ፋይል መለጠፍ በአስተዳዳሪዎ ታግዷል</translation>
 <translation id="6960565108681981554">አልገበረም። የአገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="696203921837389374">በሞባይል ውሂብ ላይ ማመሳሰልን አንቃ</translation>
 <translation id="6965382102122355670">እሺ</translation>
@@ -939,6 +940,7 @@
 <translation id="8903931173357132290">ትምህርት ይጨርሱ</translation>
 <translation id="8912078710089354287">ጅራቱን የሚቆላ ውሻ</translation>
 <translation id="8919081441417203123">ዴኒሽ</translation>
+<translation id="8949925099261528566">ተገናኝቷል፣ ምንም በይነመረብ የለም</translation>
 <translation id="8965697826696209160">በቂ ቦታ የለም።</translation>
 <translation id="8997962250644902079">የቻይንኛ (ተለምዷዊ) ፒንዪን</translation>
 <translation id="8998871447376656508">ሰቀላውን ለማጠናቀቅ በእርስዎ Google Drive ውስጥ በቂ ቦታ የለም።</translation>

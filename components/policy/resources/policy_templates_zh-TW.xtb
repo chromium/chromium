@@ -1871,7 +1871,6 @@
 <translation id="2856674246949497058">如果作業系統比目標版本還新，則復原並維持在目標版本，並在作業過程中執行 Powerwash。</translation>
 <translation id="2866619962692161453">中繼政策類型</translation>
 <translation id="2866726566162790531">允許所有 HTTP 驗證機制的來源清單</translation>
-<translation id="2869762730352628426">在登入畫面上啟用自動點擊功能</translation>
 <translation id="2872098849906555324">停用 Google 雲端硬碟同步功能</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2874209944580848064">支援 Android 裝置的 <ph name="PRODUCT_OS_NAME" />裝置注意事項：</translation>
@@ -2560,7 +2559,6 @@
 <translation id="3502555714327823858">允許所有雙面列印模式</translation>
 <translation id="350443680860256679">設定 ARC</translation>
 <translation id="350797926066071931">啟用翻譯</translation>
-<translation id="3508047333410537654">在登入畫面上啟用單聲道音訊</translation>
 <translation id="3513265258454735822">啟用瀏覽器記錄儲存功能</translation>
 <translation id="3513655665999652754">Quirks Server 會提供特定硬體的設定檔，例如可調整螢幕校正功能的
        ICC 顯示器設定檔。
@@ -4066,7 +4064,6 @@
 <translation id="5191476996923842491">setTimeout() 函式的預設行為出現延遲。</translation>
 <translation id="519247340330463721">設定安全瀏覽相關政策。</translation>
 <translation id="5194683382395300627">允許在網站上使用 <ph name="ASSISTANT_PRODUCT_NAME" /> 執行操作，例如自動變更密碼</translation>
-<translation id="5196520640744454600">在登入畫面上啟用相黏鍵功能</translation>
 <translation id="5196630732055960309">允許這些網頁應用程式上的 File Handling API</translation>
 <translation id="5206454085187851382">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="5207543664699568887">設定 Linux 上的 <ph name="PRODUCT_NAME" /> 是否要使用系統通知。
@@ -5787,7 +5784,6 @@
 <translation id="6920640961852058581">變更 Kerberos 票證的預設設定</translation>
 <translation id="6921544339867564740">允許裝置在 Chrome OS 上執行虛擬機器</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
-<translation id="6923731550900440989">在登入畫面上啟用插入點醒目顯示功能</translation>
 <translation id="6924223708804692571">這項政策會強制停用指定語言的拼字檢查功能。系統會忽略該清單中無法辨識的語言。
 
       如果啟用這項政策，系統會為指定的語言停用拼字檢查功能。針對不在清單上的語言，使用者仍可以啟用或停用拼字檢查功能。

@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Зіскануйте документ</translation>
 <translation id="1309250603447638106">Завантаження оновлень для сканування документів</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Щоб перейти, натисніть клавішу пошуку + стрілку вліво.</translation>
+<translation id="1417314334557041815">Редагувати сторінку <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камеру <ph name="CAMERA" /> відключено.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунди</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нічого не записано</translation>
 <translation id="1838104802459806957">Нахилити вгору</translation>
+<translation id="1843105061469674856">Сканувати додаткові сторінки</translation>
 <translation id="1851169887664797861">Доступні додаткові елементи керування камерою</translation>
 <translation id="1851616744363735765">ПРИЗУПИНЕНО</translation>
 <translation id="1862930711583847113">Не вдається експортувати файл "<ph name="FILE" />"</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Для цієї камери не можна змінити роздільну здатність</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="4281620174117014503">Середня роздільна здатність</translation>
+<translation id="428234092390943511">Зменшене зображення сторінки</translation>
 <translation id="4329152592498422850">Перейти в режим квадратного фото</translation>
 <translation id="4340659173795395806">Тепер ви можете створювати файли PDF із кількома сторінками</translation>
 <translation id="4383571725254449280">Друкувати журнали продуктивності</translation>

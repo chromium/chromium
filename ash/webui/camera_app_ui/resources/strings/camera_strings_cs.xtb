@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Naskenujte dokument</translation>
 <translation id="1309250603447638106">Stahování aktualizací pro skenování dokumentů</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Přejdete na ně stisknutím tlačítka Hledat a šipky vlevo.</translation>
+<translation id="1417314334557041815">Upravit stránku <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> je odpojena.</translation>
 <translation id="1473110567575736769">3sekundový časovač</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Nic nebylo zaznamenáno</translation>
 <translation id="1838104802459806957">Naklonit nahoru</translation>
+<translation id="1843105061469674856">Naskenovat další stránku</translation>
 <translation id="1851169887664797861">Jsou k dispozici další ovládací prvky kamery</translation>
 <translation id="1851616744363735765">POZASTAVENO</translation>
 <translation id="1862930711583847113">Soubor <ph name="FILE" /> nelze exportovat</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Rozlišení této kamery nelze změnit</translation>
 <translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
 <translation id="4281620174117014503">Střední rozlišení</translation>
+<translation id="428234092390943511">Miniatura stránky</translation>
 <translation id="4329152592498422850">Přepnout na pořízení čtvercové fotky</translation>
 <translation id="4340659173795395806">Teď můžete vytvořit vícestránkový soubor PDF</translation>
 <translation id="4383571725254449280">Vytisknout protokoly výkonu</translation>

@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Birmano (Myanmar)</translation>
 <translation id="2392369802118427583">Activar</translation>
 <translation id="240770291734945588">Espazo dispoñible: <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Inicia sesión na rede</translation>
 <translation id="2425665904502185219">Tamaño total dos ficheiros</translation>
 <translation id="2428749644083375155">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos en <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Non hai reproducións dispoñibles</translation>
 <translation id="383652340667548381">Serbio</translation>
 <translation id="385051799172605136">Atrás</translation>
+<translation id="3851491607336266896">Con conexión, conectividade limitada</translation>
 <translation id="3855472144336161447">Neo 2 alemán</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrición</translation>
@@ -696,7 +698,6 @@
 <translation id="6935521024859866267">Do revés</translation>
 <translation id="6943836128787782965">Erro ao obter HTTP</translation>
 <translation id="6949408524333579394">Serbio (transliteración)</translation>
-<translation id="6954309393500027528">O teu administrador bloqueou a función de pegar este ficheiro</translation>
 <translation id="6960565108681981554">Non activada. Contacta co teu operador.</translation>
 <translation id="696203921837389374">Activar a sincronización a través de datos móbiles</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -938,6 +939,7 @@
 <translation id="8903931173357132290">Persoa graduada</translation>
 <translation id="8912078710089354287">Can movendo o rabo</translation>
 <translation id="8919081441417203123">Danés</translation>
+<translation id="8949925099261528566">Con conexión, sen Internet</translation>
 <translation id="8965697826696209160">Non hai espazo suficiente.</translation>
 <translation id="8997962250644902079">Chinés tradicional (Pinyin)</translation>
 <translation id="8998871447376656508">Non tes suficiente espazo libre en Google Drive para completar a carga.</translation>

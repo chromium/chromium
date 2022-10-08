@@ -101,7 +101,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="1448440926884431741">Organisez vos produits suivis dans les favoris</translation>
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Choisissez la langue de Chrome</translation>
-<translation id="147113415845704694">Essayez "Quel temps fait-il aujourd'hui ?"</translation>
 <translation id="1474893630593443211">Meilleur contrôle sur les annonces que vous voyez</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="148482509007564431">Flux d'enregistrement en tant que favori</translation>
@@ -340,6 +339,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2861923151411510142">Certaines fonctionnalités de Chrome ne seront plus disponibles</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2871733351037274014">Précharger des pages</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> souhaite que vous approuviez ce site Web :</translation>
 <translation id="2886836735871983413">Une liste de sites s'affichera ici quand vous naviguerez sur le Web</translation>
 <translation id="2888126860611144412">À propos de Chrome</translation>
 <translation id="2891154217021530873">Arrêter le chargement de la page</translation>
@@ -355,6 +355,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2932150158123903946">Stockage Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier ne sera pas modifié</translation>
 <translation id="2936980480904111527">Les notifications de Chrome vous simplifient la vie</translation>
+<translation id="2940075786175545812">Option permettant d'approuver ou non un site Web</translation>
 <translation id="2942036813789421260">L'onglet "Aperçu" est fermé</translation>
 <translation id="2946420957526726953">Mise à jour de Chrome pour la connexion à d'autres appareils…</translation>
 <translation id="2951071800649516099">Ajoutez des pages à votre liste de lecture pour plus tard</translation>
@@ -422,6 +423,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="3259831549858767975">Réduire tous les éléments de la page</translation>
 <translation id="3264124641674805320">Comment télécharger un contenu pour plus tard</translation>
 <translation id="3264259168916048410">L'ordinateur souhaite utiliser cet appareil pour se connecter à un site</translation>
+<translation id="3265093782546847662">Toutes les pages de <ph name="DOMAIN" /></translation>
 <translation id="3265534588625245297">Gérer les sites que vous suivez</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
@@ -720,7 +722,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4925120120285606924">Capture d'écran <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés sous forme de fichier texte. Toute personne ou application ayant accès au dossier de destination pourra les voir.</translation>
 <translation id="4932247056774066048">Vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />. Vos données Chrome seront donc supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
-<translation id="4941179133499732445">Appuyez sur le micro pour lancer une recherche vocale</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4950924971025849764">Lorsque vous êtes connecté au même compte Google, d'autres appareils peuvent utiliser ce téléphone comme clé de sécurité.</translation>
@@ -731,6 +732,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4985248278475639481">À propos de la personnalisation des annonces</translation>
 <translation id="4987271110129728827">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
+<translation id="4991110219272367918">Option permettant d'approuver ou non un site Web fermée</translation>
 <translation id="499724277181351974">Accéder à : <ph name="WEBSITE_TITLE" /> – <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Suivre ce site ici</translation>
 <translation id="500351648694011114">Parcourir plus facilement</translation>
@@ -743,7 +745,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="504456571576643789">Éléments à prendre en compte</translation>
 <translation id="5054455334322721892">D'<ph name="BEGIN_LINK1" />autres formes d'activité<ph name="END_LINK1" /> peuvent être enregistrées dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
-<translation id="5061533557687621530">Pour connaître la météo, appuyez sur le micro et dites "Quel temps fait-il aujourd'hui ?"</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5091199029769593641">Vous verrez bientôt les stories de <ph name="SITE_NAME" /> quand vous ouvrirez un onglet. Les sites que vous suivez seront enregistrés dans votre compte Google. Vous pourrez les gérer dans les paramètres Discover.</translation>
 <translation id="5091249083535528968">Données d'utilisation avancées</translation>
@@ -764,7 +765,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5171045022955879922">Rechercher ou saisir une URL</translation>
 <translation id="517734441743343109">En continuant, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
-<translation id="5188992787241350004">Faites une recherche vocale</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="5193988420012215838">Copié dans le presse-papiers</translation>
 <translation id="5199929503336119739">Profil professionnel</translation>
@@ -1105,6 +1105,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
+<translation id="6908998565271542516">Option permettant d'approuver ou non un site Web ouverte à pleine hauteur</translation>
 <translation id="6909589135458168665">Précharger des pages</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
 <translation id="694267552845942083">Vous personnalisez actuellement vos paramètres de synchronisation. Pour valider l'activation de la synchronisation, appuyez sur le bouton "Confirmer" en bas de l'écran. Revenir en haut de la page</translation>
@@ -1112,6 +1113,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
 <translation id="696447261358045621">Quitter le mode navigation privée</translation>
+<translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6979737339423435258">Toutes les données</translation>
 <translation id="6987047470128880212">La navigation privée n'est pas disponible sur cet appareil</translation>
 <translation id="6995899638241819463">Recevoir une alerte si des mots de passe sont compromis lors d'une violation des données</translation>

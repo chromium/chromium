@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1412802024419177173">モデム（<ph name="ADDRESS" />）</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />、マウス</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />、キーボードとマウス</translation>
 <translation id="2616803374438260326">キーボード/マウス（<ph name="ADDRESS" />）</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />、周辺機器</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />、タブレット</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />、スマートフォン</translation>
 <translation id="3273951168350045122">キーボード（<ph name="ADDRESS" />）</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />、パソコン</translation>
 <translation id="4287283380557401002">カー オーディオ（<ph name="ADDRESS" />）</translation>
 <translation id="430326050669417502">ジョイスティック（<ph name="ADDRESS" />）</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />、オーディオ機器</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />、ビデオ機器</translation>
 <translation id="5271696982761495740">タブレット（<ph name="ADDRESS" />）</translation>
 <translation id="5376363957846771741">不明またはサポートされていないデバイス（<ph name="ADDRESS" />）</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />、モデム</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />、カーオーディオ機器</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />、キーボード</translation>
 <translation id="654594702871184195">オーディオ（<ph name="ADDRESS" />）</translation>
 <translation id="6744468237221042970">コンピュータ（<ph name="ADDRESS" />）</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />、ジョイスティック</translation>
 <translation id="7501330106833014351">ゲームパッド（<ph name="ADDRESS" />）</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />、ゲームパッド</translation>
 <translation id="8866374292072238753">動画（<ph name="ADDRESS" />）</translation>
 <translation id="8952558712545617651">マウス（<ph name="ADDRESS" />）</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />、不明なデバイスタイプ</translation>
 <translation id="907431882454731668">周辺機器（<ph name="ADDRESS" />）</translation>
 <translation id="978248992969828584">電話（<ph name="ADDRESS" />）</translation>
 </translationbundle>

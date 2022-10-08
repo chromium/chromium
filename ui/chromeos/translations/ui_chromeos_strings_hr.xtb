@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">burmanski (Mjanmar)</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="240770291734945588">Dostupno je <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Prijava na mrežu</translation>
 <translation id="2425665904502185219">Ukupna veličina datoteka</translation>
 <translation id="2428749644083375155">Kopiranje stavki (njih <ph name="NUMBER_OF_ITEMS" />) u mapu <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Vrsta</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Nema dostupnih reprodukcija</translation>
 <translation id="383652340667548381">Srpski</translation>
 <translation id="385051799172605136">Natrag</translation>
+<translation id="3851491607336266896">Povezano, ograničena povezivost</translation>
 <translation id="3855472144336161447">njemačka (Neo 2)</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3866249974567520381">Opis</translation>
@@ -698,7 +700,6 @@
 <translation id="6935521024859866267">Naopako</translation>
 <translation id="6943836128787782965">HTTP GET neuspješan</translation>
 <translation id="6949408524333579394">transliteracija za srpski</translation>
-<translation id="6954309393500027528">Administrator je blokirao ljepljenje te datoteke</translation>
 <translation id="6960565108681981554">Nije aktivirano. Obratite se mobilnom operateru.</translation>
 <translation id="696203921837389374">Omogući sinkronizaciju putem mobilnih podataka</translation>
 <translation id="6965382102122355670">U redu</translation>
@@ -940,6 +941,7 @@
 <translation id="8903931173357132290">Prvostupnik</translation>
 <translation id="8912078710089354287">Pas maše repom</translation>
 <translation id="8919081441417203123">Danski</translation>
+<translation id="8949925099261528566">Povezano, bez interneta</translation>
 <translation id="8965697826696209160">Nema dovoljno prostora.</translation>
 <translation id="8997962250644902079">kineski (tradicionalni) pinyin</translation>
 <translation id="8998871447376656508">Nema dovoljno slobodnog prostora na Google disku da biste dovršili prijenos.</translation>

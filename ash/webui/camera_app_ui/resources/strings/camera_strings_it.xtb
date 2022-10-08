@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Scansiona il tuo documento</translation>
 <translation id="1309250603447638106">Download degli aggiornamenti per la funzionalità di scansione dei documenti in corso…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasto per la ricerca + Freccia sinistra per accedere.</translation>
+<translation id="1417314334557041815">Modifica pagina <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nessun dato registrato</translation>
 <translation id="1838104802459806957">Inclinazione verso l'alto</translation>
+<translation id="1843105061469674856">Scansiona pagina aggiuntiva</translation>
 <translation id="1851169887664797861">Disponibili controlli della videocamera aggiuntivi</translation>
 <translation id="1851616744363735765">IN PAUSA</translation>
 <translation id="1862930711583847113">Impossibile esportare <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="414641094616694804">Non è possibile modificare la risoluzione di questa fotocamera</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
 <translation id="4281620174117014503">Media risoluzione</translation>
+<translation id="428234092390943511">Miniatura della pagina</translation>
 <translation id="4329152592498422850">Passa alla modalità foto quadrata</translation>
 <translation id="4340659173795395806">Ora puoi creare un PDF di più pagine</translation>
 <translation id="4383571725254449280">Log relativi alle prestazioni di stampa</translation>

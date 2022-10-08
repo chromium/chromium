@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1412802024419177173">مودم (<ph name="ADDRESS" />)</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />، موشواره</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />، ترکیب صفحه‌کلید و موشواره</translation>
 <translation id="2616803374438260326">صفحه‌کلید/موشواره (<ph name="ADDRESS" />)</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />، محیطی</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />، رایانه لوحی</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />، تلفن</translation>
 <translation id="3273951168350045122">صفحه‌کلید (<ph name="ADDRESS" />)</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />، رایانه</translation>
 <translation id="4287283380557401002">صوتی خودرو (<ph name="ADDRESS" />)</translation>
 <translation id="430326050669417502">دسته کنترل (<ph name="ADDRESS" />)</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />، دستگاه صوتی</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />، دستگاه ویدیو</translation>
 <translation id="5271696982761495740">رایانهٔ لوحی (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">دستگاه ناشناس یا پشتیبانی نشده (<ph name="ADDRESS" />)</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /><ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />، مودم</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />، دستگاه صوتی خودرو</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />، صفحه‌کلید</translation>
 <translation id="654594702871184195">صوتی (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">رایانه (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />، دسته کنترل</translation>
 <translation id="7501330106833014351">پد بازی (<ph name="ADDRESS" />)</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />، دسته بازی</translation>
 <translation id="8866374292072238753">ویدئو (<ph name="ADDRESS" />)</translation>
 <translation id="8952558712545617651">موشواره (<ph name="ADDRESS" />)</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />، نوع دستگاه ناشناس</translation>
 <translation id="907431882454731668">محیطی (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">تلفن (<ph name="ADDRESS" />)</translation>
 </translationbundle>

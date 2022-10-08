@@ -257,6 +257,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2405664212338326887">No conectado</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
+<translation id="2417486498593892439">Acceder a la red</translation>
 <translation id="2426051945783024481">El encuadre de la cámara se centró automáticamente</translation>
 <translation id="2427507373259914951">Clic con botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Antes de aceptar, debes confirmar que aparece la siguiente clave de contraseña en el dispositivo: <ph name="PASSKEY" />.</translation>
@@ -414,6 +415,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (puerto lateral derecho delantero)</translation>
 <translation id="3375634426936648815">Conectado</translation>
+<translation id="3378438761594387761">Aquí encontrarás tus descargas y capturas de pantalla recientes</translation>
 <translation id="3378442621503952303">Se está estableciendo conexión con el perfil. Espera unos minutos.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -497,7 +499,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
 <translation id="384082539148746321">¿Deseas borrar la plantilla?</translation>
-<translation id="3842239759367498783">Sigue leyendo desde tu dispositivo móvil (<ph name="TITLE" />)</translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="385300504083504382">Inicio</translation>
@@ -721,6 +722,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5083553833479578423">Desbloquea más funciones del Asistente.</translation>
 <translation id="509790653408515442">Cuando transmitas las apps del teléfono, aparecerán aquí</translation>
 <translation id="5098537242461068432">Se reabrieron el escritorio y las ventanas</translation>
+<translation id="5104236669533825617">No se puede crear la presentación en pantalla</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar el mes siguiente</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
@@ -766,6 +768,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (derecho)</translation>
 <translation id="5352250171825660495">El Tema oscuro está activado</translation>
 <translation id="5356963482258194581">Cambia entre los temas oscuro y claro. Haz clic con el botón derecho en el escritorio y elige Estilo y fondo de pantalla.</translation>
+<translation id="536019650977002321">Tu administrador no permite capturas de audio. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestaña</translation>
 <translation id="5379115545237091094">Realizaste demasiados intentos</translation>
 <translation id="5391307769715781764">¿Deseas reemplazar el escritorio?</translation>
@@ -996,7 +999,6 @@ Nueva instalación</translation>
 <translation id="6700713906295497288">Botón de menú IME</translation>
 <translation id="6707693040195709527">Se superó la fecha límite para cambiar el dispositivo a la versión anterior</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6713285437468012787">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" se sincronizó y ahora está disponible para todos los usuarios. Puedes ir a Configuración para eliminar esta sincronización.</translation>
 <translation id="6723839937902243910">Alimentación</translation>
 <translation id="6727969043791803658">Conectado (batería: <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1386,6 +1388,7 @@ Nueva instalación</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (puerto derecho en la parte posterior)</translation>
 <translation id="8940956008527784070">Batería baja (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Conectado, pero sin conexión a Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con tu Chromebook.</translation>
 <translation id="8982906748181120328">Visibilidad de Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>

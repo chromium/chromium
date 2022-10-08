@@ -101,7 +101,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
 <translation id="1450753235335490080">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Chọn ngôn ngữ cho Chrome</translation>
-<translation id="147113415845704694">Hãy thử nói “Thời tiết hôm nay thế nào?”</translation>
 <translation id="1474893630593443211">Tăng khả năng kiểm soát quảng cáo bạn thấy</translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
 <translation id="148482509007564431">Luồng lưu dấu trang</translation>
@@ -723,7 +722,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4925120120285606924">Ảnh chụp màn hình <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
 <translation id="4932247056774066048">Vì bạn đang đăng xuất khỏi một tài khoản thuộc quản lý của <ph name="DOMAIN_NAME" /> nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này. Tuy nhiên, dữ liệu đó sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
-<translation id="4941179133499732445">Nhấn vào micrô để tìm kiếm bằng giọng nói</translation>
 <translation id="4943703118917034429">Thực tế ảo</translation>
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
 <translation id="4950924971025849764">Khi bạn đăng nhập vào cùng một Tài khoản Google, các thiết bị khác có thể dùng điện thoại này làm khoá bảo mật.</translation>
@@ -747,7 +745,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="504456571576643789">Những yếu tố cần xem xét</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Các hình thức hoạt động khác<ph name="END_LINK1" /> có thể được lưu vào Tài khoản Google khi bạn đăng nhập. Bạn có thể xóa những dữ liệu này bất cứ lúc nào.</translation>
-<translation id="5061533557687621530">Để xem thông tin thời tiết, hãy nhấn vào micrô và nói “Thời tiết hôm nay thế nào?”</translation>
 <translation id="506254248375231072">Không có thẻ nào</translation>
 <translation id="5091199029769593641">Bạn sẽ sớm thấy các tin bài của <ph name="SITE_NAME" /> khi mở một thẻ mới. Các trang web bạn theo dõi sẽ được lưu trong tài khoản Google của bạn. Bạn có thể quản lý các trang web đó trong phần cài đặt Khám phá.</translation>
 <translation id="5091249083535528968">Dữ liệu sử dụng mở rộng</translation>
@@ -768,7 +765,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5171045022955879922">Tìm kiếm hoặc nhập URL</translation>
 <translation id="517734441743343109">Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_TOS_LINK" />Điều khoản dịch vụ<ph name="END_TOS_LINK" /> và <ph name="BEGIN_PRIVACY_LINK" />Chính sách\u00A0Quyền riêng tư<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
-<translation id="5188992787241350004">Tìm kiếm bằng giọng nói</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="5193988420012215838">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="5199929503336119739">Hồ sơ công việc</translation>

@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">버마어/미얀마어</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> 사용 가능</translation>
+<translation id="2417486498593892439">네트워크에 로그인</translation>
 <translation id="2425665904502185219">전체 파일 크기</translation>
 <translation id="2428749644083375155">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
 <translation id="2448312741937722512">유형</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">재생을 사용할 수 없음</translation>
 <translation id="383652340667548381">세르비아어</translation>
 <translation id="385051799172605136">뒤로</translation>
+<translation id="3851491607336266896">연결됨, 제한된 연결</translation>
 <translation id="3855472144336161447">독일어 Neo 2</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3866249974567520381">설명</translation>
@@ -697,7 +699,6 @@
 <translation id="6935521024859866267">180도 회전</translation>
 <translation id="6943836128787782965">HTTP 실패</translation>
 <translation id="6949408524333579394">세르비아어(음역)</translation>
-<translation id="6954309393500027528">관리자가 이 파일의 붙여넣기를 차단했습니다.</translation>
 <translation id="6960565108681981554">활성화되지 않았습니다. 이동통신사에 문의하세요.</translation>
 <translation id="696203921837389374">모바일 데이터를 이용한 동기화 사용 설정</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -939,6 +940,7 @@
 <translation id="8903931173357132290">졸업생</translation>
 <translation id="8912078710089354287">꼬리를 흔드는 개</translation>
 <translation id="8919081441417203123">덴마크어</translation>
+<translation id="8949925099261528566">연결됨, 인터넷 사용 불가</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="8997962250644902079">중국어(번체, 병음)</translation>
 <translation id="8998871447376656508">Google Drive에 여유 공간이 부족하여 업로드를 완료할 수 없습니다.</translation>

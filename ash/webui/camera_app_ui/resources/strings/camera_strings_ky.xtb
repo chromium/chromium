@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Документиңизди скандоо</translation>
 <translation id="1309250603447638106">Документти скандоо функциясы үчүн жаңыртуулар жүктөлүп алынууда</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Кирүү үчүн Search + солго жебени басыңыз.</translation>
+<translation id="1417314334557041815"><ph name="INDEX" />-бетти түзөтүү</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ажыратылды.</translation>
 <translation id="1473110567575736769">3 секунддук таймер</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Эч нерсе жаздырылган жок</translation>
 <translation id="1838104802459806957">Өйдө кыйшайтуу</translation>
+<translation id="1843105061469674856">Кошумча бетти скандоо</translation>
 <translation id="1851169887664797861">Камераны көзөмөлдөй турган кошумча каражаттар бар</translation>
 <translation id="1851616744363735765">ТЫНДЫРЫЛДЫ</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> файлын экспорттоо мүмкүн болбой жатат</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Камеранын резолюциясын өзгөртүүгө болбойт</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
 <translation id="4281620174117014503">Орточо резолюция</translation>
+<translation id="428234092390943511">Беттин эскизи</translation>
 <translation id="4329152592498422850">Чарчы сүрөт тартуу режимине которулуу</translation>
 <translation id="4340659173795395806">Эми бир нече беттен турган PDF файлын түзө аласыз</translation>
 <translation id="4383571725254449280">Басып чыгаруу майнаптуулугунун таржымалы</translation>

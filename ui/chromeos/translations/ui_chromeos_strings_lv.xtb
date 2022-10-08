@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Birmiešu (Mjanma)</translation>
 <translation id="2392369802118427583">Aktivizēt</translation>
 <translation id="240770291734945588">Pieejams: <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Pierakstīties tīklā</translation>
 <translation id="2425665904502185219">Failu kopējais lielums</translation>
 <translation id="2428749644083375155">Notiek kopēšana uz mapi <ph name="FOLDER_NAME" />. Kopējamo vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="2448312741937722512">Tips</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Atskaņošana nav pieejama</translation>
 <translation id="383652340667548381">Serbu valoda</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
+<translation id="3851491607336266896">Savienojums izveidots, ierobežota savienojamība</translation>
 <translation id="3855472144336161447">Vācu Neo 2</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3866249974567520381">Apraksts</translation>
@@ -697,7 +699,6 @@
 <translation id="6935521024859866267">Otrādi</translation>
 <translation id="6943836128787782965">Neizdevās iegūt HTTP</translation>
 <translation id="6949408524333579394">Serbu, transliterācija</translation>
-<translation id="6954309393500027528">Jūsu administrators is bloķējis šī faila ielīmēšanu.</translation>
 <translation id="6960565108681981554">Nav aktivizēts. Sazinieties ar mobilo sakaru operatoru.</translation>
 <translation id="696203921837389374">Iespējot mobilo datu sinhronizāciju</translation>
 <translation id="6965382102122355670">Labi</translation>
@@ -939,6 +940,7 @@
 <translation id="8903931173357132290">Absolvents</translation>
 <translation id="8912078710089354287">Suns luncina asti</translation>
 <translation id="8919081441417203123">Dāņu valoda</translation>
+<translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
 <translation id="8965697826696209160">Nepietiek vietas.</translation>
 <translation id="8997962250644902079">Ķīniešu (tradicionālā), piņjiņs</translation>
 <translation id="8998871447376656508">Jūsu Google diskā nepietiek vietas, lai pabeigtu augšupielādi.</translation>

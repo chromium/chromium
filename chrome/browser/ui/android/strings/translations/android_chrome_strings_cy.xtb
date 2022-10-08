@@ -101,7 +101,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="1448440926884431741">Trefnu eich cynhyrchion sy'n cael eu dilyn yn Nodau tudalen</translation>
 <translation id="1450753235335490080">Methu â rhannu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Dewiswch iaith Chrome</translation>
-<translation id="147113415845704694">Rhowch gynnig ar “Beth yw'r tywydd heddiw?”</translation>
 <translation id="1474893630593443211">Mwy o reolaeth dros yr hysbysebion rydych yn eu gweld</translation>
 <translation id="1477626028522505441">Wedi methu â lawrlwytho <ph name="FILE_NAME" /> oherwydd problemau gweinydd.</translation>
 <translation id="148482509007564431">Llif cadw nodau tudalen</translation>
@@ -723,7 +722,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4925120120285606924">Sgrinlun <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Bydd eich cyfrineiriau'n cael eu hallforio a'u lawrlwytho fel ffeil testun. Byddant yn weladwy i unrhyw un ac unrhyw ap sydd â mynediad at y ffolder cyrchfan.</translation>
 <translation id="4932247056774066048">Oherwydd eich bod yn allgofnodi o gyfrif a reolir gan <ph name="DOMAIN_NAME" />, bydd eich data Chrome yn cael eu dileu o'r ddyfais hon. Bydd yn aros yn eich Cyfrif Google.</translation>
-<translation id="4941179133499732445">Tapiwch y meic i chwilio â'ch llais</translation>
 <translation id="4943703118917034429">Rhithwirionedd</translation>
 <translation id="4943872375798546930">Dim canlyniadau</translation>
 <translation id="4950924971025849764">Pan fyddwch wedi mewngofnodi i'r un Cyfrif Google, gall dyfeisiau eraill ddefnyddio'r ffôn hwn fel allwedd ddiogelwch.</translation>
@@ -747,7 +745,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5039804452771397117">Caniatáu</translation>
 <translation id="504456571576643789">Pethau i'w hystyried</translation>
 <translation id="5054455334322721892">Gall <ph name="BEGIN_LINK1" />mathau eraill o weithgarwch<ph name="END_LINK1" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
-<translation id="5061533557687621530">I wirio'r tywydd, tapiwch y meic a dywedwch “Beth yw'r tywydd heddiw?"</translation>
 <translation id="506254248375231072">Dim tabiau</translation>
 <translation id="5091199029769593641">Yn fuan, byddwch yn gweld straeon o <ph name="SITE_NAME" /> pan fyddwch yn agor tab newydd. Mae gwefannau rydych yn eu dilyn yn cael eu cadw yn eich cyfrif Google. Gallwch eu rheoli yn y gosodiadau Discover.</translation>
 <translation id="5091249083535528968">Data defnydd estynedig</translation>
@@ -768,7 +765,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5171045022955879922">Chwiliwch neu teipiwch URL</translation>
 <translation id="517734441743343109">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_TOS_LINK" />Telerau Gwasanaeth<ph name="END_TOS_LINK" /> a'r <ph name="BEGIN_PRIVACY_LINK" />Polisi\u00A0Preifatrwydd<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Agor yn Chrome</translation>
-<translation id="5188992787241350004">Chwilio â'ch llais</translation>
 <translation id="5191251636205085390">Dysgu am a rheoli technolegau newydd sy'n anelu at ddisodli cwcis trydydd parti</translation>
 <translation id="5193988420012215838">Wedi'i gopïo i'ch clipfwrdd</translation>
 <translation id="5199929503336119739">Proffil gwaith</translation>

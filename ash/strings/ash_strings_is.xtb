@@ -257,6 +257,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2405664212338326887">Ekki tengt</translation>
 <translation id="2408955596600435184">Sláðu inn PIN-númerið þitt</translation>
 <translation id="2412593942846481727">Uppfærsla í boði</translation>
+<translation id="2417486498593892439">Skrá inn á net</translation>
 <translation id="2426051945783024481">Myndavélarrammi miðjusettur sjálfkrafa</translation>
 <translation id="2427507373259914951">Vinstrismella</translation>
 <translation id="2429753432712299108">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ vill fá heimild til að parast. Áður en þú samþykkir skaltu staðfesta að þessi aðgangslykill birtist á því tæki: <ph name="PASSKEY" /></translation>
@@ -497,7 +498,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="383058930331066723">Kveikt er á rafhlöðusparnaði</translation>
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
 <translation id="384082539148746321">Eyða sniðmáti?</translation>
-<translation id="3842239759367498783">Haltu áfram að lesa í fartækinu <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Engar netupplýsingar tiltækar</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="385300504083504382">Byrjun</translation>
@@ -998,7 +998,6 @@ Ný uppsetning</translation>
 <translation id="6700713906295497288">IME-valmyndarhnappur</translation>
 <translation id="6707693040195709527">Færsla tækisins í fyrri útgáfu er komin fram yfir tíma</translation>
 <translation id="6710213216561001401">Til baka</translation>
-<translation id="6713285437468012787">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ var parað og er nú aðgengilegt öllum notendum. Þú getur fjarlægt þessa pörun í stillingum.</translation>
 <translation id="6723839937902243910">Orka</translation>
 <translation id="6727969043791803658">Tengt, <ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1388,6 +1387,7 @@ Ný uppsetning</translation>
 <translation id="8936501819958976551">óvirkt</translation>
 <translation id="8938800817013097409">USB-C tæki (hægra tengi að aftan)</translation>
 <translation id="8940956008527784070">Rafhlaða að tæmast (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Tengt, enginn netaðgangur</translation>
 <translation id="8951539504029375108">Aðeins samþykkt Thunderbolt-tæki eru samhæf Chromebook</translation>
 <translation id="8982906748181120328">Nærsýnileiki</translation>
 <translation id="8983038754672563810">HSPA</translation>

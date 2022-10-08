@@ -266,6 +266,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2405664212338326887">Not connected</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2412593942846481727">Update available</translation>
+<translation id="2417486498593892439">Sign in to network</translation>
 <translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
@@ -508,7 +509,6 @@ Connect your device to power.</translation>
 <translation id="383058930331066723">Battery saver mode is on</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
 <translation id="384082539148746321">Delete template?</translation>
-<translation id="3842239759367498783">Continue reading from your mobile device <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="385300504083504382">Beginning</translation>
@@ -1009,7 +1009,6 @@ New install</translation>
 <translation id="6700713906295497288">IME menu button</translation>
 <translation id="6707693040195709527">Device change to previous version is overdue</translation>
 <translation id="6710213216561001401">Previous</translation>
-<translation id="6713285437468012787">Bluetooth device "<ph name="DEVICE_NAME" />" has been paired and is now available to all users. You may remove this pairing using Settings.</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1399,6 +1398,7 @@ New install</translation>
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
 <translation id="8940956008527784070">Battery low (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8951539504029375108">Only approved Thunderbolt devices are compatible with your Chromebook</translation>
 <translation id="8982906748181120328">Nearby visibility</translation>
 <translation id="8983038754672563810">HSPA</translation>

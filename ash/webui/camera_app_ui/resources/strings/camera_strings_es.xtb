@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Escanear tu documento</translation>
 <translation id="1309250603447638106">Descargando actualizaciones para la función de escanear documentos</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pulsa la tecla de búsqueda y la flecha hacia la izquierda para acceder a ellos.</translation>
+<translation id="1417314334557041815">Editar página <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> está desenchufada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">No se ha grabado nada</translation>
 <translation id="1838104802459806957">Inclinar hacia arriba</translation>
+<translation id="1843105061469674856">Escanear otra página más</translation>
 <translation id="1851169887664797861">Controles de cámara adicionales disponibles</translation>
 <translation id="1851616744363735765">EN PAUSA</translation>
 <translation id="1862930711583847113">No se puede exportar <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Esta cámara no puede cambiar de resolución</translation>
 <translation id="4269820728363426813">Copiar la dirección del enlace</translation>
 <translation id="4281620174117014503">Resolución media</translation>
+<translation id="428234092390943511">Miniatura de la página</translation>
 <translation id="4329152592498422850">Cambiar para hacer una foto cuadrada</translation>
 <translation id="4340659173795395806">Ahora puedes crear PDFs de varias páginas</translation>
 <translation id="4383571725254449280">Imprimir registros de rendimiento</translation>

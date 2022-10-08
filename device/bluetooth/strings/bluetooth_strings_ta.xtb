@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1412802024419177173">மோடம் (<ph name="ADDRESS" />)</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />, மவுஸ்</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />, கீபோர்டு மற்றும் மவுஸ் சேர்க்கை</translation>
 <translation id="2616803374438260326">கீபோர்டு/சுட்டி (<ph name="ADDRESS" />)</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />, வெளிப்புற சாதனம்</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />, டேப்லெட்</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />, மொபைல்</translation>
 <translation id="3273951168350045122">கீபோர்டு (<ph name="ADDRESS" />)</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />, கம்ப்யூட்டர்</translation>
 <translation id="4287283380557401002">கார் ஆடியோ (<ph name="ADDRESS" />)</translation>
 <translation id="430326050669417502">ஜாய்ஸ்டிக் (<ph name="ADDRESS" />)</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />, ஆடியோ சாதனம்</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />, வீடியோ சாதனம்</translation>
 <translation id="5271696982761495740">டேப்லெட் (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">அறியாத அல்லது ஆதரிக்கப்படாத சாதனம் (<ph name="ADDRESS" />)</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />, மோடம்</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />, கார் ஆடியோ சாதனம்</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />, கீபோர்டு</translation>
 <translation id="654594702871184195">ஆடியோ (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">கம்ப்யூட்டர் (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, ஜாய்ஸ்டிக்</translation>
 <translation id="7501330106833014351">கேம்பேட் (<ph name="ADDRESS" />)</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />, கேம்பேட்</translation>
 <translation id="8866374292072238753">வீடியோ (<ph name="ADDRESS" />)</translation>
 <translation id="8952558712545617651">சுட்டி (<ph name="ADDRESS" />)</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />, அறியப்படாத சாதன வகை</translation>
 <translation id="907431882454731668">வெளிப்புற சாதனம் (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">ஃபோன் (<ph name="ADDRESS" />)</translation>
 </translationbundle>

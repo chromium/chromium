@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Numériser votre document</translation>
 <translation id="1309250603447638106">Téléchargement des mises à jour pour la numérisation de documents en cours…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche et flèche vers la gauche pour y accéder.</translation>
+<translation id="1417314334557041815">Modifier la page <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> est débranchée.</translation>
 <translation id="1473110567575736769">Minuterie de trois secondes</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Rien n'a été enregistré</translation>
 <translation id="1838104802459806957">Incliner vers le haut</translation>
+<translation id="1843105061469674856">Numériser une page supplémentaire</translation>
 <translation id="1851169887664797861">De nouvelles commandes sont offertes pour l'appareil photo</translation>
 <translation id="1851616744363735765">INTERROMPU</translation>
 <translation id="1862930711583847113">Impossible d'exporter <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">La résolution de cette caméra n'est pas modifiable</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4281620174117014503">Résolution moyenne</translation>
+<translation id="428234092390943511">Miniature de la page</translation>
 <translation id="4329152592498422850">Bouton permettant de prendre une photo carrée</translation>
 <translation id="4340659173795395806">Vous pouvez maintenant créer un PDF multipage</translation>
 <translation id="4383571725254449280">Imprimer les journaux de performance</translation>

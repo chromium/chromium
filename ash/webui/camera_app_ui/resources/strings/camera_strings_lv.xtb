@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Dokumenta skenēšana</translation>
 <translation id="1309250603447638106">Notiek atjauninājumu lejupielāde dokumentu skenēšanai.</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Lai piekļūtu tām, vienlaikus nospiediet meklēšanas taustiņu un kreiso bulttaustiņu.</translation>
+<translation id="1417314334557041815">Rediģēt <ph name="INDEX" />. lapu</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1467231725790366244">Kamera <ph name="CAMERA" /> ir atvienota.</translation>
 <translation id="1473110567575736769">3 sekunžu taimeris</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nekas nav ierakstīts</translation>
 <translation id="1838104802459806957">Pavirzīt augšup</translation>
+<translation id="1843105061469674856">Skenēt papildu lapu</translation>
 <translation id="1851169887664797861">Ir pieejamas papildu kameras vadīklas</translation>
 <translation id="1851616744363735765">APTURĒTA</translation>
 <translation id="1862930711583847113">Nevar eksportēt failu <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Šai kamerai nevar mainīt izšķirtspēju</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
 <translation id="4281620174117014503">Vidēja izšķirtspēja</translation>
+<translation id="428234092390943511">Lapas sīktēls</translation>
 <translation id="4329152592498422850">Pārslēgt uz kvadrātveida fotoattēlu uzņemšanu</translation>
 <translation id="4340659173795395806">Tagad varat izveidot PDF failu ar vairākām lapām.</translation>
 <translation id="4383571725254449280">Drukāt veiktspējas žurnālus</translation>

@@ -257,6 +257,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2405664212338326887">No connectat</translation>
 <translation id="2408955596600435184">Introdueix el PIN</translation>
 <translation id="2412593942846481727">Hi ha una actualització disponible</translation>
+<translation id="2417486498593892439">Inicia la sessió a la xarxa</translation>
 <translation id="2426051945783024481">L'enquadrament de la càmera s'ha centrat automàticament</translation>
 <translation id="2427507373259914951">Fes clic amb el botó esquerre</translation>
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
@@ -497,7 +498,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="383058930331066723">El mode d'estalvi de bateria està activat</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
 <translation id="384082539148746321">Vols suprimir la plantilla?</translation>
-<translation id="3842239759367498783">Continua la lectura des del dispositiu mòbil <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="385300504083504382">Principi</translation>
@@ -998,7 +998,6 @@ Instal·lació nova</translation>
 <translation id="6700713906295497288">Botó del menú d'IME</translation>
 <translation id="6707693040195709527">El canvi del dispositiu a la versió anterior ha vençut</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6713285437468012787">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" s'ha vinculat i ja està disponible per a tots els usuaris. Podeu eliminar la vinculació a Configuració.</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
@@ -1385,6 +1384,7 @@ Instal·lació nova</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Connectat, sense Internet</translation>
 <translation id="8951539504029375108">Només els dispositius Thunderbolt aprovats són compatibles amb el teu Chromebook</translation>
 <translation id="8982906748181120328">Visibilitat Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>

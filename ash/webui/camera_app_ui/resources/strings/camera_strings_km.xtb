@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1113173431709655881">មុខងារ​កាមេរ៉ា</translation>
 <translation id="1153190633558910465">បិទ​ក្រឡា</translation>
 <translation id="1175958423215084756">បានរកឃើញ​តំណ។ <ph name="HOSTNAME" /></translation>
@@ -9,6 +10,7 @@
 <translation id="1300209025925956156">ស្កេន​ឯកសារ​របស់អ្នក</translation>
 <translation id="1309250603447638106">កំពុងទាញយកកំណែ​ថ្មីសម្រាប់ការស្កេនឯកសារ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />។ Search + ព្រួញទៅ​ឆ្វេង ដើម្បីចូលប្រើ។</translation>
+<translation id="1417314334557041815">កែ​ទំព័រទី <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ត្រូវបានផ្ដាច់។</translation>
 <translation id="1473110567575736769">កម្មវិធីកំណត់ម៉ោងរាប់ថយក្រោយ 3 វិនាទី</translation>
@@ -18,8 +20,10 @@
 <translation id="1588438908519853928">ធម្មតា</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">មិនបានថត​អ្វី​សោះ</translation>
 <translation id="1838104802459806957">ផ្អៀង​ឡើងលើ</translation>
+<translation id="1843105061469674856">ស្កេនទំព័របន្ថែម</translation>
 <translation id="1851169887664797861">មាន​ការគ្រប់គ្រង​កាមេរ៉ាបន្ថែម</translation>
 <translation id="1851616744363735765">បាន​ផ្អាក</translation>
 <translation id="1862930711583847113">មិនអាច​នាំចេញ <ph name="FILE" /> បានទេ</translation>
@@ -77,6 +81,7 @@
 <translation id="414641094616694804">កាមេរ៉ានេះ​មិនអាចប្ដូរ​កម្រិតគុណភាព​បានទេ</translation>
 <translation id="4269820728363426813">ចម្លងអាសយដ្ឋានតំណ</translation>
 <translation id="4281620174117014503">កម្រិតគុណភាព​មធ្យម</translation>
+<translation id="428234092390943511">រូបក្របតំណាងទំព័រ</translation>
 <translation id="4329152592498422850">ប្ដូរទៅ​ថតរូប​ទម្រង់ការ៉េ</translation>
 <translation id="4340659173795395806">ឥឡូវនេះ អ្នក​អាច​បង្កើត PDF ច្រើន​ទំព័រ​បានហើយ</translation>
 <translation id="4383571725254449280">កំណត់​ហេតុប្រតិបត្តិការនៃការបោះពុម្ព</translation>
@@ -90,6 +95,7 @@
 <translation id="4705093842003735294">កម្រិតគុណភាព​ពេញលេញ</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">ផ្សាយការថត​វីដេអូ​ទៅបណ្ដាញច្រើន</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">សមាមាត្រ​រូបថត</translation>
 <translation id="5057360777601936059">កាមេរ៉ារបស់អ្នកមិន​អាច​ប្រើបានទេនៅពេលនេះ។
         សូមពិនិត្យមើល​ថាតើ​កាមេរ៉ា​ត្រូវបាន​ភ្ជាប់​ត្រឹមត្រូវ​ឬអត់។</translation>
@@ -98,6 +104,7 @@
 <translation id="5266635337630551423">ជ្រុងខាងលើផ្នែកខាងឆ្វេងនៃឯកសារ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5320594929574852403">កំពុងផ្លាស់ទី​ក្នុងទិសដៅ​ខាងឆ្វេង</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">ដាក់គែម​ឯកសារ​ទាំងអស់​នៅក្នុងស៊ុម។ ការស្កេន​ដំណើរការ​បានល្អបំផុត ប្រសិនបើ​ឯកសារ និង​ផ្ទៃខាងក្រោយ​មានពណ៌ខុសគ្នា​។</translation>
 <translation id="5662366948659129155">កំពុង​ស្កេន​ទំព័រទី <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">ការ៉េ</translation>

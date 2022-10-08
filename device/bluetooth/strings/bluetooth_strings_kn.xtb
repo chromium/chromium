@@ -2,32 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1412802024419177173">ಮೋಡೆಮ್ (<ph name="ADDRESS" />)</translation>
-<translation id="1426891891566455573"><ph name="DEVICE_NAME" />, ಮೌಸ್</translation>
-<translation id="2162295688984026195"><ph name="DEVICE_NAME" />, ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್ ಸಂಯೋಜನೆ</translation>
 <translation id="2616803374438260326">ಕೀಬೋರ್ಡ್/ಮೌಸ್ (<ph name="ADDRESS" />)</translation>
-<translation id="2624917159090553505"><ph name="DEVICE_NAME" />, ಬಾಹ್ಯ ಸಾಧನ</translation>
-<translation id="2894380829637873837"><ph name="DEVICE_NAME" />, ಟ್ಯಾಬ್ಲೆಟ್</translation>
-<translation id="3036527976720628348"><ph name="DEVICE_NAME" />, ಫೋನ್</translation>
 <translation id="3273951168350045122">ಕೀಬೋರ್ಡ್ (<ph name="ADDRESS" />)</translation>
-<translation id="3689300613247337921"><ph name="DEVICE_NAME" />, ಕಂಪ್ಯೂಟರ್</translation>
 <translation id="4287283380557401002">ಕಾರು ಆಡಿಯೊ (<ph name="ADDRESS" />)</translation>
 <translation id="430326050669417502">ಜಾಯ್‌ಸ್ಟಿಕ್ (<ph name="ADDRESS" />)</translation>
-<translation id="4698630591226285015"><ph name="DEVICE_NAME" />, ಆಡಿಯೋ ಸಾಧನ</translation>
-<translation id="4986357476502426173"><ph name="DEVICE_NAME" />, ವೀಡಿಯೊ ಸಾಧನ</translation>
 <translation id="5271696982761495740">ಟ್ಯಾಬ್ಲೆಟ್ (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">ಅಪರಿಚಿತ ಅಥವಾ ಬೆಂಬಲಿತವಲ್ಲದ ಸಾಧನ (<ph name="ADDRESS" />)</translation>
-<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
-<translation id="5716052956047449618"><ph name="DEVICE_NAME" />, ಮೋಡೆಮ್</translation>
-<translation id="6459740836740815150"><ph name="DEVICE_NAME" />, ಕಾರ್ ಆಡಿಯೋ ಸಾಧನ</translation>
-<translation id="6542922424766292144"><ph name="DEVICE_NAME" />, ಕೀಬೋರ್ಡ್</translation>
 <translation id="654594702871184195">ಆಡಿಯೋ (<ph name="ADDRESS" />)</translation>
 <translation id="6744468237221042970">ಕಂಪ್ಯೂಟರ್ (<ph name="ADDRESS" />)</translation>
-<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, ಜಾಯ್‌ಸ್ಟಿಕ್</translation>
 <translation id="7501330106833014351">ಗೇಮ್‌ಪ್ಯಾಡ್ (<ph name="ADDRESS" />)</translation>
-<translation id="8613368722576151038"><ph name="DEVICE_NAME" />, ಗೇಮ್‌ಪ್ಯಾಡ್</translation>
 <translation id="8866374292072238753">ವೀಡಿಯೊ (<ph name="ADDRESS" />)</translation>
 <translation id="8952558712545617651">ಮೌಸ್ (<ph name="ADDRESS" />)</translation>
-<translation id="8961448405689538648"><ph name="DEVICE_NAME" />, ಅಪರಿಚಿತ ಸಾಧನದ ಪ್ರಕಾರ</translation>
 <translation id="907431882454731668">ಪೆರಿಫರಲ್ (<ph name="ADDRESS" />)</translation>
 <translation id="978248992969828584">ಫೋನ್ (<ph name="ADDRESS" />)</translation>
 </translationbundle>

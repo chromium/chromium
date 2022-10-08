@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Skanowanie dokumentu</translation>
 <translation id="1309250603447638106">Pobieram aktualizacje dotyczące skanowania dokumentów</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
+<translation id="1417314334557041815">Edytuj stronę <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">3-sekundowy samowyzwalacz</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nic nie zostało nagrane</translation>
 <translation id="1838104802459806957">Przechyl do góry</translation>
+<translation id="1843105061469674856">Skanuj dodatkową stronę</translation>
 <translation id="1851169887664797861">Dostępne dodatkowe ustawienia aparatu</translation>
 <translation id="1851616744363735765">WSTRZYMANO</translation>
 <translation id="1862930711583847113">Nie udało się wyeksportować pliku <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Ta kamera nie umożliwia zmiany rozdzielczości</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
 <translation id="4281620174117014503">Rozdzielczość średnia</translation>
+<translation id="428234092390943511">Miniatura strony</translation>
 <translation id="4329152592498422850">Przełącz, by zrobić kwadratowe zdjęcie</translation>
 <translation id="4340659173795395806">Możesz teraz utworzyć wielostronicowy plik PDF</translation>
 <translation id="4383571725254449280">Drukuj dzienniki wydajności</translation>

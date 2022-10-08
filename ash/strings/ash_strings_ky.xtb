@@ -266,6 +266,7 @@
 <translation id="2405664212338326887">Туташкан жок</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2412593942846481727">Жаңы версия бар</translation>
+<translation id="2417486498593892439">Тармакка кирүү</translation>
 <translation id="2426051945783024481">Камеранын алкагы автоматтык түрдө ортого коюлду</translation>
 <translation id="2427507373259914951">Сол баскычын чыкылдатуу</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат суроодо. Уруксат берүүдөн мурун, төмөнкү купуя сөз айкашы түзмөгүңүздө көрүнүп тургандыгын ырастаңыз: <ph name="PASSKEY" /></translation>
@@ -423,6 +424,7 @@
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3371140690572404006">USB-C түзмөгү (оң жактагы маңдайкы оюкча)</translation>
 <translation id="3375634426936648815">Туташты</translation>
+<translation id="3378438761594387761">Акыркы жүктөп алган нерселериңизди жана скриншотторду бул жерден табасыз</translation>
 <translation id="3378442621503952303">Профилге туташууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="3386978599540877378">толук экран режиминдеги лупа</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -507,7 +509,6 @@
 <translation id="383058930331066723">Батареяны үнөмдөгүч режими күйүк</translation>
 <translation id="383629559565718788">Баскычтоптун жөндөөлөрүн көрсөтүү</translation>
 <translation id="384082539148746321">Үлгүнү өчүрөсүзбү?</translation>
-<translation id="3842239759367498783"><ph name="TITLE" /> мобилдик түзмөгүңүздөн улантып окуңуз</translation>
 <translation id="3846575436967432996">Бир дагы тармак маалыматы жок</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="385300504083504382">Киришүү</translation>
@@ -731,6 +732,7 @@
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="509790653408515442">Телефонуңуздагы колдонмолорду алып ойнотконуңузда, алар ушул жерде көрсөтүлөт</translation>
 <translation id="5098537242461068432">Иш такта жана терезелер кайра ачылды</translation>
+<translation id="5104236669533825617">Скринкаст түзүлбөй жатат</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5117590920725113268">Кийинки айды көрсөтүү</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
@@ -776,6 +778,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (оң)</translation>
 <translation id="5352250171825660495">Караңгы тема күйүк</translation>
 <translation id="5356963482258194581">Караңгы жана жарык темалардын арасында которулуңуз. Иш тактада оң баскычын чыкылдатып, "Тушкагаз жана стилди" тандаңыз.</translation>
+<translation id="536019650977002321">Администраторуңуз аудио жаздырууга тыюу салган. Көбүрөөк маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Бул өтмөккө өтүү</translation>
 <translation id="5379115545237091094">Өтө көп аракеттер аткарылды</translation>
 <translation id="5391307769715781764">Сакталган иш тактаны алмаштырасызбы?</translation>
@@ -1006,7 +1009,6 @@
 <translation id="6700713906295497288">IME меню баскычы</translation>
 <translation id="6707693040195709527">Түзмөктү мурунку версияга өзгөртүүнүн мөөнөтү бүттү</translation>
 <translation id="6710213216561001401">Мурунку</translation>
-<translation id="6713285437468012787">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташтырылып, эми ал бардык колдонуучуларга жеткиликтүү. Бул жупташууну Жөндөөлөрдөн алып салсаңыз болот.</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6727969043791803658">Туташып турат, батареянын деңгээли – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">дагы <ph name="COUNT" /></translation>
@@ -1396,6 +1398,7 @@
 <translation id="8936501819958976551">өчүрүлдү</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Туташып турат, Интернет жок</translation>
 <translation id="8951539504029375108">Ырасталган Thunderbolt түзмөктөрү гана Chromebook түзмөгүңүзгө шайкеш келет</translation>
 <translation id="8982906748181120328">Nearby'да көрүнүү</translation>
 <translation id="8983038754672563810">HSPA</translation>

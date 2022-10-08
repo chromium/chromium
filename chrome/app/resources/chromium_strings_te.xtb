@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1231839967188101156">ఆన్‌లో ఉన్నప్పుడు, Chromium ఇన్‌యాక్టివ్ ట్యాబ్‌ల నుండి మెమరీని ఖాళీ చేస్తుంది. దీని ద్వారా యాక్టివ్ ట్యాబ్‌లకు, ఇతర యాప్‌లకు మరిన్ని కంప్యూటర్ రిసోర్స్‌లు లభిస్తాయి, దీనితో Chromium వేగంగా పని చేస్తుంది. మీ ఇన్‌యాక్టివ్ ట్యాబ్‌లకు మీరు తిరిగి వచ్చినప్పుడు, అవి ఆటోమేటిక్‌గా మళ్లీ యాక్టివ్‌గా మారతాయి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">మెమరీ సేవర్ Chromiumను వేగవంతం చేస్తుంది</translation>
 <translation id="1315551408014407711">మీ కొత్త Chromium ప్రొఫైల్‍ను సెట్ అప్ చేయండి</translation>
 <translation id="1385859895174722837">Chromiumలో Google Assistant</translation>
 <translation id="1396446129537741364">Chromium పాస్‌వర్డ్‌లను చూపడానికి ప్రయత్నిస్తోంది.</translation>
@@ -207,6 +208,7 @@
 <translation id="6055895534982063517">కొత్త Chromium వెర్షన్ అందుబాటులో ఉంది, ఇది మునుపటి కంటే వేగవంతంగా ఉంటుంది.</translation>
 <translation id="6063093106622310249">&amp;Chromiumలో తెరవండి</translation>
 <translation id="6072279588547424923">Chromiumకు <ph name="EXTENSION_NAME" /> జోడించబడింది</translation>
+<translation id="6072463441809498330">Chromiumను వేగవంతం చేయండి</translation>
 <translation id="608006075545470555">ఈ బ్రౌజర్‌కు వర్క్ ప్రొఫైల్‌ను జోడించండి</translation>
 <translation id="6096348254544841612">Chromiumను అనుకూలంగా మార్చండి మరియు నియంత్రించండి. అప్‌డేట్ అందుబాటులో ఉంది.</translation>
 <translation id="6119438414301547735">Chromium టూల్‌బార్‌లో యాక్సెస్ రిక్వెస్ట్‌లను చూపడానికి ఎక్స్‌టెన్షన్‌ను అనుమతించండి</translation>

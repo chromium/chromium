@@ -83,11 +83,13 @@
 <translation id="753732157349120914">ଟାବ୍ ସ୍ୱିଚର୍</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Googleରୁ <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{Googleରୁ <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7559245342362162951">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ ଗ୍ରୀଡ୍‌ରେ ଗୋଷ୍ଠୀର ଟାବ୍‌ଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ ସେୟାର କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ ସେୟାର କରନ୍ତୁ}}</translation>
 <translation id="7792771145871471484">ପ୍ରସ୍ତାବଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_ONE" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}other{ଚୟନ କରାଯାଇଥିବା <ph name="TABS_COUNT_MANY" />ଟି ଟାବକୁ ଗ୍ରୁପ୍ କରନ୍ତୁ}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ରେଟିଂ, <ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା}}</translation>
 <translation id="7885132941432959125">ଟାବ୍‍କୁ ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="7966321538264951561">ପ୍ରସ୍ତାବଗୁଡ଼ିକୁ ଖାରଜ କରନ୍ତୁ।</translation>
+<translation id="8018192911041116887">ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8029301326595421733">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="814503310257431685">ସମସ୍ତ ଦେଖନ୍ତୁ</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>

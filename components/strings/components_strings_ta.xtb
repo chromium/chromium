@@ -396,6 +396,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{ஏதுமில்லை}=1{1 தளம்}other{# தளங்கள்}}</translation>
 <translation id="1924727005275031552">புதிய முகவரி</translation>
 <translation id="1927439593081478069">Chrome பாதுகாப்புச் சரிபார்ப்பை இயக்குவதற்கான பட்டன். Chrome அமைப்புகளில் பாதுகாப்புச் சரிபார்ப்பை இயக்க, Enter பட்டனை அழுத்துங்கள்</translation>
+<translation id="1935995810530254458">பரவாயில்லை நகலெடு</translation>
 <translation id="1939175642807587452">அறிவிப்புகளை அனுப்ப அனுமதி கேட்க வேண்டும்</translation>
 <translation id="1943994668912612445">வடிவமைப்பு</translation>
 <translation id="1945968466830820669">உங்கள் நிறுவனத்தின் கணக்கிற்கான அணுகலை நீங்கள் இழக்கக்கூடும் அல்லது அடையாளத் திருட்டை எதிர்கொள்ளக்கூடும். இப்போதே உங்கள் கடவுச்சொல்லை மாற்றும்படி Chromium பரிந்துரைக்கிறது.</translation>
@@ -449,6 +450,7 @@
 <translation id="2085876078937250610">சேமி…</translation>
 <translation id="2088086323192747268">ஒத்திசைவை நிர்வகிப்பதற்கான பட்டன். எந்தெந்தத் தகவல்களை ஒத்திசைக்க வேண்டும் என்பதை Chrome அமைப்புகளில் நிர்வகிக்க, Enter விசையை அழுத்துங்கள்</translation>
 <translation id="2091887806945687916">ஒலி</translation>
+<translation id="2093982008204312032">கடவுச்சொற்களை நிரப்புவதற்காக Windows Helloவை முடக்க Google Chrome முயல்கிறது.</translation>
 <translation id="2094505752054353250">டொமைன் பொருந்தவில்லை</translation>
 <translation id="2099652385553570808">டிரிப்பில் ஸ்டேப்பில் லெஃப்ட்</translation>
 <translation id="2101225219012730419">பதிப்பு:</translation>
@@ -1139,6 +1141,7 @@
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} பக்கத்தைக் கொண்ட PDF ஆவணம்}other{{COUNT} பக்கங்களைக் கொண்ட PDF ஆவணம்}}</translation>
 <translation id="4022639246993848966">3.5x5</translation>
 <translation id="4023431997072828269">பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தி இந்தப் படிவம் சமர்ப்பிக்கப்படுவதால் உங்கள் தகவல்களைப் பிறரால் பார்க்க முடியும்.</translation>
+<translation id="4024923292610332139">கடவுச்சொற்களை நிரப்புவதற்காக TouchIDயை முடக்க</translation>
 <translation id="4025913568718019429">Google தனியுரிமை அமைப்புகளை நிர்வகிப்பதற்கான பட்டன். Google கணக்கின் தனியுரிமை அமைப்புகளைப் பார்க்க, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4030383055268325496">&amp;சேர்த்தலைச் செயல்தவிர்</translation>
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
@@ -1200,6 +1203,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">விலையைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="4194250254487269611">உங்கள் கார்டு விவரங்களைத் தற்போது சேமிக்க இயலாது</translation>
+<translation id="4195643157523330669">புதிய தாவலில் திற</translation>
 <translation id="4196861286325780578">&amp;நகர்த்தலை மீண்டும் செய்</translation>
 <translation id="4202554117186904723">ரோல் 5</translation>
 <translation id="4203769790323223880">கேமரா அனுமதி வழங்கப்படவில்லை</translation>
@@ -1255,6 +1259,7 @@
 <translation id="42981349822642051">விரி</translation>
 <translation id="4300675098767811073">மல்டிப்பில் பஞ்ச் ரைட்</translation>
 <translation id="4302514097724775343">விளையாட டைனோசரைத் தட்டுங்கள்</translation>
+<translation id="4304049446746819918">{0,plural, =1{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைலை நகர்த்துவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைல்களை நகர்த்துவதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="4305666528087210886">உங்கள் ஃபைலை அணுக முடியவில்லை</translation>
 <translation id="4306529830550717874">முகவரியைச் சேமிக்கவா?</translation>
 <translation id="4306812610847412719">கிளிப்போர்டு</translation>
@@ -1630,6 +1635,7 @@
 <translation id="5254043433801397071">அச்சிடுவதற்கான உள்ளடக்கத்தை மேம்படுத்து</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">பரவாயில்லை, படமெடு</translation>
+<translation id="5257739419779698609">{0,plural, =1{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைலை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைல்களை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="5266128565379329178">பைண்டு டாப்</translation>
 <translation id="5269225904387178860">குவாட் பஞ்ச் பாட்டம்</translation>
 <translation id="5269999699920406580">சிஸ்டம் முழுவதிலும் பயன்படுத்தப்படும் அம்சங்களை உரிமையாளரால் மட்டுமே அமைக்க முடியும்: <ph name="OWNER_EMAIL" /></translation>
@@ -1692,6 +1698,7 @@
 <translation id="5412236728747081950">மிகவும் தொடர்புடைய விளம்பரங்களைக் காட்டுவதற்காக Chromeமில் இருந்து உங்கள் ஆர்வங்களை இந்தத் தளம் பெறுகிறது</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ஸ்டேக்கர் 4</translation>
+<translation id="5414511064953050917">பரவாயில்லை நகர்த்து</translation>
 <translation id="5421136146218899937">உலாவிய தரவை அழி...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{தளங்கள் எதுவும் தடுக்கப்படவில்லை}=1{1 தளம் தடுக்கப்பட்டுள்ளது}other{# தளங்கள் தடுக்கப்பட்டுள்ளன}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> உங்களுக்கு அறிவிப்புகளை அனுப்ப விரும்புகிறது</translation>
@@ -2312,6 +2319,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
+<translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
 <translation id="7174545416324379297">ஒன்றிணைக்கப்பட்டது</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2920,6 +2928,7 @@
 <translation id="8763986294015493060">தற்போது திறந்துள்ள மறைநிலைச் சாளரங்கள் அனைத்தையும் மூடும்</translation>
 <translation id="8766943070169463815">பாதுகாப்பான பேமெண்ட்டின் அனுமதிச் சான்றை அங்கீகரிப்பதற்கான தாள் திறக்கப்பட்டது</translation>
 <translation id="8767765348545497220">உதவிக் குமிழை மூடும்</translation>
+<translation id="877348612833018844">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகர்த்த வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகர்த்த வேண்டுமா?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">பைக்குகள்</translation>
 <translation id="8790007591277257123">&amp;நீக்குதலை மீண்டும் செய்</translation>

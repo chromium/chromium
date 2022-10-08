@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Сканіраванне дакумента</translation>
 <translation id="1309250603447638106">Ідзе спампоўванне абнаўленняў для функцыі сканіравання дакументаў</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Каб перайсці да іх, націсніце кнопку Пошук + стрэлка ўлева.</translation>
+<translation id="1417314334557041815">Рэдагаваць старонку <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камера "<ph name="CAMERA" />" адключана.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунды</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Даныя не запісаны</translation>
 <translation id="1838104802459806957">Нахіліць уверх</translation>
+<translation id="1843105061469674856">Сканіраваць яшчэ адну старонку</translation>
 <translation id="1851169887664797861">Дадатковыя элементы кіравання камерай даступныя</translation>
 <translation id="1851616744363735765">ПРЫПЫНЕНА</translation>
 <translation id="1862930711583847113">Не ўдалося экспартаваць файл "<ph name="FILE" />"</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Гэта камера не можа змяняць раздзяляльнасць</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
 <translation id="4281620174117014503">Сярэдняя раздзяляльнасць</translation>
+<translation id="428234092390943511">Мініяцюра старонкі</translation>
 <translation id="4329152592498422850">Пераключыць на здымку квадратных фота</translation>
 <translation id="4340659173795395806">Цяпер вы можаце ствараць PDF-файлы з мноствам старонак</translation>
 <translation id="4383571725254449280">Журналы прадукцыйнасці друку</translation>

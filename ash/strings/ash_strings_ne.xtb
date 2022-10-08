@@ -496,7 +496,6 @@
 <translation id="383058930331066723">ब्याट्री सेभर मोड अन छ</translation>
 <translation id="383629559565718788">किबोर्डका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="384082539148746321">टेम्प्लेट मेटाउने हो?</translation>
-<translation id="3842239759367498783">आफ्नो मोबाइल यन्त्रमार्फत पढ्ने कार्य जारी राख्नुहोस् <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">सञ्जाल जानकारी उपलब्ध छैन</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
@@ -995,7 +994,6 @@
 <translation id="6700713906295497288">IME सम्बन्धी मेनुको बटन</translation>
 <translation id="6707693040195709527">यो डिभाइसमा अझै पनि अघिल्लो संस्करण रिस्टोर गरिएको छैन</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
-<translation id="6713285437468012787">ब्लुतुथ यन्त्र "<ph name="DEVICE_NAME" />" लाई जोडा मिलाइएको छ र अब सबै प्रयोगकर्ताहरूको लागि उपलब्ध छ। तपाइँले सेटिङहरू प्रयोग ग्रदै यस जोडालाई हटाउन सक्नुहुनेछ।</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>

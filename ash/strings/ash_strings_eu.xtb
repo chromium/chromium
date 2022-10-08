@@ -257,6 +257,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2405664212338326887">Konektatu gabe</translation>
 <translation id="2408955596600435184">Idatzi PINa</translation>
 <translation id="2412593942846481727">Eguneratu egin daiteke</translation>
+<translation id="2417486498593892439">Hasi saioa sarean</translation>
 <translation id="2426051945783024481">Erdiratu da automatikoki kamerako markoa</translation>
 <translation id="2427507373259914951">Egin klik ezkerreko botoiarekin</translation>
 <translation id="2429753432712299108">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailuak parekatzeko baimena nahi du. Onartu aurretik, berretsi gailu horretan pasakode hau agertzen dela: <ph name="PASSKEY" /></translation>
@@ -414,6 +415,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3371140690572404006">USB-C gailua (eskuinaldeko aurreko ataka)</translation>
 <translation id="3375634426936648815">Konektatuta</translation>
+<translation id="3378438761594387761">Azken deskargak eta pantaila-kapturak aurkituko dituzu hemen</translation>
 <translation id="3378442621503952303">Profilera konektatzen. Itxaron minutu batzuk.</translation>
 <translation id="3386978599540877378">pantaila osoko lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -497,7 +499,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="383058930331066723">Bateria-aurreztailea aktibatuta dago</translation>
 <translation id="383629559565718788">Erakutsi teklatuaren ezarpenak</translation>
 <translation id="384082539148746321">Txantiloia ezabatu nahi duzu?</translation>
-<translation id="3842239759367498783">Jarraitu irakurtzen gailu mugikorrean <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Ez dago sare-informazio erabilgarririk</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="385300504083504382">Hasiera</translation>
@@ -721,6 +722,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5083553833479578423">Desblokeatu Laguntzailea zerbitzuaren eginbide gehiago.</translation>
 <translation id="509790653408515442">Telefonoko aplikazioak zuzenean igortzen dituzunean, hemen agertuko dira</translation>
 <translation id="5098537242461068432">Ireki dira berriro lan-eremua eta leihoak</translation>
+<translation id="5104236669533825617">Ezin da sortu pantaila-bideoa</translation>
 <translation id="5107522548814527560">Sarea</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
@@ -766,6 +768,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5344128444027639014">% <ph name="BATTERY_PERCENTAGE" /> (eskuinekoa)</translation>
 <translation id="5352250171825660495">Aktibatuta dago gai iluna.</translation>
 <translation id="5356963482258194581">Aldatu gai ilunetik gai argira, eta alderantziz. Egin klik eskuineko botoiarekin mahaigainean eta hautatu Horma-papera eta estiloa.</translation>
+<translation id="536019650977002321">Administratzaileak ez du ematen audioa kapturatzeko baimenik. Informazio gehiago lortzeko, jarri harekin harremanetan.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Joan fitxa honetara</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
 <translation id="5391307769715781764">Gordetako lan-eremua ordeztu?</translation>
@@ -996,7 +999,6 @@ Berriki instalatu da</translation>
 <translation id="6700713906295497288">IME menu-botoia</translation>
 <translation id="6707693040195709527">Gailua aurreko bertsiora itzultzeko epemuga gainditu da</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
-<translation id="6713285437468012787">Bluetooth bidezko "<ph name="DEVICE_NAME" />" gailua parekatu egin da eta, beraz, erabiltzaile guztientzat erabilgarri dago. Parekatzea kentzeko, erabili Ezarpenak.</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="6727969043791803658">Konektatuta; bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="6732800389263199929">Beste <ph name="COUNT" /></translation>
@@ -1385,6 +1387,7 @@ Berriki instalatu da</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="8940956008527784070">Bateria gutxi (% <ph name="PERCENTAGE" />)</translation>
+<translation id="8949925099261528566">Konektatuta; ezin dago Interneteko konexiorik</translation>
 <translation id="8951539504029375108">Onartutako Thunderbolt bidezko gailuak soilik dira bateragarriak Chromebook-arekin</translation>
 <translation id="8982906748181120328">Nearby-ren ikusgaitasuna</translation>
 <translation id="8983038754672563810">HSPA</translation>

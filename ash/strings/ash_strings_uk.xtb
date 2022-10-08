@@ -257,6 +257,7 @@
 <translation id="2405664212338326887">Не підключено</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2412593942846481727">Доступне оновлення</translation>
+<translation id="2417486498593892439">Вхід у мережу</translation>
 <translation id="2426051945783024481">Камера центрується автоматично</translation>
 <translation id="2427507373259914951">Натиснути лівою кнопкою</translation>
 <translation id="2429753432712299108">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Перш ніж надати його, підтвердьте, що на пристрої відображається цей ключ доступу: <ph name="PASSKEY" /></translation>
@@ -414,6 +415,7 @@
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3371140690572404006">пристрій, під’єднаний до порту USB-C (праворуч на передній панелі)</translation>
 <translation id="3375634426936648815">Підключено</translation>
+<translation id="3378438761594387761">Тут з’являтимуться нещодавні завантаження й записи екрана</translation>
 <translation id="3378442621503952303">Триває підключення до профілю. Зачекайте кілька хвилин.</translation>
 <translation id="3386978599540877378">лупу для повноекранного режиму</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -496,7 +498,6 @@
 <translation id="383058930331066723">Режим енергозбереження ввімкнено</translation>
 <translation id="383629559565718788">Показати налаштування клавіатури</translation>
 <translation id="384082539148746321">Видалити шаблон?</translation>
-<translation id="3842239759367498783">Продовжити читати з мобільного пристрою <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Інформація про мережу не доступна</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">На початок</translation>
@@ -720,6 +721,7 @@
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
 <translation id="509790653408515442">Тут з’являтимуться додатки, які ви транслюєте з телефона</translation>
 <translation id="5098537242461068432">Робочий стіл і вікна знову відкрито</translation>
+<translation id="5104236669533825617">Не вдалося створити скрінкаст</translation>
 <translation id="5107522548814527560">Інтернет</translation>
 <translation id="5117590920725113268">Показати наступний місяць</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
@@ -765,6 +767,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Правий)</translation>
 <translation id="5352250171825660495">Темну тему ввімкнено</translation>
 <translation id="5356963482258194581">Ви можете перемикатися між темною та світлою темами. Для цього натисніть правою кнопкою миші будь-де на робочому столі й виберіть "Оформлення та стиль".</translation>
+<translation id="536019650977002321">Ваш адміністратор забороняє записувати звук. Щоб дізнатися більше, зверніться до нього.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на цю вкладку</translation>
 <translation id="5379115545237091094">Забагато спроб</translation>
 <translation id="5391307769715781764">Замінити збережений робочий стіл?</translation>
@@ -995,7 +998,6 @@
 <translation id="6700713906295497288">Кнопка меню IME</translation>
 <translation id="6707693040195709527">Кінцевий термін переходу пристрою до попередньої версії минув</translation>
 <translation id="6710213216561001401">Назад</translation>
-<translation id="6713285437468012787">Пристрій Bluetooth "<ph name="DEVICE_NAME" />" підключено. Він доступний для всіх користувачів. Відключити пристрій можна в Налаштуваннях.</translation>
 <translation id="6723839937902243910">Заряд</translation>
 <translation id="6727969043791803658">Під'єднано, акумулятор заряджено на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1385,6 +1387,7 @@
 <translation id="8936501819958976551">деактивовано</translation>
 <translation id="8938800817013097409">Пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="8940956008527784070">Низький заряд акумулятора (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8951539504029375108">З вашим Chromebook сумісні лише схвалені пристрої Thunderbolt</translation>
 <translation id="8982906748181120328">Видимість поблизу</translation>
 <translation id="8983038754672563810">HSPA</translation>

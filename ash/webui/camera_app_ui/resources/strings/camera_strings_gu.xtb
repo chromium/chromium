@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1057925581724305206">પૂર્ણ HD (1080p)</translation>
 <translation id="1113173431709655881">કૅમેરા મોડ</translation>
 <translation id="1153190633558910465">ગ્રિડ બંધ કરો</translation>
 <translation id="1175958423215084756">લિંકની જાણકારી મળી. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">સામાન્ય</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">કંઈ રેકોર્ડ થયું નથી</translation>
 <translation id="1838104802459806957">ઉપર ટિલ્ટ કરો</translation>
 <translation id="1843105061469674856">વધારાના પેજ સ્કૅન કરો</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">પૂર્ણ રિઝોલ્યુશન</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">મલ્ટિ-સ્ટ્રીમ સુવિધા વડે વીડિયો રેકોર્ડિંગ કરવું</translation>
+<translation id="4984613436295737187">ક્વોડ HD (1440p)</translation>
 <translation id="5034763830503483128">ફોટોનો સાપેક્ષ ગુણોત્તર</translation>
 <translation id="5057360777601936059">તમારો કૅમેરા હાલમાં ઉપલબ્ધ નથી.
 કૃપા કરીને તપાસો કે કૅમેરા યોગ્ય રીતે કનેક્ટ થયેલો છે.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">દસ્તાવેજનો સૌથી ઉપરનો ડાબો ખૂણો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5320594929574852403">ડાબી દિશામાં ખસેડી રહ્યાં છીએ</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">દસ્તાવેજના બધા ખૂણાઓને ફ્રેમની અંદર રાખો. જો દસ્તાવેજ અને બૅકગ્રાઉન્ડ અલગ-અલગ રંગોના હોય, તો સ્કૅન શ્રેષ્ઠ રીતે કામ કરે છે.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
 <translation id="5671277269877808209">ચોરસ</translation>

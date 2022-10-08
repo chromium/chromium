@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">பர்மீஸ்/மியான்மர்</translation>
 <translation id="2392369802118427583">செயல்படுத்து</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> உள்ளது</translation>
+<translation id="2417486498593892439">நெட்வொர்க்கில் உள்நுழையவும்</translation>
 <translation id="2425665904502185219">மொத்த ஃபைலின் அளவு</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /ஃபோல்டர்களை <ph name="FOLDER_NAME" />க்கு நகலெடுக்கிறது</translation>
 <translation id="2448312741937722512">வகை</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">பிளேபேக் இல்லை</translation>
 <translation id="383652340667548381">செர்பியன்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
+<translation id="3851491607336266896">இணைக்கப்பட்டது, வரம்பிற்கு உட்பட்ட இணைப்புநிலை</translation>
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3866249974567520381">விவரம்</translation>
@@ -697,7 +699,6 @@
 <translation id="6935521024859866267">தலைகீழ்</translation>
 <translation id="6943836128787782965">HTTP தோல்வியடைந்தது</translation>
 <translation id="6949408524333579394">செர்பியன் ஒலிபெயர்ப்பு</translation>
-<translation id="6954309393500027528">இந்த ஃபைலை நகலெடுத்து ஒட்டுவதை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="6960565108681981554">இயக்கப்படவில்லை. சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="696203921837389374">மொபைல் டேட்டாவுடன் ஒத்திசை</translation>
 <translation id="6965382102122355670">சரி</translation>
@@ -939,6 +940,7 @@
 <translation id="8903931173357132290">பட்டப் படிப்பு</translation>
 <translation id="8912078710089354287">வாலாட்டும் நாய்</translation>
 <translation id="8919081441417203123">டேனிஷ்</translation>
+<translation id="8949925099261528566">இணைக்கப்பட்டுள்ளது, ஆனால் இணைய இணைப்பு இல்லை</translation>
 <translation id="8965697826696209160">போதிய இடம் இல்லை.</translation>
 <translation id="8997962250644902079">சீனம் (பாரம்பரியம்) பின்யின்</translation>
 <translation id="8998871447376656508">பதிவேற்றத்தை நிறைவுசெய்ய உங்கள் Google Driveவில் போதிய காலியிடம் இல்லை.</translation>

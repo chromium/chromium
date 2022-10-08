@@ -257,6 +257,7 @@
 <translation id="2405664212338326887">Не падключана</translation>
 <translation id="2408955596600435184">Увядзіце PIN-код</translation>
 <translation id="2412593942846481727">Ёсць абнаўленне</translation>
+<translation id="2417486498593892439">Увайдзіце ў сетку</translation>
 <translation id="2426051945783024481">Камера адцэнтравана аўтаматычна</translation>
 <translation id="2427507373259914951">Націсканне левай кнопкай мышы</translation>
 <translation id="2429753432712299108">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазволу на спалучэнне. Перш чым пагадзіцца, упэўніцеся, што на прыладзе паказаны гэты ключ доступу: <ph name="PASSKEY" /></translation>
@@ -414,6 +415,7 @@
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3371140690572404006">Прылада USB-C (пярэдні порт справа)</translation>
 <translation id="3375634426936648815">Падключана</translation>
+<translation id="3378438761594387761">Тут з'явяцца нядаўна зробленыя здымкі экрана і апошнія спампоўкі</translation>
 <translation id="3378442621503952303">Ідзе падключэнне да профілю. Пачакайце некалькі хвілін.</translation>
 <translation id="3386978599540877378">экранная лупа ў поўнаэкранным рэжыме</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -496,7 +498,6 @@
 <translation id="383058930331066723">Уключаны рэжым эканоміі зараду</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
-<translation id="3842239759367498783">Працягвайце чытаць на мабільнай прыладзе <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
@@ -720,6 +721,7 @@
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
 <translation id="509790653408515442">Тут будуць з'яўляцца праграмы з вашага тэлефона, якія вы адкрываеце без спампоўвання</translation>
 <translation id="5098537242461068432">Працоўны стол і вокны зноў адкрыты</translation>
+<translation id="5104236669533825617">Не ўдалося запусціць трансляцыю экрана</translation>
 <translation id="5107522548814527560">Інтэрнэт</translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
@@ -765,6 +767,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (правы)</translation>
 <translation id="5352250171825660495">Цёмная тэма ўключана</translation>
 <translation id="5356963482258194581">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце правай кнопкай мышы на працоўны стол і выберыце "Шпалеры і стыль".</translation>
+<translation id="536019650977002321">Адміністратар не дазваляе запісваць аўдыя. Па дадатковую інфармацыю звяртайцеся да яго.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Перайсці на гэту ўкладку</translation>
 <translation id="5379115545237091094">Занадта шмат спроб</translation>
 <translation id="5391307769715781764">Замяніць захаваны працоўны стол?</translation>
@@ -995,7 +998,6 @@
 <translation id="6700713906295497288">Кнопка меню рэдактара метадаў уводу</translation>
 <translation id="6707693040195709527">Час на вяртанне да ранейшай версіі АС мінуў</translation>
 <translation id="6710213216561001401">Назад</translation>
-<translation id="6713285437468012787">Прылада Bluetooth "<ph name="DEVICE_NAME" />" спалучана і цяпер даступная ўсім карыстальнікам. Гэта спалучэнне можна выдаліць у "Наладах".</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
@@ -1385,6 +1387,7 @@
 <translation id="8936501819958976551">выключыла</translation>
 <translation id="8938800817013097409">Прылада USB-C (задні порт справа)</translation>
 <translation id="8940956008527784070">Нізкі зарад акумулятара (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
 <translation id="8951539504029375108">З вашым ноўтбукам Chromebook сумяшчальныя толькі ўхваленыя прылады Thunderbolt</translation>
 <translation id="8982906748181120328">Бачн. паблізу</translation>
 <translation id="8983038754672563810">HSPA</translation>

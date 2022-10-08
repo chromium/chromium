@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">ເມື່ອເປີດໃຊ້, Chromium ຈະສ້າງພື້ນທີ່ຫວ່າງຈາກແຖບທີ່ບໍ່ເຮັດວຽກ. ນີ້ຈະເຮັດໃຫ້ແຖບທີ່ເຮັດວຽກ ແລະ ແອັບອື່ນໆມີຊັບພະຍາກອນຄອມພິວເຕີຫຼາຍຂຶ້ນ ແລະ ເຮັດໃຫ້ Chromium ຮັກສາຄວາມໄວໄດ້. ແຖບທີ່ບໍ່ເຮັດວຽກຂອງທ່ານຈະກັບມາເຮັດວຽກອັດຕະໂນມັດເມື່ອທ່ານກັບໄປຫາພວກມັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">ຕົວປະຢັດໜ່ວຍຄວາມຈຳເຮັດໃຫ້ Chromium ໄວຂຶ້ນ</translation>
 <translation id="1315551408014407711">ຕັ້ງຄ່າໂປຣໄຟລ໌ Chromium ໃໝ່ຂອງທ່ານ</translation>
 <translation id="1385859895174722837">ຜູ້ຊ່ວຍ Google ໃນ Chromium</translation>
 <translation id="1396446129537741364">Chromium ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">ມີ Chromium ລຸ້ນໃໝ່ຢູ່, ແລະມັນປອດໄພກ່ວາຜ່ານມາ.</translation>
 <translation id="6063093106622310249">&amp;ເປີດໃນ Chromium</translation>
 <translation id="6072279588547424923">ເພີ່ມ <ph name="EXTENSION_NAME" /> ໃສ່ Chromium ແລ້ວ</translation>
+<translation id="6072463441809498330">ເຮັດໃຫ້ Chromium ໄວຂຶ້ນ</translation>
 <translation id="608006075545470555">ເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກໃສ່ໂປຣແກຣມທ່ອງເວັບນີ້</translation>
 <translation id="6096348254544841612">ປັບແຕ່ງ ແລະ ຄວບຄຸມ Chromium. ມີການອັບເດດແລ້ວ</translation>
 <translation id="6119438414301547735">ອະນຸຍາດໃຫ້ສ່ວນຂະຫຍາຍສະແດງຄຳຮ້ອງຂໍສິດເຂົ້າເຖິງໃນແຖບເຄື່ອງມື Chromium</translation>

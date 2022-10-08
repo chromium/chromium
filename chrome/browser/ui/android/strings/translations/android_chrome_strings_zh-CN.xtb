@@ -101,7 +101,6 @@
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
-<translation id="147113415845704694">试着说“今天的天气如何？”</translation>
 <translation id="1474893630593443211">更好地控制您看到的广告</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="148482509007564431">书签保存流程</translation>
@@ -720,7 +719,6 @@
 <translation id="4925120120285606924">屏幕截图 <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的帐号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 帐号中。</translation>
-<translation id="4941179133499732445">点按麦克风图标即可使用语音进行搜索</translation>
 <translation id="4943703118917034429">虚拟实境</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4950924971025849764">当您登录同一 Google 帐号后，其他设备便可将此手机用作安全密钥。</translation>
@@ -743,7 +741,6 @@
 <translation id="5039804452771397117">允许</translation>
 <translation id="504456571576643789">注意事项</translation>
 <translation id="5054455334322721892">当您登录后，系统可能会将<ph name="BEGIN_LINK1" />其他形式的活动记录<ph name="END_LINK1" />保存在您的 Google 帐号中。您可以随时删除这些记录。</translation>
-<translation id="5061533557687621530">若要查询天气，请点按麦克风图标并说“今天的天气如何？”</translation>
 <translation id="506254248375231072">没有任何标签页</translation>
 <translation id="5091199029769593641">不久之后，当打开新标签页时，您将看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 帐号中。您可在“探索”设置中管理它们。</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
@@ -764,7 +761,6 @@
 <translation id="5171045022955879922">搜索或输入网址</translation>
 <translation id="517734441743343109">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />和<ph name="BEGIN_PRIVACY_LINK" />隐私权政策<ph name="END_PRIVACY_LINK" />。</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
-<translation id="5188992787241350004">使用语音进行搜索</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5199929503336119739">工作资料</translation>

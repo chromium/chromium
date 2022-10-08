@@ -1736,7 +1736,6 @@
 <translation id="2856674246949497058">OS のバージョンが対象バージョンより新しい場合に、対象バージョンに戻してそのバージョンを維持します。このプロセスでは Powerwash が行われます。</translation>
 <translation id="2866619962692161453">Metapolicy タイプ</translation>
 <translation id="2866726566162790531">すべての HTTP 認証を許可するオリジンのリスト</translation>
-<translation id="2869762730352628426">ログイン画面で自動クリックを有効にする</translation>
 <translation id="2872961005593481000">終了</translation>
 <translation id="2874209944580848064">Android アプリをサポートする <ph name="PRODUCT_OS_NAME" /> デバイスに関する注意:</translation>
 <translation id="2875192972412983412">サーバー プリンタについてのクエリを送信するプリント サーバーのサブセットを指定します。
@@ -2406,7 +2405,6 @@
 <translation id="3502555714327823858">すべての両面印刷モードを許可する</translation>
 <translation id="350443680860256679">ARC を設定する</translation>
 <translation id="350797926066071931">翻訳を有効にする</translation>
-<translation id="3508047333410537654">ログイン画面でモノラル音声を有効にする</translation>
 <translation id="3513265258454735822">ブラウザの履歴の保存を有効にする</translation>
 <translation id="3513655665999652754">Quirks サーバーから、ハードウェア固有の設定ファイル（モニターのキャリブレーションを調整する ICC ディスプレイ プロファイルなど）が提供されます。
 
@@ -3838,7 +3836,6 @@
 <translation id="5191476996923842491">setTimeout() 関数のタイムアウト処理にデフォルトの動作を使用する。</translation>
 <translation id="519247340330463721">セーフ ブラウジングに関するポリシーを設定します。</translation>
 <translation id="5194683382395300627">ウェブでの <ph name="ASSISTANT_PRODUCT_NAME" /> の使用を許可する（パスワードの自動変更を有効にするためなど）</translation>
-<translation id="5196520640744454600">ログイン画面で固定キーを有効にする</translation>
 <translation id="5196630732055960309">File Handling API の使用を許可するウェブアプリを指定する</translation>
 <translation id="5206454085187851382"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="5207543664699568887">Linux で <ph name="PRODUCT_NAME" /> がシステム通知を使用するかどうかを設定します。True に設定するか未設定のままにすると、<ph name="PRODUCT_NAME" /> はシステム通知を使用できます。False に設定すると、<ph name="PRODUCT_NAME" /> はシステム通知を使用しません。代わりに <ph name="PRODUCT_NAME" /> のメッセージ センターが使用されます。</translation>
@@ -5440,7 +5437,6 @@
 <translation id="6920640961852058581">Kerberos チケットのデフォルト構成を変更する</translation>
 <translation id="6921544339867564740">Chrome OS 上で仮想マシンを実行することをデバイスに許可する</translation>
 <translation id="6922884955650325312"><ph name="FLASH_PLUGIN_NAME" /> プラグインをブロックする</translation>
-<translation id="6923731550900440989">ログイン画面でテキストカーソルによるハイライト表示を有効にする</translation>
 <translation id="6924223708804692571">言語のスペルチェックを自動的に無効にします。指定した言語のうち認識されないものは無視されます。
 
       このポリシーを有効にした場合、指定された言語のスペルチェックは無効になります。このリストにない言語のスペルチェックについては、ユーザーが引き続き有効または無効にできます。

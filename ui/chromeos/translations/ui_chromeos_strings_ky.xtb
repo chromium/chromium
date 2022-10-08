@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Бирмача (Мьянма)</translation>
 <translation id="2392369802118427583">Жандыруу</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> жеткиликтүү</translation>
+<translation id="2417486498593892439">Тармакка кирүү</translation>
 <translation id="2425665904502185219">Жалпы файлдардын өлчөмү</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> нерсе <ph name="FOLDER_NAME" /> папкасына көчүрүлүүдө</translation>
 <translation id="2448312741937722512">Түрү</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Ойното турган нерсе жок</translation>
 <translation id="383652340667548381">Сербче</translation>
 <translation id="385051799172605136">Артка</translation>
+<translation id="3851491607336266896">Туташып турат, байланыш чектелген</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
@@ -697,7 +699,6 @@
 <translation id="6935521024859866267">Астын-үстү</translation>
 <translation id="6943836128787782965">HTTP кыйрап калды</translation>
 <translation id="6949408524333579394">Сербче (транслитерация)</translation>
-<translation id="6954309393500027528">Бул файлды чаптоо аракети администраторуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="696203921837389374">Мобилдик дайындар аркылуу шайкештештирүүнү иштетүү</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -939,6 +940,7 @@
 <translation id="8903931173357132290">Бүтүрүүчү</translation>
 <translation id="8912078710089354287">Куйругун шыйпаңдаткан ит</translation>
 <translation id="8919081441417203123">Датча</translation>
+<translation id="8949925099261528566">Туташып турат, Интернет жок</translation>
 <translation id="8965697826696209160">Бош орун жетишсиз.</translation>
 <translation id="8997962250644902079">Кытайча пиньинь (салттуу)</translation>
 <translation id="8998871447376656508">Жүктөп берүүнү аягына чыгаруу үчүн Google Drive'да бош орун жетишпейт.</translation>

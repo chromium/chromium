@@ -396,6 +396,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1924727005275031552">Novo</translation>
 <translation id="1927439593081478069">Botón para executar a comprobación de seguranza de Chrome. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
+<translation id="1935995810530254458">Copiar igualmente</translation>
 <translation id="1939175642807587452">Pode pedirche permiso para enviar notificacións</translation>
 <translation id="1943994668912612445">Deseño</translation>
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
@@ -449,6 +450,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2085876078937250610">Gardar…</translation>
 <translation id="2088086323192747268">Botón Xestionar sincronización. Para xestionar na configuración de Chrome a información que se sincroniza, preme Introducir</translation>
 <translation id="2091887806945687916">Son</translation>
+<translation id="2093982008204312032">Google Chrome está tentando desactivar Windows Hello para completar contrasinais.</translation>
 <translation id="2094505752054353250">Os dominios non coinciden</translation>
 <translation id="2099652385553570808">Tres grampas na parte esquerda</translation>
 <translation id="2101225219012730419">Versión:</translation>
@@ -1143,6 +1145,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4014128326099193693">{COUNT,plural, =1{Documento PDF con {COUNT} páxina}other{Documento PDF con {COUNT} páxinas}}</translation>
 <translation id="4022639246993848966">3,5 x 5</translation>
 <translation id="4023431997072828269">Dado que estás a piques de enviar este formulario a través dunha conexión non segura, a túa información será visible para outras persoas.</translation>
+<translation id="4024923292610332139">desactivar TouchID para completar contrasinais</translation>
 <translation id="4025913568718019429">Botón para xestionar a configuración de Privacidade de Google. Para ir á configuración de privacidade da túa Conta de Google, preme Introducir</translation>
 <translation id="4030383055268325496">&amp;Desfacer a acción de engadir</translation>
 <translation id="4031179711345676612">Permítese o micrófono</translation>
@@ -1204,6 +1207,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4186035307311647330">Deixar de facer seguimento de prezos</translation>
 <translation id="4194250254487269611">A túa tarxeta non se puido gardar neste momento</translation>
+<translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196861286325780578">&amp;Refacer movemento</translation>
 <translation id="4202554117186904723">Quinto rolo</translation>
 <translation id="4203769790323223880">O acceso á cámara non está permitido</translation>
@@ -1259,6 +1263,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="42981349822642051">Ampliar</translation>
 <translation id="4300675098767811073">Varias perforacións na parte dereita</translation>
 <translation id="4302514097724775343">Toca o dinosauro para xogar</translation>
+<translation id="4304049446746819918">{0,plural, =1{A política do administrador non recomenda mover este ficheiro a este destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda mover estes ficheiros a este destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="4305666528087210886">Non se puido acceder ao ficheiro</translation>
 <translation id="4306529830550717874">Queres gardar o enderezo?</translation>
 <translation id="4306812610847412719">portapapeis</translation>
@@ -1634,6 +1639,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5254043433801397071">Optimizar contido da impresión</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Capturar de todos os modos</translation>
+<translation id="5257739419779698609">{0,plural, =1{A política do administrador non recomenda copiar este ficheiro neste destino: <ph name="DESTINATION_NAME" />}other{A política do administrador non recomenda copiar estes ficheiros neste destino: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5266128565379329178">Encadernación na parte superior</translation>
 <translation id="5269225904387178860">Catro perforacións na parte inferior</translation>
 <translation id="5269999699920406580">As funcións que se aplican en todo o sistema só as pode definir o propietario (<ph name="OWNER_EMAIL" />)</translation>
@@ -1696,6 +1702,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5412236728747081950">Este sitio obtén os teus intereses de Chrome para mostrarche anuncios máis relevantes</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />: <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Amontoador 4</translation>
+<translation id="5414511064953050917">Mover igualmente</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Non hai sitios bloqueados}=1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
@@ -2317,6 +2324,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>
 <translation id="7153618581592392745">Lavanda</translation>
 <translation id="7156870133441232244">O servidor debería actualizarse a TLS 1.2 ou a unha versión posterior.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Queres copiar o ficheiro confidencial?}other{Queres copiar os ficheiros confidenciais?}}</translation>
 <translation id="717330890047184534">Código de identificación de GAIA:</translation>
 <translation id="7174545416324379297">Valores combinados</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" /> e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
@@ -2925,6 +2933,7 @@ Detalles adicionais:
 <translation id="8763986294015493060">Pechar todas as ventás do modo de incógnito que estean abertas</translation>
 <translation id="8766943070169463815">A folla de autenticación da credencial de pagos seguros está aberta</translation>
 <translation id="8767765348545497220">Pechar globo de axuda</translation>
+<translation id="877348612833018844">{0,plural, =1{Queres mover o ficheiro confidencial?}other{Queres mover os ficheiros confidenciais?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motocicletas</translation>
 <translation id="8790007591277257123">&amp;Refacer eliminación</translation>

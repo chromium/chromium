@@ -257,6 +257,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2405664212338326887">No conectado</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
 <translation id="2412593942846481727">Actualización disponible</translation>
+<translation id="2417486498593892439">Iniciar sesión en la red</translation>
 <translation id="2426051945783024481">Encuadre de cámara centrado automáticamente</translation>
 <translation id="2427507373259914951">Clic con el botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para emparejarse. Antes de aceptar, comprueba que la llave de acceso <ph name="PASSKEY" /> aparezca en el dispositivo</translation>
@@ -414,6 +415,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB tipo C (puerto frontal derecho)</translation>
 <translation id="3375634426936648815">Conectado</translation>
+<translation id="3378438761594387761">Aquí verás tus descargas y capturas de pantalla recientes</translation>
 <translation id="3378442621503952303">Conectándose al perfil. Espera unos minutos.</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -497,7 +499,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="383058930331066723">Modo de ahorro de batería activado</translation>
 <translation id="383629559565718788">Mostrar configuración de teclado</translation>
 <translation id="384082539148746321">¿Quieres eliminar la plantilla?</translation>
-<translation id="3842239759367498783">Continúa leyendo en tu dispositivo móvil <ph name="TITLE" /></translation>
 <translation id="3846575436967432996">No hay información de red disponible.</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="385300504083504382">Principio</translation>
@@ -721,6 +722,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
 <translation id="509790653408515442">Cuando proyectes las aplicaciones de tu teléfono, aparecerán aquí</translation>
 <translation id="5098537242461068432">Se han vuelto a abrir el escritorio y las ventanas</translation>
+<translation id="5104236669533825617">No se puede crear la grabación de pantalla</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mes siguiente</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
@@ -766,6 +768,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (derecho)</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
 <translation id="5356963482258194581">Cambia entre el tema oscuro y el claro. Haz clic con el botón derecho en el escritorio y selecciona Fondo de pantalla y estilo.</translation>
+<translation id="536019650977002321">Tu administrador no permite grabar audio. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Ir a esta pestaña</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5391307769715781764">¿Sustituir escritorio guardado?</translation>
@@ -996,7 +999,6 @@ Nueva instalación</translation>
 <translation id="6700713906295497288">Botón de menú de IME</translation>
 <translation id="6707693040195709527">El dispositivo ya debería haber cambiado a la versión anterior</translation>
 <translation id="6710213216561001401">Anterior</translation>
-<translation id="6713285437468012787">Se ha emparejado el dispositivo Bluetooth "<ph name="DEVICE_NAME" />" y ya está disponible para todos los usuarios. Para eliminar este emparejamiento, accede a Configuración.</translation>
 <translation id="6723839937902243910">Batería</translation>
 <translation id="6727969043791803658">Conectado, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="6732800389263199929"><ph name="COUNT" /> +</translation>
@@ -1386,6 +1388,7 @@ Nueva instalación</translation>
 <translation id="8936501819958976551">desactivado</translation>
 <translation id="8938800817013097409">Dispositivo USB tipo C (puerto derecho situado en la parte trasera)</translation>
 <translation id="8940956008527784070">Poca batería (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8949925099261528566">Conexión sin Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con Chromebook</translation>
 <translation id="8982906748181120328">Visibilidad Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>

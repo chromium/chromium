@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Escanea tu documento</translation>
 <translation id="1309250603447638106">Descargando actualizaciones para escanear documentos</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Presiona Búsqueda + flecha hacia la izquierda para acceder.</translation>
+<translation id="1417314334557041815">Editar la página <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">La cámara <ph name="CAMERA" /> está desconectada.</translation>
 <translation id="1473110567575736769">Temporizador de 3 segundos</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">No se grabaron datos</translation>
 <translation id="1838104802459806957">Inclinar hacia arriba</translation>
+<translation id="1843105061469674856">Escanear página adicional</translation>
 <translation id="1851169887664797861">Controles adicionales de cámara disponibles</translation>
 <translation id="1851616744363735765">DETENIDA</translation>
 <translation id="1862930711583847113">No se puede exportar <ph name="FILE" /></translation>
@@ -77,6 +79,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="414641094616694804">No se puede modificar la resolución de la cámara</translation>
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
 <translation id="4281620174117014503">Resolución media</translation>
+<translation id="428234092390943511">Miniatura de la página</translation>
 <translation id="4329152592498422850">Cambiar al modo para tomar fotos cuadradas</translation>
 <translation id="4340659173795395806">Ahora puedes crear archivos PDF de varias páginas</translation>
 <translation id="4383571725254449280">Registros de rendimiento de impresión</translation>

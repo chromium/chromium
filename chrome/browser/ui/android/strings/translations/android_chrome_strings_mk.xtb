@@ -101,7 +101,6 @@
 <translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
-<translation id="147113415845704694">Пробајте со „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="1474893630593443211">Поголема контрола над рекламите што ги гледате</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="148482509007564431">Тек за зачувување обележувач</translation>
@@ -723,7 +722,6 @@
 <translation id="4925120120285606924">Слика од екранот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Вашите лозинки ќе се извезат и преземат како текстуална датотека. Тие ќе бидат видливи за секого и за секоја апликација со пристап до дестинациската папка.</translation>
 <translation id="4932247056774066048">Бидејќи се одјавувате од сметка управувана од <ph name="DOMAIN_NAME" />, вашите податоци на Chrome ќе се избришат од уредов. Тие ќе останат во вашата сметка на Google.</translation>
-<translation id="4941179133499732445">Допрете го микрофонот за да пребарувате со гласот</translation>
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4950924971025849764">Кога сте најавени на истата сметка на Google, другите уреди можат да го користат телефонов како безбедносен клуч.</translation>
@@ -747,7 +745,6 @@
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="504456571576643789">Нешта што треба да се земат предвид</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
-<translation id="5061533557687621530">За да го проверите времето, допрете го микрофонот и кажете „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="506254248375231072">Нема картички</translation>
 <translation id="5091199029769593641">Наскоро ќе гледате стории од <ph name="SITE_NAME" /> при отворање нова картичка. Сајтовите што ги следите се зачувуваат во сметката на Google. Може да управувате со нив во поставките за Discover.</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
@@ -768,7 +765,6 @@
 <translation id="5171045022955879922">Барај или впиши URL</translation>
 <translation id="517734441743343109">Ако продолжите, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />Политикатa\u00A0за\u00A0приватност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
-<translation id="5188992787241350004">Пребарувајте со гласот</translation>
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
 <translation id="5199929503336119739">Работен профил</translation>

@@ -80,11 +80,13 @@
 <translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google તરફથી <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{Google તરફથી <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ શેર કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ શેર કરો}}</translation>
 <translation id="7792771145871471484">સૂચનોનો રિવ્યૂ કરો.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબનું ગ્રૂપ બનાવો}one{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}other{પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબનું ગ્રૂપ બનાવો}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7885132941432959125">ટૅબને જમણે ખસેડો</translation>
 <translation id="7966321538264951561">સૂચનોને છોડી દો.</translation>
+<translation id="8018192911041116887">શેર કરેલા ટૅબ</translation>
 <translation id="8029301326595421733">આ સ્ટોર વિશેની માહિતી સંપૂર્ણ સ્ક્રીન પર ખુલી છે</translation>
 <translation id="814503310257431685">બધા જુઓ</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>

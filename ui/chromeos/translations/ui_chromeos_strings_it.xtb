@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Birmano/Myanmar</translation>
 <translation id="2392369802118427583">Attiva</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> di spazio disponibile</translation>
+<translation id="2417486498593892439">Accedi alla rete</translation>
 <translation id="2425665904502185219">Dimensioni totali file</translation>
 <translation id="2428749644083375155">Copia di <ph name="NUMBER_OF_ITEMS" /> elementi in <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Riproduzione non disponibile</translation>
 <translation id="383652340667548381">Serbo</translation>
 <translation id="385051799172605136">Indietro</translation>
+<translation id="3851491607336266896">Connesso, connettività limitata</translation>
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrizione</translation>
@@ -696,7 +698,6 @@
 <translation id="6935521024859866267">Capovolta</translation>
 <translation id="6943836128787782965">Recupero HTTP non riuscito</translation>
 <translation id="6949408524333579394">Traslitterazione serbo</translation>
-<translation id="6954309393500027528">Non puoi incollare questo file perché questa azione è stata bloccata dall'amministratore</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="696203921837389374">Attiva sincronizzazione tramite dati mobili</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -938,6 +939,7 @@
 <translation id="8903931173357132290">Persona laureata</translation>
 <translation id="8912078710089354287">Cane che scodinzola</translation>
 <translation id="8919081441417203123">Danese</translation>
+<translation id="8949925099261528566">Connesso, senza Internet</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
 <translation id="8997962250644902079">Cinese (tradizionale) Pinyin</translation>
 <translation id="8998871447376656508">Spazio libero su Google Drive non sufficiente per completare il caricamento.</translation>
