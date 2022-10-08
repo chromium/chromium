@@ -23,12 +23,10 @@ std::ostream& operator<<(std::ostream& s, const GpuDiskCacheType& type) {
 std::ostream& operator<<(std::ostream& s, const GpuDiskCacheHandle& handle) {
   switch (GetHandleType(handle)) {
     case GpuDiskCacheType::kGlShaders:
-      s << "GlShaderHandle("
-        << absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle).value() << ")";
+      s << "GlShaderHandle(" << GetHandleValue(handle) << ")";
       break;
     case GpuDiskCacheType::kDawnWebGPU:
-      s << "DawnWebGPUHandle("
-        << absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle).value() << ")";
+      s << "DawnWebGPUHandle(" << GetHandleValue(handle) << ")";
       break;
   }
   return s;
@@ -50,6 +48,13 @@ GpuDiskCacheType GetHandleType(const GpuDiskCacheHandle& handle) {
     return GpuDiskCacheType::kGlShaders;
   DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle));
   return GpuDiskCacheType::kDawnWebGPU;
+}
+
+int32_t GetHandleValue(const GpuDiskCacheHandle& handle) {
+  if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle))
+    return absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle).value();
+  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle));
+  return absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle).value();
 }
 
 bool IsReservedGpuDiskCacheHandle(const GpuDiskCacheHandle& handle) {

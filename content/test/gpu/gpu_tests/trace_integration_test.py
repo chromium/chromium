@@ -6,7 +6,8 @@ import logging
 import os
 import posixpath
 import sys
-from typing import Any, Dict, Iterator, List
+import tempfile
+from typing import Any, Dict, Generator, Iterator, List, Optional, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -116,19 +117,99 @@ _HTML_CANVAS_NOTIFY_LISTENERS_CANVAS_CHANGED_EVENT_NAME =\
 _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME =\
     'StaticBitmapImageToVideoFrameCopier::Convert'
 
+# Caching events and constants
+_GPU_HOST_STORE_BLOB_EVENT_NAME =\
+    'GpuHostImpl::StoreBlobToDisk'
+_WEBGPU_BLOB_CACHE_HIT_EVENT_NAME = \
+    'DawnCachingInterface::CacheHit'
+# Refers to GpuDiskCacheType::kDawnWebGPU see the following header:
+#     gpu/ipc/common/gpu_disk_cache_type.h
+_WEBGPU_CACHE_HANDLE_TYPE = 1
+
+# Special 'other_args' keys that is used to pass additional arguments
+_MIN_CACHE_HIT_KEY = 'min_cache_hits'
+_PROFILE_DIR_KEY = 'profile_dir'
+_PROFILE_TYPE_KEY = 'profile_type'
+
 
 class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
 
   def __init__(  # pylint: disable=too-many-arguments
-      self, browser_args: List[str], category: str, test_harness_script: str,
-      finish_js_condition: str, success_eval_func: str, other_args: dict):
+      self,
+      browser_args: List[str],
+      category: str,
+      test_harness_script: str,
+      finish_js_condition: str,
+      success_eval_func: str,
+      other_args: dict,
+      restart_browser: bool = True):
     self.browser_args = browser_args
     self.category = category
     self.test_harness_script = test_harness_script
     self.finish_js_condition = finish_js_condition
     self.success_eval_func = success_eval_func
     self.other_args = other_args
+    self.restart_browser = restart_browser
+
+
+class _CacheTraceTestArguments():
+  """Struct-like object for passing persistent cache trace test arguments.
+
+  Cache trace tests consist of a series of normal trace test invocations that
+  are necessary in order to verify the expected caching behaviors. The cache
+  tests also specify a specific temporary data directory to ensure caching
+  works as expected."""
+
+  def __init__(  # pylint: disable=too-many-arguments
+      self, browser_args: List[str], category: str, test_harness_script: str,
+      finish_js_condition: str, first_load_eval_func: str,
+      cache_hit_eval_func: str, cache_hit_pages: List[str]):
+    self.browser_args = browser_args
+    self.category = category
+    self.test_harness_script = test_harness_script
+    self.finish_js_condition = finish_js_condition
+    self.first_load_eval_func = first_load_eval_func
+    self.cache_hit_eval_func = cache_hit_eval_func
+    self.cache_hit_pages = cache_hit_pages
+
+  def GenerateFirstLoadTest(self) -> _TraceTestArguments:
+    """Returns the trace test arguments for the first load cache test."""
+    return _TraceTestArguments(browser_args=self.browser_args,
+                               category=self.category,
+                               test_harness_script=self.test_harness_script,
+                               finish_js_condition=self.finish_js_condition,
+                               success_eval_func=self.first_load_eval_func,
+                               other_args={},
+                               restart_browser=True)
+
+  def GenerateCacheHitTests(
+      self,
+      min_cache_hits) -> Generator[Tuple[str, _TraceTestArguments], None, None]:
+    """Returns a generator for all cache hit trace tests.
+
+    First pass of tests just do a re-navigation, second pass should restarts
+    with a seeded profile directory.
+    """
+    other_args = {_MIN_CACHE_HIT_KEY: min_cache_hits}
+    for cache_hit_page in self.cache_hit_pages:
+      yield (posixpath.join(gpu_data_relative_path, cache_hit_page),
+             _TraceTestArguments(browser_args=self.browser_args,
+                                 category=self.category,
+                                 test_harness_script=self.test_harness_script,
+                                 finish_js_condition=self.finish_js_condition,
+                                 success_eval_func=self.cache_hit_eval_func,
+                                 other_args=other_args,
+                                 restart_browser=False))
+    for cache_hit_page in self.cache_hit_pages:
+      yield (posixpath.join(gpu_data_relative_path, cache_hit_page),
+             _TraceTestArguments(browser_args=self.browser_args,
+                                 category=self.category,
+                                 test_harness_script=self.test_harness_script,
+                                 finish_js_condition=self.finish_js_condition,
+                                 success_eval_func=self.cache_hit_eval_func,
+                                 other_args=other_args,
+                                 restart_browser=True))
 
 
 class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -209,30 +290,88 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               other_args=p.other_args)
       ])
 
-  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
-    test_params = args[0]
+    # The following tests are caching tests that do not render to canvas and so
+    # are not a part of the pixel tests suite. Each tuple represents:
+    #   (test_name, first_load_url, cache_hit_pages)
+    #
+    # test_name: Name of the test.
+    # first_load_url: The first URL that is loaded and when cache entries should
+    #   be written. This URL determines the number of expected cache entries to
+    #   expect in following loads.
+    # cache_hit_pages: List of URLs that should be both re-navigated to, and
+    #   reloaded in a restarted browser to expect cache hits from disk.
+    webgpu_caching_tests: List[Tuple[str, str, List[str]]] = [
+        ('RenderPipelineWorker',
+         'webgpu-caching.html?testId=render-test&worker=true', [
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
+        ('RenderPipelineWorkerAsync',
+         'webgpu-caching.html?testId=render-test-async&worker=true', [
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
+        ('ComputePipelineWorker',
+         'webgpu-caching.html?testId=compute-test&worker=true', [
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+        ('ComputePipelineWorkerAsync',
+         'webgpu-caching.html?testId=compute-test-async&worker=true', [
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+    ]
+    for (name, first_load_page, cache_hit_pages) in webgpu_caching_tests:
+      browser_args = [
+          cba.ENABLE_UNSAFE_WEBGPU,
+          cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
+          '--enable-dawn-features=enable_blob_cache'
+      ]
+      # For the tests to run properly on Linux, we need additional args.
+      if sys.platform.startswith('linux'):
+        browser_args += ['--enable-features=Vulkan']
+      yield ('WebGPUCachingTraceTest_' + name,
+             posixpath.join(gpu_data_relative_path, first_load_page), [
+                 _CacheTraceTestArguments(
+                     browser_args=browser_args,
+                     category='gpu',
+                     test_harness_script=basic_test_harness_script,
+                     finish_js_condition='domAutomationController._finished',
+                     first_load_eval_func='CheckWebGPUFirstLoadCache',
+                     cache_hit_eval_func='CheckWebGPUCacheHits',
+                     cache_hit_pages=cache_hit_pages)
+             ])
 
-    # The version of this test in the old GPU test harness restarted
-    # the browser after each test, so continue to do that to match its
-    # behavior.
-    self.RestartBrowserWithArgs(test_params.browser_args)
+  def _RunActualGpuTraceTest(self,
+                             test_path: str,
+                             args: _TraceTestArguments,
+                             profile_dir: Optional[str] = None,
+                             profile_type: Optional[str] = None) -> dict:
+    """Returns a dictionary generated via the success evaluation."""
+    if args.restart_browser:
+      # The version of this test in the old GPU test harness restarted the
+      # browser after each test, so continue to do that to match its behavior
+      # by default for legacy tests.
+      self.RestartBrowserWithArgs(args.browser_args,
+                                  profile_dir=profile_dir,
+                                  profile_type=profile_type)
 
     # Set up tracing.
     config = tracing_config.TracingConfig()
     config.chrome_trace_config.category_filter.AddExcludedCategory('*')
-    config.chrome_trace_config.category_filter.AddFilter(test_params.category)
+    config.chrome_trace_config.category_filter.AddFilter(args.category)
     config.enable_chrome_trace = True
     tab = self.tab
     tab.browser.platform.tracing_controller.StartTracing(config, 60)
 
     # Perform page navigation.
     url = self.UrlOfStaticFilePath(test_path)
-    tab.Navigate(url,
-                 script_to_evaluate_on_commit=test_params.test_harness_script)
+    tab.Navigate(url, script_to_evaluate_on_commit=args.test_harness_script)
 
     try:
-      tab.action_runner.WaitForJavaScriptCondition(
-          test_params.finish_js_condition, timeout=30)
+      tab.action_runner.WaitForJavaScriptCondition(args.finish_js_condition,
+                                                   timeout=30)
     finally:
       test_messages = tab.EvaluateJavaScript(
           'domAutomationController._messages')
@@ -243,13 +382,39 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     timeline_data = tab.browser.platform.tracing_controller.StopTracing()
 
     # Evaluate success.
-    if test_params.success_eval_func:
+    if args.success_eval_func:
       timeline_model = model_module.TimelineModel(timeline_data)
       event_iter = timeline_model.IterAllEvents(
           event_type_predicate=timeline_model.IsSliceOrAsyncSlice)
-      prefixed_func_name = '_EvaluateSuccess_' + test_params.success_eval_func
-      getattr(self, prefixed_func_name)(test_params.category, event_iter,
-                                        test_params.other_args)
+      prefixed_func_name = '_EvaluateSuccess_' + args.success_eval_func
+      results = getattr(self, prefixed_func_name)(args.category, event_iter,
+                                                  args.other_args)
+      return results if results else {}
+    return {}
+
+  def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
+    params = args[0]
+    if isinstance(params, _TraceTestArguments):
+      self._RunActualGpuTraceTest(test_path, params)
+    elif isinstance(params, _CacheTraceTestArguments):
+      # Create a new temporary directory for each cache test that is run.
+      cache_profile_dir = tempfile.TemporaryDirectory()
+
+      # Run the first load page and get the number of expected cache hits.
+      load_params = params.GenerateFirstLoadTest()
+      results =\
+        self._RunActualGpuTraceTest(test_path,
+                                    load_params,
+                                    profile_dir=cache_profile_dir.name,
+                                    profile_type='exact')
+      min_hits = results[_MIN_CACHE_HIT_KEY]
+
+      # Generate and run the cache hit tests using the seeding cache dir.
+      for (hit_path, trace_params) in params.GenerateCacheHitTests(min_hits):
+        self._RunActualGpuTraceTest(hit_path,
+                                    trace_params,
+                                    profile_dir=cache_profile_dir.name,
+                                    profile_type='clean')
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -610,6 +775,37 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         and found_accelerated_two_copy_event is False):
       self.fail('%s events with accelerated_frame_pool_copy were not found' %
                 _STATIC_BITMAP_TO_VID_FRAME_CONVERT_EVENT_NAME)
+
+  def _EvaluateSuccess_CheckWebGPUFirstLoadCache(self, category: str,
+                                                 event_iterator: Iterator,
+                                                 _other_args: dict) -> dict:
+    stored_blobs = 0
+    for event in event_iterator:
+      if event.category != category:
+        continue
+      if event.name == _GPU_HOST_STORE_BLOB_EVENT_NAME:
+        if event.args.get('handle_type', None) == _WEBGPU_CACHE_HANDLE_TYPE:
+          stored_blobs += 1
+    if stored_blobs == 0:
+      self.fail('Expected at least 1 cache entry to be written.')
+    return {_MIN_CACHE_HIT_KEY: stored_blobs}
+
+  def _EvaluateSuccess_CheckWebGPUCacheHits(self, category: str,
+                                            event_iterator: Iterator,
+                                            other_args: dict) -> None:
+    cache_hits = 0
+    for event in event_iterator:
+      if event.category != category:
+        continue
+      if event.name == _GPU_HOST_STORE_BLOB_EVENT_NAME:
+        if event.args.get('handle_type', None) == _WEBGPU_CACHE_HANDLE_TYPE:
+          self.fail('Unexpected WebGPU cache entry was stored on reloaded page')
+      if event.name == _WEBGPU_BLOB_CACHE_HIT_EVENT_NAME:
+        cache_hits += 1
+    stored_blobs = other_args[_MIN_CACHE_HIT_KEY]
+    if cache_hits == 0 or cache_hits < stored_blobs:
+      self.fail('WebGPU cache hits (%d) is 0 or less than blobs stored (%d).' %
+                (cache_hits, stored_blobs))
 
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:

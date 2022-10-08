@@ -219,6 +219,12 @@ crbug.com/852089 [ linux ] WebGPUTraceTest_* [ Skip ]
 crbug.com/852089 [ chromeos ] WebGPUTraceTest_* [ Skip ]
 crbug.com/852089 [ fuchsia ] WebGPUTraceTest_* [ Skip ]
 
+# WebGPU caching is currently only supporting Win10 and Linux. (D3D12 and Vulkan)
+crbug.com/dawn/549 [ android ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ mac ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ chromeos ] WebGPUCachingTraceTest_* [ Skip ]
+crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

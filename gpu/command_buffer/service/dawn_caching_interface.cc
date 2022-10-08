@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
@@ -121,6 +122,7 @@ size_t DawnCachingBackend::Entry::ReadData(void* value_out,
   }
 
   // Otherwise, verify that the size that is being copied out is identical.
+  TRACE_EVENT0("gpu", "DawnCachingInterface::CacheHit");
   DCHECK(value_size == DataSize());
   memcpy(value_out, data_.data(), value_size);
   return value_size;

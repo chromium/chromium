@@ -509,6 +509,7 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::GetOrCreateByPath(
 
   auto cache = base::WrapRefCounted(new GpuDiskCache(
       this, path, blob_loaded_cb, std::move(cache_destroyed_cb)));
+
   cache->Init();
   return cache;
 }
@@ -628,7 +629,6 @@ void GpuDiskCache::Init() {
   if (rv.net_error == net::OK) {
     NOTREACHED();  // This shouldn't actually happen with a non-memory backend.
     backend_ = std::move(rv.backend);
-    cache_available_ = true;
   }
 }
 
