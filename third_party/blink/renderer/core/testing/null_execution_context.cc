@@ -25,8 +25,11 @@ NullExecutionContext::NullExecutionContext(
     std::unique_ptr<FrameScheduler> scheduler)
     : ExecutionContext(
           v8::Isolate::GetCurrent(),
-          MakeGarbageCollected<Agent>(v8::Isolate::GetCurrent(),
-                                      base::UnguessableToken::Create())),
+          MakeGarbageCollected<Agent>(
+              v8::Isolate::GetCurrent(),
+              base::UnguessableToken::Create(),
+              v8::MicrotaskQueue::New(v8::Isolate::GetCurrent(),
+                                      v8::MicrotasksPolicy::kScoped))),
       scheduler_(std::move(scheduler)) {}
 
 NullExecutionContext::~NullExecutionContext() {}
