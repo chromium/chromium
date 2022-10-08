@@ -119,8 +119,11 @@ LayoutBlockFlow* LayoutObjectFactory::CreateBlockFlow(
     Node& node,
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  if (style.Display() == EDisplay::kListItem) {
-    // Create a LayoutBlockFlow with a list marker
+  if (style.Display() == EDisplay::kListItem &&
+      node.GetPseudoId() != kPseudoIdBackdrop) {
+    // Create a LayoutBlockFlow with a ListItemOrdinal and maybe a ::marker.
+    // ::backdrop is excluded since it's not tree-abiding, and ListItemOrdinal
+    // needs to traverse the tree.
     return CreateObject<LayoutBlockFlow, LayoutNGListItem, LayoutListItem>(
         node, legacy);
   }
