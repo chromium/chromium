@@ -548,8 +548,8 @@ NetworkContext::NetworkContext(
 
   InitializeCorsParams();
 
-  SetSplitAuthCacheByNetworkIsolationKey(
-      params_->split_auth_cache_by_network_isolation_key);
+  SetSplitAuthCacheByNetworkAnonymizationKey(
+      params_->split_auth_cache_by_network_anonymization_key);
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
   if (params_->ct_policy)
@@ -2086,13 +2086,13 @@ void NetworkContext::ForceDomainReliabilityUploadsForTesting(
   std::move(callback).Run();
 }
 
-void NetworkContext::SetSplitAuthCacheByNetworkIsolationKey(
-    bool split_auth_cache_by_network_isolation_key) {
+void NetworkContext::SetSplitAuthCacheByNetworkAnonymizationKey(
+    bool split_auth_cache_by_network_anonymization_key) {
   url_request_context_->http_transaction_factory()
       ->GetSession()
       ->http_auth_cache()
-      ->SetKeyServerEntriesByNetworkIsolationKey(
-          split_auth_cache_by_network_isolation_key);
+      ->SetKeyServerEntriesByNetworkAnonymizationKey(
+          split_auth_cache_by_network_anonymization_key);
 }
 
 void NetworkContext::SaveHttpAuthCacheProxyEntries(
@@ -2121,19 +2121,20 @@ void NetworkContext::LoadHttpAuthCacheProxyEntries(
 
 void NetworkContext::AddAuthCacheEntry(
     const net::AuthChallengeInfo& challenge,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::AuthCredentials& credentials,
     AddAuthCacheEntryCallback callback) {
   net::HttpAuthCache* http_auth_cache =
       url_request_context_->http_transaction_factory()
           ->GetSession()
           ->http_auth_cache();
-  http_auth_cache->Add(
-      challenge.challenger,
-      challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
-                         : net::HttpAuth::AUTH_SERVER,
-      challenge.realm, net::HttpAuth::StringToScheme(challenge.scheme),
-      network_isolation_key, challenge.challenge, credentials, challenge.path);
+  http_auth_cache->Add(challenge.challenger,
+                       challenge.is_proxy ? net::HttpAuth::AUTH_PROXY
+                                          : net::HttpAuth::AUTH_SERVER,
+                       challenge.realm,
+                       net::HttpAuth::StringToScheme(challenge.scheme),
+                       network_anonymization_key, challenge.challenge,
+                       credentials, challenge.path);
   std::move(callback).Run();
 }
 
@@ -2148,7 +2149,7 @@ void NetworkContext::SetCorsNonWildcardRequestHeadersSupport(bool value) {
 
 void NetworkContext::LookupServerBasicAuthCredentials(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     LookupServerBasicAuthCredentialsCallback callback) {
   net::HttpAuthCache* http_auth_cache =
       url_request_context_->http_transaction_factory()
@@ -2156,7 +2157,7 @@ void NetworkContext::LookupServerBasicAuthCredentials(
           ->http_auth_cache();
   net::HttpAuthCache::Entry* entry = http_auth_cache->LookupByPath(
       url::SchemeHostPort(url), net::HttpAuth::AUTH_SERVER,
-      network_isolation_key, url.path());
+      network_anonymization_key, url.path());
   if (entry && entry->scheme() == net::HttpAuth::AUTH_SCHEME_BASIC)
     std::move(callback).Run(entry->credentials());
   else
@@ -2194,7 +2195,7 @@ void NetworkContext::LookupProxyAuthCredentials(
   //  NetworkIsolationKey.
   net::HttpAuthCache::Entry* entry =
       http_auth_cache->Lookup(scheme_host_port, net::HttpAuth::AUTH_PROXY,
-                              realm, net_scheme, net::NetworkIsolationKey());
+                              realm, net_scheme, net::NetworkAnonymizationKey());
   if (entry)
     std::move(callback).Run(entry->credentials());
   else

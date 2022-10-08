@@ -284,21 +284,22 @@ class TestNetworkContext : public mojom::NetworkContext {
       AddDomainReliabilityContextForTestingCallback callback) override {}
   void ForceDomainReliabilityUploadsForTesting(
       ForceDomainReliabilityUploadsForTestingCallback callback) override {}
-  void SetSplitAuthCacheByNetworkIsolationKey(
-      bool split_auth_cache_by_network_isolation_key) override {}
+  void SetSplitAuthCacheByNetworkAnonymizationKey(
+      bool split_auth_cache_by_network_anonymization_key) override {}
   void SaveHttpAuthCacheProxyEntries(
       SaveHttpAuthCacheProxyEntriesCallback callback) override {}
   void LoadHttpAuthCacheProxyEntries(
       const base::UnguessableToken& cache_key,
       LoadHttpAuthCacheProxyEntriesCallback callback) override {}
-  void AddAuthCacheEntry(const net::AuthChallengeInfo& challenge,
-                         const net::NetworkIsolationKey& network_isolation_key,
-                         const net::AuthCredentials& credentials,
-                         AddAuthCacheEntryCallback callback) override {}
+  void AddAuthCacheEntry(
+      const net::AuthChallengeInfo& challenge,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const net::AuthCredentials& credentials,
+      AddAuthCacheEntryCallback callback) override {}
   void SetCorsNonWildcardRequestHeadersSupport(bool value) override {}
   void LookupServerBasicAuthCredentials(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       LookupServerBasicAuthCredentialsCallback callback) override {}
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void LookupProxyAuthCredentials(

@@ -89,7 +89,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
@@ -140,8 +140,8 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
           http_auth_preferences(), host_resolver));
 #endif
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, scheme_host_port,
-                                      net_log)) {
+                                      network_anonymization_key,
+                                      scheme_host_port, net_log)) {
     return ERR_INVALID_RESPONSE;
   }
   handler->swap(tmp_handler);
@@ -180,8 +180,8 @@ bool HttpAuthHandlerNegotiate::AllowsExplicitCredentials() {
 bool HttpAuthHandlerNegotiate::Init(
     HttpAuthChallengeTokenizer* challenge,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
-  network_isolation_key_ = network_isolation_key;
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  network_anonymization_key_ = network_anonymization_key;
 #if BUILDFLAG(IS_POSIX)
   if (!auth_system_->Init(net_log())) {
     VLOG(1) << "can't initialize GSSAPI library";
@@ -352,11 +352,7 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalName() {
   HostResolver::ResolveHostParameters parameters;
   parameters.include_canonical_name = true;
   resolve_host_request_ = resolver_->CreateRequest(
-      scheme_host_port_,
-      net::NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              network_isolation_key_),
-      net_log(), parameters);
+      scheme_host_port_, network_anonymization_key_, net_log(), parameters);
   return resolve_host_request_->Start(base::BindOnce(
       &HttpAuthHandlerNegotiate::OnIOComplete, base::Unretained(this)));
 }

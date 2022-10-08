@@ -525,11 +525,11 @@ void ProfileNetworkContextService::UpdateSplitAuthCacheByNetworkIsolationKey() {
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
   profile_->ForEachStoragePartition(base::BindRepeating(
-      [](bool split_auth_cache_by_network_isolation_key,
+      [](bool split_auth_cache_by_network_anonymization_key,
          content::StoragePartition* storage_partition) {
         storage_partition->GetNetworkContext()
-            ->SetSplitAuthCacheByNetworkIsolationKey(
-                split_auth_cache_by_network_isolation_key);
+            ->SetSplitAuthCacheByNetworkAnonymizationKey(
+                split_auth_cache_by_network_anonymization_key);
       },
       split_auth_cache_by_network_isolation_key));
 }
@@ -993,7 +993,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->reset_http_cache_backend =
       GetHttpCacheBackendResetParam(g_browser_process->local_state());
 
-  network_context_params->split_auth_cache_by_network_isolation_key =
+  network_context_params->split_auth_cache_by_network_anonymization_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
   // All consumers of the main NetworkContext must provide NetworkIsolationKeys

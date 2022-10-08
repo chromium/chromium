@@ -99,7 +99,7 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
       NetLogWithSource()));
 
   auto transport_params = base::MakeRefCounted<TransportSocketParams>(
-      destination, NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+      destination, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       OnHostResolutionCallback(),
       /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
 
@@ -175,7 +175,7 @@ class SpdyProxyClientSocketTest : public PlatformTest,
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
         url::SchemeHostPort{GURL(kProxyUrl)}, HttpAuth::AUTH_PROXY, "MyRealm1",
-        HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+        HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
@@ -284,7 +284,7 @@ void SpdyProxyClientSocketTest::Initialize(base::span<const MockRead> reads,
       user_agent_, endpoint_host_port_pair_, net_log_with_source_,
       base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_PROXY, GURL("https://" + proxy_host_port_.ToString()),
-          NetworkIsolationKey(), session_->http_auth_cache(),
+          NetworkAnonymizationKey(), session_->http_auth_cache(),
           session_->http_auth_handler_factory(), session_->host_resolver()),
       // Testing with the proxy delegate is in HttpProxyConnectJobTest.
       nullptr);

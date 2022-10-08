@@ -44,8 +44,8 @@ std::unique_ptr<HttpAuthHandlerMock> CreateMockHandler(bool connection_based) {
   url::SchemeHostPort scheme_host_port(GURL("https://www.example.com"));
   SSLInfo null_ssl_info;
   EXPECT_TRUE(auth_handler->InitFromChallenge(
-      &challenge, HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-      scheme_host_port, NetLogWithSource()));
+      &challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+      NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource()));
   return auth_handler;
 }
 
@@ -149,7 +149,7 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
     std::unique_ptr<HttpAuthHandler> handler;
     HttpAuth::ChooseBestChallenge(
         http_auth_handler_factory.get(), *headers, null_ssl_info,
-        NetworkIsolationKey(), HttpAuth::AUTH_SERVER, scheme_host_port,
+        NetworkAnonymizationKey(), HttpAuth::AUTH_SERVER, scheme_host_port,
         disabled_schemes, NetLogWithSource(), host_resolver.get(), &handler);
 
     if (handler.get()) {

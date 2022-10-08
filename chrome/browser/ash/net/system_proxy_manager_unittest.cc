@@ -248,7 +248,7 @@ TEST_F(SystemProxyManagerTest, UserCredentialsRequestedFromNetworkService) {
       ->http_auth_cache()
       ->Add(url::SchemeHostPort(GURL(kProxyAuthEmptyPath)),
             net::HttpAuth::AUTH_PROXY, kRealm,
-            net::HttpAuth::AUTH_SCHEME_DIGEST, net::NetworkIsolationKey(),
+            net::HttpAuth::AUTH_SCHEME_DIGEST, net::NetworkAnonymizationKey(),
             kProxyAuthChallenge,
             net::AuthCredentials(kBrowserUsername16, kBrowserPassword16),
             std::string() /* path */);

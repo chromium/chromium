@@ -188,7 +188,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         proxy_endpoint_(url::kHttpsScheme, kProxyHost, kProxyPort),
         destination_endpoint_(url::kHttpsScheme, kOriginHost, kOriginPort),
         http_auth_cache_(
-            false /* key_server_entries_by_network_isolation_key */),
+            false /* key_server_entries_by_network_anonymization_key */),
         host_resolver_(std::make_unique<MockCachingHostResolver>()),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()) {
     FLAGS_quic_enable_http3_grease_randomness = false;
@@ -327,7 +327,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         NetLogWithSource::Make(NetLogSourceType::NONE),
         base::MakeRefCounted<HttpAuthController>(
             HttpAuth::AUTH_PROXY, proxy_endpoint_.GetURL(),
-            NetworkIsolationKey(), &http_auth_cache_,
+            NetworkAnonymizationKey(), &http_auth_cache_,
             http_auth_handler_factory_.get(), host_resolver_.get()),
         proxy_delegate_.get());
 
@@ -777,7 +777,7 @@ TEST_P(QuicProxyClientSocketTest, ConnectWithAuthCredentials) {
   const std::u16string kBar(u"bar");
   http_auth_cache_.Add(
       url::SchemeHostPort(GURL(kProxyUrl)), HttpAuth::AUTH_PROXY, "MyRealm1",
-      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
       "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   AssertConnectSucceeds();

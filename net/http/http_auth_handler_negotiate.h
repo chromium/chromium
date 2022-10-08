@@ -69,7 +69,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
-                          const NetworkIsolationKey& network_isolation_key,
+                          const NetworkAnonymizationKey& network_isolation_key,
                           const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int digest_nonce_count,
@@ -102,7 +102,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* challenge,
             const SSLInfo& ssl_info,
-            const NetworkIsolationKey& network_isolation_key) override;
+            const NetworkAnonymizationKey& network_isolation_key) override;
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,
@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
   std::unique_ptr<HttpAuthMechanism> auth_system_;
   const raw_ptr<HostResolver> resolver_;
 
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
 
   // Members which are needed for DNS lookup + SPN.
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;

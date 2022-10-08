@@ -65,7 +65,7 @@ bool HttpAuthHandlerMock::AllowsExplicitCredentials() {
 bool HttpAuthHandlerMock::Init(
     HttpAuthChallengeTokenizer* challenge,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   EXPECT_EQ(State::WAIT_FOR_INIT, state_);
   state_ = State::WAIT_FOR_GENERATE_AUTH_TOKEN;
   auth_scheme_ = HttpAuth::AUTH_SCHEME_MOCK;
@@ -155,7 +155,7 @@ int HttpAuthHandlerMock::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int nonce_count,
@@ -170,8 +170,8 @@ int HttpAuthHandlerMock::Factory::CreateAuthHandler(
   handlers.erase(handlers.begin());
   if (do_init_from_challenge_ &&
       !tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, scheme_host_port,
-                                      net_log)) {
+                                      network_anonymization_key,
+                                      scheme_host_port, net_log)) {
     return ERR_INVALID_RESPONSE;
   }
   handler->swap(tmp_handler);

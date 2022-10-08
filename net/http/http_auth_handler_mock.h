@@ -53,7 +53,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
-                          const NetworkIsolationKey& network_isolation_key,
+                          const NetworkAnonymizationKey& network_isolation_key,
                           const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int nonce_count,
@@ -99,7 +99,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
   bool AllowsExplicitCredentials() override;
   bool Init(HttpAuthChallengeTokenizer* challenge,
             const SSLInfo& ssl_info,
-            const NetworkIsolationKey& network_isolation_key) override;
+            const NetworkAnonymizationKey& network_isolation_key) override;
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,

@@ -26,7 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   net::HttpAuthHandlerBasic::Factory factory;
   factory.CreateAuthHandlerFromString(challenge, net::HttpAuth::AUTH_SERVER,
-                                      null_ssl_info, net::NetworkIsolationKey(),
+                                      null_ssl_info, net::NetworkAnonymizationKey(),
                                       scheme_host_port, net::NetLogWithSource(),
                                       host_resolver.get(), &basic);
   return 0;
