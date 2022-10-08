@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/pumpkin_installer.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_event_handler_delegate_impl.h"
+#include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
@@ -92,6 +93,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_resource.h"
+#include "services/accessibility/buildflags.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -438,6 +440,19 @@ AccessibilityManager::AccessibilityManager() {
     manager->Initialize(static_cast<int>(Sound::kVolumeAdjust),
                         bundle.GetRawDataResource(IDR_SOUND_VOLUME_ADJUST_WAV));
   }
+  if (::features::IsAccessibilityServiceEnabled()) {
+    // We create an AccessibilityServiceClient even if the build flag is not
+    // set, because this allows tests with the AccessibilityServiceClient to
+    // run.
+    accessibility_service_client_ =
+        std::make_unique<AccessibilityServiceClient>();
+#if !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+    LOG(WARNING) << "Constructing an AccessibilityServiceClient for "
+                    "AccessibilityManager, but Chrome was not built with the "
+                    "Accessibility Service. Did you mean to add "
+                    "`enable_accessibility_service=true` to your gn args?";
+#endif  // !BUILDFLAG(ENABLE_ACCESSIBILITY_SERVICE)
+  }
 
   base::FilePath resources_path;
   if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path))
@@ -627,15 +642,25 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
         kUserSpokenFeedbackEnabled, enabled);
   }
 
+  // TODO(crbug.com/1355633): Refactor a helper class that uses either
+  // AccessibilityExtensionLoader or AccessibilityServiceClient when
+  // setting profile or turning on/off extensions depending on the state
+  // of the flag. That class will own both the loaders and the
+  // AccessibilityServiceClient.
   if (enabled) {
     chromevox_loader_->SetProfile(
         profile_,
         base::BindRepeating(&AccessibilityManager::PostSwitchChromeVoxProfile,
                             weak_ptr_factory_.GetWeakPtr()));
+    if (accessibility_service_client_)
+      accessibility_service_client_->SetProfile(profile_);
   }
 
   if (spoken_feedback_enabled_ == enabled)
     return;
+
+  if (accessibility_service_client_)
+    accessibility_service_client_->SetChromeVoxEnabled(enabled);
 
   spoken_feedback_enabled_ = enabled;
 
@@ -805,11 +830,22 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
   if (enabled) {
     accessibility_common_extension_loader_->SetProfile(
         profile_, base::OnceClosure() /* done_callback */);
+    if (accessibility_service_client_)
+      accessibility_service_client_->SetProfile(profile_);
   }
 
   size_t pref_count = accessibility_common_enabled_features_.count(pref_name);
   if ((pref_count != 0 && enabled) || (pref_count == 0 && !enabled))
     return;
+
+  if (accessibility_service_client_) {
+    if (pref_name == prefs::kDockedMagnifierEnabled ||
+        pref_name == prefs::kAccessibilityScreenMagnifierEnabled) {
+      accessibility_service_client_->SetMagnifierEnabled(enabled);
+    } else if (pref_name == prefs::kAccessibilityAutoclickEnabled) {
+      accessibility_service_client_->SetAutoclickEnabled(enabled);
+    }
+  }
 
   if (enabled) {
     accessibility_common_enabled_features_.insert(pref_name);
@@ -1027,6 +1063,9 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         pref_service, g_browser_process->local_state());
   }
 
+  if (accessibility_service_client_)
+    accessibility_service_client_->SetDictationEnabled(enabled);
+
   if (!enabled)
     return;
 
@@ -1180,11 +1219,17 @@ void AccessibilityManager::OnSelectToSpeakChanged() {
 
   const bool enabled = profile_->GetPrefs()->GetBoolean(
       prefs::kAccessibilitySelectToSpeakEnabled);
-  if (enabled)
+  if (enabled) {
     select_to_speak_loader_->SetProfile(profile_, base::OnceClosure());
+    if (accessibility_service_client_)
+      accessibility_service_client_->SetProfile(profile_);
+  }
 
   if (select_to_speak_enabled_ == enabled)
     return;
+
+  if (accessibility_service_client_)
+    accessibility_service_client_->SetSelectToSpeakEnabled(enabled);
 
   select_to_speak_enabled_ = enabled;
 
@@ -1238,6 +1283,9 @@ void AccessibilityManager::OnSwitchAccessChanged() {
 
     switch_access_loader_->SetProfile(profile_, base::OnceClosure());
 
+    if (accessibility_service_client_)
+      accessibility_service_client_->SetProfile(profile_);
+
     // Make sure we always update the VK state, on every profile transition.
     ChromeKeyboardControllerClient::Get()->SetEnableFlag(
         keyboard::KeyboardEnableFlag::kExtensionEnabled);
@@ -1245,6 +1293,10 @@ void AccessibilityManager::OnSwitchAccessChanged() {
 
   if (switch_access_enabled_ == enabled)
     return;
+
+  if (accessibility_service_client_)
+    accessibility_service_client_->SetSwitchAccessEnabled(enabled);
+
   switch_access_enabled_ = enabled;
 
   AccessibilityStatusEventDetails details(
@@ -1465,6 +1517,9 @@ void AccessibilityManager::SetProfile(Profile* profile) {
         ->AddUIThreadHistogramCallback(base::BindOnce(
             &AccessibilityManager::UpdateChromeOSAccessibilityHistograms,
             base::Unretained(this)));
+
+    if (accessibility_service_client_)
+      accessibility_service_client_->SetProfile(profile);
 
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);

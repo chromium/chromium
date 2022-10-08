@@ -24,6 +24,10 @@ class AccessibilityServiceRouterFactory
   static AccessibilityServiceRouter* GetForBrowserContext(
       content::BrowserContext* context);
 
+  static AccessibilityServiceRouterFactory* GetInstanceForTest() {
+    return GetInstance();
+  }
+
  private:
   friend class base::NoDestructor<AccessibilityServiceRouterFactory>;
   static AccessibilityServiceRouterFactory* GetInstance();

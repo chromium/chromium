@@ -8322,6 +8322,8 @@ static_library("test_support") {
     sources += [
       "apps/app_service/webapk/webapk_test_server.cc",
       "apps/app_service/webapk/webapk_test_server.h",
+      "ash/accessibility/service/fake_accessibility_service.cc",
+      "ash/accessibility/service/fake_accessibility_service.h",
       "ash/app_mode/fake_cws.cc",
       "ash/app_mode/fake_cws.h",
       "ash/arc/extensions/fake_arc_support.cc",

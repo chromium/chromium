@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -194,6 +195,14 @@ void SetSelectToSpeakEnabled(bool enabled) {
 
 bool IsSelectToSpeakEnabled() {
   return AccessibilityManager::Get()->IsSelectToSpeakEnabled();
+}
+
+void SetSwitchAccessEnabled(bool enabled) {
+  AccessibilityManager::Get()->SetSwitchAccessEnabled(enabled);
+}
+
+void SetMagnifierEnabled(bool enabled) {
+  MagnificationManager::Get()->SetMagnifierEnabled(enabled);
 }
 
 void SetDictationEnabled(bool enabled) {
@@ -1510,6 +1519,43 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   SetBrailleDisplayAvailability(true);
   EXPECT_TRUE(IsSpokenFeedbackEnabled());
   EXPECT_TRUE(IsBrailleImeEnabled());
+}
+
+class AccessibilityManagerWithAccessibilityServiceTest
+    : public AccessibilityManagerTest {
+ public:
+  AccessibilityManagerWithAccessibilityServiceTest() = default;
+  AccessibilityManagerWithAccessibilityServiceTest(
+      const AccessibilityManagerWithAccessibilityServiceTest&) = delete;
+  AccessibilityManagerWithAccessibilityServiceTest& operator=(
+      const AccessibilityManagerWithAccessibilityServiceTest&) = delete;
+  ~AccessibilityManagerWithAccessibilityServiceTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityService);
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceTest,
+                       Constructs) {
+  // The service will be constructed and start receiving accessibility events
+  // when a subset of features are enabled. This simple test ensures that there
+  // are no crashes when setting up the service and toggling features.
+  SetSpokenFeedbackEnabled(true);
+  SetSelectToSpeakEnabled(true);
+  SetSwitchAccessEnabled(true);
+  SetAutoclickEnabled(true);
+  SetDictationEnabled(true);
+  SetMagnifierEnabled(true);
+
+  SetSpokenFeedbackEnabled(false);
+  SetSelectToSpeakEnabled(false);
+  SetSwitchAccessEnabled(false);
+  SetAutoclickEnabled(false);
+  SetDictationEnabled(false);
+  SetMagnifierEnabled(false);
 }
 
 }  // namespace ash
