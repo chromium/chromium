@@ -97,11 +97,7 @@ cast_source_set("named_message_port_connector_cast") {
   ]
 }
 
-group("browser") {
-  public_deps = [ ":browser_base" ]
-}
-
-cast_source_set("browser_base") {
+cast_source_set("browser") {
   sources = [
     "application_media_info_manager.cc",
     "application_media_info_manager.h",
@@ -431,13 +427,13 @@ cast_source_set("display_configurator") {
 cast_source_set("simple_main_parts") {
   sources = [ "cast_browser_main_parts_simple.cc" ]
 
-  public_deps = [ ":browser_base" ]
+  public_deps = [ ":browser" ]
 }
 
 cast_source_set("simple_client") {
   sources = [ "cast_content_browser_client_simple.cc" ]
 
-  public_deps = [ ":browser_base" ]
+  public_deps = [ ":browser" ]
 
   deps = [
     "//base",

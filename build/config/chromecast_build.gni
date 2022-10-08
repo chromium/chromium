@@ -117,7 +117,7 @@ if (enable_cast_audio_renderer) {
 # Assert that Chromecast is being built for a supported platform.
 assert(is_linux || is_chromeos || is_android || is_fuchsia ||
            !enable_cast_receiver,
-       "Cast receiver builds are not supported on $target_os")
+       "Cast receiver builds are not supported on $current_os")
 
 assert(enable_cast_receiver || !is_cast_audio_only,
        "is_cast_audio_only = true requires enable_cast_receiver = true.")

@@ -64,7 +64,7 @@ cast_source_set("grpc_webui") {
     "//chromecast/base",
     "//chromecast/base:chromecast_switches",
     "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser:browser_base",
+    "//chromecast/browser",
     "//net",
     "//third_party/blink/public/common:headers",
     "//third_party/grpc:grpc++",
@@ -181,7 +181,7 @@ cast_source_set("runtime_application_dispatcher") {
     ":grpc_webui",
     ":runtime_application",
     "//base",
-    "//chromecast/browser:browser_base",
+    "//chromecast/browser",
     "//chromecast/common:feature_constants",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/common",
@@ -227,7 +227,7 @@ cast_source_set("runtime_application_dispatcher_grpc") {
     ":runtime_application",
     ":runtime_application_dispatcher",
     "//base",
-    "//chromecast/browser:browser_base",
+    "//chromecast/browser",
     "//chromecast/common:feature_constants",
     "//components/cast_receiver/browser",
     "//components/cast_receiver/browser:page_state_observer",
@@ -272,7 +272,7 @@ cast_source_set("core_browser_cast_service") {
     ":runtime_application_dispatcher",
     ":runtime_application_dispatcher_grpc",
     "//base",
-    "//chromecast/browser:browser_base",
+    "//chromecast/browser",
     "//chromecast/cast_core:cast_core_switches",
     "//chromecast/metrics:cast_event_builder_simple",
     "//chromecast/service",
@@ -300,7 +300,7 @@ cast_source_set("browser") {
 
   public_deps = [
     ":runtime_application_dispatcher",
-    "//chromecast/browser:browser_base",
+    "//chromecast/browser",
     "//components/cast_receiver/browser",
   ]
 

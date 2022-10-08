@@ -11,19 +11,16 @@ cast_source_set("renderer") {
   ]
 
   deps = [
-    "//base",
-    "//chromecast/cast_core/runtime/common:cors_exempt_headers",
-    "//components/cast_streaming/public",
     "//components/cast_streaming/renderer",
-    "//media",
   ]
 
   public_deps = [
-    "//chromecast/renderer:renderer_base",
-    "//third_party/blink/public/common:headers",
+    "//chromecast/renderer",
   ]
+}
 
-  if (enable_cast_media_runtime) {
-    sources += [ "cast_content_renderer_client_factory.cc" ]
-  }
+cast_source_set("renderer_simple") {
+  sources = [ "cast_runtime_content_renderer_client_simple.cc" ]
+
+  deps = [ ":renderer" ]
 }

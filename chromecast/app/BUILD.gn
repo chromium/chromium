@@ -22,6 +22,7 @@ cast_source_set("app") {
     "//chromecast/common",
     "//chromecast/common:resource_delegate",
     "//chromecast/gpu",
+    "//chromecast/renderer",
     "//chromecast/utility",
     "//components/crash/core/common:crash_key",
     "//content/public/app",
@@ -29,12 +30,6 @@ cast_source_set("app") {
     "//content/public/common",
     "//ui/base",
   ]
-
-  if (enable_cast_media_runtime) {
-    deps += [ "//chromecast/renderer:renderer_base" ]
-  } else {
-    deps += [ "//chromecast/renderer" ]
-  }
 
   if (!is_fuchsia) {
     # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.

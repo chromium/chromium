@@ -16,7 +16,7 @@ cast_source_set("core_runtime_lib_simple") {
     "//chromecast/base:default_create_sys_info",
     "//chromecast/browser",
     "//chromecast/cast_core/runtime/browser:browser_simple",
-    "//chromecast/cast_core/runtime/renderer",
+    "//chromecast/cast_core/runtime/renderer:renderer_simple",
   ]
 }
 
