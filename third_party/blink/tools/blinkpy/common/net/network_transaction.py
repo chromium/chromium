@@ -29,7 +29,7 @@
 import logging
 import random
 import time
-import requests.exceptions
+import urllib.error
 
 _log = logging.getLogger(__name__)
 
@@ -58,19 +58,15 @@ class NetworkTransaction(object):
         while True:
             try:
                 return request()
-            except requests.exceptions.RequestException as error:
-                if hasattr(error, 'response'):
-                    code = error.response.status_code
-                    if self._return_none_on_404 and code == 404:
-                        return None
-                    _log.warning('Received HTTP status %s loading "%s": %s. ',
-                                 code, error.response.url,
-                                 error.response.reason)
-                else:
-                    _log.warning('Received RequestException: %s ...', error)
-                _log.warning('Retrying in %.3f seconds...',
-                             self._backoff_seconds)
+            except urllib.error.URLError as error:
+                code = getattr(error, 'code', None)
+                if self._return_none_on_404 and code == 404:
+                    return None
                 self._check_for_timeout()
+                _log.warning(
+                    'Received HTTP status %s loading "%s": %s. '
+                    'Retrying in %.3f seconds...', code, error.filename,
+                    error.reason, self._backoff_seconds)
                 self._sleep()
 
     def _check_for_timeout(self):

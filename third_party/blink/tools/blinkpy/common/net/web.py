@@ -27,8 +27,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import functools
+import gzip
+import io
 import logging
-import requests
+import urllib.request
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
 
@@ -36,9 +38,13 @@ _log = logging.getLogger(__name__)
 
 
 class Web(object):
+    class _HTTPRedirectHandler2(urllib.request.HTTPRedirectHandler):  # pylint:disable=no-init
+        """A subclass of HTTPRedirectHandler to support 308 Permanent Redirect."""
 
-    def __init__(self):
-        self.session = requests.Session()
+        def http_error_308(self, req, fp, code, msg, headers):  # pylint:disable=unused-argument
+            # We have to override the code to 301 (Moved Permanently);
+            # otherwise, HTTPRedirectHandler will throw a HTTPError.
+            return self.http_error_301(req, fp, 301, msg, headers)
 
     def get_binary(self, url, return_none_on_404=False):
         make_request = functools.partial(self.request_and_read,
@@ -49,15 +55,24 @@ class Web(object):
             return_none_on_404=return_none_on_404).run(make_request)
 
     def request(self, method, url, data=None, headers=None):
-        return self.session.request(method.lower(),
-                                    url,
-                                    data=data,
-                                    headers=headers,
-                                    stream=True)
+        opener = urllib.request.build_opener(Web._HTTPRedirectHandler2)
+        request = urllib.request.Request(url=url, data=data)
+
+        request.get_method = lambda: method
+
+        if headers:
+            for key, value in headers.items():
+                request.add_header(key, value)
+
+        return opener.open(request)
 
     def request_and_read(self, *args, **kwargs):
+        # TODO(crbug.com/1213998): Consider a higher-level HTTP client like
+        # `requests` that handles retries and decoding automatically.
         response = self.request(*args, **kwargs)
-        buf = bytearray()
-        for section in response.iter_content(chunk_size=None):
-            buf.extend(section)
-        return buf
+        if response.headers.get('Content-Encoding') == 'gzip':
+            # Wrap the HTTP response, which is not fully file-like.
+            buf = io.BytesIO(response.read())
+            gzip_decoder = gzip.GzipFile(fileobj=buf)
+            return gzip_decoder.read()
+        return response.read()

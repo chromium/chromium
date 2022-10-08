@@ -5,7 +5,7 @@
 import base64
 import json
 import logging
-from requests.exceptions import HTTPError
+from six.moves.urllib.error import HTTPError
 
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
@@ -162,13 +162,9 @@ class GerritCL(object):
         try:
             return self.api.post(path, {'message': message})
         except HTTPError as e:
-            message = 'Failed to post a comment to issue {}'.format(
-                self.change_id)
-            if hasattr(e, 'response'):
-                message += ' (code {})'.format(e.response.status_code)
-            else:
-                message += ' (error {})'.format(e.response.status_code)
-            raise GerritError(message)
+            raise GerritError(
+                'Failed to post a comment to issue {} (code {}).'.format(
+                    self.change_id, e.code))
 
     def is_exportable(self):
         # TODO(robertma): Consolidate with the related part in chromium_exportable_commits.py.

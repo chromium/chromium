@@ -10,8 +10,8 @@ import re
 import six
 
 from collections import namedtuple
-from requests.exceptions import HTTPError
-from requests.exceptions import InvalidURL
+from six.moves.urllib.error import HTTPError
+from six.moves.urllib.error import URLError
 from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
@@ -137,17 +137,13 @@ class WPTGitHub(object):
         try:
             response = self.request(path, method='POST', body=body)
         except HTTPError as e:
-            if hasattr(e, 'response'):
-                _log.error(e.response.reason)
-                if e.response.status_code == 422:
-                    _log.error('Please check if branch already exists; If so, '
-                               'please remove the PR description and '
-                               'delete the branch')
-                raise GitHubError(201, e.response.status_code,
-                                  'create PR branch %s' % remote_branch_name)
-            else:
-                raise GitHubError(201, e,
-                                  'create PR branch %s' % remote_branch_name)
+            _log.error(e.reason)
+            if e.code == 422:
+                _log.error('Please check if branch already exists; If so, '
+                           'please remove the PR description and '
+                           'delete the branch')
+            raise GitHubError(201, e.code,
+                              'create PR branch %s' % remote_branch_name)
 
         if response.status_code != 201:
             raise GitHubError(201, response.status_code, 'create PR')
@@ -388,11 +384,11 @@ class WPTGitHub(object):
                     raise GitHubError(204, response.status_code,
                                       'check if PR %d is merged' % pr_number)
             except HTTPError as e:
-                if hasattr(e, 'response') and e.response.status_code == 404:
+                if e.code == 404:
                     return False
                 else:
                     raise
-            except InvalidURL as e:
+            except URLError as e:
                 # After migrate to py3 we met random timeout issue here,
                 # Retry this request in this case
                 _log.warning("Meet URLError...")
@@ -417,7 +413,7 @@ class WPTGitHub(object):
         try:
             response = self.request(path, method='PUT', body=body)
         except HTTPError as e:
-            if hasattr(e, 'response') and e.response.status_code == 405:
+            if e.code == 405:
                 raise MergeError(pr_number)
             else:
                 raise
@@ -476,10 +472,10 @@ class JSONResponse(object):
         """Initializes a JSONResponse instance.
 
         Args:
-            raw_response: a response object returned by requests.
+            raw_response: a response object returned by open methods in urllib2.
         """
         self._raw_response = raw_response
-        self.status_code = raw_response.status_code
+        self.status_code = raw_response.getcode()
         try:
             self.data = json.load(raw_response)
         except ValueError:
