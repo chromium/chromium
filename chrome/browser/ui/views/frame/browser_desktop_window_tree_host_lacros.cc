@@ -96,9 +96,9 @@ void BrowserDesktopWindowTreeHostLacros::UpdateFrameHints() {
         {SkRRect::kLowerRight_Corner, false, false},
     };
     for (const auto& corner : kCorners) {
-      auto radii = rrect.radii(corner.corner);
-      auto rx = std::ceil(scale * radii.x());
-      auto ry = std::ceil(scale * radii.y());
+      auto corner_radii = rrect.radii(corner.corner);
+      auto rx = std::ceil(scale * corner_radii.x());
+      auto ry = std::ceil(scale * corner_radii.y());
       auto corner_rect = SkIRect::MakeXYWH(
           corner.left ? rect.x() : rect.right() - rx,
           corner.upper ? rect.y() : rect.bottom() - ry, rx, ry);

@@ -467,10 +467,6 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
           .Wait();
 
       // Fake the OS account addition.
-      account_manager::AccountKey kAccountKey{
-          kGaiaId, account_manager::AccountType::kGaia};
-      auto* account_manager = MaybeGetAshAccountManagerForTests();
-      DCHECK(account_manager);
       account_manager->UpsertAccount(kAccountKey, email, "access_token");
 
       // Fake that this account was successfully added via the UI.
@@ -859,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 #define MAYBE_CreateSignedInProfileDiceReenter CreateSignedInProfileDiceReenter
 #endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileDiceReenter) {
+                       MAYBE_CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartDiceSignIn();
 
