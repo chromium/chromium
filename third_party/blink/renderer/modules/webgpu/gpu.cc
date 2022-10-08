@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,9 +21,11 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
@@ -146,20 +149,19 @@ WGPURequestAdapterOptions AsDawnType(
 //     ExecutionContextToken.
 WebGPUExecutionContextToken GetExecutionContextToken(
     const ExecutionContext* execution_context) {
-  auto execution_context_token = execution_context->GetExecutionContextToken();
-
-  // TODO(dawn:549) Implement passing real DocumentToken when ready.
   // WebGPU only supports 2 types of context tokens, DocumentTokens and
-  // DedicatedWorkerTokens. We are currently passing a placeholder
-  // DocumentToken (by default construction), and a real DedicatedWorkerToken.
-  // The token is sent to the GPU process so that it can be cross-referenced
-  // against the browser process to get an isolation key for caching purposes.
-  WebGPUExecutionContextToken webgpu_execution_context_token;
-  if (execution_context_token.Is<DedicatedWorkerToken>()) {
-    webgpu_execution_context_token =
-        execution_context_token.GetAs<DedicatedWorkerToken>();
+  // DedicatedWorkerTokens. The token is sent to the GPU process so that it can
+  // be cross-referenced against the browser process to get an isolation key for
+  // caching purposes.
+  if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    return execution_context->GetExecutionContextToken()
+        .GetAs<DedicatedWorkerToken>();
   }
-  return webgpu_execution_context_token;
+  if (execution_context->IsWindow()) {
+    return To<LocalDOMWindow>(execution_context)->document()->Token();
+  }
+  NOTREACHED();
+  return WebGPUExecutionContextToken();
 }
 
 }  // anonymous namespace

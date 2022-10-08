@@ -42,6 +42,7 @@
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -1076,8 +1077,18 @@ std::string GpuProcessHost::GetIsolationKey(
     int32_t process_id,
     const blink::WebGPUExecutionContextToken& token) {
   if (token.Is<blink::DocumentToken>()) {
-    // TODO(dawn:549) Add DocumentToken support when it is ready.
-    return "";
+    // Return an empty isolation key if the frame host is gone. This could
+    // happen if the frame is destroyed (or being destroyed) in between when we
+    // are trying to get the isolation key.
+    RenderFrameHostImpl* frame_host = RenderFrameHostImpl::FromDocumentToken(
+        process_id, token.GetAs<blink::DocumentToken>());
+    if (!frame_host) {
+      return "";
+    }
+
+    auto isolation_key =
+        frame_host->GetNetworkIsolationKey().ToCacheKeyString();
+    return isolation_key ? *isolation_key : "";
   } else if (token.Is<blink::DedicatedWorkerToken>()) {
     // Return an empty isolation key if the process host or the worker host is
     // gone. This may happen if the worker is destroyed (or being destroyed) in
