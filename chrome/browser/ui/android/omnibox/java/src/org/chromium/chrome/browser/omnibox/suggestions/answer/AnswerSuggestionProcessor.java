@@ -63,6 +63,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     @Override
     public void onNativeInitialized() {
+        super.onNativeInitialized();
         mOmniBoxAnswerColorReversal =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE);
         boolean financeReversalEnabled = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
