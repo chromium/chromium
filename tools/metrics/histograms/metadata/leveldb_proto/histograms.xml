@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="LevelDB.ApproximateMemTableMemoryUse.{LevelDBClient}"
-    units="bytes" expires_after="2022-10-23">
+    units="bytes" expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>salg@google.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.DestroySuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Destroy call was successful or not.</summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.GetErrorStatus.{LevelDBClient}" enum="LevelDBStatus"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.GetFound.{LevelDBClient}" enum="Boolean"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Get call found what was requested.</summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.GetSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Get call was successful or not.</summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.InitStatus.{LevelDBClient}" enum="LevelDBStatus"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>The LevelDB Status from a ProtoDatabase Init call.</summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.LoadEntriesSuccess.{LevelDBClient}"
-    enum="BooleanSuccess" expires_after="2022-10-23">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.LoadKeysAndEntriesSuccess.{LevelDBClient}"
-    enum="BooleanSuccess" expires_after="2022-10-23">
+    enum="BooleanSuccess" expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.LoadKeysSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadKeys call was successful or not.</summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.UpdateErrorStatus.{LevelDBClient}"
-    enum="LevelDBStatus" expires_after="2022-10-23">
+    enum="LevelDBStatus" expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.UpdateSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2022-10-23">
+    expires_after="2023-02-26">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>
