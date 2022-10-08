@@ -25,6 +25,12 @@ struct AutocompleteMatchType {
   // numeric values should never be reused. The values should remain
   // synchronized with the enum AutocompleteMatchType in
   // //tools/metrics/histograms/enums.xml.
+  //
+  // Any changes to this enum also requires an update to:
+  //  - `AutocompleteMatch::AsOmniboxEventResultType()`
+  //  - `GetClientSummarizedResultType()`
+  //  - `AutocompleteMatchType::ToString()`
+  //  - `AutocompleteMatchType::GetAccessibilityBaseLabel()`
   enum Type {
     URL_WHAT_YOU_TYPED    = 0,  // The input as a URL.
     HISTORY_URL           = 1,  // A past page whose URL contains the input.
@@ -80,7 +86,7 @@ struct AutocompleteMatchType {
     NULL_RESULT_MESSAGE         = 32,  // A suggestion whose purpose is only to
                                        // deliver a message. This suggestion
                                        // cannot be opened or acted upon.
-    STARTER_PACK     = 33,  // A URL suggestion that a starter pack
+    STARTER_PACK                = 33,  // A URL suggestion that a starter pack
                                        // keyword mode chip attaches to.
     NUM_TYPES,
   };

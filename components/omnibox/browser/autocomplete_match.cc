@@ -1213,9 +1213,7 @@ AutocompleteMatch::AsOmniboxEventResultType() const {
     case AutocompleteMatchType::HISTORY_CLUSTER:
       return OmniboxEventProto::Suggestion::HISTORY_CLUSTER;
     case AutocompleteMatchType::STARTER_PACK:
-      // TODO(yoangela): Update this when STARTER_PACK is added to
-      //   OmniboxEventProto.
-      return OmniboxEventProto::Suggestion::NAVSUGGEST;
+      return OmniboxEventProto::Suggestion::STARTER_PACK;
     case AutocompleteMatchType::VOICE_SUGGEST:
       // VOICE_SUGGEST matches are only used in Java and are not logged,
       // so we should never reach this case.

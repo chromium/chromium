@@ -52,7 +52,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "open-tab",
     "history-cluster",
     "null-result-message",
-    "navsuggest-starter-pack"
+    "starter-pack"
   };
   // clang-format on
   static_assert(std::size(strings) == AutocompleteMatchType::NUM_TYPES,

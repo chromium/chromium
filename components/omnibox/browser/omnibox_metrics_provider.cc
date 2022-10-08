@@ -107,6 +107,8 @@ ClientSummarizedResultType GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::OPEN_TAB,
            ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::STARTER_PACK,
+           ClientSummarizedResultType::kUrl},
       });
 
   const auto it = kResultTypesToClientSummarizedResultTypes->find(type);
