@@ -73,6 +73,9 @@ void AsyncAPIMock::SetToken(unsigned int command,
 MockDecoderClient::MockDecoderClient() = default;
 MockDecoderClient::~MockDecoderClient() = default;
 
+MockIsolationKeyProvider::MockIsolationKeyProvider() = default;
+MockIsolationKeyProvider::~MockIsolationKeyProvider() = default;
+
 namespace gles2 {
 
 MockShaderTranslator::MockShaderTranslator() = default;

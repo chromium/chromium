@@ -23,12 +23,13 @@ WebGPUDecoder* WebGPUDecoder::Create(
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
     scoped_refptr<SharedContextState> shared_context_state,
-    const DawnCacheOptions& dawn_cache_options) {
+    const DawnCacheOptions& dawn_cache_options,
+    IsolationKeyProvider* isolation_key_provider) {
 #if BUILDFLAG(USE_DAWN)
   return CreateWebGPUDecoderImpl(
       client, command_buffer_service, shared_image_manager, memory_tracker,
       outputter, gpu_preferences, std::move(shared_context_state),
-      dawn_cache_options);
+      dawn_cache_options, isolation_key_provider);
 #else
   NOTREACHED();
   return nullptr;

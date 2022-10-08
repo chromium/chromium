@@ -962,6 +962,13 @@ void GpuServiceImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
   gpu_host_->StoreBlobToDisk(handle, key, shader);
 }
 
+void GpuServiceImpl::GetIsolationKey(
+    int client_id,
+    const blink::WebGPUExecutionContextToken& token,
+    GetIsolationKeyCallback cb) {
+  gpu_host_->GetIsolationKey(client_id, token, std::move(cb));
+}
+
 void GpuServiceImpl::MaybeExitOnContextLost() {
   DCHECK(main_runner_->BelongsToCurrentThread());
 

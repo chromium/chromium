@@ -176,6 +176,7 @@ target(link_target_type, "gles2_sources") {
     "id_manager.h",
     "indexed_buffer_binding_host.cc",
     "indexed_buffer_binding_host.h",
+    "isolation_key_provider.h",
     "logger.cc",
     "logger.h",
     "mailbox_manager_dummy.cc",

@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/context_result.h"
+#include "gpu/command_buffer/service/isolation_key_provider.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
@@ -54,7 +55,8 @@ class SyncPointManager;
 
 // Encapsulates an IPC channel between the GPU process and one renderer
 // process. On the renderer side there's a corresponding GpuChannelHost.
-class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
+class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
+                                          public IsolationKeyProvider {
  public:
   GpuChannel(const GpuChannel&) = delete;
   GpuChannel& operator=(const GpuChannel&) = delete;
@@ -122,6 +124,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener {
   // IPC::Listener implementation:
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelError() override;
+
+  // gpu::IsolationKeyProvider:
+  void GetIsolationKey(const blink::WebGPUExecutionContextToken& token,
+                       GetIsolationKeyCallback cb) override;
 
   void OnCommandBufferScheduled(CommandBufferStub* stub);
   void OnCommandBufferDescheduled(CommandBufferStub* stub);

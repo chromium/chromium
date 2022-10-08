@@ -595,6 +595,14 @@ void GpuHostImpl::DisableGpuCompositing() {
   delegate_->DisableGpuCompositing();
 }
 
+void GpuHostImpl::GetIsolationKey(
+    int32_t client_id,
+    const blink::WebGPUExecutionContextToken& token,
+    GetIsolationKeyCallback cb) {
+  std::string isolation_key = delegate_->GetIsolationKey(client_id, token);
+  std::move(cb).Run(isolation_key);
+}
+
 void GpuHostImpl::DidUpdateGPUInfo(const gpu::GPUInfo& gpu_info) {
   delegate_->DidUpdateGPUInfo(gpu_info);
 }

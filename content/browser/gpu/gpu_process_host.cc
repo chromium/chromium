@@ -42,6 +42,9 @@
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
 #include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/child_process_host_impl.h"
 #include "content/common/in_process_child_thread_params.h"
@@ -71,9 +74,11 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/network_isolation_key.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
@@ -1066,6 +1071,41 @@ void GpuProcessHost::DidUpdateDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
   GpuDataManagerImpl::GetInstance()->UpdateDXGIInfo(std::move(dxgi_info));
 }
 #endif
+
+std::string GpuProcessHost::GetIsolationKey(
+    int32_t process_id,
+    const blink::WebGPUExecutionContextToken& token) {
+  if (token.Is<blink::DocumentToken>()) {
+    // TODO(dawn:549) Add DocumentToken support when it is ready.
+    return "";
+  } else if (token.Is<blink::DedicatedWorkerToken>()) {
+    // Return an empty isolation key if the process host or the worker host is
+    // gone. This may happen if the worker is destroyed (or being destroyed) in
+    // between when we are trying to get the isolation key.
+    RenderProcessHost* render_process_host =
+        RenderProcessHost::FromID(process_id);
+    if (!render_process_host ||
+        !render_process_host->IsInitializedAndNotDead()) {
+      return "";
+    }
+    DedicatedWorkerHost* dedicated_worker_host =
+        static_cast<StoragePartitionImpl*>(
+            render_process_host->GetStoragePartition())
+            ->GetDedicatedWorkerService()
+            ->GetDedicatedWorkerHostFromToken(
+                token.GetAs<blink::DedicatedWorkerToken>());
+    if (!dedicated_worker_host) {
+      return "";
+    }
+
+    auto isolation_key =
+        dedicated_worker_host->GetNetworkIsolationKey().ToCacheKeyString();
+    return isolation_key ? *isolation_key : "";
+  }
+
+  NOTREACHED();
+  return "";
+}
 
 void GpuProcessHost::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,
                                             gpu::DomainGuilt guilt) {

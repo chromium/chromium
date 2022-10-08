@@ -14,6 +14,7 @@ namespace gpu {
 class CommandBufferServiceBase;
 class DecoderClient;
 struct GpuPreferences;
+class IsolationKeyProvider;
 class MemoryTracker;
 class SharedContextState;
 class SharedImageManager;
@@ -35,7 +36,8 @@ GPU_GLES2_EXPORT WebGPUDecoder* CreateWebGPUDecoderImpl(
     gles2::Outputter* outputter,
     const GpuPreferences& gpu_preferences,
     scoped_refptr<SharedContextState> shared_context_state,
-    const DawnCacheOptions& dawn_cache_options);
+    const DawnCacheOptions& dawn_cache_options,
+    IsolationKeyProvider* isolation_key_provider);
 
 }  // namespace webgpu
 }  // namespace gpu

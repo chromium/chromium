@@ -10,6 +10,7 @@ import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/mojom/gpu_extra_info.mojom";
 import "url/mojom/url.mojom";
 [EnableIf=is_win]
@@ -57,6 +58,14 @@ interface GpuHost {
   // GPU process has decided to disable GPU compositing. Host process keeps
   // track of this decision in case the GPU process crashes.
   DisableGpuCompositing();
+
+  // Asks the host to pass an isolation key for a given token. The client id
+  // corresponds to the render process id.
+  // TODO(dawn:549) Consider using ExecutionContextToken if DocumentToken
+  //     becomes a part of the ExecutionContextToken.
+  GetIsolationKey(int32 client_id,
+                  blink.mojom.WebGPUExecutionContextToken wgpu_context_token)
+      => (string isolation_key);
 
   [EnableIf=is_win]
   SetChildSurface(gpu.mojom.SurfaceHandle parent,

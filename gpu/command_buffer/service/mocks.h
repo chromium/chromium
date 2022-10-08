@@ -20,6 +20,7 @@
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "gpu/command_buffer/service/isolation_key_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/shader_translator.h"
@@ -107,6 +108,18 @@ class MockDecoderClient : public DecoderClient {
   MOCK_METHOD(void, ScheduleGrContextCleanup, ());
   MOCK_METHOD(void, SetActiveURL, (GURL url));
   MOCK_METHOD(void, HandleReturnData, (base::span<const uint8_t> data));
+};
+
+class MockIsolationKeyProvider : public IsolationKeyProvider {
+ public:
+  MockIsolationKeyProvider();
+  ~MockIsolationKeyProvider() override;
+
+  MOCK_METHOD(void,
+              GetIsolationKey,
+              (const blink::WebGPUExecutionContextToken& token,
+               GetIsolationKeyCallback cb),
+              (override));
 };
 
 namespace gles2 {

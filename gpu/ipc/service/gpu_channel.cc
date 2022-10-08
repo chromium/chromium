@@ -629,6 +629,13 @@ void GpuChannel::OnChannelError() {
   gpu_channel_manager_->RemoveChannel(client_id_);
 }
 
+void GpuChannel::GetIsolationKey(
+    const blink::WebGPUExecutionContextToken& token,
+    GetIsolationKeyCallback cb) {
+  gpu_channel_manager_->delegate()->GetIsolationKey(client_id_, token,
+                                                    std::move(cb));
+}
+
 void GpuChannel::OnCommandBufferScheduled(CommandBufferStub* stub) {
   scheduler_->EnableSequence(stub->sequence_id());
 }
