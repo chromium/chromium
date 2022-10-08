@@ -2762,31 +2762,30 @@ TEST_P(CertVerifyProcInternalTest, ValidityJustAfterNotAfter) {
 }
 
 TEST_P(CertVerifyProcInternalTest, FailedIntermediateSignatureValidation) {
-  base::FilePath certs_dir =
-      GetTestNetDataDirectory()
-          .AppendASCII("verify_certificate_chain_unittest")
-          .AppendASCII(
-              "intermediate-wrong-signature-no-authority-key-identifier");
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
 
-  CertificateList certs = CreateCertificateListFromFile(
-      certs_dir, "chain.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, certs.size());
+  // Intermediate has no authorityKeyIdentifier. Also remove
+  // subjectKeyIdentifier from root for good measure.
+  intermediate->EraseExtension(der::Input(kAuthorityKeyIdentifierOid));
+  root->EraseExtension(der::Input(kSubjectKeyIdentifierOid));
 
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+  // Get the chain with the leaf and the intermediate signed by the original
+  // key of |root|.
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
 
-  scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBuffer(
-      bssl::UpRef(certs[0]->cert_buffer()), std::move(intermediates));
-  ASSERT_TRUE(cert.get());
+  // Generate a new key for root.
+  root->GenerateECKey();
 
-  // Trust the root certificate.
-  ScopedTestRoot scoped_root(certs.back().get());
+  // Trust the new root certificate.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
 
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(cert.get(), "test.example", flags, CRLSet::BuiltinCRLSet().get(),
-             CertificateList(), &verify_result);
+      Verify(cert.get(), "www.example.com", flags,
+             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
 
   // The intermediate was signed by a different root with a different key but
   // with the same name as the trusted one, and the intermediate has no
@@ -2797,30 +2796,38 @@ TEST_P(CertVerifyProcInternalTest, FailedIntermediateSignatureValidation) {
 }
 
 TEST_P(CertVerifyProcInternalTest, FailedTargetSignatureValidation) {
-  base::FilePath certs_dir =
-      GetTestNetDataDirectory()
-          .AppendASCII("verify_certificate_chain_unittest")
-          .AppendASCII("target-wrong-signature-no-authority-key-identifier");
+  std::unique_ptr<CertBuilder> leaf, intermediate, root;
+  CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
+  ASSERT_TRUE(leaf && intermediate && root);
 
-  CertificateList certs = CreateCertificateListFromFile(
-      certs_dir, "chain.pem", X509Certificate::FORMAT_AUTO);
-  ASSERT_EQ(3U, certs.size());
+  // Leaf has no authorityKeyIdentifier. Also remove subjectKeyIdentifier from
+  // intermediate for good measure.
+  leaf->EraseExtension(der::Input(kAuthorityKeyIdentifierOid));
+  intermediate->EraseExtension(der::Input(kSubjectKeyIdentifierOid));
 
+  // Get a copy of the leaf signed by the original key of intermediate.
+  bssl::UniquePtr<CRYPTO_BUFFER> leaf_wrong_signature = leaf->DupCertBuffer();
+
+  // Generate a new key for intermediate.
+  intermediate->GenerateECKey();
+
+  // Make a chain that includes the original leaf with the wrong signature and
+  // the new intermediate.
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+  intermediates.push_back(intermediate->DupCertBuffer());
 
   scoped_refptr<X509Certificate> cert = X509Certificate::CreateFromBuffer(
-      bssl::UpRef(certs[0]->cert_buffer()), std::move(intermediates));
+      bssl::UpRef(leaf_wrong_signature), std::move(intermediates));
   ASSERT_TRUE(cert.get());
 
   // Trust the root certificate.
-  ScopedTestRoot scoped_root(certs.back().get());
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
 
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(cert.get(), "test.example", flags, CRLSet::BuiltinCRLSet().get(),
-             CertificateList(), &verify_result);
+      Verify(cert.get(), "www.example.com", flags,
+             CRLSet::BuiltinCRLSet().get(), CertificateList(), &verify_result);
 
   // The leaf was signed by a different intermediate with a different key but
   // with the same name as the one in the chain, and the leaf has no

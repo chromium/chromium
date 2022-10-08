@@ -286,7 +286,7 @@ void GetCertChainInfo(PCCERT_CHAIN_CONTEXT chain_context,
               const_cast<PCERT_CONTEXT>(cert),
               CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
               const_cast<PCERT_CONTEXT>(issuer), 0, nullptr)) {
-        verify_result->cert_status |= CERT_STATUS_INVALID;
+        verify_result->cert_status |= CERT_STATUS_AUTHORITY_INVALID;
         break;
       }
     }
