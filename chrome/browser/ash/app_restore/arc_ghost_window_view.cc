@@ -26,6 +26,17 @@
 
 namespace {
 
+constexpr char kGhostWindowTypeHistogram[] = "Arc.GhostWindowViewType";
+
+// Ghost window view type enumeration; Used for UMA counter.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GhostWindowType {
+  kIconSpinning = 0,
+  kIconSpinningWithFixupText = 1,
+  kMaxValue = kIconSpinningWithFixupText,
+};
+
 class Throbber : public views::View {
  public:
   explicit Throbber(uint32_t color) : color_(color) {
@@ -126,12 +137,19 @@ void ArcGhostWindowView::SetType(arc::GhostWindowType type) {
       message_label_ = label.get();
       AddChildView(std::move(label));
       Layout();
+
+      base::UmaHistogramEnumeration(
+          kGhostWindowTypeHistogram,
+          GhostWindowType::kIconSpinningWithFixupText);
     }
   } else {
     if (message_label_) {
       RemoveChildView(message_label_);
       message_label_ = nullptr;
       Layout();
+
+      base::UmaHistogramEnumeration(kGhostWindowTypeHistogram,
+                                    GhostWindowType::kIconSpinning);
     }
   }
 }

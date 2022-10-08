@@ -1168,6 +1168,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.GhostWindowViewType" units="ArcGhostWindowViewType"
+    expires_after="2023-04-05">
+  <owner>sstan@chromium.org</owner>
+  <owner>arc-framework-tok@google.com</owner>
+  <summary>
+    Number of the view type of ARC app ghost window. Counted when the ghost
+    window created or the view updated.
+  </summary>
+</histogram>
+
 <histogram name="Arc.IconLoadFromFileTime.compressedFirst5" units="ms"
     expires_after="2021-03-11">
   <owner>khmel@google.com</owner>

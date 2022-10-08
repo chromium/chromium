@@ -4193,6 +4193,11 @@ Unknown properties are collapsed to zero. -->
       label="inotify exceeds its limit while processing a filesystem change"/>
 </enum>
 
+<enum name="ArcGhostWindowViewType">
+  <int value="0" label="IconSpinning"/>
+  <int value="1" label="IconSpinningWithFixupText"/>
+</enum>
+
 <enum name="ArchiveAnalysisResult">
   <int value="0" label="Unknown"/>
   <int value="1" label="Unspecified"/>
