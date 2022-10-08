@@ -2130,6 +2130,10 @@ void SkiaOutputSurfaceImplOnGpu::MarkContextLost(ContextLostReason reason) {
   // Release all ongoing AsyncReadResults.
   ReleaseAsyncReadResultHelpers();
 
+  for (auto& entry : skia_representations_) {
+    entry.second->OnContextLost();
+  }
+
   context_state_->MarkContextLost();
   if (context_lost_callback_) {
     PostTaskToClientThread(std::move(context_lost_callback_));

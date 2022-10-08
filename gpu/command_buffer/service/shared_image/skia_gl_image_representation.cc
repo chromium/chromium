@@ -76,6 +76,8 @@ SkiaGLImageRepresentation::SkiaGLImageRepresentation(
 SkiaGLImageRepresentation::~SkiaGLImageRepresentation() {
   DCHECK_EQ(RepresentationAccessMode::kNone, mode_);
   surface_.reset();
+
+  DCHECK_EQ(!has_context(), context_state_->context_lost());
   if (!has_context())
     gl_representation_->OnContextLost();
 }
