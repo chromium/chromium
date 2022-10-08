@@ -62,6 +62,9 @@ class AppBannerManagerAndroid : public AppBannerManager,
   base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppName(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& java_web_contents);
+  base::android::ScopedJavaLocalRef<jstring> GetInstallableWebAppManifestId(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& java_web_contents);
 
   // Returns true if the banner pipeline is currently running.
   bool IsRunningForTesting(JNIEnv* env,

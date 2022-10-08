@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuUtil;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -901,8 +902,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (currentTab != null && shouldShowHomeScreenMenuItem) {
             Context context = ContextUtils.getApplicationContext();
             long addToHomeScreenStart = SystemClock.elapsedRealtime();
-            ResolveInfo resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
-                    context, currentTab.getUrl().getSpec());
+            ResolveInfo resolveInfo = queryWebApkResolvInfo(context, currentTab);
             RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
                     SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
@@ -932,6 +932,23 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             homescreenItem.setVisible(false);
             openWebApkItem.setVisible(false);
         }
+    }
+
+    private ResolveInfo queryWebApkResolvInfo(Context context, Tab currentTab) {
+        ResolveInfo resolveInfo = null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_UNIQUE_ID)) {
+            String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());
+            resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(context,
+                    currentTab.getUrl().getSpec(),
+                    WebappRegistry.getInstance().findWebApkWithManifestId(manifestId));
+        }
+        if (resolveInfo == null) {
+            // If a WebAPK with matching manifestId can't be found, fallback to query without it.
+            resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
+                    context, currentTab.getUrl().getSpec());
+        }
+
+        return resolveInfo;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

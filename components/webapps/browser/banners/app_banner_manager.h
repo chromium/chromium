@@ -136,6 +136,9 @@ class AppBannerManager : public content::WebContentsObserver,
   static std::u16string GetInstallableWebAppName(
       content::WebContents* web_contents);
 
+  static std::string GetInstallableWebAppManifestId(
+      content::WebContents* web_contents);
+
   // Returns whether installability checks satisfy promotion requirements
   // (e.g. having a service worker fetch event) or have passed previously within
   // the current manifest scope. Already-installed apps are non-promotable by

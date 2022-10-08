@@ -87,7 +87,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.READ_LATER,
         ChromeFeatureList.BOOKMARKS_REFRESH})
-@Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST})
+@Features.DisableFeatures({ChromeFeatureList.SHOPPING_LIST, ChromeFeatureList.WEB_APK_UNIQUE_ID})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Costants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs

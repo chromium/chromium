@@ -80,6 +80,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
@@ -216,6 +217,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         FeatureList.setTestCanUseDefaultsForTesting();
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
+        WebappRegistry.refreshSharedPrefsForTesting();
 
         mJniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Mockito.when(mManagedBrowserUtilsJniMock.isBrowserManaged(mProfile)).thenReturn(false);
@@ -239,6 +241,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         setShoppingListItemRowEnabled(false);
         setDesktopSiteExceptionsEnabled(false);
         setTabSelectionEditorV2Enabled(false);
+        setWebApkUniqueIdEnabled(false);
         FeatureList.setTestValues(mTestValues);
     }
 
@@ -279,6 +282,10 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void setTabSelectionEditorV2Enabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, enabled);
         CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_SELECTION_EDITOR_V2, enabled);
+    }
+
+    private void setWebApkUniqueIdEnabled(boolean enabled) {
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.WEB_APK_UNIQUE_ID, enabled);
     }
 
     @After

@@ -507,6 +507,7 @@ void AppBannerManager::ResetCurrentPageData() {
   active_media_players_.clear();
   manifest_ = blink::mojom::Manifest::New();
   manifest_url_ = GURL();
+  manifest_id_ = GURL();
   validated_url_ = GURL();
   UpdateState(State::INACTIVE);
   SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kUnknown);
@@ -823,7 +824,22 @@ std::u16string AppBannerManager::GetInstallableWebAppName(
       return manager->GetAppName();
   }
 }
-
+// static
+std::string AppBannerManager::GetInstallableWebAppManifestId(
+    content::WebContents* web_contents) {
+  AppBannerManager* manager = FromWebContents(web_contents);
+  if (!manager)
+    return std::string();
+  switch (manager->installable_web_app_check_result_) {
+    case InstallableWebAppCheckResult::kUnknown:
+    case InstallableWebAppCheckResult::kNo:
+    case InstallableWebAppCheckResult::kNo_AlreadyInstalled:
+      return std::string();
+    case InstallableWebAppCheckResult::kYes_ByUserRequest:
+    case InstallableWebAppCheckResult::kYes_Promotable:
+      return manager->manifest_id_.spec();
+  }
+}
 bool AppBannerManager::IsProbablyPromotableWebApp(
     bool ignore_existing_installations) const {
   bool in_promotable_scope =

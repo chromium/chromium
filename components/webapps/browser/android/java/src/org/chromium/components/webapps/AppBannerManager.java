@@ -153,6 +153,16 @@ public class AppBannerManager {
         }
     }
 
+    /** Returns the language option to use for the add to homescreen dialog and menu item. */
+    public static String maybeGetManifestId(WebContents webContents) {
+        AppBannerManager manager =
+                webContents != null ? AppBannerManager.forWebContents(webContents) : null;
+        if (manager != null) {
+            return manager.getManifestId(webContents);
+        }
+        return null;
+    }
+
     /** Sets the app-banner-showing logic to ignore the Chrome channel. */
     @VisibleForTesting
     public static void ignoreChromeChannelForTesting() {
@@ -204,10 +214,15 @@ public class AppBannerManager {
         return !TextUtils.equals("", AppBannerManagerJni.get().getInstallableWebAppName(contents));
     }
 
+    public String getManifestId(WebContents contents) {
+        return AppBannerManagerJni.get().getInstallableWebAppManifestId(contents);
+    }
+
     @NativeMethods
     interface Natives {
         AppBannerManager getJavaBannerManagerForWebContents(WebContents webContents);
         String getInstallableWebAppName(WebContents webContents);
+        String getInstallableWebAppManifestId(WebContents webContents);
         boolean onAppDetailsRetrieved(long nativeAppBannerManagerAndroid, AppBannerManager caller,
                 AppData data, String title, String packageName, String imageUrl);
         // Testing methods.

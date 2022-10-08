@@ -6,6 +6,7 @@ package org.chromium.components.webapk.lib.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -513,6 +514,38 @@ public class WebApkValidatorTest {
                 RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
     }
 
+    @Test
+    public void testQueryWebApkResolveInfoWithPackageName() {
+        addWebApkResolveInfoWithPackageName(URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME, EXPECTED_SIGNATURE);
+
+        ResolveInfo resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
+                RuntimeEnvironment.application, URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
+
+        assertNotNull(resolveInfo);
+        assertEquals(resolveInfo.activityInfo.packageName, WEBAPK_PACKAGE_NAME);
+    }
+
+    @Test
+    public void testQueryWebApkResolveInfoWithInvalidPackageName() {
+        addWebApkResolveInfoWithPackageName(
+                URL_OF_WEBAPK, INVALID_WEBAPK_PACKAGE_NAME, EXPECTED_SIGNATURE);
+
+        ResolveInfo resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
+                RuntimeEnvironment.application, URL_OF_WEBAPK, INVALID_WEBAPK_PACKAGE_NAME);
+
+        assertNull(resolveInfo);
+    }
+
+    @Test
+    public void testQueryWebApkResolveInfoWithInvalidSignature() {
+        addWebApkResolveInfoWithPackageName(URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME, SIGNATURE_1);
+
+        ResolveInfo resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
+                RuntimeEnvironment.application, URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
+
+        assertNull(resolveInfo);
+    }
+
     // Get the full test file path.
     private static String testFilePath(String fileName) {
         return TestDir.getTestFilePath(TEST_DATA_DIR + fileName);
@@ -546,5 +579,20 @@ public class WebApkValidatorTest {
             String packageName, Signature signature, String startUrl, String manifestUrl) {
         return newPackageInfo(packageName, new Signature[] {new Signature(""), signature}, null,
                 startUrl, manifestUrl);
+    }
+
+    private void addWebApkResolveInfoWithPackageName(
+            String startUrl, String packageName, byte[] signature) {
+        try {
+            Intent intent = Intent.parseUri(startUrl, Intent.URI_INTENT_SCHEME);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setPackage(packageName);
+
+            mPackageManager.addResolveInfoForIntent(intent, newResolveInfo(packageName));
+            mPackageManager.addPackage(newPackageInfoWithBrowserSignature(
+                    packageName, new Signature(signature), startUrl, null));
+        } catch (URISyntaxException e) {
+            Assert.fail("URI is invalid.");
+        }
     }
 }
