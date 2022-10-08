@@ -55,6 +55,12 @@ void ApplyWindow(float* p, size_t n) {
   }
 }
 
+// Returns x if x is finite (not NaN or infinite), otherwise returns
+// default_value
+float EnsureFinite(float x, float default_value) {
+  return std::isfinite(x) ? x : default_value;
+}
+
 }  // namespace
 
 RealtimeAnalyser::RealtimeAnalyser(unsigned render_quantum_frames)
@@ -275,8 +281,8 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   for (size_t i = 0; i < n; ++i) {
     std::complex<double> c(real_p_data[i], imag_p_data[i]);
     double scalar_magnitude = abs(c) * magnitude_scale;
-    destination[i] =
-        static_cast<float>(k * destination[i] + (1 - k) * scalar_magnitude);
+    destination[i] = EnsureFinite(
+        static_cast<float>(k * destination[i] + (1 - k) * scalar_magnitude), 0);
   }
 }
 
