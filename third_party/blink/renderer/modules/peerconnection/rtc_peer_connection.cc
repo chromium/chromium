@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -113,7 +114,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_void_request_promise_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -128,6 +128,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats_request.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -165,20 +166,22 @@ bool ThrowExceptionIfSignalingStateClosed(
   return false;
 }
 
-void AsyncCallErrorCallback(V8RTCPeerConnectionErrorCallback* error_callback,
+void AsyncCallErrorCallback(ExecutionContext* context,
+                            V8RTCPeerConnectionErrorCallback* error_callback,
                             DOMException* exception) {
   DCHECK(error_callback);
-  Microtask::EnqueueMicrotask(WTF::BindOnce(
+  context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
       &V8RTCPeerConnectionErrorCallback::InvokeAndReportException,
       WrapPersistent(error_callback), nullptr, WrapPersistent(exception)));
 }
 
 bool CallErrorCallbackIfSignalingStateClosed(
+    ExecutionContext* context,
     webrtc::PeerConnectionInterface::SignalingState state,
     V8RTCPeerConnectionErrorCallback* error_callback) {
   if (state == webrtc::PeerConnectionInterface::SignalingState::kClosed) {
     if (error_callback) {
-      AsyncCallErrorCallback(error_callback,
+      AsyncCallErrorCallback(context, error_callback,
                              MakeGarbageCollected<DOMException>(
                                  DOMExceptionCode::kInvalidStateError,
                                  kSignalingStateClosedMessage));
@@ -692,7 +695,8 @@ ScriptPromise RTCPeerConnection::createOffer(
       context, WebFeature::kRTCPeerConnectionCreateOfferLegacyFailureCallback);
   UseCounter::Count(context,
                     WebFeature::kRTCPeerConnectionCreateOfferLegacyCompliant);
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
+  if (CallErrorCallbackIfSignalingStateClosed(context, signaling_state_,
+                                              error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
   RTCSessionDescriptionRequest* request =
@@ -746,7 +750,8 @@ ScriptPromise RTCPeerConnection::createAnswer(
   UseCounter::Count(context,
                     WebFeature::kRTCPeerConnectionCreateAnswerLegacyCompliant);
 
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
+  if (CallErrorCallbackIfSignalingStateClosed(context, signaling_state_,
+                                              error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
   RTCSessionDescriptionRequest* request =
@@ -935,8 +940,9 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
     const RTCSessionDescriptionInit* session_description_init,
     V8VoidFunction* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback) {
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_,
-                                              error_callback)) {
+  if (CallErrorCallbackIfSignalingStateClosed(
+          ExecutionContext::From(script_state), signaling_state_,
+          error_callback)) {
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -985,7 +991,7 @@ ScriptPromise RTCPeerConnection::setLocalDescription(
     DOMException* exception = checkSdpForStateErrors(context, parsed_sdp);
     if (exception) {
       if (error_callback)
-        AsyncCallErrorCallback(error_callback, exception);
+        AsyncCallErrorCallback(context, error_callback, exception);
       return ScriptPromise::CastUndefined(script_state);
     }
   }
@@ -1054,8 +1060,9 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
     const RTCSessionDescriptionInit* session_description_init,
     V8VoidFunction* success_callback,
     V8RTCPeerConnectionErrorCallback* error_callback) {
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_,
-                                              error_callback)) {
+  if (CallErrorCallbackIfSignalingStateClosed(
+          ExecutionContext::From(script_state), signaling_state_,
+          error_callback)) {
     return ScriptPromise::CastUndefined(script_state);
   }
 
@@ -1089,7 +1096,8 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
   if (ContainsCandidate(session_description_init->sdp()))
     DisableBackForwardCache(context);
 
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
+  if (CallErrorCallbackIfSignalingStateClosed(context, signaling_state_,
+                                              error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
   auto* request = MakeGarbageCollected<RTCVoidRequestImpl>(
@@ -1428,7 +1436,9 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   DCHECK(success_callback);
   DCHECK(error_callback);
 
-  if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
+  if (CallErrorCallbackIfSignalingStateClosed(
+          ExecutionContext::From(script_state), signaling_state_,
+          error_callback))
     return ScriptPromise::CastUndefined(script_state);
 
   if (IsIceCandidateMissingSdpMidAndMLineIndex(candidate)) {

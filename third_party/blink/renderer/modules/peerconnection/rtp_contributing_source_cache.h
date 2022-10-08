@@ -56,7 +56,8 @@ class RtpContributingSourceCache {
   // Ensures the cache for `requesting_receiver` is up-to-date. Based on a
   // heuristic, this method may update the cache for all other receivers while
   // it is at it.
-  void MaybeUpdateRtpSources(RTCRtpReceiver* requesting_receiver);
+  void MaybeUpdateRtpSources(ScriptState* script_state,
+                             RTCRtpReceiver* requesting_receiver);
   void UpdateRtpSourcesOnWorkerThread(
       Vector<RTCRtpReceiverPlatform*>* receivers,
       HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>*
