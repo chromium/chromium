@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_FILES_H_
+#define COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_FILES_H_
+
 #include <map>
+#include <memory>
+#include <string>
 
 #include "base/files/file.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/file.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
-
-#ifndef COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_FILES_H_
-#define COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_FILES_H_
 
 namespace reporting {
 
@@ -74,27 +78,30 @@ class HealthModuleFiles {
   // Helper method checking size for a given file.
   static StatusOr<uint32_t> FileSize(const base::FilePath& file_path);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Root directory of ERP Health data files.
   const base::FilePath directory_;
 
   // Base name of files for the storage represented.
-  base::StringPiece file_base_name_;
+  const std::string file_base_name_;
 
   // Max storage space that can be used by every file.
   const uint32_t max_storage_space_;
 
   // Available storage space.
-  uint32_t storage_used_;
+  uint32_t storage_used_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Current largest file header in use.
-  uint32_t max_file_header_ = 0;
+  uint32_t max_file_header_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
 
   // Files currently managed for a given history.
-  std::map<uint32_t, base::FilePath> files_;
+  std::map<uint32_t, base::FilePath> files_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Max storage used by an individual history, 10KB.
+  // Max storage used by an individual history, currently constant 10KiB.
   // TODO(tylergarrett) control each history per policy.
-  uint32_t max_file_storage_ = 10000;
+  const uint32_t max_file_storage_ = 10 * 1024u;
 };
 }  // namespace reporting
 

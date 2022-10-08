@@ -4,39 +4,37 @@
 
 #include "components/reporting/health/health_module.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
-#include "components/reporting/util/file.h"
+#include "base/thread_annotations.h"
 
 namespace reporting {
 
-namespace {
-constexpr char kHistoryFileBasename[] = "health_info_";
-}
-
-HealthModule::~HealthModule() = default;
-
 // static
 scoped_refptr<HealthModule> HealthModule::Create(
-    const base::FilePath& directory) {
+    std::unique_ptr<HealthModuleDelegate> delegate) {
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return base::WrapRefCounted(
-      new HealthModule(directory, sequenced_task_runner));
+      new HealthModule(std::move(delegate), sequenced_task_runner));
 }
 
-HealthModule::HealthModule(const base::FilePath& directory,
+HealthModule::HealthModule(std::unique_ptr<HealthModuleDelegate> delegate,
                            scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : delegate_(std::make_unique<HealthModuleDelegate>(directory,
-                                                       kHistoryFileBasename,
-                                                       max_history_bytes_)),
-      task_runner_(task_runner) {
+    : delegate_(std::move(delegate)), task_runner_(task_runner) {
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&HealthModuleDelegate::Init,
                                                    delegate_->GetWeakPtr()));
+}
+
+HealthModule::~HealthModule() {
+  // Destruct delegate on the thread (needed it for weak ptr factory).
+  task_runner_->DeleteSoon(FROM_HERE, std::move(delegate_));
 }
 
 void HealthModule::PostHealthRecord(HealthDataHistory history) {

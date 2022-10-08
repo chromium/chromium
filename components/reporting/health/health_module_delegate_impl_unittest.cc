@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/health/health_module_delegate.h"
+#include "components/reporting/health/health_module_delegate_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -15,14 +15,14 @@ namespace reporting {
 namespace {
 
 constexpr char kBaseFileOne[] = "base";
-constexpr uint32_t kDefaultCallSize = 10;
-constexpr uint32_t kRepeatedPtrFieldSizeOverhead = 2;
-constexpr uint32_t kMaxWriteCount = 10;
+constexpr uint32_t kDefaultCallSize = 10u;
+constexpr uint32_t kRepeatedPtrFieldSizeOverhead = 2u;
+constexpr uint32_t kMaxWriteCount = 10u;
 constexpr uint32_t kMaxStorage =
     kMaxWriteCount * (kRepeatedPtrFieldSizeOverhead + kDefaultCallSize);
-constexpr uint32_t kTinyStorage = 2;
+constexpr uint32_t kTinyStorage = 2u;
 
-const char kHexCharLookup[0x10] = {
+constexpr char kHexCharLookup[0x10] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
 };
@@ -37,17 +37,17 @@ std::string BytesToHexString(base::StringPiece bytes) {
 }
 
 void CompareHealthData(base::StringPiece expected, ERPHealthData got) {
-  EXPECT_THAT(expected, testing::StrEq(got.SerializeAsString()));
+  EXPECT_THAT(expected, StrEq(got.SerializeAsString()));
 }
 
-class HealthModuleDelegateTest : public ::testing::Test {
+class HealthModuleDelegateImplTest : public ::testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   HealthDataHistory AddEnqueueRecordCall() {
     HealthDataHistory history;
     EnqueueRecordCall call;
-    call.set_priority(static_cast<Priority>(1));
+    call.set_priority(Priority::IMMEDIATE);
     *history.mutable_enqueue_record_call() = call;
     history.set_timestamp_seconds(base::Time::Now().ToTimeT());
     return history;
@@ -56,7 +56,7 @@ class HealthModuleDelegateTest : public ::testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(HealthModuleDelegateTest, TestInit) {
+TEST_F(HealthModuleDelegateImplTest, TestInit) {
   ERPHealthData ref_data;
   const std::string file_name = base::StrCat({kBaseFileOne, "0"});
   auto call = AddEnqueueRecordCall();
@@ -65,7 +65,8 @@ TEST_F(HealthModuleDelegateTest, TestInit) {
                          BytesToHexString(call.SerializeAsString()))
                   .ok());
 
-  HealthModuleDelegate delegate(temp_dir_.GetPath(), kBaseFileOne, kMaxStorage);
+  HealthModuleDelegateImpl delegate(temp_dir_.GetPath(), kMaxStorage,
+                                    kBaseFileOne);
   ASSERT_FALSE(delegate.IsInitialized());
 
   delegate.Init();
@@ -74,9 +75,10 @@ TEST_F(HealthModuleDelegateTest, TestInit) {
       base::BindOnce(CompareHealthData, ref_data.SerializeAsString()));
 }
 
-TEST_F(HealthModuleDelegateTest, TestWrite) {
+TEST_F(HealthModuleDelegateImplTest, TestWrite) {
   ERPHealthData ref_data;
-  HealthModuleDelegate delegate(temp_dir_.GetPath(), kBaseFileOne, kMaxStorage);
+  HealthModuleDelegateImpl delegate(temp_dir_.GetPath(), kMaxStorage,
+                                    kBaseFileOne);
   ASSERT_FALSE(delegate.IsInitialized());
 
   // Can not post before initiating.
@@ -107,10 +109,10 @@ TEST_F(HealthModuleDelegateTest, TestWrite) {
       base::BindOnce(CompareHealthData, ref_data.SerializeAsString()));
 }
 
-TEST_F(HealthModuleDelegateTest, TestOversizedWrite) {
+TEST_F(HealthModuleDelegateImplTest, TestOversizedWrite) {
   ERPHealthData ref_data;
-  HealthModuleDelegate delegate(temp_dir_.GetPath(), kBaseFileOne,
-                                kTinyStorage);
+  HealthModuleDelegateImpl delegate(temp_dir_.GetPath(), kTinyStorage,
+                                    kBaseFileOne);
 
   delegate.PostHealthRecord(AddEnqueueRecordCall());
   delegate.GetERPHealthData(

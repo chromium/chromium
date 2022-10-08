@@ -62,6 +62,7 @@ source_set("test_callbacks_support") {
   sources = [
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
+    "test_util.h",
   ]
 
   deps = [

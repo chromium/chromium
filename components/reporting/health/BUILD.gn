@@ -10,6 +10,8 @@ static_library("health_module") {
     "health_module.h",
     "health_module_delegate.cc",
     "health_module_delegate.h",
+    "health_module_delegate_impl.cc",
+    "health_module_delegate_impl.h",
     "health_module_files.cc",
     "health_module_files.h",
   ]
@@ -29,13 +31,15 @@ static_library("health_module") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "health_module_delegate_unittest.cc",
+    "health_module_delegate_impl_unittest.cc",
     "health_module_files_unittest.cc",
+    "health_module_unittest.cc",
   ]
 
   deps = [
     ":health_module",
     "//base/test:test_support",
+    "//components/reporting/util:test_callbacks_support",
     "//testing/gtest",
   ]
 }

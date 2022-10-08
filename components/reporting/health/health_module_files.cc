@@ -4,9 +4,15 @@
 
 #include "components/reporting/health/health_module_files.h"
 
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -53,7 +59,8 @@ std::unique_ptr<HealthModuleFiles> HealthModuleFiles::Create(
     }
   }
 
-  return std::unique_ptr<HealthModuleFiles>(
+  // Cannot use make_unique - constructor is private.
+  return base::WrapUnique(
       new HealthModuleFiles(directory, file_base_name, max_storage_space,
                             storage_used, max_file_header, std::move(files)));
 }
@@ -80,6 +87,7 @@ HealthModuleFiles::HealthModuleFiles(
 HealthModuleFiles::~HealthModuleFiles() = default;
 
 base::FilePath HealthModuleFiles::CreateNewFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++max_file_header_;
   base::FilePath file_path(directory_.AppendASCII(
       base::StrCat({file_base_name_, base::NumberToString(max_file_header_)})));
@@ -88,6 +96,7 @@ base::FilePath HealthModuleFiles::CreateNewFile() {
 }
 
 void HealthModuleFiles::DeleteOldestFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (files_.empty()) {
     return;
   }
@@ -98,6 +107,7 @@ void HealthModuleFiles::DeleteOldestFile() {
 }
 
 void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& file : files_) {
     const auto read_result = MaybeReadFile(file.second, /*offset=*/0);
     if (!read_result.status().ok()) {
@@ -117,6 +127,7 @@ void HealthModuleFiles::PopulateHistory(ERPHealthData* data) const {
 }
 
 Status HealthModuleFiles::Write(base::StringPiece data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status free_status = ReserveStorage(data.size());
   RETURN_IF_ERROR(free_status);
 
@@ -136,6 +147,7 @@ Status HealthModuleFiles::Write(base::StringPiece data) {
 }
 
 Status HealthModuleFiles::FreeStorage(uint32_t storage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (storage_used_ + storage <= max_storage_space_) {
     return Status::StatusOK();
   }
@@ -163,8 +175,8 @@ Status HealthModuleFiles::FreeStorage(uint32_t storage) {
 }
 
 Status HealthModuleFiles::ReserveStorage(uint32_t storage) {
-  // account for newline character.
-  uint32_t actual_storage = storage + 1;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  uint32_t actual_storage = storage + 1;  // account for newline character.
   if (actual_storage > max_storage_space_) {
     return Status(error::RESOURCE_EXHAUSTED,
                   "Requested storage space is larger than max allowed storage");

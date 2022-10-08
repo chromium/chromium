@@ -4,6 +4,8 @@
 
 #include "components/reporting/health/health_module_files.h"
 
+#include <string>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,12 +22,12 @@ constexpr char kBaseFileOne[] = "base_file_name";
 constexpr char kUnmatchedBaseFile[] = "no_files_match_this";
 constexpr int kInitialFiles = 3;
 constexpr int kIntialRecordsPerFile = 5;
-constexpr uint32_t kSimpleEnqueueRecordCallLineSize = 21;
-constexpr uint32_t kSmallMaxStorageSize = 70;
-constexpr uint32_t kLargeMaxStorageSize = 1000;
-constexpr uint32_t kFullMaxStorageSize = 20000;
+constexpr uint32_t kSimpleEnqueueRecordCallLineSize = 21u;
+constexpr uint32_t kSmallMaxStorageSize = 70u;
+constexpr uint32_t kLargeMaxStorageSize = 1000u;
+constexpr uint32_t kFullMaxStorageSize = 20000u;
 
-const char kHexCharLookup[0x10] = {
+constexpr char kHexCharLookup[0x10] = {
     '0', '1', '2', '3', '4', '5', '6', '7',
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
 };
@@ -82,14 +84,14 @@ TEST_F(HealthModuleFilesTest, TestCreation) {
   ASSERT_TRUE(files != nullptr);
   files->PopulateHistory(&history);
   EXPECT_THAT(history.SerializeAsString(),
-              ::testing::StrEq(initial_health_data_.SerializeAsString()));
+              StrEq(initial_health_data_.SerializeAsString()));
 
   ERPHealthData empty_history;
   std::unique_ptr<HealthModuleFiles> no_files = HealthModuleFiles::Create(
       directory_.GetPath(), kUnmatchedBaseFile, kLargeMaxStorageSize);
   ASSERT_TRUE(no_files != nullptr);
   no_files->PopulateHistory(&empty_history);
-  EXPECT_THAT(empty_history.history(), ::testing::IsEmpty());
+  EXPECT_THAT(empty_history.history(), IsEmpty());
 
   ERPHealthData small_history;
   const uint32_t total_records_stored =
@@ -102,7 +104,7 @@ TEST_F(HealthModuleFilesTest, TestCreation) {
   initial_health_data_.mutable_history()->DeleteSubrange(
       0, initial_size - total_records_stored);
   EXPECT_THAT(small_history.SerializeAsString(),
-              ::testing::StrEq(initial_health_data_.SerializeAsString()));
+              StrEq(initial_health_data_.SerializeAsString()));
 
   std::unique_ptr<HealthModuleFiles> null_files = HealthModuleFiles::Create(
       directory_.GetPath(), kBaseFileOne, /*max_storage_space=*/0);
@@ -113,20 +115,19 @@ TEST_F(HealthModuleFilesTest, TestFullStorage) {
   ERPHealthData history;
   std::unique_ptr<HealthModuleFiles> files = HealthModuleFiles::Create(
       directory_.GetPath(), kBaseFileOne, kFullMaxStorageSize);
-  const uint32_t total_records_stored =
+  static constexpr uint32_t total_records_stored =
       kFullMaxStorageSize / kSimpleEnqueueRecordCallLineSize;
   ASSERT_TRUE(files != nullptr);
   for (int i = 0; i < 1000; i++) {
     auto call = AddEnqueueRecordCall();
-    ASSERT_TRUE(files->Write(BytesToHexString(call.SerializeAsString())).ok());
+    ASSERT_OK(files->Write(BytesToHexString(call.SerializeAsString())));
     if (i + total_records_stored >= 1000) {
       *history.add_history() = call;
     }
   }
   ERPHealthData got;
   files->PopulateHistory(&got);
-  EXPECT_THAT(history.SerializeAsString(),
-              ::testing::StrEq(got.SerializeAsString()));
+  EXPECT_THAT(history.SerializeAsString(), StrEq(got.SerializeAsString()));
 }
 
 TEST_F(HealthModuleFilesTest, NotEnoughStorage) {
@@ -135,13 +136,13 @@ TEST_F(HealthModuleFilesTest, NotEnoughStorage) {
       directory_.GetPath(), kBaseFileOne, /*max_storage_space=*/1);
   ASSERT_TRUE(files != nullptr);
   files->PopulateHistory(&history);
-  ASSERT_THAT(history.history(), ::testing::IsEmpty());
+  ASSERT_THAT(history.history(), IsEmpty());
 
   ASSERT_FALSE(
       files->Write(BytesToHexString(AddEnqueueRecordCall().SerializeAsString()))
           .ok());
   files->PopulateHistory(&history);
-  ASSERT_THAT(history.history(), ::testing::IsEmpty());
+  ASSERT_THAT(history.history(), IsEmpty());
 }
 
 TEST_F(HealthModuleFilesTest, JustEnoughStorage) {
@@ -153,7 +154,7 @@ TEST_F(HealthModuleFilesTest, JustEnoughStorage) {
   int initial_size = initial_health_data_.history_size();
   initial_health_data_.mutable_history()->DeleteSubrange(0, initial_size - 1);
   ASSERT_THAT(history.SerializeAsString(),
-              ::testing::StrEq(initial_health_data_.SerializeAsString()));
+              StrEq(initial_health_data_.SerializeAsString()));
 
   history.mutable_history()->Clear();
   auto call = AddEnqueueRecordCall();
@@ -161,7 +162,7 @@ TEST_F(HealthModuleFilesTest, JustEnoughStorage) {
   ASSERT_TRUE(files->Write(BytesToHexString(call.SerializeAsString())).ok());
   files->PopulateHistory(&history);
   EXPECT_THAT(history.SerializeAsString(),
-              ::testing::StrEq(initial_health_data_.SerializeAsString()));
+              StrEq(initial_health_data_.SerializeAsString()));
 }
 }  // namespace
 }  // namespace reporting

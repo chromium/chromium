@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "base/files/file.h"
-#include "base/memory/ref_counted.h"
-#include "components/reporting/health/health_module_delegate.h"
-#include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/file.h"
-#include "components/reporting/util/status.h"
-#include "components/reporting/util/statusor.h"
-
 #ifndef COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_H_
 #define COMPONENTS_REPORTING_HEALTH_HEALTH_MODULE_H_
+
+#include <memory>
+
+#include "base/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
+#include "components/reporting/health/health_module_delegate.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/util/status.h"
 
 namespace reporting {
 
@@ -22,34 +22,32 @@ namespace reporting {
 // are done with mutual exclusion
 class HealthModule : public base::RefCountedThreadSafe<HealthModule> {
  public:
-  // Factory constructor for use in production
-  static scoped_refptr<HealthModule> Create(const base::FilePath& directory);
+  // Static class factory method.
+  static scoped_refptr<HealthModule> Create(
+      std::unique_ptr<HealthModuleDelegate> delegate);
 
   HealthModule(const HealthModule& other) = delete;
   HealthModule& operator=(const HealthModule& other) = delete;
 
-  // Add history record to local memory. Triggers a write to health files.
+  // Adds history record to local memory. Triggers a write to health files.
   void PostHealthRecord(HealthDataHistory history);
 
-  // Get health data and send to |cb|.
+  // Gets health data and send to |cb|.
   void GetHealthData(base::OnceCallback<void(const ERPHealthData)> cb);
 
  protected:
   // Constructor can only be called by |Create| factory method.
-  HealthModule(const base::FilePath& directory,
+  HealthModule(std::unique_ptr<HealthModuleDelegate> delegate,
                scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Delegate controlling read/write logic.
+  // HealthModuleDelegate controlling read/write logic.
   std::unique_ptr<HealthModuleDelegate> delegate_;
 
-  virtual ~HealthModule();
+  virtual ~HealthModule();  // `virtual` is mandated by RefCounted.
 
  private:
   // Task Runner which tasks are posted to.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // Default max history size. 100 KB.
-  const uint32_t max_history_bytes_ = 100000;
 
   friend base::RefCountedThreadSafe<HealthModule>;
 };
