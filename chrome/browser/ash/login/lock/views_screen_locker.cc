@@ -118,20 +118,20 @@ void ViewsScreenLocker::HandleAuthenticateUserWithPasswordOrPin(
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
   DCHECK(user);
-  UserContext user_context(*user);
-  user_context.SetKey(
+  auto user_context = std::make_unique<UserContext>(*user);
+  user_context->SetKey(
       Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
-  user_context.SetIsUsingPin(authenticated_by_pin);
-  user_context.SetSyncPasswordData(password_manager::PasswordHashData(
+  user_context->SetIsUsingPin(authenticated_by_pin);
+  user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       account_id.GetUserEmail(), base::UTF8ToUTF16(password),
       false /*force_update*/));
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
-      (user_context.GetUserType() !=
+      (user_context->GetUserType() !=
        user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY)) {
     LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context.GetUserType();
+               << user_context->GetUserType();
   }
-  ScreenLocker::default_screen_locker()->Authenticate(user_context,
+  ScreenLocker::default_screen_locker()->Authenticate(std::move(user_context),
                                                       std::move(callback));
   UpdatePinKeyboardState(account_id);
 }

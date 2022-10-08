@@ -70,6 +70,7 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
     if (features::IsUseAuthFactorsEnabled()) {
       std::string session = FakeUserDataAuthClient::TestApi::Get()->AddSession(
           cryptohome_user_id, true /*authenticated*/);
+      user_context_->SetIsUsingPin(true);
       user_context_->SetAuthSessionId(std::move(session));
       user_context_->SetAuthFactorsConfiguration(AuthFactorsConfiguration());
     }
@@ -115,17 +116,22 @@ class PinStorageCryptohomeUnitTest : public testing::TestWithParam<Param> {
     return res;
   }
 
-  bool TryAuthenticate(const std::string& pin, Purpose purpose) const {
+  bool TryAuthenticate(const std::string& pin, Purpose purpose) {
+    auto user_context = std::make_unique<UserContext>(*user_context_);
+    user_context->ResetAuthSessionId();
     bool res;
     base::RunLoop loop;
     storage_->TryAuthenticate(
-        test_account_id_, Key(pin), purpose,
+        std::move(user_context), Key(pin), purpose,
         base::BindOnce(
-            [](base::OnceClosure closure, bool* res, bool auth_success) {
-              *res = auth_success;
+            [](PinStorageCryptohomeUnitTest* self, bool* res,
+               base::OnceClosure closure,
+               std::unique_ptr<UserContext> user_context,
+               absl::optional<AuthenticationError> error) {
+              *res = !error.has_value();
               std::move(closure).Run();
             },
-            loop.QuitClosure(), &res));
+            base::Unretained(this), &res, loop.QuitClosure()));
     loop.Run();
     return res;
   }

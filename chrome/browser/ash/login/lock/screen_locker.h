@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/session_manager/session_manager_types.h"
@@ -92,7 +93,7 @@ class ScreenLocker
 
   // Called when an account password (not PIN/quick unlock) has been used to
   // unlock the device.
-  void OnPasswordAuthSuccess(const UserContext& user_context);
+  void OnPasswordAuthSuccess(std::unique_ptr<UserContext> user_context);
 
   // Disables authentication for the user with `account_id`. Notifies lock
   // screen UI. `auth_disabled_data` is used to display information in the UI.
@@ -105,7 +106,7 @@ class ScreenLocker
   void ReenableAuthForUser(const AccountId& account_id);
 
   // Authenticates the user with given `user_context`.
-  void Authenticate(const UserContext& user_context,
+  void Authenticate(std::unique_ptr<UserContext> user_context,
                     AuthenticateCallback callback);
 
   // Authenticates the user with given `account_id` using the challenge-response
@@ -174,7 +175,7 @@ class ScreenLocker
 
   // Saves sync password hash and salt to user profile prefs based on
   // `user_context`.
-  void SaveSyncPasswordHash(const UserContext& user_context);
+  void SaveSyncPasswordHash(std::unique_ptr<UserContext> user_context);
 
   // Returns true if authentication is enabled on the lock screen for the given
   // user.
@@ -259,15 +260,16 @@ class ScreenLocker
       const AccountId& account_id,
       std::vector<ChallengeResponseKey> challenge_response_keys);
 
-  void OnPinAttemptDone(UserContext user_context, bool success);
+  void OnPinAttemptDone(std::unique_ptr<UserContext>,
+                        absl::optional<AuthenticationError>);
 
   // Called to select the appropriate Authenticator and perform unlock
   // operation.
-  void AttemptUnlock(const UserContext& user_context);
+  void AttemptUnlock(std::unique_ptr<UserContext> user_context);
 
   // Called to continue authentication against cryptohome after the pin login
   // check has completed.
-  void ContinueAuthenticate(const UserContext& user_context);
+  void ContinueAuthenticate(std::unique_ptr<UserContext> user_context);
 
   // Periodically called to see if PIN and fingerprint are still available for
   // use. PIN and fingerprint are disabled after a certain period of time (e.g.

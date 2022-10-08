@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_salt_storage.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -58,10 +59,10 @@ class PinStorageCryptohome {
   void CanAuthenticate(std::unique_ptr<UserContext> user_context,
                        Purpose purpose,
                        BoolCallback result);
-  void TryAuthenticate(const AccountId& account_id,
+  void TryAuthenticate(std::unique_ptr<UserContext> user_context,
                        const Key& key,
                        Purpose purpose,
-                       BoolCallback result);
+                       AuthOperationCallback callback);
 
   void SetPinSaltStorageForTesting(
       std::unique_ptr<PinSaltStorage> pin_salt_storage);
@@ -71,15 +72,23 @@ class PinStorageCryptohome {
 
   // We call this after changing something in cryptohome. It reloads the
   // AuthFactorsConfiguration.
-  void OnAuthFactorsEdit(AuthOperationCallback,
-                         std::unique_ptr<UserContext>,
-                         absl::optional<AuthenticationError>);
+  void OnAuthFactorsEdit(AuthOperationCallback callback,
+                         std::unique_ptr<UserContext> user_context,
+                         absl::optional<AuthenticationError> error);
+
+  void TryAuthenticateWithAuthSession(
+      const Key& key,
+      AuthOperationCallback callback,
+      bool user_exists,
+      std::unique_ptr<UserContext> user_context,
+      absl::optional<AuthenticationError> error);
 
   bool salt_obtained_ = false;
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
   std::unique_ptr<PinSaltStorage> pin_salt_storage_;
   AuthFactorEditor auth_factor_editor_;
+  AuthPerformer auth_performer_;
 
   base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
 };

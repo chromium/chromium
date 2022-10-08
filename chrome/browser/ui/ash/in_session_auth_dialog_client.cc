@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
+using ::ash::AuthenticationError;
 using ::ash::AuthStatusConsumer;
 using ::ash::ExtendedAuthenticator;
 using ::ash::Key;
@@ -109,18 +110,17 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(user);
-  UserContext user_context(*user);
-  user_context.SetKey(
-      Key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password));
-  user_context.SetIsUsingPin(authenticated_by_pin);
-  user_context.SetSyncPasswordData(password_manager::PasswordHashData(
+  auto user_context = std::make_unique<UserContext>(*user);
+  Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), password);
+  user_context->SetIsUsingPin(authenticated_by_pin);
+  user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(password),
       false /*force_update*/));
   if (user->GetAccountId().GetAccountType() == AccountType::ACTIVE_DIRECTORY &&
-      (user_context.GetUserType() !=
+      (user_context->GetUserType() !=
        user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY)) {
     LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context.GetUserType();
+               << user_context->GetUserType();
   }
 
   DCHECK(!pending_auth_state_);
@@ -128,32 +128,24 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
 
   if (authenticated_by_pin) {
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
-        user_context.GetAccountId(), *user_context.GetKey(),
+        std::move(user_context), std::move(key),
         ash::quick_unlock::Purpose::kWebAuthn,
         base::BindOnce(&InSessionAuthDialogClient::OnPinAttemptDone,
-                       weak_factory_.GetWeakPtr(), user_context));
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
   // TODO(yichengli): If user type is SUPERVISED, use supervised authenticator?
 
-  AuthenticateWithPassword(user_context);
+  user_context->SetKey(std::move(key));
+  AuthenticateWithPassword(std::move(*user_context));
 }
 
 void InSessionAuthDialogClient::OnPinAttemptDone(
-    const UserContext& user_context,
-    bool success) {
-  if (success) {
-    // Mark strong auth if this is cryptohome based pin.
-    if (ash::quick_unlock::PinBackend::GetInstance()->ShouldUseCryptohome(
-            user_context.GetAccountId())) {
-      ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-          ash::quick_unlock::QuickUnlockFactory::GetForAccountId(
-              user_context.GetAccountId());
-      if (quick_unlock_storage)
-        quick_unlock_storage->MarkStrongAuth();
-    }
-    OnAuthSuccess(user_context);
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  if (!error.has_value()) {
+    OnAuthSuccess(std::move(*user_context));
   } else {
     // Do not try submitting as password.
     if (pending_auth_state_) {

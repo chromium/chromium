@@ -597,16 +597,22 @@ class QuickUnlockPrivateUnitTest
   bool TryAuthenticate(const std::string& password) {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    auto user_context = std::make_unique<ash::UserContext>(
+        user_manager::USER_TYPE_REGULAR, account_id);
+    user_context->SetIsUsingPin(true);
     bool called = false;
     bool success = false;
     base::RunLoop loop;
     ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
-        account_id, ash::Key(password), ash::quick_unlock::Purpose::kAny,
-        base::BindLambdaForTesting([&](bool auth_success) {
-          called = true;
-          success = auth_success;
-          loop.Quit();
-        }));
+        std::move(user_context), ash::Key(password),
+        ash::quick_unlock::Purpose::kAny,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<ash::UserContext>,
+                absl::optional<ash::AuthenticationError> error) {
+              called = true;
+              success = !error.has_value();
+              loop.Quit();
+            }));
     loop.Run();
     return success;
   }

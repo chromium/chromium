@@ -35,15 +35,6 @@ namespace {
 using ::cryptohome::KeyLabel;
 
 template <typename ReplyType>
-void OnCryptohomeCallCompleteLegacy(PinStorageCryptohome::BoolCallback callback,
-                                    absl::optional<ReplyType> reply) {
-  std::move(callback).Run(
-      reply.has_value() &&
-      reply->error() ==
-          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
-}
-
-template <typename ReplyType>
 void OnCryptohomeCallComplete(std::unique_ptr<UserContext> context,
                               AuthOperationCallback callback,
                               absl::optional<ReplyType> reply) {
@@ -201,7 +192,8 @@ absl::optional<Key> PinStorageCryptohome::TransformPinKey(
 }
 
 PinStorageCryptohome::PinStorageCryptohome()
-    : pin_salt_storage_(std::make_unique<PinSaltStorage>()) {
+    : pin_salt_storage_(std::make_unique<PinSaltStorage>()),
+      auth_performer_(ash::UserDataAuthClient::Get()) {
   SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
       &PinStorageCryptohome::OnSystemSaltObtained, weak_factory_.GetWeakPtr()));
 }
@@ -397,32 +389,62 @@ void PinStorageCryptohome::CanAuthenticate(
                      true /*require_unlocked*/));
 }
 
-void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
-                                           const Key& key,
-                                           Purpose purpose,
-                                           BoolCallback result) {
-  if (IsCryptohomePinDisabledByPolicy(account_id, purpose)) {
-    std::move(result).Run(false);
+void PinStorageCryptohome::TryAuthenticate(
+    std::unique_ptr<UserContext> user_context,
+    const Key& key,
+    Purpose purpose,
+    AuthOperationCallback callback) {
+  if (IsCryptohomePinDisabledByPolicy(user_context->GetAccountId(), purpose)) {
+    AuthenticationError error{AuthFailure::AUTH_DISABLED};
+    std::move(callback).Run(std::move(user_context), std::move(error));
     return;
   }
-  const std::string secret = PinBackend::ComputeSecret(
-      key.GetSecret(), pin_salt_storage_->GetSalt(account_id),
-      key.GetKeyType());
-  ::user_data_auth::CheckKeyRequest request;
-  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
-      cryptohome::Identification(account_id));
-  *request.mutable_authorization_request() =
-      cryptohome::CreateAuthorizationRequest(KeyLabel(kCryptohomePinLabel),
-                                             secret);
-  if (purpose == Purpose::kWebAuthn) {
-    request.set_unlock_webauthn_secret(true);
+
+  if (purpose == Purpose::kWebAuthn || !features::IsUseAuthFactorsEnabled()) {
+    // Legacy implementation using CheckKey.
+
+    const std::string secret = PinBackend::ComputeSecret(
+        key.GetSecret(),
+        pin_salt_storage_->GetSalt(user_context->GetAccountId()),
+        key.GetKeyType());
+    ::user_data_auth::CheckKeyRequest request;
+    *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
+        cryptohome::Identification(user_context->GetAccountId()));
+    *request.mutable_authorization_request() =
+        cryptohome::CreateAuthorizationRequest(KeyLabel(kCryptohomePinLabel),
+                                               secret);
+    if (purpose == Purpose::kWebAuthn) {
+      request.set_unlock_webauthn_secret(true);
+    }
+
+    UserDataAuthClient::Get()->CheckKey(
+        request, base::BindOnce(
+                     &OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
+                     std::move(user_context), std::move(callback)));
+    return;
   }
 
-  UserDataAuthClient::Get()->CheckKey(
-      request,
-      base::BindOnce(
-          &OnCryptohomeCallCompleteLegacy<::user_data_auth::CheckKeyReply>,
-          std::move(result)));
+  if (!user_context->GetAuthSessionId().empty()) {
+    NOTREACHED() << "TryAuthenticate called with existing auth session";
+    user_context->SetAuthSessionId(std::string());
+  }
+
+  // We need to start an auth session, which requires us to specify whether
+  // the user is ephemeral or not. Ephemeral users shouldn't be able to set
+  // up a pin, so we should never end up here.
+  bool ephemeral = false;
+  if (user_manager::UserManager::IsInitialized()) {
+    ephemeral = user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+        user_context->GetAccountId());
+  }
+  DCHECK(!ephemeral);
+
+  auto on_start_auth_session =
+      base::BindOnce(&PinStorageCryptohome::TryAuthenticateWithAuthSession,
+                     weak_factory_.GetWeakPtr(), key, std::move(callback));
+  auth_performer_.StartAuthSession(
+      std::move(user_context), ephemeral /*ephemeral*/,
+      AuthSessionIntent::kVerifyOnly, std::move(on_start_auth_session));
 }
 
 void PinStorageCryptohome::SetPinSaltStorageForTesting(
@@ -442,6 +464,27 @@ void PinStorageCryptohome::OnAuthFactorsEdit(
 
   auth_factor_editor_.GetAuthFactorsConfiguration(std::move(user_context),
                                                   std::move(callback));
+}
+
+void PinStorageCryptohome::TryAuthenticateWithAuthSession(
+    const Key& key,
+    AuthOperationCallback callback,
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    absl::optional<AuthenticationError> error) {
+  DCHECK(features::IsUseAuthFactorsEnabled());
+  DCHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN);
+  DCHECK(user_exists);
+
+  if (error.has_value()) {
+    std::move(callback).Run(std::move(user_context), std::move(error));
+    return;
+  }
+
+  const std::string& raw_pin = key.GetSecret();
+  std::string salt = pin_salt_storage_->GetSalt(user_context->GetAccountId());
+  auth_performer_.AuthenticateWithPin(
+      raw_pin, std::move(salt), std::move(user_context), std::move(callback));
 }
 
 }  // namespace ash::quick_unlock

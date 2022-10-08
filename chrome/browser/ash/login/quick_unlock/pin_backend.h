@@ -81,11 +81,16 @@ class PinBackend {
                        Purpose purpose,
                        BoolCallback result);
 
-  // Try to authenticate.
-  void TryAuthenticate(const AccountId& account_id,
+  // Try to check a pin `key` value for the given user. The `key` must be plain
+  // text and not contain a salt. The `user_context` must not have an
+  // associated auth session, and must have `IsUsingPin` set to true. The
+  // UserContext passed to the `result` callback after the authentication
+  // attempt is the same as the one that was passed to `TryAuthenticate`. In
+  // particular, it does not have an associated auth session.
+  void TryAuthenticate(std::unique_ptr<UserContext> user_context,
                        const Key& key,
                        Purpose purpose,
-                       BoolCallback result);
+                       AuthOperationCallback result);
 
   // Returns true if the cryptohome backend should be used. Sometimes the prefs
   // backend should be used even when cryptohome is available, ie, when there is
@@ -127,18 +132,19 @@ class PinBackend {
   // Actions to be performed after an authentication attempt with Cryptohome.
   // The only use case right now is for PIN auto submit, where we might want to
   // expose the PIN length upon a successful attempt.
-  void OnCryptohomeAuthenticationResponse(const AccountId& account_id,
-                                          const Key& key,
-                                          BoolCallback result,
-                                          bool success);
+  void OnCryptohomeAuthenticationResponse(
+      const Key& key,
+      AuthOperationCallback result,
+      std::unique_ptr<UserContext> user_context,
+      absl::optional<AuthenticationError> error);
 
   // Called after checking the user's PIN when enabling auto submit.
   // If the authentication was `success`ful, the `pin_length` will be
   // exposed in local state.
-  void OnPinAutosubmitCheckComplete(const AccountId& account_id,
-                                    size_t pin_length,
+  void OnPinAutosubmitCheckComplete(size_t pin_length,
                                     BoolCallback result,
-                                    bool success);
+                                    std::unique_ptr<UserContext> user_context,
+                                    absl::optional<AuthenticationError> error);
 
   // Help method for working with the PIN auto submit preference.
   PrefService* PrefService(const AccountId& account_id);

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -80,7 +81,8 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   void AuthenticateWithPassword(const ash::UserContext& user_context);
 
-  void OnPinAttemptDone(const ash::UserContext& user_context, bool success);
+  void OnPinAttemptDone(std::unique_ptr<ash::UserContext> user_context,
+                        absl::optional<ash::AuthenticationError> error);
 
   void OnPasswordAuthSuccess(const ash::UserContext& user_context);
 
