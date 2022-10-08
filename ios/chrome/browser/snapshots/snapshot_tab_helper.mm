@@ -10,7 +10,6 @@
 #import "base/threading/sequenced_task_runner_handle.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
