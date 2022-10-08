@@ -1447,18 +1447,12 @@ bool FormOrFieldsetsToFormData(
     fields_extracted[i] = true;
 
     if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-      // Providing |common_ancestor| speeds up IsDomPredecessor(). If the
-      // |control_element| is part of a form, it is guaranteed that the
-      // |form_element| is a common ancestor, otherwise we fall back to the
-      // Document as a non-ideal but always correct alternative.
-      const blink::WebNode& common_ancestor =
-          form_element ? static_cast<const blink::WebNode&>(*form_element)
-                       : static_cast<const blink::WebNode&>(
-                             control_elements[i].GetDocument());
+      const blink::WebFormElement& ancestor_hint =
+          form_element ? *form_element : blink::WebFormElement();
       // Finds the last frame that precedes |control_element|.
       while (next_iframe < iframe_elements.size() &&
-             !IsDomPredecessor(control_element, iframe_elements[next_iframe],
-                               common_ancestor)) {
+             !IsDOMPredecessor(control_element, iframe_elements[next_iframe],
+                               ancestor_hint)) {
         ++next_iframe;
       }
       // The |next_frame|th frame precedes `control_element` and thus the last
@@ -1712,38 +1706,49 @@ WebFormElement GetClosestAncestorFormElement(WebNode n) {
   return WebFormElement();
 }
 
-bool IsDomPredecessor(const blink::WebNode& x,
+bool IsDOMPredecessor(const blink::WebNode& x,
                       const blink::WebNode& y,
-                      const blink::WebNode& common_ancestor) {
+                      const blink::WebNode& ancestor_hint) {
   DCHECK(x.GetDocument() == y.GetDocument());
-  DCHECK(x.GetDocument() == common_ancestor.GetDocument());
+  DCHECK(ancestor_hint.IsNull() ||
+         x.GetDocument() == ancestor_hint.GetDocument());
+  // Extends the `path` up to `end` (exclusive) or the document root.
   // Paths are backwards: the last element is the top-most node.
-  auto BuildPath = [&common_ancestor](blink::WebNode node) {
-    DCHECK(common_ancestor != node);
-    std::vector<WebNode> path;
-    path.reserve(16);
-    while (!node.IsNull() && node != common_ancestor) {
-      path.push_back(node);
-      node = path.back().ParentNode();
-    }
+  auto BuildPath = [](std::vector<blink::WebNode> path,
+                      const blink::WebNode& end) {
     DCHECK(!path.empty());
+    path.reserve(path.size() + 16);
+    blink::WebNode parent;
+    while (!(parent = path.back().ParentNode()).IsNull() && parent != end)
+      path.push_back(parent);
     return path;
   };
-  std::vector<blink::WebNode> x_path = BuildPath(x);
-  std::vector<blink::WebNode> y_path = BuildPath(y);
+  // Returns true iff `lhs` is strictly to the left of `rhs`, provided both
+  // nodes are siblings.
+  auto IsLeftSiblingOf = [](const blink::WebNode& lhs,
+                            const blink::WebNode& rhs) {
+    DCHECK(lhs.ParentNode() == rhs.ParentNode());
+    for (blink::WebNode n = rhs; !n.IsNull(); n = n.NextSibling()) {
+      if (n == lhs)
+        return false;
+    }
+    return true;
+  };
+  // Both paths are successors of either `ancestor_hint` or the document root.
+  // If their parents aren't the same, we extend the paths to the document root.
+  std::vector<blink::WebNode> x_path = BuildPath({x}, ancestor_hint);
+  std::vector<blink::WebNode> y_path = BuildPath({y}, ancestor_hint);
+  if (x_path.back().ParentNode() != y_path.back().ParentNode()) {
+    x_path = BuildPath(std::move(x_path), blink::WebNode());
+    y_path = BuildPath(std::move(y_path), blink::WebNode());
+  }
   auto x_it = x_path.rbegin();
   auto y_it = y_path.rbegin();
   // Find the first different nodes in the paths. If such nodes exist, they are
   // siblings and their sibling order determines |x| and |y|'s relationship.
   while (x_it != x_path.rend() && y_it != y_path.rend()) {
-    if (*x_it != *y_it) {
-      DCHECK(x_it->ParentNode() == y_it->ParentNode());
-      for (blink::WebNode n = *y_it; !n.IsNull(); n = n.NextSibling()) {
-        if (n == *x_it)
-          return false;
-      }
-      return true;
-    }
+    if (*x_it != *y_it)
+      return IsLeftSiblingOf(*x_it, *y_it);
     ++x_it;
     ++y_it;
   }

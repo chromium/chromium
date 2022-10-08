@@ -1205,9 +1205,9 @@ TEST_F(FormAutofillUtilsTest, GetClosestAncestorFormElement) {
             GetFormElementById(doc, "non_existent_form", AllowNull(true)));
 }
 
-// Tests that `IsDomPredecessor(lhs, rhs, common_ancestor)` holds iff a DOM
-// traversal visits the DOM element with ID |lhs| before the one with ID |rhs|,
-// where |common_ancestor| is the ID of an ancestor DOM node.
+// Tests that `IsDOMPredecessor(lhs, rhs, ancestor_hint)` holds iff a DOM
+// traversal visits the DOM element with ID `lhs` before the one with ID `rhs`,
+// where `ancestor_hint` is the ID of an ancestor DOM node.
 //
 // For this test, DOM element IDs should be named so that if X as visited
 // before Y, then X.id is lexicographically less than Y.id.
@@ -1237,40 +1237,44 @@ TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
   struct IsDomPredecessorTestParam {
     std::string lhs_id;
     std::string rhs_id;
-    std::string common_ancestor_id;
+    std::vector<std::string> ancestor_hint_ids = {"",    "0",   "00",
+                                                  "002", "003", "01"};
   };
-  std::vector<IsDomPredecessorTestParam> test_cases{
-      IsDomPredecessorTestParam{"000", "000", "0"},
-      IsDomPredecessorTestParam{"001", "001", "0"},
-      IsDomPredecessorTestParam{"000", "001", "0"},
-      IsDomPredecessorTestParam{"000", "001", "00"},
-      IsDomPredecessorTestParam{"000", "0020", "0"},
-      IsDomPredecessorTestParam{"000", "0020", "00"},
-      IsDomPredecessorTestParam{"000", "004", "0"},
-      IsDomPredecessorTestParam{"000", "004", "00"},
-      IsDomPredecessorTestParam{"0020", "0030", "0"},
-      IsDomPredecessorTestParam{"0020", "0030", "00"},
-      IsDomPredecessorTestParam{"0030", "004", "00"},
-      IsDomPredecessorTestParam{"000", "010", "0"},
-      IsDomPredecessorTestParam{"0030", "010", "0"},
-      IsDomPredecessorTestParam{"01", "011", "0"}};
+  std::vector<IsDomPredecessorTestParam> test_cases = {
+      IsDomPredecessorTestParam{"000", "000"},
+      IsDomPredecessorTestParam{"001", "001"},
+      IsDomPredecessorTestParam{"000", "001"},
+      IsDomPredecessorTestParam{"000", "001"},
+      IsDomPredecessorTestParam{"000", "0020"},
+      IsDomPredecessorTestParam{"000", "0020"},
+      IsDomPredecessorTestParam{"000", "004"},
+      IsDomPredecessorTestParam{"000", "004"},
+      IsDomPredecessorTestParam{"0020", "0030"},
+      IsDomPredecessorTestParam{"0020", "0030"},
+      IsDomPredecessorTestParam{"0030", "004"},
+      IsDomPredecessorTestParam{"000", "010"},
+      IsDomPredecessorTestParam{"0030", "010"},
+      IsDomPredecessorTestParam{"0030", "011"},
+      IsDomPredecessorTestParam{"010", "011"}};
 
   for (const auto& test : test_cases) {
-    SCOPED_TRACE(testing::Message()
-                 << "lhs=" << test.lhs_id << " rhs=" << test.rhs_id
-                 << " common_ancestor=" << test.common_ancestor_id);
-    ASSERT_NE(test.lhs_id, test.common_ancestor_id);
-    ASSERT_NE(test.rhs_id, test.common_ancestor_id);
-    ASSERT_TRUE(base::StartsWith(test.lhs_id, test.common_ancestor_id));
-    ASSERT_TRUE(base::StartsWith(test.rhs_id, test.common_ancestor_id));
-    WebDocument doc = GetMainFrame()->GetDocument();
-    WebNode lhs = GetElementById(doc, test.lhs_id);
-    WebNode rhs = GetElementById(doc, test.rhs_id);
-    WebNode common_ancestor = GetElementById(doc, test.common_ancestor_id);
-    EXPECT_EQ(test.lhs_id < test.rhs_id,
-              IsDomPredecessor(lhs, rhs, common_ancestor));
-    EXPECT_EQ(test.rhs_id < test.lhs_id,
-              IsDomPredecessor(rhs, lhs, common_ancestor));
+    for (const auto& ancestor_hint_id : test.ancestor_hint_ids) {
+      SCOPED_TRACE(testing::Message()
+                   << "lhs=" << test.lhs_id << " rhs=" << test.rhs_id
+                   << " ancestor_hint_id=" << ancestor_hint_id);
+      ASSERT_NE(test.lhs_id, ancestor_hint_id);
+      ASSERT_NE(test.rhs_id, ancestor_hint_id);
+      WebDocument doc = GetMainFrame()->GetDocument();
+      WebNode lhs = GetElementById(doc, test.lhs_id);
+      WebNode rhs = GetElementById(doc, test.rhs_id);
+      WebNode ancestor_hint = ancestor_hint_id.empty()
+                                  ? WebNode()
+                                  : GetElementById(doc, ancestor_hint_id);
+      EXPECT_EQ(test.lhs_id < test.rhs_id,
+                IsDOMPredecessor(lhs, rhs, ancestor_hint));
+      EXPECT_EQ(test.rhs_id < test.lhs_id,
+                IsDOMPredecessor(rhs, lhs, ancestor_hint));
+    }
   }
 }
 

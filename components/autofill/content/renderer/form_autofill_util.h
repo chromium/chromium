@@ -125,18 +125,18 @@ bool IsVisibleIframe(const blink::WebElement& iframe_element);
 // [1] https://html.spec.whatwg.org/multipage/forms.html#the-form-element
 blink::WebFormElement GetClosestAncestorFormElement(blink::WebNode node);
 
-// Returns true if a DOM traversal (pre-order, depth-first) visits |x| before
-// |y|. |common_ancestor| can be any shared ancestor of |x| and |y| (including
-// the WebDocument), with deeper ancestors leading to better performance since
-// the function compares the paths from |x| and |y| to |common_ancestor|.
+// Returns true if a DOM traversal (pre-order, depth-first) visits `x` before
+// `y`.
+// As a performance improvement, `ancestor_hint` can be set to a suspected
+// ancestor of `x` and `y`. Otherwise, `ancestor_hint` can be arbitrary.
 //
 // This function is a simplified/specialised version of Blink's private
 // Node::compareDocumentPosition().
 //
 // Exposed for testing purposes.
-bool IsDomPredecessor(const blink::WebNode& x,
+bool IsDOMPredecessor(const blink::WebNode& x,
                       const blink::WebNode& y,
-                      const blink::WebNode& common_ancestor);
+                      const blink::WebNode& ancestor_hint);
 
 // Gets up to kMaxListSize data list values (with corresponding label) for the
 // given element, each value and label have as far as kMaxDataLength.
