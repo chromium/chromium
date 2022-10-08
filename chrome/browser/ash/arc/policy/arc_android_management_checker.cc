@@ -86,7 +86,7 @@ void ArcAndroidManagementChecker::StartCheckInternal() {
   DCHECK(!callback_.is_null());
 
   if (!identity_manager_->HasAccountWithRefreshToken(device_account_id_)) {
-    VLOG(2) << "No refresh token is available for android management check.";
+    LOG(ERROR) << "No refresh token is available for android management check.";
     std::move(callback_).Run(CheckResult::ERROR);
     return;
   }
