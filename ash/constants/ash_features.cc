@@ -1100,6 +1100,11 @@ BASE_FEATURE(kHomeButtonWithText,
 // the Chromebook to share its cellular internet connection to other devices.
 BASE_FEATURE(kHotspot, "Hotspot", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, allows the user to cycle between windows of an app using Alt + `.
+BASE_FEATURE(kSameAppWindowCycle,
+             "SameAppWindowCycle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the snooping protection prototype is enabled.
 BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
@@ -2867,6 +2872,10 @@ bool IsReverseScrollGesturesEnabled() {
 
 bool IsRgbKeyboardEnabled() {
   return base::FeatureList::IsEnabled(kRgbKeyboard);
+}
+
+bool IsSameAppWindowCycleEnabled() {
+  return base::FeatureList::IsEnabled(kSameAppWindowCycle);
 }
 
 bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
