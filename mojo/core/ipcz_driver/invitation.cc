@@ -173,11 +173,8 @@ MojoResult Invitation::Send(
     }
   }
 
-  // TODO: Support isolated connections.
   const bool is_isolated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ISOLATED) != 0;
-  CHECK(!is_isolated);
-
   const IpczNodeOptions& config = GetIpczNodeOptions();
   IpczConnectNodeFlags flags = 0;
   if (!config.is_broker) {
@@ -189,6 +186,13 @@ MojoResult Invitation::Send(
     if (!config.use_local_shared_memory_allocation) {
       flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
     }
+  }
+
+  if (is_isolated) {
+    // Nodes using isolated invitations are required by MojoIpcz to both be
+    // brokers.
+    CHECK(config.is_broker);
+    flags |= IPCZ_CONNECT_NODE_TO_BROKER;
   }
 
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
@@ -240,18 +244,26 @@ MojoHandle Invitation::Accept(
   // processes to leak their transport so that it can stay alive right up until
   // normal process termination.
   bool leak_transport = false;
+  bool is_isolated = false;
   if (options) {
     if (options->struct_size < sizeof(*options)) {
       return MOJO_RESULT_INVALID_ARGUMENT;
     }
     leak_transport =
         (options->flags & MOJO_ACCEPT_INVITATION_FLAG_LEAK_TRANSPORT_ENDPOINT);
+    is_isolated = (options->flags & MOJO_ACCEPT_INVITATION_FLAG_ISOLATED);
   }
 
   auto invitation = base::MakeRefCounted<Invitation>();
 
   const IpczNodeOptions& config = GetIpczNodeOptions();
-  CHECK(!config.is_broker);
+  if (is_isolated) {
+    // Nodes using isolated invitations are required by MojoIpcz to both be
+    // brokers.
+    CHECK(config.is_broker);
+  } else {
+    CHECK(!config.is_broker);
+  }
 
   IpczConnectNodeFlags flags = IPCZ_CONNECT_NODE_TO_BROKER;
   if (!config.use_local_shared_memory_allocation) {

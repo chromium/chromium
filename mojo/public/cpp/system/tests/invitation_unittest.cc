@@ -22,6 +22,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
+#include "mojo/core/test/test_switches.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -118,6 +119,9 @@ class InvitationCppTest : public testing::Test,
     command_line.AppendSwitchASCII(switches::kEnableFeatures, enable_features);
     command_line.AppendSwitchASCII(switches::kDisableFeatures,
                                    disable_features);
+    if (invitation_type == InvitationType::kIsolated) {
+      command_line.AppendSwitch(test_switches::kMojoIsBroker);
+    }
 
     child_process_ = base::SpawnMultiProcessTestChild(
         test_client_name, command_line, launch_options);
@@ -248,12 +252,6 @@ DEFINE_TEST_CLIENT(CppSendClient) {
 }
 
 TEST_P(InvitationCppTest, SendIsolated) {
-  if (mojo::core::IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
-  }
-
   ScopedMessagePipeHandle pipe;
   LaunchChildTestClient("CppSendIsolatedClient", &pipe, 1,
                         InvitationType::kIsolated, GetParam());
@@ -285,9 +283,10 @@ DEFINE_TEST_CLIENT(CppSendWithMultiplePipesClient) {
 
 TEST(InvitationCppTest_NoParam, SendIsolatedInvitationWithDuplicateName) {
   if (mojo::core::IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+    // This feature is not particularly useful in a world where isolated
+    // connections are only supported between broker nodes.
+    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
+                 << "between the same two nodes.";
   }
 
   base::test::TaskEnvironment task_environment;

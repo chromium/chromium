@@ -15,6 +15,8 @@ static_library("test_support") {
     "mojo_test_suite_base.h",
     "scoped_mojo_support.cc",
     "scoped_mojo_support.h",
+    "test_switches.cc",
+    "test_switches.h",
     "test_utils.h",
   ]
 

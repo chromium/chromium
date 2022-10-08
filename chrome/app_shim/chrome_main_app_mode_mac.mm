@@ -133,7 +133,11 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     base::Thread* io_thread = new base::Thread("CrAppShimIO");
     io_thread->StartWithOptions(std::move(io_thread_options));
 
-    mojo::core::Init();
+    // We're using an isolated Mojo connection between the browser and this
+    // process, so this process must act as a broker.
+    mojo::core::Configuration config;
+    config.is_broker_process = true;
+    mojo::core::Init(config);
     mojo::core::ScopedIPCSupport ipc_support(
         io_thread->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

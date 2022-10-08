@@ -15,6 +15,7 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/core/test/test_support_impl.h"
+#include "mojo/core/test/test_switches.h"
 #include "mojo/public/tests/test_support_private.h"
 
 namespace mojo::core::test {
@@ -43,7 +44,9 @@ class ScopedMojoSupport::CoreInstance {
     mojo_config.max_message_num_bytes =
         mojo::core::test::MojoTestBase::kMaxMessageSizeInTests;
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kTestChildProcess)) {
+            switches::kTestChildProcess) ||
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            test_switches::kMojoIsBroker)) {
       mojo_config.is_broker_process = true;
     }
 

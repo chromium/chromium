@@ -28,6 +28,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/node_controller.h"
 #include "mojo/core/test/mojo_test_base.h"
+#include "mojo/core/test/test_switches.h"
 #include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -349,6 +350,10 @@ base::Process InvitationTest::LaunchChildTestClient(
       &enable_features, &disable_features);
   command_line.AppendSwitchASCII(switches::kEnableFeatures, enable_features);
   command_line.AppendSwitchASCII(switches::kDisableFeatures, disable_features);
+
+  if (send_flags & MOJO_SEND_INVITATION_FLAG_ISOLATED) {
+    command_line.AppendSwitch(test_switches::kMojoIsBroker);
+  }
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
       test_client_name, command_line, launch_options);
@@ -802,12 +807,6 @@ DEFINE_TEST_CLIENT(ReinvitationClient) {
 }
 
 TEST_F(InvitationTest, SendIsolatedInvitation) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
-  }
-
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "SendIsolatedInvitationClient", &primordial_pipe, 1,
@@ -845,10 +844,11 @@ DEFINE_TEST_CLIENT(SendIsolatedInvitationClient) {
 }
 
 TEST_F(InvitationTest, SendMultipleIsolatedInvitations) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // This feature is not particularly useful in a world where isolated
+    // connections are only supported between broker nodes.
+    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
+                 << "between the same two nodes.";
   }
 
   // We send a secondary transport to the client process so we can send a second
@@ -930,10 +930,11 @@ DEFINE_TEST_CLIENT(SendMultipleIsolatedInvitationsClient) {
 }
 
 TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+  if (mojo::core::IsMojoIpczEnabled()) {
+    // This feature is not particularly useful in a world where isolated
+    // connections are only supported between broker nodes.
+    GTEST_SKIP() << "MojoIpcz does not support multiple isolated invitations "
+                 << "between the same two nodes.";
   }
 
   PlatformChannel channel1;
@@ -959,9 +960,8 @@ TEST_F(InvitationTest, SendIsolatedInvitationWithDuplicateName) {
 
 TEST_F(InvitationTest, SendIsolatedInvitationToSelf) {
   if (IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
+    GTEST_SKIP() << "MojoIpcz does not support nodes sending isolated "
+                 << "invitations to themselves.";
   }
 
   PlatformChannel channel;
@@ -999,12 +999,6 @@ TEST_F(InvitationTest, BrokenInvitationTransportBreaksAttachedPipe) {
 }
 
 TEST_F(InvitationTest, BrokenIsolatedInvitationTransportBreaksAttachedPipe) {
-  if (IsMojoIpczEnabled()) {
-    // TODO(http://crbug.com/1299283): Enable this test with MojoIpcz once
-    // support for isolated connections is implemented.
-    GTEST_SKIP() << "MojoIpcz does not yet support isolated invitations.";
-  }
-
   MojoHandle primordial_pipe;
   base::Process child_process = LaunchChildTestClient(
       "BrokenTransportClient", &primordial_pipe, 1, TransportType::kChannel,
