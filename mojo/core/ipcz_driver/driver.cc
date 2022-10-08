@@ -102,12 +102,12 @@ IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  auto [one, two] = Transport::CreatePair(transport1->destination(),
-                                          transport0->destination());
-  if (transport0->destination() == Transport::Destination::kToBroker) {
+  auto [one, two] = Transport::CreatePair(transport0->destination_type(),
+                                          transport1->destination_type());
+  if (transport0->destination_type() == Transport::EndpointType::kBroker) {
     one->set_remote_process(transport1->remote_process().Duplicate());
   }
-  if (transport1->destination() == Transport::Destination::kToBroker) {
+  if (transport1->destination_type() == Transport::EndpointType::kBroker) {
     two->set_remote_process(transport0->remote_process().Duplicate());
   }
   *new_transport0 = ObjectBase::ReleaseAsHandle(std::move(one));

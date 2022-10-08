@@ -214,8 +214,9 @@ class CoreIpczTest : public test::MojoTestBase {
 class ChannelPeerClosureListener {
  public:
   explicit ChannelPeerClosureListener(PlatformHandle handle)
-      : transport_(base::MakeRefCounted<ipcz_driver::Transport>(
-            ipcz_driver::Transport::kToBroker,
+      : transport_(ipcz_driver::Transport::Create(
+            {.source = ipcz_driver::Transport::kNonBroker,
+             .destination = ipcz_driver::Transport::kBroker},
             PlatformChannelEndpoint(std::move(handle)))) {
     transport_->Activate(
         reinterpret_cast<uintptr_t>(this),

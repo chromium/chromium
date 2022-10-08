@@ -131,8 +131,8 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
       bool for_broker_target) const override {
     std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>> transports;
     transports = Transport::CreatePair(
-        for_broker_target ? Transport::kToBroker : Transport::kToNonBroker,
-        Transport::kToBroker);
+        Transport::kBroker,
+        for_broker_target ? Transport::kBroker : Transport::kNonBroker);
     return {
         .ours = Transport::ReleaseAsHandle(std::move(transports.first)),
         .theirs = Transport::ReleaseAsHandle(std::move(transports.second)),
@@ -176,8 +176,11 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
       parent_process = base::Process(LongToHandle(parent_handle_value));
     }
 #endif  // BUILDFLAG(IS_WIN)
-    return Transport::ReleaseAsHandle(base::MakeRefCounted<Transport>(
-        Transport::kToBroker, std::move(endpoint), std::move(parent_process)));
+    return Transport::ReleaseAsHandle(Transport::Create(
+        {.source = parent_process.IsValid() ? Transport::kBroker
+                                            : Transport::kNonBroker,
+         .destination = Transport::kBroker},
+        std::move(endpoint), std::move(parent_process)));
   }
 
  private:

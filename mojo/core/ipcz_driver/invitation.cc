@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/base_shared_memory_service.h"
 #include "mojo/core/ipcz_driver/transport.h"
@@ -15,6 +16,12 @@
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/process/process_info.h"
+#endif
 
 namespace mojo::core::ipcz_driver {
 
@@ -62,7 +69,7 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
 }
 
 IpczDriverHandle CreateTransportForMojoEndpoint(
-    Transport::Destination destination,
+    Transport::EndpointTypes endpoint_types,
     const MojoInvitationTransportEndpoint& endpoint,
     bool leak_channel_on_shutdown,
     base::Process remote_process = base::Process(),
@@ -82,7 +89,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     channel_endpoint = PlatformChannelEndpoint(std::move(handle));
   }
   auto transport = base::MakeRefCounted<Transport>(
-      destination, std::move(channel_endpoint), std::move(remote_process));
+      endpoint_types, std::move(channel_endpoint), std::move(remote_process));
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(leak_channel_on_shutdown);
   return ObjectBase::ReleaseAsHandle(std::move(transport));
@@ -196,7 +203,9 @@ MojoResult Invitation::Send(
   }
 
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
-      Transport::kToNonBroker, *transport_endpoint,
+      {.source = config.is_broker ? Transport::kBroker : Transport::kNonBroker,
+       .destination = is_isolated ? Transport::kBroker : Transport::kNonBroker},
+      *transport_endpoint,
       /*leak_channel_on_shutdown=*/false, std::move(remote_process),
       error_handler, error_handler_context);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
@@ -285,9 +294,26 @@ MojoHandle Invitation::Accept(
   // application-provided attachments begin at index 1.
   IpczHandle portals[kMaxAttachments + 1];
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
-      Transport::kToBroker, *transport_endpoint, leak_transport);
+      {.source = is_isolated ? Transport::kBroker : Transport::kNonBroker,
+       .destination = Transport::kBroker},
+      *transport_endpoint, leak_transport);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return IPCZ_INVALID_DRIVER_HANDLE;
+  }
+
+  // In an elevated Windows process our transport needs a handle to the broker's
+  // own process (assumed to be our parent process). This is required to support
+  // transmission of arbitrary Windows handles to and from the elevated process.
+  base::Process launcher;
+#if BUILDFLAG(IS_WIN)
+  if (base::IsCurrentProcessElevated()) {
+    launcher = base::Process(::OpenProcess(
+        PROCESS_DUP_HANDLE, FALSE,
+        base::GetParentProcessId(base::GetCurrentProcessHandle())));
+  }
+#endif
+  if (launcher.IsValid()) {
+    Transport::FromHandle(transport)->set_remote_process(std::move(launcher));
   }
 
   IpczResult result = GetIpczAPI().ConnectNode(

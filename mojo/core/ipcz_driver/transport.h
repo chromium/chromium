@@ -29,19 +29,29 @@ namespace mojo::core::ipcz_driver {
 class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
                                           public Channel::Delegate {
  public:
-  // Tracks what type of remote process is on the other end of this transport.
-  // This is used for handle brokering decisions on Windows.
-  enum Destination : uint32_t {
-    kToNonBroker,
-    kToBroker,
+  // Enumerates the type of node at local endpoint of a Transport object.
+  enum EndpointType : uint32_t {
+    kBroker,
+    kNonBroker,
   };
 
-  Transport(Destination destination,
+  struct EndpointTypes {
+    EndpointType source;
+    EndpointType destination;
+  };
+  Transport(EndpointTypes endpoint_types,
             Channel::Endpoint endpoint,
-            base::Process remote_process = base::Process());
+            base::Process remote_process);
+
+  // Static helper that is slightly more readable due to better type deduction
+  // than MakeRefCounted<T>.
+  static scoped_refptr<Transport> Create(
+      EndpointTypes endpoint_types,
+      Channel::Endpoint endpoint,
+      base::Process remote_process = base::Process());
 
   static std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>
-  CreatePair(Destination first_destination, Destination second_destination);
+  CreatePair(EndpointType first_type, EndpointType second_type);
 
   // Accessors for a global TaskRunner to use for Transport I/O.
   static void SetIOTaskRunner(
@@ -50,7 +60,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
 
   static constexpr Type object_type() { return kTransport; }
 
-  Destination destination() const { return destination_; }
+  EndpointType source_type() const { return endpoint_types_.source; }
+  EndpointType destination_type() const { return endpoint_types_.destination; }
   const base::Process& remote_process() const { return remote_process_; }
 
   // Provides a handle to the remote process on the other end of this transport.
@@ -158,7 +169,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // platforms.
   bool ShouldSerializeProcessHandle(Transport& transmitter) const;
 
-  const Destination destination_;
+  const EndpointTypes endpoint_types_;
   base::Process remote_process_;
   MojoProcessErrorHandler error_handler_ = nullptr;
   uintptr_t error_handler_context_ = 0;

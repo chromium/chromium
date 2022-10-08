@@ -146,8 +146,9 @@ void BaseSharedMemoryService::CreateClient(ScopedIpczHandle portal) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_APPLE)
   PlatformChannel channel;
 
-  IpczHandle box = Transport::Box(base::MakeRefCounted<Transport>(
-      Transport::kToNonBroker, channel.TakeRemoteEndpoint()));
+  IpczHandle box = Transport::Box(Transport::Create(
+      {.source = Transport::kBroker, .destination = Transport::kNonBroker},
+      channel.TakeRemoteEndpoint()));
   const IpczResult result = GetIpczAPI().Put(portal.get(), nullptr, 0, &box, 1,
                                              IPCZ_NO_FLAGS, nullptr);
   DCHECK_EQ(result, IPCZ_RESULT_OK);
