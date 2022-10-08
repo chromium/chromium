@@ -24,7 +24,6 @@ source_set("ntp") {
     ":constants",
     ":feature_flags",
   ]
-  deps = [ "//ios/chrome/browser/ui/util" ]
 }
 
 source_set("logo") {
