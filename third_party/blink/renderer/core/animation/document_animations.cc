@@ -181,13 +181,17 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   return animations;
 }
 
-void DocumentAnimations::ValidateTimelines() {
+bool DocumentAnimations::ValidateTimelines() {
+  bool all_timelines_valid = true;
   for (auto& timeline : unvalidated_timelines_) {
-    if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline.Get()))
-      scroll_timeline->ValidateState();
+    if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(timeline.Get())) {
+      bool timeline_valid = scroll_timeline->ValidateState();
+      all_timelines_valid &= timeline_valid;
+    }
   }
 
   unvalidated_timelines_.clear();
+  return all_timelines_valid;
 }
 
 void DocumentAnimations::DetachCompositorTimelines() {

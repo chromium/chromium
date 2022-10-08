@@ -89,8 +89,10 @@ class CORE_EXPORT DocumentAnimations final
   // the timeline are marked for recalc, which causes the style/layout phase
   // to run again.
   //
+  // Returns true if all timeline states are correct, otherwise returns false.
+  //
   // https://github.com/w3c/csswg-drafts/issues/5261
-  void ValidateTimelines();
+  bool ValidateTimelines();
 
   // Detach compositor timelines to prevent further ticking of any animations
   // associated with the timelines.  Detached timelines may be subsequently

@@ -495,12 +495,13 @@ void ScrollTimeline::InvalidateEffectTargetStyle() {
     animation->InvalidateEffectTargetStyle();
 }
 
-void ScrollTimeline::ValidateState() {
+bool ScrollTimeline::ValidateState() {
   auto state = ComputeTimelineState();
   if (timeline_state_snapshotted_ == state)
-    return;
+    return true;
   timeline_state_snapshotted_ = state;
   InvalidateEffectTargetStyle();
+  return false;
 }
 
 cc::AnimationTimeline* ScrollTimeline::EnsureCompositorTimeline() {

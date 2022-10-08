@@ -2394,6 +2394,20 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       return;
     DCHECK(Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean);
 
+    // ScrollTimelines may be associated with a source that never had a
+    // a chance to get a layout box at the time style was calculated; when
+    // this situation happens, RunScrollTimelineSteps will re-snapshot all
+    // affected timelines and dirty style for associated effect targets.
+    //
+    // https://github.com/w3c/csswg-drafts/issues/5261
+    if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled() &&
+        should_run_scroll_timeline_steps) {
+      should_run_scroll_timeline_steps = false;
+      bool needs_to_repeat_lifecycle = RunScrollTimelineSteps();
+      if (needs_to_repeat_lifecycle)
+        continue;
+    }
+
     if (!GetLayoutView())
       return;
 
@@ -2436,20 +2450,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
     // Some features may require several passes over style and layout
     // within the same lifecycle update.
     bool needs_to_repeat_lifecycle = false;
-
-    // ScrollTimelines may be associated with a source that never had a
-    // a chance to get a layout box at the time style was calculated; when
-    // this situation happens, RunScrollTimelineSteps will re-snapshot all
-    // affected timelines and dirty style for associated effect targets.
-    //
-    // https://github.com/w3c/csswg-drafts/issues/5261
-    if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled() &&
-        should_run_scroll_timeline_steps) {
-      should_run_scroll_timeline_steps = false;
-      needs_to_repeat_lifecycle = RunScrollTimelineSteps();
-      if (needs_to_repeat_lifecycle)
-        continue;
-    }
 
     // ResizeObserver and post-layout IntersectionObserver observation
     // deliveries may dirty style and layout. RunResizeObserverSteps will return
@@ -2518,17 +2518,16 @@ bool LocalFrameView::RunScrollTimelineSteps() {
   // TODO(crbug.com/1329159): Determine if the source for a view timeline has
   // changed, which may in turn require a fresh style/layout cycle.
 
-  DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean);
+  DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kLayoutClean);
   bool re_run_lifecycles = false;
-  ForAllNonThrottledLocalFrameViews([&re_run_lifecycles](
-                                        LocalFrameView& frame_view) {
-    frame_view.GetFrame()
-        .GetDocument()
-        ->GetDocumentAnimations()
-        .ValidateTimelines();
-    re_run_lifecycles |=
-        (frame_view.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean);
-  });
+  ForAllNonThrottledLocalFrameViews(
+      [&re_run_lifecycles](LocalFrameView& frame_view) {
+        bool timelines_valid = frame_view.GetFrame()
+                                   .GetDocument()
+                                   ->GetDocumentAnimations()
+                                   .ValidateTimelines();
+        re_run_lifecycles |= !timelines_valid;
+      });
   return re_run_lifecycles;
 }
 

@@ -118,7 +118,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void InvalidateEffectTargetStyle();
 
   // See DocumentAnimations::ValidateTimelines
-  void ValidateState();
+  bool ValidateState();
 
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
