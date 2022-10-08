@@ -164,6 +164,12 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     # for Chrome and WebLayer.
     return True
 
+  def enable_wifi(self):
+    self._device.RunShellCommand(['svc', 'wifi', 'enable'])
+
+  def disable_wifi(self):
+    self._device.RunShellCommand(['svc', 'wifi', 'disable'])
+
   @contextlib.contextmanager
   def _archive_logcat(self, filename, endpoint_name):
     start_point = 'START {}'.format(endpoint_name)
@@ -195,8 +201,8 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
   def __enter__(self):
     self._device.EnableRoot()
     # Run below commands to ensure that the device can download a seed
+    self.disable_wifi()
     self._device.adb.Emu(['power', 'ac', 'on'])
-    self._device.RunShellCommand(['svc', 'wifi', 'enable'])
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
         finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
@@ -931,13 +937,17 @@ def main(args):
       test_case.install_seed()
       ret |= test_case.run_tests('with_finch_seed', test_results_dict,
                                  check_seed_loaded=True)
+
       # TODO(b/187185389): Figure out why WebView needs an extra restart
-      # to fetch and load a new finch seed. Also we should not check if
-      # the seed is loaded during the extra restart tests since the seed
-      # may not always be loaded after the restart.
+      # to fetch and load a new finch seed.
       ret |= test_case.run_tests(
           'extra_restart', test_results_dict,
-          extra_browser_args=test_case.finch_seed_download_args())
+          extra_browser_args=test_case.finch_seed_download_args(),
+          check_seed_loaded=True)
+
+      # enable wifi so that a new seed can be downloaded from the finch server
+      test_case.enable_wifi()
+
       # Restart webview+shell to fetch new seed to variations_seed_new
       ret |= test_case.run_tests(
           'fetch_new_seed_restart', test_results_dict,
@@ -949,6 +959,10 @@ def main(args):
           'load_new_seed_restart', test_results_dict,
           extra_browser_args=test_case.finch_seed_download_args(),
           check_seed_loaded=True)
+
+      # Disable wifi so that new updates will not be downloaded which can cause
+      # timeouts in the adb commands run below.
+      test_case.disable_wifi()
     else:
       test_case.install_seed()
       ret = test_case.run_tests('with_finch_seed', test_results_dict)
