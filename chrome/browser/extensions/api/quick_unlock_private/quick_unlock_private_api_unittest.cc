@@ -172,8 +172,8 @@ class QuickUnlockPrivateUnitTest
   void SetUp() override {
     const auto param = GetParam();
 
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // TODO(b/239681292): Add (integration) tests with UseAuthFactors
     // enabled.

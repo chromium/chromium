@@ -418,7 +418,8 @@ void ScopedFeatureList::InitWithFeatures(
   InitWithFeaturesImpl(enabled_features, {}, disabled_features);
 }
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS)
 void ScopedFeatureList::InitWithFeatures(
     const std::vector<Feature>& enabled_features,
     const std::vector<Feature>& disabled_features) {
@@ -511,7 +512,8 @@ void ScopedFeatureList::InitWithFeaturesAndParameters(
   InitWithFeaturesImpl({}, enabled_features, disabled_features);
 }
 
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_CHROMEOS)
 void ScopedFeatureList::InitWithFeaturesAndParameters(
     const std::vector<FeatureAndParams>& enabled_features,
     const std::vector<Feature>& disabled_features) {

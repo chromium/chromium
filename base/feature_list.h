@@ -103,7 +103,8 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
 #endif  // BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   Feature(const Feature&) = delete;
   Feature& operator=(const Feature&) = delete;
 #else
