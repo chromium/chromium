@@ -5,19 +5,14 @@
 #include "base/threading/thread_local_storage.h"
 
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#include <process.h>
-#endif
-
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#include <process.h>
 // Ignore warnings about ptr->int conversions that we use when
 // storing ints into ThreadLocalStorage.
 #pragma warning(disable : 4311 4312)

@@ -9,15 +9,12 @@
 #include "build/build_config.h"
 
 #if DCHECK_IS_ON()
-
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_local.h"
-#include "base/trace_event/base_tracing.h"
-#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NaCL doesn't support stack sampling and Android is slow at stack sampling and

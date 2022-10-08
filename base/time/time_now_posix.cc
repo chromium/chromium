@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
+
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
-
-#include "base/time/time.h"
-#include "build/build_config.h"
-#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
-#include <time64.h>
-#endif
 #include <unistd.h>
 
 #include "base/check.h"
@@ -19,6 +15,10 @@
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
+#include <time64.h>
+#endif
 
 // Ensure the Fuchsia and Mac builds do not include this module. Instead,
 // non-POSIX implementation is used for sampling the system clocks.

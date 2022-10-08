@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/time/time.h"
+
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
-
-#include "base/time/time.h"
-#include "build/build_config.h"
-#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
-#include <time64.h>
-#endif
 #include <unistd.h>
-
 #include <limits>
 
 #include "base/no_destructor.h"
@@ -21,6 +16,9 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
+#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
+#include <time64.h>
+#endif
 #if BUILDFLAG(IS_NACL)
 #include "base/os_compat_nacl.h"
 #endif
