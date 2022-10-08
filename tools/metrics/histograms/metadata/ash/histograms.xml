@@ -3520,6 +3520,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PrivacyIndicators.{Icon}.AnimationSmoothness" units="%"
+    expires_after="2023-09-19">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the privacy indicators {Icon} fade in animation.
+    This occurs when an app is accessing camera/microphone or screen sharing and
+    a green indicator appears on the status area button.
+  </summary>
+  <token key="Icon">
+    <variant name="CameraIcon" summary="Camera icon"/>
+    <variant name="MicrophoneIcon" summary="Microphone icon"/>
+    <variant name="ScreenshareIcon" summary="Screen share icon"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Projector.CreationFlow.{TabletOrClamshell}"
     enum="ProjectorCreationFlow" expires_after="2022-12-01">
   <owner>tobyhuang@chromium.org</owner>

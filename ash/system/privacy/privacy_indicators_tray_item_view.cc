@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -49,6 +51,9 @@ constexpr auto kShorterSizeShrinkAnimationDelay =
     kDwellInExpandDuration + base::Milliseconds(133);
 constexpr auto kSizeChangeAnimationDuration = base::Milliseconds(333);
 constexpr auto kExpandAnimationDuration = base::Milliseconds(400);
+constexpr auto kIconFadeInDelayDuration = base::Milliseconds(83);
+constexpr auto kCameraIconFadeInDuration = base::Milliseconds(233);
+constexpr auto kMicAndScreenshareFadeInDuration = base::Milliseconds(116);
 
 void StartAnimation(gfx::LinearAnimation* animation) {
   if (!animation)
@@ -73,6 +78,41 @@ void StartRecordAnimationSmoothness(
         base::UmaHistogramPercentage(
             "Ash.PrivacyIndicators.AnimationSmoothness", smoothness);
       })));
+}
+
+void StartReportLayerAnimationSmoothness(
+    const std::string& animation_histogram_name,
+    int smoothness) {
+  // Only record animation smoothness if `animation_histogram_name` is given.
+  if (animation_histogram_name.empty())
+    return;
+  base::UmaHistogramPercentage(animation_histogram_name, smoothness);
+}
+
+void FadeInView(views::View* view,
+                base::TimeDelta duration,
+                const std::string& animation_histogram_name) {
+  // The view must have a layer to perform animation.
+  DCHECK(view->layer());
+
+  // Stop any ongoing animation.
+  if (view->layer()->GetAnimator()->is_animating())
+    view->layer()->GetAnimator()->StopAnimating();
+
+  ui::AnimationThroughputReporter reporter(
+      view->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating(
+          &StartReportLayerAnimationSmoothness, animation_histogram_name)));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(view, 0.0f)
+      .At(kIconFadeInDelayDuration)
+      .SetDuration(duration)
+      .SetOpacity(view, 1.0f);
 }
 
 }  // namespace
@@ -207,6 +247,20 @@ void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
   // short side to the final size (a green dot).
   expand_animation_->Start();
   StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
+
+  // At the same time, fade in icons.
+  if (camera_icon_->GetVisible()) {
+    FadeInView(camera_icon_, kCameraIconFadeInDuration,
+               "Ash.PrivacyIndicators.CameraIcon.AnimationSmoothness");
+  }
+  if (microphone_icon_->GetVisible()) {
+    FadeInView(camera_icon_, kMicAndScreenshareFadeInDuration,
+               "Ash.PrivacyIndicators.MicrophoneIcon.AnimationSmoothness");
+  }
+  if (screen_share_icon_->GetVisible()) {
+    FadeInView(camera_icon_, kMicAndScreenshareFadeInDuration,
+               "Ash.PrivacyIndicators.ScreenshareIcon.AnimationSmoothness");
+  }
 }
 
 void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
