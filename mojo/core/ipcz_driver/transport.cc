@@ -77,8 +77,10 @@ void EncodeHandle(PlatformHandle& handle,
     return;
   }
 
-  // When sending from a broker to a non-broker, duplicate the handle to the
-  // remote process first, then encode that duplicated value.
+  // When sending from a broker to another node (broker or non-broker),
+  // duplicate the handle to the remote process first, then encode that
+  // duplicated value. By convention, endpoints connected to a broker expect to
+  // receive handles that already belong to them.
   BOOL result = ::DuplicateHandle(
       ::GetCurrentProcess(), handle.ReleaseHandle(), remote_process.Handle(),
       &out_handle, 0, FALSE, DUPLICATE_SAME_ACCESS | DUPLICATE_CLOSE_SOURCE);
@@ -88,7 +90,7 @@ void EncodeHandle(PlatformHandle& handle,
 PlatformHandle DecodeHandle(HANDLE handle,
                             const base::Process& remote_process,
                             Transport::Destination destination) {
-  if (!remote_process.IsValid()) {
+  if (destination == Transport::Destination::kToBroker) {
     // Handles coming from a broker are already ours.
     DCHECK(destination == Transport::kToBroker);
     return PlatformHandle(base::win::ScopedHandle(handle));

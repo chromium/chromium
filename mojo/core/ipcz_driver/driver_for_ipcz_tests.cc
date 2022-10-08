@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/simple_thread.h"
@@ -25,6 +26,8 @@
 
 namespace mojo::core::ipcz_driver {
 namespace {
+
+const char kParentHandle[] = "mojo-ipcz-test-parent-handle";
 
 const char kMojoIpczInProcessTestDriverName[] = "MojoIpczInProcess";
 const char kMojoIpczMultiprocessTestDriverName[] = "MojoIpczMultiprocess";
@@ -124,12 +127,15 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
   }
 
   ipcz::test::TestNode::TransportPair CreateTransports(
-      ipcz::test::TestNode& source) const override {
-    auto [ours, theirs] =
-        Transport::CreatePair(Transport::kToNonBroker, Transport::kToBroker);
+      ipcz::test::TestNode& source,
+      bool for_broker_target) const override {
+    std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>> transports;
+    transports = Transport::CreatePair(
+        for_broker_target ? Transport::kToBroker : Transport::kToNonBroker,
+        Transport::kToBroker);
     return {
-        .ours = Transport::ReleaseAsHandle(std::move(ours)),
-        .theirs = Transport::ReleaseAsHandle(std::move(theirs)),
+        .ours = Transport::ReleaseAsHandle(std::move(transports.first)),
+        .theirs = Transport::ReleaseAsHandle(std::move(transports.second)),
     };
   }
 
@@ -151,12 +157,27 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
   }
 
   IpczDriverHandle GetClientTestNodeTransport() override {
+    const base::CommandLine& command_line =
+        *base::CommandLine::ForCurrentProcess();
     PlatformChannelEndpoint endpoint =
         PlatformChannelEndpoint::RecoverFromString(
-            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                PlatformChannel::kHandleSwitch));
+            command_line.GetSwitchValueASCII(PlatformChannel::kHandleSwitch));
+
+    base::Process parent_process;
+#if BUILDFLAG(IS_WIN)
+    // If we're launched as a broker, the test will pass us a handle back to its
+    // process. The Transport uses this to duplicate handles to and from the
+    // parent process. See SpawnTestNodeProcess().
+    const std::string parent_handle_switch =
+        command_line.GetSwitchValueASCII(kParentHandle);
+    int parent_handle_value;
+    if (!parent_handle_switch.empty() &&
+        base::StringToInt(parent_handle_switch, &parent_handle_value)) {
+      parent_process = base::Process(LongToHandle(parent_handle_value));
+    }
+#endif  // BUILDFLAG(IS_WIN)
     return Transport::ReleaseAsHandle(base::MakeRefCounted<Transport>(
-        Transport::kToBroker, std::move(endpoint)));
+        Transport::kToBroker, std::move(endpoint), std::move(parent_process)));
   }
 
  private:
@@ -165,10 +186,14 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
       const ipcz::test::TestNodeDetails& details,
       IpczDriverHandle our_transport,
       IpczDriverHandle their_transport) {
-    std::unique_ptr<ipcz::test::TestNode> node = details.factory();
-    node->SetTransport(their_transport);
     Transport::FromHandle(our_transport)
         ->set_remote_process(base::Process::Current());
+    if (details.is_broker) {
+      Transport::FromHandle(their_transport)
+          ->set_remote_process(base::Process::Current());
+    }
+    std::unique_ptr<ipcz::test::TestNode> node = details.factory();
+    node->SetTransport(their_transport);
     return ipcz::MakeRefCounted<MojoIpczInProcessTestNodeController>(
         std::string(details.name.begin(), details.name.end()), std::move(node),
         this);
@@ -186,6 +211,7 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
 
     std::set<std::string> uninherited_args;
     uninherited_args.insert(PlatformChannel::kHandleSwitch);
+    uninherited_args.insert(kParentHandle);
     uninherited_args.insert(switches::kTestChildProcess);
 
     // Copy commandline switches from the parent process, except for the
@@ -204,6 +230,24 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
     endpoint.PrepareToPass(options, command_line);
 #if BUILDFLAG(IS_WIN)
     options.start_hidden = true;
+
+    base::Process this_process;
+    if (details.is_broker) {
+      // If we're launching another broker, it needs a handle back to our own
+      // process so that it can duplicate handles between us and itself. See
+      // GetClientTestNodeTransport().
+      HANDLE dupe;
+      BOOL ok = ::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentProcess(),
+                                  ::GetCurrentProcess(), &dupe, 0, TRUE,
+                                  DUPLICATE_SAME_ACCESS);
+      CHECK(ok);
+      this_process = base::Process(dupe);
+
+      options.handles_to_inherit.push_back(this_process.Handle());
+      command_line.AppendSwitchASCII(
+          kParentHandle,
+          base::NumberToString(HandleToLong(this_process.Handle())));
+    }
 #endif
 
     base::Process child = base::SpawnMultiProcessTestChild(

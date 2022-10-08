@@ -6,6 +6,7 @@
 #define IPCZ_SRC_IPCZ_NODE_H_
 
 #include <functional>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -142,10 +143,10 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
                           Ref<DriverTransport> transport,
                           Ref<NodeLinkMemory> memory);
 
-  // Handles a rejected introduction from the broker. This is called on a
-  // non-broker node that previously requested an introduction to `name` if
-  // the broker could not satisfy the request.
-  bool CancelIntroduction(const NodeName& name);
+  // Handles a rejected introduction for the node named `name` from the
+  // identified broker. This is called on a node that previously requested an
+  // introduction if the broker is unable or unwilling to satisfy the request.
+  void NotifyIntroductionFailed(NodeLink& from_broker, const NodeName& name);
 
   // Relays a message to its destination on behalf of `from_node`.
   bool RelayMessage(const NodeName& from_node, msg::RelayMessage& relay);
@@ -163,7 +164,17 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   using BrokerLinkCallback = std::function<void(Ref<NodeLink>)>;
   void WaitForBrokerLinkAsync(BrokerLinkCallback callback);
 
+  // Processes a request for an indirect cross-network node introduction. The
+  // request was sent by `from_node_link` (a link to another broker) and is
+  // asking us to introduce `our_node` within our network to `their_node` in the
+  // the requestor's network.
+  bool HandleIndirectIntroductionRequest(NodeLink& from_node_link,
+                                         const NodeName& our_node,
+                                         const NodeName& their_node);
+
  private:
+  class PendingIntroduction;
+
   ~Node() override;
 
   // Deactivates all NodeLinks and their underlying driver transports in
@@ -190,7 +201,9 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   NodeName assigned_name_ ABSL_GUARDED_BY(mutex_);
 
   // A link to the first broker this node connected to. If this link is broken,
-  // the node will lose all its other links too.
+  // the node will lose all its other links too. This is always null on broker
+  // nodes, though brokers may keep track of links to other brokers within
+  // `other_brokers_`.
   Ref<NodeLink> broker_link_ ABSL_GUARDED_BY(mutex_);
 
   // A link over which all internal shared memory allocation is delegated. If
@@ -206,11 +219,11 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   using ConnectionMap = absl::flat_hash_map<NodeName, Connection>;
   ConnectionMap connections_ ABSL_GUARDED_BY(mutex_);
 
-  // A map of other nodes to which this node is waiting for an introduction from
-  // `broker_link_`. Once such an introduction is received, all callbacks for
-  // that NodeName are executed.
+  // A map of other nodes to which this node is waiting for an introduction,
+  // either from its own broker or (if we are a broker) all the other known
+  // brokers we're connected to.
   using PendingIntroductionMap =
-      absl::flat_hash_map<NodeName, std::vector<EstablishLinkCallback>>;
+      absl::flat_hash_map<NodeName, std::unique_ptr<PendingIntroduction>>;
   PendingIntroductionMap pending_introductions_ ABSL_GUARDED_BY(mutex_);
 
   // Nodes may race to request introductions to each other from the same broker.
@@ -246,6 +259,12 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // Set of callbacks waiting to be invoked as soon as this Node acquires a
   // broker link.
   std::vector<BrokerLinkCallback> broker_link_callbacks_
+      ABSL_GUARDED_BY(mutex_);
+
+  // Mapping of links to other known brokers in the system. This is the subset
+  // of `links_` which corresponds to remote broker nodes NOT in this node's own
+  // network. This map can only be non-empty on broker nodes.
+  absl::flat_hash_map<NodeName, Ref<NodeLink>> other_brokers_
       ABSL_GUARDED_BY(mutex_);
 };
 

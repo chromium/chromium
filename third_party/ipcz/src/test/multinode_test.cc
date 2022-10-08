@@ -129,7 +129,9 @@ class SyncTestDriver : public InProcessTestDriverBase {
 
   const char* GetName() const override { return internal::kSyncTestDriverName; }
 
-  TestNode::TransportPair CreateTransports(TestNode& source) const override {
+  TestNode::TransportPair CreateTransports(
+      TestNode& source,
+      bool for_broker_target) const override {
     TestNode::TransportPair transports;
     const IpczResult result = GetIpczDriver().CreateTransports(
         IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
@@ -163,7 +165,15 @@ class AsyncTestDriver : public InProcessTestDriverBase {
 
   const char* GetName() const override { return name_; }
 
-  TestNode::TransportPair CreateTransports(TestNode& source) const override {
+  TestNode::TransportPair CreateTransports(
+      TestNode& source,
+      bool for_broker_target) const override {
+    if (for_broker_target) {
+      auto [ours, theirs] =
+          reference_drivers::CreateAsyncTransportPairForBrokers();
+      return {.ours = ours, .theirs = theirs};
+    }
+
     reference_drivers::AsyncTransportPair transports =
         reference_drivers::CreateAsyncTransportPair();
     return {
@@ -232,7 +242,9 @@ class MultiprocessTestDriver : public TestDriver {
     return internal::kMultiprocessTestDriverName;
   }
 
-  TestNode::TransportPair CreateTransports(TestNode& source) const override {
+  TestNode::TransportPair CreateTransports(
+      TestNode& source,
+      bool for_broker_target) const override {
     TestNode::TransportPair transports;
     const IpczResult result = GetIpczDriver().CreateTransports(
         IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE, IPCZ_NO_FLAGS,
@@ -398,7 +410,12 @@ void TestNode::CloseThisNode() {
 Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
     const TestNodeDetails& details,
     IpczDriverHandle& our_transport) {
-  TransportPair transports = CreateTransports();
+  TransportPair transports;
+  if (details.is_broker) {
+    transports = CreateBrokerToBrokerTransports();
+  } else {
+    transports = CreateTransports();
+  }
   Ref<TestNodeController> controller = test_driver_->SpawnTestNode(
       *this, details, transports.ours, transports.theirs);
   spawned_nodes_.push_back(controller);
@@ -407,7 +424,11 @@ Ref<TestNode::TestNodeController> TestNode::SpawnTestNodeImpl(
 }
 
 TestNode::TransportPair TestNode::CreateTransports() {
-  return test_driver_->CreateTransports(*this);
+  return test_driver_->CreateTransports(*this, /*for_broker_target=*/false);
+}
+
+TestNode::TransportPair TestNode::CreateBrokerToBrokerTransports() {
+  return test_driver_->CreateTransports(*this, /*for_broker_target=*/true);
 }
 
 void TestNode::SetTransport(IpczDriverHandle transport) {

@@ -5,6 +5,8 @@
 #ifndef IPCZ_SRC_DRIVERS_ASYNC_REFERENCE_DRIVER_H_
 #define IPCZ_SRC_DRIVERS_ASYNC_REFERENCE_DRIVER_H_
 
+#include <utility>
+
 #include "ipcz/ipcz.h"
 
 namespace ipcz::reference_drivers {
@@ -27,6 +29,11 @@ struct AsyncTransportPair {
   IpczDriverHandle non_broker;
 };
 AsyncTransportPair CreateAsyncTransportPair();
+
+// Creates a new pair of async transport endpoints, one for each of two
+// different brokers to be connected.
+std::pair<IpczDriverHandle, IpczDriverHandle>
+CreateAsyncTransportPairForBrokers();
 
 }  // namespace ipcz::reference_drivers
 

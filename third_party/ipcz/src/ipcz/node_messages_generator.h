@@ -183,11 +183,37 @@ IPCZ_MSG_BEGIN(NonBrokerReferralRejected, IPCZ_MSG_ID(6), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(uint64_t, referral_id)
 IPCZ_MSG_END()
 
-// Sent by a non-broker node to a broker node, asking the broker to introduce
-// the non-broker to the node identified by `name`. If the broker is willing and
-// able to comply with this request, it will send an AcceptIntroduction message
-// (see below) to both the sender of this message and the node identified by
-// `name`.
+// Sent from one broker to another to establish an initial link between two
+// distinct node networks. Once two brokers are connected their networks are
+// effectively merged and nodes in either network can become interconnected by
+// ipcz.
+IPCZ_MSG_BEGIN(ConnectFromBrokerToBroker, IPCZ_MSG_ID(7), IPCZ_MSG_VERSION(0))
+  // The name of the sending node.
+  IPCZ_MSG_PARAM(NodeName, name)
+
+  // The highest protocol version known and desired by the sending broker.
+  IPCZ_MSG_PARAM(uint32_t, protocol_version)
+
+  // The number of initial portals assumed by the sending broker on its end of
+  // the link established by this handshake.
+  IPCZ_MSG_PARAM(uint32_t, num_initial_portals)
+
+  // A primary buffer memory object which may be used to establish a
+  // NodeLinkMemory between the two brokers. Since each broker sends a memory
+  // object during this handshake, the one to use for the primary buffer is
+  // determined by whichever broker's name is the lesser of the two when
+  // compared numerically.
+  IPCZ_MSG_PARAM_DRIVER_OBJECT(buffer)
+IPCZ_MSG_END()
+
+// Sent to a broker to ask for an introduction to one of the non-broker nodes in
+// its own network. This may be sent either from a non-broker in the same
+// network, or a broker from another network.
+//
+// The non-broker to be introduced to the sender is identified by `name`. If the
+// broker is willing and able to comply with this request, it will send an
+// AcceptIntroduction message (see below) to both the sender of this message and
+// the node identified by `name`.
 //
 // If the broker does not know the node named `name`, it will send only a
 // RejectIntroduction message back to the sender to indicate failure.
@@ -223,11 +249,25 @@ IPCZ_MSG_BEGIN(AcceptIntroduction, IPCZ_MSG_ID(11), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM_DRIVER_OBJECT(memory)
 IPCZ_MSG_END()
 
-// Sent back to a non-broker if the broker did not recognzie the subject of an
-// introduction request.
+// Sent to a node in response to RequestIntroduction if the broker receiving
+// that message did not recognize or otherwise could not introduce the requested
+// node.
 IPCZ_MSG_BEGIN(RejectIntroduction, IPCZ_MSG_ID(12), IPCZ_MSG_VERSION(0))
   // The name of the node whose introduction cannot be fulfilled.
   IPCZ_MSG_PARAM(NodeName, name)
+IPCZ_MSG_END()
+
+// Sent from a broker to another broker to request that the receiving broker
+// introduce a named node in its own network to a named node in the sender's
+// network.
+IPCZ_MSG_BEGIN(RequestIndirectIntroduction,
+               IPCZ_MSG_ID(13),
+               IPCZ_MSG_VERSION(0))
+  // The name of the node to be introduced on the sender's own network.
+  IPCZ_MSG_PARAM(NodeName, source_node)
+
+  // The name of the node to be introduced on the recipient's own network.
+  IPCZ_MSG_PARAM(NodeName, target_node)
 IPCZ_MSG_END()
 
 // Shares a new buffer to support allocation of blocks of `block_size` bytes.

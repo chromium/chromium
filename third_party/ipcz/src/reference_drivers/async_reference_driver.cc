@@ -308,4 +308,12 @@ AsyncTransportPair CreateAsyncTransportPair() {
   };
 }
 
+std::pair<IpczDriverHandle, IpczDriverHandle>
+CreateAsyncTransportPairForBrokers() {
+  AsyncTransport::Pair transports = AsyncTransport::CreatePair(
+      AsyncTransport::NodeType::kBroker, AsyncTransport::NodeType::kBroker);
+  return {Object::ReleaseAsHandle(std::move(transports.first)),
+          Object::ReleaseAsHandle(std::move(transports.second))};
+}
+
 }  // namespace ipcz::reference_drivers

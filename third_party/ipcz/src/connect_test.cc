@@ -268,5 +268,89 @@ MULTINODE_TEST(ConnectTest, FailedNonBrokerReferral) {
   Close(c);
 }
 
+MULTINODE_TEST_BROKER_NODE(ConnectTestNode, AnotherBroker) {
+  IpczHandle b = ConnectToBroker();
+  PingPong(b);
+  Close(b);
+}
+
+MULTINODE_TEST(ConnectTest, BrokerToBroker) {
+  IpczHandle b = SpawnTestNode<AnotherBroker>();
+
+  PingPong(b);
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(b, IPCZ_TRAP_PEER_CLOSED));
+  Close(b);
+}
+
+MULTINODE_TEST_NODE(ConnectTestNode, BrokerClient) {
+  IpczHandle b = ConnectToBroker();
+  IpczHandle other_client;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&other_client, 1}));
+
+  // Ensure that we end up with a direct connection to the other client, which
+  // implies the two non-broker nodes have been properly introduced across the
+  // boundary of their respective node networks.
+  PingPong(other_client);
+  WaitForDirectRemoteLink(other_client);
+
+  // Synchronize against the main test node. See synchronization comment there.
+  PingPong(b);
+  CloseAll({b, other_client});
+}
+
+MULTINODE_TEST_BROKER_NODE(ConnectTestNode, BrokerWithClientNode) {
+  IpczHandle b = ConnectToBroker();
+  IpczHandle client = SpawnTestNode<BrokerClient>();
+
+  IpczHandle other_client;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&other_client, 1}));
+  Put(client, "", {&other_client, 1});
+
+  // Synchronize against the launched client to ensure that it's done before we
+  // join it and terminate.
+  PingPong(client);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(client, IPCZ_TRAP_PEER_CLOSED));
+
+  // Synchronize against the main test node. See synchronization comment there.
+  PingPong(b);
+  CloseAll({b, client});
+}
+
+MULTINODE_TEST(ConnectTest, MultiBrokerIntroductions) {
+  // This test covers introductions in a multi-broker network. There are four
+  // test nodes involved here: the main node (this one, call it A), a secondary
+  // broker B launched with the BrokerWithClientNode body defined above; and
+  // two client nodes (running BrokerClient above) we will call C and D, with
+  // C launched by A and D launched by B.
+  //
+  // A portal pair is created on A and its portals are passed to node B (our
+  // secondary broker) and node C (the singular non-broker client node in A's
+  // local network) respectively.
+  //
+  // Node B in turn passes its end to its own launched non-broker client D. This
+  // ultimately elicits a need for node C to be introduced to node D. The test
+  // succeeds only once the portal on node C appears to be directly connected to
+  // the portal on node D -- and vice versa -- implying successful introduction.
+
+  IpczHandle other_broker = SpawnTestNode<BrokerWithClientNode>();
+  IpczHandle client = SpawnTestNode<BrokerClient>();
+
+  auto [q, p] = OpenPortals();
+  Put(other_broker, "", {&q, 1});
+  Put(client, "", {&p, 1});
+
+  // Synchronize against both the launched broker and the launched client node
+  // to ensure that they're done before we join them and terminate.
+  PingPong(other_broker);
+  PingPong(client);
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(other_broker, IPCZ_TRAP_PEER_CLOSED));
+  EXPECT_EQ(IPCZ_RESULT_OK,
+            WaitForConditionFlags(client, IPCZ_TRAP_PEER_CLOSED));
+
+  CloseAll({other_broker, client});
+}
+
 }  // namespace
 }  // namespace ipcz

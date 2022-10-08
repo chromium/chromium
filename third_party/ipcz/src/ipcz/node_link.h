@@ -236,6 +236,8 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnRequestIntroduction(msg::RequestIntroduction& request) override;
   bool OnAcceptIntroduction(msg::AcceptIntroduction& accept) override;
   bool OnRejectIntroduction(msg::RejectIntroduction& reject) override;
+  bool OnRequestIndirectIntroduction(
+      msg::RequestIndirectIntroduction& request) override;
   bool OnAddBlockBuffer(msg::AddBlockBuffer& add) override;
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnAcceptParcelDriverObjects(

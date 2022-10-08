@@ -156,6 +156,9 @@ class TestNode : public internal::TestBase {
       IpczConnectNodeFlags flags = IPCZ_NO_FLAGS) {
     IpczDriverHandle our_transport;
     auto controller = SpawnTestNodeImpl(TestNodeType::kDetails, our_transport);
+    if (TestNodeType::kDetails.is_broker) {
+      flags |= IPCZ_CONNECT_NODE_TO_BROKER;
+    }
     const IpczResult result = ipcz().ConnectNode(
         node(), our_transport, portals.size(), flags, nullptr, portals.data());
     ABSL_ASSERT(result == IPCZ_RESULT_OK);
@@ -197,6 +200,10 @@ class TestNode : public internal::TestBase {
     IpczDriverHandle theirs;
   };
   TransportPair CreateTransports();
+
+  // Creates a pair of transport appropriate for connecting two broker nodes
+  // together.
+  TransportPair CreateBrokerToBrokerTransports();
 
   // Helper used to support multiprocess TestNode invocation.
   int RunAsChild(TestDriver* test_driver);
@@ -244,10 +251,14 @@ class TestDriver {
   // A unique name for this test driver.
   virtual const char* GetName() const = 0;
 
-  // Creates a new pair of transports suitable for connecting a broker node to a
-  // non-broker node. Called by `source`, who will adopt `ours` from the
-  // returned pair and pass `theirs` to some newly spawned test node.
-  virtual TestNode::TransportPair CreateTransports(TestNode& source) const = 0;
+  // Creates a new pair of transports suitable for connecting a broker node to
+  // another node. Called by `source`, who will adopt `ours` from the returned
+  // pair and pass `theirs` to some newly spawned test node. If
+  // `for_broker_target` is true, `theirs` will be suitable for passing to a
+  // broker node; otherwise it must be passed to a non-broker.
+  virtual TestNode::TransportPair CreateTransports(
+      TestNode& source,
+      bool for_broker_target) const = 0;
 
   // Spawns a new TestNode instance for a TestNode described by `details`,
   // passing `their_transport` to the new node so it can establish a connection.
@@ -330,7 +341,7 @@ void RegisterMultinodeTests();
 // named node can be spawned by another node using SpawnTestNode<T> where T is
 // the unique name given by `node_name` here. `fixture` must be
 /// ipcz::test::TestNode or a subclass thereof.
-#define MULTINODE_TEST_NODE(fixture, node_name)                            \
+#define MULTINODE_TEST_NODE_IMPL(fixture, node_name, is_broker_value)      \
   class node_name : public fixture {                                       \
     static_assert(::ipcz::test::internal::IsValidTestNodeType<fixture>,    \
                   "MULTINODE_TEST_NODE() requires a fixture derived from " \
@@ -340,7 +351,7 @@ void RegisterMultinodeTests();
     static constexpr ::ipcz::test::TestNodeDetails kDetails = {            \
         .name = #fixture "_" #node_name "_Node",                           \
         .factory = &::ipcz::test::internal::MakeTestNode<node_name>,       \
-        .is_broker = false,                                                \
+        .is_broker = is_broker_value,                                      \
     };                                                                     \
     const ::ipcz::test::TestNodeDetails& GetDetails() const override {     \
       return kDetails;                                                     \
@@ -350,6 +361,12 @@ void RegisterMultinodeTests();
   ::ipcz::test::MultinodeTestNodeRegistration<node_name>                   \
       kRegister_##node_name;                                               \
   void node_name::NodeBody()
+
+#define MULTINODE_TEST_NODE(fixture, node_name) \
+  MULTINODE_TEST_NODE_IMPL(fixture, node_name, /*is_broker=*/false)
+
+#define MULTINODE_TEST_BROKER_NODE(fixture, node_name) \
+  MULTINODE_TEST_NODE_IMPL(fixture, node_name, /*is_broker=*/true)
 
 #define MULTINODE_TEST_NAME(name) #name
 #define MULTINODE_TEST_CLASS_NAME(name) name##_Test
