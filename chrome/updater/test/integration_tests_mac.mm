@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -63,10 +64,10 @@ Launchd::Type LaunchdType(UpdaterScope scope) {
 }
 
 base::FilePath GetExecutablePath() {
-  base::FilePath test_executable;
-  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+  base::FilePath out_dir;
+  if (!base::PathService::Get(base::DIR_EXE, &out_dir))
     return base::FilePath();
-  return test_executable.DirName().Append(GetExecutableRelativePath());
+  return out_dir.Append(GetExecutableRelativePath());
 }
 
 absl::optional<base::FilePath> GetProductPath(UpdaterScope scope) {

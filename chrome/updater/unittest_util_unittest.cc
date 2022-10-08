@@ -4,6 +4,7 @@
 
 #include "chrome/updater/unittest_util.h"
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

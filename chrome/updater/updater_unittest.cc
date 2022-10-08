@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -31,11 +32,10 @@ namespace updater {
 
 // Tests the updater process returns 0 when run with --test argument.
 TEST(UpdaterTest, UpdaterExitCode) {
-  base::FilePath this_executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
-  const base::FilePath executableFolder = this_executable_path.DirName();
-  const base::FilePath updater = this_executable_path.DirName().Append(
-      updater::GetExecutableRelativePath());
+  base::FilePath out_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
+  const base::FilePath updater =
+      out_dir.Append(updater::GetExecutableRelativePath());
 
   base::LaunchOptions options;
 #if BUILDFLAG(IS_WIN)
@@ -59,11 +59,10 @@ TEST(UpdaterTest, UpdaterExitCode) {
 // it is useful to have a hint of information available somewhere, to determine
 // whether "updater.exe" is the test variant or the production variant.
 TEST(UpdaterTest, UpdaterTestVersionResource) {
-  base::FilePath this_executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
   const base::FilePath updater_test_name(FILE_PATH_LITERAL("updater_test.exe"));
-  const base::FilePath updater_test_path(
-      this_executable_path.DirName().Append(updater_test_name));
+  base::FilePath out_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
+  const base::FilePath updater_test_path(out_dir.Append(updater_test_name));
   ASSERT_TRUE(base::PathExists(updater_test_path)) << updater_test_path;
   const std::unique_ptr<FileVersionInfoWin> version_info =
       FileVersionInfoWin::CreateFileVersionInfoWin(updater_test_path);

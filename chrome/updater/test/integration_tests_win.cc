@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -529,10 +530,10 @@ base::win::ScopedVariant GetDispatchProperty(
 }  // namespace
 
 base::FilePath GetSetupExecutablePath() {
-  base::FilePath test_executable;
-  if (!base::PathService::Get(base::FILE_EXE, &test_executable))
+  base::FilePath out_dir;
+  if (!base::PathService::Get(base::DIR_EXE, &out_dir))
     return base::FilePath();
-  return test_executable.DirName().AppendASCII("UpdaterSetup_test.exe");
+  return out_dir.AppendASCII("UpdaterSetup_test.exe");
 }
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {

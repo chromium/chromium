@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -72,9 +73,9 @@ class ScopedSymbolPath {
         subkey_(is_system ? L"SYSTEM\\CurrentControlSet\\Control\\Session "
                             L"Manager\\Environment"
                           : L"Environment") {
-    base::FilePath this_executable_path;
-    base::PathService::Get(base::FILE_EXE, &this_executable_path);
-    const std::wstring symbol_path = this_executable_path.DirName().value();
+    base::FilePath out_dir;
+    base::PathService::Get(base::DIR_EXE, &out_dir);
+    const std::wstring symbol_path = out_dir.value();
 
     // For an unknown reason, symbolized stacks for code running as user
     // requires setting up the environment variable for this unit test process.

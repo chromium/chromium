@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -23,10 +24,9 @@ namespace {
 // Returns the KSAdmin exit code, and sets `std_out` to the contents of its
 // stdout.
 int RunKSAdmin(std::string* std_out, const std::vector<std::string>& args) {
-  base::FilePath file_exe;
-  EXPECT_TRUE(base::PathService::Get(base::FILE_EXE, &file_exe));
-  base::CommandLine command(
-      file_exe.DirName().Append(FILE_PATH_LITERAL("ksadmin")));
+  base::FilePath out_dir;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
+  base::CommandLine command(out_dir.Append(FILE_PATH_LITERAL("ksadmin")));
   for (const auto& arg : args) {
     command.AppendSwitch(arg);
   }
