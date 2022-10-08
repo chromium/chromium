@@ -104,7 +104,7 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
   Feature(const Feature&) = delete;
   Feature& operator=(const Feature&) = delete;
 #else

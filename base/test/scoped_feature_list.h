@@ -146,7 +146,7 @@ class ScopedFeatureList final {
   void InitWithFeatures(const std::vector<FeatureRef>& enabled_features,
                         const std::vector<FeatureRef>& disabled_features);
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS)
+    !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
   // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
   void InitWithFeatures(const std::vector<Feature>& enabled_features,
                         const std::vector<Feature>& disabled_features);
@@ -176,7 +176,7 @@ class ScopedFeatureList final {
       const std::vector<FeatureAndParams>& enabled_features,
       const std::vector<FeatureRef>& disabled_features);
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS)
+    !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
   // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
   void InitWithFeaturesAndParameters(
       const std::vector<FeatureAndParams>& enabled_features,
