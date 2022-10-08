@@ -265,6 +265,8 @@ class HttpStreamFactory::JobController
 
   // Calculates why Chrome uses a specific transport protocol for HTTP semantics
   // and returns it as an enum.
+  // This returns ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON as a default value
+  // when the reason is unknown.
   AlternateProtocolUsage CalculateAlternateProtocolUsage(Job* job) const;
 
   // Called when a Job encountered a network error that could be resolved by

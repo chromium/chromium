@@ -26,7 +26,7 @@ network::mojom::AlternateProtocolUsage EnumTraits<
     case net::ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE:
       return network::mojom::AlternateProtocolUsage::kDnsAlpnH3JobWonRace;
     default:
-      return network::mojom::AlternateProtocolUsage::kMaxValue;
+      return network::mojom::AlternateProtocolUsage::kUnspecifiedReason;
   }
 }
 

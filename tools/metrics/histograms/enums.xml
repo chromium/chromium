@@ -1712,6 +1712,7 @@ Unknown properties are collapsed to zero. -->
   <int value="5"
       label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_WITHOUT_RACE"/>
   <int value="6" label="ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE"/>
+  <int value="7" label="ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON"/>
 </enum>
 
 <enum name="AlternativeServiceType">

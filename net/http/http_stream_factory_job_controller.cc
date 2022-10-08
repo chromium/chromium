@@ -1320,9 +1320,7 @@ quic::ParsedQuicVersion HttpStreamFactory::JobController::SelectQuicVersion(
 void HttpStreamFactory::JobController::ReportAlternateProtocolUsage(
     AlternateProtocolUsage alternate_protocol_usage,
     bool is_google_host) const {
-  if (alternate_protocol_usage == ALTERNATE_PROTOCOL_USAGE_MAX) {
-    return;
-  }
+  DCHECK_LT(alternate_protocol_usage, ALTERNATE_PROTOCOL_USAGE_MAX);
   HistogramAlternateProtocolUsage(alternate_protocol_usage, is_google_host);
 }
 
@@ -1350,7 +1348,8 @@ HttpStreamFactory::JobController::CalculateAlternateProtocolUsage(
       return ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE;
     }
   }
-  return ALTERNATE_PROTOCOL_USAGE_MAX;
+  // TODO(crbug.com/1345536): Implement better logic to support uncovered cases.
+  return ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
 }
 
 int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,

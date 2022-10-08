@@ -27,6 +27,9 @@ enum AlternateProtocolUsage {
   // HTTPS DNS protocol upgrade job won a race with a normal connection and
   // an Alternate Protocol job.
   ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE = 6,
+  // This value is used when the reason is unknown and also used as the default
+  // value.
+  ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON = 7,
   // Maximum value for the enum.
   ALTERNATE_PROTOCOL_USAGE_MAX,
 };

@@ -945,6 +945,9 @@ String AlternateProtocolUsageToString(
     case net::AlternateProtocolUsage::
         ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE:
       return protocol::Network::AlternateProtocolUsageEnum::DnsAlpnH3JobWonRace;
+    case net::AlternateProtocolUsage::
+        ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON:
+      return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
     case net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX:
       return protocol::Network::AlternateProtocolUsageEnum::UnspecifiedReason;
   }

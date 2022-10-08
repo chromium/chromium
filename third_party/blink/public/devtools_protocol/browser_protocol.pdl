@@ -5277,7 +5277,7 @@ domain Network
       # HTTPS DNS protocol upgrade job won a race with a normal connection and
       # an Alternate Protocol job.
       dnsAlpnH3JobWonRace
-      # When the reason is unspecified.
+      # This value is used when the reason is unknown.
       unspecifiedReason
 
   # HTTP response data.

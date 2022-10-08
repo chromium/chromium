@@ -4159,9 +4159,11 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   base::HistogramTester histogram_tester;
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
-  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
-  // alpn is not available.
-  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+  // Net.AlternateProtocolUsage records
+  // ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON, when only main job exists.
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+      1);
 
   request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -4199,9 +4201,11 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   base::HistogramTester histogram_tester;
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
-  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
-  // alpn is not available.
-  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+  // Net.AlternateProtocolUsage records
+  // ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON, when only main job exists.
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+      1);
 
   request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -4242,9 +4246,11 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   base::HistogramTester histogram_tester;
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
-  // Net.AlternateProtocolUsage must not record anything, when HTTPS record with
-  // alpn is not available.
-  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+  // Net.AlternateProtocolUsage records
+  // ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON, when only main job exists.
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+      1);
 
   request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -4937,9 +4943,11 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Make |main_job| succeed.
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
-  // Net.AlternateProtocolUsage must not record anything, when DNS alpn job
-  // failed.
-  histogram_tester.ExpectTotalCount("Net.AlternateProtocolUsage", 0);
+  // Net.AlternateProtocolUsage records
+  // ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON, when only main job exists.
+  histogram_tester.ExpectUniqueSample(
+      "Net.AlternateProtocolUsage", ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON,
+      1);
 
   CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
                   /*dns_alpn_h3_job_exists=*/false,

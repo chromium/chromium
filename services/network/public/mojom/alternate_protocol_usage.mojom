@@ -24,6 +24,6 @@ enum AlternateProtocolUsage {
   // HTTPS DNS protocol upgrade job won a race with a normal connection and
   // an Alternate Protocol job.
   kDnsAlpnH3JobWonRace,
-  // When the reason is unspecified.
+  // This value is used when the reason is unknown.
   kUnspecifiedReason
 };

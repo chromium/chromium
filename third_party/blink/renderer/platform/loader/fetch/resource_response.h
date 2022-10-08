@@ -607,7 +607,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   // The reason why Chrome uses a specific transport protocol for HTTP
   // semantics.
   net::AlternateProtocolUsage alternate_protocol_usage_ =
-      net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_MAX;
+      net::AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
 
   // Information about the type of connection used to fetch this resource.
   net::HttpResponseInfo::ConnectionInfo connection_info_ =
