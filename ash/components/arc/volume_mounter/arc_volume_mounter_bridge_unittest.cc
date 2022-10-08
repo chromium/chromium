@@ -25,16 +25,22 @@ class ArcVolumeMounterBridgeTest : public testing::Test {
   void SetUp() override {
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::MockDiskMountManager);
-    bridge_ = ArcVolumeMounterBridge::GetForBrowserContextForTesting(&context_);
+    context_ = std::make_unique<TestBrowserContext>();
+    bridge_ =
+        ArcVolumeMounterBridge::GetForBrowserContextForTesting(context_.get());
   }
-  void TearDown() override { ash::disks::DiskMountManager::Shutdown(); }
+
+  void TearDown() override {
+    context_.reset();
+    ash::disks::DiskMountManager::Shutdown();
+  }
 
   ArcVolumeMounterBridge* bridge() { return bridge_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
-  TestBrowserContext context_;
+  std::unique_ptr<TestBrowserContext> context_;
   ArcVolumeMounterBridge* bridge_ = nullptr;
 };
 

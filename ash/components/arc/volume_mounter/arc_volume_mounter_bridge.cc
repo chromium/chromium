@@ -131,8 +131,8 @@ ArcVolumeMounterBridge::ArcVolumeMounterBridge(content::BrowserContext* context,
 }
 
 ArcVolumeMounterBridge::~ArcVolumeMounterBridge() {
-  if (DiskMountManager::GetInstance())  // for testing
-    DiskMountManager::GetInstance()->RemoveObserver(this);
+  DCHECK(DiskMountManager::GetInstance());
+  DiskMountManager::GetInstance()->RemoveObserver(this);
   arc_bridge_service_->volume_mounter()->SetHost(nullptr);
   arc_bridge_service_->volume_mounter()->RemoveObserver(this);
 }
