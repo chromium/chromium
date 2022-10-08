@@ -30,22 +30,14 @@ import("//third_party/protobuf/proto_library.gni")
 
 build_epoll_based_tools = is_linux || is_chromeos
 
-# TODO(crbug.com/1344231): Set this to always true. At which point, this
-# variable can go away and the conditionals below that depends on it can be
-# simplified.
-_no_shadow_is_internal = !is_chromeos_lacros
-
 config("quiche_internal_config") {
   cflags = []
   if (is_clang) {
     cflags += [
       "-Wno-unused-private-field",
+      "-Wno-shadow",
       "-Wno-sign-compare",
     ]
-  }
-
-  if (_no_shadow_is_internal) {
-    cflags += [ "-Wno-shadow" ]
   }
 }
 
@@ -57,10 +49,6 @@ config("quiche_config") {
     "src/quiche/common/platform/default",
     "src",
   ]
-
-  if (!_no_shadow_is_internal) {
-    cflags = [ "-Wno-shadow" ]
-  }
 }
 
 component("quiche") {
