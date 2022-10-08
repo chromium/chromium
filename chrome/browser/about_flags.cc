@@ -9692,6 +9692,21 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCvcForVcnYellowPath)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-holding-space-predictability",
+     flag_descriptions::kHoldingSpacePredictabilityName,
+     flag_descriptions::kHoldingSpacePredictabilityDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHoldingSpacePredictability)},
+    {"enable-holding-space-refresh",
+     flag_descriptions::kHoldingSpaceRefreshName,
+     flag_descriptions::kHoldingSpaceRefreshDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceRefresh)},
+    {"enable-holding-space-suggestions",
+     flag_descriptions::kHoldingSpaceSuggestionsName,
+     flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

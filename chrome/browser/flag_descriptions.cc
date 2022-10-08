@@ -5642,6 +5642,22 @@ const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
     "Enable diacritics and other varient character selection on physical "
     "keyboard longpress.";
 
+const char kHoldingSpacePredictabilityName[] =
+    "Enable holding space predictability";
+const char kHoldingSpacePredictabilityDescription[] =
+    "Increases predictability of holding space by being ever present in the "
+    "shelf and always reserving space for downloads and screen captures.";
+
+const char kHoldingSpaceRefreshName[] = "Enable holding space refresh";
+const char kHoldingSpaceRefreshDescription[] =
+    "Enables a refresh of holding space which better conveys the relationship "
+    "with the Files app.";
+
+const char kHoldingSpaceSuggestionsName[] = "Enable holding space suggestions";
+const char kHoldingSpaceSuggestionsDescription[] =
+    "Enables pinned file suggestions in holding space to help the user "
+    "understand and discover the ability to pin.";
+
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";

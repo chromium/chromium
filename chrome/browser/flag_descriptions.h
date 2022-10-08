@@ -3223,6 +3223,15 @@ extern const char kHotspotDescription[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
 extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
 
+extern const char kHoldingSpacePredictabilityName[];
+extern const char kHoldingSpacePredictabilityDescription[];
+
+extern const char kHoldingSpaceRefreshName[];
+extern const char kHoldingSpaceRefreshDescription[];
+
+extern const char kHoldingSpaceSuggestionsName[];
+extern const char kHoldingSpaceSuggestionsDescription[];
+
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 

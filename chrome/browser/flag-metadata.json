@@ -2452,6 +2452,21 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-holding-space-predictability",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "enable-holding-space-refresh",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
+    "name": "enable-holding-space-suggestions",
+    "owners": [ "//ash/public/cpp/holding_space/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-hostname-setting",
     "owners": [ "khorimoto", "cros-connectivity@google.com" ],
     "expiry_milestone": 115

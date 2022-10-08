@@ -58192,6 +58192,7 @@ from previous Chrome versions.
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
+  <int value="-1155411808" label="HoldingSpacePredictability:enabled"/>
   <int value="-1155071457"
       label="CCTResizableAllowResizeByUserGesture:disabled"/>
   <int value="-1154834060" label="OmniboxRichAutocompletion:disabled"/>
@@ -58320,6 +58321,7 @@ from previous Chrome versions.
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1073388569" label="TerminalDev:enabled"/>
+  <int value="-1072911844" label="HoldingSpaceSuggestions:enabled"/>
   <int value="-1072337227" label="FilesArchivemount2:disabled"/>
   <int value="-1071471678" label="enable-finch-seed-delta-compression"/>
   <int value="-1071043945" label="VerticalSnap:enabled"/>
@@ -59288,6 +59290,7 @@ from previous Chrome versions.
   <int value="-498740735" label="ArcUsbHost:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
   <int value="-498412005" label="EnableDrDc:disabled"/>
+  <int value="-497986393" label="HoldingSpacePredictability:disabled"/>
   <int value="-497571337" label="SkipUndecryptablePasswords:enabled"/>
   <int value="-496989565"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
@@ -61085,6 +61088,7 @@ from previous Chrome versions.
   <int value="620189062" label="TabFreeze:enabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
+  <int value="622027416" label="HoldingSpaceSuggestions:disabled"/>
   <int value="623112705"
       label="IPH_KeyboardAccessoryPaymentVirtualCard:disabled"/>
   <int value="623772100" label="EnableIncognitoWindowCounter:disabled"/>
@@ -62416,6 +62420,7 @@ from previous Chrome versions.
   <int value="1419984081"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:enabled"/>
   <int value="1420007919" label="SyncTrustedVaultPassphrasePromo:disabled"/>
+  <int value="1421267643" label="HoldingSpaceRefresh:disabled"/>
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
   <int value="1422421509" label="SetTimeoutWithoutClamp:disabled"/>
   <int value="1422462035" label="PaymentRequestBasicCard:disabled"/>
@@ -62584,6 +62589,7 @@ from previous Chrome versions.
   <int value="1520754417" label="ConfirmationChip:enabled"/>
   <int value="1524178643" label="AppServiceExternalProtocol:enabled"/>
   <int value="1526489044" label="NtpRealboxMatchSearchboxTheme:disabled"/>
+  <int value="1526574513" label="HoldingSpaceRefresh:enabled"/>
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
