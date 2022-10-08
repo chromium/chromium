@@ -170,11 +170,13 @@ bool FrameResources::Initialize() {
   constexpr gfx::BufferFormat kBufferFormat =
       gfx::BufferFormat::YUV_420_BIPLANAR;
 
-  // All YUV420 buffers must have dimensions dividable by 2.
-  constexpr int kI420Alignment = 2;
-  gfx::Size buffer_size_in_pixels(
-      base::bits::AlignUp(coded_size_.width(), kI420Alignment),
-      base::bits::AlignUp(coded_size_.height(), kI420Alignment));
+  // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
+  // buffer allocation code.
+  // Align buffer stride to 4, because our rendering code at
+  // GLImageMemory::Initialize() requires it, since it sometimes treats
+  // Y-planes are 4 bytes per pixel textures.
+  gfx::Size buffer_size_in_pixels(base::bits::AlignUp(coded_size_.width(), 4),
+                                  base::bits::AlignUp(coded_size_.height(), 2));
 
   // Create the GpuMemoryBuffer.
   gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
