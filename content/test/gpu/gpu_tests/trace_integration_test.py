@@ -301,23 +301,59 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # cache_hit_pages: List of URLs that should be both re-navigated to, and
     #   reloaded in a restarted browser to expect cache hits from disk.
     webgpu_caching_tests: List[Tuple[str, str, List[str]]] = [
+        ('RenderPipelineMainThread',
+         'webgpu-caching.html?testId=render-test', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
+        ('RenderPipelineMainThreadAsync',
+         'webgpu-caching.html?testId=render-test-async', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
+             'webgpu-caching.html?testId=render-test&worker=true',
+             'webgpu-caching.html?testId=render-test-async&worker=true'
+         ]),
         ('RenderPipelineWorker',
          'webgpu-caching.html?testId=render-test&worker=true', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
              'webgpu-caching.html?testId=render-test&worker=true',
              'webgpu-caching.html?testId=render-test-async&worker=true'
          ]),
         ('RenderPipelineWorkerAsync',
          'webgpu-caching.html?testId=render-test-async&worker=true', [
+             'webgpu-caching.html?testId=render-test',
+             'webgpu-caching.html?testId=render-test-async',
              'webgpu-caching.html?testId=render-test&worker=true',
              'webgpu-caching.html?testId=render-test-async&worker=true'
          ]),
+        ('ComputePipelineMainThread',
+         'webgpu-caching.html?testId=compute-test', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
+        ('ComputePipelineMainThreadAsync',
+         'webgpu-caching.html?testId=compute-test-async', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
+             'webgpu-caching.html?testId=compute-test&worker=true',
+             'webgpu-caching.html?testId=compute-test-async&worker=true'
+         ]),
         ('ComputePipelineWorker',
          'webgpu-caching.html?testId=compute-test&worker=true', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
              'webgpu-caching.html?testId=compute-test&worker=true',
              'webgpu-caching.html?testId=compute-test-async&worker=true'
          ]),
         ('ComputePipelineWorkerAsync',
          'webgpu-caching.html?testId=compute-test-async&worker=true', [
+             'webgpu-caching.html?testId=compute-test',
+             'webgpu-caching.html?testId=compute-test-async',
              'webgpu-caching.html?testId=compute-test&worker=true',
              'webgpu-caching.html?testId=compute-test-async&worker=true'
          ]),
