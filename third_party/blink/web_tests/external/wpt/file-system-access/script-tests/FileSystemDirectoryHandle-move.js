@@ -198,10 +198,32 @@ directory_test(async (t, root) => {
 
 directory_test(async (t, root) => {
   const handle = await createFileWithContents(t, 'file-before', 'foo', root);
-  await promise_rejects_js(
-      t, TypeError, handle.move(root, '#$23423@352^*3243'));
+  const valid_name = '#$23423@352^*3243';
+  await handle.move(root, valid_name);
 
-  assert_array_equals(await getSortedDirectoryEntries(root), ['file-before']);
+  assert_array_equals(await getSortedDirectoryEntries(root), [valid_name]);
+  assert_equals(await getFileContents(handle), 'foo');
+  assert_equals(await getFileSize(handle), 3);
+
+  const contains_invalid_characters = '/file\\';
+  await promise_rejects_js(
+      t, TypeError, handle.move(root, contains_invalid_characters));
+
+  assert_array_equals(await getSortedDirectoryEntries(root), [valid_name]);
+  assert_equals(await getFileContents(handle), 'foo');
+  assert_equals(await getFileSize(handle), 3);
+
+  const empty_name = '';
+  await promise_rejects_js(t, TypeError, handle.move(root, empty_name));
+
+  assert_array_equals(await getSortedDirectoryEntries(root), [valid_name]);
+  assert_equals(await getFileContents(handle), 'foo');
+  assert_equals(await getFileSize(handle), 3);
+
+  const banned_name = '..';
+  await promise_rejects_js(t, TypeError, handle.move(root, banned_name));
+
+  assert_array_equals(await getSortedDirectoryEntries(root), [valid_name]);
   assert_equals(await getFileContents(handle), 'foo');
   assert_equals(await getFileSize(handle), 3);
 }, 'move(dir, name) with a name with invalid characters should fail');

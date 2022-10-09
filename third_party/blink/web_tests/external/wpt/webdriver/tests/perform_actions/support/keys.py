@@ -903,8 +903,3 @@ ALTERNATIVE_KEY_NAMES = {
     "SUBTRACT": "Subtract",
     "UP": "Up",
 }
-
-if sys.platform == "darwin":
-    MODIFIER_KEY = Keys.META
-else:
-    MODIFIER_KEY = Keys.CONTROL
