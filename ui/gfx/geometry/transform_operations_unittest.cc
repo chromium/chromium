@@ -1223,8 +1223,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     float t = step / (kNumSteps - 1.f);
     t = gfx::Tween::FloatValueBetween(t, min_progress, max_progress);
     gfx::Transform partial_transform = to.Blend(from, t).Apply();
-    gfx::BoxF transformed = box;
-    partial_transform.TransformBox(&transformed);
+    gfx::BoxF transformed = partial_transform.MapBox(box);
 
     if (first_time) {
       empirical_bounds = transformed;

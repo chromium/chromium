@@ -2830,26 +2830,13 @@ TEST(XFormTest, TransformRRectF) {
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 }
 
-TEST(XFormTest, TransformBox) {
+TEST(XFormTest, MapBox) {
   Transform translation;
   translation.Translate3d(3.f, 7.f, 6.f);
   BoxF box(1.f, 2.f, 3.f, 4.f, 5.f, 6.f);
   BoxF expected(4.f, 9.f, 9.f, 4.f, 5.f, 6.f);
-  translation.TransformBox(&box);
-  EXPECT_EQ(expected.ToString(), box.ToString());
-}
-
-TEST(XFormTest, TransformBoxReverse) {
-  Transform translation;
-  translation.Translate3d(3.f, 7.f, 6.f);
-  BoxF box(1.f, 2.f, 3.f, 4.f, 5.f, 6.f);
-  BoxF expected(-2.f, -5.f, -3.f, 4.f, 5.f, 6.f);
-  EXPECT_TRUE(translation.TransformBoxReverse(&box));
-  EXPECT_EQ(expected.ToString(), box.ToString());
-
-  Transform singular;
-  singular.Scale3d(0.f, 0.f, 0.f);
-  EXPECT_FALSE(singular.TransformBoxReverse(&box));
+  BoxF transformed = translation.MapBox(box);
+  EXPECT_EQ(expected, transformed);
 }
 
 TEST(XFormTest, RoundTranslationComponents) {

@@ -556,14 +556,14 @@ bool Transform::TransformRRectF(RRectF* rrect) const {
   return true;
 }
 
-void Transform::TransformBox(BoxF* box) const {
+BoxF Transform::MapBox(const BoxF& box) const {
   BoxF bounds;
   bool first_point = true;
   for (int corner = 0; corner < 8; ++corner) {
-    gfx::Point3F point = box->origin();
-    point += gfx::Vector3dF(corner & 1 ? box->width() : 0.f,
-                            corner & 2 ? box->height() : 0.f,
-                            corner & 4 ? box->depth() : 0.f);
+    gfx::Point3F point = box.origin();
+    point += gfx::Vector3dF(corner & 1 ? box.width() : 0.f,
+                            corner & 2 ? box.height() : 0.f,
+                            corner & 4 ? box.depth() : 0.f);
     point = MapPoint(point);
     if (first_point) {
       bounds.set_origin(point);
@@ -572,15 +572,7 @@ void Transform::TransformBox(BoxF* box) const {
       bounds.ExpandTo(point);
     }
   }
-  *box = bounds;
-}
-
-bool Transform::TransformBoxReverse(BoxF* box) const {
-  gfx::Transform inverse = *this;
-  if (!GetInverse(&inverse))
-    return false;
-  inverse.TransformBox(box);
-  return true;
+  return bounds;
 }
 
 bool Transform::Blend(const Transform& from, double progress) {

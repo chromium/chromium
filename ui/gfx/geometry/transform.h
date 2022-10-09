@@ -349,16 +349,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // matrix cannot be applied to rrect.
   bool TransformRRectF(RRectF* rrect) const;
 
-  // Applies transformation on the given box. After the function completes,
-  // |box| will be the smallest axis aligned bounding box containing the
+  // Returns the box with transformation applied on the given box. The returned
+  // box will be the smallest axis aligned bounding box containing the
   // transformed box.
-  void TransformBox(BoxF* box) const;
-
-  // Applies the reverse transformation on the given box. After the function
-  // completes, |box| will be the smallest axis aligned bounding box
-  // containing the transformed box. Returns false if the matrix cannot be
-  // inverted.
-  bool TransformBoxReverse(BoxF* box) const;
+  [[nodiscard]] BoxF MapBox(const BoxF& box) const;
 
   // Decomposes |this| and |from|, interpolates the decomposed values, and
   // sets |this| to the reconstituted result. Returns false if either matrix

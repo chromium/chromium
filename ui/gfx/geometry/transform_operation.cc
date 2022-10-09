@@ -475,11 +475,9 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
           !BlendTransformOperations(from, to, max_progress, &to_operation))
         return false;
 
-      *bounds = box;
-      from_operation.matrix.TransformBox(bounds);
+      *bounds = from_operation.matrix.MapBox(box);
 
-      gfx::BoxF to_box = box;
-      to_operation.matrix.TransformBox(&to_box);
+      BoxF to_box = to_operation.matrix.MapBox(box);
       bounds->ExpandTo(to_box);
 
       return true;
