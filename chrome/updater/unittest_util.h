@@ -58,6 +58,10 @@ absl::optional<base::FilePath> GetOverrideFilePath(UpdaterScope scope);
 bool DeleteFileAndEmptyParentDirectories(
     const absl::optional<base::FilePath>& file_path);
 
+// TODO(crbug.com/1372590) - remove function when the bug is closed.
+// Returns the path of the updater_test.exe in the "out" directory of the build.
+base::FilePath GetUpdaterTestPath();
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_UNITTEST_UTIL_H_
