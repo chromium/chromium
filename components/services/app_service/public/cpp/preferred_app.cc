@@ -97,61 +97,6 @@ apps::mojom::PreferredAppPtr ConvertPreferredAppToMojomPreferredApp(
   return mojom_preferred_app;
 }
 
-PreferredAppChangesPtr ConvertMojomPreferredAppChangesToPreferredAppChanges(
-    const apps::mojom::PreferredAppChangesPtr& mojom_preferred_app_changes) {
-  if (!mojom_preferred_app_changes) {
-    return nullptr;
-  }
-
-  PreferredAppChangesPtr preferred_app_changes =
-      std::make_unique<PreferredAppChanges>();
-  for (const auto& added_filters : mojom_preferred_app_changes->added_filters) {
-    apps::IntentFilters filters;
-    for (auto& filter : added_filters.second) {
-      filters.push_back(ConvertMojomIntentFilterToIntentFilter(filter));
-    }
-    preferred_app_changes->added_filters[added_filters.first] =
-        std::move(filters);
-  }
-  for (const auto& removed_filters :
-       mojom_preferred_app_changes->removed_filters) {
-    apps::IntentFilters filters;
-    for (auto& filter : removed_filters.second) {
-      filters.push_back(ConvertMojomIntentFilterToIntentFilter(filter));
-    }
-    preferred_app_changes->removed_filters[removed_filters.first] =
-        std::move(filters);
-  }
-  return preferred_app_changes;
-}
-
-apps::mojom::PreferredAppChangesPtr
-ConvertPreferredAppChangesToMojomPreferredAppChanges(
-    const PreferredAppChangesPtr& preferred_app_changes) {
-  auto mojom_preferred_app_changes = apps::mojom::PreferredAppChanges::New();
-  if (!preferred_app_changes) {
-    return mojom_preferred_app_changes;
-  }
-
-  for (const auto& added_filters : preferred_app_changes->added_filters) {
-    std::vector<apps::mojom::IntentFilterPtr> mojom_filters;
-    for (auto& filter : added_filters.second) {
-      mojom_filters.push_back(ConvertIntentFilterToMojomIntentFilter(filter));
-    }
-    mojom_preferred_app_changes->added_filters[added_filters.first] =
-        std::move(mojom_filters);
-  }
-  for (const auto& removed_filters : preferred_app_changes->removed_filters) {
-    std::vector<apps::mojom::IntentFilterPtr> mojom_filters;
-    for (auto& filter : removed_filters.second) {
-      mojom_filters.push_back(ConvertIntentFilterToMojomIntentFilter(filter));
-    }
-    mojom_preferred_app_changes->removed_filters[removed_filters.first] =
-        std::move(mojom_filters);
-  }
-  return mojom_preferred_app_changes;
-}
-
 PreferredApps ConvertMojomPreferredAppsToPreferredApps(
     const std::vector<apps::mojom::PreferredAppPtr>& mojom_preferred_apps) {
   PreferredApps ret;
