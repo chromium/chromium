@@ -10,6 +10,7 @@
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace ash {
+class DemoAshPixelDiffTest;
 
 // A helper class that provides utility functions for performing pixel diff
 // tests via the Skia Gold.
@@ -23,13 +24,6 @@ class AshPixelDiffTestHelper {
   AshPixelDiffTestHelper(const AshPixelDiffTestHelper&) = delete;
   AshPixelDiffTestHelper& operator=(const AshPixelDiffTestHelper&) = delete;
   ~AshPixelDiffTestHelper();
-
-  // Takes a screenshot of the primary fullscreen then uploads it to the Skia
-  // Gold to perform pixel comparison. `screenshot_name` specifies the benchmark
-  // image. Returns the comparison result.
-  // NOTE: use this function only when necessary. Otherwise, a tiny UI change
-  // may break many pixel tests.
-  bool ComparePrimaryFullScreen(const std::string& screenshot_name);
 
   // Similar to `ComparePrimaryFullScreen()` but with the difference that only
   // the pixels within the screen bounds of `ui_components` are compared. The
@@ -61,6 +55,15 @@ class AshPixelDiffTestHelper {
   }
 
  private:
+  friend DemoAshPixelDiffTest;
+
+  // Takes a screenshot of the primary fullscreen then uploads it to the Skia
+  // Gold to perform pixel comparison. `screenshot_name` specifies the benchmark
+  // image. Returns the comparison result.
+  // NOTE: use this function only when necessary. Otherwise, a tiny UI change
+  // may break many pixel tests.
+  bool ComparePrimaryFullScreen(const std::string& screenshot_name);
+
   // Compares a screenshot of the primary screen with the specified benchmark
   // image. Only the pixels in `rects_in_screen` affect the comparison result.
   bool ComparePrimaryScreenshotInRects(

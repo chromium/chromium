@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/scrollable_shelf_view.h"
+#include "ash/shelf/shelf_menu_model_adapter.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shelf/test/scrollable_shelf_test_base.h"
 #include "ash/test/ash_pixel_diff_test_helper.h"
 #include "ash/test/ash_pixel_test_init_params.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 
 namespace ash {
 
@@ -74,8 +78,16 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   GetEventGenerator()->MoveMouseTo(shelf_center);
   GetEventGenerator()->PressRightButton();
 
-  EXPECT_TRUE(GetPixelDiffer()->ComparePrimaryFullScreen(
-      GetParam() ? "shelf_context_menu_in_guest_mode" : "shelf_context_menu"));
+  // Verify the shelf context menu and the shelf.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      GetParam() ? "shelf_context_menu_in_guest_mode" : "shelf_context_menu",
+      GetPrimaryShelf()
+          ->shelf_widget()
+          ->shelf_view_for_testing()
+          ->shelf_menu_model_adapter_for_testing()
+          ->root_for_testing()
+          ->GetSubmenu(),
+      GetPrimaryShelf()->GetWindow()));
 }
 
 }  // namespace ash

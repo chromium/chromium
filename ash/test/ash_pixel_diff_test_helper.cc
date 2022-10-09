@@ -17,13 +17,6 @@ AshPixelDiffTestHelper::AshPixelDiffTestHelper(
 
 AshPixelDiffTestHelper::~AshPixelDiffTestHelper() = default;
 
-bool AshPixelDiffTestHelper::ComparePrimaryFullScreen(
-    const std::string& screenshot_name) {
-  aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
-  return pixel_diff_.CompareNativeWindowScreenshot(
-      screenshot_name, primary_root_window, primary_root_window->bounds());
-}
-
 bool AshPixelDiffTestHelper::ComparePrimaryScreenshotInRects(
     const std::string& screenshot_name,
     const std::vector<gfx::Rect>& rects_in_screen) {
@@ -54,6 +47,13 @@ bool AshPixelDiffTestHelper::ComparePrimaryScreenshotInRects(
   return pixel_diff_.CompareNativeWindowScreenshotInRects(
       screenshot_name, primary_root_window, primary_root_window->bounds(),
       /*algorithm=*/nullptr, rects_in_pixel);
+}
+
+bool AshPixelDiffTestHelper::ComparePrimaryFullScreen(
+    const std::string& screenshot_name) {
+  aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
+  return pixel_diff_.CompareNativeWindowScreenshot(
+      screenshot_name, primary_root_window, primary_root_window->bounds());
 }
 
 }  // namespace ash
