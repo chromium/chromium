@@ -131,6 +131,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
+<translation id="3426646014273736870">Šetrič pamäte zrýchlil Chrome</translation>
 <translation id="3428747202529429621">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite</translation>
 <translation id="3434246496373299699">Keď sa prihlásite pomocou účtu Google, Chrome môže skontrolovať vaše heslá</translation>
 <translation id="3451115285585441894">Prebieha pridávanie do prehliadača Chrome...</translation>
@@ -232,6 +233,7 @@ Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo p
 
 Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5524761631371622910">Keď sú zapnuté skúšobné obdobia a ak vás Chrome náhodne zapojil do aktívneho skúšobného obdobia, vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie.</translation>
+<translation id="5530733413481476019">Zrýchlite Chrome</translation>
 <translation id="556024056938947818">Prehliadač Google Chrome sa snaží zobraziť heslá.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný, a preto ho Chrome zablokoval.</translation>

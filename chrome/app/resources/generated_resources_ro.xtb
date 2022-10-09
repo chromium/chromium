@@ -2387,6 +2387,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3188465121994729530">Medie mobilă</translation>
 <translation id="3189187154924005138">Cursor mare</translation>
 <translation id="3190558889382726167">Parola a fost salvată</translation>
+<translation id="3192589799003798742">Se configurează Steam pe Chromebook</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3193695589337931419">Utilitare pentru semnalele de sistem</translation>
 <translation id="3194786596445804250">Afișează detalii despre blocarea cookie-urilor terțe</translation>
@@ -2526,6 +2527,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3341699307020049241">Codul PIN este incorect. Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="3341703758641437857">Permite accesul la adresele URL de fișiere</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” dorește să elimine această extensie.</translation>
+<translation id="3343977377045378693">Se realizează configurarea</translation>
 <translation id="3345135638360864351">Solicitarea de a accesa acest site nu a putut fi trimisă la <ph name="NAME" />. Încearcă din nou.</translation>
 <translation id="3345634917232014253">Verificarea de siguranță a rulat recent</translation>
 <translation id="3345886924813989455">Nu a fost găsit niciun browser acceptat</translation>
@@ -2537,6 +2539,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3354768182971982851">Începând cu luna decembrie 2022, versiunile vechi ale aplicațiilor Chrome nu se vor mai deschide pe dispozitivele Mac. Poți verifica dacă există o nouă versiune disponibilă.</translation>
 <translation id="3354972872297836698">Nu s-a putut asocia cu dispozitivul <ph name="DEVICE_NAME" />. Selectează dispozitivul pentru a încerca din nou.</translation>
 <translation id="3355936511340229503">Eroare de conexiune</translation>
+<translation id="3356036636691722598">Bucură-te de jocuri pe Chromebook</translation>
 <translation id="3356469410714175391">(Card virtual activat)</translation>
 <translation id="3356580349448036450">Finalizat</translation>
 <translation id="3359256513598016054">Limitări ale politicii pentru certificate</translation>
@@ -3445,6 +3448,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4211904048067111541">Nu mai folosi cu aplicații pentru Android</translation>
 <translation id="42126664696688958">Exportă</translation>
 <translation id="42137655013211669">Accesul la această resursă a fost interzis de server.</translation>
+<translation id="4214192212360095377">Dezactivează acum</translation>
 <translation id="4217558091331485702">Scanează înainte să deschizi</translation>
 <translation id="4217571870635786043">Dictare</translation>
 <translation id="4218081191298393750">Dă clic pe pictograma difuzor pentru a dezactiva sunetul filei</translation>
@@ -4338,6 +4342,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5089763948477033443">Ghidaj de redimensionare a panoului lateral</translation>
 <translation id="5090637338841444533">Nu au permisiunea de a urmări poziția camerei</translation>
 <translation id="5093569275467863761">Subcadru incognito din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Se începe instalarea</translation>
 <translation id="5094176498302660097">Poți să deschizi și să editezi fișierele acceptate în această aplicație din aplicația Fișiere sau din alte aplicații. Pentru a alege fișierele care deschid aplicația în mod prestabilit, <ph name="BEGIN_LINK" />află cum să setezi aplicații prestabilite pe dispozitiv<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicarea cu aplicațiile native cooperante</translation>
 <translation id="5097002363526479830">A eșuat conectarea la rețeaua „<ph name="NAME" />”: <ph name="DETAILS" /></translation>
@@ -6350,6 +6355,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7014174261166285193">Instalarea nu a reușit.</translation>
 <translation id="7014480873681694324">Elimină evidențierea</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
+<translation id="7014961128696979283">Lansează Steam</translation>
 <translation id="7015088858756332848">Nu s-a putut lansa Steam pe Chromebook. Încearcă din nou</translation>
 <translation id="7017004637493394352">Rostește din nou „Ok Google”</translation>
 <translation id="7017219178341817193">Adaugă o pagină nouă</translation>
@@ -6741,6 +6747,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7423425410216218516">Vizibilitatea este activată pentru <ph name="MINUTES" /> minute</translation>
 <translation id="7423513079490750513">Elimină <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> are nevoie de permisiune pentru a rula</translation>
+<translation id="7424153922653300265">Economisirea energiei este activată</translation>
 <translation id="7424818322350938336">Rețeaua a fost adăugată</translation>
 <translation id="7427315069950454694">amintirile tale pentru astăzi</translation>
 <translation id="7427348830195639090">Pagină de fundal: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7979,6 +7986,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="859246725979739260">Acest site nu are permisiunea de a accesa locația.</translation>
 <translation id="8593121833493516339">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Fișiere personalizate</translation>
+<translation id="8597404194697561297">Bun venit la Steam pe Chromebook</translation>
 <translation id="8597845839771543242">Formatul proprietății:</translation>
 <translation id="8599681327221583254">Cel puțin o politică nu este configurată corect. Contactează administratorul.</translation>
 <translation id="8599864823732014237">Omiți înregistrarea companiei?</translation>

@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Quando essa opção está ativada, o Chromium libera memória das guias inativas. Isso permite que guias ativas e outros apps usem mais recursos do computador e mantém o Chromium rápido. Suas guias inativas são reativadas automaticamente quando você volta a elas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">A Economia de memória tornou o Chromium mais rápido</translation>
 <translation id="1315551408014407711">Configure seu novo perfil do Chromium</translation>
 <translation id="1385859895174722837">Google Assistente no Chromium</translation>
 <translation id="1396446129537741364">O Chromium está tentando mostrar senhas.</translation>
@@ -207,6 +208,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="6055895534982063517">Há uma nova versão ainda mais rápida do Chromium disponível.</translation>
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium</translation>
+<translation id="6072463441809498330">Deixe o Chromium mais rápido</translation>
 <translation id="608006075545470555">Adicionar um perfil de trabalho a este navegador</translation>
 <translation id="6096348254544841612">Personalize e controle o Chromium. Uma atualização está disponível.</translation>
 <translation id="6119438414301547735">Permitir que a extensão mostre solicitações de acesso na barra de ferramentas do Chromium</translation>

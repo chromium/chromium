@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium පිළිබඳ</translation>
 <translation id="1203500561924088507">ස්ථාපනය කිරීම වෙනුවෙන් ස්තුතියි. ඔබ <ph name="BUNDLE_NAME" /> භාවිත කිරීමට පෙර ඔබගේ බ්‍රවුසරය යළි ඇරඹිය යුතුය.</translation>
 <translation id="1231839967188101156">ක්‍රියාත්මක වන විට, Chromium අක්‍රිය පටිති වෙතින් මතකය නිදහස් කරයි. මෙය සක්‍රිය පටිති සහ අනෙකුත් යෙදුම්වලට වැඩි පරිගණක සම්පත් ලබා දෙන අතර Chromium වේගවත්ව තබා ගනී. ඔබ ඒවා වෙත ආපසු යන විට ඔබේ අක්‍රිය පටිති ස්වයංක්‍රීයව නැවත සක්‍රිය වේ. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">මතක සුරකිනය Chromium වේගවත් කරන ලදි</translation>
 <translation id="1315551408014407711">ඔබගේ නව Chromium පැතිකඩ පිහිටුවන්න</translation>
 <translation id="1385859895174722837">Chromium තුළ Google සහයක</translation>
 <translation id="1396446129537741364">Chromium මුරපද පෙන්වීමට උත්සාහ කරමින් සිටී.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Chromium හි නව සංස්කරණයක් පවතී, එය සැමදාටම වඩා වේගවත්.</translation>
 <translation id="6063093106622310249">&amp;Chromium තුළ විවෘත කරන්න</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium වෙත එක් කර ඇත</translation>
+<translation id="6072463441809498330">Chromium වේගවත් කරන්න</translation>
 <translation id="608006075545470555">මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩ එක් කරන්න</translation>
 <translation id="6096348254544841612">Chromium අභිරුචිකරණය සහ පාලනය කරන්න. යාවත්කාලීන ලද හැකිය.</translation>
 <translation id="6119438414301547735">Chromium මෙවලම් තීරුවේ ප්‍රවේශ ඉල්ලීම් පෙන්වීමට දිගුවට ඉඩ දෙන්න</translation>

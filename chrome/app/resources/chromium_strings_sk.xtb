@@ -13,6 +13,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1231839967188101156">Keď je táto možnosť zapnutá, Chromium bude uvoľňovať pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a prehliadač Chromium zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Šetrič pamäte zrýchlil Chromium</translation>
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="1385859895174722837">Asistent Google v prehliadači Chromium</translation>
 <translation id="1396446129537741364">Prehliadač Chromium sa snaží zobraziť heslá.</translation>
@@ -211,6 +212,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6055895534982063517">K dispozícii je nová verzia prehliadača Chromium, ktorá je rýchlejšia ako kedykoľvek predtým.</translation>
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>
 <translation id="6072279588547424923">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do prehliadača Chromium</translation>
+<translation id="6072463441809498330">Zrýchlite Chromium</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>
 <translation id="6096348254544841612">Prispôsobte si prehliadač Chromium a ovládajte ho. K dispozícii je aktualizácia.</translation>
 <translation id="6119438414301547735">Povoliť rozšíreniu zobrazovať požiadavky na prístup na paneli s nástrojmi prehliadača Chromium</translation>

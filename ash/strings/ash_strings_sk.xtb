@@ -159,6 +159,15 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1797271123677381264">Zabudnuté heslo</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="1812997170047690955">Čo je na obrazovke?</translation>
+<translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> bola odopnutá</translation>
 <translation id="1836215606488044471">Asistent (načítava sa...)</translation>
@@ -459,6 +468,8 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3600061223661453002">Vypnuté</translation>
 <translation id="3604801046548457007">Bola vytvorená plocha <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Bola pripojená Braillova obrazovka.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Zapnutím mobilných dát aktivujete Bluetooth</translation>
 <translation id="3616883743181209306">Ponuka bola presunutá do pravého horného rohu obrazovky.</translation>
 <translation id="3619536907358025872">Nastavenia záznamu obrazovky</translation>

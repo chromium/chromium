@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2803306138276472711">Navigarea sigură Google <ph name="BEGIN_LINK" />a detectat recent programe malware<ph name="END_LINK" /> pe <ph name="SITE" />. Site-urile care sunt de obicei sigure sunt uneori infectate cu programe malware.</translation>
 <translation id="2807052079800581569">Poziția Y a imaginii</translation>
+<translation id="2808278141522721006">Poți să activezi sau să dezactivezi Windows Hello în <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Se scanează...</translation>
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
 <translation id="2826760142808435982">Conexiunea este criptată și autentificată utilizând <ph name="CIPHER" /> și folosește <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
@@ -884,6 +885,7 @@
 <translation id="3288238092761586174">Poate fi necesar ca <ph name="URL" /> să parcurgă câțiva pași suplimentari pentru a confirma plata</translation>
 <translation id="3293642807462928945">Află mai multe despre politica <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Afișează și gestionează parolele din setările Chrome</translation>
+<translation id="3299098170013242198">Windows Hello este activat pentru completarea parolelor</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
 <translation id="3304073249511302126">căutarea Bluetooth</translation>
 <translation id="33073482541490531">Parola pe care tocmai ai folosit-o a fost găsită într-o încălcare a securității datelor. Managerul de parole recomandă să schimbi parola acum.</translation>
@@ -1032,6 +1034,7 @@
 <translation id="3678342917559046352">Extensie nevalidă: se aștepta ca valoarea să aibă una dintre următoarele forme: &lt;extension_id&gt; sau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Deschide pagina într-o fereastră incognito nouă (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informații despre certificat</translation>
+<translation id="3699374065820972102">TouchID este activat pentru completarea parolelor</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
 <translation id="3704162925118123524">Rețeaua pe care o folosești poate solicita accesarea paginii de conectare.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1494,6 +1497,7 @@
 <translation id="4900217275619098670">A noua rolă</translation>
 <translation id="4901778704868714008">Salvează...</translation>
 <translation id="4905659621780993806">Administratorul îți va reporni dispozitivul automat la ora <ph name="TIME" />, pe <ph name="DATE" />. Salvează elementele deschise înainte ca dispozitivul să repornească.</translation>
+<translation id="4911007278801291296">Poți activa sau dezactiva TouchID în <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforare în stânga sus</translation>
 <translation id="4918221908152712722">Instalează <ph name="APP_NAME" /> (nu necesită descărcare)</translation>
 <translation id="4923459931733593730">Plată</translation>
@@ -1687,6 +1691,7 @@
 <translation id="5357848622083956825">Arte vizuale și design</translation>
 <translation id="536296301121032821">Setările pentru politică nu au putut fi stocate</translation>
 <translation id="5363309033720083897">Port serial permis de administrator</translation>
+<translation id="5363713372507812442">Parcursuri de căutare</translation>
 <translation id="5371425731340848620">Actualizează cardul</translation>
 <translation id="5377026284221673050">„Ora este setată în trecut”, „Ora este setată în viitor” sau „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379027395132364855">Butonul Creează o prezentare, apasă pe Enter pentru a crea rapid o prezentare Google în Prezentări</translation>

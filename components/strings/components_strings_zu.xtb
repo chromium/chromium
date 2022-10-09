@@ -714,6 +714,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2799223571221894425">Qalisa kabusha</translation>
 <translation id="2803306138276472711">Kamuva nje Ukuphequlula Okuphephile kwe-Google <ph name="BEGIN_LINK" />kuthole i-malware<ph name="END_LINK" /> ku-<ph name="SITE" />. Ngokujwayelekile amawebhusayithi aphephile ngezinye izikhathi afakwa i-malware.</translation>
 <translation id="2807052079800581569">Indawo yesithombe engu-Y</translation>
+<translation id="2808278141522721006">Ungavula noma uvale i-Windows Hello ku-<ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Iyaskena...</translation>
 <translation id="2824775600643448204">Ikheli nebha yosesho</translation>
 <translation id="2826760142808435982">Ukuxhumeka kubetheliwe kwaphinde kwaqinisekiswa kusetshenziswa i-<ph name="CIPHER" /> futhi kusebenzisa i-<ph name="KX" /> njengendlela yokushintshanisa ukhiye.</translation>
@@ -882,6 +883,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3288238092761586174">I-<ph name="URL" /> ingase idinge ukuthatha izinyathelo ezengeziwe ukuqinisekisa inkokhelo yakho</translation>
 <translation id="3293642807462928945">Funda kabanzi mayelana nenqubomgomo ye-<ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Buka futhi phatha amaphasiwedi wakho kumasethingi we-Chrome</translation>
+<translation id="3299098170013242198">I-Windows Hello ivuliwe ukuze igcwalise amaphasiwedi</translation>
 <translation id="3303855915957856445">Ayikho imiphumela yosesho etholakele</translation>
 <translation id="3304073249511302126">ukuskena kwe-bluetooth</translation>
 <translation id="33073482541490531">Iphasiwedi osanda kuyisebenzisa itholakele ekwephuleni isivumelwano sedatha. Isiphathi sephasiwedi sincoma ukushintsha le phasiwedi manje.</translation>
@@ -1029,6 +1031,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3678342917559046352">Isandiso Esingavumelekile: Bekulindeleke ukuthi inani libe ngelinye lamafomu alandelayo: &lt;extension_id&gt; noma &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Vula ikhasi kuwindi elisha le-incognito (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Ulwazi lesitifiketi</translation>
+<translation id="3699374065820972102">I-TouchID ivulelwe ukugcwalisa amaphasiwedi</translation>
 <translation id="3701427423622901115">Ukusetha kabusha kuvunyelwe.</translation>
 <translation id="3704162925118123524">Inethiwekhi oyisebenzisayo ingahle idinge ukuthi uvakashele ikhasi lokungena ngemvume.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1491,6 +1494,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4900217275619098670">Umqulu Wesishiyagalolunye</translation>
 <translation id="4901778704868714008">Londoloza...</translation>
 <translation id="4905659621780993806">Umphathi wakho uzoqalisa idivayisi yakho ngokuzenzakalelayo ngo-<ph name="TIME" /> ngomhla ka-<ph name="DATE" />. Londoloza noma yiziphi izinto ezivuliwe ngaphambi kokuthi idivayisi yakho iqale kabusha.</translation>
+<translation id="4911007278801291296">Ungavula noma uvale i-TouchID ku-<ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Ukushaya phezulu kwesokunxele</translation>
 <translation id="4918221908152712722">Faka i-<ph name="APP_NAME" /> (akukho ukulandwa okudingekayo)</translation>
 <translation id="4923459931733593730">Inkokhelo</translation>
@@ -1684,6 +1688,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5357848622083956825">Ubuciko obubonakalayo nomklamo</translation>
 <translation id="536296301121032821">Yehlulekile ukugcina izilungiselelo zenqubomgomo</translation>
 <translation id="5363309033720083897">Imbobo ye-serial ivunyelwe ngumlawuli wakho</translation>
+<translation id="5363713372507812442">Sesha Uhambo</translation>
 <translation id="5371425731340848620">Buyekeza ikhadi</translation>
 <translation id="5377026284221673050">"Iwashi lakho lisemuva" noma "Iwashi lakho liphambili" noma "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Dala inkinobho yephrezentheshini, cindezela u-Enter ukuze udale iphrezentheshini entsha ye-Google ngokushesha ku-Slides</translation>

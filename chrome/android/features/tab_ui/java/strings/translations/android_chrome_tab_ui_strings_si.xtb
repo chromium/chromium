@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ඇගයීම</translation>
 <translation id="3291470810748040983">විවෘත ටැබයක අඩු මිලක් ඇති විට ඔබට ඇඟවීමක් ලැබෙනු ඇත</translation>
 <translation id="3328308545011660196">යෝජනාව: පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
+<translation id="3499853001094440183">පටිති සමූහගත නොකරන්න</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
 <translation id="3882834874697329510">විවෘත ටැබ් එකක අඩු මිලක් ඇති විට ඇඟවීමක් ලබා ගැනීමට, සැකසීම්වල දැනුම්දීම් ක්‍රියාත්මක කරන්න.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">පටිති තෝරන්න</translation>
 <translation id="6228793724645064692">(වෙළඳසැල් ඇගයීම)</translation>
 <translation id="6333260925957816943">මෙම වෙළඳසැල පිළිබඳ තොරතුරු</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තෝරන ලද පටිත්තක් සමූහගත නොකරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" />ක්}other{පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="6510648526783655549">ටැබ් තීරුව වසන්න</translation>
 <translation id="6549021453810473782">වෙළඳසැල් තොරතුරු බලන්න</translation>
 <translation id="6562820390860419811">පටිත්ත වමට ගෙන යන්න</translation>

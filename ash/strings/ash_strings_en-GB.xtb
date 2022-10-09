@@ -340,6 +340,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2865888419503095837">Network info</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878884018241093801">No recent items</translation>
+<translation id="2885950158625301909">Learn more</translation>
 <translation id="2891209721153296020">'Unselect'</translation>
 <translation id="2894949423239620203">Cable may impact performance</translation>
 <translation id="2903844815300039659">Connected to <ph name="NAME" />, <ph name="STRENGTH" /></translation>
@@ -1051,6 +1052,7 @@ New install</translation>
 <translation id="6961121602502368900">Silence phone is not available on work profile</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
 <translation id="696267987219125751">Camera framing is off.</translation>
+<translation id="6964690557625666701">All pinned items are partying</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Get started</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1360,6 +1362,8 @@ New install</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735678380411481005">Keyboard backlight colour</translation>
 <translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Turn on camera access to allow apps and web pages with the camera permission to use the camera(s) connected to this device.</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>

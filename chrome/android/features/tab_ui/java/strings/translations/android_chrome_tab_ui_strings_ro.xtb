@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
+<translation id="3499853001094440183">Anulează gruparea filelor</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="3882834874697329510">Pentru a primi o alertă atunci când scade prețul dintr-o filă deschisă, activează notificările în Setări.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
 <translation id="6333260925957816943">Informații despre magazin</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="6510648526783655549">Închide bara de file</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6562820390860419811">Mută fila spre stânga</translation>

@@ -128,6 +128,7 @@
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3396977131400919238">S-a produs o eroare de sistem de operare în timpul instalării. Descarcă din nou Google Chrome.</translation>
+<translation id="3426646014273736870">Datorită Economisirii memoriei, Chrome este mai rapid</translation>
 <translation id="3428747202529429621">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat</translation>
 <translation id="3434246496373299699">Chrome poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
 <translation id="3451115285585441894">Se adaugă la Chrome...</translation>
@@ -225,6 +226,7 @@
 <translation id="5412485296464121825">Site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5524761631371622910">În versiunile de încercare și dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună.</translation>
+<translation id="5530733413481476019">Crește eficiența în Chrome</translation>
 <translation id="556024056938947818">Google Chrome încearcă să afișeze parolele.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>

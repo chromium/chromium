@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1231839967188101156">Când opțiunea este activată, Chromium eliberează memorie din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chromium funcționează rapid. Filele inactive se reactivează automat când revii la ele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Datorită Economisirii memoriei, Chromium este mai rapid</translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
 <translation id="1385859895174722837">Asistentul Google în Chromium</translation>
 <translation id="1396446129537741364">Chromium încearcă să afișeze parolele.</translation>
@@ -209,6 +210,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6055895534982063517">Este disponibilă o nouă versiune Chromium, iar aceasta este mai rapidă ca oricând.</translation>
 <translation id="6063093106622310249">&amp;Deschide în Chromium</translation>
 <translation id="6072279588547424923">Extensia <ph name="EXTENSION_NAME" /> a fost adăugată la Chromium</translation>
+<translation id="6072463441809498330">Crește eficiența în Chromium</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6096348254544841612">Personalizează și controlează Chromium. Este disponibilă o actualizare.</translation>
 <translation id="6119438414301547735">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chromium</translation>

@@ -87,7 +87,7 @@
 <translation id="1742316578210444689">Hebræisk translitteration</translation>
 <translation id="1747761757048858544">Hollandsk (Holland)</translation>
 <translation id="174937106936716857">Samlet antal filer</translation>
-<translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører Chrome OS. Søg efter en anden egnet app i Chrome Webshop.</translation>
+<translation id="1755345808328621801">Denne fil er designet til en pc, der kører Windows-software. Den er ikke kompatibel med din enhed, der kører ChromeOS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
 <translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
@@ -219,7 +219,7 @@
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Vandmand</translation>
 <translation id="2958458230122209142">Der er kun <ph name="REMAINING_PERCENTAGE" /> % ledig lagerplads tilbage af din individuelle lagerplads på <ph name="TOTAL_SPACE" />.</translation>
-<translation id="2977940621473452797">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. Søg efter en anden egnet app i Chrome Webshop.</translation>
+<translation id="2977940621473452797">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører ChromeOS. Søg efter en anden egnet app i Chrome Webshop.</translation>
 <translation id="2984337792991268709">I dag <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">Fransk (Canada)</translation>
 <translation id="3003189754374775221">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, opret forbindelse</translation>
@@ -421,7 +421,7 @@
 <translation id="4694604912444486114">Abe</translation>
 <translation id="469612310041132144">Kinesisk quick</translation>
 <translation id="4697043402264950621">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i stigende rækkefølge.</translation>
-<translation id="469897186246626197">Denne fil er beregnet til en pc med Windows-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
+<translation id="469897186246626197">Denne fil er beregnet til en pc med Windows-software. Den er ikke kompatibel med din enhed, som kører ChromeOS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="4706042980341760088">Tamil med skrivemaskinetastatur</translation>
 <translation id="4711094779914110278">Tyrkisk</translation>
 <translation id="4712283082407695269">Åbner "<ph name="PATH" />"</translation>
@@ -549,7 +549,7 @@
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
 <translation id="5605830556594064952">Amerikansk (Dvorak)</translation>
-<translation id="5618330573454123917">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører Chrome OS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
+<translation id="5618330573454123917">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører ChromeOS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Lyt</translation>
@@ -748,7 +748,7 @@
 <translation id="7309413087278791451">Tysk (Belgien)</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7343393116438664539">Vietnamesisk telex</translation>
-<translation id="7357762654218998920">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i Chrome OS.</translation>
+<translation id="7357762654218998920">Denne filtype understøttes ikke. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="7359359531237882347">Kopierer <ph name="NUMBER_OF_ITEMS" /> elementer...</translation>
 <translation id="7375951387215729722">Listen med filer er sorteret efter <ph name="COLUMN_NAME" /> i faldende rækkefølge.</translation>
 <translation id="7402503521691663770">ChromeOS Flex-enheder</translation>

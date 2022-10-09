@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">නැවත දියත් කරන්න</translation>
 <translation id="2803306138276472711">Google සුරක්ෂිත පිරික්සුම විසින් මෑතකදී <ph name="BEGIN_LINK" />අනිෂ්ට මෘදුකාංගයක්<ph name="END_LINK" /> <ph name="SITE" /> මත සොයා ගැනිණි. සාමාන්‍ය යෙන් සුරක්ෂිත වෙබ් අඩවි ඇතැම් විට අනිෂ්ට මෘදුකාංගවලින් ආසාදනය වී තිබිය හැක.</translation>
 <translation id="2807052079800581569">රූපය Y ස්ථානය</translation>
+<translation id="2808278141522721006">ඔබට <ph name="SETTINGS" /> තුළ Windows Hello ක්‍රියාත්මක හෝ ක්‍රියා විරහිත කළ හැක</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
 <translation id="2824775600643448204">ලිපිනය සහ සෙවීම් බාර් එක</translation>
 <translation id="2826760142808435982">සම්බන්ධතාවය සංකේතනය කර <ph name="CIPHER" /> භාවිතයෙන් සත්‍යාපනය කර ඇති අතර කේත හුවමාරු ක්‍රමවේදය ලෙස <ph name="KX" /> භාවිතා කරයි.</translation>
@@ -884,6 +885,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> හට ඔබගේ ගෙවීම සත්‍යාපනය කිරීම සඳහා අතිරේක පියවර ගැනීමට අවශ්‍ය විය හැකිය</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ප්‍රතිපත්තිය ගැන තව දැන ගන්න</translation>
 <translation id="3295444047715739395">Chrome සැකසීම් තුළ ඔබගේ මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
+<translation id="3299098170013242198">මුරපද පිරවීම සඳහා Windows Hello ක්‍රියාත්මකයි</translation>
 <translation id="3303855915957856445">සෙවුම් ප්‍රතිඵල හමු නොවිණි</translation>
 <translation id="3304073249511302126">බ්ලූටූත් ස්කෑන් කිරීම</translation>
 <translation id="33073482541490531">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
@@ -1032,6 +1034,7 @@
 <translation id="3678342917559046352">අවලංගු දිගුවක්: අගය පහත පෝරමවලින් එකක් වීමට අපේක්ෂා කරයි: &lt;extension_id&gt; හෝ &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">පිටුව නව අප්‍රසිද්ධ කවුළුවක විවෘත කරන්න (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">සහතික තොරතුරු</translation>
+<translation id="3699374065820972102">මුරපද පිරවීම සඳහා TouchID ක්‍රියාත්මකයි</translation>
 <translation id="3701427423622901115">යළි සැකසීම පිළිගැනිණි.</translation>
 <translation id="3704162925118123524">ඔබ භාවිතකරන ජාලයේ පිවිසුම් පිටුවට පිවිසීම අවශ්‍ය විය හැක.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1494,6 +1497,7 @@
 <translation id="4900217275619098670">Ninth Roll</translation>
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4905659621780993806">ඔබගේ පරිපාලක ඔබගේ උපාංගය <ph name="DATE" /> <ph name="TIME" />ට ස්වයංක්‍රියව යළි ආරම්භ කරනු ඇත ඔබගේ උපාංගය යළි ආරම්භ කිරීමට පෙර කිනම් හෝ විවෘත අයිතම සුරකින්න.</translation>
+<translation id="4911007278801291296">ඔබට <ph name="SETTINGS" /> තුළ TouchID ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කළ හැක</translation>
 <translation id="4913987521957242411">ඉහළ වමට අනින්න</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
 <translation id="4923459931733593730">ගෙවීම</translation>
@@ -1687,6 +1691,7 @@
 <translation id="5357848622083956825">දෘශ්‍ය කලා සහ මෝස්‌තර</translation>
 <translation id="536296301121032821">ප්‍රතිපත්ති සැකසුම් ගබඩා කිරීමට අසමත් විය</translation>
 <translation id="5363309033720083897">ඔබගේ පරිපාලක විසින් ඉඩ දෙන අනුක්‍රමික තොට</translation>
+<translation id="5363713372507812442">සෙවීම් චාරිකා</translation>
 <translation id="5371425731340848620">කාඩ්පත යාවත්කාලීන කරන්න</translation>
 <translation id="5377026284221673050">"ඔබේ ඔරලෝසුව පිටුපසින්" හෝ "ඔබේ ඔරලෝසුව ඉදිරියෙන්" හෝ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">ඉදිරිපත් කිරීම තනන්න බොත්තම, Slides තුළ ඉක්මනින් නව Google ඉදිරිපත් කිරීමට තැනීමට Enter ඔබන්න</translation>

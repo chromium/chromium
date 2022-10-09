@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">Нууц үгээ мартсан</translation>
 <translation id="181103072419391116">Дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="1812997170047690955">Миний дэлгэцэд юу байна вэ?</translation>
+<translation id="1823280932251546115">Төлөвийн мэдээллийн хэсэг, цаг <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Этернет: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />-г тогтоосныг болиуллаа</translation>
 <translation id="1836215606488044471">Туслах (ачаалж байна...)</translation>
@@ -459,6 +468,8 @@
 <translation id="3600061223661453002">Унтраах</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> дэлгэц үүсгэлээ</translation>
 <translation id="3606978283550408104">Брайль дэлгэц холбогдсон.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Мобайл датаг идэвхжүүлснээр Bluetooth-г мөн идэвхжүүлнэ</translation>
 <translation id="3616883743181209306">Цэсийг дэлгэцийн баруун дээд булан руу зөөсөн.</translation>
 <translation id="3619536907358025872">Дэлгэцийн зураг авах горимын тохиргоо</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
+<translation id="3499853001094440183">Zrušiť zoskupenie kariet</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="3882834874697329510">Ak chcete dostať upozornenie, keď sa na otvorenej karte zníži cena, zapnite upozornenia v Nastaveniach.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6228793724645064692">(hodnotenie obchodu)</translation>
 <translation id="6333260925957816943">Informácie o tomto obchode</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušiť zoskupenie <ph name="TABS_COUNT_ONE" /> vybranej karty}few{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}many{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
 <translation id="6510648526783655549">Zavrieť panel kariet</translation>
 <translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>
