@@ -127,9 +127,12 @@ const CLIENT_DELEGATE = {
    * @param {boolean=} useApiKey authorize the request with API key. Used for
    *     translaton requests.
    * @param {object=} additional headers.
+   * @param {string=} account email.
    * @return {!Promise<!projectorApp.XhrResponse>}
    */
-  sendXhr(url, method, requestBody, useCredentials, useApiKey, headers) {
+  sendXhr(
+      url, method, requestBody, useCredentials, useApiKey, headers,
+      accountEmail) {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'sendXhr', [
           url,
@@ -138,6 +141,7 @@ const CLIENT_DELEGATE = {
           !!useCredentials,
           !!useApiKey,
           headers,
+          accountEmail,
         ]);
   },
 

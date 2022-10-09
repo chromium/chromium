@@ -463,6 +463,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProjectorBleedingEdgeExperience);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kProjectorWebReportCrash);
 BASE_DECLARE_FEATURE(kProjectorUseApiKeyForTranslation);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kProjectorViewerUseSecondaryAccount);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kQsRevamp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kQuickDim);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kVCBackgroundBlur);
@@ -779,6 +781,8 @@ bool IsProjectorShowShortPseudoTranscript();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorUpdateIndexableTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorUseOAuthForGetVideoInfoEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsProjectorViewerUseSecondaryAccountEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorWebReportCrashEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorUseApiKeyForTranslationEnabled();

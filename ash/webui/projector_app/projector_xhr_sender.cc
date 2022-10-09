@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -75,7 +76,8 @@ void ProjectorXhrSender::Send(const GURL& url,
                               bool use_credentials,
                               bool use_api_key,
                               SendRequestCallback callback,
-                              const base::Value::Dict& headers) {
+                              const base::Value::Dict& headers,
+                              const std::string& account_email) {
   if (!IsUrlAllowlisted(url.spec())) {
     std::move(callback).Run(
         /*success=*/false,
@@ -83,13 +85,11 @@ void ProjectorXhrSender::Send(const GURL& url,
         /*error=*/"UNSUPPORTED_URL");
     return;
   }
-
   GURL request_url = url;
   if (use_api_key) {
     request_url =
         net::AppendQueryParameter(url, kApiKeyParam, google_apis::GetAPIKey());
   }
-
   if (use_credentials || use_api_key) {
     // Use end user credentials or API key to authorize the request. Doesn't
     // need to fetch OAuth token.
@@ -98,13 +98,26 @@ void ProjectorXhrSender::Send(const GURL& url,
     return;
   }
 
+  if (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
+      !IsValidEmail(account_email)) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*response_body=*/std::string(),
+        /*error=*/"INVALID_ACCOUNT_EMAIL");
+    return;
+  }
+
+  const std::string& email =
+      (ash::features::IsProjectorViewerUseSecondaryAccountEnabled() &&
+       !account_email.empty())
+          ? account_email
+          : ProjectorAppClient::Get()
+                ->GetIdentityManager()
+                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                .email;
   // Fetch OAuth token for authorizing the request.
-  // TODO(b/197366265): add support for secondary account.
-  auto primary_account =
-      ProjectorAppClient::Get()->GetIdentityManager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
   oauth_token_fetcher_.GetAccessTokenFor(
-      primary_account.email,
+      email,
       base::BindOnce(&ProjectorXhrSender::OnAccessTokenRequestCompleted,
                      weak_factory_.GetWeakPtr(), request_url, method,
                      request_body, headers.Clone(), std::move(callback)));
@@ -201,4 +214,16 @@ void ProjectorXhrSender::OnSimpleURLLoaderComplete(
   loader_map_.erase(request_id);
 }
 
+bool ProjectorXhrSender::IsValidEmail(const std::string& email) {
+  if (email.empty()) {
+    return true;
+  }
+  const std::vector<AccountInfo> accounts = oauth_token_fetcher_.GetAccounts();
+  for (const auto& info : accounts) {
+    if (email == info.email) {
+      return true;
+    }
+  }
+  return false;
+}
 }  // namespace ash

@@ -47,6 +47,9 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isUseApiKeyForTranslationEnabled",
       ash::features::IsProjectorUseApiKeyForTranslationEnabled());
+  source->AddBoolean(
+      "isViewerUseSecondaryAccountEnabled",
+      ash::features::IsProjectorViewerUseSecondaryAccountEnabled());
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 

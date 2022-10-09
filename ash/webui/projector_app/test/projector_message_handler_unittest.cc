@@ -252,6 +252,59 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
   args.Append(std::move(dict));
+  args.Append(base::Value());
+  list_args.Append(std::move(args));
+
+  mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
+                                                          test_response_body);
+
+  base::RunLoop run_loop;
+  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
+  web_ui().HandleReceivedMessage("sendXhr", list_args);
+  run_loop.Run();
+
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
+
+  // Whether the callback was rejected or not.
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+
+  // Verify that it is success.
+  EXPECT_TRUE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+
+  // Verify the response.
+  const std::string* response =
+      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  EXPECT_EQ(test_response_body, *response);
+
+  // Verify error is empty.
+  const std::string* error =
+      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  EXPECT_TRUE(error->empty());
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithEmail) {
+  const std::string& test_response_body = "{}";
+
+  base::Value::List list_args;
+  list_args.Append(kSendXhrCallback);
+  base::Value::List args;
+  args.Append(kTestXhrUrl);
+  args.Append(kTestXhrMethod);
+  args.Append(kTestXhrRequestBody);
+  // Add useCredentials.
+  args.Append(true);
+  // Add useApiKey.
+  args.Append(false);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
+  args.Append(kTestUserEmail);
   list_args.Append(std::move(args));
 
   mock_app_client().test_url_loader_factory().AddResponse(kTestXhrUrl,
@@ -303,6 +356,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
   args.Append(std::move(dict));
+  args.Append(kTestUserEmail);
   list_args.Append(std::move(args));
 
   mock_app_client().test_url_loader_factory().AddResponse(
@@ -354,6 +408,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   base::Value::Dict dict;
   dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
   args.Append(std::move(dict));
+  args.Append(kTestUserEmail);
   list_args.Append(std::move(args));
 
   base::RunLoop run_loop;

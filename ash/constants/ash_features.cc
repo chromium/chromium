@@ -1630,6 +1630,12 @@ BASE_FEATURE(kProjectorUseApiKeyForTranslation,
 // Enable or disable quick settings revamped view.
 BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the Projector Viewer supports the user experience for
+// secondary account.
+BASE_FEATURE(kProjectorViewerUseSecondaryAccount,
+             "ProjectorViewerUseSecondaryAccount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2852,6 +2858,12 @@ bool IsProjectorUseApiKeyForTranslationEnabled() {
 
 bool IsQsRevampEnabled() {
   return base::FeatureList::IsEnabled(kQsRevamp);
+}
+
+bool IsProjectorViewerUseSecondaryAccountEnabled() {
+  // TODO(b/250646696): enable this feature based on
+  // ProjectorBleedingEdgeExperience when it is ready to be tested.
+  return base::FeatureList::IsEnabled(kProjectorViewerUseSecondaryAccount);
 }
 
 bool IsQuickDimEnabled() {

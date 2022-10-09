@@ -50,13 +50,17 @@ class ProjectorXhrSender {
   virtual ~ProjectorXhrSender();
 
   // Send XHR request and trigger the callback when complete.
+  // This will attempt to fetch OAuth token for the provided email address
+  // and fallback to primary account email if account_email is not provided
+  // or ProjectorViewerUseSecondaryAccount flag is disabled.
   virtual void Send(const GURL& url,
                     const std::string& method,
                     const std::string& request_body,
                     bool use_credentials,
                     bool use_api_key,
                     SendRequestCallback callback,
-                    const base::Value::Dict& headers = base::Value::Dict());
+                    const base::Value::Dict& headers = base::Value::Dict(),
+                    const std::string& account_email = std::string());
 
  private:
   // Triggered when an OAuth token fetch completed.
@@ -80,6 +84,9 @@ class ProjectorXhrSender {
   void OnSimpleURLLoaderComplete(int request_id,
                                  SendRequestCallback callback,
                                  std::unique_ptr<std::string> response_body);
+
+  // Validate the email address provided with xhr request
+  bool IsValidEmail(const std::string& email);
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   network::mojom::URLLoaderFactory* url_loader_factory_ = nullptr;

@@ -108,14 +108,15 @@ export class TrustedAppRequestHandler extends RequestHandler {
       this.browserProxy_.onError(msg);
     });
     this.registerMethod('sendXhr', (values) => {
-      if (!values || values.length != 6) {
+      if (!values || values.length != 7) {
         return {
           success: false,
           error: 'INVALID_ARGUMENTS',
         };
       }
       return this.browserProxy_.sendXhr(
-          values[0], values[1], values[2], values[3], values[4], values[5]);
+          values[0], values[1], values[2], values[3], values[4], values[5],
+          values[6]);
     });
     this.registerMethod('shouldDownloadSoda', (args) => {
       return this.browserProxy_.shouldDownloadSoda();

@@ -4,10 +4,12 @@
 
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/google_api_keys.h"
@@ -19,6 +21,8 @@
 namespace {
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
+const char kTestUserSecondaryEmail[] = "testuser2@gmail.com";
+const char kInvalidTestUserEmail[] = "testuser0@gmail.com";
 const base::TimeDelta kExpiryTimeFromNow = base::Minutes(10);
 constexpr char kTestDriveRequestUrl[] =
     "https://www.googleapis.com/drive/v3/files/fileID";
@@ -44,6 +48,7 @@ class ProjectorXhrSenderTest : public testing::Test {
   void SetUp() override {
     sender_ = std::make_unique<ProjectorXhrSender>(
         mock_app_client_.GetUrlLoaderFactory());
+    mock_app_client_.AddSecondaryAccount(kTestUserSecondaryEmail);
   }
 
   ProjectorXhrSender* sender() { return sender_.get(); }
@@ -226,6 +231,94 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
           },
           run_loop.QuitClosure()));
 
+  run_loop.Run();
+}
+
+TEST_F(ProjectorXhrSenderTest, SuccessWithPrimaryEmail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(
+      features::kProjectorViewerUseSecondaryAccount, true /* use */);
+  base::RunLoop run_loop;
+
+  const std::string& test_response_body = "{}";
+  sender()->Send(
+      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
+      /*use_credentials=*/false,
+      /*use_api_key=*/false,
+      base::BindOnce(
+          [](const std::string& expected_response_body,
+             base::RepeatingClosure quit_closure, bool success,
+             const std::string& response_body, const std::string& error) {
+            EXPECT_TRUE(success);
+            EXPECT_EQ(expected_response_body, response_body);
+            EXPECT_EQ("", error);
+            quit_closure.Run();
+          },
+          test_response_body, run_loop.QuitClosure()),
+      base::Value::Dict(), kTestUserEmail);
+
+  mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
+                                                          test_response_body);
+
+  mock_app_client().GrantOAuthTokenFor(
+      kTestUserEmail,
+      /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
+  run_loop.Run();
+}
+
+TEST_F(ProjectorXhrSenderTest, InvalidAccountEmail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(
+      features::kProjectorViewerUseSecondaryAccount, true /* use */);
+  base::RunLoop run_loop;
+
+  sender()->Send(
+      GURL(kTestDriveRequestUrl), /*method=*/"GET", /*request_body=*/"",
+      /*use_credentials=*/false, /*use_api_key=*/false,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure, bool success,
+             const std::string& response_body, const std::string& error) {
+            EXPECT_FALSE(success);
+            EXPECT_EQ("", response_body);
+            EXPECT_EQ("INVALID_ACCOUNT_EMAIL", error);
+            quit_closure.Run();
+          },
+          run_loop.QuitClosure()),
+      /*headers=*/base::Value::Dict(),
+      /*account_email*/ kInvalidTestUserEmail);
+
+  run_loop.Run();
+}
+
+TEST_F(ProjectorXhrSenderTest, SuccessWithSecondaryEmail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(
+      features::kProjectorViewerUseSecondaryAccount, true /* use */);
+  base::RunLoop run_loop;
+
+  const std::string& test_response_body = "{}";
+  sender()->Send(
+      GURL(kTestDriveRequestUrl), "GET", /*request_body=*/"",
+      /*use_credentials=*/false,
+      /*use_api_key=*/false,
+      base::BindOnce(
+          [](const std::string& expected_response_body,
+             base::RepeatingClosure quit_closure, bool success,
+             const std::string& response_body, const std::string& error) {
+            EXPECT_TRUE(success);
+            EXPECT_EQ(expected_response_body, response_body);
+            EXPECT_EQ("", error);
+            quit_closure.Run();
+          },
+          test_response_body, run_loop.QuitClosure()),
+      base::Value::Dict(), kTestUserSecondaryEmail);
+
+  mock_app_client().test_url_loader_factory().AddResponse(kTestDriveRequestUrl,
+                                                          test_response_body);
+
+  mock_app_client().GrantOAuthTokenFor(
+      kTestUserSecondaryEmail,
+      /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
   run_loop.Run();
 }
 

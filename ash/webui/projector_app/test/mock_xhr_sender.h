@@ -38,7 +38,8 @@ class MockXhrSender : public ProjectorXhrSender {
             bool use_credentials,
             bool use_api_key,
             SendRequestCallback callback,
-            const base::Value::Dict& headers) override;
+            const base::Value::Dict& headers,
+            const std::string& account_email) override;
 
  private:
   // Quits the current run loop. Used to verify the MockXhrSender::Send getting

@@ -323,10 +323,13 @@ projectorApp.ClientDelegate.prototype.getPendingScreencasts = function() {};
  * @param {boolean=} useApiKey authorize the request with API key. Used for
  *  translation requests.
  * @param {Object=} additional headers.
+ * @param {string=} email associated with the user account to retrieve OAuth
+ *     Token.
  * @return {!Promise<!projectorApp.XhrResponse>}
  */
 projectorApp.ClientDelegate.prototype.sendXhr = function(
-    url, method, requestBody, useCredentials, useApiKey, headers) {};
+    url, method, requestBody, useCredentials, useApiKey, headers,
+    accountEmail) {};
 
 /**
  * Returns true if the device supports on device speech recognition.
