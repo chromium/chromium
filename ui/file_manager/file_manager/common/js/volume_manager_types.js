@@ -79,6 +79,10 @@ VolumeManagerCommon.RootType = {
   // Root for a provided volume.
   PROVIDED: 'provided',
 
+  // Root for entries that is not located under RootType.DRIVE. e.g. shared
+  // files. Deprecated, applied to pre-drivefs.
+  DEPRECATED_DRIVE_OTHER: 'drive_other',
+
   // Fake root for offline available files on the drive.
   DRIVE_OFFLINE: 'drive_offline',
 
@@ -100,6 +104,9 @@ VolumeManagerCommon.RootType = {
   // 'Google Drive' fake parent entry of 'My Drive', 'Shared with me' and
   // 'Offline'.
   DRIVE_FAKE_ROOT: 'drive_fake_root',
+
+  // 'Add new services' menu item.
+  DEPRECATED_ADD_NEW_SERVICES_MENU: 'deprecated_add_new_services_menu',
 
   // Root for crostini 'Linux files'.
   CROSTINI: 'crostini',
@@ -140,35 +147,35 @@ Object.freeze(VolumeManagerCommon.RootType);
  * @const
  */
 VolumeManagerCommon.RootTypesForUMA = [
-  VolumeManagerCommon.RootType.DOWNLOADS,                 // 0
-  VolumeManagerCommon.RootType.ARCHIVE,                   // 1
-  VolumeManagerCommon.RootType.REMOVABLE,                 // 2
-  VolumeManagerCommon.RootType.DRIVE,                     // 3
-  VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT,  // 4
-  VolumeManagerCommon.RootType.SHARED_DRIVE,              // 5
-  VolumeManagerCommon.RootType.MTP,                       // 6
-  VolumeManagerCommon.RootType.PROVIDED,                  // 7
-  'DEPRECATED_DRIVE_OTHER',                               // 8
-  VolumeManagerCommon.RootType.DRIVE_OFFLINE,             // 9
-  VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,      // 10
-  VolumeManagerCommon.RootType.DRIVE_RECENT,              // 11
-  VolumeManagerCommon.RootType.MEDIA_VIEW,                // 12
-  VolumeManagerCommon.RootType.RECENT,                    // 13
-  VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT,           // 14
-  'DEPRECATED_ADD_NEW_SERVICES_MENU',                     // 15
-  VolumeManagerCommon.RootType.CROSTINI,                  // 16
-  VolumeManagerCommon.RootType.ANDROID_FILES,             // 17
-  VolumeManagerCommon.RootType.MY_FILES,                  // 18
-  VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT,      // 19
-  VolumeManagerCommon.RootType.COMPUTER,                  // 20
-  VolumeManagerCommon.RootType.EXTERNAL_MEDIA,            // 21
-  VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,        // 22
-  VolumeManagerCommon.RootType.SMB,                       // 23
-  'DEPRECATED_RECENT_AUDIO',                              // 24
-  'DEPRECATED_RECENT_IMAGES',                             // 25
-  'DEPRECATED_RECENT_VIDEOS',                             // 26
-  VolumeManagerCommon.RootType.TRASH,                     // 27
-  VolumeManagerCommon.RootType.GUEST_OS,                  // 28
+  VolumeManagerCommon.RootType.DOWNLOADS,                         // 0
+  VolumeManagerCommon.RootType.ARCHIVE,                           // 1
+  VolumeManagerCommon.RootType.REMOVABLE,                         // 2
+  VolumeManagerCommon.RootType.DRIVE,                             // 3
+  VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT,          // 4
+  VolumeManagerCommon.RootType.SHARED_DRIVE,                      // 5
+  VolumeManagerCommon.RootType.MTP,                               // 6
+  VolumeManagerCommon.RootType.PROVIDED,                          // 7
+  VolumeManagerCommon.RootType.DEPRECATED_DRIVE_OTHER,            // 8
+  VolumeManagerCommon.RootType.DRIVE_OFFLINE,                     // 9
+  VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,              // 10
+  VolumeManagerCommon.RootType.DRIVE_RECENT,                      // 11
+  VolumeManagerCommon.RootType.MEDIA_VIEW,                        // 12
+  VolumeManagerCommon.RootType.RECENT,                            // 13
+  VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT,                   // 14
+  VolumeManagerCommon.RootType.DEPRECATED_ADD_NEW_SERVICES_MENU,  // 15
+  VolumeManagerCommon.RootType.CROSTINI,                          // 16
+  VolumeManagerCommon.RootType.ANDROID_FILES,                     // 17
+  VolumeManagerCommon.RootType.MY_FILES,                          // 18
+  VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT,              // 19
+  VolumeManagerCommon.RootType.COMPUTER,                          // 20
+  VolumeManagerCommon.RootType.EXTERNAL_MEDIA,                    // 21
+  VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,                // 22
+  VolumeManagerCommon.RootType.SMB,                               // 23
+  'DEPRECATED_RECENT_AUDIO',                                      // 24
+  'DEPRECATED_RECENT_IMAGES',                                     // 25
+  'DEPRECATED_RECENT_VIDEOS',                                     // 26
+  VolumeManagerCommon.RootType.TRASH,                             // 27
+  VolumeManagerCommon.RootType.GUEST_OS,                          // 28
 ];
 console.assert(
     Object.keys(VolumeManagerCommon.RootType).length ===
@@ -277,6 +284,7 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
     case VolumeManagerCommon.RootType.DRIVE:
     case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
     case VolumeManagerCommon.RootType.SHARED_DRIVE:
+    case VolumeManagerCommon.RootType.DEPRECATED_DRIVE_OTHER:
     case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
     case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
     case VolumeManagerCommon.RootType.DRIVE_RECENT:
