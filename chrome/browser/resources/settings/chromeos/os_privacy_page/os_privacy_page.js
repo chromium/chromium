@@ -34,6 +34,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
+import {PrivacyHubNavigationOrigin} from './privacy_hub_page.js';
 
 /**
  * @constructor
@@ -360,6 +361,10 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
   /** @private */
   onPrivacyHub_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'ChromeOS.PrivacyHub.Opened',
+        PrivacyHubNavigationOrigin.SYSTEM_SETTINGS,
+        Object.keys(PrivacyHubNavigationOrigin).length);
     Router.getInstance().navigateTo(routes.PRIVACY_HUB);
   }
 

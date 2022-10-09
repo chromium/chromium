@@ -81321,6 +81321,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="PriorityChanged"/>
 </enum>
 
+<enum name="PrivacyHubNavigationOrigin">
+  <int value="0" label="System settings"/>
+  <int value="1" label="Notification"/>
+</enum>
+
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Download error"/>

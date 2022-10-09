@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
@@ -171,6 +172,8 @@ void CameraPrivacySwitchController::ShowNotification(
                 if (pref_service) {
                   pref_service->SetBoolean(prefs::kUserCameraAllowed,
                                            camera_enabled);
+                  privacy_hub_metrics::LogCameraEnabledFromNotification(
+                      camera_enabled);
                 }
               },
               action_enables_camera));

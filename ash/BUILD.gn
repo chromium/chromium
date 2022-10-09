@@ -1619,6 +1619,8 @@ component("ash") {
     "system/privacy_hub/microphone_privacy_switch_controller.h",
     "system/privacy_hub/privacy_hub_controller.cc",
     "system/privacy_hub/privacy_hub_controller.h",
+    "system/privacy_hub/privacy_hub_metrics.cc",
+    "system/privacy_hub/privacy_hub_metrics.h",
     "system/privacy_screen/privacy_screen_feature_pod_controller.cc",
     "system/privacy_screen/privacy_screen_feature_pod_controller.h",
     "system/privacy_screen/privacy_screen_toast_controller.cc",

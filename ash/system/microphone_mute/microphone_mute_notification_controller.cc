@@ -11,6 +11,7 @@
 #include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/vector_icons/vector_icons.h"
@@ -124,6 +125,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
               if (!button_index)
                 return;
               CrasAudioHandler::Get()->SetInputMute(false);
+              privacy_hub_metrics::LogMicrophoneEnabledFromNotification(true);
             }));
   }
 

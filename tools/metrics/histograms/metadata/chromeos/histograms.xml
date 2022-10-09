@@ -1583,6 +1583,36 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.PrivacyHub.Opened" enum="PrivacyHubNavigationOrigin"
+    expires_after="2023-09-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records when the user visits the Privacy Hub page in system settings.
+    Capturing the origin where the user navigated from.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.PrivacyHub.{FeatureName}.{Source}.Enabled"
+    enum="BooleanEnabled" expires_after="2023-09-01">
+  <owner>zauri@google.com</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <summary>
+    Records when the user changes the device-wide {FeatureName} access from the
+    {Source}. This can happen directly from the settings page
+    &quot;Settings&quot;&gt;&quot;Security and Privacy&quot;&gt;&quot;Privacy
+    hub&quot; or through notifications.
+  </summary>
+  <token key="FeatureName">
+    <variant name="Camera"/>
+    <variant name="Microphone"/>
+  </token>
+  <token key="Source">
+    <variant name="Notification"/>
+    <variant name="Settings"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.PrivacyScreen.Toggled"
     enum="PrivacyScreenToggleUISurface" expires_after="2022-04-01">
   <owner>tengs@chromium.org</owner>

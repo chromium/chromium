@@ -29,6 +29,16 @@ import {MediaDevicesProxy} from './media_devices_proxy.js';
 import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 
 /**
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * Keep in sync with PrivacyHubNavigationOrigin in
+ * tools/metrics/histograms/enums.xml.
+ */
+export const PrivacyHubNavigationOrigin = {
+  SYSTEM_SETTINGS: 0,
+  NOTIFICATION: 1,
+};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {DeepLinkingBehaviorInterface}
@@ -295,6 +305,25 @@ class SettingsPrivacyHubPage extends SettingsPrivacyHubPageBase {
       this.camerasConnected_ = connectedCameras;
       this.microphonesConnected_ = connectedMicrophones;
     });
+  }
+
+  /**
+   * @param {!CustomEvent} event
+   * @private
+   */
+  onCameraToggleChanged_(event) {
+    chrome.metricsPrivate.recordBoolean(
+        'ChromeOS.PrivacyHub.Camera.Settings.Enabled', event.target.checked);
+  }
+
+  /**
+   * @param {!CustomEvent} event
+   * @private
+   */
+  onMicrophoneToggleChanged_(event) {
+    chrome.metricsPrivate.recordBoolean(
+        'ChromeOS.PrivacyHub.Microphone.Settings.Enabled',
+        event.target.checked);
   }
 }
 
