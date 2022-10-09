@@ -1680,6 +1680,30 @@ class AutotestPrivateIsInputMethodReadyForTestingFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateMakeFuseboxTempDirFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.makeFuseboxTempDir",
+                             AUTOTESTPRIVATE_MAKEFUSEBOXTEMPDIR)
+
+ private:
+  ~AutotestPrivateMakeFuseboxTempDirFunction() override;
+  ResponseAction Run() override;
+
+  void OnMakeTempDir(std::string error_message,
+                     std::string fusebox_file_path,
+                     std::string underlying_file_path);
+};
+
+class AutotestPrivateRemoveFuseboxTempDirFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.removeFuseboxTempDir",
+                             AUTOTESTPRIVATE_REMOVEFUSEBOXTEMPDIR)
+
+ private:
+  ~AutotestPrivateRemoveFuseboxTempDirFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

@@ -297,6 +297,7 @@ const char kFuseBoxMountNamePrefix[] = "fubomona:";
 const char kFuseBoxSubdirPrefixADP[] = "adp.";
 const char kFuseBoxSubdirPrefixFSP[] = "fsp.";
 const char kFuseBoxSubdirPrefixMTP[] = "mtp.";
+const char kFuseBoxSubdirPrefixTMP[] = "tmp.";
 
 const char kShareCacheMountPointName[] = "ShareCache";
 

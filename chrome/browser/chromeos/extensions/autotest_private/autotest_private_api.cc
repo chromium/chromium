@@ -94,6 +94,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -6124,6 +6125,59 @@ AutotestPrivateIsInputMethodReadyForTestingFunction::Run() {
   ui::TextInputMethod* engine = ui::IMEBridge::Get()->GetCurrentEngineHandler();
   return RespondNow(
       WithArguments(engine && engine->IsReadyForTesting()));  // IN-TEST
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateMakeFuseboxTempDirFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateMakeFuseboxTempDirFunction::
+    ~AutotestPrivateMakeFuseboxTempDirFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateMakeFuseboxTempDirFunction::Run() {
+  fusebox::Server* server = fusebox::Server::GetInstance();
+  if (!server) {
+    return RespondNow(Error("Fusebox server instance not available"));
+  }
+  server->MakeTempDir(base::BindOnce(
+      &AutotestPrivateMakeFuseboxTempDirFunction::OnMakeTempDir, this));
+  return RespondLater();
+}
+
+void AutotestPrivateMakeFuseboxTempDirFunction::OnMakeTempDir(
+    std::string error_message,
+    std::string fusebox_file_path,
+    std::string underlying_file_path) {
+  if (!error_message.empty()) {
+    Respond(Error(error_message));
+    return;
+  }
+  base::Value::Dict dict;
+  dict.Set("fuseboxFilePath", fusebox_file_path);
+  dict.Set("underlyingFilePath", underlying_file_path);
+  Respond(WithArguments(std::move(dict)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateRemoveFuseboxTempDirFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateRemoveFuseboxTempDirFunction::
+    ~AutotestPrivateRemoveFuseboxTempDirFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateRemoveFuseboxTempDirFunction::Run() {
+  std::unique_ptr<api::autotest_private::RemoveFuseboxTempDir::Params> params(
+      api::autotest_private::RemoveFuseboxTempDir::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  fusebox::Server* server = fusebox::Server::GetInstance();
+  if (!server) {
+    return RespondNow(Error("Fusebox server instance not available"));
+  }
+  server->RemoveTempDir(params->fusebox_file_path);
+  return RespondNow(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

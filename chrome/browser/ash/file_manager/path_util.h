@@ -58,6 +58,7 @@ extern const char kFuseBoxMountNamePrefix[];
 extern const char kFuseBoxSubdirPrefixADP[];
 extern const char kFuseBoxSubdirPrefixFSP[];
 extern const char kFuseBoxSubdirPrefixMTP[];
+extern const char kFuseBoxSubdirPrefixTMP[];
 
 // Name of the mount point used to store temporary files for sharing.
 extern const char kShareCacheMountPointName[];

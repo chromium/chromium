@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
@@ -145,6 +146,38 @@ class Server {
   void ListStorages(fusebox_staging::ListStoragesRequestProto request,
                     ListStoragesCallback callback);
 
+  // MakeTempDir makes a temporary directory that has two file paths: an
+  // underlying one (e.g. "/tmp/.foo") and a fusebox one (e.g.
+  // "/media/fuse/fusebox/tmp.foo"). The fusebox one is conceptually similar to
+  // a symbolic link, in that after a "touch /tmp/.foo/bar", bar should be
+  // visible at "/media/fuse/fusebox/tmp.foo/bar", but the 'symbolic link' is
+  // not resolved directly by the kernel.
+  //
+  // Instead, file I/O under the /media/fuse/fusebox mount point goes through
+  // the FuseBox daemon (via FUSE) to Chromium (via D-Bus) to the kernel (as
+  // Chromium storage::FileSystemURL code sees storage::kFileSystemTypeLocal
+  // files living under the underlying file path).
+  //
+  // That sounds convoluted (and overkill for 'sym-linking' a directory on the
+  // local file system), and it is, but it is essentially the same code paths
+  // that FuseBox uses to surface Chromium virtual file systems (VFSs) that are
+  // not otherwise visible on the kernel-level file system. Note that Chromium
+  // VFSs are not the same as Linux kernel VFSs.
+  //
+  // The purpose of these Make/Remove methods is to facilitate testing these
+  // FuseBox code paths (backed by an underlying tmpfs file system) without the
+  // extra complexity of fake VFSs, such as a fake ADP (Android Documents
+  // Provider) or fake MTP (Media Transfer Protocol) back-end.
+  //
+  // MakeTempDir is like "mkdir" (except the callee randomly generates the file
+  // path). RemoveTempDir is like "rm -rf".
+  using MakeTempDirCallback =
+      base::OnceCallback<void(std::string error_message,
+                              std::string fusebox_file_path,
+                              std::string underlying_file_path)>;
+  void MakeTempDir(MakeTempDirCallback callback);
+  void RemoveTempDir(std::string fusebox_file_path);
+
   struct PrefixMapEntry {
     PrefixMapEntry(std::string fs_url_prefix_arg, bool read_only_arg);
 
@@ -191,7 +224,17 @@ class Server {
   // with a base::OnceCallback model (N requests, N responses).
   using ReadDir2Map = std::map<uint64_t, ReadDir2MapEntry>;
 
+  // Maps from a fusebox_file_path (like "/media/fuse/fusebox/tmp.foo") to the
+  // ScopedTempDir that will clean up (in its destructor) the underlying
+  // temporary directory.
+  using TempSubdirMap = std::map<std::string, base::ScopedTempDir>;
+
  private:
+  void MakeTempDirOnWorkerThread(MakeTempDirCallback callback);
+  void ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
+                          bool create_succeeded,
+                          MakeTempDirCallback callback);
+
   void OnReadDirectory(scoped_refptr<storage::FileSystemContext> fs_context,
                        bool read_only,
                        uint64_t cookie,
@@ -203,6 +246,7 @@ class Server {
   fusebox::MonikerMap moniker_map_;
   PrefixMap prefix_map_;
   ReadDir2Map read_dir_2_map_;
+  TempSubdirMap temp_subdir_map_;
 
   base::WeakPtrFactory<Server> weak_ptr_factory_{this};
 };

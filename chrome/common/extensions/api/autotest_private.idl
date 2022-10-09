@@ -755,6 +755,18 @@ namespace autotestPrivate {
   callback IsInputMethodReadyForTestingCallback = void
       (boolean isReady);
 
+  // Response data for <code>makeFuseboxTempDir</code>.
+  dictionary MakeFuseboxTempDirData {
+    DOMString fuseboxFilePath;
+    DOMString underlyingFilePath;
+  };
+
+  // Callback invoked when the temporary directory was made.
+  callback MakeFuseboxTempDirCallback = void(MakeFuseboxTempDirData data);
+
+  // Callback invoked when the temporary directory was removed.
+  callback RemoveFuseboxTempDirCallback = void();
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1467,6 +1479,16 @@ namespace autotestPrivate {
     // Returns whether the current input method is ready to accept key events.
     [supportsPromises] static void isInputMethodReadyForTesting(
         IsInputMethodReadyForTestingCallback callback);
+
+    // Creates a temporary directory visible under the Fusebox mount point.
+    [supportsPromises] static void makeFuseboxTempDir(
+        MakeFuseboxTempDirCallback callback);
+
+    // Removes a temporary directory visible under the Fusebox mount point. The
+    // fuseboxFilePath argument was returned by the MakeFuseboxTempDirCallback.
+    [supportsPromises] static void removeFuseboxTempDir(
+        DOMString fuseboxFilePath,
+        RemoveFuseboxTempDirCallback callback);
   };
 
   interface Events {

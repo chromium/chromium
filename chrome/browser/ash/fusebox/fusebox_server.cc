@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_errno.h"
@@ -19,6 +21,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -255,6 +259,14 @@ void RunStatCallback(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::move(callback).Run(FileErrorToErrno(error_code), info, read_only);
+}
+
+std::string SubdirForTempDir(base::ScopedTempDir& scoped_temp_dir) {
+  std::string basename = scoped_temp_dir.GetPath().BaseName().AsUTF8Unsafe();
+  while (!basename.empty() && (basename[0] == '.')) {  // Strip leading dots.
+    basename = basename.substr(1);
+  }
+  return base::StrCat({file_manager::util::kFuseBoxSubdirPrefixTMP, basename});
 }
 
 }  // namespace
@@ -560,12 +572,103 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
 
 void Server::ListStorages(fusebox_staging::ListStoragesRequestProto request,
                           ListStoragesCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   fusebox_staging::ListStoragesResponseProto response;
   response.add_storages(kMonikerSubdir);
   for (const auto& i : prefix_map_) {
     response.add_storages(i.first);
   }
   std::move(callback).Run(response);
+}
+
+void Server::MakeTempDir(MakeTempDirCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&Server::MakeTempDirOnWorkerThread,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void Server::MakeTempDirOnWorkerThread(MakeTempDirCallback callback) {
+  base::ScopedTempDir scoped_temp_dir;
+  bool create_succeeded = scoped_temp_dir.CreateUniqueTempDir();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Server::ReplyToMakeTempDir,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(scoped_temp_dir),
+                     create_succeeded, std::move(callback)));
+}
+
+void Server::ReplyToMakeTempDir(base::ScopedTempDir scoped_temp_dir,
+                                bool create_succeeded,
+                                MakeTempDirCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!create_succeeded) {
+    std::move(callback).Run("CreateUniqueTempDir failed", "", "");
+    return;
+  }
+
+  const std::string subdir = SubdirForTempDir(scoped_temp_dir);
+  const std::string mount_name =
+      base::StrCat({file_manager::util::kFuseBoxMountNamePrefix, subdir});
+  const std::string fusebox_file_path =
+      base::StrCat({file_manager::util::kFuseBoxMediaSlashPath, subdir});
+  const base::FilePath underlying_file_path = scoped_temp_dir.GetPath();
+
+  storage::ExternalMountPoints* const mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  if (!mount_points->RegisterFileSystem(
+          mount_name, storage::kFileSystemTypeLocal,
+          storage::FileSystemMountOption(), underlying_file_path)) {
+    std::move(callback).Run("RegisterFileSystem failed", "", "");
+    return;
+  }
+
+  scoped_refptr<storage::FileSystemContext> fs_context =
+      file_manager::util::GetFileManagerFileSystemContext(
+          ProfileManager::GetActiveUserProfile());
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(
+          "http://fusebox-server.example.com");
+  fs_context->external_backend()->GrantFileAccessToOrigin(
+      storage_key.origin(), base::FilePath(mount_name));
+
+  storage::FileSystemURL fs_url =
+      mount_points->CreateExternalFileSystemURL(storage_key, mount_name, {});
+  constexpr bool read_only = false;
+  RegisterFSURLPrefix(subdir, fs_url.ToGURL().spec(), read_only);
+
+  temp_subdir_map_.insert({fusebox_file_path, std::move(scoped_temp_dir)});
+
+  std::move(callback).Run("", fusebox_file_path,
+                          underlying_file_path.AsUTF8Unsafe());
+}
+
+void Server::RemoveTempDir(std::string fusebox_file_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto iter = temp_subdir_map_.find(fusebox_file_path);
+  if (iter == temp_subdir_map_.end()) {
+    return;
+  }
+  base::ScopedTempDir scoped_temp_dir = std::move(iter->second);
+  const std::string subdir = SubdirForTempDir(scoped_temp_dir);
+  const std::string mount_name =
+      base::StrCat({file_manager::util::kFuseBoxMountNamePrefix, subdir});
+  temp_subdir_map_.erase(iter);
+  UnregisterFSURLPrefix(subdir);
+  storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+      mount_name);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(
+          [](base::ScopedTempDir) {
+            // No-op other than running the base::ScopedTempDir destructor.
+          },
+          std::move(scoped_temp_dir)));
 }
 
 void Server::OnReadDirectory(
