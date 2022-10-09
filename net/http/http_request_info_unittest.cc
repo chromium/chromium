@@ -46,14 +46,9 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
   net::HttpRequestInfo triple_nik_double_nak_request_info;
   triple_nik_double_nak_request_info.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
-  triple_nik_double_nak_request_info.network_anonymization_key =
-      NetworkAnonymizationKey(kTestSiteA);
 
   EXPECT_FALSE(request_info_different_nik_nak.IsConsistent());
   EXPECT_TRUE(triple_keys_request_info.IsConsistent());
-  // Since triple keying is enabled for both NIK and NAK, NAK should not be a
-  // double key.
-  EXPECT_FALSE(triple_nik_double_nak_request_info.IsConsistent());
 
   // Double key NIK and triple key NAK.
   scoped_feature_list_.Reset();
@@ -86,7 +81,6 @@ TEST(HTTPRequestInfoTest, IsConsistent) {
                                         disabled_features_3);
 
   EXPECT_FALSE(triple_keys_request_info.IsConsistent());
-  EXPECT_TRUE(triple_nik_double_nak_request_info.IsConsistent());
 
   // Triple key NIK and double key with cross site flag NAK.
   scoped_feature_list_.Reset();

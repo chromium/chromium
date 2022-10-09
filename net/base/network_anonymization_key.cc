@@ -23,7 +23,23 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
       frame_site_(!IsFrameSiteEnabled() ? absl::nullopt : frame_site),
       is_cross_site_(IsCrossSiteFlagSchemeEnabled() ? is_cross_site
                                                     : absl::nullopt),
-      nonce_(nonce) {}
+      nonce_(nonce) {
+  DCHECK(top_frame_site_.has_value());
+  DCHECK(!IsFrameSiteEnabled() || frame_site_.has_value());
+  // If `is_cross_site` is enabled but the value is not populated, and we have
+  // the information to calculate it, do calculate it.
+  if (IsCrossSiteFlagSchemeEnabled() && !is_cross_site_.has_value() &&
+      frame_site.has_value()) {
+    SiteForCookies site_for_cookies =
+        net::SiteForCookies(top_frame_site_.value());
+    is_cross_site_ =
+        !site_for_cookies.IsFirstParty(frame_site.value().GetURL());
+  }
+  if (IsCrossSiteFlagSchemeEnabled()) {
+    // If `frame_site_` is populated, `is_cross_site_` must be as well.
+    DCHECK(is_cross_site_.has_value());
+  }
+}
 
 NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
     const net::NetworkIsolationKey& network_isolation_key) {
