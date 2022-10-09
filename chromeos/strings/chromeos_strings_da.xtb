@@ -139,7 +139,7 @@
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
 <translation id="2163937499206714165">Aktivér mørkt tilstand</translation>
 <translation id="2180197493692062006">Der opstod en fejl. Prøv at åbne appen igen.</translation>
-<translation id="2182088270354640012">Tak for din feedback. Din feedback er med til at forbedre Chrome OS og gennemgås af Chrome OS-teamet. Vi modtager et stort antal rapporter, så du modtager ikke et direkte svar.</translation>
+<translation id="2182088270354640012">Tak for din feedback. Din feedback er med til at forbedre ChromeOS og gennemgås af ChromeOS-teamet. Vi modtager et stort antal rapporter, så du modtager ikke et direkte svar.</translation>
 <translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2212733584906323460">Navneløsning</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
@@ -295,7 +295,7 @@
 <translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
-<translation id="3969602104473960991">Chrome OS-adgangskoden er opdateret</translation>
+<translation id="3969602104473960991">ChromeOS-adgangskoden er opdateret</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="39823212440917567">Udskriftsjobs, der er ældre end <ph name="NUMBER_OF_DAYS" /> dage, fjernes</translation>
 <translation id="3993704782688964914">Din <ph name="DEVICE_NAME" /> er nu opdateret</translation>
@@ -526,7 +526,7 @@
 <translation id="6113701710518389813">Pil op</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> flere album</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6122277663991249694">Indtastningsmetodetjeneste for Chrome OS</translation>
+<translation id="6122277663991249694">Indtastningsmetodetjeneste for ChromeOS</translation>
 <translation id="6137767437444130246">Brugercertifikat</translation>
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -749,7 +749,7 @@
 <translation id="8420955526972171689">Kør tests og fejlfinding af hardwareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Indbygget tastatur</translation>
-<translation id="8431300646573772016">Nyt i Chrome OS</translation>
+<translation id="8431300646573772016">Nyt i ChromeOS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
 <translation id="8456761643544401578">Automatisk mørk tilstand</translation>
@@ -822,7 +822,7 @@
 <translation id="9082718469794970195">Brug denne video</translation>
 <translation id="9087578468327036362">Rapportér denne forespørgsel</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
-<translation id="9092255287806472980">Din feedback er med til at forbedre Chrome OS og gennemgås af vores team. Vi modtager et stort antal rapporter, så vi kan ikke sende dig et svar.</translation>
+<translation id="9092255287806472980">Din feedback er med til at forbedre ChromeOS og gennemgås af vores team. Vi modtager et stort antal rapporter, så vi kan ikke sende dig et svar.</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>
