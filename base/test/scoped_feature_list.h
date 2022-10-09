@@ -17,7 +17,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
@@ -145,14 +144,6 @@ class ScopedFeatureList final {
   // interactions.
   void InitWithFeatures(const std::vector<FeatureRef>& enabled_features,
                         const std::vector<FeatureRef>& disabled_features);
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
-  // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
-  void InitWithFeatures(const std::vector<Feature>& enabled_features,
-                        const std::vector<Feature>& disabled_features);
-  void InitWithFeatures(std::initializer_list<Feature> enabled_features,
-                        std::initializer_list<Feature> disabled_features);
-#endif
 
   // Initializes and registers a FeatureList instance based on the current
   // FeatureList and overridden with single enabled feature.
@@ -175,16 +166,6 @@ class ScopedFeatureList final {
   void InitWithFeaturesAndParameters(
       const std::vector<FeatureAndParams>& enabled_features,
       const std::vector<FeatureRef>& disabled_features);
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_APPLE)
-  // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
-  void InitWithFeaturesAndParameters(
-      const std::vector<FeatureAndParams>& enabled_features,
-      const std::vector<Feature>& disabled_features);
-  void InitWithFeaturesAndParameters(
-      const std::vector<FeatureAndParams>& enabled_features,
-      std::initializer_list<Feature> disabled_features);
-#endif
 
   // Initializes and registers a FeatureList instance based on the current
   // FeatureList and overridden with single disabled feature.

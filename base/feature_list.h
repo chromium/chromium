@@ -103,18 +103,11 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
 #endif  // BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX)
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+  // Non-copyable since:
+  // - there should be only one `Feature` instance per unique name.
+  // - a `Feature` contains internal cached state about the override state.
   Feature(const Feature&) = delete;
   Feature& operator=(const Feature&) = delete;
-#else
-  // This object needs to be copyable because of some signatures in
-  // ScopedFeatureList, but generally isn't copied anywhere except unit tests.
-  // The `cached_value` doesn't get copied and copies will trigger a lookup if
-  // their state is queried.
-  Feature(const Feature& other)
-      : name(other.name), default_state(other.default_state), cached_value(0) {}
-#endif
 
   // The name of the feature. This should be unique to each feature and is used
   // for enabling/disabling features via command line flags and experiments.
