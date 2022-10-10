@@ -8,4 +8,4 @@ guidou@chromium.org
 olka@chromium.org
 
 # WebAudio OWNERS.
-per-file renderer_webaudiodevice_impl.*=file://third_party/blink/renderer/modules/webaudio/OWNERS
+per-file renderer_webaudiodevice_impl*=file://third_party/blink/renderer/modules/webaudio/OWNERS
