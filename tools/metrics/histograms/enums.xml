@@ -43687,6 +43687,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="User left the page before first contentful paint"/>
 </enum>
 
+<enum name="FirstPartySetsClearSiteDataOutcomeType">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to clear cookies"/>
+  <int value="2" label="Failed to clear storage"/>
+  <int value="3" label="Failed to clear cookies and storage"/>
+</enum>
+
 <enum name="FirstPartySetsDatabaseInitStatus">
   <int value="0" label="Unattempted"/>
   <int value="1" label="Success"/>

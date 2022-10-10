@@ -41,6 +41,28 @@ class BrowserContext;
 // the current First-Party Sets data to disk.
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
+  // The outcome types of clearing site data for data types covered in
+  // FirstPartySetsSiteDataRemover. We only clear
+  // `BrowsingDataRemover::DATA_TYPE_COOKIES` and
+  // `BrowsingDataRemover::DATA_TYPE_DOM_STORAGE` for now. Cache is "cleared"
+  // with a different approach.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ClearSiteDataOutcomeType {
+    kSuccess = 0,
+    // Failed to clear data type of `BrowsingDataRemover::DATA_TYPE_COOKIES`.
+    kCookieFailed = 1,
+    // Failed to clear data type of
+    // `BrowsingDataRemover::DATA_TYPE_DOM_STORAGE`.
+    kStorageFailed = 2,
+    // Failed to clear both `BrowsingDataRemover::DATA_TYPE_COOKIES` and
+    // `BrowsingDataRemover::DATA_TYPE_DOM_STORAGE` data types.
+    kCookieAndStorageFailed = 3,
+
+    kMaxValue = kCookieAndStorageFailed,
+  };
+
   using SetsReadyOnceCallback =
       base::OnceCallback<void(net::GlobalFirstPartySets)>;
 
@@ -87,7 +109,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const base::Value::Dict* policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
-  // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
@@ -152,6 +173,15 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy) const;
+
+  // `failed_data_types` is a bitmask used to indicate data types from
+  // BrowsingDataRemover::DataType enum that were failed to remove. 0 indicates
+  // success.
+  void DidClearSiteDataOnChangedSetsForContext(
+      const std::string& browser_context_id,
+      net::FirstPartySetsContextConfig context_config,
+      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
+      uint64_t failed_data_types) const;
 
   // Whether Init has been called already or not.
   bool initialized_ = false;
