@@ -6,27 +6,14 @@
 import argparse
 import csv
 import requests
-import hashlib
 import urllib.parse
-
-INCLUDE_HEADERS = frozenset([
-    "access-control-allow-credentials", "access-control-allow-headers",
-    "access-control-allow-methods", "access-control-allow-origin",
-    "access-control-expose-headers", "access-control-max-age",
-    "access-control-request-headers", "access-control-request-method",
-    "clear-site-data", "content-encoding", "content-security-policy",
-    "content-type", "cross-origin-embedder-policy",
-    "cross-origin-opener-policy", "cross-origin-resource-policy", "location",
-    "sec-websocket-accept", "sec-websocket-extensions", "sec-websocket-key",
-    "sec-websocket-protocol", "sec-websocket-version", "upgrade", "vary"
-])
+import pervasive_checksum
 
 
 def generate_list_with_checksums(data):
   pairs_list = []
   flat_list = []
   for i, url_info in enumerate(data):
-    checksum_input = ""
     url = url_info[0]
     print(f"[{i}/{len(data)}] Fetching {url}")
 
@@ -35,20 +22,9 @@ def generate_list_with_checksums(data):
                       stream=True) as response:
 
       headers = list(response.headers.items())
-      headers = [(name.lower(), value) for name, value in headers]
-      headers.sort()
-
-      for header in headers:
-        if header[0] in INCLUDE_HEADERS:
-          checksum_input += header[0] + ": " + header[1] + "\n"
-
-      checksum_input += "\n"
-      checksum_input = checksum_input.encode()
-
       raw_body = response.raw.data
-      checksum_input += raw_body
 
-    checksum = hashlib.sha256(checksum_input).hexdigest().upper()
+    checksum = pervasive_checksum.calculate_checksum(headers, raw_body)
     pairs_list.append([url, checksum])
     flat_list.append(str(url))
     flat_list.append(str(checksum))
