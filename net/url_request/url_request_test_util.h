@@ -31,6 +31,7 @@
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
@@ -287,6 +288,10 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     before_start_transaction_fails_ = true;
   }
 
+  void set_fps_cache_filter(FirstPartySetsCacheFilter cache_filter) {
+    fps_cache_filter_ = std::move(cache_filter);
+  }
+
  protected:
   // NetworkDelegate:
   int OnBeforeURLRequest(URLRequest* request,
@@ -323,6 +328,11 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const URLRequest& request,
       const GURL& target_url,
       const GURL& referrer_url) const override;
+  absl::optional<FirstPartySetsCacheFilter::MatchInfo>
+  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+      const SchemefulSite& request_site,
+      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
+      const override;
 
   void InitRequestStatesIfNew(int request_id);
 
@@ -366,6 +376,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   bool before_start_transaction_fails_ = false;
   bool add_header_to_first_response_ = false;
   int next_request_id_ = 0;
+
+  FirstPartySetsCacheFilter fps_cache_filter_;
 };
 
 // ----------------------------------------------------------------------------

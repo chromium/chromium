@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,6 +27,7 @@ class Origin;
 
 namespace net {
 
+class SchemefulSite;
 class CookieOptions;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
@@ -97,6 +99,12 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   bool OnCanUseReportingClient(const url::Origin& origin,
                                const GURL& endpoint) const override;
+
+  absl::optional<FirstPartySetsCacheFilter::MatchInfo>
+  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+      const SchemefulSite& request_site,
+      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
+      const override;
 };
 
 }  // namespace net

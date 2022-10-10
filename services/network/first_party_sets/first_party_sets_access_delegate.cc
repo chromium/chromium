@@ -42,6 +42,7 @@ void FirstPartySetsAccessDelegate::NotifyReady(
     mojom::FirstPartySetsReadyEventPtr ready_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   context_config_ = std::move(ready_event->config);
+  cache_filter_ = std::move(ready_event->cache_filter);
   InvokePendingQueries();
 }
 
@@ -110,6 +111,29 @@ FirstPartySetsAccessDelegate::FindEntries(
   return manager_->FindEntries(sites, context_config_, std::move(callback));
 }
 
+absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
+FirstPartySetsAccessDelegate::GetCacheFilterMatchInfo(
+    const net::SchemefulSite& site,
+    base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!enabled_)
+    return {net::FirstPartySetsCacheFilter::MatchInfo()};
+
+  if (pending_queries_) {
+    // base::Unretained() is safe because `this` owns `pending_queries_` and
+    // `pending_queries_` will not run the enqueued callbacks after `this` is
+    // destroyed.
+    EnqueuePendingQuery(base::BindOnce(
+        &FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke,
+        base::Unretained(this), site, std::move(callback)));
+    return absl::nullopt;
+  }
+
+  return cache_filter_.GetMatchInfo(site);
+}
+
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite> top_frame_site,
@@ -148,6 +172,15 @@ void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
 
   if (sync_result.has_value())
     std::move(callbacks.second).Run(sync_result.value());
+}
+
+void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
+    const net::SchemefulSite& site,
+    base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
+        callback) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(enabled_);
+  std::move(callback).Run(cache_filter_.GetMatchInfo(site));
 }
 
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {

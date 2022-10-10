@@ -11,6 +11,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
@@ -140,6 +141,25 @@ struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
 
   static bool Read(network::mojom::FirstPartySetsContextConfigDataView config,
                    net::FirstPartySetsContextConfig* out_config);
+};
+
+template <>
+struct COMPONENT_EXPORT(FIRST_PARTY_SETS_MOJOM_TRAITS)
+    StructTraits<network::mojom::FirstPartySetsCacheFilterDataView,
+                 net::FirstPartySetsCacheFilter> {
+  static const base::flat_map<net::SchemefulSite, int64_t>& filter(
+      const net::FirstPartySetsCacheFilter& cache_filter) {
+    return cache_filter.filter();
+  }
+
+  static int64_t browser_run_id(
+      const net::FirstPartySetsCacheFilter& cache_filter) {
+    return cache_filter.browser_run_id();
+  }
+
+  static bool Read(
+      network::mojom::FirstPartySetsCacheFilterDataView cache_filter,
+      net::FirstPartySetsCacheFilter* out_cache_filter);
 };
 
 }  // namespace mojo

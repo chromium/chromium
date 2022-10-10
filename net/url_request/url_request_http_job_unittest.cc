@@ -1812,6 +1812,74 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
               MatchesCookieAccessResult(IsInclude(), _, _, _))));
 }
 
+namespace {
+
+int content_count = 0;
+std::unique_ptr<test_server::HttpResponse> IncreaseOnRequest(
+    const test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<test_server::BasicHttpResponse>();
+  http_response->set_content(base::NumberToString(content_count));
+  content_count++;
+  return std::move(http_response);
+}
+
+void ResetContentCount() {
+  content_count = 0;
+}
+
+}  // namespace
+
+TEST_F(URLRequestHttpJobTest, GetFirstPartySetsCacheFilterMatchInfo) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  https_test.RegisterRequestHandler(base::BindRepeating(&IncreaseOnRequest));
+  ASSERT_TRUE(https_test.Start());
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto* network_delegate = context_builder->set_network_delegate(
+      std::make_unique<TestNetworkDelegate>());
+  auto context = context_builder->Build();
+
+  const GURL kTestUrl = https_test.GetURL("/");
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("0", delegate.data_received());
+  }
+  {  // Test using the cached response.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("0", delegate.data_received());
+  }
+
+  // Set cache filter and test cache is bypassed because the request site has a
+  // matched entry in the filter and its response cache was stored before being
+  // marked to clear.
+  const int64_t kClearAtRunId = 3;
+  const int64_t kBrowserRunId = 3;
+  FirstPartySetsCacheFilter cache_filter(
+      {{SchemefulSite(kTestUrl), kClearAtRunId}}, kBrowserRunId);
+  network_delegate->set_fps_cache_filter(std::move(cache_filter));
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        kTestUrl, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->SetLoadFlags(LOAD_SKIP_CACHE_VALIDATION);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("1", delegate.data_received());
+  }
+
+  ResetContentCount();
+}
+
 class PartitionedCookiesURLRequestHttpJobTest
     : public URLRequestHttpJobTest,
       public testing::WithParamInterface<bool> {

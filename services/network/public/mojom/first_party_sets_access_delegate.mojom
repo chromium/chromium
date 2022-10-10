@@ -37,4 +37,7 @@ struct FirstPartySetsReadyEvent {
   // by the network service for the network context.
   //
   FirstPartySetsContextConfig config;
+
+  // The config to filter cache access for the purpose of "clearing cache".
+  FirstPartySetsCacheFilter cache_filter;
 };

@@ -11,6 +11,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
@@ -175,6 +176,20 @@ bool StructTraits<network::mojom::FirstPartySetsContextConfigDataView,
     return false;
 
   *out_config = net::FirstPartySetsContextConfig(std::move(customizations));
+
+  return true;
+}
+
+bool StructTraits<network::mojom::FirstPartySetsCacheFilterDataView,
+                  net::FirstPartySetsCacheFilter>::
+    Read(network::mojom::FirstPartySetsCacheFilterDataView cache_filter,
+         net::FirstPartySetsCacheFilter* out_cache_filter) {
+  base::flat_map<net::SchemefulSite, int64_t> filter;
+  if (!cache_filter.ReadFilter(&filter))
+    return false;
+
+  *out_cache_filter = net::FirstPartySetsCacheFilter(
+      std::move(filter), std::move(cache_filter.browser_run_id()));
 
   return true;
 }

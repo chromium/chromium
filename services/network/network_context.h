@@ -602,6 +602,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return cors_non_wildcard_request_headers_support_;
   }
 
+  FirstPartySetsAccessDelegate& first_party_sets_access_delegate() {
+    return first_party_sets_access_delegate_;
+  }
+
 #if BUILDFLAG(ENABLE_REPORTING)
   void AddReportingApiObserver(
       mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)

@@ -16,6 +16,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -74,6 +75,16 @@ class FirstPartySetsAccessDelegate
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(EntriesResult)> callback);
 
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
+  GetCacheFilterMatchInfo(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback);
+
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
   // only be called once the instance is fully initialized.
@@ -88,6 +99,13 @@ class FirstPartySetsAccessDelegate
   void FindEntriesAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(EntriesResult)> callback) const;
+
+  // Same as `GetCacheFilterMatchInfo`, but plumbs the result into the
+  // callback. Must only be called once the instance is fully initialized.
+  void GetCacheFilterMatchInfoAndInvoke(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback) const;
 
   // Runs all pending queries. Must not be called until the instance is fully
   // initialized.
@@ -107,6 +125,10 @@ class FirstPartySetsAccessDelegate
 
   // First-Party Sets configuration for this network context.
   net::FirstPartySetsContextConfig context_config_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // First-Party Sets configuration for this network context.
+  net::FirstPartySetsCacheFilter cache_filter_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The queue of queries that are waiting for the instance to be initialized.

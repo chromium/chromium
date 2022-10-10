@@ -10,6 +10,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
@@ -162,6 +163,23 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsContextConfig) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
               network::mojom::FirstPartySetsContextConfig>(original,
                                                            round_tripped));
+
+  EXPECT_EQ(original, round_tripped);
+}
+
+TEST(FirstPartySetsTraitsTest, RoundTrips_FirstPartySetsCacheFilter) {
+  net::SchemefulSite a(GURL("https://a.test"));
+  int64_t kClearAtRunId = 2;
+  int64_t kBrowserRunId = 3;
+
+  const net::FirstPartySetsCacheFilter original({{a, kClearAtRunId}},
+                                                kBrowserRunId);
+
+  net::FirstPartySetsCacheFilter round_tripped;
+
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<
+          network::mojom::FirstPartySetsCacheFilter>(original, round_tripped));
 
   EXPECT_EQ(original, round_tripped);
 }

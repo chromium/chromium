@@ -25,6 +25,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_request_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/url_request/url_request_job.h"
@@ -219,6 +220,11 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // Called after getting the FirstPartySetMetadata during Start for this job.
   void OnGotFirstPartySetMetadata(
       FirstPartySetMetadata first_party_set_metadata);
+
+  // Called after getting the FirstPartySetsCacheFilter match info during Start
+  // for this job.
+  void OnGotFirstPartySetCacheFilterMatchInfo(
+      FirstPartySetsCacheFilter::MatchInfo match_info);
 
   // Returns true iff this request leg should include the Cookie header. Note
   // that cookies may still be eventually blocked by the CookieAccessDelegate

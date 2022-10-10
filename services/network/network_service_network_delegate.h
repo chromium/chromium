@@ -11,12 +11,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_delegate_impl.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class SchemefulSite;
 class SiteForCookies;
 }  // namespace net
 
@@ -92,6 +94,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                                const GURL& endpoint) const override;
   bool OnCanUseReportingClient(const url::Origin& origin,
                                const GURL& endpoint) const override;
+  absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
+  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
+      const net::SchemefulSite& request_site,
+      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback) const override;
 
   int HandleClearSiteDataHeader(
       net::URLRequest* request,
