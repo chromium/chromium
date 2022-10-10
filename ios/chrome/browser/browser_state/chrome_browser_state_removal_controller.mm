@@ -66,13 +66,15 @@ std::string GetDomainForGaiaId(ChromeBrowserState* browser_state,
                                const std::string& gaia_id) {
   ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       account_manager_service->GetIdentityWithGaiaID(gaia_id);
 
-  if (![identity userEmail])
+  NSString* user_email = identity.userEmail;
+  if (!user_email.length)
     return std::string();
+
   return gaia::ExtractDomainName(
-      gaia::SanitizeEmail(base::SysNSStringToUTF8([identity userEmail])));
+      gaia::SanitizeEmail(base::SysNSStringToUTF8(user_email)));
 }
 }
 
