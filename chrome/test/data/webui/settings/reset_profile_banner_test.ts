@@ -17,7 +17,8 @@ suite('BannerTests', function() {
   setup(function() {
     browserProxy = new TestResetBrowserProxy();
     ResetBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     resetBanner = document.createElement('settings-reset-profile-banner');
     document.body.appendChild(resetBanner);
     assertTrue(resetBanner.$.dialog.open);

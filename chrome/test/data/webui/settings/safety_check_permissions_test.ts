@@ -14,7 +14,8 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   let page: SettingsSafetyCheckUnusedSitePermissionsElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page =
         document.createElement('settings-safety-check-unused-site-permissions');
     document.body.appendChild(page);
@@ -48,7 +49,8 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
   let page: SettingsSafetyCheckNotificationPermissionsElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement(
         'settings-safety-check-notification-permissions');
     document.body.appendChild(page);

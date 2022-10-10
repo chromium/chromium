@@ -9,7 +9,8 @@ suite('SettingsMenuInteractiveUITest', () => {
   let settingsMenu: SettingsMenuElement;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMenu);

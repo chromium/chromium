@@ -25,7 +25,8 @@ suite('SigninViewTest', function() {
     // calls to backend.
     SigninViewProxyImpl.setInstance(new TestSigninViewProxy());
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('signin-view');
     document.body.appendChild(testElement);
   });

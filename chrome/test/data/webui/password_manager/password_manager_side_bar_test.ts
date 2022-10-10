@@ -13,7 +13,8 @@ suite('PasswordManagerSideBarTest', function() {
   let sidebar: PasswordManagerSideBarElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     sidebar = document.createElement('password-manager-side-bar');
     document.body.appendChild(sidebar);
     return flushTasks();

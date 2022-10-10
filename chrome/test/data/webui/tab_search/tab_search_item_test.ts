@@ -16,7 +16,8 @@ suite('TabSearchItemTest', () => {
   async function setupTest(data: TabData) {
     tabSearchItem = document.createElement('tab-search-item');
     tabSearchItem.data = data;
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     document.body.appendChild(tabSearchItem);
     await flushTasks();
   }

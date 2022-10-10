@@ -59,7 +59,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
 
   // Initialize a site-list before each test.
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     prefsVarious = createSiteSettingsPrefs([], [
       createContentSettingTypeToValuePair(
@@ -462,7 +463,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     // The default sorting (most visited) will have the ascending storage
     // values. With the URL param, we expect the sites to be sorted by usage in
     // descending order.
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     setUpAllSites(prefsVarious, SortMethod.STORAGE);
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
@@ -514,7 +516,8 @@ suite('AllSites_DisabledConsolidatedControls', function() {
   });
 
   test('can sort by name by passing URL param', async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     setUpAllSites(prefsVarious, SortMethod.NAME);
     testElement = document.createElement('all-sites');
     document.body.appendChild(testElement);
@@ -1087,7 +1090,8 @@ suite('AllSites_EnabledConsolidatedControls', function() {
 
   // Initialize a site-list before each test.
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();
@@ -1507,7 +1511,8 @@ suite('AllSites_EnableFirstPartySets', function() {
 
   // Initialize a site-list before each test.
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     localDataBrowserProxy = new TestLocalDataBrowserProxy();

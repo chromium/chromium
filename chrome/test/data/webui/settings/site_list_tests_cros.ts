@@ -51,7 +51,8 @@ suite('SiteListChromeOS', function() {
     androidInfoBrowserProxy = new TestAndroidInfoBrowserProxy();
     AndroidInfoBrowserProxyImpl.setInstance(androidInfoBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('site-list');
     testElement.searchFilter = '';
     document.body.appendChild(testElement);

@@ -313,7 +313,7 @@ function assertCookiesCardVisible(
 
 // Bundles functionality to create the page object for tests.
 function createPrivacyGuidePageForTest(settingsPrefs: SettingsPrefsElement) {
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
   const page = document.createElement('settings-privacy-guide-page');
   page.disableAnimationsForTesting();
   page.prefs = settingsPrefs.prefs!;
@@ -1325,7 +1325,8 @@ suite('HistorySyncFragment', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('privacy-guide-history-sync-fragment');
     document.body.appendChild(page);
     return flushTasks();
@@ -1499,7 +1500,8 @@ suite('CompletionFragment', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
 
@@ -1576,7 +1578,8 @@ suite('CompletionFragmentPrivacySandboxRestricted', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
 
@@ -1627,7 +1630,8 @@ suite('CompletionFragmentPrivacyGuide2Disabled', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('privacy-guide-completion-fragment');
     document.body.appendChild(page);
 
@@ -1668,7 +1672,8 @@ suite('PrivacyGuideDialog', function() {
   let page: SettingsPrivacyGuideDialogElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-privacy-guide-dialog');
     document.body.appendChild(page);
 
@@ -1703,7 +1708,8 @@ suite('PrivacyGuideDialog', function() {
 suite('CardHeaderTestsPrivacyGuide2Enabled', function() {
   test('phase2HeadersVisible', function() {
     for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
-      document.body.innerHTML = '';
+      document.body.innerHTML =
+          window.trustedTypes!.emptyHTML as unknown as string;
       const page = document.createElement(fragmentName);
       document.body.appendChild(page);
       flush();
@@ -1727,7 +1733,8 @@ suite('CardHeaderTestsPrivacyGuide2Disabled', function() {
 
   test('phase1HeadersVisible', function() {
     for (const fragmentName of SETTINGS_FRAGMENT_NAMES) {
-      document.body.innerHTML = '';
+      document.body.innerHTML =
+          window.trustedTypes!.emptyHTML as unknown as string;
       const page = document.createElement(fragmentName);
       document.body.appendChild(page);
       flush();

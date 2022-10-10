@@ -132,7 +132,8 @@ suite('SafetyCheckPageUiTests', function() {
     safetyCheckBrowserProxy.setParentRanDisplayString('Dummy string');
     SafetyCheckBrowserProxyImpl.setInstance(safetyCheckBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-page');
     document.body.appendChild(page);
     flush();
@@ -216,7 +217,8 @@ suite('SafetyCheckChildTests', function() {
   let page: SettingsSafetyCheckChildElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-child');
     document.body.appendChild(page);
   });
@@ -369,7 +371,8 @@ suite('SafetyCheckUpdatesChildUiTests', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-updates-child');
     document.body.appendChild(page);
     flush();
@@ -495,7 +498,8 @@ suite('SafetyCheckPasswordsChildUiTests', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-passwords-child');
     document.body.appendChild(page);
     flush();
@@ -658,7 +662,8 @@ suite('SafetyCheckSafeBrowsingChildUiTests', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-safe-browsing-child');
     document.body.appendChild(page);
     flush();
@@ -803,7 +808,8 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-extensions-child');
     document.body.appendChild(page);
     flush();
@@ -960,7 +966,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
   const unusedSiteElementName = 'settings-safety-check-unused-site-permissions';
 
   function createPage() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-page');
     document.body.appendChild(page);
     flush();

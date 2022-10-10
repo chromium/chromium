@@ -16,7 +16,8 @@ suite('<history-item> focus test', function() {
   let item: HistoryItemElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     BrowserServiceImpl.setInstance(new TestBrowserService());
 
     item = document.createElement('history-item');

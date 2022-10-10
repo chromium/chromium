@@ -46,7 +46,8 @@ suite('NuxNtpBackgroundTest', function() {
     NtpBackgroundProxyImpl.setInstance(testNtpBackgroundProxy);
     testNtpBackgroundProxy.setBackgroundsList(backgrounds);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('nux-ntp-background');
     document.body.appendChild(testElement);
 

@@ -19,7 +19,8 @@ suite('NewTabPageCustomizeDialogTest', () => {
   let handler: TestBrowserProxy;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     handler = installMock(
         PageHandlerRemote,

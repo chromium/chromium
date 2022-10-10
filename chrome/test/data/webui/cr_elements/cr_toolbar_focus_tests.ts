@@ -15,7 +15,8 @@ suite('cr-toolbar', function() {
   let toolbar: CrToolbarElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     toolbar = document.createElement('cr-toolbar');
     document.body.appendChild(toolbar);
   });

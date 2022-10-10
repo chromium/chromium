@@ -37,7 +37,8 @@ suite('CrElementsGridFocusTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   test('right focuses right item', () => {

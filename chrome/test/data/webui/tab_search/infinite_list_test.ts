@@ -52,7 +52,8 @@ suite('InfiniteListTest', () => {
 
   async function setupTest(sampleData: Array<TabData|TitleItem>) {
     const testApp = document.createElement('test-app');
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     document.body.appendChild(testApp);
 
     infiniteList = testApp.shadowRoot!.querySelector('infinite-list')!;

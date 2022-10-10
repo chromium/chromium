@@ -32,7 +32,8 @@ suite('ChooserExceptionListEntry', function() {
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('chooser-exception-list-entry');
     document.body.appendChild(testElement);
   });

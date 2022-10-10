@@ -55,7 +55,8 @@ suite('PerformancePage', function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     performancePage = document.createElement('settings-performance-page');
     performancePage.set('prefs', {
       performance_tuning: {

@@ -66,7 +66,8 @@ suite(extension_pack_dialog_tests.suiteName, function() {
   let mockDelegate: MockDelegate;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     mockDelegate = new MockDelegate();
     packDialog = document.createElement('extensions-pack-dialog');
     packDialog.delegate = mockDelegate;

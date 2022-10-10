@@ -70,7 +70,8 @@ suite(extension_error_page_tests.suiteName, function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const runtimeError = Object.assign(
         {
           contextUrl: 'Unknown',

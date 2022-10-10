@@ -95,7 +95,7 @@ let appearanceBrowserProxy: TestAppearanceBrowserProxy;
 
 function createAppearancePage() {
   appearanceBrowserProxy.reset();
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
 
   appearancePage = document.createElement('settings-appearance-page');
   appearancePage.set('prefs', {
@@ -324,7 +324,8 @@ suite('HomeUrlInput', function() {
   setup(function() {
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     homeUrlInput = document.createElement('home-url-input');
     homeUrlInput.set(

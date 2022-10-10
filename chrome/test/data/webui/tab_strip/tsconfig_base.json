@@ -5,7 +5,7 @@
        "./../../../../../third_party/node/node_modules/@types"
     ],
     "types": [
-      "mocha",
+      "mocha", "trusted-types",
       "trusted-types"
     ]
   }

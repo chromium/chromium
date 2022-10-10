@@ -16,7 +16,8 @@ suite('OtherOptionsSettingsTest', function() {
   let model: PrintPreviewModelElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.headerFooter.available', true);

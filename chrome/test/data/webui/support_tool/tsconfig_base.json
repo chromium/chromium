@@ -4,6 +4,6 @@
       "typeRoots": [
          "./../../../../../third_party/node/node_modules/@types"
       ],
-      "types": ["mocha"]
+      "types": ["mocha", "trusted-types"]
     }
 }

@@ -15,7 +15,8 @@ suite('CrMenuSelectorFocusTest', () => {
   let element: CrMenuSelector;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('cr-menu-selector') as CrMenuSelector;
 
     // Slot some menu items.

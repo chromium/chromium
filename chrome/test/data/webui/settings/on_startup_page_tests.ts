@@ -51,7 +51,8 @@ suite('OnStartupPage', function() {
 
   async function initPage(): Promise<void> {
     onStartupBrowserProxy.reset();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-on-startup-page');
     testElement.prefs = {
       session: {

@@ -54,7 +54,8 @@ suite('MainPageTests', function() {
     Router.getInstance().navigateTo(routes.BASIC);
     searchManager = new TestSearchManager();
     setSearchManagerForTesting(searchManager);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     settingsMain = document.createElement('settings-main');
     settingsMain.prefs = settingsPrefs.prefs!;
     settingsMain.toolbarSpinnerActive = false;

@@ -124,7 +124,8 @@ suite('incompatibleApplicationsHandler', function() {
 
   async function initPage(hasAdminRights: boolean): Promise<void> {
     incompatibleApplicationsBrowserProxy.reset();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     loadTimeData.overrideValues({
       hasAdminRights: hasAdminRights,

@@ -49,7 +49,8 @@ suite(custom_margins_test.suiteName, function() {
       ['marginTop', 'marginRight', 'marginBottom', 'marginLeft'];
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     measurementSystem =
         new MeasurementSystem(',', '.', MeasurementSystemUnitType.IMPERIAL);
     model = document.createElement('print-preview-model');

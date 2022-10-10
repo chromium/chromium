@@ -27,7 +27,8 @@ suite('SettingsToggleButton', () => {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     };
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-toggle-button');
     testElement.set('pref', pref);
     document.body.appendChild(testElement);

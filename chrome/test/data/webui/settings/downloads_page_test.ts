@@ -61,7 +61,8 @@ suite('DownloadsHandler', function() {
     downloadsBrowserProxy = new TestDownloadsBrowserProxy();
     DownloadsBrowserProxyImpl.setInstance(downloadsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     downloadsPage = document.createElement('settings-downloads-page');
     document.body.appendChild(downloadsPage);

@@ -67,7 +67,8 @@ suite('AppSettingsAppTest', () => {
     testProxy = new TestAppManagementBrowserProxy(app);
     BrowserProxy.setInstance(testProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     appSettingsApp = document.createElement('web-app-settings-app');
     document.body.appendChild(appSettingsApp);
     await waitAfterNextRender(appSettingsApp);

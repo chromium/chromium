@@ -92,7 +92,8 @@ suite('ManageProfileTests', function() {
   setup(function() {
     browserProxy = new TestManageProfileBrowserProxy();
     ManageProfileBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({profileShortcutsEnabled: false});
     manageProfile = createManageProfileElement();
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
@@ -199,7 +200,8 @@ suite('ManageProfileTests', function() {
   // Tests profile shortcut toggle is visible and toggling it removes and
   // creates the profile shortcut respectively.
   test('ManageProfileShortcutToggle', async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();
@@ -238,7 +240,8 @@ suite('ManageProfileTests', function() {
     browserProxy.setProfileShortcutStatus(
         ProfileShortcutStatus.PROFILE_SHORTCUT_NOT_FOUND);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();
@@ -263,7 +266,8 @@ suite('ManageProfileTests', function() {
     browserProxy.setProfileShortcutStatus(
         ProfileShortcutStatus.PROFILE_SHORTCUT_SETTING_HIDDEN);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({profileShortcutsEnabled: true});
     manageProfile = createManageProfileElement();
     flush();

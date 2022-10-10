@@ -24,7 +24,8 @@ suite('cr-toolbar-search-field', function() {
   }
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     field = document.createElement('cr-toolbar-search-field');
     searches = [];
     field.addEventListener('search-changed', function(event) {

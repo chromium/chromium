@@ -20,7 +20,8 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     handler = installMock(PhotosHandlerRemote, PhotosProxy.setHandler);
     metrics = fakeMetricsPrivate();
   });

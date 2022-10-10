@@ -77,7 +77,8 @@ suite('NewTabPageVoiceSearchOverlayTest', () => {
   let metrics: MetricsTracker;
 
   setup(async () => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;

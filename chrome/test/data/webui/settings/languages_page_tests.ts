@@ -38,7 +38,8 @@ suite('languages page', function() {
   const initialLanguages = 'en-US,sw';
 
   suiteSetup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     CrSettingsPrefs.deferInitialization = true;
   });
 
@@ -85,7 +86,8 @@ suite('languages page', function() {
   });
 
   teardown(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   suite(languages_page_tests.TestNames.AddLanguagesDialog, function() {

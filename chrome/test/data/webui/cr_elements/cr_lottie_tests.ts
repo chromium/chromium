@@ -82,7 +82,8 @@ suite('cr_lottie_test', function() {
   });
 
   function createLottieElement(autoplay: boolean = true) {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     crLottieElement = document.createElement('cr-lottie');
     crLottieElement.animationUrl = SAMPLE_LOTTIE_GREEN;
     crLottieElement.autoplay = autoplay;

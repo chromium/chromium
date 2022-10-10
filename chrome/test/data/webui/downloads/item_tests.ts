@@ -16,7 +16,8 @@ suite('item tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     // This isn't strictly necessary, but is a probably good idea.
     BrowserProxy.setInstance(new TestDownloadsProxy());

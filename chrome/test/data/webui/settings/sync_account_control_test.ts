@@ -41,7 +41,8 @@ suite('SyncAccountControl', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-sync-account-control');
     testElement.syncStatus = {
       signedIn: true,

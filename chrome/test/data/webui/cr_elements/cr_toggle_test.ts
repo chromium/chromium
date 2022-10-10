@@ -14,7 +14,8 @@ suite('cr-toggle', function() {
   let toggle: CrToggleElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     toggle = document.createElement('cr-toggle');
     document.body.appendChild(toggle);
     assertNotChecked();

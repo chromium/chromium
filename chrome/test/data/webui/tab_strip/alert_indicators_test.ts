@@ -18,7 +18,8 @@ suite('AlertIndicators', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     alertIndicatorsElement =
         document.createElement('tabstrip-alert-indicators');

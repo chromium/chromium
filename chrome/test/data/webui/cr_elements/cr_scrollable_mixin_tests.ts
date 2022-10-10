@@ -54,7 +54,8 @@ suite('cr-scrollable-mixin', function() {
   let ironList: IronListElement;
 
   setup(function(done) {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);

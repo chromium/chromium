@@ -22,7 +22,8 @@ suite('CrSettingsDoNotTrackToggleTest', function() {
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-do-not-track-toggle');
     testElement.prefs = {
       enable_do_not_track: {

@@ -147,7 +147,8 @@ function leaveUrlInput() {
 
 suite('General', () => {
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     createBrowserProxy();
     createWindowProxy();
@@ -457,7 +458,8 @@ suite('Modification', () => {
   });
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     createBrowserProxy();
     createWindowProxy();
@@ -1005,7 +1007,8 @@ suite('Modification', () => {
 
 suite('Theming', () => {
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     createBrowserProxy();
     createWindowProxy();

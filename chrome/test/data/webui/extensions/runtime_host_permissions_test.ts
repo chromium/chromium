@@ -21,7 +21,8 @@ suite('RuntimeHostPermissions', function() {
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('extensions-runtime-host-permissions');
     delegate = new TestService();
     delegate.userSiteSettings = {permittedSites: [], restrictedSites: []};

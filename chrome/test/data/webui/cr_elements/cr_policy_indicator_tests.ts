@@ -17,7 +17,8 @@ suite('CrPolicyIndicator', function() {
   let indicator: CrPolicyIndicatorElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     indicator = document.createElement('cr-policy-indicator');
     document.body.appendChild(indicator);
   });

@@ -84,7 +84,8 @@ suite('cr-focus-row-behavior-test', function() {
   let testElement: TestFocusRowBehaviorElement;
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     testElement = document.createElement('test-focus-row-behavior-element');
     document.body.appendChild(testElement);

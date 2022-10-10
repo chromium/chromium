@@ -24,7 +24,8 @@ suite('cr-icon-button', function() {
   }
 
   setup(async () => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     button = document.createElement('cr-icon-button');
     document.body.appendChild(button);
     await flushTasks();

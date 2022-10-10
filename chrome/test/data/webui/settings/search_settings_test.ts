@@ -14,7 +14,8 @@ suite('SearchSettingsTest', function() {
 
   setup(function() {
     searchManager = getSearchManager();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   /**

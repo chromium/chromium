@@ -27,7 +27,8 @@ suite('TranslatePageMetricsBrowser', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs()) as
         unknown as typeof chrome.settingsPrivate;

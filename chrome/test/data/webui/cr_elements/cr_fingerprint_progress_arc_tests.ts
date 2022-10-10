@@ -82,7 +82,8 @@ suite('cr_fingerprint_progress_arc_test', function() {
     fakeMediaQueryList = new FakeMediaQueryList('(prefers-color-scheme: dark)');
     matchMediaMock.returnValue = fakeMediaQueryList;
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     progressArc = /** @type {!CrFingerprintProgressArcElement} */ (
         document.createElement('cr-fingerprint-progress-arc'));
     document.body.appendChild(progressArc);

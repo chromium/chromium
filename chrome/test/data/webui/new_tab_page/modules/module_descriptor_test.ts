@@ -18,7 +18,8 @@ suite('NewTabPageModulesModuleDescriptorTest', () => {
   let metrics: MetricsTracker;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({
       navigationStartTime: 0.0,
     });

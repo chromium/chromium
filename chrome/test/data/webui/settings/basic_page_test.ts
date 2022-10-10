@@ -49,7 +49,8 @@ suite('SettingsBasicPage', () => {
   });
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     // Because some test() cases below call navigateTo(), need to ensure that
     // the route is being reset before each test.
@@ -296,7 +297,8 @@ suite('PrivacyGuidePromo', () => {
     loadTimeData.overrideValues({showPrivacyGuide: true});
     privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
     PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-basic-page');
     page.prefs = settingsPrefs.prefs!;
     // The promo is only shown when privacy guide hasn't been visited yet.
@@ -448,7 +450,8 @@ suite('SettingsBasicPagePerformance', () => {
   }
 
   async function createNewBasicPage() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
     flush();

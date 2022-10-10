@@ -16,7 +16,8 @@ suite('SettingsUIToolbarAndDrawer', function() {
   let drawer: CrDrawerElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
     return CrSettingsPrefs.initialized.then(() => {
@@ -78,7 +79,8 @@ suite('SettingsUISearch', function() {
   let searchField: CrToolbarSearchFieldElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     ui = document.createElement('settings-ui');
     document.body.appendChild(ui);
     return CrSettingsPrefs.initialized.then(() => {

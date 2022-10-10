@@ -42,7 +42,8 @@ suite('CrContainerShadowBehavior', function() {
   customElements.define(TestElement.is, TestElement);
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   test('no bottom shadow', function() {

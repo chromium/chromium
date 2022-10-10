@@ -28,7 +28,8 @@ suite('SyncControlsTest', async function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     syncControls = document.createElement('settings-sync-controls');
     document.body.appendChild(syncControls);
 
@@ -148,7 +149,8 @@ suite('SyncControlsSubpageTest', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     syncControls = document.createElement('settings-sync-controls');
     const router = Router.getInstance();

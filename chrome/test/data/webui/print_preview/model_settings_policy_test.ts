@@ -16,7 +16,8 @@ suite('ModelSettingsPolicyTest', function() {
   let model: PrintPreviewModelElement;
 
   function setupModel() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 

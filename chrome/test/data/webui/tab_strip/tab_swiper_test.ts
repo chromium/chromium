@@ -12,7 +12,8 @@ suite('TabSwiper', () => {
   let tabSwiper: TabSwiper;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     tabElement = document.createElement('div');
     document.body.appendChild(tabElement);

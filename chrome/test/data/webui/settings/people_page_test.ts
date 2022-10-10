@@ -59,7 +59,8 @@ suite('ProfileInfoTests', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.pageVisibility = pageVisibility;
     document.body.appendChild(peoplePage);
@@ -111,7 +112,8 @@ suite('SigninDisallowedTests', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.pageVisibility = pageVisibility;
     document.body.appendChild(peoplePage);
@@ -149,7 +151,8 @@ suite('SyncStatusTests', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.pageVisibility = pageVisibility;
     document.body.appendChild(peoplePage);
@@ -452,7 +455,8 @@ suite('SyncSettings', function() {
     profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
     ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     peoplePage = document.createElement('settings-people-page');
     peoplePage.pageVisibility = pageVisibility;
     document.body.appendChild(peoplePage);

@@ -20,7 +20,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
 
   // Initialize an extension activity log item before each test.
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testActivityGroup = {
       activityIds: new Set(['1']),
       key: 'i18n.getUILanguage',

@@ -14,7 +14,8 @@ suite('PasswordManagerAppTest', function() {
   let app: PasswordManagerAppElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     app = document.createElement('password-manager-app');
     document.body.appendChild(app);
     app.setNarrowForTesting(false);

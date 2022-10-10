@@ -157,7 +157,8 @@ suite('ProtocolHandlers', function() {
   /** @return {!Promise} */
   async function initPage() {
     browserProxy.reset();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('protocol-handlers');
     document.body.appendChild(testElement);
     await browserProxy.whenCalled('observeAppProtocolHandlers');

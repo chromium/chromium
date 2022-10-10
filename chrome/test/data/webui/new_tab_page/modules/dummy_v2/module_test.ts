@@ -17,7 +17,8 @@ suite('NewTabPageModulesDummyModuleTest', () => {
   let handler: TestBrowserProxy;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     handler = installMock(FooHandlerRemote, FooProxy.setHandler);
     handler.setResultFor('getData', Promise.resolve({data: []}));

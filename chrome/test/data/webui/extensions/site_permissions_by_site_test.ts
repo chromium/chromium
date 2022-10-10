@@ -49,7 +49,8 @@ suite('SitePermissionsBySite', function() {
     delegate = new TestService();
     delegate.siteGroups = siteGroups;
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('extensions-site-permissions-by-site');
     element.delegate = delegate;
     document.body.appendChild(element);

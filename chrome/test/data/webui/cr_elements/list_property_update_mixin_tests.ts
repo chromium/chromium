@@ -135,7 +135,8 @@ suite('ListPropertyUpdateMixin', function() {
 
   // Initialize a list-property-update-mixin-test-element before each test.
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement =
         document.createElement('list-property-update-mixin-test-element');
     document.body.appendChild(testElement);

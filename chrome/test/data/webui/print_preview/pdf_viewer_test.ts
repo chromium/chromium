@@ -26,7 +26,8 @@ Object.assign(window, {pdf_viewer_test});
 
 suite(pdf_viewer_test.suiteName, function() {
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   test(pdf_viewer_test.TestNames.Basic, async () => {

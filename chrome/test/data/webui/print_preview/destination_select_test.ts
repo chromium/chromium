@@ -26,7 +26,8 @@ suite(destination_select_test.suiteName, function() {
   const meta = new IronMeta({type: 'iconset', value: undefined});
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     destinationSelect =
         document.createElement('print-preview-destination-select');
     destinationSelect.disabled = false;

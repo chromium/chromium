@@ -20,7 +20,8 @@ suite('AppManagementPermissionItemTest', function() {
   let testProxy: TestAppManagementBrowserProxy;
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const app = createTestApp();
     testProxy = new TestAppManagementBrowserProxy();
     BrowserProxy.setInstance(testProxy);

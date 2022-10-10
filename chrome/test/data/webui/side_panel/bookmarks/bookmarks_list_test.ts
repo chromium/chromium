@@ -100,7 +100,8 @@ suite('SidePanelBookmarksListTest', () => {
 
   setup(async () => {
     window.localStorage[LOCAL_STORAGE_OPEN_FOLDERS_KEY] = undefined;
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     metrics = fakeMetricsPrivate();
 

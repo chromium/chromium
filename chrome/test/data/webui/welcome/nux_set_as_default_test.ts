@@ -21,7 +21,8 @@ suite('SetAsDefaultTest', function() {
     testSetAsDefaultProxy = new TestNuxSetAsDefaultProxy();
     NuxSetAsDefaultProxyImpl.setInstance(testSetAsDefaultProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('nux-set-as-default');
     document.body.appendChild(testElement);
     navigatedPromise = new Promise(resolve => {

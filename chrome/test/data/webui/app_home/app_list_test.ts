@@ -48,7 +48,8 @@ suite('AppTest', () => {
     testProxy = new TestAppHomeBrowserProxy(apps);
     BrowserProxy.setInstance(testProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     appListElement = document.createElement('app-list');
     document.body.appendChild(appListElement);
     await waitAfterNextRender(appListElement);

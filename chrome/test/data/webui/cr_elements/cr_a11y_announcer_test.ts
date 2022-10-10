@@ -10,7 +10,8 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('CrA11yAnnouncerElementTest', () => {
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   test('CreatesAndGetsAnnouncers', () => {

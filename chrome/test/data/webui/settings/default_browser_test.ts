@@ -66,7 +66,8 @@ suite('DefaultBrowserPageTest', function() {
 
   function initPage() {
     browserProxy.reset();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-default-browser-page');
     document.body.appendChild(page);
     return browserProxy.whenCalled('requestDefaultBrowserState');

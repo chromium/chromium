@@ -17,7 +17,8 @@ suite('CrPolicyPrefIndicator', function() {
   let indicator: CrPolicyPrefIndicatorElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     indicator = document.createElement('cr-policy-pref-indicator');
     document.body.appendChild(indicator);

@@ -15,7 +15,8 @@ suite('cr-toast-manager', () => {
   let toastManager: CrToastManagerElement;
 
   suiteSetup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     toastManager = /** @type {!CrToastManagerElement} */ (
         document.createElement('cr-toast-manager'));
     document.body.appendChild(toastManager);

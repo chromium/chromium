@@ -54,7 +54,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
   // Initialize an extension activity log item before each test.
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     proxyDelegate = new TestService();
 
     activityLogStream = document.createElement('activity-log-stream');

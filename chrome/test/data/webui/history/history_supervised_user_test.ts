@@ -19,7 +19,8 @@ suite('history-list supervised-user', function() {
       [createHistoryEntry('2016-03-15', 'https://www.google.com')];
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 

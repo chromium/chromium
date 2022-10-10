@@ -28,7 +28,8 @@ suite('SitePermissions', function() {
     delegate.userSiteSettings = userSiteSettings;
     Service.setInstance(delegate);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('extensions-site-permissions');
     element.delegate = delegate;
     element.enableEnhancedSiteControls = true;

@@ -21,7 +21,8 @@ suite('NewTabPageDiscountConsentDialogTest', () => {
   let actionSignalCaptured: ActionSignal;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     discountConsentDialog = document.createElement('discount-consent-dialog');
     document.body.appendChild(discountConsentDialog);
 

@@ -45,7 +45,8 @@ suite('CrComponentsMostVisitedFocusTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     const handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
     const callbackRouter = new MostVisitedPageCallbackRouter();

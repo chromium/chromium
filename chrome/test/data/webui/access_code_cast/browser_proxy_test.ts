@@ -20,7 +20,8 @@ suite('BrowserProxyTest', () => {
   let proxy: BrowserProxy;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     BrowserProxy.setInstance(new BrowserProxy(true));
     proxy = BrowserProxy.getInstance();
   });

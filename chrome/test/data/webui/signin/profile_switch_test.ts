@@ -23,7 +23,8 @@ suite('ProfileSwitchTest', function() {
     getSwitchProfilePromiseResolver = new PromiseResolver();
     browserProxy.setGetSwitchProfilePromise(
         getSwitchProfilePromiseResolver.promise);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     profileSwitchElement = document.createElement('profile-switch');
     document.body.appendChild(profileSwitchElement);
     return waitBeforeNextRender(profileSwitchElement);

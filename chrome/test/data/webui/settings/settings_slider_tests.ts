@@ -25,7 +25,8 @@ suite('SettingsSlider', function() {
   const ticks: number[] = [2, 4, 8, 16, 32, 64, 128];
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     slider = document.createElement('settings-slider');
     slider.pref = {
       key: '',

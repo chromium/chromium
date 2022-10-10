@@ -67,7 +67,8 @@ suite('NavigationBehaviorTest', function() {
     });
 
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     // Creates 3 elements with IDs step-(0~2).
     for (let i = 0; i < 3; i++) {
       elements.push(document.createElement('test-element') as TestElement);

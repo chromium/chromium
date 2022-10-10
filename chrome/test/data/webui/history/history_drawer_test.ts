@@ -15,7 +15,8 @@ suite('drawer-test', function() {
   let app: HistoryAppElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
     app = document.createElement('history-app');

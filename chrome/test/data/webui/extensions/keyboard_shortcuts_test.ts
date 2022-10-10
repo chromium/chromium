@@ -34,7 +34,8 @@ suite(extension_shortcut_tests.suiteName, function() {
   let testDelegate: TestService;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     keyboardShortcuts = document.createElement('extensions-keyboard-shortcuts');
     testDelegate = new TestService();
     keyboardShortcuts.delegate = testDelegate;

@@ -17,7 +17,8 @@ suite('AdvancedPage', function() {
   let basicPage: SettingsBasicPageElement;
 
   suiteSetup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
     return CrSettingsPrefs.initialized

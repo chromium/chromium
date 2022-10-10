@@ -30,7 +30,8 @@ suite('settings-languages', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   setup(function() {

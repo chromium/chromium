@@ -39,7 +39,8 @@ suite('CrSettingsCookiesPageTest', function() {
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     page.set('prefs.generated.cookie_session_only', {
@@ -294,7 +295,8 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsDisabled', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     page.set('prefs.generated.cookie_session_only', {
@@ -337,7 +339,8 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     page.set('prefs.generated.cookie_session_only', {
@@ -379,7 +382,8 @@ suite('CrSettingsCookiesPageTest_lacrosSecondaryProfile', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
@@ -411,7 +415,8 @@ suite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled', function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-cookies-page');
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);

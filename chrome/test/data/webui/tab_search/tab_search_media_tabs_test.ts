@@ -52,7 +52,8 @@ suite('TabSearchMediaTabsTest', () => {
 
     tabSearchApp = document.createElement('tab-search-app');
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     document.body.appendChild(tabSearchApp);
     await flushTasks();
   }

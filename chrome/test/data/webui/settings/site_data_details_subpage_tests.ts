@@ -47,7 +47,8 @@ suite('SiteDataDetailsSubpage', function() {
     LocalDataBrowserProxyImpl.setInstance(browserProxy);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('site-data-details-subpage');
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS_DATA_DETAILS, new URLSearchParams('site=' + site));

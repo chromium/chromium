@@ -17,7 +17,8 @@ suite('CrExtensionsErrorConsoleTest', function() {
 
   // Initialize an extension activity log item before each test.
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     window.history.replaceState(
         {}, '', '?errors=oehidglfoeondlkoeloailjdmmghacge');
     const manager = document.createElement('extensions-manager');

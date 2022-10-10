@@ -14,7 +14,8 @@ suite('AlertIndicator', () => {
   let alertIndicatorStyle: CSSStyleDeclaration;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     alertIndicatorElement = document.createElement('tabstrip-alert-indicator');
     document.body.appendChild(alertIndicatorElement);

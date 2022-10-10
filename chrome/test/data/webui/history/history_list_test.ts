@@ -72,7 +72,8 @@ suite(history_list_test.suiteName, function() {
 
   setup(function() {
     window.history.replaceState({}, '', '/');
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 

@@ -39,7 +39,8 @@ suite('PaymentSectionUiTest', function() {
 
 suite('PaymentsSection', function() {
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     loadTimeData.overrideValues({
       migrationEnabled: true,
       virtualCardEnrollmentEnabled: true,

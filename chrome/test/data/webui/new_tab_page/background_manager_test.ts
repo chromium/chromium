@@ -30,7 +30,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     backgroundImage = new FakeIFrameElement();
     backgroundImage.id = 'backgroundImage';

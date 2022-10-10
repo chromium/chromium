@@ -12,7 +12,8 @@ suite('NewTabPageDoodleShareDialogFocusTest', () => {
   let doodleShareDialog: DoodleShareDialogElement;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     doodleShareDialog = document.createElement('ntp-doodle-share-dialog');
     document.body.appendChild(doodleShareDialog);
   });

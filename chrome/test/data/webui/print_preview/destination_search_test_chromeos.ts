@@ -58,7 +58,8 @@ suite(destination_search_test_chromeos.suiteName, function() {
     // Set up dialog
     dialog = document.createElement('print-preview-destination-dialog-cros');
     dialog.destinationStore = destinationStore;
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     document.body.appendChild(dialog);
     return nativeLayer.whenCalled('getPrinterCapabilities').then(function() {
       dialog.show();

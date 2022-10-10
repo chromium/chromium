@@ -16,7 +16,8 @@ suite('cr_tabs_test', function() {
   let tabs: CrTabsElement;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     tabs = document.createElement('cr-tabs');
     tabs.tabNames = ['tab1', 'tab2', 'tab3'];
     tabs.tabIcons = ['chrome://icon1.png'];

@@ -20,7 +20,8 @@ suite(button_strip_interactive_test.suiteName, function() {
   let buttonStrip: PrintPreviewButtonStripElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     buttonStrip = document.createElement('print-preview-button-strip');
     buttonStrip.destination = new Destination(
         'FooDevice',

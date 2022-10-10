@@ -16,7 +16,8 @@ suite('AvatarIcon', function() {
   let syncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);

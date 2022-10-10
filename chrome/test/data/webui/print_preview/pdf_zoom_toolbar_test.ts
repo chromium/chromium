@@ -33,7 +33,8 @@ suite(pdf_zoom_toolbar_test.suiteName, function() {
   const fitPageIcon: string = 'fullscreen-exit';
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     zoomToolbar = document.createElement('viewer-zoom-toolbar');
     document.body.appendChild(zoomToolbar);

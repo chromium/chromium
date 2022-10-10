@@ -119,7 +119,8 @@ suite('CrComponentsCustomizeThemesTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testProxy = new TestCustomizeThemesBrowserProxy();
     CustomizeThemesBrowserProxyImpl.setInstance(testProxy);
   });
@@ -552,7 +553,8 @@ suite('ThemeIconTest', () => {
   }
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     themeIcon = document.createElement('cr-theme-icon');
     document.body.appendChild(themeIcon);

@@ -33,7 +33,8 @@ suite(advanced_item_test.suiteName, function() {
 
   /** @override */
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const model: PrintPreviewModelElement =
         document.createElement('print-preview-model');
     document.body.appendChild(model);

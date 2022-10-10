@@ -47,7 +47,8 @@ suite('AppearanceFontHandler', function() {
     fontsBrowserProxy = new TestFontsBrowserProxy();
     FontsBrowserProxyImpl.setInstance(fontsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     fontsPage = document.createElement('settings-appearance-fonts-page');
     document.body.appendChild(fontsPage);

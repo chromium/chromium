@@ -21,7 +21,8 @@ suite('sync-page-test', function() {
 
   setup(function() {
     setupRouterWithSyncRoutes();
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     SyncBrowserProxyImpl.setInstance(new TestSyncBrowserProxy());
     const router = Router.getInstance();
     router.navigateTo((router.getRoutes() as SyncRoutes).SYNC);

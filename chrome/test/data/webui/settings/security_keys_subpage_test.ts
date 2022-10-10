@@ -215,7 +215,8 @@ suite('SecurityKeysResetDialog', function() {
   setup(function() {
     browserProxy = new TestSecurityKeysResetBrowserProxy();
     SecurityKeysResetBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement('settings-security-keys-reset-dialog');
     allDivs = Object.values(ResetDialogPage);
   });
@@ -330,7 +331,8 @@ suite('SecurityKeysSetPINDialog', function() {
   setup(function() {
     browserProxy = new TestSecurityKeysPINBrowserProxy();
     SecurityKeysPINBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement('settings-security-keys-set-pin-dialog');
     allDivs = Object.values(SetPINDialogPage);
   });
@@ -595,7 +597,8 @@ suite('SecurityKeysCredentialManagement', function() {
   setup(function() {
     browserProxy = new TestSecurityKeysCredentialBrowserProxy();
     SecurityKeysCredentialBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement(
         'settings-security-keys-credential-management-dialog');
     allDivs = Object.values(CredentialManagementDialogPage);
@@ -830,7 +833,8 @@ suite('SecurityKeysBioEnrollment', function() {
   setup(function() {
     browserProxy = new TestSecurityKeysBioEnrollProxy();
     SecurityKeysBioEnrollProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement('settings-security-keys-bio-enroll-dialog');
     allDivs = Object.values(BioEnrollDialogPage);
   });

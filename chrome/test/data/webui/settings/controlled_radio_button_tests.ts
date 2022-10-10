@@ -19,7 +19,8 @@ suite('controlled radio button', function() {
   };
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     radioButton = document.createElement('controlled-radio-button');
     radioButton.set('pref', pref);
     document.body.appendChild(radioButton);

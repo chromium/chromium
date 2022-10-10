@@ -11,7 +11,8 @@ suite('SiteFavicon', function() {
   let siteFavicon: SiteFaviconElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     siteFavicon = document.createElement('site-favicon');
     document.body.appendChild(siteFavicon);
   });

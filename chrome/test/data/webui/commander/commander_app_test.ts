@@ -62,7 +62,8 @@ suite('CommanderWebUIBrowserTest', () => {
   setup(async () => {
     testProxy = new TestCommanderBrowserProxy();
     BrowserProxyImpl.setInstance(testProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     app = document.createElement('commander-app');
     document.body.appendChild(app);
     await flushTasks();

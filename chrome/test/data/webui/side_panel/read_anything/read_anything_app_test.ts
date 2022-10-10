@@ -17,7 +17,8 @@ suite('ReadAnythingAppTest', () => {
   chrome.readAnything.onConnected = function() {};
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     readAnythingApp = document.createElement('read-anything-app');
     document.body.appendChild(readAnythingApp);
     chrome.readAnything.setThemeForTesting('default', 18.0, 0, 0, 1, 0);

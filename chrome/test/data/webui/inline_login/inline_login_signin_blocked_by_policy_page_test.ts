@@ -44,11 +44,13 @@ suite(inline_login_signin_blocked_by_policy_page_test.suiteName, () => {
   }
 
   function testSetup(dialogArgs: AccountAdditionOptions|null) {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testBrowserProxy = new TestInlineLoginBrowserProxy();
     testBrowserProxy.setDialogArguments(dialogArgs);
     InlineLoginBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
         document.createElement('inline-login-app'));
     document.body.appendChild(inlineLoginComponent);

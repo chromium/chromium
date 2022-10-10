@@ -16,7 +16,8 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('ExtensionOptionsDialogTest', () => {
   test('show options dialog', async () => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     window.history.replaceState(
         {}, '', '/?id=ibbpngabdmdpednkhonkkobdeccpkiff');
 

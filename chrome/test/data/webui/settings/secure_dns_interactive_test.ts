@@ -32,7 +32,8 @@ suite('SettingsSecureDnsInputInteractive', function() {
 
   setup(function() {
     assertTrue(document.hasFocus());
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
     flush();
@@ -86,7 +87,8 @@ suite('SettingsSecureDnsInteractive', function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('settings-secure-dns');
     testElement.prefs = {
       dns_over_https:

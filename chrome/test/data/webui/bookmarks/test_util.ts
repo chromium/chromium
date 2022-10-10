@@ -10,7 +10,7 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
  * Replace the current body of the test with a new element.
  */
 export function replaceBody(element: Element) {
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
 
   window.history.replaceState({}, '', '/');
 

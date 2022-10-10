@@ -105,7 +105,8 @@ suite('PasswordsSection_Cros', function() {
   let elementFactory: CrosPasswordSectionElementFactory;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);

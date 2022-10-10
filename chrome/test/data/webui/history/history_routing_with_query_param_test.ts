@@ -17,7 +17,8 @@ suite('routing-with-query-param', function() {
   let testService: TestBrowserService;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     window.history.replaceState({}, '', '/?q=query');
     testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);

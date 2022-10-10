@@ -179,7 +179,8 @@ suite('SiteDetails', function() {
     websiteUsageProxy = new TestWebsiteUsageBrowserProxy();
     WebsiteUsageBrowserProxyImpl.setInstance(websiteUsageProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   function createSiteDetails(origin: string) {

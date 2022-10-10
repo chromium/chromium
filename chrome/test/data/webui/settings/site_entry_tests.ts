@@ -63,7 +63,8 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('site-entry');
     document.body.appendChild(testElement);
   });
@@ -484,7 +485,8 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('site-entry');
     document.body.appendChild(testElement);
   });

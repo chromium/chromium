@@ -24,7 +24,8 @@ function createBrowserProxy() {
 
 suite('history-clusters', () => {
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     createBrowserProxy();
   });

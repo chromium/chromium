@@ -36,7 +36,8 @@ suite(extension_manager_unit_tests.suiteName, function() {
     browserProxy = new TestKioskBrowserProxy();
     KioskBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     service = new TestService();
     Service.setInstance(service);

@@ -69,7 +69,8 @@ suite(extension_kiosk_mode_tests.suiteName, function() {
   }
 
   async function initPage() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     browserProxy.reset();
     dialog = document.createElement('extensions-kiosk-dialog');
     document.body.appendChild(dialog);

@@ -36,7 +36,8 @@ suite(extension_navigation_helper_tests.suiteName, function() {
   let navigationHelper: NavigationHelper;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     navigationHelper = new NavigationHelper();
   });
 

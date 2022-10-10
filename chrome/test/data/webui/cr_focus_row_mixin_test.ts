@@ -83,7 +83,8 @@ suite('cr-focus-row-mixin-test', function() {
   let testElement: TestFocusRowMixinElement;
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     testElement = document.createElement('test-focus-row-mixin-element');
     document.body.appendChild(testElement);

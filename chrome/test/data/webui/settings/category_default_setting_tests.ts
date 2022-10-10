@@ -26,7 +26,8 @@ suite('CategoryDefaultSetting', function() {
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testElement = document.createElement('category-default-setting');
     testElement.subOptionLabel = 'test label';
     document.body.appendChild(testElement);

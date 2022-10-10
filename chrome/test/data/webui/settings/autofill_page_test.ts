@@ -142,7 +142,8 @@ suite('PasswordsAndForms', function() {
 
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
@@ -308,7 +309,7 @@ function createAutofillPageSection() {
       value: false,
     },
   };
-  document.body.innerHTML = '';
+  document.body.innerHTML = window.trustedTypes!.emptyHTML as unknown as string;
   document.body.appendChild(autofillPage);
   flush();
   return autofillPage;

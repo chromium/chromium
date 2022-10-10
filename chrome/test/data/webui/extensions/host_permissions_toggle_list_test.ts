@@ -25,7 +25,8 @@ suite('HostPermissionsToggleList', function() {
   };
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     element = document.createElement('extensions-host-permissions-toggle-list');
     delegate = new TestService();
     delegate.userSiteSettings = userSiteSettings;

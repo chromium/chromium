@@ -27,7 +27,8 @@ suite(link_container_test.suiteName, function() {
   let linkContainer: PrintPreviewLinkContainerElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     linkContainer = document.createElement('print-preview-link-container');
     document.body.appendChild(linkContainer);
 

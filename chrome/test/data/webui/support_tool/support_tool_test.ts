@@ -152,7 +152,8 @@ suite('SupportToolTest', function() {
 
   setup(async function() {
     loadTimeData.overrideValues(strings);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     browserProxy = new TestSupportToolBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
     supportTool = document.createElement('support-tool');
@@ -270,7 +271,8 @@ suite('UrlGeneratorTest', function() {
   let browserProxy: TestSupportToolBrowserProxy;
 
   setup(async function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     browserProxy = new TestSupportToolBrowserProxy();
     BrowserProxyImpl.setInstance(browserProxy);
     urlGenerator = document.createElement('url-generator');

@@ -44,7 +44,8 @@ suite('RelaunchConfirmationDialogTestSuite', function() {
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     testRelaunchMixin = document.createElement('test-relaunch-mixin-element');
     document.body.appendChild(testRelaunchMixin);
     flush();

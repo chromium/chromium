@@ -96,7 +96,8 @@ suite('SafetyCheckChromeCleanerUiTests', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     page = document.createElement('settings-safety-check-chrome-cleaner-child');
     document.body.appendChild(page);
     flush();

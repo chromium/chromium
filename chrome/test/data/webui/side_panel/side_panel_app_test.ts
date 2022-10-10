@@ -13,7 +13,8 @@ suite('SidePanelAppElementTest', () => {
   let sidePanelApp: SidePanelAppElement;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     sidePanelApp = document.createElement('side-panel-app');
     document.body.appendChild(sidePanelApp);
   });

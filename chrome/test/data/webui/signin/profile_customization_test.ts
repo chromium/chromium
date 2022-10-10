@@ -42,7 +42,8 @@ import {TestProfileCustomizationBrowserProxy} from './test_profile_customization
         welcomeTitle: WELCOME_TEXT_1,
       });
       ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
-      document.body.innerHTML = '';
+      document.body.innerHTML =
+          window.trustedTypes!.emptyHTML as unknown as string;
       app = document.createElement('profile-customization-app');
       document.body.append(app);
       return browserProxy.whenCalled('initialized');
@@ -180,7 +181,8 @@ suite(`LocalProfileCreationTest`, function() {
       welcomeTitle: '',
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     app = document.createElement('profile-customization-app');
     document.body.append(app);
     return browserProxy.whenCalled('initialized');

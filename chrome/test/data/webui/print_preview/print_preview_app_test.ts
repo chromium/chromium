@@ -72,7 +72,8 @@ suite(print_preview_app_test.suiteName, function() {
 
   setup(function() {
     // Stub out the native layer and the plugin.
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     // <if expr="is_chromeos">

@@ -17,7 +17,8 @@ suite('#overflow-menu', function() {
   let target2: HTMLElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const testService = new TestBrowserService();
     BrowserServiceImpl.setInstance(testService);
 

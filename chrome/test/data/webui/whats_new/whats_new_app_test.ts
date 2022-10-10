@@ -40,7 +40,8 @@ suite('WhatsNewAppTest', function() {
       'chrome://webui-test/whats_new/test_with_command_3.html';
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   test('with query parameters', async () => {

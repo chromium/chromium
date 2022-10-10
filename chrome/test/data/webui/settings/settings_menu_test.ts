@@ -15,7 +15,8 @@ suite('SettingsMenu', function() {
   let settingsMenu: SettingsMenuElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     settingsMenu = document.createElement('settings-menu');
     settingsMenu.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMenu);
@@ -55,7 +56,8 @@ suite('SettingsMenuReset', function() {
   let settingsMenu: SettingsMenuElement;
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     Router.getInstance().navigateTo(routes.RESET, undefined);
     settingsMenu = document.createElement('settings-menu');
     document.body.appendChild(settingsMenu);

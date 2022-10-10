@@ -78,7 +78,8 @@ suite(destination_settings_test.suiteName, function() {
   });
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     // Stub out native layer.
     nativeLayer = new NativeLayerStub();

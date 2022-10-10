@@ -35,7 +35,8 @@ suite(preview_area_test.suiteName, function() {
     pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.setSetting('pages', [1, 2, 3]);

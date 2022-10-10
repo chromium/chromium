@@ -24,7 +24,8 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.setValidationResult(true);
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
 
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
   });
 
   function setupAddDialog() {

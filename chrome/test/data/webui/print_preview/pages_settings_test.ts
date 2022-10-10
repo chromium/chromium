@@ -39,7 +39,8 @@ suite(pages_settings_test.suiteName, function() {
   const limitError: string = 'Out of bounds page reference, limit is ';
 
   setup(function() {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
 

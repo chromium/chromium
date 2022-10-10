@@ -14,7 +14,8 @@ suite('ErrorMessageElementTest', () => {
   let c2cErrorMessage: ErrorMessageElement;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
 
     c2cErrorMessage = document.createElement('c2c-error-message');
     document.body.appendChild(c2cErrorMessage);
