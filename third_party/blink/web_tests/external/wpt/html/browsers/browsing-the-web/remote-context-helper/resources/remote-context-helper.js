@@ -49,7 +49,7 @@
 {
   const RESOURCES_PATH =
       '/html/browsers/browsing-the-web/remote-context-helper/resources';
-  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.html`;
+  const WINDOW_EXECUTOR_PATH = `${RESOURCES_PATH}/executor.sub.html`;
   const WORKER_EXECUTOR_PATH = `${RESOURCES_PATH}/executor-worker.js`;
 
   /**
