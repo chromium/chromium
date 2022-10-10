@@ -12,8 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher_platform.h"
 #include "components/cast_receiver/common/public/status.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
-#include "third_party/cast_core/public/src/proto/runtime/runtime_service.castcore.pb.h"
 
 namespace cast_receiver {
 class ApplicationClient;

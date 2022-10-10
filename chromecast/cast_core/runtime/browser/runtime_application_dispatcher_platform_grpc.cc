@@ -140,6 +140,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLoadApplication(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (request.cast_session_id().empty()) {
+    LOG(ERROR) << "Session ID is empty";
     reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
                                 "Application session ID is missing"));
     return;
@@ -147,8 +148,9 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLoadApplication(
 
   std::string session_id = request.cast_session_id();
   if (client_->HasApplication(session_id)) {
-    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
-                                "Application already exists"));
+    LOG(ERROR) << "Application already exists";
+    reactor->Write(grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
+                                "Application already exist"));
     return;
   }
 
@@ -173,6 +175,20 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLaunchApplication(
     cast::runtime::LaunchApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.cast_session_id().empty()) {
+    LOG(ERROR) << "Session id is empty";
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Sesssion id is missing"));
+    return;
+  }
+
+  std::string session_id = request.cast_session_id();
+  if (!client_->HasApplication(session_id)) {
+    LOG(ERROR) << "Application does not exist";
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Application does not exists"));
+    return;
+  }
 
   client_->LaunchApplication(
       std::move(request),
@@ -180,7 +196,7 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleLaunchApplication(
           task_runner_,
           base::BindOnce(
               &RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLaunching,
-              weak_factory_.GetWeakPtr(), request.cast_session_id(),
+              weak_factory_.GetWeakPtr(), std::move(session_id),
               std::move(reactor))));
 }
 
@@ -188,11 +204,17 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStopApplication(
     cast::runtime::StopApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.cast_session_id().empty()) {
+    LOG(ERROR) << "Session id is missing";
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Sesssion id is missing"));
+    return;
+  }
 
   std::unique_ptr<RuntimeApplication> app =
       client_->StopApplication(request.cast_session_id());
   if (!app) {
-    LOG(ERROR) << "Application doesn't exist anymore: session_id"
+    LOG(ERROR) << "Application doesn't exist anymore: session_id="
                << request.cast_session_id();
     reactor->Write(
         grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
@@ -272,7 +294,8 @@ void RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLoaded(
     cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
     cast_receiver::Status success) {
   if (!client_->HasApplication(session_id)) {
-    LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
+    LOG(ERROR) << "Application doesn't exist anymore: session_id="
+               << session_id;
     reactor->Write(
         grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
     return;
@@ -294,7 +317,8 @@ void RuntimeApplicationDispatcherPlatformGrpc::OnApplicationLaunching(
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
     cast_receiver::Status success) {
   if (!client_->HasApplication(session_id)) {
-    LOG(ERROR) << "Application doesn't exist anymore: session_id" << session_id;
+    LOG(ERROR) << "Application doesn't exist anymore: session_id="
+               << session_id;
     reactor->Write(
         grpc::Status(grpc::StatusCode::NOT_FOUND, "Application not found"));
     return;

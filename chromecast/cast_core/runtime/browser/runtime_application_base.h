@@ -133,20 +133,18 @@ class RuntimeApplicationBase : public RuntimeApplication,
 
   const std::string cast_session_id_;
   const cast::common::ApplicationConfig app_config_;
-
+  // Renderer type used by this application.
+  mojom::RendererType renderer_type_;
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // The WebView associated with the window in which the Cast application is
   // displayed.
   CastWebView::Scoped cast_web_view_;
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   // Flags whether the application is running or stopped.
   bool is_application_running_ = false;
-
-  // Renderer type used by this application.
-  mojom::RendererType renderer_type_;
 
   cast::common::MediaState::Type media_state_ =
       cast::common::MediaState::LOAD_BLOCKED;

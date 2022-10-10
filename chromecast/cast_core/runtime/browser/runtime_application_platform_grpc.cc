@@ -139,7 +139,9 @@ void RuntimeApplicationPlatformGrpc::HandlePostMessage(
 
   const auto success = client_->OnMessagePortMessage(std::move(request));
   if (success) {
-    reactor->Write(grpc::Status());
+    cast::web::MessagePortStatus message_port_status;
+    message_port_status.set_status(cast::web::MessagePortStatus::OK);
+    reactor->Write(std::move(message_port_status));
   } else {
     reactor->Write(
         grpc::Status(grpc::StatusCode::UNKNOWN, "Failed to post message"));

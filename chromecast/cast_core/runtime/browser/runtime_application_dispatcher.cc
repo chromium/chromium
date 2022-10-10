@@ -123,19 +123,18 @@ void RuntimeApplicationDispatcher::OnApplicationLaunching(
     std::string session_id,
     StatusCallback callback,
     cast_receiver::Status status) {
-  std::move(callback).Run(status);
-
   if (!status) {
-    return;
+    LOG(INFO) << "Failed to launch application";
+    auto iter = loaded_apps_.find(session_id);
+    if (iter != loaded_apps_.end()) {
+      loaded_apps_.erase(iter);
+
+      // TODO(b/232140331): Call this only when foreground app changes.
+      application_client_->OnForegroundApplicationChanged(nullptr);
+    }
   }
 
-  auto iter = loaded_apps_.find(session_id);
-  if (iter != loaded_apps_.end()) {
-    loaded_apps_.erase(iter);
-
-    // TODO(b/232140331): Call this only when foreground app changes.
-    application_client_->OnForegroundApplicationChanged(nullptr);
-  }
+  std::move(callback).Run(status);
 }
 
 }  // namespace chromecast
