@@ -5851,7 +5851,6 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
   auto collected_data = ash::metrics_util::StopDataCollection();
   std::vector<api::autotest_private::ThroughputTrackerAnimationData>
       result_data;
-  result_data.reserve(collected_data.size());
   for (const auto& data : collected_data) {
     api::autotest_private::ThroughputTrackerAnimationData animation_data;
     animation_data.frames_expected = data.frames_expected;
@@ -5859,41 +5858,15 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
     animation_data.jank_count = data.jank_count;
     result_data.emplace_back(std::move(animation_data));
   }
+
   return RespondNow(
       ArgumentList(api::autotest_private::StopThroughputTrackerDataCollection::
                        Results::Create(result_data)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateGetThroughputTrackerDataFunction
-///////////////////////////////////////////////////////////////////////////////
-AutotestPrivateGetThroughputTrackerDataFunction::
-    AutotestPrivateGetThroughputTrackerDataFunction() = default;
-
-AutotestPrivateGetThroughputTrackerDataFunction::
-    ~AutotestPrivateGetThroughputTrackerDataFunction() = default;
-
-ExtensionFunction::ResponseAction
-AutotestPrivateGetThroughputTrackerDataFunction::Run() {
-  auto collected_data = ash::metrics_util::GetCollectedData();
-  std::vector<api::autotest_private::ThroughputTrackerAnimationData>
-      result_data;
-  result_data.reserve(collected_data.size());
-  for (const auto& data : collected_data) {
-    api::autotest_private::ThroughputTrackerAnimationData animation_data;
-    animation_data.frames_expected = data.frames_expected;
-    animation_data.frames_produced = data.frames_produced;
-    animation_data.jank_count = data.jank_count;
-    result_data.emplace_back(std::move(animation_data));
-  }
-  return RespondNow(ArgumentList(
-      api::autotest_private::GetThroughputTrackerData::Results::Create(
-          result_data)));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetDisplaySmoothnessFunction
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 AutotestPrivateGetDisplaySmoothnessFunction::
     AutotestPrivateGetDisplaySmoothnessFunction() = default;

@@ -34,10 +34,6 @@ ASH_PUBLIC_EXPORT void StartDataCollection();
 ASH_PUBLIC_EXPORT std::vector<cc::FrameSequenceMetrics::CustomReportData>
 StopDataCollection();
 
-// Gets the currently collected data and clears it after return.
-ASH_PUBLIC_EXPORT std::vector<cc::FrameSequenceMetrics::CustomReportData>
-GetCollectedData();
-
 // Returns smoothness calculated from given data.
 ASH_PUBLIC_EXPORT int CalculateSmoothness(
     const cc::FrameSequenceMetrics::CustomReportData& data);

@@ -522,18 +522,13 @@ var defaultTests = [
         })
         .then(function() {
           return promisify(
-              chrome.autotestPrivate.getThroughputTrackerData);
+              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
         })
         .then(function(data) {
           chrome.test.assertTrue(data.length > 0);
           return promisify(unminimizeBrowserWindow);
         })
         .then(function() {
-          return promisify(
-              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
-        })
-        .then(function(data) {
-          chrome.test.assertTrue(data.length > 0);
           chrome.test.succeed();
         })
         .catch(function(err) {
