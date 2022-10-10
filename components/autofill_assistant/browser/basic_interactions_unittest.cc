@@ -525,6 +525,38 @@ TEST_F(BasicInteractionsTest, ComputeValueIntegerSum) {
   EXPECT_TRUE(user_model_.GetValue("result")->is_client_side_only());
 }
 
+TEST_F(BasicInteractionsTest, ComputeValueArrayLength) {
+  ComputeValueProto proto;
+  proto.set_result_model_identifier("result");
+  proto.mutable_array_length();
+
+  // Missing fields.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Add missing field, but |value| doesn't exist in |user_model_|
+  proto.mutable_array_length()->mutable_value()->set_model_identifier("value");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Empty value
+  user_model_.SetValue("value", ValueProto());
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(0));
+
+  // Empty array
+  ValueProto value;
+  value.mutable_ints();
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(0));
+
+  // Non-Empty array
+  value.mutable_ints()->add_values(5);
+  value.mutable_ints()->add_values(6);
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(2));
+}
+
 TEST_F(BasicInteractionsTest, EndActionWithoutCallbackFails) {
   EndActionProto proto;
   EXPECT_FALSE(basic_interactions_.EndAction(ClientStatus(INVALID_ACTION)));

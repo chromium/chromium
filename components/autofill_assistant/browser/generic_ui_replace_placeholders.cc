@@ -334,6 +334,14 @@ void ReplacePlaceholdersInCallback(
                                        placeholders);
           }
           return;
+        case ComputeValueProto::kArrayLength:
+          if (in_out_proto->compute_value().array_length().has_value()) {
+            ReplacePlaceholdersInValue(in_out_proto->mutable_compute_value()
+                                           ->mutable_array_length()
+                                           ->mutable_value(),
+                                       placeholders);
+          }
+          return;
         case ComputeValueProto::KIND_NOT_SET:
           return;
       }

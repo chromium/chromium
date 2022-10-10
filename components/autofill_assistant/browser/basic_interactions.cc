@@ -427,6 +427,20 @@ bool StringEmpty(UserModel* user_model,
   return true;
 }
 
+bool ArrayLength(UserModel* user_model,
+                 const std::string& result_model_identifier,
+                 const ArrayLengthProto& proto) {
+  auto value = user_model->GetValue(proto.value());
+  if (!value.has_value()) {
+    DVLOG(2) << "Failed to find value in user model";
+    return false;
+  }
+  user_model->SetValue(
+      result_model_identifier,
+      SimpleValue(GetValueSize(*value), ContainsClientOnlyValue({*value})));
+  return true;
+}
+
 }  // namespace
 
 base::WeakPtr<BasicInteractions> BasicInteractions::GetWeakPtr() {
@@ -533,6 +547,15 @@ bool BasicInteractions::ComputeValue(const ComputeValueProto& proto) {
       }
       return StringEmpty(execution_delegate_->GetUserModel(),
                          proto.result_model_identifier(), proto.string_empty());
+    case ComputeValueProto::kArrayLength: {
+      if (!proto.array_length().has_value()) {
+        DVLOG(2)
+            << "Error computing ComputeValue::ArrayLength: no value specified";
+        return false;
+      }
+      return ArrayLength(execution_delegate_->GetUserModel(),
+                         proto.result_model_identifier(), proto.array_length());
+    }
     case ComputeValueProto::KIND_NOT_SET:
       DVLOG(2) << "Error computing value: kind not set";
       return false;

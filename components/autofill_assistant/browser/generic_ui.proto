@@ -139,6 +139,8 @@ message ComputeValueProto {
     CreateLoginOptionResponseProto create_login_option_response = 9;
     // Check if a string value is empty.
     StringEmptyProto string_empty = 10;
+    // Writes the length of array model_identifier to the result.
+    ArrayLengthProto array_length = 11;
   }
 
   // The model identifier to write the result to.
@@ -248,6 +250,15 @@ message IntegerSumProto {
   repeated ValueReferenceProto values = 3;
 
   reserved 1, 2;
+}
+
+// Computes the length of a list |value|.
+// If |value| doesn't point to a list, e.g. if it points to
+// |credit_card_response|, we simply return 1.
+message ArrayLengthProto {
+  // |value| is a required field.
+  // If not present, |result_model_identifier| won't be written.
+  optional ValueReferenceProto value = 1;
 }
 
 // Creates a safe-to-transmit CreditCardResponseProto for the input |value|.
