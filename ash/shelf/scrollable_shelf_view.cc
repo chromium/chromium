@@ -355,10 +355,6 @@ void ScrollableShelfView::Init() {
       ScrollArrowView::kRight, GetShelf()->IsHorizontalAlignment(), shelf_view_,
       this));
 
-  gradient_layer_delegate_ =
-      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
-  layer()->SetMaskLayer(gradient_layer_delegate_->layer());
-
   focus_search_ = std::make_unique<ScrollableShelfFocusSearch>(this);
 
   GetShelf()->tooltip()->set_shelf_tooltip_delegate(this);
@@ -782,13 +778,6 @@ void ScrollableShelfView::Layout() {
   right_arrow_->SetVisible(!right_arrow_bounds.IsEmpty());
   right_arrow_->SetBoundsRect(right_arrow_bounds);
 
-  // Layer::Clone(), which may be triggered by screen rotation, does not copy
-  // the mask layer. So we may need to reset the mask layer.
-  if (ShouldApplyMaskLayerGradientZone() && !layer()->layer_mask_layer()) {
-    DCHECK(!gradient_layer_delegate_->layer()->layer_mask_back_link());
-    layer()->SetMaskLayer(gradient_layer_delegate_->layer());
-  }
-
   MaybeUpdateGradientZone();
 
   // Layout |shelf_container_view_|.
@@ -851,11 +840,6 @@ void ScrollableShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void ScrollableShelfView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (ShouldApplyMaskLayerGradientZone() &&
-      gradient_layer_delegate_->layer()->bounds() != layer()->bounds()) {
-    gradient_layer_delegate_->layer()->SetBounds(layer()->bounds());
-  }
-
   const gfx::Insets old_edge_padding_insets = edge_padding_insets_;
   const gfx::Vector2dF old_scroll_offset = scroll_offset_;
 
@@ -976,7 +960,7 @@ void ScrollableShelfView::ScrollRectToVisible(const gfx::Rect& rect) {
 }
 
 std::unique_ptr<ui::Layer> ScrollableShelfView::RecreateLayer() {
-  layer()->SetMaskLayer(nullptr);
+  layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
   return views::View::RecreateLayer();
 }
 
@@ -1583,78 +1567,142 @@ float ScrollableShelfView::CalculateTargetOffsetAfterScroll(
   return target_offset;
 }
 
-GradientLayerDelegate::FadeZone
-ScrollableShelfView::CalculateStartGradientZone() const {
-  if (!should_show_start_gradient_zone_)
-    return GradientLayerDelegate::FadeZone();
+void ScrollableShelfView::CalculateHorizontalGradient(
+    gfx::LinearGradient* gradient_mask) {
+  auto get_clamped = [](int position, int total) -> float {
+    return std::clamp(static_cast<float>(position) / total, 0.f, 1.f);
+  };
 
-  gfx::Rect zone_rect;
-  bool fade_in = false;
-  const bool is_horizontal_alignment = GetShelf()->IsHorizontalAlignment();
-
-  if (is_horizontal_alignment) {
-    int gradient_start;
-    int gradient_end;
-
-    // Calculates the bounds of the gradient zone. Enlarge the gradient zone by
-    // one-pixel to offset the potential rounding error during rendering (we
-    // also do it in CalculateEndGradientZone()).
-    if (ShouldAdaptToRTL()) {
-      const int border = visible_space_.right();
-      gradient_start = border - scrollable_shelf_constants::kGradientZoneLength;
-      gradient_end = border + 1;
-    } else {
-      const int border = visible_space_.x();
-      gradient_start = border - 1;
-      gradient_end = border + scrollable_shelf_constants::kGradientZoneLength;
-    }
-    zone_rect =
-        gfx::Rect(gradient_start, 0, gradient_end - gradient_start, height());
-  } else {
-    zone_rect = gfx::Rect(0, visible_space_.y() - 1, width(),
-                          scrollable_shelf_constants::kGradientZoneLength + 1);
+  // Do not add gradient if visible width is too narrow.
+  if (visible_space_.right() <
+      visible_space_.x() +
+          2 * scrollable_shelf_constants::kGradientZoneLength) {
+    return;
   }
 
-  fade_in = !ShouldAdaptToRTL();
+  float gradient_start, gradient_end;
 
-  return {zone_rect, fade_in, is_horizontal_alignment};
+  const bool rtl = ShouldAdaptToRTL();
+
+  // Horizontal linear gradient, from left to right
+  gradient_mask->set_angle(0);
+
+  // If true, create a gradient area that fades in the shelf app buttons at
+  // the beginning
+  const bool show_fade_in =
+      rtl ? should_show_end_gradient_zone_ : should_show_start_gradient_zone_;
+  if (show_fade_in) {
+    gradient_start = get_clamped((visible_space_.x() - 1), width());
+    gradient_end = get_clamped(
+        (visible_space_.x() + scrollable_shelf_constants::kGradientZoneLength),
+        width());
+
+    // When the scroll arrow button shows, `gradient_start` is greater than 0.
+    // Ensure that the area in the range [0, gradient_start) has an opaque
+    // opacity so that the scroll arrow button is visible.
+    if (gradient_start > 0) {
+      gradient_mask->AddStep(0, /*alpha=*/255);
+      gradient_mask->AddStep(get_clamped((visible_space_.x() - 2), width()),
+                             255);
+    }
+    gradient_mask->AddStep(gradient_start, 0);
+    gradient_mask->AddStep(gradient_end, 255);
+  }
+
+  // If true, create a gradient area that fades out the shelf app buttons at
+  // the end
+  bool show_fade_out =
+      rtl ? should_show_start_gradient_zone_ : should_show_end_gradient_zone_;
+  if (show_fade_out) {
+    gradient_start =
+        get_clamped((visible_space_.right() -
+                     scrollable_shelf_constants::kGradientZoneLength),
+                    width());
+    gradient_end = get_clamped((visible_space_.right() + 1), width());
+    gradient_mask->AddStep(gradient_start, /*alpha=*/255);
+    gradient_mask->AddStep(gradient_end, 0);
+
+    // When the scroll arrow button shows, `gradient_end` is less than 1.
+    // Ensure that the area in the range (gradient_end, 1] has an opaque
+    // opacity so that the scroll arrow button is visible.
+    if (gradient_end < 1) {
+      gradient_mask->AddStep(get_clamped((visible_space_.right() + 2), width()),
+                             255);
+      gradient_mask->AddStep(1, 255);
+    }
+  }
 }
 
-GradientLayerDelegate::FadeZone ScrollableShelfView::CalculateEndGradientZone()
-    const {
-  if (!should_show_end_gradient_zone_)
-    return GradientLayerDelegate::FadeZone();
+void ScrollableShelfView::CalculateVerticalGradient(
+    gfx::LinearGradient* gradient_mask) {
+  auto get_clamped = [](int position, int total) -> float {
+    return std::clamp(static_cast<float>(position) / total, 0.f, 1.f);
+  };
 
-  gfx::Rect zone_rect;
-  bool fade_in = false;
-  const bool is_horizontal_alignment = GetShelf()->IsHorizontalAlignment();
+  float gradient_start, gradient_end;
 
-  if (is_horizontal_alignment) {
-    int gradient_start;
-    int gradient_end;
+  DCHECK(!ShouldAdaptToRTL());
 
-    if (ShouldAdaptToRTL()) {
-      const int border = visible_space_.x();
-      gradient_start = border - 1;
-      gradient_end = border + scrollable_shelf_constants::kGradientZoneLength;
-    } else {
-      const int border = visible_space_.right();
-      gradient_start = border - scrollable_shelf_constants::kGradientZoneLength;
-      gradient_end = border + 1;
+  // Vertical gradient from top to bottom.
+  gradient_mask->set_angle(-90);
+
+  if (should_show_start_gradient_zone_) {
+    gradient_start = get_clamped((visible_space_.y() - 1), height());
+    gradient_end = get_clamped(
+        (visible_space_.y() + scrollable_shelf_constants::kGradientZoneLength),
+        height());
+
+    // When the scroll arrow button shows, `gradient_start` is greater than 0.
+    // Ensure that the area in the range [0, gradient_start) has an opaque
+    // opacity so that the scroll arrow button is visible.
+    if (gradient_start > 0) {
+      gradient_mask->AddStep(0, /*alpha=*/255);
+      gradient_mask->AddStep(get_clamped((visible_space_.y() - 2), height()),
+                             255);
     }
-    zone_rect =
-        gfx::Rect(gradient_start, 0, gradient_end - gradient_start, height());
-  } else {
-    zone_rect =
-        gfx::Rect(0,
-                  visible_space_.bottom() -
-                      scrollable_shelf_constants::kGradientZoneLength,
-                  width(), scrollable_shelf_constants::kGradientZoneLength + 1);
+    gradient_mask->AddStep(gradient_start, 0);
+    gradient_mask->AddStep(gradient_end, 255);
   }
 
-  fade_in = ShouldAdaptToRTL();
+  if (should_show_end_gradient_zone_) {
+    gradient_start =
+        get_clamped((visible_space_.bottom() -
+                     scrollable_shelf_constants::kGradientZoneLength),
+                    height());
+    gradient_end = get_clamped((visible_space_.bottom() + 1), height());
+    gradient_mask->AddStep(gradient_start,
+                           /*alpha=*/255);
+    gradient_mask->AddStep(gradient_end, 0);
 
-  return {zone_rect, fade_in, is_horizontal_alignment};
+    // When the scroll arrow button shows, `gradient_end` is less than 1.
+    // Ensure that the area in the range (gradient_end, 1] has an opaque
+    // opacity so that the scroll arrow button is visible.
+    if (gradient_end < 1) {
+      gradient_mask->AddStep(
+          get_clamped((visible_space_.bottom() + 2), height()), 255);
+      gradient_mask->AddStep(1, 255);
+    }
+  }
+}
+
+void ScrollableShelfView::UpdateGradientMask() {
+  // There is no visible shelf app buttons so return early
+  if (bounds().IsEmpty() || visible_space_.IsEmpty())
+    return;
+
+  gfx::LinearGradient gradient_mask;
+
+  if (GetShelf()->IsHorizontalAlignment()) {
+    CalculateHorizontalGradient(&gradient_mask);
+  } else {
+    CalculateVerticalGradient(&gradient_mask);
+  }
+
+  // Return if the gradients do not change.
+  if (gradient_mask == layer()->gradient_mask())
+    return;
+
+  layer()->SetGradientMask(gradient_mask);
 }
 
 void ScrollableShelfView::UpdateGradientZoneState() {
@@ -1686,31 +1734,7 @@ void ScrollableShelfView::MaybeUpdateGradientZone() {
   // (1) Fade zone's visibility changes.
   // (2) Fade zone should show and the arrow button's location changes.
   UpdateGradientZoneState();
-
-  const GradientLayerDelegate::FadeZone target_start_fade_zone =
-      CalculateStartGradientZone();
-  const GradientLayerDelegate::FadeZone target_end_fade_zone =
-      CalculateEndGradientZone();
-
-  const bool should_update_start_fade_zone =
-      target_start_fade_zone.zone_rect !=
-      gradient_layer_delegate_->start_fade_zone_bounds();
-  const bool should_update_end_fade_zone =
-      target_end_fade_zone.zone_rect !=
-      gradient_layer_delegate_->end_fade_zone_bounds();
-
-  if (!should_update_start_fade_zone && !should_update_end_fade_zone)
-    return;
-
-  PaintGradientZone(CalculateStartGradientZone(), CalculateEndGradientZone());
-}
-
-void ScrollableShelfView::PaintGradientZone(
-    const GradientLayerDelegate::FadeZone& start_rect,
-    const GradientLayerDelegate::FadeZone& end_rect) {
-  gradient_layer_delegate_->set_start_fade_zone(start_rect);
-  gradient_layer_delegate_->set_end_fade_zone(end_rect);
-  SchedulePaint();
+  UpdateGradientMask();
 }
 
 bool ScrollableShelfView::ShouldApplyMaskLayerGradientZone() const {
@@ -2096,15 +2120,10 @@ void ScrollableShelfView::UpdateScrollOffset(float target_offset) {
   const bool strategy_needs_update = (layout_strategy_ != new_strategy);
   if (strategy_needs_update) {
     layout_strategy_ = new_strategy;
-    const bool has_gradient_zone = layer()->layer_mask_layer();
+    const bool has_gradient_zone = !layer()->gradient_mask().IsEmpty();
     const bool should_have_gradient_zone = ShouldApplyMaskLayerGradientZone();
     if (has_gradient_zone && !should_have_gradient_zone) {
-      PaintGradientZone(GradientLayerDelegate::FadeZone(),
-                        GradientLayerDelegate::FadeZone());
-      layer()->SetMaskLayer(nullptr);
-    } else if (!has_gradient_zone && should_have_gradient_zone) {
-      gradient_layer_delegate_->layer()->SetBounds(layer()->bounds());
-      layer()->SetMaskLayer(gradient_layer_delegate_->layer());
+      layer()->SetGradientMask(gfx::LinearGradient::GetEmpty());
     }
     InvalidateLayout();
   }

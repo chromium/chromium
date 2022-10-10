@@ -126,7 +126,7 @@ TEST(RenderPassIOTest, SharedQuadStateList) {
     gfx::Transform transform;
     transform.MakeIdentity();
     gfx::LinearGradient gradient_mask(40);
-    gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
+    gradient_mask.AddStep(/*fraction=*/0, /*alpha=*/0);
     gradient_mask.AddStep(1, 255);
     sqs1->SetAll(
         transform, gfx::Rect(0, 0, 640, 480), gfx::Rect(10, 10, 600, 400),

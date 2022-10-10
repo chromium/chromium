@@ -13,5 +13,5 @@ struct Step {
 struct LinearGradient {
   int16 angle = 0;
   uint8 step_count = 0;
-  array<Step, 6> steps;
+  array<Step, 8> steps;
 };
