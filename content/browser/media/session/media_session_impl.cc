@@ -1118,6 +1118,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
 
   info->muted = is_muted_;
   info->has_presentation = has_presentation_;
+  info->remote_playback_metadata = remote_playback_metadata_.Clone();
 
   return info;
 }
@@ -1615,6 +1616,12 @@ void MediaSessionImpl::OnAudioOutputSinkIdChanged() {
 }
 
 void MediaSessionImpl::OnAudioOutputSinkChangingDisabled() {
+  RebuildAndNotifyMediaSessionInfoChanged();
+}
+
+void MediaSessionImpl::SetRemotePlaybackMetadata(
+    media_session::mojom::RemotePlaybackMetadataPtr metadata) {
+  remote_playback_metadata_ = std::move(metadata);
   RebuildAndNotifyMediaSessionInfoChanged();
 }
 

@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.con/1364238): Move MockMediaSession to content/public/test/.
 class MockMediaSession : public content::MediaSession {
  public:
   MOCK_METHOD(void,

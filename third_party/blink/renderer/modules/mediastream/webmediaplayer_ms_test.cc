@@ -580,6 +580,8 @@ class WebMediaPlayerMSTest
   void DidMediaMetadataChange(
       bool has_audio,
       bool has_video,
+      media::AudioCodec audio_codec,
+      media::VideoCodec video_codec,
       media::MediaContentType media_content_type) override {}
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
@@ -588,6 +590,7 @@ class WebMediaPlayerMSTest
   void DidDisableAudioOutputSinkChanges() override {}
   void DidUseAudioServiceChange(bool uses_audio_service) override {}
   void DidPlayerSizeChange(const gfx::Size& size) override {}
+  void OnRemotePlaybackDisabled(bool disabled) override {}
 
   // Implementation of cc::VideoFrameProvider::Client
   void StopUsingProvider() override;

@@ -214,6 +214,11 @@ void MediaSessionController::OnAudioOutputSinkChangingDisabled() {
   media_session_->OnAudioOutputSinkChangingDisabled();
 }
 
+void MediaSessionController::OnRemotePlaybackMetadataChanged(
+    media_session::mojom::RemotePlaybackMetadataPtr metadata) {
+  media_session_->SetRemotePlaybackMetadata(std::move(metadata));
+}
+
 bool MediaSessionController::IsMediaSessionNeeded() const {
   if (web_contents_->HasPictureInPictureVideo())
     return true;

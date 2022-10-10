@@ -4713,9 +4713,20 @@ void HTMLMediaElement::DidPlayerMutedStatusChange(bool muted) {
 void HTMLMediaElement::DidMediaMetadataChange(
     bool has_audio,
     bool has_video,
+    media::AudioCodec audio_codec,
+    media::VideoCodec video_codec,
     media::MediaContentType media_content_type) {
-  for (auto& observer : media_player_observer_remote_set_->Value())
+  for (auto& observer : media_player_observer_remote_set_->Value()) {
     observer->OnMediaMetadataChanged(has_audio, has_video, media_content_type);
+  }
+
+  if (video_codec == media::VideoCodec::kUnknown &&
+      audio_codec == media::AudioCodec::kUnknown) {
+    return;
+  }
+  video_codec_ = video_codec;
+  audio_codec_ = audio_codec;
+  OnRemotePlaybackMetadataChange();
 }
 
 void HTMLMediaElement::DidPlayerMediaPositionStateChange(
@@ -4745,6 +4756,13 @@ void HTMLMediaElement::DidUseAudioServiceChange(bool uses_audio_service) {
 void HTMLMediaElement::DidPlayerSizeChange(const gfx::Size& size) {
   for (auto& observer : media_player_observer_remote_set_->Value())
     observer->OnMediaSizeChanged(size);
+}
+
+void HTMLMediaElement::OnRemotePlaybackDisabled(bool disabled) {
+  if (is_remote_playback_disabled_ == disabled)
+    return;
+  is_remote_playback_disabled_ = disabled;
+  OnRemotePlaybackMetadataChange();
 }
 
 media::mojom::blink::MediaPlayerHost&
@@ -4861,6 +4879,16 @@ void HTMLMediaElement::ReportCurrentTimeToMediaSource() {
   // See MediaSourceAttachment::OnElementTimeUpdate() for why the attachment
   // needs our currentTime.
   media_source_attachment_->OnElementTimeUpdate(currentTime());
+}
+
+void HTMLMediaElement::OnRemotePlaybackMetadataChange() {
+  for (auto& observer : media_player_observer_remote_set_->Value()) {
+    observer->OnRemotePlaybackMetadataChange(
+        media_session::mojom::blink::RemotePlaybackMetadata::New(
+            WTF::String(media::GetCodecName(video_codec_)),
+            WTF::String(media::GetCodecName(audio_codec_)),
+            is_remote_playback_disabled_));
+  }
 }
 
 HTMLMediaElement::OpenerContextObserver::OpenerContextObserver(

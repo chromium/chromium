@@ -567,6 +567,8 @@ class CORE_EXPORT HTMLMediaElement
   void DidMediaMetadataChange(
       bool has_audio,
       bool has_video,
+      media::AudioCodec audio_codec,
+      media::VideoCodec video_codec,
       media::MediaContentType media_content_type) override;
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
@@ -575,6 +577,7 @@ class CORE_EXPORT HTMLMediaElement
   void DidDisableAudioOutputSinkChanges() override;
   void DidUseAudioServiceChange(bool uses_audio_service) override;
   void DidPlayerSizeChange(const gfx::Size& size) override;
+  void OnRemotePlaybackDisabled(bool disabled) override;
 
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an
@@ -713,6 +716,7 @@ class CORE_EXPORT HTMLMediaElement
   void ReportCurrentTimeToMediaSource();
 
   void ResetMojoState();
+  void OnRemotePlaybackMetadataChange();
 
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
@@ -844,6 +848,11 @@ class CORE_EXPORT HTMLMediaElement
   // Whether or not |web_media_player_| should apply pitch adjustments at
   // playback raters other than 1.0.
   bool preserves_pitch_ = true;
+
+  // Whether the player disables the Remote Playback feature.
+  bool is_remote_playback_disabled_ = false;
+  media::AudioCodec audio_codec_ = media::AudioCodec::kUnknown;
+  media::VideoCodec video_codec_ = media::VideoCodec::kUnknown;
 
   Member<AudioTrackList> audio_tracks_;
   Member<VideoTrackList> video_tracks_;

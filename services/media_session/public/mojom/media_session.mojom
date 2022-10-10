@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -128,6 +128,13 @@ enum CameraState {
   kTurnedOff,
 };
 
+[Stable]
+struct RemotePlaybackMetadata {
+  string video_codec;
+  string audio_codec;
+  bool remote_playback_disabled;
+};
+
 // Contains state information about a MediaSession.
 [Stable]
 struct MediaSessionInfo {
@@ -196,6 +203,9 @@ struct MediaSessionInfo {
 
   // Tracks whether the associated WebContents has a presentation.
   [MinVersion=14] bool has_presentation;
+
+  // Stores the Media metadata used for Remote Playback.
+  [MinVersion=15] RemotePlaybackMetadata? remote_playback_metadata;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -238,7 +248,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 22
+// Next Method ID: 23
 [Stable]
 interface MediaSession {
   [Stable, Extensible]

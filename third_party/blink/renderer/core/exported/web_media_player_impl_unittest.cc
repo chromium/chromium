@@ -173,8 +173,12 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DidPlayerStartPlaying, void());
   MOCK_METHOD1(DidPlayerPaused, void(bool));
   MOCK_METHOD1(DidPlayerMutedStatusChange, void(bool));
-  MOCK_METHOD3(DidMediaMetadataChange,
-               void(bool, bool, media::MediaContentType));
+  MOCK_METHOD5(DidMediaMetadataChange,
+               void(bool,
+                    bool,
+                    media::AudioCodec,
+                    media::VideoCodec,
+                    media::MediaContentType));
   MOCK_METHOD4(DidPlayerMediaPositionStateChange,
                void(double,
                     base::TimeDelta,
@@ -183,6 +187,7 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(DidDisableAudioOutputSinkChanges, void());
   MOCK_METHOD1(DidUseAudioServiceChange, void(bool uses_audio_service));
   MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
+  MOCK_METHOD1(OnRemotePlaybackDisabled, void(bool));
   MOCK_METHOD0(DidBufferUnderflow, void());
   MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD0(OnRequestVideoFrameCallback, void());

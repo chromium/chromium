@@ -572,8 +572,9 @@ WebMediaPlayer::LoadTiming WebMediaPlayerMS::Load(
     MaybeCreateWatchTimeReporter();
   }
 
-  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
-                                  media::MediaContentType::OneShot);
+  client_->DidMediaMetadataChange(
+      HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
+      media::VideoCodec::kUnknown, media::MediaContentType::OneShot);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::OneShot);
 
@@ -713,8 +714,9 @@ void WebMediaPlayerMS::ReloadVideo() {
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
   // focus changes. See https://crbug.com/596516 for more details.
-  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
-                                  media::MediaContentType::OneShot);
+  client_->DidMediaMetadataChange(
+      HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
+      media::VideoCodec::kUnknown, media::MediaContentType::OneShot);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::OneShot);
 }
@@ -773,8 +775,9 @@ void WebMediaPlayerMS::ReloadAudio() {
   // TODO(perkj, magjed): We use OneShot focus type here so that it takes
   // audio focus once it starts, and then will not respond to further audio
   // focus changes. See https://crbug.com/596516 for more details.
-  client_->DidMediaMetadataChange(HasAudio(), HasVideo(),
-                                  media::MediaContentType::OneShot);
+  client_->DidMediaMetadataChange(
+      HasAudio(), HasVideo(), media::AudioCodec::kUnknown,
+      media::VideoCodec::kUnknown, media::MediaContentType::OneShot);
   delegate_->DidMediaMetadataChange(delegate_id_, HasAudio(), HasVideo(),
                                     media::MediaContentType::OneShot);
 }

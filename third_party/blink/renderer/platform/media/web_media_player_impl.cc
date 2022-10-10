@@ -1132,8 +1132,10 @@ void WebMediaPlayerImpl::SetVolume(double volume) {
   if (delegate_has_audio_ != HasUnmutedAudio()) {
     delegate_has_audio_ = HasUnmutedAudio();
     media::MediaContentType content_type = GetMediaContentType();
-    client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
-                                    content_type);
+    client_->DidMediaMetadataChange(
+        delegate_has_audio_, HasVideo(),
+        pipeline_metadata_.audio_decoder_config.codec(),
+        pipeline_metadata_.video_decoder_config.codec(), content_type);
     delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                       HasVideo(), content_type);
   }
@@ -2069,8 +2071,10 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
 
   delegate_has_audio_ = HasUnmutedAudio();
   media::MediaContentType content_type = GetMediaContentType();
-  client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
-                                  content_type);
+  client_->DidMediaMetadataChange(
+      delegate_has_audio_, HasVideo(),
+      pipeline_metadata_.audio_decoder_config.codec(),
+      pipeline_metadata_.video_decoder_config.codec(), content_type);
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                     HasVideo(), content_type);
 
@@ -2357,8 +2361,10 @@ void WebMediaPlayerImpl::OnDurationChange() {
 
   client_->DurationChanged();
   media::MediaContentType content_type = GetMediaContentType();
-  client_->DidMediaMetadataChange(delegate_has_audio_, HasVideo(),
-                                  content_type);
+  client_->DidMediaMetadataChange(
+      delegate_has_audio_, HasVideo(),
+      pipeline_metadata_.audio_decoder_config.codec(),
+      pipeline_metadata_.video_decoder_config.codec(), content_type);
   delegate_->DidMediaMetadataChange(delegate_id_, delegate_has_audio_,
                                     HasVideo(), content_type);
 
@@ -2671,6 +2677,9 @@ void WebMediaPlayerImpl::ScheduleRestart() {
 void WebMediaPlayerImpl::RequestRemotePlaybackDisabled(bool disabled) {
   if (observer_)
     observer_->OnRemotePlaybackDisabled(disabled);
+  if (client_) {
+    client_->OnRemotePlaybackDisabled(disabled);
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

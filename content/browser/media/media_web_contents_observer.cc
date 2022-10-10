@@ -447,6 +447,14 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       ->OnAudioOutputSinkChangingDisabled(media_player_id_);
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnRemotePlaybackMetadataChange(
+        media_session::mojom::RemotePlaybackMetadataPtr
+            remote_playback_metadata) {
+  media_web_contents_observer_->OnRemotePlaybackMetadataChange(
+      media_player_id_, std::move(remote_playback_metadata));
+}
+
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
   PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info)
@@ -568,6 +576,13 @@ void MediaWebContentsObserver::OnAudioOutputSinkChangedWithRawDeviceId(
     const std::string& raw_device_id) {
   session_controllers_manager_->OnAudioOutputSinkChanged(player_id,
                                                          raw_device_id);
+}
+
+void MediaWebContentsObserver::OnRemotePlaybackMetadataChange(
+    const MediaPlayerId& player_id,
+    media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata) {
+  session_controllers_manager_->OnRemotePlaybackMetadataChange(
+      player_id, std::move(remote_playback_metadata));
 }
 
 bool MediaWebContentsObserver::IsMediaPlayerRemoteAvailable(

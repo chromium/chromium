@@ -184,6 +184,13 @@ class TestMediaPlayerObserver final
 
   void OnAudioOutputSinkChangingDisabled() override {}
 
+  void OnRemotePlaybackMetadataChange(
+      media_session::mojom::blink::RemotePlaybackMetadataPtr
+          remote_playback_metadata) override {
+    received_remote_playback_metadata_ = std::move(remote_playback_metadata);
+    run_loop_->Quit();
+  }
+
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 
@@ -206,6 +213,12 @@ class TestMediaPlayerObserver final
     return received_uses_audio_service_.value() == uses_audio_service;
   }
 
+  bool received_remote_playback_metadata(
+      media_session::mojom::blink::RemotePlaybackMetadataPtr
+          remote_playback_metadata) const {
+    return received_remote_playback_metadata_ == remote_playback_metadata;
+  }
+
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   bool received_media_playing_{false};
@@ -214,6 +227,8 @@ class TestMediaPlayerObserver final
   absl::optional<OnMetadataChangedResult> received_metadata_changed_result_;
   gfx::Size received_media_size_{0, 0};
   absl::optional<bool> received_uses_audio_service_;
+  media_session::mojom::blink::RemotePlaybackMetadataPtr
+      received_remote_playback_metadata_;
 };
 
 class TestMediaPlayerHost final : public media::mojom::blink::MediaPlayerHost {
@@ -377,9 +392,17 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
   void NotifyMediaMetadataChanged(bool has_audio,
                                   bool has_video,
+                                  media::AudioCodec audio_codec,
+                                  media::VideoCodec video_codec,
                                   media::MediaContentType media_content_type) {
-    media_->DidMediaMetadataChange(has_audio, has_video, media_content_type);
+    media_->DidMediaMetadataChange(has_audio, has_video, audio_codec,
+                                   video_codec, media_content_type);
     media_player_observer().WaitUntilReceivedMessage();
+    // wait for OnRemotePlaybackMetadataChange() to be called.
+    if (audio_codec != media::AudioCodec::kUnknown ||
+        video_codec != media::VideoCodec::kUnknown) {
+      media_player_observer().WaitUntilReceivedMessage();
+    }
   }
 
   bool ReceivedMessageMediaMetadataChanged(
@@ -409,6 +432,18 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   bool ReceivedMessageUseAudioServiceChanged(bool uses_audio_service) {
     return media_player_observer().received_use_audio_service_changed(
         uses_audio_service);
+  }
+
+  void NotifyRemotePlaybackDisabled(bool is_remote_playback_disabled) {
+    media_->OnRemotePlaybackDisabled(is_remote_playback_disabled);
+    media_player_observer().WaitUntilReceivedMessage();
+  }
+
+  bool ReceivedRemotePlaybackMetadataChange(
+      media_session::mojom::blink::RemotePlaybackMetadataPtr
+          remote_playback_metadata) {
+    return media_player_observer().received_remote_playback_metadata(
+        std::move(remote_playback_metadata));
   }
 
   bool WasPlayerDestroyed() const { return !media_player_weak_; }
@@ -1117,19 +1152,33 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
 
   bool has_audio = false;
   bool has_video = true;
+  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
+  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
   media::MediaContentType media_content_type =
       media::MediaContentType::Transient;
 
-  NotifyMediaMetadataChanged(has_audio, has_video, media_content_type);
+  NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
+                             media_content_type);
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
                                                   media_content_type));
   // Change values and test again.
   has_audio = true;
   has_video = false;
   media_content_type = media::MediaContentType::OneShot;
-  NotifyMediaMetadataChanged(has_audio, has_video, media_content_type);
+  NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
+                             media_content_type);
   EXPECT_TRUE(ReceivedMessageMediaMetadataChanged(has_audio, has_video,
                                                   media_content_type));
+
+  // Send codecs
+  audio_codec = media::AudioCodec::kAAC;
+  video_codec = media::VideoCodec::kH264;
+  NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
+                             media_content_type);
+  EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
+      media_session::mojom::blink::RemotePlaybackMetadata::New(
+          WTF::String(media::GetCodecName(video_codec)),
+          WTF::String(media::GetCodecName(audio_codec)), false)));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
@@ -1138,6 +1187,21 @@ TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
   const gfx::Size kTestMediaSizeChangedValue(16, 9);
   NotifyMediaSizeChange(kTestMediaSizeChangedValue);
   EXPECT_TRUE(ReceivedMessageMediaSizeChange(kTestMediaSizeChangedValue));
+}
+
+TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
+  WaitForPlayer();
+  media::VideoCodec video_codec = media::VideoCodec::kH264;
+  media::AudioCodec audio_codec = media::AudioCodec::kAAC;
+  bool is_remote_playback_disabled = true;
+  NotifyMediaMetadataChanged(true, true, audio_codec, video_codec,
+                             media::MediaContentType::Transient);
+  NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
+  EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
+      media_session::mojom::blink::RemotePlaybackMetadata::New(
+          WTF::String(media::GetCodecName(video_codec)),
+          WTF::String(media::GetCodecName(audio_codec)),
+          is_remote_playback_disabled)));
 }
 
 TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {

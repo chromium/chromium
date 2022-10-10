@@ -143,6 +143,14 @@ void MediaSessionControllersManager::OnAudioOutputSinkChangingDisabled(
   controller->OnAudioOutputSinkChangingDisabled();
 }
 
+void MediaSessionControllersManager::OnRemotePlaybackMetadataChange(
+    const MediaPlayerId& id,
+    media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata) {
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnRemotePlaybackMetadataChanged(
+      std::move(remote_playback_metadata));
+}
+
 MediaSessionController* MediaSessionControllersManager::FindOrCreateController(
     const MediaPlayerId& id) {
   auto it = controllers_map_.find(id);

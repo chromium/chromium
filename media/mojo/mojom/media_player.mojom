@@ -106,6 +106,10 @@ interface MediaPlayerObserver {
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();
+
+  // Notifies that the RemotePlayback metadata of the media player has changed.
+  OnRemotePlaybackMetadataChange(media_session.mojom.RemotePlaybackMetadata
+                             remote_playback_metadata);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

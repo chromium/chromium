@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"  // For MediaPlayerId.
+#include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace media {
 enum class MediaContentType;
@@ -88,6 +89,11 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // Called when the ability to switch audio output devices for the player |id|
   // has been disabled.
   void OnAudioOutputSinkChangingDisabled(const MediaPlayerId& id);
+
+  // Called when the RemotePlayback metadata has changed.
+  void OnRemotePlaybackMetadataChange(
+      const MediaPlayerId& id,
+      media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata);
 
  private:
   using ControllersMap =

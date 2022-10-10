@@ -211,6 +211,9 @@ class CONTENT_EXPORT MediaWebContentsObserver
     void OnAudioOutputSinkChanged(const std::string& hashed_device_id) override;
     void OnUseAudioServiceChanged(bool uses_audio_service) override;
     void OnAudioOutputSinkChangingDisabled() override;
+    void OnRemotePlaybackMetadataChange(
+        media_session::mojom::RemotePlaybackMetadataPtr
+            remote_playback_metadata) override;
 
    private:
     PlayerInfo* GetPlayerInfo();
@@ -243,7 +246,7 @@ class CONTENT_EXPORT MediaWebContentsObserver
       base::flat_map<MediaPlayerId,
                      mojo::AssociatedRemote<media::mojom::MediaPlayer>>;
 
-  // Communicates with the MediaSessionControllerManager to find or create (if
+  // Communicates with the MediaSessionControllersManager to find or create (if
   // needed) a MediaSessionController identified by |player_id|, in order to
   // bind its mojo remote for media::mojom::MediaPlayer.
   void OnMediaPlayerAdded(
@@ -268,6 +271,9 @@ class CONTENT_EXPORT MediaWebContentsObserver
   void OnAudioOutputSinkChangedWithRawDeviceId(
       const MediaPlayerId& player_id,
       const std::string& raw_device_id);
+  void OnRemotePlaybackMetadataChange(
+      const MediaPlayerId& player_id,
+      media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata);
 
   // Used to notify when the renderer -> browser mojo connection via the
   // interface media::mojom::MediaPlayerObserver gets disconnected.
