@@ -518,8 +518,7 @@ std::unique_ptr<FirstLastNameField> FirstLastNameField::Parse(
   std::unique_ptr<FirstLastNameField> field = ParseSharedNameLabelSequence(
       scanner, page_language, pattern_source, log_manager);
 
-  if (!field && base::FeatureList::IsEnabled(
-                    features::kAutofillEnableNameSurenameParsing)) {
+  if (!field) {
     field = ParseNameSurnameLabelSequence(scanner, page_language,
                                           pattern_source, log_manager);
   }

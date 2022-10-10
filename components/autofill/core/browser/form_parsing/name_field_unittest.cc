@@ -71,10 +71,6 @@ TEST_P(NameFieldTest, FirstLast) {
 }
 
 TEST_P(NameFieldTest, NameSurname) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNameSurenameParsing);
-
   AddTextFormFieldData("name", "name", NAME_FIRST);
   AddTextFormFieldData("surname", "surname", NAME_LAST);
 
@@ -82,10 +78,6 @@ TEST_P(NameFieldTest, NameSurname) {
 }
 
 TEST_P(NameFieldTest, NameSurnameWithMiddleName) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNameSurenameParsing);
-
   AddTextFormFieldData("name", "name", NAME_FIRST);
   AddTextFormFieldData("middlename", "middlename", NAME_MIDDLE);
   AddTextFormFieldData("surname", "surname", NAME_LAST);
@@ -94,10 +86,6 @@ TEST_P(NameFieldTest, NameSurnameWithMiddleName) {
 }
 
 TEST_P(NameFieldTest, NameSurname_DE) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillEnableNameSurenameParsing);
-
   AddTextFormFieldData("name", "name", NAME_FIRST);
   AddTextFormFieldData("nachname", "nachname", NAME_LAST);
 

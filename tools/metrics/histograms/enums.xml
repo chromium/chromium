@@ -63027,7 +63027,6 @@ from previous Chrome versions.
   <int value="1807088829"
       label="JourneysOnDeviceClusteringContentClustering:disabled"/>
   <int value="1807374811" label="CCTModuleCache:enabled"/>
-  <int value="1808936313" label="AutofillEnableNameSurenameParsing:enabled"/>
   <int value="1809704744"
       label="SyncAndroidPromosWithAlternativeTitle:disabled"/>
   <int value="1809940714" label="SpeculativeLaunchServiceWorker:disabled"/>
@@ -63349,7 +63348,6 @@ from previous Chrome versions.
   <int value="1990873642"
       label="AutofillEnableSurfacingServerCardNickname:disabled"/>
   <int value="1991461704" label="SubframeShutdownDelay:enabled"/>
-  <int value="1991751157" label="AutofillEnableNameSurenameParsing:disabled"/>
   <int value="1991771852" label="LeftToRightUrls:enabled"/>
   <int value="1991912338" label="ModuleScriptsDynamicImport:enabled"/>
   <int value="1992466116" label="enable-passive-event-listeners-due-to-fling"/>

@@ -207,8 +207,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1150895) Remove once launched.
        features::kAutofillParsingPatternProvider,
        features::kAutofillPageLanguageDetection,
-       // TODO(crbug.com/1277480): Remove once launched.
-       features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.
        autofill::features::kAutofillParseMerchantPromoCodeFields,
        // TODO(crbug.com/1335549): Remove once launched.
