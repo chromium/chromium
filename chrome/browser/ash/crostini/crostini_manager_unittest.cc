@@ -1215,9 +1215,9 @@ TEST_F(CrostiniManagerRestartTest, HeartbeatKeepsCreateContainerFromTimingOut) {
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
 
-  task_environment_.FastForwardBy(base::Minutes(7));
+  task_environment_.FastForwardBy(base::Minutes(4));
   crostini_manager_->OnLxdContainerDownloading(signal);
-  task_environment_.FastForwardBy(base::Minutes(7));
+  task_environment_.FastForwardBy(base::Minutes(4));
   ASSERT_EQ(0, restart_crostini_callback_count_);
 
   task_environment_.FastForwardBy(base::Minutes(6));

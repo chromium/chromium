@@ -306,12 +306,12 @@ class CrostiniManager::CrostiniRestarter
       {mojom::InstallerState::kStart, base::Minutes(2)},
       {mojom::InstallerState::kInstallImageLoader,
        base::Hours(6)},  // May need to download DLC or component
-      {mojom::InstallerState::kCreateDiskImage, base::Minutes(8)},
+      {mojom::InstallerState::kCreateDiskImage, base::Minutes(5)},
       {mojom::InstallerState::kStartTerminaVm, kStartVmTimeout},
       {mojom::InstallerState::kStartLxd, base::Minutes(5)},
       // While CreateContainer may need to download a file, we get progress
       // messages that reset the countdown.
-      {mojom::InstallerState::kCreateContainer, base::Minutes(8)},
+      {mojom::InstallerState::kCreateContainer, base::Minutes(5)},
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
       // StartContainer sends heartbeat messages on a 30-second interval, but
       // there's a bit of work that's not covered by heartbeat messages so to be
