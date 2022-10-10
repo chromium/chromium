@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_view.js';
+import '../strings.m.js';
 import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -12,6 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface} from './shortcut_types.js';
+import {isCustomizationDisabled} from './shortcut_utils.js';
 
 export type ShowEditDialogEvent = CustomEvent<{
   description: string,
@@ -92,7 +94,19 @@ export class AcceleratorRowElement extends PolymerElement {
         });
   }
 
+  private shouldShowLockIcon_(): boolean {
+    if (isCustomizationDisabled()) {
+      return false;
+    }
+
+    return this.isLocked_;
+  }
+
   private showDialog_() {
+    if (isCustomizationDisabled()) {
+      return;
+    }
+
     this.dispatchEvent(new CustomEvent(
         'show-edit-dialog',
         {

@@ -7,6 +7,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
@@ -16,9 +18,18 @@ import {fakeSubCategories} from 'chrome://shortcut-customization/js/fake_data.js
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import {AcceleratorInfo, AcceleratorKeys, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createUserAccelerator} from './shortcut_customization_test_util.js';
+
+function initShortcutCustomizationAppElement():
+    ShortcutCustomizationAppElement {
+  const element = document.createElement('shortcut-customization-app');
+  document.body.appendChild(element);
+  flush();
+  return element;
+}
 
 suite('shortcutCustomizationAppTest', function() {
   let page: ShortcutCustomizationAppElement|null = null;
@@ -27,9 +38,6 @@ suite('shortcutCustomizationAppTest', function() {
 
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
-
-    page = document.createElement('shortcut-customization-app');
-    document.body.appendChild(page);
   });
 
   teardown(() => {
@@ -81,6 +89,7 @@ suite('shortcutCustomizationAppTest', function() {
   }
 
   test('LoadFakeChromeOSPage', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     const subSections = getSubsections('chromeos-page-id');
@@ -112,6 +121,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('LoadFakeBrowserPage', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     const navPanel =
@@ -143,6 +153,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('OpenDialogFromAccelerator', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // The edit dialog should not be stamped and visible.
@@ -162,6 +173,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('DialogOpensOnEvent', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // The edit dialog should not be stamped and visible.
@@ -197,6 +209,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('ReplaceAccelerator', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
@@ -267,6 +280,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('AddAccelerator', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
@@ -345,6 +359,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RemoveAccelerator', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // Open dialog for first accelerator in View Desk subsection.
@@ -376,6 +391,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('RestoreAllButton', async () => {
+    page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     let restoreDialog = getDialog('#restoreDialog');
@@ -402,5 +418,27 @@ suite('shortcutCustomizationAppTest', function() {
 
     restoreDialog = getDialog('#restoreDialog');
     assertFalse(!!restoreDialog);
+  });
+
+  test('RestoreAllButtonShownWithFlag', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    page = initShortcutCustomizationAppElement();
+    waitAfterNextRender(getPage());
+    await flushTasks();
+    const restoreButton = getPage().shadowRoot!.querySelector(
+                              '#restoreAllButton') as CrButtonElement;
+    await flushTasks();
+    assertTrue(isVisible(restoreButton));
+  });
+
+  test('RestoreAllButtonHiddenWithoutFlag', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    page = initShortcutCustomizationAppElement();
+    waitAfterNextRender(getPage());
+    await flushTasks();
+    const restoreButton = getPage().shadowRoot!.querySelector(
+                              '#restoreAllButton') as CrButtonElement;
+    await flushTasks();
+    assertFalse(isVisible(restoreButton));
   });
 });

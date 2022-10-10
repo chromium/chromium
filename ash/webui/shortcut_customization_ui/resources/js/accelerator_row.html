@@ -38,7 +38,7 @@
       </accelerator-view>
     </template>
   </div>
-  <div id="lockIconContainer" hidden="[[!isLocked_]]">
+  <div id="lockIconContainer" hidden="[[!shouldShowLockIcon_(isLocked_)]]">
     <iron-icon icon="shortcut-customization:lock"></iron-icon>
   </div>
 </div>

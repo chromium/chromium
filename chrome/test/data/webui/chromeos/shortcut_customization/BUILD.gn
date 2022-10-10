@@ -28,6 +28,7 @@ ts_library("build_ts") {
     "fake_shortcut_provider_test.ts",
     "shortcut_customization_test.ts",
     "shortcut_customization_test_util.ts",
+    "shortcut_utils_test.ts",
   ]
   deps = [
     "../..:build_ts",

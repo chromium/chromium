@@ -22,7 +22,12 @@ var ShortcutCustomizationAppBrowserTest = class extends PolymerTest {
   }
 
   get featureList() {
-    return {enabled: ['features::kShortcutCustomizationApp']};
+    return {
+      enabled: [
+        'features::kShortcutCustomizationApp',
+        'features::kShortcutCustomization'
+      ]
+    };
   }
 };
 
@@ -35,6 +40,7 @@ const tests = [
   ['AcceleratorSubsectionTest', 'accelerator_subsection_test.js'],
   ['FakeShortcutProviderTest', 'fake_shortcut_provider_test.js'],
   ['ShortcutCustomizationApp', 'shortcut_customization_test.js'],
+  ['ShortcutUtils', 'shortcut_utils_test.js'],
 ];
 
 tests.forEach(test => registerTest(...test));

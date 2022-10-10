@@ -18,6 +18,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -46,6 +47,11 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
   source->UseStringsJs();
 }
 
+void AddFeatureFlags(content::WebUIDataSource* html_source) {
+  html_source->AddBoolean("isCustomizationEnabled",
+                          features::IsShortcutCustomizationEnabled());
+}
+
 }  // namespace
 
 ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
@@ -66,6 +72,8 @@ ShortcutCustomizationAppUI::ShortcutCustomizationAppUI(content::WebUI* web_ui)
   SetUpWebUIDataSource(source, resources,
                        IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_INDEX_HTML);
   AddLocalizedStrings(source);
+
+  AddFeatureFlags(source);
 
   provider_ = std::make_unique<shortcut_ui::AcceleratorConfigurationProvider>();
 }

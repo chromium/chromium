@@ -42,7 +42,8 @@
 <navigation-view-panel id="navigationPanel" title="[[i18n('appTitle')]]"
     show-tool-bar>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
-    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_">
+    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked_" 
+      hidden="[[shouldHideRestoreAllButton_()]]">
       <!-- TODO(jimmyxgong): i18n this string-->
       Reset all shortcuts
     </cr-button>

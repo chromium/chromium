@@ -22,6 +22,7 @@ import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {isCustomizationDisabled} from './shortcut_utils.js';
 
 export interface ShortcutCustomizationAppElement {
   $: {
@@ -197,6 +198,10 @@ export class ShortcutCustomizationAppElement extends
 
   protected closeRestoreAllDialog_() {
     this.showRestoreAllDialog_ = false;
+  }
+
+  protected shouldHideRestoreAllButton_() {
+    return isCustomizationDisabled();
   }
 
   static get template() {
