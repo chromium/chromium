@@ -10502,26 +10502,6 @@
             ]
         }
     ],
-    "TailoredSecurityIntegrationDesktopNotice": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220902",
-                    "enable_features": [
-                        "TailoredSecurityDesktopNotice"
-                    ]
-                }
-            ]
-        }
-    ],
     "ThemeProviderColorProviderRedirection": [
         {
             "platforms": [
