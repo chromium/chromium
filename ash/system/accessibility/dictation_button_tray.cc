@@ -22,6 +22,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
@@ -50,9 +51,10 @@ gfx::ImageSkia GetIconImage(bool active, bool enabled) {
 DictationButtonTray::DictationButtonTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name),
-      icon_(new views::ImageView()),
-      download_progress_(0) {
+    : TrayBackgroundView(shelf, catalog_name), download_progress_(0) {
+  SetPressedCallback(base::BindRepeating(
+      &DictationButtonTray::OnDictationButtonPressed, base::Unretained(this)));
+
   Shell* shell = Shell::Get();
   ui::TextInputClient* client =
       shell->window_tree_host_manager()->input_method()->GetTextInputClient();
@@ -62,11 +64,13 @@ DictationButtonTray::DictationButtonTray(
       GetIconImage(/*active=*/false, /*enabled=*/in_text_input_);
   const int vertical_padding = (kTrayItemSize - icon_image.height()) / 2;
   const int horizontal_padding = (kTrayItemSize - icon_image.width()) / 2;
-  icon_->SetBorder(views::CreateEmptyBorder(
+  auto icon = std::make_unique<views::ImageView>();
+  icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  icon_->SetTooltipText(
+  icon->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION));
-  tray_container()->AddChildView(icon_);
+  icon_ = tray_container()->AddChildView(std::move(icon));
+
   shell->AddShellObserver(this);
   shell->accessibility_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
@@ -81,21 +85,6 @@ DictationButtonTray::~DictationButtonTray() {
   shell->window_tree_host_manager()->input_method()->RemoveObserver(this);
 }
 
-bool DictationButtonTray::PerformAction(const ui::Event& event) {
-  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
-      DictationToggleSource::kButton);
-
-  CheckDictationStatusAndUpdateIcon();
-  return true;
-}
-
-void DictationButtonTray::Initialize() {
-  TrayBackgroundView::Initialize();
-  UpdateVisibility();
-}
-
-void DictationButtonTray::ClickedOutsideBubble() {}
-
 void DictationButtonTray::OnDictationStarted() {
   UpdateIcon(/*dictation_active=*/true);
 }
@@ -108,6 +97,18 @@ void DictationButtonTray::OnAccessibilityStatusChanged() {
   UpdateVisibility();
   CheckDictationStatusAndUpdateIcon();
 }
+
+void DictationButtonTray::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  CheckDictationStatusAndUpdateIcon();
+}
+
+void DictationButtonTray::Initialize() {
+  TrayBackgroundView::Initialize();
+  UpdateVisibility();
+}
+
+void DictationButtonTray::ClickedOutsideBubble() {}
 
 std::u16string DictationButtonTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME);
@@ -137,35 +138,6 @@ void DictationButtonTray::Layout() {
   UpdateProgressIndicatorBounds();
 }
 
-const char* DictationButtonTray::GetClassName() const {
-  return "DictationButtonTray";
-}
-
-void DictationButtonTray::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  CheckDictationStatusAndUpdateIcon();
-}
-
-void DictationButtonTray::UpdateIcon(bool dictation_active) {
-  icon_->SetImage(GetIconImage(dictation_active, GetEnabled()));
-  SetIsActive(dictation_active);
-}
-
-void DictationButtonTray::UpdateProgressIndicatorBounds() {
-  if (progress_indicator_)
-    progress_indicator_->layer()->SetBounds(GetBackgroundBounds());
-}
-
-void DictationButtonTray::UpdateVisibility() {
-  bool is_visible =
-      Shell::Get()->accessibility_controller()->dictation().enabled();
-  SetVisiblePreferred(is_visible);
-}
-
-void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {
-  UpdateIcon(Shell::Get()->accessibility_controller()->dictation_active());
-}
-
 void DictationButtonTray::OnCaretBoundsChanged(
     const ui::TextInputClient* client) {
   TextInputChanged(client);
@@ -174,14 +146,6 @@ void DictationButtonTray::OnCaretBoundsChanged(
 void DictationButtonTray::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
   TextInputChanged(client);
-}
-
-void DictationButtonTray::TextInputChanged(const ui::TextInputClient* client) {
-  in_text_input_ =
-      client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
-  SetEnabled((download_progress_ <= 0 || download_progress_ >= 100) &&
-             in_text_input_);
-  CheckDictationStatusAndUpdateIcon();
 }
 
 void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
@@ -219,5 +183,42 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
   }
   progress_indicator_->InvalidateLayer();
 }
+
+void DictationButtonTray::OnDictationButtonPressed(const ui::Event& event) {
+  Shell::Get()->accessibility_controller()->ToggleDictationFromSource(
+      DictationToggleSource::kButton);
+  CheckDictationStatusAndUpdateIcon();
+}
+
+void DictationButtonTray::UpdateIcon(bool dictation_active) {
+  icon_->SetImage(GetIconImage(dictation_active, GetEnabled()));
+  SetIsActive(dictation_active);
+}
+
+void DictationButtonTray::UpdateProgressIndicatorBounds() {
+  if (progress_indicator_)
+    progress_indicator_->layer()->SetBounds(GetBackgroundBounds());
+}
+
+void DictationButtonTray::UpdateVisibility() {
+  bool is_visible =
+      Shell::Get()->accessibility_controller()->dictation().enabled();
+  SetVisiblePreferred(is_visible);
+}
+
+void DictationButtonTray::CheckDictationStatusAndUpdateIcon() {
+  UpdateIcon(Shell::Get()->accessibility_controller()->dictation_active());
+}
+
+void DictationButtonTray::TextInputChanged(const ui::TextInputClient* client) {
+  in_text_input_ =
+      client && client->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
+  SetEnabled((download_progress_ <= 0 || download_progress_ >= 100) &&
+             in_text_input_);
+  CheckDictationStatusAndUpdateIcon();
+}
+
+BEGIN_METADATA(DictationButtonTray, TrayBackgroundView)
+END_METADATA
 
 }  // namespace ash
