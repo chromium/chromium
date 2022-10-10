@@ -558,6 +558,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mSignInState = null;
         notifyCallbacksWaitingForOperation();
 
+        RecordHistogram.recordEnumeratedHistogram("Signin.SigninAbortedAccessPoint",
+                signInState.getAccessPoint(), SigninAccessPoint.MAX);
+
         if (signInState.mCallback != null) {
             signInState.mCallback.onSignInAborted();
         }
