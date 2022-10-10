@@ -985,7 +985,7 @@ TEST_F(HostResolverTest, NetworkIsolationKey) {
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
   EXPECT_EQ(kNetworkIsolationKey,
-            inner_resolver->last_request_network_isolation_key());
+            inner_resolver->last_request_network_anonymization_key());
 }
 
 TEST_F(HostResolverTest, NoOptionalParameters) {

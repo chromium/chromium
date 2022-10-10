@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -52,8 +52,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   net::SOCKSClientSocket socket(
       std::move(fuzzed_socket), net::HostPortPair("foo", 80),
-      net::NetworkIsolationKey(), net::DEFAULT_PRIORITY, &mock_host_resolver,
-      net::SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
+      net::NetworkAnonymizationKey(), net::DEFAULT_PRIORITY,
+      &mock_host_resolver, net::SecureDnsPolicy::kAllow,
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   callback.GetResult(result);
   return 0;

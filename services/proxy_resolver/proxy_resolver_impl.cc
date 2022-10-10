@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -30,7 +30,7 @@ class ProxyResolverImpl::Job {
 
   ~Job();
 
-  void Start(const net::NetworkIsolationKey& network_isolation_key);
+  void Start(const net::NetworkAnonymizationKey& network_anonymization_key);
 
  private:
   // Mojo error handler. This is invoked in response to the client
@@ -56,14 +56,14 @@ ProxyResolverImpl::~ProxyResolverImpl() = default;
 
 void ProxyResolverImpl::GetProxyForUrl(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<mojom::ProxyResolverRequestClient> client) {
   DVLOG(1) << "GetProxyForUrl(" << url << ")";
   std::unique_ptr<Job> job =
       std::make_unique<Job>(std::move(client), this, url);
   Job* job_ptr = job.get();
   resolve_jobs_[job_ptr] = std::move(job);
-  job_ptr->Start(network_isolation_key);
+  job_ptr->Start(network_anonymization_key);
 }
 
 void ProxyResolverImpl::DeleteJob(Job* job) {
@@ -83,9 +83,9 @@ ProxyResolverImpl::Job::Job(
 ProxyResolverImpl::Job::~Job() = default;
 
 void ProxyResolverImpl::Job::Start(
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   resolver_->resolver_->GetProxyForURL(
-      url_, network_isolation_key, &result_,
+      url_, network_anonymization_key, &result_,
       base::BindOnce(&Job::GetProxyDone, base::Unretained(this)), &request_,
       std::make_unique<MojoProxyResolverV8TracingBindings<
           mojom::ProxyResolverRequestClient>>(client_.get()));

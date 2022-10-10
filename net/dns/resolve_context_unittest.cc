@@ -329,7 +329,7 @@ TEST_F(ResolveContextTest, HostCacheInvalidation) {
 
   base::TimeTicks now;
   HostCache::Key key("example.com", DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
+                     HostResolverSource::ANY, NetworkAnonymizationKey());
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{},
@@ -382,7 +382,7 @@ TEST_F(ResolveContextTest, HostCacheInvalidation_SameSession) {
   // Add to the host cache and add some DoH server status.
   base::TimeTicks now;
   HostCache::Key key("example.com", DnsQueryType::UNSPECIFIED, 0,
-                     HostResolverSource::ANY, NetworkIsolationKey());
+                     HostResolverSource::ANY, NetworkAnonymizationKey());
   context.host_cache()->Set(
       key,
       HostCache::Entry(OK, /*ip_endpoints=*/{}, /*aliases=*/{"example.com"},

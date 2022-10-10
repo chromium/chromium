@@ -58,7 +58,7 @@ std::unique_ptr<HostResolver> CreateMockHostResolver() {
   // local.com resolves to a private IP address.
   host_resolver->rules()->AddRule("local.com", "127.0.0.1");
   host_resolver->LoadIntoCache(HostPortPair("local.com", 80),
-                               NetworkIsolationKey(), absl::nullopt);
+                               NetworkAnonymizationKey(), absl::nullopt);
   // Hosts not listed here (e.g., "example.com") are treated as external. See
   // ThroughputAnalyzerTest.PrivateHost below.
 
@@ -117,10 +117,10 @@ TEST_F(ThroughputAnalyzerTest, PrivateHost) {
   auto host_resolver = CreateMockHostResolver();
   EXPECT_FALSE(nqe::internal::IsPrivateHostForTesting(
       host_resolver.get(), HostPortPair("example.com", 80),
-      NetworkIsolationKey()));
+      NetworkAnonymizationKey()));
   EXPECT_TRUE(nqe::internal::IsPrivateHostForTesting(
       host_resolver.get(), HostPortPair("local.com", 80),
-      NetworkIsolationKey()));
+      NetworkAnonymizationKey()));
 }
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -159,10 +159,10 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
 
     // Start more requests than the maximum number of requests that can be held
     // in the memory.
-    EXPECT_EQ(test_case.is_local,
-              nqe::internal::IsPrivateHostForTesting(
-                  context->host_resolver(),
-                  HostPortPair::FromURL(test_case.url), NetworkIsolationKey()));
+    EXPECT_EQ(test_case.is_local, nqe::internal::IsPrivateHostForTesting(
+                                      context->host_resolver(),
+                                      HostPortPair::FromURL(test_case.url),
+                                      NetworkAnonymizationKey()));
     for (size_t i = 0; i < 1000; ++i) {
       std::unique_ptr<URLRequest> request(
           context->CreateRequest(test_case.url, DEFAULT_PRIORITY,
@@ -179,16 +179,18 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
 
 #if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
-#define MAYBE_MaximumRequestsWithNetworkIsolationKey \
-  DISABLED_MaximumRequestsWithNetworkIsolationKey
+#define MAYBE_MaximumRequestsWithNetworkAnonymizationKey \
+  DISABLED_MaximumRequestsWithNetworkAnonymizationKey
 #else
-#define MAYBE_MaximumRequestsWithNetworkIsolationKey \
-  MaximumRequestsWithNetworkIsolationKey
+#define MAYBE_MaximumRequestsWithNetworkAnonymizationKey \
+  MaximumRequestsWithNetworkAnonymizationKey
 #endif
-// Make sure that the NetworkIsolationKey is respected when resolving a host
+// Make sure that the NetworkAnonymizationKey is respected when resolving a host
 // from the cache.
-TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
+TEST_F(ThroughputAnalyzerTest,
+       MAYBE_MaximumRequestsWithNetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
   const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl = GURL("http://foo.test/test.html");
 
@@ -209,17 +211,17 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
     auto mock_host_resolver = std::make_unique<MockCachingHostResolver>();
 
     // Add an entry to the host cache mapping kUrl to non-local IP when using an
-    // empty NetworkIsolationKey.
+    // empty NetworkAnonymizationKey.
     mock_host_resolver->rules()->AddRule(kUrl.host(), "1.2.3.4");
     mock_host_resolver->LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                      NetworkIsolationKey(), absl::nullopt);
+                                      NetworkAnonymizationKey(), absl::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
     // kNetworkIsolationKey.
     mock_host_resolver->rules()->ClearRules();
     mock_host_resolver->rules()->AddRule(kUrl.host(), "127.0.0.1");
     mock_host_resolver->LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                      kNetworkIsolationKey, absl::nullopt);
+                                      kNetworkAnonymizationKey, absl::nullopt);
 
     context_builder->set_host_resolver(std::move(mock_host_resolver));
     auto context = context_builder->Build();
@@ -232,8 +234,8 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequestsWithNetworkIsolationKey) {
     EXPECT_EQ(use_network_isolation_key,
               nqe::internal::IsPrivateHostForTesting(
                   context->host_resolver(), HostPortPair::FromURL(kUrl),
-                  use_network_isolation_key ? kNetworkIsolationKey
-                                            : NetworkIsolationKey()));
+                  use_network_isolation_key ? kNetworkAnonymizationKey
+                                            : NetworkAnonymizationKey()));
     for (size_t i = 0; i < 1000; ++i) {
       std::unique_ptr<URLRequest> request(
           context->CreateRequest(kUrl, DEFAULT_PRIORITY, &test_delegate,

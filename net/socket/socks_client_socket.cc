@@ -63,7 +63,7 @@ static_assert(sizeof(SOCKS4ServerResponse) == kReadHeaderSize,
 SOCKSClientSocket::SOCKSClientSocket(
     std::unique_ptr<StreamSocket> transport_socket,
     const HostPortPair& destination,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     RequestPriority priority,
     HostResolver* host_resolver,
     SecureDnsPolicy secure_dns_policy,
@@ -72,7 +72,7 @@ SOCKSClientSocket::SOCKSClientSocket(
       host_resolver_(host_resolver),
       secure_dns_policy_(secure_dns_policy),
       destination_(destination),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       priority_(priority),
       net_log_(transport_socket_->NetLog()),
       traffic_annotation_(traffic_annotation) {}
@@ -303,11 +303,7 @@ int SOCKSClientSocket::DoResolveHost() {
   parameters.initial_priority = priority_;
   parameters.secure_dns_policy = secure_dns_policy_;
   resolve_host_request_ = host_resolver_->CreateRequest(
-      destination_,
-      net::NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              network_isolation_key_),
-      net_log_, parameters);
+      destination_, network_anonymization_key_, net_log_, parameters);
 
   return resolve_host_request_->Start(
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));

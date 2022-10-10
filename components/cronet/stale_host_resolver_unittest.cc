@@ -26,8 +26,8 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
-#include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_config.h"
@@ -235,7 +235,7 @@ class StaleHostResolverTest : public testing::Test {
     base::TimeDelta ttl(base::Seconds(kCacheEntryTTLSec));
     net::HostCache::Key key(kHostname, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
     net::HostCache::Entry entry(
         error,
         error == net::OK ? MakeEndpoints(kCacheAddress)
@@ -259,7 +259,7 @@ class StaleHostResolverTest : public testing::Test {
 
     net::HostCache::Key key(kHostname, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
     base::TimeTicks now = tick_clock_.NowTicks();
     net::HostCache::EntryStaleness stale;
     EXPECT_TRUE(resolver_->GetHostCache()->LookupStale(key, now, &stale));

@@ -50,7 +50,7 @@ MockAsyncProxyResolver::~MockAsyncProxyResolver() = default;
 
 int MockAsyncProxyResolver::GetProxyForURL(
     const GURL& url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request,
@@ -173,12 +173,12 @@ ForwardingProxyResolver::ForwardingProxyResolver(ProxyResolver* impl)
 
 int ForwardingProxyResolver::GetProxyForURL(
     const GURL& query_url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request,
     const NetLogWithSource& net_log) {
-  return impl_->GetProxyForURL(query_url, network_isolation_key, results,
+  return impl_->GetProxyForURL(query_url, network_anonymization_key, results,
                                std::move(callback), request, net_log);
 }
 

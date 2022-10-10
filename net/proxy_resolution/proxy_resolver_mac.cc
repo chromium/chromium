@@ -203,7 +203,7 @@ class ProxyResolverMac : public ProxyResolver {
 
   // ProxyResolver methods:
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
@@ -223,7 +223,7 @@ ProxyResolverMac::~ProxyResolverMac() = default;
 // inspired by http://developer.apple.com/samplecode/CFProxySupportTool/
 int ProxyResolverMac::GetProxyForURL(
     const GURL& query_url,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback /*callback*/,
     std::unique_ptr<Request>* /*request*/,

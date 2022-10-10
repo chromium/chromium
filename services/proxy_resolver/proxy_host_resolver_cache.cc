@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace proxy_resolver {
 
@@ -30,10 +30,10 @@ ProxyHostResolverCache::~ProxyHostResolverCache() = default;
 
 void ProxyHostResolverCache::StoreEntry(
     std::string hostname,
-    net::NetworkIsolationKey network_isolation_key,
+    net::NetworkAnonymizationKey network_anonymization_key,
     bool is_ex_operation,
     std::vector<net::IPAddress> results) {
-  Key key{std::move(hostname), std::move(network_isolation_key),
+  Key key{std::move(hostname), std::move(network_anonymization_key),
           is_ex_operation};
 
   // Delete any old, now-obsolete entries.
@@ -62,9 +62,9 @@ void ProxyHostResolverCache::StoreEntry(
 
 const std::vector<net::IPAddress>* ProxyHostResolverCache::LookupEntry(
     std::string hostname,
-    net::NetworkIsolationKey network_isolation_key,
+    net::NetworkAnonymizationKey network_anonymization_key,
     bool is_ex_operation) {
-  Key key{std::move(hostname), std::move(network_isolation_key),
+  Key key{std::move(hostname), std::move(network_anonymization_key),
           is_ex_operation};
 
   auto entry = entries_.find(key);

@@ -39,7 +39,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
   void WriteToCache(const std::string& host) {
     net::HostCache::Key key(host, net::DnsQueryType::UNSPECIFIED, 0,
                             net::HostResolverSource::ANY,
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
     net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
     cache_->Set(key, entry, base::TimeTicks::Now(), base::Seconds(1));
@@ -65,13 +65,13 @@ class HostCachePersistenceManagerTest : public testing::Test {
 
     net::HostCache::Key key1("1.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
+                             net::NetworkAnonymizationKey());
     net::HostCache::Key key2("2.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
+                             net::NetworkAnonymizationKey());
     net::HostCache::Key key3("3.test", net::DnsQueryType::UNSPECIFIED, 0,
                              net::HostResolverSource::ANY,
-                             net::NetworkIsolationKey());
+                             net::NetworkAnonymizationKey());
     net::HostCache::Entry entry(net::OK, /*ip_endpoints=*/{}, /*aliases=*/{},
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
 

@@ -1660,8 +1660,10 @@ void NetworkContext::LookUpProxyForURL(
     mojo::PendingRemote<mojom::ProxyLookupClient> proxy_lookup_client) {
   DCHECK(proxy_lookup_client);
   std::unique_ptr<ProxyLookupRequest> proxy_lookup_request(
-      std::make_unique<ProxyLookupRequest>(std::move(proxy_lookup_client), this,
-                                           network_isolation_key));
+      std::make_unique<ProxyLookupRequest>(
+          std::move(proxy_lookup_client), this,
+          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              network_isolation_key)));
   ProxyLookupRequest* proxy_lookup_request_ptr = proxy_lookup_request.get();
   proxy_lookup_requests_.insert(std::move(proxy_lookup_request));
   proxy_lookup_request_ptr->Start(url);
@@ -1724,7 +1726,7 @@ void NetworkContext::CreateWebSocket(
 void NetworkContext::CreateWebTransport(
     const GURL& url,
     const url::Origin& origin,
-    const net::NetworkIsolationKey& key,
+    const net::NetworkAnonymizationKey& key,
     std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
     mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client) {

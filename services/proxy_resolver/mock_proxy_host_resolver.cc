@@ -12,7 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 
 namespace proxy_resolver {
 
@@ -66,14 +66,14 @@ std::unique_ptr<ProxyHostResolver::Request>
 MockProxyHostResolver::CreateRequest(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   ++num_resolve_;
 
   if (fail_all_)
     return std::make_unique<RequestImpl>(std::vector<net::IPAddress>(),
                                          synchronous_mode_);
 
-  auto match = results_.find({hostname, operation, network_isolation_key});
+  auto match = results_.find({hostname, operation, network_anonymization_key});
   if (match == results_.end())
     return std::make_unique<RequestImpl>(
         std::vector<net::IPAddress>({net::IPAddress(127, 0, 0, 1)}),
@@ -85,19 +85,20 @@ MockProxyHostResolver::CreateRequest(
 void MockProxyHostResolver::SetError(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   fail_all_ = false;
-  results_[{hostname, operation, network_isolation_key}].clear();
+  results_[{hostname, operation, network_anonymization_key}].clear();
 }
 
 void MockProxyHostResolver::SetResult(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     std::vector<net::IPAddress> result) {
   DCHECK(!result.empty());
   fail_all_ = false;
-  results_[{hostname, operation, network_isolation_key}] = std::move(result);
+  results_[{hostname, operation, network_anonymization_key}] =
+      std::move(result);
 }
 
 void MockProxyHostResolver::FailAll() {
@@ -135,7 +136,7 @@ std::unique_ptr<ProxyHostResolver::Request>
 HangingProxyHostResolver::CreateRequest(
     const std::string& hostname,
     net::ProxyResolveDnsOperation operation,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   return std::make_unique<RequestImpl>(this);
 }
 

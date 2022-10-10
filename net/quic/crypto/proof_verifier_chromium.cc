@@ -562,13 +562,13 @@ ProofVerifierChromium::ProofVerifierChromium(
     TransportSecurityState* transport_security_state,
     SCTAuditingDelegate* sct_auditing_delegate,
     std::set<std::string> hostnames_to_allow_unknown_roots,
-    const NetworkIsolationKey& network_isolation_key)
+    const NetworkAnonymizationKey& network_anonymization_key)
     : cert_verifier_(cert_verifier),
       ct_policy_enforcer_(ct_policy_enforcer),
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       hostnames_to_allow_unknown_roots_(hostnames_to_allow_unknown_roots),
-      network_isolation_key_(network_isolation_key) {
+      network_isolation_key_(network_anonymization_key) {
   DCHECK(cert_verifier_);
   DCHECK(ct_policy_enforcer_);
   DCHECK(transport_security_state_);

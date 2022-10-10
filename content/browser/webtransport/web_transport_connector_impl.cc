@@ -121,11 +121,11 @@ WebTransportConnectorImpl::WebTransportConnectorImpl(
     int process_id,
     base::WeakPtr<RenderFrameHostImpl> frame,
     const url::Origin& origin,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : process_id_(process_id),
       frame_(std::move(frame)),
       origin_(origin),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       throttle_context_(GetThrottleContext(process_id_, frame_)) {}
 
 WebTransportConnectorImpl::~WebTransportConnectorImpl() = default;
@@ -223,7 +223,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
   }
 
   process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
-      url, origin_, network_isolation_key_, std::move(fingerprints),
+      url, origin_, network_anonymization_key_, std::move(fingerprints),
       std::move(handshake_client));
 }
 

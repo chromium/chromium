@@ -26,12 +26,12 @@ SOCKSSocketParams::SOCKSSocketParams(
     scoped_refptr<TransportSocketParams> proxy_server_params,
     bool socks_v5,
     const HostPortPair& host_port_pair,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : transport_params_(std::move(proxy_server_params)),
       destination_(host_port_pair),
       socks_v5_(socks_v5),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       traffic_annotation_(traffic_annotation) {}
 
 SOCKSSocketParams::~SOCKSSocketParams() = default;

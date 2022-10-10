@@ -1715,7 +1715,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKey) {
   ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kNetworkIsolationKey,
-            session_deps_.host_resolver->request_network_isolation_key(1));
+            session_deps_.host_resolver->request_network_anonymization_key(1));
 }
 
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
@@ -1757,7 +1757,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
   ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kNetworkIsolationKey,
-            session_deps_.host_resolver->request_network_isolation_key(1));
+            session_deps_.host_resolver->request_network_anonymization_key(1));
 }
 
 // Test that, in the case of an HTTP proxy, the same transient
@@ -1829,10 +1829,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
             session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(2));
-  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
-  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
-            session_deps_.host_resolver->request_network_isolation_key(2));
+  EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
+            session_deps_.host_resolver->request_network_anonymization_key(2));
 }
 
 // Test that, in the case of an HTTPS proxy, the same transient
@@ -1904,10 +1904,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
             session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(2));
-  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
-  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
-            session_deps_.host_resolver->request_network_isolation_key(2));
+  EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
+            session_deps_.host_resolver->request_network_anonymization_key(2));
 }
 
 // Test that, in the case of a SOCKS5 proxy, the passed in NetworkIsolationKey
@@ -1991,10 +1991,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
             session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(2));
-  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
-  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
-            session_deps_.host_resolver->request_network_isolation_key(2));
+  EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
+            session_deps_.host_resolver->request_network_anonymization_key(2));
 
   // First two lookups completes, starting the next two, which should be for the
   // destination's hostname, and should use the passed in NIKs.
@@ -2003,10 +2003,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
   ASSERT_EQ(4u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(3));
   EXPECT_EQ(kNetworkIsolationKey1,
-            session_deps_.host_resolver->request_network_isolation_key(3));
+            session_deps_.host_resolver->request_network_anonymization_key(3));
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(4));
   EXPECT_EQ(kNetworkIsolationKey2,
-            session_deps_.host_resolver->request_network_isolation_key(4));
+            session_deps_.host_resolver->request_network_anonymization_key(4));
 }
 
 // Test that, in the case of a SOCKS5 proxy, the same transient
@@ -2078,10 +2078,10 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
             session_deps_.host_resolver->request_host(1));
   EXPECT_EQ(kProxyServer.host_port_pair().host(),
             session_deps_.host_resolver->request_host(2));
-  EXPECT_TRUE(session_deps_.host_resolver->request_network_isolation_key(1)
+  EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
-  EXPECT_EQ(session_deps_.host_resolver->request_network_isolation_key(1),
-            session_deps_.host_resolver->request_network_isolation_key(2));
+  EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
+            session_deps_.host_resolver->request_network_anonymization_key(2));
 }
 
 TEST_F(TransportClientSocketPoolTest, HasActiveSocket) {

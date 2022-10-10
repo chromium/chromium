@@ -1286,7 +1286,7 @@ interface NetworkContext {
   CreateWebTransport(
         url.mojom.Url url,
         url.mojom.Origin origin,
-        NetworkIsolationKey network_isolation_key,
+        NetworkAnonymizationKey network_anonymization_key,
         array<WebTransportCertificateFingerprint> fingerprints,
         pending_remote<WebTransportHandshakeClient> handshake_client);
 

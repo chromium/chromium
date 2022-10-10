@@ -4029,9 +4029,11 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
   // HostResolverManager obeys features::kSplitHostCacheByNetworkIsolationKey,
   // so this is fine to do regardless of the feature value.
   for (const auto& cache_entry : kCacheEntries) {
-    HostCache::Key key("just.testing", DnsQueryType::UNSPECIFIED, 0,
-                       HostResolverSource::ANY,
-                       cache_entry.network_isolation_key);
+    HostCache::Key key(
+        "just.testing", DnsQueryType::UNSPECIFIED, 0, HostResolverSource::ANY,
+        net::NetworkAnonymizationKey::
+            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                cache_entry.network_isolation_key));
     IPAddress address;
     ASSERT_TRUE(address.AssignFromIPLiteral(cache_entry.cached_ip_address));
     HostCache::Entry entry = HostCache::Entry(
@@ -15208,7 +15210,6 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
     proc_->SignalMultiple(1u);  // Allow up to one proc query.
   }
 
-  const NetworkIsolationKey kIsolationKey;
   const NetworkAnonymizationKey kAnonymizationKey;
   const url::SchemeHostPort kEndpoint =
       url::SchemeHostPort(url::kHttpsScheme, "bootstrap", 443);
@@ -15245,7 +15246,7 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
 
   HostCache::Key MakeCacheKey(bool secure) {
     HostCache::Key cache_key(kEndpoint, DnsQueryType::UNSPECIFIED, 0,
-                             HostResolverSource::ANY, kIsolationKey);
+                             HostResolverSource::ANY, kAnonymizationKey);
     cache_key.secure = secure;
     return cache_key;
   }
