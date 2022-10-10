@@ -94,13 +94,6 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
-  // Stores the policy modifications into policy_modifications table, and
-  // returns true on success. Note that inserting new modifications will
-  // wipe out the pre-existing ones for the given `browser_context_id`.
-  [[nodiscard]] bool InsertPolicyModifications(
-      const std::string& browser_context_id,
-      const net::FirstPartySetsContextConfig& config);
-
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
 
@@ -140,6 +133,13 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const std::string& browser_context_id,
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
           manual_sets);
+
+  // Stores the policy modifications into policy_modifications table, and
+  // returns true on success. Note that inserting new modifications will
+  // wipe out the pre-existing ones for the given `browser_context_id`.
+  [[nodiscard]] bool InsertPolicyModifications(
+      const std::string& browser_context_id,
+      const net::FirstPartySetsContextConfig& config);
 
   // Gets the previously-stored manual_sets for the `browser_context_id`.
   [[nodiscard]] base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>

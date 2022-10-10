@@ -994,4 +994,50 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
           Pair(ddd, net::FirstPartySetEntry(ddd, net::SiteType::kPrimary,
                                             absl::nullopt))));
 }
+
+TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
+  const base::Version version("0.0.1");
+  const std::string browser_context_id = "b";
+  const net::SchemefulSite primary(GURL("https://aaa.test"));
+  const net::SchemefulSite associated_site(GURL("https://bbb.test"));
+
+  const net::SchemefulSite manual_primary(GURL("https://ccc.test"));
+  const net::SchemefulSite manual_associated_site(GURL("https://ddd.test"));
+
+  const net::SchemefulSite config_primary_site(GURL("https://example.test"));
+  const net::SchemefulSite config_site_member1(GURL("https://member1.test"));
+  const net::SchemefulSite config_site_member2(GURL("https://member2.test"));
+
+  net::GlobalFirstPartySets global_sets(
+      /*entries=*/{{associated_site,
+                    net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
+                                            absl::nullopt)},
+                   {primary,
+                    net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                            absl::nullopt)}},
+      /*aliases=*/{});
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
+      {manual_associated_site,
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated,
+                               absl::nullopt)},
+      {manual_primary,
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
+                               absl::nullopt)}};
+  global_sets.ApplyManuallySpecifiedSet(manual_sets);
+
+  net::FirstPartySetsContextConfig config(
+      {{config_site_member1,
+        net::FirstPartySetEntry(config_primary_site, net::SiteType::kAssociated,
+                                absl::nullopt)},
+       {config_site_member2, absl::nullopt}});
+
+  OpenDatabase();
+  // Trigger the lazy-initialization.
+  EXPECT_TRUE(
+      db()->PersistSets(browser_context_id, version, global_sets, config));
+
+  EXPECT_EQ(db()->GetGlobalSets(browser_context_id), global_sets);
+  EXPECT_EQ(db()->FetchPolicyModifications(browser_context_id), config);
+}
+
 }  // namespace content
