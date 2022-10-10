@@ -46,8 +46,6 @@ import sys
 import time
 import traceback
 
-from six.moves import range
-
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.net.file_uploader import FileUploader
@@ -168,17 +166,7 @@ class Manager(object):
         should_retry_failures = self._options.num_retries > 0
 
         try:
-            if not self._port.host.platform.is_win():
-                _pid = os.getpid()
-                def sighandler(signum, frame):
-                    self._printer.write_update("Received SIGTERM in %d" % os.getpid())
-                    message = ''.join(traceback.format_stack(frame))
-                    self._printer.write_update(message)
-                    if os.getpid() == _pid:
-                        os.killpg(os.getpgrp(), signal.SIGINT)
-                    else:
-                        os.kill(os.getpid(), signal.SIGINT)
-                signal.signal(signal.SIGTERM, sighandler)
+            self._register_termination_handler()
             self._start_servers(tests_to_run)
             if self._options.watch:
                 run_results = self._run_test_loop(tests_to_run, tests_to_skip)
@@ -248,6 +236,19 @@ class Manager(object):
         return test_run_results.RunDetails(exit_code, summarized_full_results,
                                            summarized_failing_results,
                                            initial_results, all_retry_results)
+
+    def _register_termination_handler(self):
+        if self._port.host.platform.is_win():
+            signum = signal.SIGBREAK
+        else:
+            signum = signal.SIGTERM
+        signal.signal(signum, self._on_termination)
+
+    def _on_termination(self, signum, _frame):
+        self._printer.write_update(
+            'Received signal "%s" (%d) in %d' %
+            (signal.strsignal(signum), signum, os.getpid()))
+        raise KeyboardInterrupt
 
     def _run_test_loop(self, tests_to_run, tests_to_skip):
         # Don't show results in a new browser window because we're already

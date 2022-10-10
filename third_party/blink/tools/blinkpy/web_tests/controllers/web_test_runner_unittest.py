@@ -31,13 +31,16 @@ import mock
 import sys
 import unittest
 
-import six
-
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests import run_web_tests
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
-from blinkpy.web_tests.controllers.web_test_runner import WebTestRunner, Worker, Sharder, TestRunInterruptedException
+from blinkpy.web_tests.controllers.web_test_runner import (
+    WebTestRunner,
+    Worker,
+    Sharder,
+    TestRunInterruptedException,
+)
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.test_run_results import TestRunResults
@@ -67,6 +70,9 @@ class FakePrinter(object):
         pass
 
     def write(self, msg):
+        pass
+
+    def writeln(self, msg):
         pass
 
     def write_update(self, msg):
@@ -149,6 +155,21 @@ class WebTestRunnerTests(unittest.TestCase):
         runner._options.exit_after_n_failures = 10
         with self.assertRaises(TestRunInterruptedException):
             runner._interrupt_if_at_failure_limits(run_results)
+
+    def test_keyboard_interrupt(self):
+        runner = self._runner()
+        runner._options.derived_batch_size = 1
+        runner._options.must_use_derived_batch_size = True
+        expectations = TestExpectations(runner._port)
+        test_inputs = [TestInput('passes/text.html', timeout_ms=6000)]
+        with mock.patch('blinkpy.common.message_pool.get',
+                        side_effect=KeyboardInterrupt):
+            results = runner.run_tests(expectations,
+                                       test_inputs,
+                                       tests_to_skip=[],
+                                       num_workers=1,
+                                       retry_attempt=0)
+        self.assertEqual(results.keyboard_interrupted, True)
 
     def test_update_summary_with_result(self):
         runner = self._runner()
