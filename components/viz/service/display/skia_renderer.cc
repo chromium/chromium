@@ -2305,7 +2305,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
                                    DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawTextureQuad");
   const gfx::ColorSpace& src_color_space =
-      resource_provider()->GetColorSpace(quad->resource_id());
+      resource_provider()->GetSamplerColorSpace(quad->resource_id());
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&

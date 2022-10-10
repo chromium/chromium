@@ -298,7 +298,13 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
 
   if (resource_id != kInvalidResourceId) {
     candidate.format = resource_provider_->GetBufferFormat(resource_id);
-    candidate.color_space = resource_provider_->GetColorSpace(resource_id);
+    // TODO(b/181974042): We should probably also propagate the
+    // resource_provider_->GetSamplerColorSpace() -- while the display
+    // controller is not expected to use the GPU sampler, some hardware can do
+    // per-plane color management. We just don't have the API for it yet (at
+    // least on ChromeOS).
+    candidate.color_space =
+        resource_provider_->GetOverlayColorSpace(resource_id);
     candidate.hdr_metadata = resource_provider_->GetHDRMetadata(resource_id);
 
     if (!base::Contains(kOverlayFormats, candidate.format))
