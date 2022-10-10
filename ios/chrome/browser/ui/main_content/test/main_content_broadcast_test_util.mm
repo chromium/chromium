@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_observer.h"
 #import "ios/chrome/browser/ui/main_content/test/test_main_content_ui_state.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

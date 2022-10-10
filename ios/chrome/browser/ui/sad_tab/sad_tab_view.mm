@@ -18,6 +18,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/common/ui/util/text_view_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
