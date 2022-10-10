@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
 #import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
