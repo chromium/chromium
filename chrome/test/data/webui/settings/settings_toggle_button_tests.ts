@@ -328,5 +328,22 @@ suite('SettingsToggleButton', () => {
     subLabelTextWithLink!.click();
     assertFalse(testElement.checked);
   });
+
+  test('sub label with action link should have proper role', () => {
+    let subLabelTextWithLink =
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#sub-label-text-with-link');
+    testElement.set('subLabelWithLink', `<a is="action-link"></a>`);
+    flush();
+
+    subLabelTextWithLink = testElement.shadowRoot!.querySelector<HTMLElement>(
+        '#sub-label-text-with-link');
+    assertTrue(!!subLabelTextWithLink);
+    flush();
+
+    const actionLink = subLabelTextWithLink!.querySelector('a');
+    assertTrue(!!actionLink);
+    assertEquals(actionLink.getAttribute('role'), 'link');
+  });
   // </if>
 });

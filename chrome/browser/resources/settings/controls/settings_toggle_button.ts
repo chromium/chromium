@@ -7,6 +7,7 @@
  * `settings-toggle-button` is a toggle that controls a supplied preference.
  */
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/action_link.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -151,7 +152,7 @@ export class SettingsToggleButtonElement extends
   private getSubLabelWithLinkContent_(contents: string) {
     return sanitizeInnerHtml(
         contents,
-        {attrs: ['id', 'aria-hidden', 'aria-labelledby', 'tabindex']});
+        {attrs: ['id', 'is', 'aria-hidden', 'aria-labelledby', 'tabindex']});
   }
 
   private onSubLabelTextWithLinkClick_(e: Event) {
