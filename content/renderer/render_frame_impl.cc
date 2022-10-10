@@ -3137,15 +3137,13 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
     DCHECK(!subresource_loader_factories->pending_isolated_world_factories()
                 .empty());
 
-#if DCHECK_IS_ON()
-    // This situation should happen only if the frame hosts a document that
-    // isn't related to a real navigation (i.e. if an initial empty document
-    // should "inherit" the factories from its opener/parent).
-    WebURL url = GetWebFrame()->GetDocument().Url();
-    DCHECK(!GURL(url).IsAboutSrcdoc());
-    if (url.IsValid() && !url.IsEmpty())
-      DCHECK(url.ProtocolIs(url::kAboutScheme));
-#endif
+    // `!IsHostChildURLLoaderFactoryBundle` should only happen if the frame
+    // hosts a document that isn't related to a real navigation (i.e. if an
+    // initial empty document should "inherit" the factories from its
+    // opener/parent).
+    DCHECK_EQ(NavigationCommitState::kInitialEmptyDocument,
+              navigation_commit_state_);
+
     auto partial_bundle =
         base::MakeRefCounted<blink::ChildURLLoaderFactoryBundle>();
     static_cast<blink::URLLoaderFactoryBundle*>(partial_bundle.get())
