@@ -3223,7 +3223,9 @@ TEST_F(SiteSettingsHandlerTest, HandleResetNotificationPermissionForOrigin) {
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
 
-TEST_F(SiteSettingsHandlerTest, PopulateNotificationPermissionReviewData) {
+// TODO(crbug.com/137935): Re-enable this test.
+TEST_F(SiteSettingsHandlerTest,
+       DISABLED_PopulateNotificationPermissionReviewData) {
   // Add a couple of notification permission and check they appear in review
   // list.
   HostContentSettingsMap* map =
