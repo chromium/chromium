@@ -37,16 +37,14 @@ ForceInstalledAffiliatedExtensionApiTest::
     : test_install_attributes_(
           ash::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                          "fake-id")) {
-  // TODO(crbug.com/1311355): This test is run with the feature
-  // kUseAuthsessionAuthentication enabled and disabled because of a
+  // TODO(b/239422391): This test is run with the feature
+  // kUseAuthFactors enabled and disabled because of a
   // transitive dependency of AffiliationTestHelper on that feature. Remove
-  // the parameter when kUseAuthsessionAuthentication is removed.
+  // the parameter when kUseAuthFactors is removed.
   if (is_auth_session_enabled) {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
   } else {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    feature_list_.InitAndDisableFeature(ash::features::kUseAuthFactors);
   }
 
   set_exit_when_last_browser_closes(false);

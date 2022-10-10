@@ -387,15 +387,13 @@ CertStoreServiceTest::CertStoreServiceTest()
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
 
   // TODO(crbug.com/1311355): This test is run with the feature
-  // kUseAuthsessionAuthentication enabled and disabled because of a
+  // kUseAuthFactors enabled and disabled because of a
   // transitive dependency of AffiliationTestHelper on that feature. Remove
-  // the parameter when kUseAuthsessionAuthentication is removed.
+  // the parameter when kUseAuthFactors is removed.
   if (std::get<1>(GetParam())) {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
   } else {
-    feature_list_.InitAndDisableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    feature_list_.InitAndDisableFeature(ash::features::kUseAuthFactors);
   }
 }
 

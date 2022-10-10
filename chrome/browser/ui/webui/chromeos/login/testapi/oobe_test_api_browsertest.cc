@@ -143,11 +143,10 @@ class OobeTestApiLoginPinTest : public OobeTestApiTest,
     login_mixin_.AppendRegularUsers(1);
 
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          ash::features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ash::features::kUseAuthsessionAuthentication);
+          ash::features::kUseAuthFactors);
     }
   }
 

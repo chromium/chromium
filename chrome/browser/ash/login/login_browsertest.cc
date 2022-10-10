@@ -96,11 +96,9 @@ class LoginOfflineTest : public LoginManagerTest,
  public:
   LoginOfflineTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     }
 
     login_manager_.AppendRegularUsers(1);

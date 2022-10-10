@@ -47,11 +47,17 @@ struct PinFactor {
 };
 
 struct RecoveryFactor {};
+struct SmartCardFactor {
+  std::string public_key_spki_der;
+};
 
 struct KioskFactor {};
 
-using FakeAuthFactor =
-    absl::variant<PasswordFactor, PinFactor, RecoveryFactor, KioskFactor>;
+using FakeAuthFactor = absl::variant<PasswordFactor,
+                                     PinFactor,
+                                     RecoveryFactor,
+                                     KioskFactor,
+                                     SmartCardFactor>;
 
 // Strings concatenated with the account id to obtain a user's profile
 // directory name. The prefix "u-" below corresponds to
@@ -62,6 +68,10 @@ const std::string kUserDataDirNameSuffix = "-hash";
 
 // Label of the recovery auth factor.
 const std::string kCryptohomeRecoveryKeyLabel = "recovery";
+// Label of the kiosk auth factor.
+const std::string kCryptohomePublicMountLabel = "publicmount";
+// Label of the GAIA password key
+const std::string kCryptohomeGaiaKeyLabel = "gaia";
 
 }  // namespace
 
@@ -150,6 +160,14 @@ absl::optional<cryptohome::KeyData> FakeAuthFactorToKeyData(
             return data;
           },
           [&](const RecoveryFactor&) { return absl::nullopt; },
+          [&](const SmartCardFactor& smart_card) {
+            cryptohome::KeyData data;
+            data.set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
+            data.set_label(std::move(label));
+            data.add_challenge_response_key()->set_public_key_spki_der(
+                smart_card.public_key_spki_der);
+            return data;
+          },
           [&](const KioskFactor& kiosk) {
             cryptohome::KeyData data;
             data.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
@@ -192,6 +210,15 @@ absl::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
             result.set_type(user_data_auth::AUTH_FACTOR_TYPE_KIOSK);
             result.mutable_kiosk_metadata();
             return result;
+          },
+          [&](const SmartCardFactor& smart_card) {
+            user_data_auth::AuthFactor result;
+            result.set_label(std::move(label));
+            result.set_type(
+                user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+            result.mutable_smart_card_metadata()->set_public_key_spki_der(
+                smart_card.public_key_spki_der);
+            return result;
           }),
       factor);
 }
@@ -209,10 +236,14 @@ std::pair<std::string, FakeAuthFactor> KeyToFakeAuthFactor(
   }
 
   switch (data.type()) {
-    case cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
     case cryptohome::KeyData::KEY_TYPE_FINGERPRINT:
       LOG(FATAL) << "Unsupported key type: " << data.type();
       __builtin_unreachable();
+    case cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
+      return {label,
+              SmartCardFactor{
+                  .public_key_spki_der =
+                      data.challenge_response_key(0).public_key_spki_der()}};
     case cryptohome::KeyData::KEY_TYPE_PASSWORD:
       if (data.has_policy() && data.policy().low_entropy_credential()) {
         return {label, PinFactor{.pin = secret, .locked = false}};
@@ -252,6 +283,10 @@ std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
       return {label, KioskFactor{}};
     case user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY:
       return {label, RecoveryFactor{}};
+    case user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD: {
+      std::string t = factor.smart_card_metadata().public_key_spki_der();
+      return {label, SmartCardFactor{.public_key_spki_der = t}};
+    }
     default:
       NOTREACHED();
       __builtin_unreachable();
@@ -274,6 +309,10 @@ bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
             // Kiosk key secrets are derived from app ids and don't leave
             // cryptohome, so there's nothing to check.
             return true;
+          },
+          [&](const SmartCardFactor& smart_card) {
+            LOG(FATAL) << "Checking smart card key is not implemented yet";
+            return false;
           }),
       factor);
 }
@@ -303,6 +342,9 @@ bool AuthInputMatchesFakeFactorType(
           },
           [&](const KioskFactor& kiosk) {
             return auth_input.has_kiosk_input();
+          },
+          [&](const SmartCardFactor& smart_card) {
+            return auth_input.has_smart_card_input();
           }),
       fake_factor);
 }
@@ -936,8 +978,34 @@ void FakeUserDataAuthClient::StartAuthSession(
   const bool user_exists = user_it != std::end(users_);
   reply.set_user_exists(user_exists);
 
+  const std::string& account_id = request.account_id().account_id();
+  // See device_local_account.h
+  const bool is_kiosk =
+      base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
+
   if (user_exists) {
-    const UserCryptohomeState& user_state = user_it->second;
+    UserCryptohomeState& user_state = user_it->second;
+
+    // TODO(b/239422391): Some tests expect that kiosk or gaia keys exist
+    // for existing users, but don't set those keys up. Until those tests are
+    // fixed, we explicitly add keys here.
+    if (is_kiosk) {
+      if (!user_state.auth_factors.contains(kCryptohomePublicMountLabel)) {
+        LOG(ERROR) << "Listing kiosk key even though it was not set up";
+
+        FakeAuthFactor factor{KioskFactor()};
+        user_state.auth_factors.insert(
+            {kCryptohomeRecoveryKeyLabel, std::move(factor)});
+      };
+    } else {
+      if (!user_state.auth_factors.contains(kCryptohomeGaiaKeyLabel)) {
+        LOG(ERROR) << "Listing GAIA password key even though it was not set up";
+        FakeAuthFactor factor{PasswordFactor()};
+        user_state.auth_factors.insert(
+            {kCryptohomeGaiaKeyLabel, std::move(factor)});
+      };
+    }
+
     for (const auto& [label, factor] : user_state.auth_factors) {
       absl::optional<cryptohome::KeyData> key_data =
           FakeAuthFactorToKeyData(label, factor);
@@ -959,10 +1027,6 @@ void FakeUserDataAuthClient::StartAuthSession(
     }
   }
 
-  const std::string& account_id = request.account_id().account_id();
-  // See device_local_account.h
-  const bool is_kiosk =
-      base::EndsWith(account_id, "kiosk-apps.device-local.localhost");
   // TODO(crbug.com/1334538): Some tests expect that kiosk or gaia keys exist
   // for existing users, but don't set those keys up. Until those tests are
   // fixed, we explicitly add keys here.
@@ -978,8 +1042,7 @@ void FakeUserDataAuthClient::StartAuthSession(
       LOG_IF(ERROR, was_inserted)
           << "Listing kiosk key even though it was not set up";
     } else {
-      // See kCryptohomeGaiaKeyLabel.
-      std::string gaia_label = "gaia";
+      std::string gaia_label = kCryptohomeGaiaKeyLabel;
       cryptohome::KeyData gaia_key;
       gaia_key.set_label(gaia_label);
       gaia_key.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
@@ -1401,7 +1464,10 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
               return;
             }
           },
-          [&](const KioskFactor& kiosk) {}),
+          [&](const KioskFactor& kiosk) {},
+          [&](const SmartCardFactor& smart_card) {
+            LOG(ERROR) << "Checking smart card key is not implemented yet";
+          }),
       factor);
 
   if (reply.error() !=

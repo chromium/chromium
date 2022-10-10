@@ -1019,16 +1019,14 @@ class ExistingUserControllerActiveDirectoryTestCreateProfileDir
   ExistingUserControllerActiveDirectoryTestCreateProfileDir() {
     cryptohome_mixin_.MarkUserAsExisting(ad_account_id_);
 
-    // TODO(crbug.com/1311355): This test is run with the feature
-    // kUseAuthsessionAuthentication enabled and disabled because of a
+    // TODO(b/239422391): This test is run with the feature
+    // kUseAuthFactors enabled and disabled because of a
     // transitive dependency of AffiliationTestHelper on that feature. Remove
-    // the parameter when kUseAuthsessionAuthentication is removed.
+    // the parameter when kUseAuthFactors is removed.
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     }
   }
 
@@ -1176,11 +1174,9 @@ class ExistingUserControllerSavePasswordHashTest
  public:
   ExistingUserControllerSavePasswordHashTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseAuthsessionAuthentication);
+      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     }
   }
   ~ExistingUserControllerSavePasswordHashTest() override = default;

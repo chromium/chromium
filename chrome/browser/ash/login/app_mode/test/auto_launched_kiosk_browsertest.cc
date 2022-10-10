@@ -248,11 +248,9 @@ class AutoLaunchedKioskTest : public AutoLaunchedKioskTestBase,
  public:
   AutoLaunchedKioskTest() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          features::kUseAuthsessionAuthentication);
+      feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
     } else {
-      feature_list_.InitAndDisableFeature(
-          features::kUseAuthsessionAuthentication);
+      feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
     }
   }
 

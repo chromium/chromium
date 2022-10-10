@@ -78,11 +78,9 @@ SecurityTokenSamlTest::SecurityTokenSamlTest()
                       &gaia_mixin_,
                       /*client_cert_authorities=*/{GetClientCertCaName()}) {
   if (GetParam()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kUseAuthFactors);
   } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kUseAuthsessionAuthentication);
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kUseAuthFactors);
   }
   // Allow the forced installation of extensions in the background.
   needs_background_networking_ = true;

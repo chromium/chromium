@@ -200,6 +200,8 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
   void AuthenticateAuthSession(
       const ::user_data_auth::AuthenticateAuthSessionRequest& request,
       AuthenticateAuthSessionCallback callback) override;
+  void AddAuthFactor(const ::user_data_auth::AddAuthFactorRequest& request,
+                     AddAuthFactorCallback callback) override;
   void AddCredentials(const ::user_data_auth::AddCredentialsRequest& request,
                       AddCredentialsCallback callback) override;
   void Mount(const ::user_data_auth::MountRequest& request,
@@ -226,6 +228,15 @@ void SecretInterceptingFakeUserDataAuthClient::AddCredentials(
     AddCredentialsCallback callback) {
   salted_hashed_secret_ = request.authorization().key().secret();
   FakeUserDataAuthClient::AddCredentials(request, std::move(callback));
+}
+
+void SecretInterceptingFakeUserDataAuthClient::AddAuthFactor(
+    const ::user_data_auth::AddAuthFactorRequest& request,
+    AddAuthFactorCallback callback) {
+  CHECK(request.auth_factor().type() ==
+        user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+  salted_hashed_secret_ = request.auth_input().password_input().secret();
+  FakeUserDataAuthClient::AddAuthFactor(request, std::move(callback));
 }
 
 void SecretInterceptingFakeUserDataAuthClient::Mount(
@@ -377,7 +388,7 @@ class SamlTestBase : public OobeBaseTest {
 };
 
 // The first value of the parameter runs the tests with
-// kUseAuthsessionAuthentication feature and the second value with
+// kUseAuthFactors feature and the second value with
 // kCheckPasswordsAgainstCryptohomeHelper
 class SamlTestWithFeatures
     : public SamlTestBase,
@@ -387,9 +398,9 @@ class SamlTestWithFeatures
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(features::kUseAuthsessionAuthentication);
+      enabled_features.push_back(features::kUseAuthFactors);
     } else {
-      disabled_features.push_back(features::kUseAuthsessionAuthentication);
+      disabled_features.push_back(features::kUseAuthFactors);
     }
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(
@@ -406,7 +417,7 @@ class SamlTestWithFeatures
 };
 
 // The first value of the parameter runs the tests with
-// kUseAuthsessionAuthentication feature.
+// UseAuthFactors feature.
 class ImprovedScrapingTestBase
     : public SamlTestBase,
       public testing::WithParamInterface<std::tuple<bool>> {
@@ -426,9 +437,9 @@ void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
   if (std::get<0>(GetParam())) {
-    enabled_features.push_back(features::kUseAuthsessionAuthentication);
+    enabled_features.push_back(features::kUseAuthFactors);
   } else {
-    disabled_features.push_back(features::kUseAuthsessionAuthentication);
+    disabled_features.push_back(features::kUseAuthFactors);
   }
   if (enable_improved_scraping) {
     enabled_features.push_back(
