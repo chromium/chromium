@@ -2058,9 +2058,7 @@ experimental domain CacheStorage
       # An opaque unique id of the cache.
       CacheId cacheId
       # Security origin of the cache.
-      optional string securityOrigin
-      # Storage key of the cache.
-      optional string storageKey
+      string securityOrigin
       # The name of the cache.
       string cacheName
 
