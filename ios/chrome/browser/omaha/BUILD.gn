@@ -20,7 +20,6 @@ source_set("omaha") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
