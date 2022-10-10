@@ -6505,6 +6505,10 @@ const char kPreferLibYuvImageProcessorName[] = "Prefer libYUV image processor";
 const char kPreferLibYuvImageProcessorDescription[] =
     "Prefers the libYUV image processor for format conversion of video frames "
     "over the hardware implementation";
+const char kPreferGLImageProcessorName[] = "Prefer GL image processor";
+const char kPreferGLImageProcessorDescription[] =
+    "Prefers the GL image processor for format conversion of video frames over"
+    " both the libYUV and hardware implementations";
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 

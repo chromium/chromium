@@ -6762,6 +6762,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPreferLibYuvImageProcessorDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kPreferLibYuvImageProcessor)},
+    {"prefer-gl-image-processor",
+     flag_descriptions::kPreferGLImageProcessorName,
+     flag_descriptions::kPreferGLImageProcessorDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kPreferGLImageProcessor)},
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
