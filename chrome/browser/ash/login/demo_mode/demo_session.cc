@@ -616,7 +616,7 @@ void DemoSession::OnSessionStateChanged() {
         g_browser_process->platform_part()->cros_component_manager()->Load(
             "demo-mode-app",
             component_updater::CrOSComponentManager::MountPolicy::kMount,
-            component_updater::CrOSComponentManager::UpdatePolicy::kForce,
+            component_updater::CrOSComponentManager::UpdatePolicy::kDontForce,
             base::BindOnce(&DemoSession::OnDemoAppComponentLoaded,
                            weak_ptr_factory_.GetWeakPtr()));
       }
