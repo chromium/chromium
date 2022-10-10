@@ -368,13 +368,26 @@ String SVGUseElement::title() const {
   return String();
 }
 
+static void PostProcessInstanceElement(SVGElement& target,
+                                       SVGElement& instance) {
+  // Transfer non-markup event listeners.
+  if (EventTargetData* data = target.GetEventTargetData()) {
+    data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
+        &instance);
+  }
+  // Set up the corresponding element association.
+  instance.SetCorrespondingElement(&target);
+  // Setup the mapping from the target element back to the instance.
+  target.AddInstance(&instance);
+}
+
 static void PostProcessInstanceTree(SVGElement& target_root,
                                     SVGElement& instance_root) {
   DCHECK(!instance_root.isConnected());
   // We checked this before creating the cloned subtree.
   DCHECK(!IsDisallowedElement(instance_root));
-  // Associate the roots.
-  instance_root.SetCorrespondingElement(&target_root);
+  // Handle the root(s). (Always allowed and SVGElements.)
+  PostProcessInstanceElement(target_root, instance_root);
 
   // The subtrees defined by |target_root| and |instance_root| should be
   // isomorphic at this point, so we can walk both trees simultaneously to be
@@ -408,11 +421,10 @@ static void PostProcessInstanceTree(SVGElement& target_root,
           ElementTraversal::NextSkippingChildren(*target_element, &target_root);
       instance_element = instance_next;
     } else {
-      // Set up the corresponding element association.
       if (auto* svg_instance_element =
               DynamicTo<SVGElement>(instance_element)) {
-        svg_instance_element->SetCorrespondingElement(
-            To<SVGElement>(target_element));
+        PostProcessInstanceElement(To<SVGElement>(*target_element),
+                                   *svg_instance_element);
       }
       target_element = ElementTraversal::Next(*target_element, &target_root);
       instance_element =
@@ -453,7 +465,6 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
     instance_root = svg_element;
   }
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
-  PostProcessInstanceTree(target_root, *instance_root);
   return instance_root;
 }
 
@@ -465,28 +476,21 @@ void SVGUseElement::AttachShadowTree(SVGElement& target) {
   if (IsDisallowedElement(target) || HasCycleUseReferencing(*this, target))
     return;
 
-  // Set up root SVG element in shadow tree.
-  // Clone the target subtree into the shadow tree, not handling <use> and
-  // <symbol> yet.
-  UseShadowRoot().AppendChild(CreateInstanceTree(target));
+  // Create the initial clone of the |target| subtree. Handles transformation
+  // of <symbol> to <svg>.
+  SVGElement* instance_root = CreateInstanceTree(target);
+
+  // Remove disallowed elements, clone event handlers and set up the
+  // association with the corresponding/target element.
+  PostProcessInstanceTree(target, *instance_root);
+
+  // Finally attach to the tree.
+  UseShadowRoot().AppendChild(instance_root);
 
   // Assure shadow tree building was successful.
   DCHECK(InstanceRoot());
   DCHECK_EQ(InstanceRoot()->GeneratingUseElement(), this);
   DCHECK_EQ(InstanceRoot()->CorrespondingElement(), &target);
-
-  for (SVGElement& instance :
-       Traversal<SVGElement>::DescendantsOf(UseShadowRoot())) {
-    SVGElement* corresponding_element = instance.CorrespondingElement();
-    // Transfer non-markup event listeners.
-    if (EventTargetData* data = corresponding_element->GetEventTargetData()) {
-      data->event_listener_map.CopyEventListenersNotCreatedFromMarkupToTarget(
-          &instance);
-    }
-    // Setup the mapping from the corresponding (original) element back to the
-    // instance.
-    corresponding_element->AddInstance(&instance);
-  }
 }
 
 void SVGUseElement::DetachShadowTree() {
