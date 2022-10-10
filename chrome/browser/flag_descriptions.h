@@ -414,6 +414,9 @@ extern const char kChromeWhatsNewInMainMenuNewBadgeName[];
 extern const char kChromeWhatsNewInMainMenuNewBadgeDescription[];
 #endif
 
+extern const char kDarkLightModeKMeansColorName[];
+extern const char kDarkLightModeKMeansColorDescription[];
+
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];
 

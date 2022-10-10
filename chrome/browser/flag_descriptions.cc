@@ -760,6 +760,12 @@ const char kChromeWhatsNewInMainMenuNewBadgeDescription[] =
     "menu.";
 #endif
 
+const char kDarkLightModeKMeansColorName[] =
+    "K Means color algorithm for dark light mode";
+const char kDarkLightModeKMeansColorDescription[] =
+    "Enables the alternate K Means color algorithm for extracting color from "
+    "user wallpaper to mix into system UI for dark light mode";
+
 const char kDarkLightTestName[] = "Dark/light mode of system UI";
 const char kDarkLightTestDescription[] =
     "Enables the dark/light mode of system UI, which includes shelf, launcher, "

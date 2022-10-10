@@ -4104,6 +4104,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableLacrosTtsSupportName,
      flag_descriptions::kDisableLacrosTtsSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDisableLacrosTtsSupport)},
+    {"dark-light-mode-k-means-color",
+     flag_descriptions::kDarkLightModeKMeansColorName,
+     flag_descriptions::kDarkLightModeKMeansColorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDarkLightModeKMeansColor)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

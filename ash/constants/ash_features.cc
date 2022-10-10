@@ -575,6 +575,10 @@ BASE_FEATURE(kCryptohomeRecoverySetup,
              "CryptohomeRecoverySetup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDarkLightModeKMeansColor,
+             "DarkLightModeKMeansColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDemoModeSWA, "DemoModeSWA", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Assistant stylus features, including the
@@ -2347,6 +2351,11 @@ bool IsCryptohomeRecoverySetupEnabled() {
 
 bool IsDarkLightModeEnabled() {
   return chromeos::features::IsDarkLightModeEnabled();
+}
+
+bool IsDarkLightModeKMeansColorEnabled() {
+  return IsDarkLightModeEnabled() &&
+         base::FeatureList::IsEnabled(kDarkLightModeKMeansColor);
 }
 
 bool IsDemoModeSWAEnabled() {

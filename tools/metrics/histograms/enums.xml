@@ -57775,6 +57775,7 @@ from previous Chrome versions.
   <int value="-1396595854"
       label="PrivateNetworkAccessRespectPreflightResults:enabled"/>
   <int value="-1396434715" label="AssistMultiWord:disabled"/>
+  <int value="-1396348326" label="DarkLightModeKMeansColor:enabled"/>
   <int value="-1395216271" label="LauncherGameSearch:disabled"/>
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392673888"
@@ -61954,6 +61955,7 @@ from previous Chrome versions.
   <int value="1127402319" label="WebAssemblyCodeProtection:enabled"/>
   <int value="1127427821" label="OmniboxEntitySuggestions:disabled"/>
   <int value="1127954225" label="EnableDnsProxy:enabled"/>
+  <int value="1128245405" label="DarkLightModeKMeansColor:disabled"/>
   <int value="1128874009" label="ScalableStatusArea:disabled"/>
   <int value="1129542111" label="CastAllowAllIPs:disabled"/>
   <int value="1129888794" label="ash-touch-hud"/>
