@@ -3365,7 +3365,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   ~DownloadManagerWaiter() override { download_manager_->RemoveObserver(this); }
 
   void WaitForInitialized() {
-    if (initialized_ || download_manager_->IsManagerInitialized())
+    if (initialized_)
       return;
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -3531,7 +3531,19 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, PRE_DownloadCookieIsolation_CrossSession) {
   content::EnsureCookiesFlushed(profile());
 }
 
-IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation_CrossSession) {
+// TODO(crbug.com/994789): Flaky on MSan, Linux, and ChromeOS.
+// TODO(crbug.com/1204299): Flaky on Windows. Consistently failing on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_DownloadCookieIsolation_CrossSession \
+  DISABLED_DownloadCookieIsolation_CrossSession
+#else
+#define MAYBE_DownloadCookieIsolation_CrossSession \
+  DownloadCookieIsolation_CrossSession
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_P(WebViewTest,
+                       MAYBE_DownloadCookieIsolation_CrossSession) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleDownloadRequestWithCookie));
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
@@ -3590,7 +3602,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation_CrossSession) {
   for (auto* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     ASSERT_TRUE(download->GetFullPath().empty());
-    EXPECT_NE(download::DOWNLOAD_INTERRUPT_REASON_NONE,
+    EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
               download->GetLastReason());
     download->Resume(true);
   }
