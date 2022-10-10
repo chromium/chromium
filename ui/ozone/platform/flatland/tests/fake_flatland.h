@@ -13,12 +13,28 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/fidl/cpp/interface_request.h>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <string>
 
 #include "base/callback.h"
 
 namespace ui {
+
+class FakeParentViewportWatcher
+    : public fuchsia::ui::composition::testing::ParentViewportWatcher_TestBase {
+ public:
+  explicit FakeParentViewportWatcher(
+      fidl::InterfaceRequest<fuchsia::ui::composition::ParentViewportWatcher>
+          request);
+  ~FakeParentViewportWatcher() override;
+
+ private:
+  // |fuchsia::ui::composition::testing::Flatland_TestBase|
+  void NotImplemented_(const std::string& name) override;
+
+  fidl::Binding<fuchsia::ui::composition::ParentViewportWatcher> binding_;
+};
 
 // A lightweight fake implementation of the Flatland API.
 //
@@ -109,6 +125,7 @@ class FakeFlatland
   PresentHandler present_handler_;
   ViewRefFocusedRequestHandler view_ref_focused_handler_;
   TouchSourceRequestHandler touch_source_request_handler_;
+  absl::optional<FakeParentViewportWatcher> parent_viewport_watcher_;
 };
 
 }  // namespace ui

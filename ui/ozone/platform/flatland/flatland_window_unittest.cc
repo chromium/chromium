@@ -62,8 +62,16 @@ class FlatlandWindowTest : public ::testing::Test {
     return flatland_window_.get();
   }
 
-  void SetDevicePixelRatio(float device_pixel_ratio) {
-    flatland_window_->device_pixel_ratio_ = device_pixel_ratio;
+  void SetLayoutInfo(float device_pixel_ratio) {
+    fuchsia::ui::composition::LayoutInfo layout_info;
+    layout_info.set_logical_size({100, 100});
+    layout_info.set_device_pixel_ratio(
+        {device_pixel_ratio, device_pixel_ratio});
+    flatland_window_->OnGetLayout(std::move(layout_info));
+  }
+
+  bool HasPendingAttachSurfaceContentClosure() {
+    return !!flatland_window_->pending_attach_surface_content_closure_;
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -132,7 +140,8 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
   MockPlatformWindowDelegate delegate;
   EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_));
   CreateFlatlandWindow(&delegate);
-  SetDevicePixelRatio(1.f);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
+  SetLayoutInfo(1.f);
 
   // FlatlandWindow should start watching touch events in ctor.
   task_environment_.RunUntilIdle();
@@ -167,7 +176,8 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
 
   // Update device pixel ratio.
   const float kDPR = 2.f;
-  SetDevicePixelRatio(kDPR);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
+  SetLayoutInfo(kDPR);
 
   // Send the same touch event and expect coordinates to be scaled from
   // TouchEvent.
@@ -192,6 +202,31 @@ TEST_F(FlatlandWindowTest, AppliesDevicePixelRatio) {
   fake_touch_source_.ScheduleCallback(std::move(events));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(event_received);
+}
+
+TEST_F(FlatlandWindowTest, WaitForNonZeroSize) {
+  MockPlatformWindowDelegate delegate;
+  EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_));
+  FlatlandWindow* flatland_window = CreateFlatlandWindow(&delegate);
+
+  // FlatlandWindow should start watching callbacks in ctor.
+  task_environment_.RunUntilIdle();
+
+  // Create a ViewportCreationToken.
+  fuchsia::ui::views::ViewportCreationToken parent_token;
+  fuchsia::ui::views::ViewCreationToken child_token;
+  auto status = zx::channel::create(0, &parent_token.value, &child_token.value);
+  ASSERT_EQ(ZX_OK, status);
+
+  // Try attaching the content. It should only be a closure.
+  flatland_window->AttachSurfaceContent(std::move(parent_token));
+  EXPECT_TRUE(HasPendingAttachSurfaceContentClosure());
+
+  // Setting layout info should trigger the closure and delegate calls.
+  EXPECT_CALL(delegate, OnWindowStateChanged(_, _)).Times(1);
+  EXPECT_CALL(delegate, OnBoundsChanged(_)).Times(1);
+  SetLayoutInfo(1.f);
+  EXPECT_FALSE(HasPendingAttachSurfaceContentClosure());
 }
 
 }  // namespace ui

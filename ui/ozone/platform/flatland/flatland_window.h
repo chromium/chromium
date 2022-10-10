@@ -15,6 +15,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/fuchsia/pointer_events_handler.h"
@@ -56,11 +58,13 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   // keyboard features when creating the InputMethod for the window.
   bool virtual_keyboard_enabled() const { return is_virtual_keyboard_enabled_; }
 
-  // PlatformWindow implementation.
+  // Test only PlatformWindow implementation.
   gfx::Rect GetBoundsInPixels() const override;
   void SetBoundsInPixels(const gfx::Rect& bounds) override;
   gfx::Rect GetBoundsInDIP() const override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
+
+  // PlatformWindow implementation.
   void SetTitle(const std::u16string& title) override;
   void Show(bool inactive) override;
   void Hide() override;
@@ -132,8 +136,10 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
 
   fuchsia::ui::composition::TransformId root_transform_id_;
   fuchsia::ui::composition::TransformId surface_transform_id_;
-
   fuchsia::ui::composition::ContentId surface_content_id_;
+
+  // Pending Viewport creation callback waiting on |logical_size_|.
+  base::OnceClosure pending_attach_surface_content_closure_;
 
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
 

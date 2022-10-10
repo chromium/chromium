@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/scoped_refptr.h"
-#include "flatland_connection.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/events_ozone.h"
@@ -102,6 +102,17 @@ FlatlandWindow::~FlatlandWindow() {
 
 void FlatlandWindow::AttachSurfaceContent(
     fuchsia::ui::views::ViewportCreationToken token) {
+  // 0x0 is not a valid Viewport size for Flatland. Sending these commands will
+  // cause an error that results in channel closure. We will receive a non-zero
+  // size at OnGetLayout(), so we wait until then to run these commands.
+  if (bounds_.IsEmpty()) {
+    DCHECK(!logical_size_);
+    pending_attach_surface_content_closure_ =
+        base::BindOnce(&FlatlandWindow::AttachSurfaceContent,
+                       base::Unretained(this), std::move(token));
+    return;
+  }
+
   if (surface_content_id_.value) {
     flatland_.flatland()->ReleaseViewport(surface_content_id_, [](auto) {});
     flatland_.flatland()->ReleaseTransform(surface_transform_id_);
@@ -123,8 +134,10 @@ void FlatlandWindow::AttachSurfaceContent(
   flatland_.flatland()->SetContent(surface_transform_id_, surface_content_id_);
   flatland_.Present();
 
-  // View is actually not attached but without it we dont get OutputPresenter
-  // updates.
+  // TODO(crbug.com/1371497): Remove the call here and rely on
+  // ParentViewportStatus signals instead.
+  // View is actually not attached yet, but without this we don't get
+  // OutputPresenter updates.
   OnViewAttachedChanged(true);
 }
 
@@ -333,11 +346,17 @@ void FlatlandWindow::OnViewRefFocusedWatchResult(
 void FlatlandWindow::UpdateSize() {
   DCHECK(logical_size_);
 
-  const gfx::Point old_origin = bounds_.origin();
+  const auto old_bounds = bounds_;
   bounds_ = gfx::Rect(
       gfx::ScaleToCeiledSize(logical_size_.value(), device_pixel_ratio_));
 
-  PlatformWindowDelegate::BoundsChange bounds(old_origin != bounds_.origin());
+  if (pending_attach_surface_content_closure_) {
+    DCHECK(old_bounds.IsEmpty());
+    std::move(pending_attach_surface_content_closure_).Run();
+  }
+
+  PlatformWindowDelegate::BoundsChange bounds(old_bounds.origin() !=
+                                              bounds_.origin());
   // TODO(fxbug.dev/93998): Calculate insets and update.
   platform_window_delegate_->OnBoundsChanged(bounds);
 }

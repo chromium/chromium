@@ -98,10 +98,22 @@ void FakeFlatland::CreateView2(
     touch_source_request_handler_(
         std::move(*view_protocols.mutable_touch_source()));
   }
+  parent_viewport_watcher_.emplace(std::move(parent_viewport_watcher));
 }
 
 void FakeFlatland::SetDebugName(std::string debug_name) {
   debug_name_ = std::move(debug_name);
+}
+
+FakeParentViewportWatcher::FakeParentViewportWatcher(
+    fidl::InterfaceRequest<fuchsia::ui::composition::ParentViewportWatcher>
+        request)
+    : binding_(this, std::move(request)) {}
+
+FakeParentViewportWatcher::~FakeParentViewportWatcher() = default;
+
+void FakeParentViewportWatcher::NotImplemented_(const std::string& name) {
+  LOG(ERROR) << "FakeParentViewportWatcher does not implement " << name;
 }
 
 }  // namespace ui
