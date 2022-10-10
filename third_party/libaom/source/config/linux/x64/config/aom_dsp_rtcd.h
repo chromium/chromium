@@ -4640,6 +4640,11 @@ uint64_t aom_mse_16xh_16bit_c(uint8_t* dst,
                               uint16_t* src,
                               int w,
                               int h);
+uint64_t aom_mse_16xh_16bit_sse2(uint8_t* dst,
+                                 int dstride,
+                                 uint16_t* src,
+                                 int w,
+                                 int h);
 uint64_t aom_mse_16xh_16bit_avx2(uint8_t* dst,
                                  int dstride,
                                  uint16_t* src,
@@ -9204,13 +9209,12 @@ unsigned int aom_variance8x8_sse2(const uint8_t* src_ptr,
                                   unsigned int* sse);
 #define aom_variance8x8 aom_variance8x8_sse2
 
-int aom_vector_var_c(const int16_t* ref, const int16_t* src, const int bwl);
-int aom_vector_var_sse4_1(const int16_t* ref,
-                          const int16_t* src,
-                          const int bwl);
+int aom_vector_var_c(const int16_t* ref, const int16_t* src, int bwl);
+int aom_vector_var_sse4_1(const int16_t* ref, const int16_t* src, int bwl);
+int aom_vector_var_avx2(const int16_t* ref, const int16_t* src, int bwl);
 RTCD_EXTERN int (*aom_vector_var)(const int16_t* ref,
                                   const int16_t* src,
-                                  const int bwl);
+                                  int bwl);
 
 void aom_dsp_rtcd(void);
 
@@ -9707,7 +9711,7 @@ static void setup_rtcd_internal(void) {
   aom_mse16x16 = aom_mse16x16_sse2;
   if (flags & HAS_AVX2)
     aom_mse16x16 = aom_mse16x16_avx2;
-  aom_mse_16xh_16bit = aom_mse_16xh_16bit_c;
+  aom_mse_16xh_16bit = aom_mse_16xh_16bit_sse2;
   if (flags & HAS_AVX2)
     aom_mse_16xh_16bit = aom_mse_16xh_16bit_avx2;
   aom_mse_wxh_16bit = aom_mse_wxh_16bit_sse2;
@@ -10317,6 +10321,8 @@ static void setup_rtcd_internal(void) {
   aom_vector_var = aom_vector_var_c;
   if (flags & HAS_SSE4_1)
     aom_vector_var = aom_vector_var_sse4_1;
+  if (flags & HAS_AVX2)
+    aom_vector_var = aom_vector_var_avx2;
 }
 #endif
 
