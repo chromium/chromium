@@ -19,8 +19,8 @@
 @protocol OmniboxCommands;
 @protocol PopupMenuCommands;
 @protocol PopupMenuLongPressDelegate;
+@class ToolbarButton;
 @class ToolbarButtonFactory;
-@class ToolbarToolsMenuButton;
 
 // ViewController for the adaptive toolbar. This ViewController is the super
 // class of the different implementation (primary or secondary).
@@ -47,7 +47,7 @@
 @property(nonatomic, weak) id<AdaptiveToolbarMenusProvider> menuProvider;
 
 // Returns the tools menu button.
-- (ToolbarToolsMenuButton*)toolsMenuButton;
+- (ToolbarButton*)toolsMenuButton;
 
 // Updates the view so a snapshot can be taken. It needs to be adapted,
 // depending on if it is a snapshot displayed `onNTP` or not.

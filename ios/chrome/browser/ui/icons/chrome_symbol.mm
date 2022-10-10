@@ -97,6 +97,7 @@ NSString* const kWifiSymbol = @"wifi";
 NSString* const kBookmarksSymbol = @"star.fill";
 NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
+NSString* const kMenuSymbol = @"ellipsis";
 
 const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 

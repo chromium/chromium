@@ -72,7 +72,7 @@
 // Button to display the share menu, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* shareButton;
 // Button to display the tools menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarToolsMenuButton* toolsMenuButton;
+@property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
 
 // Button to cancel the edit of the location bar, redefined as readwrite.
 @property(nonatomic, strong, readwrite) UIButton* cancelButton;

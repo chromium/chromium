@@ -134,7 +134,7 @@ NSString* const kContextMenuActionIdentifier = @"kContextMenuActionIdentifier";
 
 #pragma mark - Public
 
-- (ToolbarToolsMenuButton*)toolsMenuButton {
+- (ToolbarButton*)toolsMenuButton {
   return self.view.toolsMenuButton;
 }
 

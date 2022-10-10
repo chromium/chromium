@@ -109,9 +109,15 @@ NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
   return tabGridButton;
 }
 
-- (ToolbarToolsMenuButton*)toolsMenuButton {
-  ToolbarToolsMenuButton* toolsMenuButton =
-      [[ToolbarToolsMenuButton alloc] initWithFrame:CGRectZero];
+- (ToolbarButton*)toolsMenuButton {
+  ToolbarButton* toolsMenuButton;
+  if (UseSymbols()) {
+    toolsMenuButton = [ToolbarButton
+        toolbarButtonWithImage:DefaultSymbolWithPointSize(
+                                   kMenuSymbol, kSymbolToolbarPointSize)];
+  } else {
+    toolsMenuButton = [[ToolbarToolsMenuButton alloc] initWithFrame:CGRectZero];
+  }
 
   SetA11yLabelAndUiAutomationName(toolsMenuButton, IDS_IOS_TOOLBAR_SETTINGS,
                                   kToolbarToolsMenuButtonIdentifier);

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator.h"
 
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -125,7 +127,13 @@
 #pragma mark - ToolbarCommands
 
 - (void)triggerToolsMenuButtonAnimation {
-  [self.viewController.toolsMenuButton triggerAnimation];
+  if (UseSymbols())
+    return;
+
+  ToolbarToolsMenuButton* toolsMenuButton =
+      base::mac::ObjCCastStrict<ToolbarToolsMenuButton>(
+          self.viewController.toolsMenuButton);
+  [toolsMenuButton triggerAnimation];
 }
 
 #pragma mark - ToolbarCoordinatee

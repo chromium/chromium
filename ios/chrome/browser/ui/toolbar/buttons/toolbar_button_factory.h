@@ -42,7 +42,7 @@
 // Tab Grid ToolbarButton.
 - (ToolbarTabGridButton*)tabGridButton;
 // Tools Menu ToolbarButton.
-- (ToolbarToolsMenuButton*)toolsMenuButton;
+- (ToolbarButton*)toolsMenuButton;
 // Share ToolbarButton.
 - (ToolbarButton*)shareButton;
 // Reload ToolbarButton.

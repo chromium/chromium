@@ -34,7 +34,7 @@
 // Button to display the share menu.
 @property(nonatomic, strong, readonly) ToolbarButton* shareButton;
 // Button to display the tools menu.
-@property(nonatomic, strong, readonly) ToolbarToolsMenuButton* toolsMenuButton;
+@property(nonatomic, strong, readonly) ToolbarButton* toolsMenuButton;
 // Button to create a new tab.
 @property(nonatomic, strong, readonly) ToolbarButton* openNewTabButton;
 // Separator between the toolbar and the content.

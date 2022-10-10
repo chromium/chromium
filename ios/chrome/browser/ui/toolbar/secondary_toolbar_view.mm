@@ -43,7 +43,7 @@ const CGFloat kToolsMenuOffset = -7;
 // Buttons to navigate forward, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarButton* forwardButton;
 // Button to display the tools menu, redefined as readwrite.
-@property(nonatomic, strong, readwrite) ToolbarToolsMenuButton* toolsMenuButton;
+@property(nonatomic, strong, readwrite) ToolbarButton* toolsMenuButton;
 // Button to display the tab grid, redefined as readwrite.
 @property(nonatomic, strong, readwrite) ToolbarTabGridButton* tabGridButton;
 // Button to create a new tab, redefined as readwrite.
