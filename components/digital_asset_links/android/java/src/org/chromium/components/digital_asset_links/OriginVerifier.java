@@ -202,9 +202,13 @@ public abstract class OriginVerifier {
         }
 
         mVerificationStartTime = SystemClock.uptimeMillis();
-        boolean requestSent = OriginVerifierJni.get().verifyOrigin(mNativeOriginVerifier,
-                OriginVerifier.this, mPackageName, mSignatureFingerprints.toArray(new String[0]),
-                origin.toString(), mRelation, mWebContents);
+        String[] fingerprints = mSignatureFingerprints == null
+                ? null
+                : mSignatureFingerprints.toArray(new String[0]);
+
+        boolean requestSent =
+                OriginVerifierJni.get().verifyOrigin(mNativeOriginVerifier, OriginVerifier.this,
+                        mPackageName, fingerprints, origin.toString(), mRelation, mWebContents);
         if (!requestSent) {
             recordResultMetrics(VerifierResult.REQUEST_FAILURE);
             PostTask.runOrPostTask(
