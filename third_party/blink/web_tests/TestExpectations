@@ -7239,6 +7239,10 @@ crbug.com/1363138 http/tests/inspector-protocol/cachestorage/read-cached-respons
 # Investigate the flake
 crbug.com/1371395 virtual/not-restored-reasons/external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]
 
+# Disable top flakes trigger step failure on builders
+crbug.com/1371949 [ Mac12 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
+crbug.com/1371949 [ Mac11 ] virtual/low-priority-script-loading/http/tests/devtools/network/resource-priority.js [ Failure Pass ]
+
 # Sheriff 2022-10-07
 crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transform-capitalize-* [ Failure Pass ]
 
