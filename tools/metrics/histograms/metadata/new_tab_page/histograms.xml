@@ -1726,6 +1726,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.ShoppingTasks.ProductClick" units="index"
     expires_after="2022-11-20">
+  <obsolete>
+    Last logged in M101. Marked obsolete 2022-10.
+  </obsolete>
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1738,6 +1741,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.ShoppingTasks.ProductDownloadCount"
     units="products" expires_after="2022-11-20">
+  <obsolete>
+    Last logged in M101. Marked obsolete 2022-10.
+  </obsolete>
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1752,6 +1758,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.ShoppingTasks.RelatedSearchClick" units="index"
     expires_after="2022-11-20">
+  <obsolete>
+    Last logged in M101. Marked obsolete 2022-10.
+  </obsolete>
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1764,6 +1773,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.ShoppingTasks.RelatedSearchDownloadCount"
     units="count" expires_after="2022-11-20">
+  <obsolete>
+    Last logged in M101. Marked obsolete 2022-10.
+  </obsolete>
   <owner>danpeng@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
