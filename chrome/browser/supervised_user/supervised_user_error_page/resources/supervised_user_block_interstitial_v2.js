@@ -1,17 +1,26 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 let showDetails = false;
 
+let localWebApprovalsEnabled = false;
+
+/** Return the element with the given id. */
 function $(id) {
   return document.body.querySelector(`#${id}`);
 }
 
+/** Update visibility of the 'details' element. */
 function updateDetails() {
   $('details').hidden = !showDetails;
 }
 
+/**
+ * Send one of the supported commands to the supervised user error page
+ * controller.
+ * @param {string} cmd See implementation below
+ */
 function sendCommand(cmd) {
   if (window.supervisedUserErrorPageController) {
     switch (cmd) {
@@ -30,24 +39,22 @@ function sendCommand(cmd) {
     }
     return;
   }
-  window.domAutomationController.send(cmd);
 }
 
 function makeImageSet(url1x, url2x) {
   return '-webkit-image-set(url(' + url1x + ') 1x, url(' + url2x + ') 2x)';
 }
 
+/** Perform all initialization that can be done at DOMContentLoaded time. */
 function initialize() {
   const allowAccessRequests = loadTimeData.getBoolean('allowAccessRequests');
   const avatarURL1x = loadTimeData.getString('avatarURL1x');
   const avatarURL2x = loadTimeData.getString('avatarURL2x');
   const custodianName = loadTimeData.getString('custodianName');
-  if (loadTimeData.getBoolean('isLocalWebApprovalsEnabled')) {
-    console.error(
-        'Local web approvals should not be enabled without web filter' +
-        'interstitial refresh being enabled.');
-    return;
-  }
+  localWebApprovalsEnabled =
+      loadTimeData.getBoolean('isLocalWebApprovalsEnabled');
+  const localWebApprovalsPreferred =
+      loadTimeData.getBoolean('isLocalWebApprovalsPreferred');
 
   if (custodianName && allowAccessRequests) {
     $('custodians-information').hidden = false;
@@ -83,35 +90,29 @@ function initialize() {
 
   if (allowAccessRequests) {
     $('remote-approvals-button').hidden = false;
+    if (localWebApprovalsEnabled) {
+      $('local-approvals-button').hidden = false;
+      if (localWebApprovalsPreferred) {
+        $('local-approvals-button').classList.add('primary-button');
+        $('remote-approvals-button').classList.add('secondary-button');
+      } else {
+        $('remote-approvals-button').classList.add('primary-button');
+        $('local-approvals-button').classList.add('secondary-button');
+      }
+    }
     $('remote-approvals-button').onclick = function(event) {
       $('remote-approvals-button').disabled = true;
       sendCommand('requestUrlAccessRemote');
+    };
+    $('local-approvals-button').onclick = function(event) {
+      sendCommand('requestUrlAccessLocal');
     };
   } else {
     $('remote-approvals-button').hidden = true;
   }
 
-  if (loadTimeData.getBoolean('showFeedbackLink')) {
-    $('show-details-link').hidden = false;
-    $('show-details-link').onclick = function(event) {
-      showDetails = true;
-      $('show-details-link').hidden = true;
-      $('hide-details-link').hidden = false;
-      updateDetails();
-    };
-    $('hide-details-link').onclick = function(event) {
-      showDetails = false;
-      $('show-details-link').hidden = false;
-      $('hide-details-link').hidden = true;
-      updateDetails();
-    };
-    $('feedback-link').onclick = function(event) {
-      sendCommand('feedback');
-    };
-  } else {
-    $('feedback').hidden = true;
-    $('details-button-container').hidden = true;
-  }
+  $('feedback').hidden = true;
+  $('details-button-container').hidden = true;
 
   // Focus the top-level div for screen readers.
   $('frame-blocked').focus();
@@ -138,6 +139,10 @@ function requestCreated(isSuccessful, isMainFrame) {
   $('block-page-header').hidden = true;
   $('block-page-message').hidden = true;
   $('hide-details-link').hidden = true;
+  $('block-reason').style.display = 'none';
+  if (localWebApprovalsEnabled) {
+    $('local-approvals-button').hidden = false;
+  }
   showDetails = false;
   updateDetails();
   if (isSuccessful) {
@@ -145,13 +150,25 @@ function requestCreated(isSuccessful, isMainFrame) {
     $('request-sent-message').hidden = false;
     $('remote-approvals-button').hidden = true;
     $('show-details-link').hidden = true;
-    $('back-button').hidden = !isMainFrame;
-    $('back-button').onclick = function(event) {
-      sendCommand('back');
-    };
-    $('back-button').focus();
+    if (localWebApprovalsEnabled) {
+      $('local-approvals-button').hidden = true;
+      $('local-approvals-remote-request-sent-button').hidden = false;
+      $('local-approvals-remote-request-sent-button').onclick = function(
+          event) {
+        sendCommand('requestUrlAccessLocal');
+      };
+      $('local-approvals-remote-request-sent-button').focus();
+    } else {
+      $('back-button').hidden = !isMainFrame;
+      $('back-button').onclick = function(event) {
+        sendCommand('back');
+      };
+      $('back-button').focus();
+    }
     $('error-page-illustration').hidden = true;
     $('waiting-for-approval-illustration').hidden = false;
+    $('request-sent-description').hidden = false;
+    $('local-approvals-button').classList.add('secondary-button');
   } else {
     $('request-failed-message').hidden = false;
     $('remote-approvals-button').disabled = false;
