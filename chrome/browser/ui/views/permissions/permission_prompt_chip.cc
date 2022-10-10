@@ -43,8 +43,13 @@ bool PermissionPromptChip::UpdateAnchor() {
   UpdateBrowser();
 
   LocationBarView* lbv = GetLocationBarView();
+
+  if (!lbv || !lbv->IsInitialized()) {
+    return false;  // view should be recreated
+  }
+
   const bool is_location_bar_drawn =
-      lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
+      lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
   if (chip_controller_->IsPermissionPromptChipVisible() &&
       !is_location_bar_drawn) {
     chip_controller_->ResetPermissionPromptChip();
