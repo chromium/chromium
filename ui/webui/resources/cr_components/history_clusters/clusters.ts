@@ -277,7 +277,8 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
     return this.result_.clusters.length ?
         '' :
         loadTimeData.getString(
-            this.result_.query ? 'noSearchResults' : 'noResults');
+            this.result_.query ? 'noSearchResults' :
+                                 'historyClustersNoResults');
   }
 
   /**
