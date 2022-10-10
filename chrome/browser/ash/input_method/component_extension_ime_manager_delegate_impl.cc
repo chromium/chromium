@@ -324,13 +324,13 @@ bool ComponentExtensionIMEManagerDelegateImpl::ReadEngineComponent(
       dict.FindStringKey(extensions::manifest_keys::kOptionsPage);
   if (option_page) {
     url_string = *option_page;
-    GURL url = extensions::Extension::GetResourceURL(
+    GURL options_page_url = extensions::Extension::GetResourceURL(
         extensions::Extension::GetBaseURLFromExtensionId(
             component_extension.id),
         url_string);
-    if (!url.is_valid())
+    if (!options_page_url.is_valid())
       return false;
-    out->options_page_url = url;
+    out->options_page_url = options_page_url;
   } else {
     // Fallback to extension level options page.
     out->options_page_url = component_extension.options_page_url;
