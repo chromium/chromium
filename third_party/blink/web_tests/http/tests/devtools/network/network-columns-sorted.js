@@ -32,7 +32,7 @@
   function sortGrid() {
     var logView = UI.panels.network.networkLogView;
     var dataGrid = logView.dataGrid;
-    var columnsView = logView.columns;
+    var columnsView = logView.columns();
     TestRunner.addSniffer(columnsView, 'dataGridSortedForTest', dataGridSorted.bind(null, logView), true);
 
     dataGrid.markColumnAsSortedBy('name', DataGrid.DataGrid.Order.Ascending);
