@@ -67,6 +67,9 @@ class PagePlaceholderTabHelper
   // that has the Content Area named guide.
   void DisplaySnapshotImage(UIImage* snapshot);
 
+  // Display image in a placeholder after retrieval from SnapshotTabHelper.
+  void OnImageRetrieved(UIImage* image);
+
   // WebState this tab helper is attached to.
   web::WebState* web_state_ = nullptr;
 

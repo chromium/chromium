@@ -78,6 +78,12 @@ void PagePlaceholderTabHelper::WebStateDestroyed(web::WebState* web_state) {
   RemovePlaceholder();
 }
 
+void PagePlaceholderTabHelper::OnImageRetrieved(UIImage* image) {
+  if (displaying_placeholder()) {
+    DisplaySnapshotImage(image);
+  }
+}
+
 void PagePlaceholderTabHelper::AddPlaceholder() {
   // WebState::WasShown() and WebState::IsVisible() are bookkeeping mechanisms
   // that do not guarantee the WebState's view is in the view hierarchy.
@@ -99,13 +105,20 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
   SnapshotTabHelper* snapshotTabHelper =
       SnapshotTabHelper::FromWebState(web_state_);
   if (snapshotTabHelper) {
-    base::WeakPtr<PagePlaceholderTabHelper> weak_tab_helper =
-        weak_factory_.GetWeakPtr();
-    snapshotTabHelper->RetrieveGreySnapshot(^(UIImage* snapshot) {
-      if (weak_tab_helper && weak_tab_helper->displaying_placeholder()) {
-        DisplaySnapshotImage(snapshot);
-      }
-    });
+    __block base::OnceCallback<void(UIImage*)> callback =
+        base::BindOnce(&PagePlaceholderTabHelper::OnImageRetrieved,
+                       weak_factory_.GetWeakPtr());
+
+    auto block = ^(UIImage* image) {
+      std::move(callback).Run(image);
+    };
+
+    // Show grey snapshots only for the WebStates that haven't been loaded
+    if (web_state_->IsLoading()) {
+      snapshotTabHelper->RetrieveGreySnapshot(block);
+    } else {
+      snapshotTabHelper->RetrieveColorSnapshot(block);
+    }
   }
 
   // Remove placeholder if it takes too long to load the page.
