@@ -12,10 +12,13 @@ import os
 import platform
 import subprocess
 import sys
+from typing import Optional
 
-from common import GetHostOsFromPlatform, SDK_ROOT
-from update_images import DownloadAndUnpackFromCloudStorage, \
-                          MakeCleanDirectory
+from common import GetHostOsFromPlatform
+from common import MakeCleanDirectory
+from common import SDK_ROOT
+
+from gcs_download import DownloadAndUnpackFromCloudStorage
 
 
 def _GetHostArch():
@@ -26,6 +29,27 @@ def _GetHostArch():
   elif host_arch == 'aarch64':
     return 'arm64'
   raise Exception('Unsupported host architecture: %s' % host_arch)
+
+
+def GetSDKOverrideGCSPath(path: Optional[str] = None) -> Optional[str]:
+  """Fetches the sdk override path from a file.
+
+  Args:
+    path: the full file path to read the data from.
+      defaults to sdk_override.txt in the directory of this file.
+
+  Returns:
+    The contents of the file, stripped of white space.
+      Example: gs://fuchsia-artifacts/development/some-id/sdk
+  """
+  if not path:
+    path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+
+  if not os.path.isfile(path):
+    return None
+
+  with open(path, 'r') as f:
+    return f.read().strip()
 
 
 def _GetTarballPath(gcs_tarball_prefix: str) -> str:
@@ -54,10 +78,10 @@ def main():
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
 
-  sdk_override = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+  gcs_tarball_prefix = GetSDKOverrideGCSPath()
 
   # Download from CIPD if there is no override file.
-  if not os.path.isfile(sdk_override):
+  if not gcs_tarball_prefix:
     if not args.cipd_prefix:
       parser.exit(1, '--cipd-prefix must be specified.')
     if not args.version:
@@ -70,9 +94,6 @@ def main():
                    text=True,
                    input=ensure_file)
     return 0
-
-  with open(sdk_override, 'r') as f:
-    gcs_tarball_prefix = f.read()
 
   # Always re-download the SDK.
   logging.info('Downloading GN SDK from GCS...')

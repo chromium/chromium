@@ -5,11 +5,11 @@
 import logging
 import os
 import platform
+import shutil
 import signal
 import socket
 import subprocess
 import sys
-import time
 import threading
 
 DIR_SOURCE_ROOT = os.path.abspath(
@@ -165,3 +165,10 @@ def IsRunningUnattended():
   """
   # Chromium tests only for the presence of the variable, so match that here.
   return 'CHROME_HEADLESS' in os.environ
+
+
+def MakeCleanDirectory(directory_name):
+  """If the directory exists, delete it and then remake it with no contents."""
+  if os.path.exists(directory_name):
+    shutil.rmtree(directory_name)
+  os.mkdir(directory_name)
