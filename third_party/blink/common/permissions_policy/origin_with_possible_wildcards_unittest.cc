@@ -154,6 +154,45 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
       std::make_tuple(
           "https://*", OriginWithPossibleWildcards::NodeType::kAttribute,
           "https://%2A", false, "Origin with host wildcard in attribute"),
+      std::make_tuple("https://*.com",
+                      OriginWithPossibleWildcards::NodeType::kHeader,
+                      "https://%2A.com", false,
+                      "Origin with non-registerable host wildcard in header"),
+      std::make_tuple(
+          "https://*.com", OriginWithPossibleWildcards::NodeType::kAttribute,
+          "https://%2A.com", false,
+          "Origin with non-registerable host wildcard in attribute"),
+      std::make_tuple("https://*.appspot.com",
+                      OriginWithPossibleWildcards::NodeType::kHeader,
+                      "https://%2A.appspot.com", false,
+                      "Origin with only private tld host wildcard in header"),
+      std::make_tuple(
+          "https://*.appspot.com",
+          OriginWithPossibleWildcards::NodeType::kAttribute,
+          "https://%2A.appspot.com", false,
+          "Origin with only private tld host wildcard in attribute"),
+      std::make_tuple("https://*.foo.appspot.com",
+                      OriginWithPossibleWildcards::NodeType::kHeader,
+                      HasWildcardSubdomainsInPermissionsPolicy()
+                          ? "https://foo.appspot.com"
+                          : "https://%2A.foo.appspot.com",
+                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      "Origin with private tld host wildcard in header"),
+      std::make_tuple("https://*.foo.appspot.com",
+                      OriginWithPossibleWildcards::NodeType::kAttribute,
+                      "https://%2A.foo.appspot.com", false,
+                      "Origin with private tld host wildcard in attribute"),
+      std::make_tuple("https://*.example.test",
+                      OriginWithPossibleWildcards::NodeType::kHeader,
+                      HasWildcardSubdomainsInPermissionsPolicy()
+                          ? "https://example.test"
+                          : "https://%2A.example.test",
+                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      "Origin with unknown tld host wildcard in header"),
+      std::make_tuple("https://*.example.test",
+                      OriginWithPossibleWildcards::NodeType::kAttribute,
+                      "https://%2A.example.test", false,
+                      "Origin with unknown tld host wildcard in attribute"),
       std::make_tuple("https://foo.com:*",
                       OriginWithPossibleWildcards::NodeType::kHeader, "null",
                       false, "Origin with port wildcard in header"),
@@ -198,6 +237,8 @@ TEST_P(OriginWithPossibleWildcardsTest, Serialize) {
                       "Origin with subdomain wildcard"),
       std::make_tuple("https://%2A.foo.com", false, "https://%2A.foo.com",
                       "Origin with improper subdomain wildcard"),
+      std::make_tuple("https://%2A.com", false, "https://%2A.com",
+                      "Origin with non-registerable subdomain wildcard"),
       std::make_tuple("null", false, "null", "Opaque origin"),
   };
   for (const auto& value : values) {

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "base/feature_list.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/cors/origin_access_entry.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -49,23 +50,28 @@ OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
     auto allowlist_entry_copy(allowlist_entry);
     allowlist_entry_copy.erase(wildcard_pos + 3, 2);
     const auto parsed_origin = url::Origin::Create(GURL(allowlist_entry_copy));
-    if (!parsed_origin.opaque()) {
+    // The origin must not be opaque and its host must be registrable.
+    if (parsed_origin.opaque()) {
+      // We early return here assuming even with the `*.` the origin parses
+      // opaque.
+      return OriginWithPossibleWildcards();
+    } else if (
+        net::registry_controlled_domains::HostHasRegistryControlledDomain(
+            parsed_origin.host(),
+            net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
       return OriginWithPossibleWildcards(parsed_origin,
                                          /*has_subdomain_wildcard=*/true);
-    } else {
-      return OriginWithPossibleWildcards();
     }
   }
   // Otherwise, parse the origin string and verify that the result is
   // valid. Invalid strings will produce an opaque origin.
-  else {
-    const auto parsed_origin = url::Origin::Create(GURL(allowlist_entry));
-    if (!parsed_origin.opaque()) {
-      return OriginWithPossibleWildcards(parsed_origin,
-                                         /*has_subdomain_wildcard=*/false);
-    } else {
-      return OriginWithPossibleWildcards();
-    }
+  const auto parsed_origin = url::Origin::Create(GURL(allowlist_entry));
+  if (parsed_origin.opaque()) {
+    return OriginWithPossibleWildcards();
+  } else {
+    return OriginWithPossibleWildcards(parsed_origin,
+                                       /*has_subdomain_wildcard=*/false);
   }
 }
 
