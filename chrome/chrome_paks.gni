@@ -168,7 +168,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/signin_resources.pak",
         "$root_gen_dir/chrome/support_tool_resources.pak",
         "$root_gen_dir/chrome/tab_search_resources.pak",
-        "$root_gen_dir/chrome/webid_resources_100_percent.pak",
         "$root_gen_dir/chrome/webui_gallery_resources.pak",
         "$root_gen_dir/chrome/whats_new_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
@@ -177,7 +176,6 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources:component_extension_resources",
         "//chrome/browser/resources:dev_ui_paks",
-        "//chrome/browser/resources:webid_resources",
         "//chrome/browser/resources/access_code_cast:resources",
         "//chrome/browser/resources/app_service_internals:resources",
         "//chrome/browser/resources/bookmarks:resources",

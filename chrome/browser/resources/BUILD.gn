@@ -23,7 +23,6 @@ group("resources") {
     public_deps += [
       ":component_extension_resources",
       ":dev_ui_paks",
-      ":webid_resources",
       "access_code_cast:resources",
       "app_service_internals:resources",
       "bookmarks:resources",
@@ -181,18 +180,6 @@ if (!is_android) {
       "grit/component_extension_resources_map.cc",
       "grit/component_extension_resources_map.h",
       "component_extension_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
-  grit("webid_resources") {
-    source = "webid/webid_resources.grd"
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/webid_resources.h",
-      "grit/webid_resources_map.cc",
-      "grit/webid_resources_map.h",
-      "webid_resources_100_percent.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }

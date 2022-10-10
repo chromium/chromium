@@ -236,10 +236,6 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [1680],
   },
-   "chrome/browser/resources/webid/webid_resources.grd": {
-    "includes": [1700],
-    "structures": [1720],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/nearby_internals/nearby_internals_resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [1740],
