@@ -4,6 +4,18 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+mojom("mojom_bucket") {
+  sources = [ "indexed_db_bucket_types.mojom" ]
+  public_deps = [
+    "//components/services/storage/public/mojom/buckets",
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  webui_module_path = "/"
+}
+
 mojom("mojom") {
   sources = [
     "indexed_db_control.mojom",
@@ -11,6 +23,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    ":mojom_bucket",
     "//components/services/storage/public/mojom",
     "//third_party/blink/public/mojom:mojom_core",
   ]

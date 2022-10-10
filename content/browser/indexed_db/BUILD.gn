@@ -1,0 +1,20 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "indexed_db_internals.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//components/services/storage/privileged/mojom:mojom_bucket",
+    "//services/network/public/mojom:mojom_schemeful_site",
+  ]
+
+  disable_variants = true
+
+  component_output_prefix = "indexed_db_interfaces"
+  component_macro_prefix = "INDEXED_DB_INTERFACES"
+}
