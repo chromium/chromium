@@ -397,7 +397,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsSettingsPage', 'os_settings_page_test.js'],
  ['OsSettingsUi', 'os_settings_ui_test.js'],
- ['OsSettingsUi2', 'os_settings_ui_test_2.js'],
+ /*
+   Flaky failures: https://crbug.com/1373052
+   ['OsSettingsUi2', 'os_settings_ui_test_2.js'],
+ */
  ['OsSettingsMain', 'os_settings_main_test.js'],
  ['OsSearchPage', 'os_search_page_test.js'],
  ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
