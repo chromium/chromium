@@ -101,10 +101,8 @@ bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   switch (error.recovery_type) {
     case PasswordStoreBackendErrorRecoveryType::kUnrecoverable:
     case PasswordStoreBackendErrorRecoveryType::kUnspecified:
-    // TODO(http://crbug.com/1362464): Do not fallback on retriable errors
-    // once retrying is implemented.
-    case PasswordStoreBackendErrorRecoveryType::kRetriable:
       return true;
+    case PasswordStoreBackendErrorRecoveryType::kRetriable:
     case PasswordStoreBackendErrorRecoveryType::kRecoverable:
       return false;
   }
