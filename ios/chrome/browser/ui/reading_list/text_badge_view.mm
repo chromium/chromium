@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/reading_list/text_badge_view.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
