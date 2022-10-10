@@ -109,6 +109,9 @@
       break;
     case InitStageSafeMode:
       break;
+    case InitStageVariationsSeed:
+      [appState queueTransitionToNextInitStage];
+      break;
     case InitStageBrowserObjectsForBackgroundHandlers:
       [appState queueTransitionToNextInitStage];
       break;

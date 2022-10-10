@@ -23,6 +23,11 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // at the InitStageSafeMode stage if safe mode is needed, or will move to the
   // next stage otherwise.
   InitStageSafeMode,
+  // The app is waiting for the Finch seed to be fetched on first run. The app
+  // will stay at the InitStageVariationsSeed if it is the first launch after
+  // installation, and the seed has not been fetched; it moves to the next stage
+  // otherwise.
+  InitStageVariationsSeed,
   // The app is initializing the browser objects for the background handlers.
   // In particular this creates ChromeMain instances which initialises many
   // low-level objects (such as PostTask, ChromeBrowserStateManager, named

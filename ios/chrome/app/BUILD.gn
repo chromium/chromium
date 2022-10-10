@@ -225,6 +225,19 @@ source_set("safe_mode_app_state_agent") {
   ]
 }
 
+source_set("variations_app_state_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "variations_app_state_agent.h",
+    "variations_app_state_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+  ]
+}
+
 source_set("enterprise_app_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -362,6 +375,7 @@ source_set("app_internal") {
     ":post_restore_app_agent",
     ":safe_mode_app_state_agent",
     ":tests_hook",
+    ":variations_app_state_agent",
     "//base",
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
