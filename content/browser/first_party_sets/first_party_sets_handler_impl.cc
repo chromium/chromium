@@ -19,6 +19,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -251,7 +252,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!enabled_) {
+  if (!enabled_ || !features::kFirstPartySetsClearSiteDataOnChangedSets.Get()) {
     std::move(callback).Run(std::move(context_config));
     return;
   }
@@ -278,7 +279,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(global_sets_.has_value());
   DCHECK(!browser_context_id.empty());
-  DCHECK(enabled_);
+  DCHECK(enabled_ && features::kFirstPartySetsClearSiteDataOnChangedSets.Get());
 
   if (!db_helper_.is_null()) {
     // TODO(crbug.com/1219656): Call site state clearing.

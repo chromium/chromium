@@ -393,6 +393,10 @@ BASE_FEATURE(kFirstPartySets,
              "FirstPartySets",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether to clear sites data on FPS transitions.
+const base::FeatureParam<bool> kFirstPartySetsClearSiteDataOnChangedSets{
+    &kFirstPartySets, "FirstPartySetsClearSiteDataOnChangedSets", false};
+
 // Controls whether the client is considered a dogfooder for the FirstPartySets
 // feature.
 const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
