@@ -201,8 +201,10 @@ void OnFirstRunHasExited(ResumeTaskCallback original_intent_callback,
                           << static_cast<int>(status);
   std::move(original_intent_callback).Run(proceed);
 
-  if (proceed && post_first_run_callback)
+  if (proceed) {
+    DCHECK(post_first_run_callback);
     std::move(post_first_run_callback).Run();
+  }
 }
 
 }  // namespace

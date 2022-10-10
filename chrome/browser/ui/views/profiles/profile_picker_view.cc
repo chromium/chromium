@@ -4,10 +4,9 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -66,8 +65,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/views/profiles/lacros_first_run_signed_in_flow_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_lacros.h"
 #include "chrome/grit/generated_resources.h"
 #endif
 
@@ -112,27 +110,6 @@ bool IsClassicProfilePickerFlow(const ProfilePicker::Params& params) {
   return params.entry_point() !=
          ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class LacrosFirstRunFlowController : public ProfileManagementFlowController {
- public:
-  LacrosFirstRunFlowController(
-      ProfilePickerWebContentsHost* host,
-      Profile* profile,
-      ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback)
-      : ProfileManagementFlowController(host, Step::kPostSignInFlow) {
-    RegisterStep(
-        initial_step(),
-        ProfileManagementStepController::CreateForPostSignInFlow(
-            host, std::make_unique<LacrosFirstRunSignedInFlowController>(
-                      host, profile,
-                      content::WebContents::Create(
-                          content::WebContents::CreateParams(profile)),
-                      std::move(first_run_exited_callback))));
-  }
-  ~LacrosFirstRunFlowController() override = default;
-};
-#endif
 
 }  // namespace
 
@@ -624,7 +601,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   } else if (params_.entry_point() ==
              ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    flow_controller_ = std::make_unique<LacrosFirstRunFlowController>(
+    flow_controller_ = std::make_unique<FirstRunFlowControllerLacros>(
         /*host=*/this, picker_profile,
         base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
                        // Unretained ok because the controller is owned
