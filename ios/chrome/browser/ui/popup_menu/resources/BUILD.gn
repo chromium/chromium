@@ -224,6 +224,15 @@ imageset("popup_menu_new_window") {
   ]
 }
 
+imageset("popup_menu_open_price_notifications") {
+  sources = [
+    "popup_menu_open_price_notifications.imageset/Contents.json",
+    "popup_menu_open_price_notifications.imageset/popup_menu_open_price_notifications.png",
+    "popup_menu_open_price_notifications.imageset/popup_menu_open_price_notifications@2x.png",
+    "popup_menu_open_price_notifications.imageset/popup_menu_open_price_notifications@3x.png",
+  ]
+}
+
 imageset("popup_menu_help") {
   sources = [
     "popup_menu_help.imageset/Contents.json",
