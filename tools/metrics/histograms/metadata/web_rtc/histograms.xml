@@ -1649,12 +1649,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtcpMux" enum="PeerConnectionRtcpMux"
-    expires_after="2020-02-23">
-  <owner>pthatcher@chromium.org</owner>
+    expires_after="2023-04-07">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Whether RTCP-mux is used for the PeerConnection (both the local and remote
     description enable RTCP-mux). Recorded after SetLocalDescription and
     SetRemoteDescription are called, once per PeerConnection.
+
+    Warning: This histogram was expired from 2020-02-23 to 2022-10-10. Data may
+    be missing.
   </summary>
 </histogram>
 
