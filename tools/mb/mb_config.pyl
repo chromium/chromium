@@ -406,7 +406,6 @@
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
-      'fuchsia-fyi-arm64-emu-arg': 'release_trybot_fuchsia_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',

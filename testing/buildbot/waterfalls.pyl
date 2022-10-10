@@ -3162,22 +3162,6 @@
           'gtest_tests': 'fuchsia_gtests',
         },
       },
-      # A temporary builder to test the changes to the emulator arguments on
-      # arm64.
-      'fuchsia-fyi-arm64-emu-arg': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_gtests',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'fuchsia-test-pool',
-          'linux-focal',
-        ],
-      },
       'fuchsia-fyi-cfv2-script': {
         'browser_config': 'web-engine-shell',
         'os_type': 'fuchsia',

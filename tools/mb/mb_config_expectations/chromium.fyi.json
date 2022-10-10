@@ -799,18 +799,6 @@
       "use_goma": true
     }
   },
-  "fuchsia-fyi-arm64-emu-arg": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "target_cpu": "arm64",
-      "target_os": "fuchsia",
-      "test_host_cpu": "arm64",
-      "use_goma": true
-    }
-  },
   "fuchsia-fyi-cfv2-script": {
     "gn_args": {
       "dcheck_always_on": false,
