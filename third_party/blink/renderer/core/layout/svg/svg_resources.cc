@@ -80,7 +80,10 @@ void SVGResources::UpdateEffects(LayoutObject& object,
     style.Filter().AddClient(EnsureClient(object));
   if (StyleSVGResource* masker_resource = style.MaskerResource())
     masker_resource->AddClient(EnsureClient(object));
-  if (diff.FilterChanged()) {
+  // FilterChanged() includes changes from more than just the 'filter'
+  // property, so explicitly check that a filter existed or exists.
+  if (diff.FilterChanged() &&
+      (style.HasFilter() || (old_style && old_style->HasFilter()))) {
     // We either created one above, or had one already.
     DCHECK(GetClient(object));
     object.SetNeedsPaintPropertyUpdate();
