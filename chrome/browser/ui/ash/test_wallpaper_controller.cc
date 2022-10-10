@@ -165,6 +165,7 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
     ash::WallpaperLayout layout,
     const gfx::ImageSkia& image) {
   ShowWallpaperImage(image);
+  ++third_party_wallpaper_count_;
   return true;
 }
 

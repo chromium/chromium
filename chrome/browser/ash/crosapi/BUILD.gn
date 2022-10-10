@@ -424,6 +424,7 @@ source_set("unit_tests") {
     "test_local_printer_ash.cc",
     "test_local_printer_ash.h",
     "test_mojo_connection_manager_unittest.cc",
+    "wallpaper_ash_unittest.cc",
   ]
 
   if (use_cups) {

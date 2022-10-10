@@ -45,6 +45,9 @@ class TestWallpaperController : public ash::WallpaperController {
   int set_google_photos_wallpaper_count() const {
     return set_google_photos_wallpaper_count_;
   }
+  int get_third_party_wallpaper_count() const {
+    return third_party_wallpaper_count_;
+  }
   int show_always_on_top_wallpaper_count() const {
     return show_always_on_top_wallpaper_count_;
   }
@@ -164,6 +167,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int set_google_photos_wallpaper_count_ = 0;
   int show_always_on_top_wallpaper_count_ = 0;
   int remove_always_on_top_wallpaper_count_ = 0;
+  int third_party_wallpaper_count_ = 0;
   absl::optional<ash::WallpaperInfo> wallpaper_info_;
   int update_current_wallpaper_layout_count_ = 0;
   absl::optional<ash::WallpaperLayout> update_current_wallpaper_layout_layout_;
