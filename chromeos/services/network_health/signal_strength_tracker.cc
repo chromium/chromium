@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/net/network_health/signal_strength_tracker.h"
+#include "chromeos/services/network_health/signal_strength_tracker.h"
 
 #include <cmath>
 #include <cstdint>
@@ -10,8 +10,7 @@
 
 #include "base/logging.h"
 
-namespace ash {
-namespace network_health {
+namespace chromeos::network_health {
 
 SignalStrengthTracker::SignalStrengthTracker() = default;
 
@@ -51,5 +50,4 @@ std::vector<uint8_t> SignalStrengthTracker::Samples() {
   return std::vector<uint8_t>(samples_.begin(), samples_.end());
 }
 
-}  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos::network_health

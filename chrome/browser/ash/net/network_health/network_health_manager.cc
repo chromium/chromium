@@ -6,25 +6,24 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
-#include "chrome/browser/ash/net/network_health/network_health.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/services/network_health/network_health_service.h"
 
 namespace ash {
 namespace network_health {
 
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace mojom = ::chromeos::network_health::mojom;
-
 NetworkHealthManager::NetworkHealthManager() {
-  network_health_ = std::make_unique<NetworkHealth>();
+  network_health_service_ =
+      std::make_unique<chromeos::network_health::NetworkHealthService>();
   network_diagnostics_ =
       std::make_unique<network_diagnostics::NetworkDiagnostics>(
           DebugDaemonClient::Get());
 }
 
-mojo::PendingRemote<mojom::NetworkHealthService>
+mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
 NetworkHealthManager::GetHealthRemoteAndBindReceiver() {
-  mojo::PendingRemote<mojom::NetworkHealthService> remote;
+  mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
+      remote;
   BindHealthReceiver(remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }
@@ -40,8 +39,9 @@ NetworkHealthManager::GetDiagnosticsRemoteAndBindReceiver() {
 }
 
 void NetworkHealthManager::BindHealthReceiver(
-    mojo::PendingReceiver<mojom::NetworkHealthService> receiver) {
-  network_health_->BindReceiver(std::move(receiver));
+    mojo::PendingReceiver<chromeos::network_health::mojom::NetworkHealthService>
+        receiver) {
+  network_health_service_->BindReceiver(std::move(receiver));
 }
 
 void NetworkHealthManager::BindDiagnosticsReceiver(
@@ -52,8 +52,9 @@ void NetworkHealthManager::BindDiagnosticsReceiver(
 }
 
 void NetworkHealthManager::AddObserver(
-    mojo::PendingRemote<mojom::NetworkEventsObserver> observer) {
-  network_health_->AddObserver(std::move(observer));
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+        observer) {
+  network_health_service_->AddObserver(std::move(observer));
 }
 
 NetworkHealthManager* NetworkHealthManager::GetInstance() {

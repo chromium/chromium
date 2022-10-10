@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_
-#define CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_
+#ifndef CHROMEOS_SERVICES_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_
+#define CHROMEOS_SERVICES_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_
 
 #include <cstdint>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "chrome/browser/ash/net/network_health/network_health_constants.h"
+#include "chromeos/services/network_health/network_health_constants.h"
 
-namespace ash {
-namespace network_health {
+namespace chromeos::network_health {
 
 // The size is the list to use for the signal strength calculations. This is
 // the sample window multipied by the sample rate.
@@ -48,7 +47,6 @@ class SignalStrengthTracker {
   uint16_t sum_ = 0;
 };
 
-}  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos::network_health
 
-#endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_
+#endif  // CHROMEOS_SERVICES_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_

@@ -19,6 +19,7 @@ source_set("unit_tests") {
   deps = [
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/network_config:unit_tests",
+    "//chromeos/services/network_health:unit_tests",
     "//chromeos/services/tts:services_unittests",
   ]
 }

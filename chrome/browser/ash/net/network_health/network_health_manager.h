@@ -9,6 +9,10 @@
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
+namespace chromeos::network_health {
+class NetworkHealthService;
+}
+
 namespace ash {
 
 namespace network_diagnostics {
@@ -16,8 +20,6 @@ class NetworkDiagnostics;
 }
 
 namespace network_health {
-
-class NetworkHealth;
 
 class NetworkHealthManager {
  public:
@@ -45,7 +47,8 @@ class NetworkHealthManager {
           chromeos::network_health::mojom::NetworkEventsObserver> observer);
 
  private:
-  std::unique_ptr<NetworkHealth> network_health_;
+  std::unique_ptr<chromeos::network_health::NetworkHealthService>
+      network_health_service_;
   std::unique_ptr<network_diagnostics::NetworkDiagnostics> network_diagnostics_;
 };
 

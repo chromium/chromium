@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/net/network_health/signal_strength_tracker.h"
+#include "chromeos/services/network_health/signal_strength_tracker.h"
 
 #include <array>
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace network_health {
+namespace chromeos::network_health {
 
 namespace {
 
@@ -74,5 +73,4 @@ TEST_F(SignalStrengthTrackerTest, SamplesSize) {
   ASSERT_EQ(tracker()->Samples()[0], num_samples - 1);
 }
 
-}  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos::network_health

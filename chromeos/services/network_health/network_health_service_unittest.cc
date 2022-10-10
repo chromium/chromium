@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/net/network_health/network_health.h"
+#include "chromeos/services/network_health/network_health_service.h"
 
 #include <utility>
 
@@ -14,19 +14,13 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
-#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace ash {
-namespace network_health {
+namespace chromeos::network_health {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace network_config = ::chromeos::network_config;
-namespace network_health = ::chromeos::network_health;
 
 // Constant values for fake devices and services.
 constexpr char kEthServicePath[] = "/service/eth/0";
@@ -44,21 +38,21 @@ constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kWifiName[] = "wifi_device1";
 
 class FakeNetworkEventsObserver
-    : public chromeos::network_health::mojom::NetworkEventsObserver {
+    : public network_health::mojom::NetworkEventsObserver {
  public:
-  // chromeos::network_health::mojom::NetworkEventsObserver:
+  // network_health::mojom::NetworkEventsObserver:
   void OnConnectionStateChanged(
       const std::string& guid,
-      chromeos::network_health::mojom::NetworkState state) override {
+      network_health::mojom::NetworkState state) override {
     connection_state_changed_event_received_ = true;
   }
-  void OnSignalStrengthChanged(const std::string& guid,
-                               chromeos::network_health::mojom::UInt32ValuePtr
-                                   signal_strength) override {
+  void OnSignalStrengthChanged(
+      const std::string& guid,
+      network_health::mojom::UInt32ValuePtr signal_strength) override {
     signal_strength_changed_event_received_ = true;
   }
 
-  mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+  mojo::PendingRemote<network_health::mojom::NetworkEventsObserver>
   pending_remote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
@@ -80,23 +74,22 @@ class FakeNetworkEventsObserver
   }
 
  private:
-  mojo::Receiver<chromeos::network_health::mojom::NetworkEventsObserver>
-      receiver_{this};
+  mojo::Receiver<network_health::mojom::NetworkEventsObserver> receiver_{this};
   bool connection_state_changed_event_received_ = false;
   bool signal_strength_changed_event_received_ = false;
 };
 
 }  // namespace
 
-class NetworkHealthTestImpl : public NetworkHealth {
+class NetworkHealthServiceTestImpl : public NetworkHealthService {
  public:
-  NetworkHealthTestImpl() {
+  NetworkHealthServiceTestImpl() {
     auto timer = std::make_unique<base::MockRepeatingTimer>();
     mock_timer_ = timer.get();
     SetTimer(std::move(timer));
   }
 
-  ~NetworkHealthTestImpl() override = default;
+  ~NetworkHealthServiceTestImpl() override = default;
 
   void FireTimer() { mock_timer_->Fire(); }
 
@@ -104,9 +97,9 @@ class NetworkHealthTestImpl : public NetworkHealth {
   base::MockRepeatingTimer* mock_timer_;
 };
 
-class NetworkHealthTest : public ::testing::Test {
+class NetworkHealthServiceTest : public ::testing::Test {
  public:
-  NetworkHealthTest() = default;
+  NetworkHealthServiceTest() = default;
 
   void SetUp() override {
     // Wait until CrosNetworkConfigTestHelper is fully setup.
@@ -181,12 +174,12 @@ class NetworkHealthTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
-  NetworkHealthTestImpl network_health_;
+  NetworkHealthServiceTestImpl network_health_;
 };
 
 // Test that all Network states can be represented by NetworkHealth.
 
-TEST_F(NetworkHealthTest, NetworkStateUninitialized) {
+TEST_F(NetworkHealthServiceTest, NetworkStateUninitialized) {
   cros_network_config_test_helper_.network_state_helper()
       .manager_test()
       ->AddTechnology(shill::kTypeWifi, false);
@@ -201,7 +194,7 @@ TEST_F(NetworkHealthTest, NetworkStateUninitialized) {
                        network_health::mojom::NetworkState::kUninitialized);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateDisabled) {
+TEST_F(NetworkHealthServiceTest, NetworkStateDisabled) {
   cros_network_config_test_helper_.network_state_helper()
       .manager_test()
       ->AddTechnology(shill::kTypeWifi, false);
@@ -213,7 +206,7 @@ TEST_F(NetworkHealthTest, NetworkStateDisabled) {
                        network_health::mojom::NetworkState::kDisabled);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateProhibited) {
+TEST_F(NetworkHealthServiceTest, NetworkStateProhibited) {
   cros_network_config_test_helper_.network_state_helper()
       .manager_test()
       ->AddTechnology(shill::kTypeWifi, true);
@@ -228,7 +221,7 @@ TEST_F(NetworkHealthTest, NetworkStateProhibited) {
                        network_health::mojom::NetworkState::kProhibited);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateNotConnected) {
+TEST_F(NetworkHealthServiceTest, NetworkStateNotConnected) {
   cros_network_config_test_helper_.network_state_helper()
       .manager_test()
       ->AddTechnology(shill::kTypeWifi, true);
@@ -240,7 +233,7 @@ TEST_F(NetworkHealthTest, NetworkStateNotConnected) {
                        network_health::mojom::NetworkState::kNotConnected);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateConnecting) {
+TEST_F(NetworkHealthServiceTest, NetworkStateConnecting) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
@@ -251,7 +244,7 @@ TEST_F(NetworkHealthTest, NetworkStateConnecting) {
                        network_health::mojom::NetworkState::kConnecting);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateRedirectFound) {
+TEST_F(NetworkHealthServiceTest, NetworkStateRedirectFound) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
@@ -262,7 +255,7 @@ TEST_F(NetworkHealthTest, NetworkStateRedirectFound) {
                        network_health::mojom::NetworkState::kPortal);
 }
 
-TEST_F(NetworkHealthTest, NetworkStateConnected) {
+TEST_F(NetworkHealthServiceTest, NetworkStateConnected) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
@@ -273,7 +266,7 @@ TEST_F(NetworkHealthTest, NetworkStateConnected) {
                        network_health::mojom::NetworkState::kConnected);
 }
 
-TEST_F(NetworkHealthTest, OneWifiNetworkConnected) {
+TEST_F(NetworkHealthServiceTest, OneWifiNetworkConnected) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
@@ -286,7 +279,7 @@ TEST_F(NetworkHealthTest, OneWifiNetworkConnected) {
                       kWifiServiceName);
 }
 
-TEST_F(NetworkHealthTest, MultiWifiNetwork) {
+TEST_F(NetworkHealthServiceTest, MultiWifiNetwork) {
   CreateDefaultWifiDevice();
   // Create multiple wifi networks that are not connected.
   for (int i = 0; i < 3; i++) {
@@ -302,7 +295,7 @@ TEST_F(NetworkHealthTest, MultiWifiNetwork) {
                        network_health::mojom::NetworkState::kNotConnected);
 }
 
-TEST_F(NetworkHealthTest, MultiWifiNetworkConnected) {
+TEST_F(NetworkHealthServiceTest, MultiWifiNetworkConnected) {
   CreateDefaultWifiDevice();
   // Create one wifi service that is online.
   cros_network_config_test_helper_.network_state_helper()
@@ -324,7 +317,7 @@ TEST_F(NetworkHealthTest, MultiWifiNetworkConnected) {
                        network_health::mojom::NetworkState::kOnline);
 }
 
-TEST_F(NetworkHealthTest, CreateActiveEthernet) {
+TEST_F(NetworkHealthServiceTest, CreateActiveEthernet) {
   CreateDefaultWifiDevice();
   // Create an ethernet device and service, and make it the active network.
   cros_network_config_test_helper_.network_state_helper().AddDevice(
@@ -346,7 +339,7 @@ TEST_F(NetworkHealthTest, CreateActiveEthernet) {
                        network_health::mojom::NetworkState::kNotConnected);
 }
 
-TEST_F(NetworkHealthTest, ConnectionStateChangeEvent) {
+TEST_F(NetworkHealthServiceTest, ConnectionStateChangeEvent) {
   FakeNetworkEventsObserver fake_network_events_observer;
   network_health_.AddObserver(fake_network_events_observer.pending_remote());
 
@@ -381,7 +374,7 @@ TEST_F(NetworkHealthTest, ConnectionStateChangeEvent) {
       true);
 }
 
-TEST_F(NetworkHealthTest, SignalStrengthChangeEvent) {
+TEST_F(NetworkHealthServiceTest, SignalStrengthChangeEvent) {
   FakeNetworkEventsObserver fake_network_events_observer;
   network_health_.AddObserver(fake_network_events_observer.pending_remote());
 
@@ -415,8 +408,9 @@ TEST_F(NetworkHealthTest, SignalStrengthChangeEvent) {
       fake_network_events_observer.signal_strength_changed_event_received(),
       false);
 
-  signal_strength = signal_strength +
-                    NetworkHealth::kMaxSignalStrengthFluctuationTolerance + 1;
+  signal_strength =
+      signal_strength +
+      NetworkHealthService::kMaxSignalStrengthFluctuationTolerance + 1;
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
       kWifiServicePath, shill::kSignalStrengthProperty,
       base::Value(signal_strength));
@@ -438,8 +432,9 @@ TEST_F(NetworkHealthTest, SignalStrengthChangeEvent) {
 
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
       kWifiServicePath, shill::kSignalStrengthProperty,
-      base::Value(signal_strength +
-                  NetworkHealth::kMaxSignalStrengthFluctuationTolerance));
+      base::Value(
+          signal_strength +
+          NetworkHealthService::kMaxSignalStrengthFluctuationTolerance));
 
   // Wait until the signal strength property has been set in the network state
   // helper.
@@ -451,7 +446,7 @@ TEST_F(NetworkHealthTest, SignalStrengthChangeEvent) {
       false);
 }
 
-TEST_F(NetworkHealthTest, NoSignalStrengthChangeEventAfterInitialSetup) {
+TEST_F(NetworkHealthServiceTest, NoSignalStrengthChangeEventAfterInitialSetup) {
   FakeNetworkEventsObserver fake_network_events_observer;
   network_health_.AddObserver(fake_network_events_observer.pending_remote());
 
@@ -487,8 +482,9 @@ TEST_F(NetworkHealthTest, NoSignalStrengthChangeEventAfterInitialSetup) {
 
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
       kWifiServicePath, shill::kSignalStrengthProperty,
-      base::Value(signal_strength +
-                  NetworkHealth::kMaxSignalStrengthFluctuationTolerance));
+      base::Value(
+          signal_strength +
+          NetworkHealthService::kMaxSignalStrengthFluctuationTolerance));
 
   // Wait until the signal strength property has been set in the network state
   // helper.
@@ -502,7 +498,7 @@ TEST_F(NetworkHealthTest, NoSignalStrengthChangeEventAfterInitialSetup) {
 
 // Checks that the AnalyzeSignalStrength function correctly calculates the
 // signal strength statistics for the current network.
-TEST_F(NetworkHealthTest, AnalyzeSignalStrength) {
+TEST_F(NetworkHealthServiceTest, AnalyzeSignalStrength) {
   // Create default WiFi device and wait until the network and service have been
   // created and configured.
   CreateDefaultWifiDevice();
@@ -527,7 +523,7 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrength) {
 
 // Check to see that the signal strength information is kept only for the active
 // network.
-TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
+TEST_F(NetworkHealthServiceTest, AnalyzeSignalStrengthActive) {
   // Create default WiFi device and two WiFi services.
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
@@ -565,7 +561,7 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
 }
 
 // Ensure that networks are tracked after they become active.
-TEST_F(NetworkHealthTest, TrackActiveNetworks) {
+TEST_F(NetworkHealthServiceTest, TrackActiveNetworks) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
@@ -608,5 +604,4 @@ TEST_F(NetworkHealthTest, TrackActiveNetworks) {
   ASSERT_EQ(2u, network_health_.GetTrackedGuidsForTest().size());
 }
 
-}  // namespace network_health
-}  // namespace ash
+}  // namespace chromeos::network_health
