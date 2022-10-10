@@ -315,7 +315,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   page_switcher_ = AddChildView(std::move(page_switcher));
 
   auto app_list_folder_view = std::make_unique<AppListFolderView>(
-      this, apps_grid_view_, contents_view_, a11y_announcer, view_delegate);
+      this, apps_grid_view_, a11y_announcer, view_delegate);
   folder_background_view_ = AddChildView(
       std::make_unique<FolderBackgroundView>(app_list_folder_view.get()));
 

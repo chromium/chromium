@@ -2845,11 +2845,6 @@ TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
 
-  // Open the newly created folder - when productivity launcher is enabled this
-  // happens automatically.
-  if (!IsProductivityLauncherEnabled())
-    LeftClickOn(folder_item_view);
-
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
   EXPECT_EQ(expected_folder_item_view_bounds,
@@ -2923,15 +2918,6 @@ TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   EXPECT_TRUE(folder_item_view->is_folder());
   EXPECT_EQ(expected_folder_item_view_bounds,
             folder_item_view->GetBoundsInScreen());
-
-  // Open the newly created folder - with productivity launcher, the folder
-  // should already be open.
-  if (!IsProductivityLauncherEnabled()) {
-    event_generator->MoveMouseTo(
-        folder_item_view->GetBoundsInScreen().CenterPoint());
-    event_generator->ClickLeftButton();
-    event_generator->ReleaseLeftButton();
-  }
 
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();

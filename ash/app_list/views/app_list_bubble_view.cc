@@ -293,8 +293,8 @@ void AppListBubbleView::InitContentsView(
 void AppListBubbleView::InitFolderView(
     ApplicationDragAndDropHost* drag_and_drop_host) {
   auto folder_view = std::make_unique<AppListFolderView>(
-      this, apps_page_->scrollable_apps_grid_view(),
-      /*contents_view=*/nullptr, a11y_announcer_.get(), view_delegate_);
+      this, apps_page_->scrollable_apps_grid_view(), a11y_announcer_.get(),
+      view_delegate_);
   folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
   folder_view->UpdateAppListConfig(GetAppListConfig());
