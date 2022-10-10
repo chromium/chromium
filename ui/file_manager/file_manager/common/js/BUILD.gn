@@ -39,7 +39,6 @@ group("js_modules") {
     ":metrics",
     ":metrics_base",
     ":notifications_browser_proxy",
-    ":power",
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage_adapter",
@@ -71,7 +70,6 @@ js_type_check("closure_compile_jsmodules") {
     ":mock_entry",
     ":mock_util",
     ":notifications_browser_proxy",
-    ":power",
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage_adapter",
@@ -273,9 +271,6 @@ js_library("notifications_browser_proxy") {
 js_library("progress_center_common") {
 }
 
-js_library("power") {
-}
-
 js_library("recent_date_bucket") {
   deps = [
     ":util",
@@ -310,7 +305,6 @@ js_library("test_error_reporting") {
 js_library("xfm") {
   deps = [
     ":notifications_browser_proxy",
-    ":power",
     ":storage_adapter",
   ]
 }

@@ -62,7 +62,6 @@ static_js_files = [
   "file_manager/common/js/mock_chrome.js",
   "file_manager/common/js/mock_entry.js",
   "file_manager/common/js/notifications_browser_proxy.js",
-  "file_manager/common/js/power.js",
   "file_manager/common/js/progress_center_common.js",
   "file_manager/common/js/recent_date_bucket.js",
   "file_manager/common/js/storage_adapter.js",

@@ -29,7 +29,6 @@ generate_grd("build_static_grdp") {
     "common/js/files_app_state.js",
     "common/js/icon_util.js",
     "common/js/mock_chrome.js",
-    "common/js/power.js",
     "common/js/storage_adapter.js",
     "common/js/test_error_reporting.js",
     "common/js/volume_manager_types.js",

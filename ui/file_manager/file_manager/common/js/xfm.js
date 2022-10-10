@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import {notifications} from './notifications_browser_proxy.js';
-import {power} from './power.js';
 import {storage} from './storage_adapter.js';
 
 // namespace
 export const xfm = {
   notifications,
-  power,
   storage,
   /**
    * @return {!chrome.app.window.AppWindow}
