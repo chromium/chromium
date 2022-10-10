@@ -103,7 +103,7 @@ declare_args() {
   enable_hevc_parser_and_hw_decoder =
       proprietary_codecs &&
       (use_fuzzing_engine || use_chromeos_protected_media || is_win || is_mac ||
-       is_android)
+       is_android || is_linux)
 }
 
 # Use another declare_args() to allow dependence on

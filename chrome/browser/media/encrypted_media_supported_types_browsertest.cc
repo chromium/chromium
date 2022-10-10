@@ -446,8 +446,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     auto hevc_supported = IsSupportedByKeySystem(key_system, kVideoMP4MimeType,
                                                  video_mp4_hevc_codecs());
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#if BUILDFLAG(IS_WIN)
-    // On Windows platforms, HEVC support is detected through the GPU
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+    // On Windows & Linux platforms, HEVC support is detected through the GPU
     // capabilities which won't indicate support when running the tests.
     // TODO(crbug/1327470): Fix this so that we can inject HEVC support on
     // Windows.
@@ -462,7 +462,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     }
 #else
     EXPECT_ECK_PROPRIETARY(hevc_supported);
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #else
     EXPECT_UNSUPPORTED(hevc_supported);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
