@@ -3433,21 +3433,6 @@
             ]
         }
     ],
-    "CrostiniLxd4Rollout": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_V2",
-                    "enable_features": [
-                        "CrostiniUseLxd4"
-                    ]
-                }
-            ]
-        }
-    ],
     "CursiveStylusPreinstall": [
         {
             "platforms": [
