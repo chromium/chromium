@@ -1178,9 +1178,22 @@ public class CustomTabsConnection {
         Bundle args = new Bundle();
         args.putInt(ON_RESIZED_SIZE_EXTRA, size);
 
+        // TODO(crbug.com/1366844): Deprecate the extra callback.
         if (safeExtraCallback(session, ON_RESIZED_CALLBACK, args) && mLogRequests) {
             logCallback("extraCallback(" + ON_RESIZED_CALLBACK + ")", args);
         }
+
+        CustomTabsCallback callback = mClientManager.getCallbackForSession(session);
+        if (callback == null) return;
+        try {
+            callback.onActivityResized(size, args);
+        } catch (Exception e) {
+            // Catching all exceptions is really bad, but we need it here,
+            // because Android exposes us to client bugs by throwing a variety
+            // of exceptions. See crbug.com/517023.
+            return;
+        }
+        logCallback("onActivityResized()", size);
     }
 
     /**
