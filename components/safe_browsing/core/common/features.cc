@@ -92,7 +92,7 @@ BASE_FEATURE(kEnhancedProtection,
 
 BASE_FEATURE(kEnhancedProtectionPhase2IOS,
              "SafeBrowsingEnhancedProtectionPhase2IOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetry,
              "SafeBrowsingExtensionTelemetry",

@@ -330,7 +330,7 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
     EXPECT_NSEQ(
         mediator_.safeBrowsingCheckItem.detailText,
         GetNSString(
-            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC));
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
   } else {
     EXPECT_NSEQ(
         mediator_.safeBrowsingCheckItem.detailText,
@@ -362,7 +362,7 @@ TEST_F(SafetyCheckMediatorTest,
   EXPECT_NSEQ(
       mediator_.safeBrowsingCheckItem.detailText,
       GetNSString(
-          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC));
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
             [[UIImage imageNamed:@"settings_safe_state"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
@@ -431,7 +431,7 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingUnSafeUI) {
   EXPECT_NSEQ(
       mediator_.safeBrowsingCheckItem.detailText,
       GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC));
-  EXPECT_FALSE(mediator_.safeBrowsingCheckItem.infoButtonHidden);
+  EXPECT_TRUE(mediator_.safeBrowsingCheckItem.infoButtonHidden);
 }
 
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingManagedUI) {
