@@ -76,6 +76,10 @@ std::vector<cc::FrameSequenceMetrics::CustomReportData> StopDataCollection() {
   DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
+  return GetCollectedData();
+}
+
+std::vector<cc::FrameSequenceMetrics::CustomReportData> GetCollectedData() {
   std::vector<cc::FrameSequenceMetrics::CustomReportData> data;
   data.swap(GetDataCollector());
   return data;

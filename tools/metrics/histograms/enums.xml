@@ -35718,6 +35718,7 @@ Called by update_extension_histograms.py.-->
       label="INPUTMETHODPRIVATE_NOTIFYINPUTMETHODREADYFORTESTING"/>
   <int value="1722" label="AUTOTESTPRIVATE_MAKEFUSEBOXTEMPDIR"/>
   <int value="1723" label="AUTOTESTPRIVATE_REMOVEFUSEBOXTEMPDIR"/>
+  <int value="1724" label="AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -1579,6 +1579,18 @@ class AutotestPrivateStopThroughputTrackerDataCollectionFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetThroughputTrackerDataFunction
+    : public ExtensionFunction {
+ public:
+  AutotestPrivateGetThroughputTrackerDataFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getThroughputTrackerData",
+                             AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA)
+
+ private:
+  ~AutotestPrivateGetThroughputTrackerDataFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateGetDisplaySmoothnessFunction : public ExtensionFunction {
  public:
   AutotestPrivateGetDisplaySmoothnessFunction();
