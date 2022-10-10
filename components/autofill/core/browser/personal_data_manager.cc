@@ -1507,7 +1507,7 @@ void PersonalDataManager::FetchImagesForUrls(
 
   image_fetcher_->FetchImagesForUrls(
       updated_urls, base::BindOnce(&PersonalDataManager::OnCardArtImagesFetched,
-                                   weak_factory_.GetWeakPtr()));
+                                   weak_factory_.GetMutableWeakPtr()));
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
