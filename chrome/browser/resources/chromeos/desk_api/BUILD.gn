@@ -12,9 +12,26 @@ assert(is_chromeos, "Desk API is ChromeOS only.")
 
 resources_grd_file = "$target_gen_dir/resources.grd"
 
-ts_files = [ "background.ts" ]
+ts_files = [
+  "background.ts",
+  "desk_api_impl.ts",
+  "message_type.ts",
+  "notification_api_impl.ts",
+  "service_worker.ts",
+]
 
-type_files = []
+type_files = [
+  "chrome_type_extension.d.ts",
+  "desk_api_types.d.ts",
+  "types.d.ts",
+]
+
+# Copy definition files to output folder, so they can import relatively the
+# generated definitions.
+copy("copy_definition") {
+  sources = type_files
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
 
 copy("copy_src") {
   sources = ts_files
@@ -23,12 +40,23 @@ copy("copy_src") {
 
 ts_library("build_ts") {
   deps = []
-  extra_deps = [ ":copy_src" ]
+  extra_deps = [
+    ":copy_definition",
+    ":copy_src",
+  ]
   root_dir = "$target_gen_dir"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = ts_files
-  definitions = type_files
+  definitions = [
+    "$target_gen_dir/chrome_type_extension.d.ts",
+    "$target_gen_dir/desk_api_types.d.ts",
+    "$target_gen_dir/types.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/notifications.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
 }
 
 js_library("js_from_ts") {
@@ -54,8 +82,14 @@ js_binary("generate_desk_api_bundle") {
 }
 
 generate_grd("build_grd") {
-  deps = [ ":generate_desk_api_bundle" ]
-  input_files = [ "index.html" ]
+  deps = [
+    ":build_ts",
+    ":generate_desk_api_bundle",
+  ]
+  input_files = [
+    "index.html",
+    "templates_icon.png",
+  ]
   input_files_base_dir = rebase_path(".", "//")
   manifest_files =
       filter_include(get_target_outputs(":generate_desk_api_bundle"),

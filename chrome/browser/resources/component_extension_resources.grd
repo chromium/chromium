@@ -35,6 +35,7 @@
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->
       <if expr="chromeos_ash or chromeos_lacros">
+        <include name="IDR_DESK_API_TEMPLATES_ICON" file="chromeos/desk_api/templates_icon.png" type="BINDATA" />
         <!-- Compiled TS -->
         <include name="IDR_DESK_API_DESK_API_BUNDLE_JS" file="${root_gen_dir}/chrome/browser/resources/chromeos/desk_api/desk_api_bundle.js" use_base_dir="false" resource_path="chromeos/desk_api/desk_api_bundle.js" type="BINDATA" />
       </if>
