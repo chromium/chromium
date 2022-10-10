@@ -219,51 +219,6 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                  @"No keyboard commands are registered.");
 }
 
-// Test that swiping left to right navigate back.
-// TODO(crbug.com/768339): This test is faling on devices because
-// grey_swipeFastInDirectionWithStartPoint does not work.
-// TODO(crbug.com/978877): Fix the bug in EG and enable the test.
-// Navigate back side swipe gesture does not work on iOS13 simulator. This
-// is not specific to Bookmarks. The issue is that the gesture needs to
-// start offscreen, and EG cannot replicate that.
-- (void)DISABLED_testNavigateBackWithGesture {
-  // Disabled on iPad as there is not "navigate back" gesture.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad");
-  }
-
-  [BookmarkEarlGrey setupStandardBookmarks];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGreyUI openMobileBookmarks];
-
-  // Make sure Mobile Bookmarks is not present. Also check the button Class to
-  // avoid matching the "back" NavigationBar button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Mobile Bookmarks"),
-                                   grey_kindOfClassName(@"UITableViewCell"),
-                                   nil)] assertWithMatcher:grey_nil()];
-
-  // Open the first folder, to be able to go back twice on the bookmarks.
-  [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
-      performAction:grey_tap()];
-
-  // Back twice using swipe left gesture.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
-                                                            0.01, 0.5)];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kBookmarkHomeTableViewIdentifier)]
-      performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
-                                                            0.01, 0.5)];
-
-  // Check we navigated back to the Mobile Bookmarks.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Mobile Bookmarks")]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
 // Tests that the bookmark context bar is shown in MobileBookmarks.
 - (void)testBookmarkContextBarShown {
   [BookmarkEarlGrey setupStandardBookmarks];
