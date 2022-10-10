@@ -975,34 +975,6 @@ TEST_P(AppListAnimationTest, SearchBoxOpacityDuringShowAndClose) {
   EXPECT_EQ(1.0f, search_box->layer()->GetTargetOpacity());
 }
 
-class AppListControllerImplMetricsTest : public AshTestBase {
- public:
-  AppListControllerImplMetricsTest() = default;
-
-  AppListControllerImplMetricsTest(const AppListControllerImplMetricsTest&) =
-      delete;
-  AppListControllerImplMetricsTest& operator=(
-      const AppListControllerImplMetricsTest&) = delete;
-
-  ~AppListControllerImplMetricsTest() override = default;
-
-  void SetUp() override {
-    AshTestBase::SetUp();
-    controller_ = Shell::Get()->app_list_controller();
-    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
-        true);
-  }
-
-  void TearDown() override {
-    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
-        false);
-    AshTestBase::TearDown();
-  }
-
-  AppListControllerImpl* controller_;
-  const base::HistogramTester histogram_tester_;
-};
-
 // Tests with the bubble launcher enabled. This is a separate test suite
 // because the feature must be enabled before ash::Shell constructs the
 // AppListControllerImpl.

@@ -49,8 +49,6 @@ class SearchBoxView;
 class StateTransitionNotifier;
 
 FORWARD_DECLARE_TEST(AppListControllerImplTest,
-                     CheckAppListViewBoundsWhenVKeyboardEnabled);
-FORWARD_DECLARE_TEST(AppListControllerImplTest,
                      CheckAppListViewBoundsWhenDismissVKeyboard);
 
 // The fraction of app list height that the app list must be released at in
@@ -318,11 +316,7 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListControllerImplTest,
-                           CheckAppListViewBoundsWhenVKeyboardEnabled);
-  FRIEND_TEST_ALL_PREFIXES(AppListControllerImplTest,
                            CheckAppListViewBoundsWhenDismissVKeyboard);
-  FRIEND_TEST_ALL_PREFIXES(AppListControllerImplMetricsTest,
-                           PresentationTimeRecordedForDragInTabletMode);
 
   class StateAnimationMetricsReporter;
 
