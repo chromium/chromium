@@ -62,11 +62,14 @@ CameraPrivacySwitchController::CameraPrivacySwitchController()
                                        ->AddCameraPrivacySwitchObserver(this))
 
 {
+  media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
 CameraPrivacySwitchController::~CameraPrivacySwitchController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  media::CameraHalDispatcherImpl::GetInstance()->RemoveActiveClientObserver(
+      this);
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
 }
@@ -87,8 +90,15 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
 void CameraPrivacySwitchController::OnPreferenceChanged(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kUserCameraAllowed);
-  switch_api_->SetCameraSWPrivacySwitch(GetUserSwitchPreference());
+  const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
+  switch_api_->SetCameraSWPrivacySwitch(pref_val);
   ClearSWSwitchNotifications();
+  if (is_camera_active_ &&
+      pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
+    // Show notification in case we switch off the camera when the camera is
+    // used by an app.
+    ShowCameraOffNotification();
+  }
 }
 
 CameraSWPrivacySwitchSetting
@@ -207,6 +217,17 @@ void CameraPrivacySwitchController::ClearSWSwitchNotifications() {
   for (const char* notification_id : kNotificationIds) {
     message_center->RemoveNotification(notification_id,
                                        /*by_user=*/false);
+  }
+}
+
+void CameraPrivacySwitchController::OnActiveClientChange(
+    cros::mojom::CameraClientType type,
+    bool is_active) {
+  is_camera_active_ = is_active;
+
+  if (is_active) {
+    if (GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled)
+      ShowCameraOffNotification();
   }
 }
 

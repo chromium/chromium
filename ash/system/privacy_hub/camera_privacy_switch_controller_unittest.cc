@@ -152,7 +152,10 @@ TEST_F(PrivacyHubCameraControllerTests, CameraOffNotificationRemoveViaClick) {
   ASSERT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  controller_->ShowCameraOffNotification();
+  // Emulate camera activity
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    true);
+  // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
@@ -174,13 +177,42 @@ TEST_F(PrivacyHubCameraControllerTests,
   ASSERT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  controller_->ShowCameraOffNotification();
+  // Emulate camera activity
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    true);
+  // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
   // Enabling camera via the user pref should clear the notification
   SetUserPref(true);
+  EXPECT_TRUE(GetUserPref());
+  EXPECT_FALSE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+}
+
+TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
+  SetUserPref(true);
+  message_center::MessageCenter* const message_center =
+      message_center::MessageCenter::Get();
+  ASSERT_TRUE(message_center);
+  message_center->RemoveNotification(kPrivacyHubCameraOffNotificationId, false);
+
+  // Emulate camera activity
+  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
+                                    true);
+  // Disable camera
+  SetUserPref(false);
+
+  // A notification should be fired.
+  EXPECT_TRUE(
+      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(GetUserPref());
+
+  // Enabling camera via clicking on the button should clear the notification
+  message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
+                                            0);
   EXPECT_TRUE(GetUserPref());
   EXPECT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
