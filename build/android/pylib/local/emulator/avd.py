@@ -376,6 +376,14 @@ class AvdConfig:
             'hw.lcd.height': height,
             'hw.lcd.width': width,
             'hw.mainKeys': 'no',  # Show nav buttons on screen
+            # TODO(crbug/1372660): Disable unnecessary hardware features to see
+            # if it can speed up CQ. If any below feature is required, we should
+            # revert it back.
+            'hw.camera': 'no',
+            'hw.gps': 'no',
+            'hw.accelerometer': 'no',
+            'hw.audioInput': 'no',
+            'hw.audioOutput': 'no',
         })
 
         if self.avd_settings.ram_size:
