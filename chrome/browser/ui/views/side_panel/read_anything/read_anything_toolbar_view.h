@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,6 +32,7 @@ class ReadAnythingToolbarView : public views::View,
     virtual void OnFontSizeChanged(bool increase) = 0;
     virtual void OnColorsChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetColorsModel() = 0;
+    virtual ui::ColorId GetForegroundColorId() = 0;
     virtual void OnLineSpacingChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetLineSpacingModel() = 0;
     virtual void OnLetterSpacingChanged(int new_index) = 0;
@@ -72,6 +74,7 @@ class ReadAnythingToolbarView : public views::View,
   raw_ptr<views::Combobox> colors_combobox_;
   raw_ptr<views::Combobox> lines_combobox_;
   raw_ptr<views::Combobox> letter_spacing_combobox_;
+  std::vector<raw_ptr<views::Separator>> separators_;
 
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;
   raw_ptr<ReadAnythingCoordinator> coordinator_;

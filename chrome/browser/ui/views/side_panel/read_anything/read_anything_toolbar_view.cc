@@ -167,6 +167,10 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
 
   increase_text_size_button_->UpdateIcon(gfx::CreateVectorIcon(
       kTextIncreaseIcon, kLargeIconSize, new_theme->foreground_color));
+
+  for (views::Separator* separator : separators_) {
+    separator->SetColorId(delegate_->GetForegroundColorId());
+  }
 }
 
 std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
@@ -183,9 +187,9 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
   separator_container->SetLayoutManager(std::move(separator_layout_manager));
 
   auto separator = std::make_unique<views::Separator>();
-  separator->SetColorId(ui::kColorMenuSeparator);
-
-  separator_container->AddChildView(std::move(separator));
+  separator->SetColorId(delegate_->GetForegroundColorId());
+  separators_.push_back(
+      separator_container->AddChildView(std::move(separator)));
 
   return separator_container;
 }

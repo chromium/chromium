@@ -57,8 +57,8 @@ void ReadAnythingModel::Init(std::string& font_name,
     colors_model_->SetDefaultColorsIndexFromPref(colors_index);
   }
 
-  auto& initial_colors =
-      colors_model_->GetColorsAt(colors_model_->GetStartingStateIndex());
+  colors_combobox_index_ = colors_model_->GetStartingStateIndex();
+  auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_ = initial_colors.foreground;
   background_color_ = initial_colors.background;
 
@@ -99,11 +99,19 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   // Check that the index is valid.
   DCHECK(colors_model_->IsValidColorsIndex(new_index));
 
+  colors_combobox_index_ = new_index;
   auto& new_colors = colors_model_->GetColorsAt(new_index);
   foreground_color_ = new_colors.foreground;
   background_color_ = new_colors.background;
 
   NotifyThemeChanged();
+}
+
+ui::ColorId ReadAnythingModel::GetForegroundColorId() {
+  // Check that the index is valid.
+  DCHECK(colors_model_->IsValidColorsIndex(colors_combobox_index_));
+
+  return colors_model_->GetForegroundColorId(colors_combobox_index_);
 }
 
 void ReadAnythingModel::SetSelectedLineSpacingByIndex(size_t new_index) {
@@ -240,16 +248,20 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   // TODO (crbug.com/1266555): Define default colors from system theme.
   ColorInfo kDefaultColors = {u"Default", IDS_READ_ANYTHING_DEFAULT_PNG,
-                              gfx::kGoogleGrey800, gfx::kGoogleGrey050};
+                              gfx::kGoogleGrey800, gfx::kGoogleGrey050,
+                              ui::kColorReadAnythingForegroundLight};
 
   ColorInfo kLightColors = {u"Light", IDS_READ_ANYTHING_LIGHT_PNG,
-                            gfx::kGoogleGrey800, gfx::kGoogleGrey050};
+                            gfx::kGoogleGrey800, gfx::kGoogleGrey050,
+                            ui::kColorReadAnythingForegroundLight};
 
   ColorInfo kDarkColors = {u"Dark", IDS_READ_ANYTHING_DARK_PNG,
-                           gfx::kGoogleGrey200, gfx::kGoogleGrey900};
+                           gfx::kGoogleGrey200, gfx::kGoogleGrey900,
+                           ui::kColorReadAnythingForegroundDark};
 
   ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
-                             gfx::kGoogleGrey800, gfx::kGoogleYellow200};
+                             gfx::kGoogleGrey800, gfx::kGoogleYellow200,
+                             ui::kColorReadAnythingForegroundYellow};
 
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);
@@ -268,6 +280,10 @@ void ReadAnythingColorsModel::SetDefaultColorsIndexFromPref(size_t index) {
 ReadAnythingColorsModel::ColorInfo& ReadAnythingColorsModel::GetColorsAt(
     size_t index) {
   return colors_choices_[index];
+}
+
+ui::ColorId ReadAnythingColorsModel::GetForegroundColorId(size_t index) {
+  return GetColorsAt(index).foreground_color_id;
 }
 
 absl::optional<size_t> ReadAnythingColorsModel::GetDefaultIndex() const {

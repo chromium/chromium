@@ -60,6 +60,7 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   void OnFontSizeChanged(bool increase) override;
   void OnColorsChanged(int new_index) override;
   ui::ComboboxModel* GetColorsModel() override;
+  ui::ColorId GetForegroundColorId() override;
   void OnLineSpacingChanged(int new_index) override;
   ui::ComboboxModel* GetLineSpacingModel() override;
   void OnLetterSpacingChanged(int new_index) override;

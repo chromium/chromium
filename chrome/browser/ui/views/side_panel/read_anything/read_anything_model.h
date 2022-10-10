@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/color/color_id.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingFontModel
@@ -79,11 +80,15 @@ class ReadAnythingColorsModel : public ui::ComboboxModel {
 
     // The background color, used for text background.
     SkColor background;
+
+    // The foreground color as a ColorId, used for separators.
+    ui::ColorId foreground_color_id;
   };
 
   bool IsValidColorsIndex(size_t index);
   void SetDefaultColorsIndexFromPref(size_t index);
   ColorInfo& GetColorsAt(size_t index);
+  ui::ColorId GetForegroundColorId(size_t index);
 
   // Simple pass-through method so Init can set the starting state colors.
   size_t GetStartingStateIndex() { return GetDefaultIndex().value(); }
@@ -234,6 +239,7 @@ class ReadAnythingModel {
   ReadAnythingFontModel* GetFontModel() { return font_model_.get(); }
   double GetFontScale() { return font_scale_; }
   ReadAnythingColorsModel* GetColorsModel() { return colors_model_.get(); }
+  ui::ColorId GetForegroundColorId();
   ReadAnythingLineSpacingModel* GetLineSpacingModel() {
     return line_spacing_model_.get();
   }
@@ -257,6 +263,9 @@ class ReadAnythingModel {
 
   read_anything::mojom::Spacing line_spacing_;
   read_anything::mojom::Spacing letter_spacing_;
+
+  // Currently selected index for colors combobox
+  int colors_combobox_index_;
 
   // TODO(crbug.com/1266555): Use |snapshot_| and |content_node_ids_| to keep
   // scrolls in sync.
