@@ -160,7 +160,7 @@ class DlpFilesController {
   DlpFilesController(const DlpFilesController& other) = delete;
   DlpFilesController& operator=(const DlpFilesController& other) = delete;
 
-  ~DlpFilesController();
+  virtual ~DlpFilesController();
 
   // Returns a list of files disallowed to be transferred in |result_callback|.
   void GetDisallowedTransfers(
@@ -210,6 +210,11 @@ class DlpFilesController {
 
   // Returns whether a dlp policy matches for the `file`.
   bool IsDlpPolicyMatched(const FileDaemonInfo& file);
+
+  // The same source url information stored for |source| is copied for
+  // |destination|
+  virtual void CopySourceInformation(const storage::FileSystemURL& source,
+                                     const storage::FileSystemURL& destination);
 
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);

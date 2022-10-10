@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <memory>
 #include <string>
@@ -15,6 +16,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -111,7 +114,22 @@ using MockIsFilesTransferRestrictedCallback = testing::StrictMock<
     base::MockCallback<DlpFilesController::IsFilesTransferRestrictedCallback>>;
 using MockCheckIfDownloadAllowedCallback = testing::StrictMock<
     base::MockCallback<DlpFilesController::CheckIfDownloadAllowedCallback>>;
+using MockGetFilesSources =
+    testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
+        ::dlp::GetFilesSourcesRequest,
+        ::chromeos::DlpClient::GetFilesSourcesCallback)>>>;
+using MockAddFile =
+    testing::StrictMock<base::MockCallback<base::RepeatingCallback<
+        void(::dlp::AddFileRequest, ::chromeos::DlpClient::AddFileCallback)>>>;
 
+ino_t GetInode(storage::FileSystemURL url) {
+  struct stat st;
+  if (stat(url.path().value().c_str(), &st)) {
+    return -1;
+  } else {
+    return st.st_ino;
+  }
+}
 }  // namespace
 
 class DlpFilesControllerTest : public testing::Test {
@@ -889,6 +907,83 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnMixedCalls) {
 
   ASSERT_EQ(events.size(), 1u);
   EXPECT_THAT(events[0], IsDlpPolicyEvent(event));
+}
+
+TEST_F(DlpFilesControllerTest, CopySourceOnCopy) {
+  AddFilesToDlpClient();
+  auto* clientInterface = chromeos::DlpClient::Get()->GetTestInterface();
+
+  MockGetFilesSources file_source_cb;
+  MockAddFile file_add_cb;
+
+  ino_t inode = GetInode(file_url1_);
+
+  EXPECT_CALL(file_source_cb, Run(_, _))
+      .WillOnce([&inode](::dlp::GetFilesSourcesRequest request,
+                         ::chromeos::DlpClient::GetFilesSourcesCallback cb) {
+        EXPECT_EQ(1, request.files_inodes().size());
+        EXPECT_EQ(inode, request.files_inodes()[0]);
+        ::dlp::GetFilesSourcesResponse response;
+        auto* meta = response.add_files_metadata();
+        meta->set_source_url("source_url");
+        meta->set_inode(inode);
+        std::move(cb).Run(response);
+      });
+
+  EXPECT_CALL(file_add_cb, Run(_, _))
+      .WillOnce([](::dlp::AddFileRequest request,
+                   ::chromeos::DlpClient::AddFileCallback cb) {
+        EXPECT_EQ("source_url", request.source_url());
+        EXPECT_EQ("destination", request.file_path());
+        ::dlp::AddFileResponse response;
+        std::move(cb).Run(std::move(response));
+      });
+
+  clientInterface->SetGetFilesSourceMock(file_source_cb.Get());
+  clientInterface->SetAddFileMock(file_add_cb.Get());
+  files_controller_->CopySourceInformation(file_url1_,
+                                           CreateFileSystemURL("destination"));
+}
+
+TEST_F(DlpFilesControllerTest, CopySourceOnCopyUnknown) {
+  AddFilesToDlpClient();
+  auto* clientInterface = chromeos::DlpClient::Get()->GetTestInterface();
+
+  MockGetFilesSources file_source_cb;
+  MockAddFile file_add_cb;
+
+  ino_t inode = GetInode(file_url1_);
+
+  EXPECT_CALL(file_source_cb, Run(_, _))
+      .WillOnce([&inode](::dlp::GetFilesSourcesRequest request,
+                         ::chromeos::DlpClient::GetFilesSourcesCallback cb) {
+        EXPECT_EQ(1, request.files_inodes().size());
+        EXPECT_EQ(inode, request.files_inodes()[0]);
+        ::dlp::GetFilesSourcesResponse response;
+        std::move(cb).Run(std::move(response));
+      });
+
+  EXPECT_CALL(file_add_cb, Run(_, _)).Times(0);
+
+  clientInterface->SetGetFilesSourceMock(file_source_cb.Get());
+  clientInterface->SetAddFileMock(file_add_cb.Get());
+  files_controller_->CopySourceInformation(file_url1_,
+                                           CreateFileSystemURL("destination"));
+}
+
+TEST_F(DlpFilesControllerTest, CopySourceOnCopyNoClient) {
+  AddFilesToDlpClient();
+  auto* clientInterface = chromeos::DlpClient::Get()->GetTestInterface();
+  testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
+      ::dlp::GetFilesSourcesRequest,
+      ::chromeos::DlpClient::GetFilesSourcesCallback)>>>
+      file_source_cb;
+  EXPECT_CALL(file_source_cb, Run(_, _)).Times(0);
+
+  clientInterface->SetGetFilesSourceMock(file_source_cb.Get());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetIsAlive(false);
+  files_controller_->CopySourceInformation(file_url1_,
+                                           CreateFileSystemURL("destination"));
 }
 
 class DlpFilesExternalDestinationTest

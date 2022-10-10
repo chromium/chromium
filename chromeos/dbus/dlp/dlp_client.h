@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
 
@@ -35,9 +36,14 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   using RequestFileAccessCallback =
       base::OnceCallback<void(const dlp::RequestFileAccessResponse response,
                               base::ScopedFD fd)>;
+  using AddFileCall =
+      base::RepeatingCallback<void(const dlp::AddFileRequest, AddFileCallback)>;
+  using GetFilesSourceCall =
+      base::RepeatingCallback<void(const dlp::GetFilesSourcesRequest,
+                                   GetFilesSourcesCallback)>;
 
-  // Interface with testing functionality. Accessed through GetTestInterface(),
-  // only implemented in the fake implementation.
+  // Interface with testing functionality. Accessed through
+  // GetTestInterface(), only implemented in the fake implementation.
   class TestInterface {
    public:
     // Returns how many times |SetDlpFilesPolicyCount| was called.
@@ -55,6 +61,12 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
     // Sets the response for IsAlive call.
     virtual void SetIsAlive(bool is_alive) = 0;
+
+    // use |mock| for AddFile calls.
+    virtual void SetAddFileMock(AddFileCall mock) = 0;
+
+    // use |mock| for GetFilesSource calls;
+    virtual void SetGetFilesSourceMock(GetFilesSourceCall mock) = 0;
 
    protected:
     virtual ~TestInterface() = default;
@@ -76,8 +88,8 @@ class COMPONENT_EXPORT(DLP) DlpClient {
   static DlpClient* Get();
 
   // Dlp daemon D-Bus method calls. See org.chromium.Dlp.xml and
-  // dlp_service.proto in Chromium OS code for the documentation of the methods
-  // and request/response messages.
+  // dlp_service.proto in Chromium OS code for the documentation of the
+  // methods and request/response messages.
   virtual void SetDlpFilesPolicy(const dlp::SetDlpFilesPolicyRequest request,
                                  SetDlpFilesPolicyCallback callback) = 0;
   virtual void AddFile(const dlp::AddFileRequest request,

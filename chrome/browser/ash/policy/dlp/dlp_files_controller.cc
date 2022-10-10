@@ -121,6 +121,29 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 // TODO(crbug.com/1366299): determine the value to use.
 constexpr size_t kEntriesLimit = 100;
 
+void GotFilesSourcesOfCopy(
+    storage::FileSystemURL destination,
+    std::vector<DlpFilesController::DlpFileMetadata> metadata) {
+  if (metadata.size() == 0) {
+    return;
+  }
+  DCHECK(metadata.size() == 1);
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    return;
+  }
+
+  if (metadata[0].source_url.empty()) {
+    return;
+  }
+
+  ::dlp::AddFileRequest request;
+  request.set_file_path(destination.path().value());
+  request.set_source_url(metadata[0].source_url);
+  // TODO(https://crbug.com/1368497): we might want to use the callback for
+  // error handling
+  chromeos::DlpClient::Get()->AddFile(request, base::DoNothing());
+}
+
 }  // namespace
 
 DlpFilesController::DlpFileMetadata::DlpFileMetadata(
@@ -253,6 +276,19 @@ void DlpFilesController::GetDisallowedTransfers(
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(close_dialog_callback)
                    .Then(std::move(return_transfers_callback)));
+}
+
+void DlpFilesController::CopySourceInformation(
+    const storage::FileSystemURL& source,
+    const storage::FileSystemURL& destination) {
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+
+  // One path is external component.
+  if (MapFilePathtoPolicyComponent(profile, source.path()).has_value() ||
+      MapFilePathtoPolicyComponent(profile, destination.path()).has_value()) {
+    return;
+  }
+  GetDlpMetadata({source}, base::BindOnce(&GotFilesSourcesOfCopy, destination));
 }
 
 void DlpFilesController::GetDlpMetadata(

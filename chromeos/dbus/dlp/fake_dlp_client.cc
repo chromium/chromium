@@ -40,6 +40,10 @@ void FakeDlpClient::SetDlpFilesPolicy(
 
 void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
                             AddFileCallback callback) {
+  if (add_file_mock_.has_value()) {
+    add_file_mock_->Run(request, std::move(callback));
+    return;
+  }
   if (request.has_file_path() && request.has_source_url()) {
     files_database_[GetInodeValue(base::FilePath(request.file_path()))] =
         request.source_url();
@@ -50,6 +54,10 @@ void FakeDlpClient::AddFile(const dlp::AddFileRequest request,
 
 void FakeDlpClient::GetFilesSources(const dlp::GetFilesSourcesRequest request,
                                     GetFilesSourcesCallback callback) {
+  if (get_files_source_mock_.has_value()) {
+    get_files_source_mock_->Run(request, std::move(callback));
+    return;
+  }
   dlp::GetFilesSourcesResponse response;
   for (const auto& file_inode : request.files_inodes()) {
     auto file_itr = files_database_.find(file_inode);
@@ -107,6 +115,13 @@ void FakeDlpClient::SetFileAccessAllowed(bool allowed) {
 
 void FakeDlpClient::SetIsAlive(bool is_alive) {
   is_alive_ = is_alive;
+}
+
+void FakeDlpClient::SetAddFileMock(AddFileCall mock) {
+  add_file_mock_ = mock;
+}
+void FakeDlpClient::SetGetFilesSourceMock(GetFilesSourceCall mock) {
+  get_files_source_mock_ = mock;
 }
 
 }  // namespace chromeos
