@@ -732,6 +732,11 @@ namespace OmniboxFieldTrial {
 // Autocomplete stability.
 
 const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultExcludeKeywordInputs(
+        &omnibox::kPreserveDefault,
+        "AutocompleteStabilityPreserveDefaultExcludeKeywordInputs",
+        false);
+const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultAfterTransfer(
         &omnibox::kPreserveDefault,
         "AutocompleteStabilityPreserveDefaultAfterTransfer",

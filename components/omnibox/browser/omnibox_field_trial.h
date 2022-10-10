@@ -476,6 +476,10 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 // `FeatureParam`s
 
 // Autocomplete stability and related features.
+// If enabled and the input is in keyword mode, the default suggestion isn't
+// preserved.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityPreserveDefaultExcludeKeywordInputs;
 // When providers update their matches, the aggregated matches for the current
 // input are sorted, then merged with the matches from the previous input
 // (`TransferOldMatches()`), then resorted. If enabled, both sorts preserve the
