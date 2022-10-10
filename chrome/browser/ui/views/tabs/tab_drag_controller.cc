@@ -74,6 +74,10 @@
 #include "chromeos/ui/base/window_properties.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/remote_cocoa/browser/window.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/env.h"                            // nogncheck
 #include "ui/aura/window.h"                         // nogncheck
@@ -492,6 +496,16 @@ void TabDragController::Init(TabDragContext* source_context,
   mouse_offset_ = mouse_offset;
   last_point_in_screen_ = start_point_in_screen_;
   last_move_screen_loc_ = start_point_in_screen_.x();
+  // Detachable tabs are not supported on Mac if the window is an out-of-process
+  // (remote_cocoa) window, i.e. a PWA window.
+  // TODO(https://crbug.com/1076777): Make detachable tabs work in PWAs on Mac.
+#if BUILDFLAG(IS_MAC)
+  if (source_context_->GetWidget() &&
+      remote_cocoa::IsWindowRemote(
+          source_context_->GetWidget()->GetNativeWindow())) {
+    detach_behavior_ = NOT_DETACHABLE;
+  }
+#endif
 
   source_context_emptiness_tracker_ =
       std::make_unique<SourceTabStripEmptinessTracker>(
