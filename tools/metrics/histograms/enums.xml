@@ -103539,6 +103539,16 @@ others/histograms.xml -->
   <int value="0" label="Unused and unclosed"/>
 </enum>
 
+<enum name="WebRtcStunIntegrityOutcome">
+  <summary>
+    Records the outcome of a STUN integrity check - succeeds, fails, or &quot;no
+    integrity attribute present&quot;.
+  </summary>
+  <int value="1" label="No integrity attribute"/>
+  <int value="2" label="OK"/>
+  <int value="3" label="Bad"/>
+</enum>
+
 <enum name="WebRtcVideoCodecs">
   <int value="0" label="Unknown"/>
   <int value="1" label="VP8"/>

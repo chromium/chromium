@@ -2141,6 +2141,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebRTC.Stun.Integrity.{StunPacketType}"
+    enum="WebRtcStunIntegrityOutcome" expires_after="2023-04-07">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Records outcome of integrity checks for STUN requests. This is used in
+    investigation of crbug.com/1177125, in order to figure out if it is safe to
+    turn on checking of these attributes.
+  </summary>
+  <token key="StunPacketType">
+    <variant name="ErrorResponse.BadRequest"/>
+    <variant name="ErrorResponse.ErrorOther"/>
+    <variant name="ErrorResponse.GlobalFailure"/>
+    <variant name="ErrorResponse.NoErrorAttribute"/>
+    <variant name="ErrorResponse.ServerError"/>
+    <variant name="ErrorResponse.StaleNonce"/>
+    <variant name="ErrorResponse.TryAlternate"/>
+    <variant name="ErrorResponse.Unauthorized"/>
+    <variant name="ErrorResponse.UnknownAttribute"/>
+    <variant name="Indication"/>
+    <variant name="Request"/>
+    <variant name="Response"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.Stun.ResponseLatency{NatType}" units="ms"
     expires_after="M85">
   <owner>qingsi@google.com</owner>
