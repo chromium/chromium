@@ -8,10 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/ime/character_composer.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
@@ -52,6 +55,8 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
                       TextInputMode mode,
                       uint32_t flags,
                       bool should_do_learning) override;
+  void WillUpdateFocus(TextInputClient* old_client,
+                       TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
                    TextInputType new_type) override;
@@ -138,6 +143,13 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
 
   // Caches VirtualKeyboard visibility.
   bool virtual_keyboard_visible_ = false;
+
+  // Keeps track of past text input clients to forward virtual keyboard changes
+  // to, since unfocusing text inputs will detach clients immediately, but the
+  // virtual keyboard bounds updates come later.
+  // Using map instead of set, because WeakPtr doesn't support comparison.
+  base::flat_map<TextInputClient*, base::WeakPtr<TextInputClient>>
+      past_clients_;
 
   // Keeps modifiers_map sent from the wayland compositor.
   std::vector<std::string> modifiers_map_;

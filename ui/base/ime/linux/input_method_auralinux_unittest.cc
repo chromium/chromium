@@ -18,6 +18,7 @@
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -94,6 +95,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   TextInputMode input_mode() const { return input_mode_; }
   uint32_t input_flags() const { return input_flags_; }
   bool should_do_learning() const { return should_do_learning_; }
+  TextInputClient* old_client() { return old_client_; }
+  TextInputClient* new_client() { return new_client_; }
 
  protected:
   bool DispatchKeyEvent(const ui::KeyEvent& key_event) override {
@@ -141,6 +144,12 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void Reset() override {}
 
+  void WillUpdateFocus(TextInputClient* old_client,
+                       TextInputClient* new_client) override {
+    old_client_ = old_client;
+    new_client_ = new_client;
+  }
+
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
                    TextInputType new_type) override {}
@@ -187,6 +196,8 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   TextInputMode input_mode_;
   uint32_t input_flags_;
   bool should_do_learning_;
+  TextInputClient* old_client_ = nullptr;
+  TextInputClient* new_client_ = nullptr;
 };
 
 class InputMethodDelegateForTesting : public ImeKeyEventDispatcher {
@@ -1095,17 +1106,32 @@ TEST_F(InputMethodAuraLinuxTest, SetContentTypeWithUpdateFocus) {
   auto client2 =
       std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_URL);
 
+  EXPECT_EQ(context_->old_client(), nullptr);
+  EXPECT_EQ(context_->new_client(), nullptr);
+
   input_method_auralinux_->SetFocusedTextInputClient(client1.get());
 
-  EXPECT_EQ(TEXT_INPUT_TYPE_TEXT, context_->input_type());
+  EXPECT_EQ(context_->input_type(), TEXT_INPUT_TYPE_TEXT);
+  EXPECT_EQ(context_->old_client(), nullptr);
+  EXPECT_EQ(context_->new_client(), client1.get());
 
   input_method_auralinux_->SetFocusedTextInputClient(client2.get());
 
-  EXPECT_EQ(TEXT_INPUT_TYPE_URL, context_->input_type());
+  EXPECT_EQ(context_->input_type(), TEXT_INPUT_TYPE_URL);
+  EXPECT_EQ(context_->old_client(), client1.get());
+  EXPECT_EQ(context_->new_client(), client2.get());
 
   input_method_auralinux_->SetFocusedTextInputClient(client1.get());
 
-  EXPECT_EQ(TEXT_INPUT_TYPE_TEXT, context_->input_type());
+  EXPECT_EQ(context_->input_type(), TEXT_INPUT_TYPE_TEXT);
+  EXPECT_EQ(context_->old_client(), client2.get());
+  EXPECT_EQ(context_->new_client(), client1.get());
+
+  input_method_auralinux_->SetFocusedTextInputClient(nullptr);
+
+  EXPECT_EQ(context_->input_type(), TEXT_INPUT_TYPE_NONE);
+  EXPECT_EQ(context_->old_client(), client1.get());
+  EXPECT_EQ(context_->new_client(), nullptr);
 }
 
 }  // namespace

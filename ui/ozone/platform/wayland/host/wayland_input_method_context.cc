@@ -10,6 +10,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/base_event_utils.h"
@@ -202,6 +204,12 @@ void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
   if (text_input_)
     text_input_->Reset();
+}
+
+void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
+                                                TextInputClient* new_client) {
+  if (old_client)
+    past_clients_.try_emplace(old_client, base::AsWeakPtr(old_client));
 }
 
 void WaylandInputMethodContext::UpdateFocus(bool has_client,
@@ -635,6 +643,13 @@ void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
 void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(
     const gfx::Rect& screen_bounds) {
   ime_delegate_->OnSetVirtualKeyboardOccludedBounds(screen_bounds);
+
+  for (auto& client : past_clients_) {
+    if (client.second)
+      client.second->EnsureCaretNotInRect(screen_bounds);
+  }
+  if (screen_bounds.IsEmpty())
+    past_clients_.clear();
 }
 
 void WaylandInputMethodContext::OnInputPanelState(uint32_t state) {

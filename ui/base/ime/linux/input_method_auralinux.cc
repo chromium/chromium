@@ -568,6 +568,7 @@ void InputMethodAuraLinux::OnWillChangeFocusedClient(
     TextInputClient* focused_before,
     TextInputClient* focused) {
   ResetContext();
+  context_->WillUpdateFocus(focused_before, focused);
 }
 
 void InputMethodAuraLinux::OnDidChangeFocusedClient(

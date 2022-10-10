@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/event.h"
@@ -47,6 +48,95 @@ absl::optional<size_t> CountGraphemeCluster(base::StringPiece16 text) {
     ++result;
   return result;
 }
+
+// TODO(crbug.com/1370046): Subclass FakeTextInputClient after pruning deps.
+class MockTextInputClient : public TextInputClient {
+ public:
+  explicit MockTextInputClient(TextInputType text_input_type) {
+    text_input_type_ = text_input_type;
+  }
+  MockTextInputClient(const MockTextInputClient& other) = delete;
+  MockTextInputClient& operator=(const MockTextInputClient& other) = delete;
+  ~MockTextInputClient() override = default;
+
+  TextInputType GetTextInputType() const override { return text_input_type_; }
+
+  MOCK_METHOD(void,
+              SetCompositionText,
+              (const ui::CompositionText&),
+              (override));
+  MOCK_METHOD(size_t, ConfirmCompositionText, (bool), (override));
+  MOCK_METHOD(void, ClearCompositionText, (), (override));
+  MOCK_METHOD(void,
+              InsertText,
+              (const std::u16string&,
+               ui::TextInputClient::InsertTextCursorBehavior cursor_behavior),
+              (override));
+  MOCK_METHOD(void, InsertChar, (const ui::KeyEvent&), (override));
+  MOCK_METHOD(ui::TextInputMode, GetTextInputMode, (), (const, override));
+  MOCK_METHOD(base::i18n::TextDirection,
+              GetTextDirection,
+              (),
+              (const, override));
+  MOCK_METHOD(int, GetTextInputFlags, (), (const, override));
+  MOCK_METHOD(bool, CanComposeInline, (), (const, override));
+  MOCK_METHOD(gfx::Rect, GetCaretBounds, (), (const, override));
+  MOCK_METHOD(gfx::Rect, GetSelectionBoundingBox, (), (const, override));
+  MOCK_METHOD(bool,
+              GetCompositionCharacterBounds,
+              (size_t, gfx::Rect*),
+              (const, override));
+  MOCK_METHOD(bool, HasCompositionText, (), (const, override));
+  MOCK_METHOD(ui::TextInputClient::FocusReason,
+              GetFocusReason,
+              (),
+              (const, override));
+  MOCK_METHOD(bool, GetTextRange, (gfx::Range*), (const, override));
+  MOCK_METHOD(bool, GetCompositionTextRange, (gfx::Range*), (const, override));
+  MOCK_METHOD(bool,
+              GetEditableSelectionRange,
+              (gfx::Range*),
+              (const, override));
+  MOCK_METHOD(bool, SetEditableSelectionRange, (const gfx::Range&), (override));
+  MOCK_METHOD(bool,
+              GetTextFromRange,
+              (const gfx::Range&, std::u16string*),
+              (const, override));
+  MOCK_METHOD(void, OnInputMethodChanged, (), (override));
+  MOCK_METHOD(bool,
+              ChangeTextDirectionAndLayoutAlignment,
+              (base::i18n::TextDirection),
+              (override));
+  MOCK_METHOD(void, ExtendSelectionAndDelete, (size_t, size_t), (override));
+  MOCK_METHOD(void, EnsureCaretNotInRect, (const gfx::Rect&), (override));
+  MOCK_METHOD(bool,
+              IsTextEditCommandEnabled,
+              (TextEditCommand),
+              (const, override));
+  MOCK_METHOD(void,
+              SetTextEditCommandForNextKeyEvent,
+              (TextEditCommand),
+              (override));
+  MOCK_METHOD(ukm::SourceId, GetClientSourceForMetrics, (), (const, override));
+  MOCK_METHOD(bool, ShouldDoLearning, (), (override));
+  MOCK_METHOD(bool,
+              SetCompositionFromExistingText,
+              (const gfx::Range&, const std::vector<ui::ImeTextSpan>&),
+              (override));
+#if BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(gfx::Range, GetAutocorrectRange, (), (const, override));
+  MOCK_METHOD(gfx::Rect, GetAutocorrectCharacterBounds, (), (const, override));
+  MOCK_METHOD(bool, SetAutocorrectRange, (const gfx::Range& range), (override));
+  MOCK_METHOD(void,
+              GetActiveTextInputControlLayoutBounds,
+              (absl::optional<gfx::Rect> * control_bounds,
+               absl::optional<gfx::Rect>* selection_bounds),
+              (override));
+#endif
+
+ private:
+  TextInputType text_input_type_;
+};
 
 class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
  public:
@@ -613,10 +703,69 @@ TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
 }
 
 TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
-  const gfx::Rect bounds(10, 20, 300, 400);
-  input_method_context_->OnSetVirtualKeyboardOccludedBounds(bounds);
+  const gfx::Rect kBounds(10, 20, 300, 400);
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
   Sync();
-  EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), bounds);
+  EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), kBounds);
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       OnSetVirtualKeyboardOccludedBoundsUpdatesPastTextInputClients) {
+  auto client1 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
+  auto client2 = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_URL);
+
+  input_method_context_->WillUpdateFocus(client1.get(), client2.get());
+  input_method_context_->UpdateFocus(true, client1->GetTextInputType(),
+                                     client2->GetTextInputType());
+  input_method_context_->WillUpdateFocus(client2.get(), nullptr);
+  input_method_context_->UpdateFocus(false, client2->GetTextInputType(),
+                                     ui::TEXT_INPUT_TYPE_NONE);
+
+  // Clients should get further bounds updates.
+  const gfx::Rect kBounds(10, 20, 300, 400);
+  EXPECT_CALL(*client1, EnsureCaretNotInRect(kBounds));
+  EXPECT_CALL(*client2, EnsureCaretNotInRect(kBounds));
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
+  Sync();
+  Mock::VerifyAndClearExpectations(client1.get());
+  Mock::VerifyAndClearExpectations(client2.get());
+
+  // Clients should get the empty bounds then be removed.
+  const gfx::Rect kBoundsEmpty(0, 30, 0, 0);
+  EXPECT_CALL(*client1, EnsureCaretNotInRect(kBoundsEmpty));
+  EXPECT_CALL(*client2, EnsureCaretNotInRect(kBoundsEmpty));
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBoundsEmpty);
+  Sync();
+  Mock::VerifyAndClearExpectations(client1.get());
+  Mock::VerifyAndClearExpectations(client2.get());
+
+  // Verify client no longer gets bounds updates.
+  const gfx::Rect kBounds2(0, 40, 100, 200);
+  EXPECT_CALL(*client1, EnsureCaretNotInRect).Times(0);
+  EXPECT_CALL(*client2, EnsureCaretNotInRect).Times(0);
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds2);
+  Sync();
+  Mock::VerifyAndClearExpectations(client1.get());
+  Mock::VerifyAndClearExpectations(client2.get());
+}
+
+TEST_P(WaylandInputMethodContextTest,
+       OnSetVirtualKeyboardOccludedBoundsWithDeletedPastTextInputClient) {
+  auto client = std::make_unique<MockTextInputClient>(TEXT_INPUT_TYPE_TEXT);
+
+  input_method_context_->WillUpdateFocus(client.get(), nullptr);
+  input_method_context_->UpdateFocus(false, client->GetTextInputType(),
+                                     ui::TEXT_INPUT_TYPE_NONE);
+
+  const gfx::Rect kBounds(10, 20, 300, 400);
+  EXPECT_CALL(*client, EnsureCaretNotInRect(kBounds));
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
+  Sync();
+  Mock::VerifyAndClearExpectations(client.get());
+
+  client.reset();
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(kBounds);
+  Sync();
 }
 
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
