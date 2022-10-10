@@ -25,7 +25,11 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -333,4 +337,57 @@ TEST(WebAppTest, IsolationDataDebugValue) {
   EXPECT_EQ(*debug_isolation_data, expected_isolation_data);
 }
 
+TEST(WebAppTest, PermissionsPolicyDebugValue) {
+  WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
+                           GURL("https://example.com"))};
+  app.SetPermissionsPolicy({
+      {blink::mojom::PermissionsPolicyFeature::kGyroscope,
+       {},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/true},
+      {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+       {},
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/false},
+      {blink::mojom::PermissionsPolicyFeature::kGamepad,
+       {{url::Origin::Create(GURL("https://example.com")),
+         /*has_subdomain_wildcard=*/false},
+        {url::Origin::Create(GURL("https://example.net")),
+         /*has_subdomain_wildcard=*/true},
+        {url::Origin::Create(GURL("https://*.example.net")),
+         /*has_subdomain_wildcard=*/false}},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+  });
+
+  EXPECT_TRUE(!app.permissions_policy().empty());
+
+  base::Value expected_permissions_policy = base::JSONReader::Read(R"([
+        {
+          "allowed_origins": [  ],
+          "feature": "gyroscope",
+          "matches_all_origins": false,
+          "matches_opaque_src": true
+        }
+        , {
+          "allowed_origins": [  ],
+          "feature": "geolocation",
+          "matches_all_origins": true,
+          "matches_opaque_src": false
+        }
+        , {
+          "allowed_origins": [ "https://example.com", "https://*.example.net", "https://%2A.example.net" ],
+          "feature": "gamepad",
+          "matches_all_origins": false,
+          "matches_opaque_src": false
+        }
+      ])")
+                                                .value();
+
+  base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
+  base::Value::List* debug_permissions_policy =
+      debug_app.FindList("permissions_policy");
+  EXPECT_TRUE(debug_permissions_policy != nullptr);
+  EXPECT_EQ(*debug_permissions_policy, expected_permissions_policy);
+}
 }  // namespace web_app

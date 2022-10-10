@@ -694,11 +694,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       const std::string feature_string(feature_name->second);
       proto_policy.set_feature(feature_string);
       for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
-        // TODO(crbug.com/1345994): Support wildcard matching.
-        if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
-          proto_policy.add_allowed_origins(
-              origin_with_possible_wildcards.origin.Serialize());
-        }
+        proto_policy.add_allowed_origins(
+            origin_with_possible_wildcards.Serialize());
       }
       proto_policy.set_matches_all_origins(decl.matches_all_origins);
       proto_policy.set_matches_opaque_src(decl.matches_opaque_src);
@@ -1320,8 +1317,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       decl.feature = feature_enum->second;
 
       for (const std::string& origin : decl_proto.allowed_origins()) {
-        decl.allowed_origins.emplace_back(url::Origin::Create(GURL(origin)),
-                                          /*has_subdomain_wildcard=*/false);
+        decl.allowed_origins.emplace_back(
+            blink::OriginWithPossibleWildcards::Parse(
+                origin, blink::OriginWithPossibleWildcards::NodeType::kHeader));
       }
       decl.matches_all_origins = decl_proto.matches_all_origins();
       decl.matches_opaque_src = decl_proto.matches_opaque_src();

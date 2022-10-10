@@ -783,11 +783,7 @@ base::Value WebApp::AsDebugValue() const {
       base::Value& allowlist_json = *json_decl.SetKey(
           "allowed_origins", base::Value(base::Value::Type::LIST));
       for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
-        // TODO(crbug.com/1345994): Support wildcard matching.
-        if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
-          allowlist_json.Append(
-              origin_with_possible_wildcards.origin.Serialize());
-        }
+        allowlist_json.Append(origin_with_possible_wildcards.Serialize());
       }
       json_decl.SetBoolKey("matches_all_origins", decl.matches_all_origins);
       json_decl.SetBoolKey("matches_opaque_src", decl.matches_opaque_src);

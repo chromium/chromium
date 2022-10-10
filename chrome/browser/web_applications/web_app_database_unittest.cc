@@ -40,6 +40,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -590,7 +593,7 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
             LaunchHandlerProto_ClientMode_FOCUS_EXISTING);
 }
 
-class WebAppDatabaseIsolationDataTest : public ::testing::Test {
+class WebAppDatabaseProtoDataTest : public ::testing::Test {
  public:
   std::unique_ptr<WebApp> CreateMinimalWebApp() {
     GURL start_url{"https://example.com/"};
@@ -602,9 +605,17 @@ class WebAppDatabaseIsolationDataTest : public ::testing::Test {
     return web_app;
   }
 
-  std::unique_ptr<WebApp> CreateIsolatedWebApp(IsolationData isolation_data) {
+  std::unique_ptr<WebApp> CreateIsolatedWebApp(
+      const IsolationData& isolation_data) {
     std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
     web_app->SetIsolationData(isolation_data);
+    return web_app;
+  }
+
+  std::unique_ptr<WebApp> CreateWebAppWithPermissionsPolicy(
+      const blink::ParsedPermissionsPolicy& permissions_policy) {
+    std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
+    web_app->SetPermissionsPolicy(permissions_policy);
     return web_app;
   }
 
@@ -614,7 +625,7 @@ class WebAppDatabaseIsolationDataTest : public ::testing::Test {
   }
 };
 
-TEST_F(WebAppDatabaseIsolationDataTest, DoesNotSetIsolationDataIfNotIsolated) {
+TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
   std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
@@ -624,7 +635,7 @@ TEST_F(WebAppDatabaseIsolationDataTest, DoesNotSetIsolationDataIfNotIsolated) {
                              absl::nullopt)));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, SavesInstalledBundleIsolationData) {
+TEST_F(WebAppDatabaseProtoDataTest, SavesInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
       IsolationData(IsolationData::InstalledBundle{.path = path}));
@@ -636,7 +647,7 @@ TEST_F(WebAppDatabaseIsolationDataTest, SavesInstalledBundleIsolationData) {
                   "path", &IsolationData::InstalledBundle::path, Eq(path))));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest,
+TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
@@ -658,7 +669,7 @@ TEST_F(WebAppDatabaseIsolationDataTest,
   EXPECT_THAT(protoed_web_app, IsNull());
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeBundleIsolationData) {
+TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
       IsolationData(IsolationData::DevModeBundle{.path = path}));
@@ -670,7 +681,7 @@ TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeBundleIsolationData) {
                   "path", &IsolationData::DevModeBundle::path, Eq(path))));
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest,
+TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
@@ -692,7 +703,7 @@ TEST_F(WebAppDatabaseIsolationDataTest,
   EXPECT_THAT(protoed_web_app, IsNull());
 }
 
-TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeProxyIsolationData) {
+TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
       IsolationData(IsolationData::DevModeProxy{.proxy_url = "proxy"}));
 
@@ -704,4 +715,75 @@ TEST_F(WebAppDatabaseIsolationDataTest, SavesDevModeProxyIsolationData) {
           "proxy_url", &IsolationData::DevModeProxy::proxy_url, Eq("proxy"))));
 }
 
+TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {
+  const blink::ParsedPermissionsPolicy policy = {
+      {blink::mojom::PermissionsPolicyFeature::kGyroscope,
+       {},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/true},
+      {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+       {},
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/false},
+      {blink::mojom::PermissionsPolicyFeature::kGamepad,
+       {{url::Origin::Create(GURL("https://example.com")),
+         /*has_subdomain_wildcard=*/false},
+        {url::Origin::Create(GURL("https://example.net")),
+         /*has_subdomain_wildcard=*/true},
+        {url::Origin::Create(GURL("https://*.example.net")),
+         /*has_subdomain_wildcard=*/false}},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+  };
+  std::unique_ptr<WebApp> web_app = CreateWebAppWithPermissionsPolicy(policy);
+
+  std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
+  EXPECT_THAT(*web_app, Eq(*protoed_web_app));
+  EXPECT_EQ(policy, protoed_web_app->permissions_policy());
+}
+
+TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyProto) {
+  const blink::ParsedPermissionsPolicy policy = {
+      {blink::mojom::PermissionsPolicyFeature::kGyroscope,
+       {},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/true},
+      {blink::mojom::PermissionsPolicyFeature::kGeolocation,
+       {},
+       /*matches_all_origins=*/true,
+       /*matches_opaque_src=*/false},
+      {blink::mojom::PermissionsPolicyFeature::kGamepad,
+       {{url::Origin::Create(GURL("https://example.com")),
+         /*has_subdomain_wildcard=*/false},
+        {url::Origin::Create(GURL("https://example.net")),
+         /*has_subdomain_wildcard=*/true},
+        {url::Origin::Create(GURL("https://*.example.net")),
+         /*has_subdomain_wildcard=*/false}},
+       /*matches_all_origins=*/false,
+       /*matches_opaque_src=*/false},
+  };
+  std::unique_ptr<WebApp> web_app = CreateWebAppWithPermissionsPolicy(policy);
+
+  std::unique_ptr<WebAppProto> proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_EQ(proto->permissions_policy().size(), 3);
+  EXPECT_EQ(proto->permissions_policy().at(0).feature(), "gyroscope");
+  EXPECT_EQ(proto->permissions_policy().at(0).allowed_origins_size(), 0);
+  EXPECT_EQ(proto->permissions_policy().at(0).matches_all_origins(), false);
+  EXPECT_EQ(proto->permissions_policy().at(0).matches_opaque_src(), true);
+  EXPECT_EQ(proto->permissions_policy().at(1).feature(), "geolocation");
+  EXPECT_EQ(proto->permissions_policy().at(1).allowed_origins_size(), 0);
+  EXPECT_EQ(proto->permissions_policy().at(1).matches_all_origins(), true);
+  EXPECT_EQ(proto->permissions_policy().at(1).matches_opaque_src(), false);
+  EXPECT_EQ(proto->permissions_policy().at(2).feature(), "gamepad");
+  ASSERT_EQ(proto->permissions_policy().at(2).allowed_origins_size(), 3);
+  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(0),
+            "https://example.com");
+  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(1),
+            "https://*.example.net");
+  EXPECT_EQ(proto->permissions_policy().at(2).allowed_origins(2),
+            "https://%2A.example.net");
+  EXPECT_EQ(proto->permissions_policy().at(2).matches_all_origins(), false);
+  EXPECT_EQ(proto->permissions_policy().at(2).matches_opaque_src(), false);
+}
 }  // namespace web_app
