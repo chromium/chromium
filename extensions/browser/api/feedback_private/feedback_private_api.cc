@@ -171,9 +171,9 @@ void SendFeedback(content::BrowserContext* browser_context,
       ->SendFeedback(feedback_params, feedback_data, std::move(send_callback));
 }
 
-std::string ToFeedbackStatus(bool success) {
-  return feedback_private::ToString(success ? feedback_private::STATUS_SUCCESS
-                                            : feedback_private::STATUS_DELAYED);
+feedback_private::Status ToFeedbackStatus(bool success) {
+  return success ? feedback_private::STATUS_SUCCESS
+                 : feedback_private::STATUS_DELAYED;
 }
 
 }  // namespace
@@ -364,8 +364,10 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,
     bool success) {
-  Respond(WithArguments(ToFeedbackStatus(success),
-                        feedback_private::ToString(type)));
+  api::feedback_private::SendFeedbackResult result;
+  result.status = ToFeedbackStatus(success);
+  result.landing_page_type = type;
+  Respond(WithArguments(result.ToValue()));
   if (!success) {
     ExtensionsAPIClient::Get()
         ->GetFeedbackPrivateDelegate()
