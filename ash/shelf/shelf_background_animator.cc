@@ -20,11 +20,7 @@
 #include "shelf_widget.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/color_analysis.h"
-
-using ColorProfile = color_utils::ColorProfile;
-using LumaRange = color_utils::LumaRange;
-using SaturationRange = color_utils::SaturationRange;
+#include "ui/gfx/animation/tween.h"
 
 namespace ash {
 
