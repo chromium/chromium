@@ -13838,6 +13838,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_LEARN_MORE" desc="The text displayed on a link on the onboarding dialog that a user can click to navigate to a Google website with detailed information on how Automated Password Change on Desktop/ Assistant works and what data is collected.">
         Learn more
       </message>
+      <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_LEARN_MORE_ABOUT_AUTOMATIC_PASSWORD_CHANGE" desc="The text displayed on a link on the onboarding dialog that a user can click to navigate to a Google website with detailed information on how Automated Password Change on Desktop/ Assistant works and what data is collected.">
+        Learn more about automatic password change
+      </message>
       <message name="IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ONBOARDING_BUTTON_CANCEL_TEXT" desc="The text on the button that declines the onboarding for Automated Password Change on Desktop.">
         Cancel
       </message>
