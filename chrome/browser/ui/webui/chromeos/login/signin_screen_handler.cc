@@ -20,12 +20,10 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
-#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 
@@ -93,8 +91,6 @@ SigninScreenHandler::SigninScreenHandler(
 SigninScreenHandler::~SigninScreenHandler() {
   weak_factory_.InvalidateWeakPtrs();
   network_state_informer_->RemoveObserver(this);
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
-  proximity_auth::ScreenlockBridge::Get()->SetFocusedUser(EmptyAccountId());
 }
 
 void SigninScreenHandler::DeclareLocalizedValues(
