@@ -325,7 +325,11 @@ try_.orchestrator_builder(
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
-    use_orchestrator_pool = True,
+    # TODO (crbug.com/1372179): Move back to orchestrator bots once they can be
+    # properly rate limited
+    # use_orchestrator_pool = True,
+    cores = None,
+    os = None,
 )
 
 try_.compilator_builder(
