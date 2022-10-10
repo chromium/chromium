@@ -1069,6 +1069,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("DRIVEFS_MIRRORING",
             chromeos::features::IsDriveFsMirroringEnabled());
 
+  dict->Set("INLINE_SYNC_STATUS",
+            chromeos::features::IsInlineSyncStatusEnabled());
+
   dict->Set("GUEST_OS",
             base::FeatureList::IsEnabled(chromeos::features::kGuestOsFiles));
 

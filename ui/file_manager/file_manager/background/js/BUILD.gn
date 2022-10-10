@@ -61,14 +61,14 @@ js_type_check("closure_compile_jsmodules") {
     ":volume_manager_util",
   ]
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "language_in=ECMASCRIPT_2020",
-        "js_module_root=./gen/ui",
-        "js_module_root=" + rebase_path("//ui", root_build_dir),
-        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-        "hide_warnings_for=third_party/",
-      ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=./gen/ui",
+                    "js_module_root=" + rebase_path("//ui", root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
+                    "hide_warnings_for=third_party/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
 }
 
 js_type_check("test_support_modules_type_check") {
@@ -180,6 +180,7 @@ js_library("drive_sync_handler") {
     "//ui/file_manager/file_manager/externs:drive_dialog_controller",
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
     "//ui/file_manager/file_manager/externs/background:progress_center",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -192,6 +193,7 @@ js_unittest("drive_sync_handler_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:url_constants",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -503,12 +505,12 @@ js_test_type_check("js_test_type_check") {
     ":volume_manager_unittest",
   ]
 
-  closure_flags =
-      strict_error_checking_closure_args + [
-        "language_in=ECMASCRIPT_2020",
-        "js_module_root=./gen/ui",
-        "js_module_root=" + rebase_path("//ui", root_build_dir),
-        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
-        "hide_warnings_for=third_party/",
-      ]
+  closure_flags = strict_error_checking_closure_args + [
+                    "language_in=ECMASCRIPT_2020",
+                    "js_module_root=./gen/ui",
+                    "js_module_root=" + rebase_path("//ui", root_build_dir),
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
+                    "hide_warnings_for=third_party/",
+                    "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
+                  ]
 }

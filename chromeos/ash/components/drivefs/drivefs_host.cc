@@ -104,12 +104,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path) {
-    base::FilePath absolutePath = host_->GetMountPath();
-    if (!base::FilePath("/").AppendRelativePath(drive_path, &absolutePath)) {
-      LOG(ERROR) << "Failed to make path relative to drive root";
-      return SyncStatus::kNotFound;
-    }
-    return sync_status_tracker_->GetSyncStatusForPath(absolutePath);
+    return sync_status_tracker_->GetSyncStatusForPath(drive_path);
   }
 
  private:
@@ -141,11 +136,11 @@ class DriveFsHost::MountState : public DriveFsSession,
                                                        SyncStatus::kInProgress);
             break;
           case mojom::ItemEvent::State::kFailed:
+            // TODO(msalomao): Post a delayed task to remove the path.
             sync_status_tracker_->AddSyncStatusForPath(path,
                                                        SyncStatus::kError);
             break;
           case mojom::ItemEvent::State::kCompleted:
-            // TODO(msalomao): Post a delayed task to remove the path.
             sync_status_tracker_->RemovePath(path);
             break;
           default:

@@ -2377,6 +2377,10 @@ bool IsDriveFsMirroringEnabled() {
   return base::FeatureList::IsEnabled(kDriveFsMirroring);
 }
 
+bool IsInlineSyncStatusEnabled() {
+  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus);
+}
+
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
 }

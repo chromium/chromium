@@ -472,6 +472,13 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     iconDiv.classList.toggle(
         'external-media-root', !!externalProps.isExternalMedia);
   }
+
+  if (util.isInlineSyncStatusEnabled()) {
+    li.toggleAttribute(
+        'data-sync-status', externalProps.syncStatus !== 'not_found');
+    li.setAttribute('data-sync-status', externalProps.syncStatus);
+    // TODO(msalomao): set sync status aria-label.
+  }
 };
 
 /**

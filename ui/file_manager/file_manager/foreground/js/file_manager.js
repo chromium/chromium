@@ -655,6 +655,10 @@ export class FileManager extends EventTarget {
     assert(this.fileOperationManager_);
     assert(this.dialogDom_);
 
+    if (util.isInlineSyncStatusEnabled()) {
+      this.fileBrowserBackground_.driveSyncHandler.metadataModel =
+          assert(this.metadataModel_);
+    }
     this.scanController_ = new ScanController(
         this.directoryModel_, this.ui_.listContainer, this.spinnerController_,
         this.selectionHandler_);

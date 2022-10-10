@@ -548,7 +548,7 @@ dictionary EntryProperties {
   boolean? isArbitrarySyncFolder;
 
   // Sync status for files tracked by different cloud filesystem providers.
-  SyncStatus? sync_status;
+  SyncStatus? syncStatus;
 };
 
 // Information about total and remaining size on the mount point.

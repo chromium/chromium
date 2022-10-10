@@ -973,6 +973,7 @@ export class FileTable extends Table {
                   'isExternalMedia',
                   'hosted',
                   'pinned',
+                  'syncStatus',
                 ])[0],
             util.isTeamDriveRoot(entry));
       });

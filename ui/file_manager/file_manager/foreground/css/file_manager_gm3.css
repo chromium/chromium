@@ -1497,6 +1497,33 @@ body.files-ng .thumbnail-frame > .img-container {
   position: relative;
 }
 
+body.files-ng .thumbnail-frame > .sync-status {
+  height: 16px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 16px;
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame > .sync-status {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=in_progress] > .sync-status {
+  background-image: url(../images/files/ui/in_progress_indicator.svg);
+}
+
+body.files-ng li:not([renaming]):not(.dim-offline) .thumbnail-frame[data-sync-status=error] > .sync-status {
+  background-image: url(../images/files/ui/error.svg);
+}
+
+body.files-ng li.directory .thumbnail-frame > .sync-status {
+  height: 100%;
+  top: 0;
+}
+
 html:not(.pointer-active) body[type='full-page'] .thumbnail-frame > .img-container,
 body[type='full-page'] .thumbnail-frame > .img-container:active,
 html:not(.pointer-active) body[type='full-page'] .detail-name .detail-icon,
@@ -2418,7 +2445,7 @@ body.files-ng #list-container li .detail-thumbnail {
 }
 
 body.files-ng #list-container
-    li.pinned:not([renaming]):not(.dim-offline) .detail-pinned {
+    li.pinned:not([renaming]):not(.dim-offline):not(.sync-in-progress):not(.sync-error) .detail-pinned {
   -webkit-mask-image: url(../images/files/ui/offline.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
@@ -2426,6 +2453,23 @@ body.files-ng #list-container
   display: flex;
   height: 40px;
   width: 40px;
+}
+
+body.files-ng #list-container li[data-sync-status]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  display: flex;
+  height: 32px;
+  width: 32px;
+}
+
+body.files-ng #list-container li[data-sync-status=in_progress]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-image: url(../images/files/ui/in_progress_indicator.svg);
+}
+
+body.files-ng #list-container li[data-sync-status=error]:not([renaming]):not(.dim-offline) .detail-pinned {
+  background-image: url(../images/files/ui/error.svg);
 }
 
 #new-folder-button {

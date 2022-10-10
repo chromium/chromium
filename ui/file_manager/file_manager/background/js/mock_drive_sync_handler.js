@@ -60,6 +60,11 @@ export class MockDriveSyncHandler extends EventTarget {
   }
 
   /**
+   * @param {Object} model
+   */
+  set metadataModel(model) {}
+
+  /**
    * Adds a dialog to be controlled by DriveSyncHandler.
    * @param {string} appId App ID of window containing the dialog.
    * @param {DriveDialogControllerInterface} dialog

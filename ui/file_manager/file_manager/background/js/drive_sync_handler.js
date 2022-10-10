@@ -12,6 +12,7 @@ import {xfm} from '../../common/js/xfm.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
+import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 
 import {fileOperationUtil} from './file_operation_util.js';
 
@@ -31,6 +32,13 @@ export class DriveSyncHandlerImpl extends EventTarget {
      * @private
      */
     this.progressCenter_ = progressCenter;
+
+    /**
+     * The metadata model to notify entries have changed.
+     * @type {?MetadataModel}
+     * @private
+     */
+    this.metadataModel_ = null;
 
     /**
      * Predefined error ID for out of quota messages.
@@ -185,6 +193,13 @@ export class DriveSyncHandlerImpl extends EventTarget {
   }
 
   /**
+   * @param {!MetadataModel} model
+   */
+  set metadataModel(model) {
+    this.metadataModel_ = model;
+  }
+
+  /**
    * Returns the completed event name.
    * @return {string}
    */
@@ -234,20 +249,35 @@ export class DriveSyncHandlerImpl extends EventTarget {
       this.progressCenter_.updateItem(item);
       return;
     }
-    switch (status.transferState) {
-      case 'in_progress':
-        await this.updateItem_(item, status);
-        break;
-      case 'completed':
-      case 'failed':
-        if ((status.hideWhenZeroJobs && status.numTotalJobs === 0) ||
-            (!status.hideWhenZeroJobs && status.numTotalJobs === 1)) {
-          await this.removeItem_(item, status);
-        }
-        break;
-      default:
-        throw new Error(
-            'Invalid transfer state: ' + status.transferState + '.');
+
+    try {
+      const entry = await util.urlToEntry(status.fileUrl);
+
+      if (util.isInlineSyncStatusEnabled()) {
+        this.metadataModel_.notifyEntriesChanged([entry]);
+        this.metadataModel_.get([entry], ['syncStatus']);
+
+        // If inline sync status is enabled, don't display visual signal for
+        // Drive syncing.
+        return;
+      }
+      switch (status.transferState) {
+        case 'in_progress':
+          await this.updateItem_(item, status, entry);
+          break;
+        case 'completed':
+        case 'failed':
+          if ((status.hideWhenZeroJobs && status.numTotalJobs === 0) ||
+              (!status.hideWhenZeroJobs && status.numTotalJobs === 1)) {
+            await this.removeItem_(item, status);
+          }
+          break;
+        default:
+          throw new Error(
+              'Invalid transfer state: ' + status.transferState + '.');
+      }
+    } catch (error) {
+      console.warn('Resolving URL ' + status.fileUrl + ' is failed: ', error);
     }
   }
 
@@ -256,15 +286,12 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * @param {ProgressCenterItem} item Item to update.
    * @param {chrome.fileManagerPrivate.FileTransferStatus} status Transfer
    *     status.
+   * @param {!Entry} entry Transfer status' corresponding entry.
    * @private
    */
-  async updateItem_(item, status) {
+  async updateItem_(item, status, entry) {
     const unlock = await this.queue_.lock();
     try {
-      const entry = await new Promise((resolve, reject) => {
-        window.webkitResolveLocalFileSystemURL(status.fileUrl, resolve, reject);
-      });
-
       item.state = ProgressItemState.PROGRESSING;
       item.type = ProgressItemType.SYNC;
       item.quiet = true;
@@ -284,8 +311,6 @@ export class DriveSyncHandlerImpl extends EventTarget {
       item.remainingTime = speedometer.getRemainingTime();
 
       this.progressRateLimiter_.run();
-    } catch (error) {
-      console.warn('Resolving URL ' + status.fileUrl + ' is failed: ', error);
     } finally {
       unlock();
     }

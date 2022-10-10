@@ -292,5 +292,11 @@ export class MetadataItem {
      * @public {string|undefined}
      */
     this.sourceUrl;
+
+    /**
+     * Status indicating the current syncing behaviour for this item.
+     * @type {string|undefined}
+     */
+    this.syncStatus;
   }
 }

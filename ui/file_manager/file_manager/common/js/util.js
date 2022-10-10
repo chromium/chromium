@@ -1357,6 +1357,15 @@ util.isTrashEnabled = () => {
 };
 
 /**
+ * Returns true if InlineSyncStatus feature flag is enabled.
+ * @returns {boolean}
+ */
+util.isInlineSyncStatusEnabled = () => {
+  return loadTimeData.valueExists('INLINE_SYNC_STATUS') &&
+      loadTimeData.getBoolean('INLINE_SYNC_STATUS');
+};
+
+/**
  * Retrieves all entries inside the given |rootEntry|.
  * @param {!DirectoryEntry} rootEntry
  * @param {function(!Array<!Entry>)} entriesCallback Called when some chunk of
