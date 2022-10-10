@@ -161,13 +161,7 @@ class ErrorPageTest : public WebTestWithWebState {
 
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
-// TODO(crbug.com/954231): this test is flaky on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_BackForwardErrorPage BackForwardErrorPage
-#else
-#define MAYBE_BackForwardErrorPage FLAKY_BackForwardErrorPage
-#endif
-TEST_F(ErrorPageTest, MAYBE_BackForwardErrorPage) {
+TEST_F(ErrorPageTest, BackForwardErrorPage) {
   // TODO(crbug.com/1153261): this test should be fixed in newer versions of
   // WebKit.
   if (@available(iOS 15, *)) {
