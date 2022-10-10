@@ -36,6 +36,6 @@ TestZwpTextInputManagerV1::TestZwpTextInputManagerV1()
                    &kTestZwpTextInputManagerV1Impl,
                    kTextInputManagerVersion) {}
 
-TestZwpTextInputManagerV1::~TestZwpTextInputManagerV1() {}
+TestZwpTextInputManagerV1::~TestZwpTextInputManagerV1() = default;
 
 }  // namespace wl

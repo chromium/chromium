@@ -578,6 +578,7 @@ source_set("wayland_unittests") {
     "host/wayland_zaura_output_unittest.cc",
     "host/wayland_zaura_shell_unittest.cc",
     "host/wayland_zwp_pointer_gestures_unittest.cc",
+    "host/zwp_text_input_wrapper_v1_unittest.cc",
     "test/wayland_drag_drop_test.cc",
     "test/wayland_drag_drop_test.h",
     "test/wayland_test.cc",

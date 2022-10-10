@@ -69,6 +69,8 @@ void TextInput::Deactivate() {
 }
 
 void TextInput::ShowVirtualKeyboardIfEnabled() {
+  pending_vk_finalize_ = true;
+
   // Some clients may ask showing virtual keyboard before sending activation.
   if (!input_method_) {
     pending_vk_visible_ = true;
@@ -78,6 +80,8 @@ void TextInput::ShowVirtualKeyboardIfEnabled() {
 }
 
 void TextInput::HideVirtualKeyboard() {
+  pending_vk_finalize_ = true;
+
   if (input_method_)
     input_method_->SetVirtualKeyboardVisibilityIfEnabled(false);
   pending_vk_visible_ = false;
@@ -159,6 +163,25 @@ void TextInput::SetAutocorrectInfo(const gfx::Range& autocorrect_range,
   // point, because the surrounding text this class holds is stale.
   // Save it as the "pending" information a surrounding text update is received.
   pending_autocorrect_info_ = {autocorrect_range, autocorrect_bounds};
+}
+
+void TextInput::FinalizeVirtualKeyboardChanges() {
+  if (staged_vk_visible_) {
+    // Order the events so vk bounds is sent while vk is visible.
+    if (*staged_vk_visible_) {
+      SendStagedVKVisibility();
+      SendStagedVKOccludedBounds();
+    } else {
+      SendStagedVKOccludedBounds();
+      SendStagedVKVisibility();
+    }
+  }
+
+  if (staged_vk_occluded_bounds_) {
+    SendStagedVKOccludedBounds();
+  }
+
+  pending_vk_finalize_ = false;
 }
 
 void TextInput::SetCompositionText(const ui::CompositionText& composition) {
@@ -363,6 +386,10 @@ void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
 }
 
 void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {
+  if (ShouldStageVKState()) {
+    staged_vk_occluded_bounds_ = rect;
+    return;
+  }
   delegate_->OnVirtualKeyboardOccludedBoundsChanged(rect);
 }
 
@@ -452,10 +479,21 @@ void GetActiveTextInputControlLayoutBounds(
 }
 
 void TextInput::OnKeyboardVisible(const gfx::Rect& keyboard_rect) {
+  if (ShouldStageVKState()) {
+    staged_vk_visible_ = true;
+    // Bounds are now stale, so clear it.
+    staged_vk_occluded_bounds_.reset();
+    return;
+  }
   delegate_->OnVirtualKeyboardVisibilityChanged(true);
 }
 
 void TextInput::OnKeyboardHidden() {
+  if (ShouldStageVKState()) {
+    staged_vk_occluded_bounds_ = gfx::Rect();
+    staged_vk_visible_ = false;
+    return;
+  }
   delegate_->OnVirtualKeyboardOccludedBoundsChanged({});
   delegate_->OnVirtualKeyboardVisibilityChanged(false);
 }
@@ -505,6 +543,26 @@ void TextInput::DetachInputMethod() {
   virtual_keyboard_observation_.Reset();
   input_method_ = nullptr;
   delegate_->Deactivated();
+}
+
+bool TextInput::ShouldStageVKState() {
+  return delegate_->SupportsFinalizeVirtualKeyboardChanges() &&
+         pending_vk_finalize_;
+}
+
+void TextInput::SendStagedVKVisibility() {
+  if (staged_vk_visible_) {
+    delegate_->OnVirtualKeyboardVisibilityChanged(*staged_vk_visible_);
+    staged_vk_visible_.reset();
+  }
+}
+
+void TextInput::SendStagedVKOccludedBounds() {
+  if (staged_vk_occluded_bounds_) {
+    delegate_->OnVirtualKeyboardOccludedBoundsChanged(
+        *staged_vk_occluded_bounds_);
+    staged_vk_occluded_bounds_.reset();
+  }
 }
 
 }  // namespace exo

@@ -6,7 +6,11 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_ZCR_EXTENDED_TEXT_INPUT_H_
 
 #include <text-input-extension-unstable-v1-server-protocol.h>
+#include <string>
 
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
 struct wl_resource;
@@ -24,9 +28,19 @@ class MockZcrExtendedTextInput : public ServerObject {
   MockZcrExtendedTextInput& operator=(const MockZcrExtendedTextInput&) = delete;
   ~MockZcrExtendedTextInput() override;
 
-  // Currently, no mock method is needed.
-  // If you're adding new APIs, please see also mock_zwp_text_input.h as
-  // reference.
+  MOCK_METHOD(void,
+              SetInputType,
+              (uint32_t input_type,
+               uint32_t input_mode,
+               uint32_t input_flags,
+               uint32_t learning_mode));
+  MOCK_METHOD(void,
+              SetGrammarFragmentAtCursor,
+              (const gfx::Range& range, const std::string& suggestion));
+  MOCK_METHOD(void,
+              SetAutocorrectInfo,
+              (const gfx::Range& range, const gfx::Rect& bounds));
+  MOCK_METHOD(void, FinalizeVirtualKeyboardChanges, ());
 };
 
 }  // namespace wl

@@ -57,6 +57,10 @@ class TextInput : public ui::TextInputClient,
     virtual void OnVirtualKeyboardOccludedBoundsChanged(
         const gfx::Rect& screen_bounds) = 0;
 
+    // Returns true if the server can expect a finalize_virtual_keyboard_changes
+    // request from the client.
+    virtual bool SupportsFinalizeVirtualKeyboardChanges() = 0;
+
     // Set the 'composition text' of the current text input.
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 
@@ -167,6 +171,9 @@ class TextInput : public ui::TextInputClient,
   void SetAutocorrectInfo(const gfx::Range& autocorrect_range,
                           const gfx::Rect& autocorrect_bounds);
 
+  // Finalizes pending virtual keyboard requested changes.
+  void FinalizeVirtualKeyboardChanges();
+
   Delegate* delegate() { return delegate_.get(); }
 
   // ui::TextInputClient:
@@ -230,6 +237,10 @@ class TextInput : public ui::TextInputClient,
   void AttachInputMethod();
   void DetachInputMethod();
   void ResetCompositionTextCache();
+
+  bool ShouldStageVKState();
+  void SendStagedVKVisibility();
+  void SendStagedVKOccludedBounds();
 
   // Delegate to talk to actual its client.
   std::unique_ptr<Delegate> delegate_;
@@ -296,6 +307,14 @@ class TextInput : public ui::TextInputClient,
   // corresponding surrounding text. Once this class receives a surrounding text
   // update, `autocorrect_info_` will take on this pending value, if it exists.
   absl::optional<AutocorrectInfo> pending_autocorrect_info_;
+
+  // True when client has made virtual keyboard related requests but haven't
+  // sent the virtual keyboard finalize request.
+  bool pending_vk_finalize_ = false;
+  // Holds the vk visibility to send to the client.
+  absl::optional<bool> staged_vk_visible_;
+  // Holds the vk occluded bounds to send to the client.
+  absl::optional<gfx::Rect> staged_vk_occluded_bounds_;
 };
 
 }  // namespace exo

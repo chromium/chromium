@@ -158,7 +158,7 @@ void InputMethodBase::SetFocusedTextInputClientInternal(
   NotifyTextInputStateChanged(text_input_client_);
 
   // Move new focused window if necessary.
-  if (text_input_client_)
+  if (text_input_client_ && !keyboard_bounds_.IsEmpty())
     text_input_client_->EnsureCaretNotInRect(keyboard_bounds_);
 }
 

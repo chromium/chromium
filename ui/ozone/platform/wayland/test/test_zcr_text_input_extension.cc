@@ -12,7 +12,7 @@ namespace wl {
 
 namespace {
 
-constexpr uint32_t kTextInputExtensionVersion = 1;
+constexpr uint32_t kTextInputExtensionVersion = 6;
 
 void GetExtendedTextInput(struct wl_client* client,
                           struct wl_resource* resource,

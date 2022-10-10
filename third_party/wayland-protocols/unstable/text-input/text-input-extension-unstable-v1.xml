@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="5">
+  <interface name="zcr_text_input_extension_v1" version="6">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="5">
+  <interface name="zcr_extended_text_input_v1" version="6">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -279,6 +279,26 @@
       <arg name="width" type="int"/>
       <arg name="height" type="int"/>
     </event>
+
+    <!-- Version 6 -->
+
+    <request name="finalize_virtual_keyboard_changes" since="6">
+      <description summary="Finalizes the requested virtual keyboard changes.">
+        This request notifies the server that the client has finished making
+        requested changes to the virtual keyboard, and the server should update
+        the client with the latest virtual keyboard state. This avoids spurious
+        intermediate requests from causing the virtual keyboard to change state
+        unnecessarily.
+
+        Clients that connect to the server at this or higher versions must send
+        this request after it finishes sending the applicable requests. The
+        server is free to decide how it handles or honors this request.
+
+        As of version 6, the applicable requests are:
+          - zwp_text_input_v1.show_input_panel
+          - zwp_text_input_v1.hide_input_panel
+      </description>
+    </request>
 
   </interface>
 </protocol>

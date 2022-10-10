@@ -120,6 +120,12 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     }
   }
 
+  bool SupportsFinalizeVirtualKeyboardChanges() override {
+    return extended_text_input_ &&
+           wl_resource_get_version(extended_text_input_) >=
+               ZCR_EXTENDED_TEXT_INPUT_V1_FINALIZE_VIRTUAL_KEYBOARD_CHANGES_SINCE_VERSION;
+  }
+
   void SetCompositionText(const ui::CompositionText& composition) override {
     SendPreeditStyle(composition.text, composition.ime_text_spans);
 
@@ -651,12 +657,25 @@ void extended_text_input_set_autocorrect_info(wl_client* client,
   text_input->SetAutocorrectInfo(autocorrect_range, autocorrect_bounds);
 }
 
+void extended_text_input_finalize_virtual_keyboard_changes(
+    wl_client* client,
+    wl_resource* resource) {
+  auto* delegate =
+      GetUserDataAs<WaylandExtendedTextInput>(resource)->delegate();
+  if (!delegate)
+    return;
+
+  auto* text_input = GetUserDataAs<TextInput>(delegate->resource());
+  text_input->FinalizeVirtualKeyboardChanges();
+}
+
 constexpr struct zcr_extended_text_input_v1_interface
     extended_text_input_implementation = {
         extended_text_input_destroy,
         extended_text_input_set_input_type,
         extended_text_input_set_grammar_fragment_at_cursor,
         extended_text_input_set_autocorrect_info,
+        extended_text_input_finalize_virtual_keyboard_changes,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

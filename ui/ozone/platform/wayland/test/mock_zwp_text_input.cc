@@ -78,6 +78,6 @@ const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl = {
 MockZwpTextInput::MockZwpTextInput(wl_resource* resource)
     : ServerObject(resource) {}
 
-MockZwpTextInput::~MockZwpTextInput() {}
+MockZwpTextInput::~MockZwpTextInput() = default;
 
 }  // namespace wl

@@ -20,24 +20,27 @@ extern const struct zwp_text_input_v1_interface kMockZwpTextInputV1Impl;
 // Manage zwp_text_input_v1.
 class MockZwpTextInput : public ServerObject {
  public:
-  MockZwpTextInput(wl_resource* resource);
+  explicit MockZwpTextInput(wl_resource* resource);
 
   MockZwpTextInput(const MockZwpTextInput&) = delete;
   MockZwpTextInput& operator=(const MockZwpTextInput&) = delete;
 
   ~MockZwpTextInput() override;
 
-  MOCK_METHOD0(Reset, void());
-  MOCK_METHOD1(Activate, void(wl_resource* window));
-  MOCK_METHOD0(Deactivate, void());
-  MOCK_METHOD0(ShowInputPanel, void());
-  MOCK_METHOD0(HideInputPanel, void());
-  MOCK_METHOD4(SetCursorRect,
-               void(int32_t x, int32_t y, int32_t width, int32_t height));
-  MOCK_METHOD2(SetSurroundingText,
-               void(std::string text, gfx::Range selection_range));
-  MOCK_METHOD2(SetContentType,
-               void(uint32_t content_hint, uint32_t content_purpose));
+  MOCK_METHOD(void, Reset, ());
+  MOCK_METHOD(void, Activate, (wl_resource * window));
+  MOCK_METHOD(void, Deactivate, ());
+  MOCK_METHOD(void, ShowInputPanel, ());
+  MOCK_METHOD(void, HideInputPanel, ());
+  MOCK_METHOD(void,
+              SetCursorRect,
+              (int32_t x, int32_t y, int32_t width, int32_t height));
+  MOCK_METHOD(void,
+              SetSurroundingText,
+              (std::string text, gfx::Range selection_range));
+  MOCK_METHOD(void,
+              SetContentType,
+              (uint32_t content_hint, uint32_t content_purpose));
 };
 
 }  // namespace wl

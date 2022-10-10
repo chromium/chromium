@@ -164,12 +164,9 @@ class WaylandInputMethodContextTest : public WaylandTest {
   void SetUpInternal() {
     input_method_context_delegate_ =
         std::make_unique<TestInputMethodContextDelegate>();
-
-    auto input_method_context = std::make_unique<WaylandInputMethodContext>(
+    input_method_context_ = std::make_unique<WaylandInputMethodContext>(
         connection_.get(), connection_->event_source(),
         input_method_context_delegate_.get());
-    input_method_context_.reset(static_cast<WaylandInputMethodContext*>(
-        input_method_context.release()));
     input_method_context_->Init(true);
     connection_->Flush();
 
@@ -432,9 +429,12 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
 }
 
 TEST_P(WaylandInputMethodContextTest, SetContentType) {
-  EXPECT_CALL(*zwp_text_input_,
-              SetContentType(ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION,
-                             ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL))
+  EXPECT_CALL(
+      *zcr_extended_text_input_,
+      SetInputType(ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_ENABLED))
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
                                         TEXT_INPUT_MODE_DEFAULT,
@@ -445,10 +445,12 @@ TEST_P(WaylandInputMethodContextTest, SetContentType) {
 }
 
 TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
-  EXPECT_CALL(*zwp_text_input_,
-              SetContentType(ZWP_TEXT_INPUT_V1_CONTENT_HINT_AUTO_COMPLETION |
-                                 ZWP_TEXT_INPUT_V1_CONTENT_HINT_SENSITIVE_DATA,
-                             ZWP_TEXT_INPUT_V1_CONTENT_PURPOSE_URL))
+  EXPECT_CALL(
+      *zcr_extended_text_input_,
+      SetInputType(ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_TYPE_URL,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_MODE_DEFAULT,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_INPUT_FLAGS_AUTOCOMPLETE_ON,
+                   ZCR_EXTENDED_TEXT_INPUT_V1_LEARNING_MODE_DISABLED))
       .Times(1);
   input_method_context_->SetContentType(TEXT_INPUT_TYPE_URL,
                                         TEXT_INPUT_MODE_DEFAULT,

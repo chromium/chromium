@@ -7,8 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -128,21 +131,18 @@ ZWPTextInputWrapperV1::ZWPTextInputWrapperV1(
           &OnSetVirtualKeyboardOccludedBounds,  // extended_text_input_set_virtual_keyboard_occluded_bounds,
       };
 
-  auto* text_input =
-      zwp_text_input_manager_v1_create_text_input(text_input_manager);
-  obj_ = wl::Object<zwp_text_input_v1>(text_input);
-  zwp_text_input_v1_add_listener(text_input, &text_input_listener, this);
+  obj_ = wl::Object<zwp_text_input_v1>(
+      zwp_text_input_manager_v1_create_text_input(text_input_manager));
+  DCHECK(obj_.get());
+  zwp_text_input_v1_add_listener(obj_.get(), &text_input_listener, this);
 
   if (text_input_extension) {
-    auto* extended_text_input =
+    extended_obj_ = wl::Object<zcr_extended_text_input_v1>(
         zcr_text_input_extension_v1_get_extended_text_input(
-            text_input_extension, obj_.get());
-    if (extended_text_input) {
-      extended_obj_ =
-          wl::Object<zcr_extended_text_input_v1>(extended_text_input);
-      zcr_extended_text_input_v1_add_listener(
-          extended_text_input, &extended_text_input_listener, this);
-    }
+            text_input_extension, obj_.get()));
+    DCHECK(extended_obj_.get());
+    zcr_extended_text_input_v1_add_listener(
+        extended_obj_.get(), &extended_text_input_listener, this);
   }
 }
 
@@ -168,10 +168,12 @@ void ZWPTextInputWrapperV1::Deactivate() {
 
 void ZWPTextInputWrapperV1::ShowInputPanel() {
   zwp_text_input_v1_show_input_panel(obj_.get());
+  TryScheduleFinalizeVirtualKeyboardChanges();
 }
 
 void ZWPTextInputWrapperV1::HideInputPanel() {
   zwp_text_input_v1_hide_input_panel(obj_.get());
+  TryScheduleFinalizeVirtualKeyboardChanges();
 }
 
 void ZWPTextInputWrapperV1::SetCursorRect(const gfx::Rect& rect) {
@@ -191,7 +193,7 @@ void ZWPTextInputWrapperV1::SetContentType(ui::TextInputType type,
                                            uint32_t flags,
                                            bool should_do_learning) {
   // If wayland compositor supports the extended version of set input type,
-  // use it to avoid loosing the info.
+  // use it to avoid losing the info.
   if (extended_obj_.get() &&
       wl::get_version_of_object(extended_obj_.get()) >=
           ZCR_EXTENDED_TEXT_INPUT_V1_SET_INPUT_TYPE_SINCE_VERSION) {
@@ -239,6 +241,29 @@ void ZWPTextInputWrapperV1::SetAutocorrectInfo(
 void ZWPTextInputWrapperV1::ResetInputEventState() {
   spans_.clear();
   preedit_cursor_ = -1;
+}
+
+void ZWPTextInputWrapperV1::TryScheduleFinalizeVirtualKeyboardChanges() {
+  if (!SupportsFinalizeVirtualKeyboardChanges() ||
+      send_vk_finalize_timer_.IsRunning()) {
+    return;
+  }
+
+  send_vk_finalize_timer_.Start(
+      FROM_HERE, base::Microseconds(0), this,
+      &ZWPTextInputWrapperV1::FinalizeVirtualKeyboardChanges);
+}
+
+void ZWPTextInputWrapperV1::FinalizeVirtualKeyboardChanges() {
+  DCHECK(SupportsFinalizeVirtualKeyboardChanges());
+  zcr_extended_text_input_v1_finalize_virtual_keyboard_changes(
+      extended_obj_.get());
+}
+
+bool ZWPTextInputWrapperV1::SupportsFinalizeVirtualKeyboardChanges() {
+  return extended_obj_.get() &&
+         wl::get_version_of_object(extended_obj_.get()) >=
+             ZCR_EXTENDED_TEXT_INPUT_V1_FINALIZE_VIRTUAL_KEYBOARD_CHANGES_SINCE_VERSION;
 }
 
 // static
