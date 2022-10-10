@@ -178,14 +178,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   v8::Local<v8::Context> EnsureScriptRegexpContext();
   void ClearScriptRegexpContext();
 
-  // EndOfScopeTasks are run when control is returning
-  // to C++ from script, after executing a script task (e.g. callback,
-  // event) or microtasks (e.g. promise). This is explicitly needed for
-  // Indexed DB transactions per spec, but should in general be avoided.
-  void AddEndOfScopeTask(base::OnceClosure);
-  void RunEndOfScopeTasks();
-  void ClearEndOfScopeTasks();
-
   ThreadDebugger* GetThreadDebugger() const { return thread_debugger_.get(); }
   void SetThreadDebugger(std::unique_ptr<ThreadDebugger> thread_debugger);
 

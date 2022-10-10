@@ -43,6 +43,40 @@ void EventLoop::EnqueueMicrotask(base::OnceClosure task) {
   }
 }
 
+void EventLoop::EnqueueEndOfMicrotaskCheckpointTask(base::OnceClosure task) {
+  end_of_checkpoint_tasks_.push_back(std::move(task));
+
+  if (end_of_checkpoint_tasks_.size() == 1) {
+    if (microtask_queue_) {
+      microtask_queue_->AddMicrotasksCompletedCallback(
+          &EventLoop::RunEndOfCheckpointTasks, this);
+    } else {
+      // Since we are handing out a ptr to this object to an object that can
+      // outlive this object increment the ref count. It will be decremented
+      // after the task runs. See `RunEndOfCheckpointTasks` for the decrement.
+      AddRef();
+      isolate_->AddMicrotasksCompletedCallback(
+          &EventLoop::RunEndOfCheckpointTasks, this);
+    }
+  }
+}
+
+void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
+  if (end_of_checkpoint_tasks_.empty())
+    return;
+  if (microtask_queue_) {
+    microtask_queue_->RemoveMicrotasksCompletedCallback(
+        &EventLoop::RunEndOfCheckpointTasks, this);
+  } else {
+    isolate_->RemoveMicrotasksCompletedCallback(
+        &EventLoop::RunEndOfCheckpointTasks, this);
+  }
+
+  Vector<base::OnceClosure> tasks = std::move(end_of_checkpoint_tasks_);
+  for (auto& task : tasks)
+    std::move(task).Run();
+}
+
 void EventLoop::PerformMicrotaskCheckpoint() {
   if (microtask_queue_) {
     microtask_queue_->PerformCheckpoint(isolate_);
@@ -101,6 +135,18 @@ void EventLoop::RunPendingMicrotask(void* data) {
   std::move(task).Run();
 
   // If we had incremented the ref count decrement it. See `EnqueueMicrotask`.
+  if (!self->microtask_queue_) {
+    self->Release();
+  }
+}
+
+// static
+void EventLoop::RunEndOfCheckpointTasks(v8::Isolate* isolate, void* data) {
+  auto* self = static_cast<EventLoop*>(data);
+  self->RunEndOfMicrotaskCheckpointTasks();
+
+  // If we had incremented the ref count decrement it. See
+  // `EnqueueEndOfMicrotaskCheckpointTask`.
   if (!self->microtask_queue_) {
     self->Release();
   }

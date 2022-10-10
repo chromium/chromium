@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -106,9 +108,11 @@ IDBTransaction::IDBTransaction(
       << "Invalid transaction mode";
 
   DCHECK_EQ(state_, kActive);
-  V8PerIsolateData::From(script_state->GetIsolate())
-      ->AddEndOfScopeTask(WTF::BindOnce(&IDBTransaction::SetActive,
-                                        WrapPersistent(this), false));
+  ExecutionContext::From(script_state)
+      ->GetAgent()
+      ->event_loop()
+      ->EnqueueEndOfMicrotaskCheckpointTask(WTF::BindOnce(
+          &IDBTransaction::SetActive, WrapPersistent(this), false));
 
   database_->TransactionCreated(this);
 }

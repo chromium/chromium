@@ -65,6 +65,16 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   // Queues |cb| to the backing v8::MicrotaskQueue.
   void EnqueueMicrotask(base::OnceClosure cb);
 
+  // Runs |cb| at the end of microtask checkpoint.
+  // The tasks are run when control is returning to C++ from script, after
+  // executing a script task (e.g. callback, event) or microtasks
+  // (e.g. promise). This is explicitly needed for Indexed DB transactions
+  // per spec, but should in general be avoided.
+  void EnqueueEndOfMicrotaskCheckpointTask(base::OnceClosure cb);
+
+  // Run any pending tasks.
+  void RunEndOfMicrotaskCheckpointTasks();
+
   // Runs pending microtasks until the queue is empty.
   void PerformMicrotaskCheckpoint();
 
@@ -94,10 +104,12 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   ~EventLoop();
 
   static void RunPendingMicrotask(void* data);
+  static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   v8::Isolate* isolate_;
   bool loop_enabled_ = true;
   Deque<base::OnceClosure> pending_microtasks_;
+  Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
 };
