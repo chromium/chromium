@@ -268,7 +268,8 @@ bool RequestIsSubframeSubresource(Frame* frame) {
 // static
 bool MixedContentChecker::IsMixedContent(const SecurityOrigin* security_origin,
                                          const KURL& url) {
-  return IsMixedContent(security_origin->Protocol(), url);
+  return IsMixedContent(
+      security_origin->GetOriginOrPrecursorOriginIfOpaque()->Protocol(), url);
 }
 
 // static
