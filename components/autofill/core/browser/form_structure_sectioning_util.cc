@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -104,13 +105,19 @@ void AssignFieldIdentifierSections(
 }
 
 void ExpandSections(base::span<const std::unique_ptr<AutofillField>> fields) {
-  Section previous_section;
-  for (const auto& field : fields) {
-    if (!IsSectionable(*field))
-      continue;
-    if (!field->section && previous_section)
-      field->section = previous_section;
-    previous_section = field->section;
+  auto HasSection = [](auto& field) {
+    return IsSectionable(*field) && field->section;
+  };
+  auto it = base::ranges::find_if(fields, HasSection);
+  while (it != fields.end()) {
+    auto end = base::ranges::find_if(it + 1, fields.end(), HasSection);
+    if (end != fields.end() && (*it)->section == (*end)->section) {
+      for (auto& field : base::make_span(it + 1, end)) {
+        if (IsSectionable(*field))
+          field->section = (*it)->section;
+      }
+    }
+    it = end;
   }
 }
 

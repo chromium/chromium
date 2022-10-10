@@ -202,8 +202,7 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromAutocomplete(
                       {.section = fields[2]->parsed_autocomplete->section}),
-                  Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete->section}),
+                  Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),

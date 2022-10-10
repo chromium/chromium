@@ -88,9 +88,12 @@ namespace autofill {
 //   ------------------------------------------------------+-------------------
 //
 // c. `kAutofillSectioningModeExpand`: The conditions from above apply.
-//    Additionally, sections based on conditions 1 and 2 are propagated
-//    downwards to focusable or <select> fields, ignoring all the usual
-//    sectioning rules.
+//    Additionally, we look at gaps between fields with sections based on
+//    conditions 1 and 2. If the gap is enclosed by the same section, this
+//    section is expanded to all the fields inside the gap. If there are no such
+//    gaps, this mode degenerates to the regular sectioning algorithm.
+//    In the example below, the "Name" and "Country" fields between the last two
+//    credit card fields are affected.
 //
 //    Example:
 //   ------------------------------------------------------+-------------------
@@ -99,7 +102,7 @@ namespace autofill {
 //   Name:      <input id=1>                               | field 1 based
 //   Country:   <input id=2>                               | field 1 based
 //   Name:      <input id=3 autocomplete=”section-A name”> | A
-//   Street:    <input id=4>                               | A
+//   Street:    <input id=4>                               | field 1 based
 //   CC number: <input id=5>                               | field 5 based
 //   CC number: <input id=6 style="display:none">          | field 5 based
 //   Name:      <input id=7>                               | field 5 based
