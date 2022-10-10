@@ -13,6 +13,29 @@ namespace network::cors {
 
 namespace {
 
+TEST(OriginAccessEntryTest, IsSubdomainOfHost) {
+  struct TestCase {
+    const std::string subdomain;
+    const std::string host;
+    const bool expected_result;
+  } inputs[] = {
+      {"foo.example.com", "example.com", true},
+      {"bar.foo.example.com", "example.com", true},
+      {"example.com", "com", true},
+      {"example.com", "example.com", false},
+      {"badexample.com", "example.com", false},
+      {"", "", false},
+      {"bar.Example.com", "example.com", false},
+  };
+
+  for (const auto& test : inputs) {
+    SCOPED_TRACE(testing::Message()
+                 << "subdomain: " << test.subdomain << ", Host: " << test.host);
+    EXPECT_EQ(test.expected_result,
+              IsSubdomainOfHost(test.subdomain, test.host));
+  }
+}
+
 TEST(OriginAccessEntryTest, PublicSuffixListTest) {
   struct TestCase {
     const std::string host;

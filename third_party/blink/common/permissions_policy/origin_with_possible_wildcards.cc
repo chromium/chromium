@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "base/feature_list.h"
+#include "services/network/public/cpp/cors/origin_access_entry.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
@@ -41,25 +42,13 @@ bool OriginWithPossibleWildcards::DoesMatchOrigin(
     if (origin == match_origin) {
       return false;
     }
-    const auto& tested_host = match_origin.host();
-    const auto& policy_host = origin.host();
-    // The tested host must be at least 2 char longer than the policy host
-    // to be a subdomain of it.
-    if (tested_host.length() < (policy_host.length() + 2)) {
+    // Scheme and port must match.
+    if (match_origin.scheme() != origin.scheme() ||
+        match_origin.port() != origin.port()) {
       return false;
     }
-    // The tested host must end with the policy host.
-    if (!base::EndsWith(tested_host, policy_host)) {
-      return false;
-    }
-    // The tested host without the policy host must end with a ".".
-    if (tested_host[tested_host.length() - policy_host.length() - 1] != '.') {
-      return false;
-    }
-    // If anything but the host doesn't match they can't match.
-    if (origin != url::Origin::CreateFromNormalizedTuple(match_origin.scheme(),
-                                                         policy_host,
-                                                         match_origin.port())) {
+    // The tested host must be a subdomain of the policy host.
+    if (!network::cors::IsSubdomainOfHost(match_origin.host(), origin.host())) {
       return false;
     }
     return true;
