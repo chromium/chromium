@@ -519,6 +519,7 @@ crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004.html [ 
 crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-004v.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/image-as-flexitem-size-007v.html [ Failure Pass ]
 crbug.com/1162704 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-015.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/flex-item-compressible-001.html [ Failure ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-height-flex-items-025.html [ Failure ]
 crbug.com/1033476 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-015.html [ Failure ]
 crbug.com/1173843 external/wpt/css/css-flexbox/frameset-crash.html [ Skip ]

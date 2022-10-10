@@ -327,27 +327,45 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   return true;
 }
 
-bool IsContentMinimumInlineSizeZero(const NGBlockNode& block_node) {
+absl::optional<LayoutUnit> ContentMinimumInlineSize(
+    const NGBlockNode& block_node,
+    const NGBoxStrut& border_padding) {
+  // Table layout is never allowed to go below the min-intrinsic size.
   if (block_node.IsTable())
-    return false;
+    return absl::nullopt;
+
   const auto* node = block_node.GetDOMNode();
   const auto* marquee_element = DynamicTo<HTMLMarqueeElement>(node);
   if (marquee_element && marquee_element->IsHorizontal())
-    return true;
-  if (!block_node.Style().LogicalWidth().IsPercentOrCalc())
-    return false;
+    return border_padding.InlineSum();
+
+  const auto& style = block_node.Style();
+  const auto& main_inline_size = style.LogicalWidth();
+
+  if (!main_inline_size.IsPercentOrCalc())
+    return absl::nullopt;
+
+  // Manually resolve the main-length against zero. calc() expressions may
+  // resolve to something greater than "zero".
+  LayoutUnit inline_size =
+      MinimumValueForLength(main_inline_size, LayoutUnit());
+  if (style.BoxSizing() == EBoxSizing::kBorderBox)
+    inline_size = std::max(border_padding.InlineSum(), inline_size);
+  else
+    inline_size += border_padding.InlineSum();
+
   if (block_node.IsTextControl())
-    return true;
+    return inline_size;
   if (IsA<HTMLSelectElement>(node))
-    return true;
+    return inline_size;
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
     const AtomicString& type = input_element->type();
     if (type == input_type_names::kFile)
-      return true;
+      return inline_size;
     if (type == input_type_names::kRange)
-      return true;
+      return inline_size;
   }
-  return false;
+  return absl::nullopt;
 }
 
 // Convert a physical offset for an NG fragment to a physical legacy
@@ -1100,8 +1118,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       NGLayoutAlgorithmParams(*this, fragment_geometry, constraint_space),
       float_input);
 
-  if (UNLIKELY(IsContentMinimumInlineSizeZero(*this)))
-    result.sizes.min_size = border_padding.InlineSum();
+  if (auto min_size = ContentMinimumInlineSize(*this, border_padding))
+    result.sizes.min_size = *min_size;
 
   bool depends_on_block_constraints =
       self_depends_on_block_constraints && result.depends_on_block_constraints;
