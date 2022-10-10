@@ -3,7 +3,7 @@ Checks the RunMicrotasks event is emitted and nested into RunTask.
 RunMicrotasks Properties:
 {
     data : {
-        microtask_count : 1
+        microtask_count : 2
     }
     endTime : <number>
     startTime : <number>
