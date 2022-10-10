@@ -904,6 +904,9 @@ void PopulateChromeWebUIFrameBinders(
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
       TabStripUI,
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      ash::personalization_app::PersonalizationAppUI,
+#endif
       NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

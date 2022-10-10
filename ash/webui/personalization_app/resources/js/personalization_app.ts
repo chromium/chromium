@@ -35,6 +35,7 @@ import './user/user_subpage_element.js';
 import './utils.js';
 import './wallpaper/index.js';
 
+import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {emptyState} from './personalization_state.js';
@@ -65,6 +66,7 @@ export {KeyboardBacklight} from './keyboard_backlight/keyboard_backlight_element
 export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keyboard_backlight_interface_provider.js';
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
+
 export * from './personalization_app.mojom-webui.js';
 export {PersonalizationBreadcrumb} from './personalization_breadcrumb_element.js';
 export {PersonalizationMain} from './personalization_main_element.js';
@@ -115,3 +117,11 @@ if (link) {
   link.href = '/hub_icon_192.png';
 }
 document.title = loadTimeData.getString('personalizationTitle');
+
+if (loadTimeData.getBoolean('isJellyEnabled')) {
+  // After the Jelly experiment is launched, replace `cros_styles.css` with
+  // `theme/colors.css` directly in `index.html`.
+  document.querySelector('link[href*=\'cros_styles.css\']')
+      ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy');
+  startColorChangeUpdater();
+}

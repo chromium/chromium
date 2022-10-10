@@ -16,6 +16,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
+#include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -25,6 +26,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::personalization_app {
@@ -322,6 +324,13 @@ void PersonalizationAppUI::BindInterface(
   user_provider_->BindInterface(std::move(receiver));
 }
 
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  DCHECK(features::IsJellyEnabled());
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
 void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("fullScreenPreviewEnabled",
                      features::IsWallpaperFullScreenPreviewEnabled());
@@ -345,6 +354,8 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isAvatarsCloudMigrationEnabled",
                      features::IsAvatarsCloudMigrationEnabled());
+
+  source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)
