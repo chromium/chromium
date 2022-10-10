@@ -17,6 +17,38 @@ class FilePath;
 
 namespace nix {
 
+enum DesktopEnvironment {
+  DESKTOP_ENVIRONMENT_OTHER = 0,
+  DESKTOP_ENVIRONMENT_CINNAMON = 1,
+  DESKTOP_ENVIRONMENT_DEEPIN = 2,
+  DESKTOP_ENVIRONMENT_GNOME = 3,
+  // KDE3, KDE4 and KDE5 are sufficiently different that we count
+  // them as different desktop environments here.
+  DESKTOP_ENVIRONMENT_KDE3 = 4,
+  DESKTOP_ENVIRONMENT_KDE4 = 5,
+  DESKTOP_ENVIRONMENT_KDE5 = 6,
+  DESKTOP_ENVIRONMENT_PANTHEON = 7,
+  DESKTOP_ENVIRONMENT_UKUI = 8,
+  DESKTOP_ENVIRONMENT_UNITY = 9,
+  DESKTOP_ENVIRONMENT_XFCE = 10,
+  DESKTOP_ENVIRONMENT_LXQT = 11,
+};
+
+// Values based on valid types indicated in:
+// https://www.freedesktop.org/software/systemd/man/pam_systemd.html; though
+// "Unset" and "Other" are provided by us to distinguish between the potentially
+// valid "Unspecified" and other cases where we may not be able to find the
+// value.
+enum class SessionType {
+  kUnset = 0,
+  kOther = 1,
+  kUnspecified = 2,
+  kTty = 3,
+  kX11 = 4,
+  kWayland = 5,
+  kMir = 6,
+};
+
 // The default XDG config directory name.
 BASE_EXPORT extern const char kDotConfigDir[];
 
@@ -43,23 +75,6 @@ BASE_EXPORT FilePath GetXDGDirectory(Environment* env, const char* env_name,
 BASE_EXPORT FilePath GetXDGUserDirectory(const char* dir_name,
                                          const char* fallback_dir);
 
-enum DesktopEnvironment {
-  DESKTOP_ENVIRONMENT_OTHER,
-  DESKTOP_ENVIRONMENT_CINNAMON,
-  DESKTOP_ENVIRONMENT_DEEPIN,
-  DESKTOP_ENVIRONMENT_GNOME,
-  // KDE3, KDE4 and KDE5 are sufficiently different that we count
-  // them as different desktop environments here.
-  DESKTOP_ENVIRONMENT_KDE3,
-  DESKTOP_ENVIRONMENT_KDE4,
-  DESKTOP_ENVIRONMENT_KDE5,
-  DESKTOP_ENVIRONMENT_PANTHEON,
-  DESKTOP_ENVIRONMENT_UKUI,
-  DESKTOP_ENVIRONMENT_UNITY,
-  DESKTOP_ENVIRONMENT_XFCE,
-  DESKTOP_ENVIRONMENT_LXQT,
-};
-
 // Return an entry from the DesktopEnvironment enum with a best guess
 // of which desktop environment we're using.  We use this to know when
 // to attempt to use preferences from the desktop environment --
@@ -71,6 +86,10 @@ BASE_EXPORT DesktopEnvironment GetDesktopEnvironment(Environment* env);
 BASE_EXPORT const char* GetDesktopEnvironmentName(DesktopEnvironment env);
 // Convenience wrapper that calls GetDesktopEnvironment() first.
 BASE_EXPORT const char* GetDesktopEnvironmentName(Environment* env);
+
+// Return an entry from the SessionType enum with a best guess
+// of which session type we're using.
+BASE_EXPORT SessionType GetSessionType(Environment& env);
 
 }  // namespace nix
 }  // namespace base

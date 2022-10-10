@@ -10,6 +10,7 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -167,6 +168,33 @@ const char* GetDesktopEnvironmentName(DesktopEnvironment env) {
 
 const char* GetDesktopEnvironmentName(Environment* env) {
   return GetDesktopEnvironmentName(GetDesktopEnvironment(env));
+}
+
+SessionType GetSessionType(Environment& env) {
+  std::string xdg_session_type;
+  if (!env.GetVar(kXdgSessionTypeEnvVar, &xdg_session_type))
+    return SessionType::kUnset;
+
+  TrimWhitespaceASCII(ToLowerASCII(xdg_session_type), TrimPositions::TRIM_ALL,
+                      &xdg_session_type);
+
+  if (xdg_session_type == "wayland")
+    return SessionType::kWayland;
+
+  if (xdg_session_type == "x11")
+    return SessionType::kX11;
+
+  if (xdg_session_type == "tty")
+    return SessionType::kTty;
+
+  if (xdg_session_type == "mir")
+    return SessionType::kMir;
+
+  if (xdg_session_type == "unspecified")
+    return SessionType::kUnspecified;
+
+  LOG(ERROR) << "Unknown XDG_SESSION_TYPE: " << xdg_session_type;
+  return SessionType::kOther;
 }
 
 }  // namespace nix

@@ -47,6 +47,11 @@
 #include "base/win/current_module.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#include "base/scoped_environment_variable_override.h"
+#endif
+
 namespace metrics {
 namespace {
 
@@ -164,6 +169,18 @@ TEST_F(MetricsLogTest, BasicRecord) {
   command_line->AppendSwitch("mock-flag-1");
   command_line->AppendSwitchASCII("mock-flag-2", "unused_value");
 
+#if BUILDFLAG(IS_LINUX)
+  base::ScopedEnvironmentVariableOverride scoped_desktop_override(
+      base::nix::kXdgCurrentDesktopEnvVar, "GNOME");
+  metrics::SystemProfileProto::OS::XdgCurrentDesktop expected_current_desktop =
+      metrics::SystemProfileProto::OS::GNOME;
+
+  base::ScopedEnvironmentVariableOverride scoped_session_override(
+      base::nix::kXdgSessionTypeEnvVar, "wayland");
+  metrics::SystemProfileProto::OS::XdgSessionType expected_session_type =
+      metrics::SystemProfileProto::OS::WAYLAND;
+#endif
+
   MetricsLog log(kOtherClientId, 137, MetricsLog::ONGOING_LOG, &client);
   log.CloseLog();
 
@@ -228,6 +245,12 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #elif BUILDFLAG(IS_IOS)
   system_profile->mutable_os()->set_build_number(
       base::SysInfo::GetIOSBuildNumber());
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  system_profile->mutable_os()->set_xdg_session_type(expected_session_type);
+  system_profile->mutable_os()->set_xdg_current_desktop(
+      expected_current_desktop);
 #endif
 
   // Hard to mock.

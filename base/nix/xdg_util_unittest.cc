@@ -48,6 +48,15 @@ const char* const kKDESessionKDE5 = "5";
 const char kDesktopSession[] = "DESKTOP_SESSION";
 const char kKDESession[] = "KDE_SESSION_VERSION";
 
+const char* const kSessionUnknown = "invalid session";
+const char* const kSessionUnspecified = "unspecified";
+const char* const kSessionTty = "tty";
+const char* const kSessionMir = "mir";
+const char* const kSessionX11 = "x11";
+const char* const kSessionWayland = "wayland";
+const char* const kSessionWaylandCapital = "Wayland";
+const char* const kSessionWaylandWhitespace = "wayland ";
+
 }  // namespace
 
 TEST(XDGUtilTest, GetDesktopEnvironmentGnome) {
@@ -205,6 +214,86 @@ TEST(XDGUtilTest, GetXdgDesktopUnity8) {
       .WillOnce(DoAll(SetArgPointee<1>(kXdgDesktopUnity8), Return(true)));
 
   EXPECT_EQ(DESKTOP_ENVIRONMENT_UNITY, GetDesktopEnvironment(&getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessiontypeUnset) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+
+  EXPECT_EQ(SessionType::kUnset, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeOther) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionUnknown), Return(true)));
+
+  EXPECT_EQ(SessionType::kOther, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeUnspecified) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionUnspecified), Return(true)));
+
+  EXPECT_EQ(SessionType::kUnspecified, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeTty) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionTty), Return(true)));
+
+  EXPECT_EQ(SessionType::kTty, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeMir) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionMir), Return(true)));
+
+  EXPECT_EQ(SessionType::kMir, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeX11) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionX11), Return(true)));
+
+  EXPECT_EQ(SessionType::kX11, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeWayland) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionWayland), Return(true)));
+
+  EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeWaylandCapital) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kSessionWaylandCapital), Return(true)));
+
+  EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
+}
+
+TEST(XDGUtilTest, GetXdgSessionTypeWaylandWhitespace) {
+  MockEnvironment getter;
+  EXPECT_CALL(getter, GetVar(_, _)).WillRepeatedly(Return(false));
+  EXPECT_CALL(getter, GetVar(Eq(kXdgSessionTypeEnvVar), _))
+      .WillOnce(
+          DoAll(SetArgPointee<1>(kSessionWaylandWhitespace), Return(true)));
+
+  EXPECT_EQ(SessionType::kWayland, GetSessionType(getter));
 }
 
 }  // namespace nix
