@@ -585,6 +585,11 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDirectCompositionLetterboxVideoOptimization)) {
+    return;
+  }
+
   if (monitor_size.IsEmpty())
     return;
 
