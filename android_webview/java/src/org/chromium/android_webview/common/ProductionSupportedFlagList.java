@@ -378,6 +378,9 @@ public final class ProductionSupportedFlagList {
                     CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
             Flag.baseFeature(BlinkFeatures.DOCUMENT_EVENT_NODE_PATH_CACHING,
                     "Enables a performance optimization that caches event paths."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
+                    "Inject a metronome into webrtc to allow task coalescing, "
+                            + " including synchronized decoding.")
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

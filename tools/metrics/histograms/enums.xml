@@ -58173,6 +58173,7 @@ from previous Chrome versions.
   <int value="-1169571217" label="SharingDesktopScreenshotsEdit:disabled"/>
   <int value="-1168910727"
       label="enable-experimental-accessibility-language-detection-dynamic"/>
+  <int value="-1168123287" label="WebRTC-FrameBuffer3:disabled"/>
   <int value="-1167992523" label="DesktopPWAsCustomTabUI:disabled"/>
   <int value="-1166745977"
       label="BluetoothAggressiveAppearanceFilter:disabled"/>
@@ -58190,6 +58191,7 @@ from previous Chrome versions.
   <int value="-1161384421" label="ContextualSuggestionsAboveArticles:enabled"/>
   <int value="-1160941363" label="AffiliationBasedMatching:disabled"/>
   <int value="-1160797265" label="PasswordScriptsFetching:enabled"/>
+  <int value="-1160730312" label="WebRTC-FrameBuffer3:enabled"/>
   <int value="-1160097262" label="WebAuthenticationCableSecondFactor:enabled"/>
   <int value="-1160026273" label="enable-web-notification-custom-layouts"/>
   <int value="-1159563774" label="enable-accessibility-script-injection"/>
