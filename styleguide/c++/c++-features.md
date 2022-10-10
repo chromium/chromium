@@ -785,6 +785,31 @@ func(T, Ts...) { ...
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/YhlF_sTDSc0/m/QMzf42BtAAAJ)
 ***
 
+### std::hardware_{constructive|destructive}_interference_size <sup>[allowed]</sup>
+
+```c++
+struct SharedData {
+  ReadOnlyFrequentlyUsed data;
+  alignas(std::hardware_destructive_interference_size) std::atomic<size_t> counter;
+};
+```
+
+**Description:** The `std::hardware_destructive_interference_size` constant is
+useful to avoid false sharing (destructive interference) between variables that
+would otherwise occupy the same cacheline. In contrast,
+`std::hardware_constructive_interference_size` is helpful to promote true
+sharing (constructive interference), e.g. to support better locality for
+non-contended data.
+
+**Documentation:**
+[std::hardware_destructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size),
+[std::hardware_constructive_interference_size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4/m/sP-J-s61AQAJ)
+***
+
 ## C++17 Banned Library Features {#library-blocklist-17}
 
 The following C++17 library features are not allowed in the Chromium codebase.
@@ -1507,24 +1532,6 @@ double dist = std::hypot(1.0, 2.5, 3.7);
 **Notes:**
 *** promo
 None
-***
-
-### Cache line interface <sup>[tbd]</sup>
-
-```c++
-alignas(std::hardware_destructive_interference_size) std::atomic<int> cat;
-static_assert(sizeof(S) <= std::hardware_constructive_interference_size);
-```
-
-**Description:** A portable way to access the L1 data cache line size.
-
-**Documentation:**
-[Hardware interference size](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
-
-**Notes:**
-*** promo
-May not be supported in libc++, according to the
-[library features table](https://en.cppreference.com/w/cpp/17)
 ***
 
 ### std::launder <sup>[tbd]</sup>
