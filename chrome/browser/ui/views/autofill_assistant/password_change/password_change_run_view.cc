@@ -136,8 +136,10 @@ void PasswordChangeRunView::CreateView() {
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlertDialog);
   // TODO(crbug.com/1329179): Ask accessibility reviewers what the best string
   // to use here is.
-  GetViewAccessibility().OverrideName(u"Automatic password change",
-                                      ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().OverrideName(
+      l10n_util::GetStringUTF16(
+          IDS_ACCESSIBLE_AUTOFILL_ASSISTANT_PASSWORD_CHANGE),
+      ax::mojom::NameFrom::kAttribute);
   SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 
   top_icon_ =
