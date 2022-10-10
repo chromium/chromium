@@ -81,7 +81,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 - (BadgeButton*)passwordsSaveBadgeButton {
   UIImage* image =
       UseSymbols()
-          ? DefaultSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
+          ? CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
           : [UIImage imageNamed:[self passwordKeyAssetName]];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordSave
@@ -100,7 +100,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 - (BadgeButton*)passwordsUpdateBadgeButton {
   UIImage* image =
       UseSymbols()
-          ? DefaultSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
+          ? CustomSymbolWithPointSize(kPasswordSymbol, kSymbolImagePointSize)
           : [UIImage imageNamed:[self passwordKeyAssetName]];
   BadgeButton* button =
       [self createButtonForType:kBadgeTypePasswordUpdate
