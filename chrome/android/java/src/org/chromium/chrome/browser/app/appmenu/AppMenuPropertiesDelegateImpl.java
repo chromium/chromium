@@ -584,7 +584,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     && mTabModelSelector.getTabModelFilterProvider()
                                     .getCurrentTabModelFilter()
                                     .getCount()
-                            > 1;
+                            != 0;
         } else {
             isMenuGroupTabsVisible = isTabSelectionEditorContext;
             isMenuGroupTabsEnabled = !isIncognitoReauthShowing && isMenuGroupTabsVisible

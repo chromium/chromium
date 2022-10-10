@@ -1047,6 +1047,27 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @SmallTest
+    public void testSelectTabsOption_IsEnabledOneTab_InRegularMode_IndependentOfIncognitoReauth() {
+        setTabSelectionEditorV2Enabled(true);
+        setUpMocksForOverviewMenu();
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
+        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelFilter.getCount()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(1);
+        Tab mockTab1 = mock(Tab.class);
+        when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
+
+        Menu menu = createTestMenu();
+        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
+        // Check group tabs enabled decision in regular mode doesn't depend on re-auth.
+        verify(mIncognitoReauthControllerMock, times(0)).isReauthPageShowing();
+
+        MenuItem item = menu.findItem(R.id.menu_select_tabs);
+        assertTrue(item.isEnabled());
+    }
+
+    @Test
+    @SmallTest
     public void testSelectTabsOption_IsDisabled_InRegularMode_IndependentOfIncognitoReauth() {
         setTabSelectionEditorV2Enabled(true);
         setUpMocksForOverviewMenu();
