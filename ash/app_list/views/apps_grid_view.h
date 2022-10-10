@@ -410,10 +410,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the current selected page, or zero if the grid does not use pages.
   virtual int GetSelectedPage() const = 0;
 
-  // Returns true if scrolling is vertical (the common case). Folders may scroll
-  // horizontally.
-  virtual bool IsScrollAxisVertical() const = 0;
-
   // Records the different ways to move an app in app list's apps grid for UMA
   // histograms.
   virtual void RecordAppMovingTypeMetrics(AppListAppMovingType type) = 0;

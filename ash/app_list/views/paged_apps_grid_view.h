@@ -68,7 +68,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
 
   PagedAppsGridView(ContentsView* contents_view,
                     AppListA11yAnnouncer* a11y_announcer,
-                    AppsGridViewFolderDelegate* folder_delegate,
                     AppListFolderController* folder_controller,
                     ContainerDelegate* container_delegate,
                     AppListKeyboardController* keyboard_controller);
@@ -105,7 +104,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   gfx::Size GetTileGridSize() const override;
   int GetTotalPages() const override;
   int GetSelectedPage() const override;
-  bool IsScrollAxisVertical() const override;
   void MaybeStartCardifiedView() override;
   void MaybeEndCardifiedView() override;
   void MaybeStartPageFlip() override;

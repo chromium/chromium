@@ -301,7 +301,6 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   apps_grid_view_ =
       scrollable_container_->AddChildView(std::make_unique<PagedAppsGridView>(
           contents_view, a11y_announcer,
-          /*folder_delegate=*/nullptr,
           /*folder_controller=*/this,
           /*container_delegate=*/this, app_list_keyboard_controller_.get()));
   apps_grid_view_->pagination_model()->AddObserver(this);

@@ -12,7 +12,6 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/apps_grid_row_change_animator.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -72,10 +71,6 @@ constexpr base::TimeDelta kPageFlipDelay = base::Milliseconds(500);
 
 // Duration for page transition.
 constexpr base::TimeDelta kPageTransitionDuration = base::Milliseconds(250);
-
-// The size of the zone within which app list item drag events will trigger a
-// page flip.
-constexpr int kPageFlipZoneSize = 20;
 
 // Duration for overscroll page transition.
 constexpr base::TimeDelta kOverscrollPageTransitionDuration =
@@ -195,13 +190,12 @@ class PagedAppsGridView::BackgroundCardLayer : public ui::Layer,
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
     AppListA11yAnnouncer* a11y_announcer,
-    AppsGridViewFolderDelegate* folder_delegate,
     AppListFolderController* folder_controller,
     ContainerDelegate* container_delegate,
     AppListKeyboardController* keyboard_controller)
     : AppsGridView(a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
-                   folder_delegate,
+                   /*folder_delegate=*/nullptr,
                    folder_controller,
                    keyboard_controller),
       contents_view_(contents_view),
@@ -218,12 +212,8 @@ PagedAppsGridView::PagedAppsGridView(
   pagination_model_.AddObserver(this);
 
   pagination_controller_ = std::make_unique<PaginationController>(
-      &pagination_model_,
-      IsInFolder() ? PaginationController::SCROLL_AXIS_HORIZONTAL
-                   : PaginationController::SCROLL_AXIS_VERTICAL,
-      IsInFolder()
-          ? base::DoNothing()
-          : base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType),
+      &pagination_model_, PaginationController::SCROLL_AXIS_VERTICAL,
+      base::BindRepeating(&AppListRecordPageSwitcherSourceByEventType),
       IsTabletMode());
 }
 
@@ -416,18 +406,10 @@ void PagedAppsGridView::Layout() {
   const gfx::Size page_size = GetPageSize();
   const int pages = pagination_model_.total_pages();
   const int current_page = pagination_model_.selected_page();
-  if (pagination_controller_->scroll_axis() ==
-      PaginationController::SCROLL_AXIS_HORIZONTAL) {
-    const int page_width = page_size.width() + GetPaddingBetweenPages();
-    items_container()->SetBoundsRect(gfx::Rect(-page_width * current_page, 0,
-                                               page_width * pages,
-                                               GetContentsBounds().height()));
-  } else {
-    const int page_height = page_size.height() + GetPaddingBetweenPages();
-    items_container()->SetBoundsRect(gfx::Rect(0, -page_height * current_page,
-                                               GetContentsBounds().width(),
-                                               page_height * pages));
-  }
+  const int page_height = page_size.height() + GetPaddingBetweenPages();
+  items_container()->SetBoundsRect(gfx::Rect(0, -page_height * current_page,
+                                             GetContentsBounds().width(),
+                                             page_height * pages));
 
   CalculateIdealBounds();
   for (size_t i = 0; i < view_model()->view_size(); ++i) {
@@ -494,11 +476,6 @@ int PagedAppsGridView::GetSelectedPage() const {
   return pagination_model_.selected_page();
 }
 
-bool PagedAppsGridView::IsScrollAxisVertical() const {
-  return pagination_controller_->scroll_axis() ==
-         PaginationController::SCROLL_AXIS_VERTICAL;
-}
-
 void PagedAppsGridView::MaybeStartCardifiedView() {
   if (!cardified_state_)
     StartAppsGridCardifiedView();
@@ -563,8 +540,7 @@ gfx::Vector2d PagedAppsGridView::GetGridCenteringOffset(int page) const {
 }
 
 void PagedAppsGridView::UpdatePaging() {
-  // Folders have the same number of tiles on every page, while the root
-  // level grid can have a different number of tiles per page.
+  // The grid can have a different number of tiles per page.
   size_t tiles = view_model()->view_size();
   int total_pages = 1;
   size_t tiles_on_page = TilesPerPage(0);
@@ -577,7 +553,6 @@ void PagedAppsGridView::UpdatePaging() {
 }
 
 void PagedAppsGridView::RecordPageMetrics() {
-  DCHECK(!IsInFolder());
   UMA_HISTOGRAM_COUNTS_100("Apps.NumberOfPages", GetTotalPages());
 }
 
@@ -602,15 +577,8 @@ const gfx::Vector2d PagedAppsGridView::CalculateTransitionOffset(
   }
 
   const gfx::Size page_size = GetPageSize();
-  if (IsScrollAxisVertical()) {
-    const int page_height = page_size.height() + GetPaddingBetweenPages();
-    return gfx::Vector2d(0, page_height * multiplier);
-  }
-
-  // Page size including padding pixels. A tile.x + page_width means the same
-  // tile slot in the next page.
-  const int page_width = page_size.width() + GetPaddingBetweenPages();
-  return gfx::Vector2d(page_width * multiplier, 0);
+  const int page_height = page_size.height() + GetPaddingBetweenPages();
+  return gfx::Vector2d(0, page_height * multiplier);
 }
 
 void PagedAppsGridView::EnsureViewVisible(const GridIndex& index) {
@@ -725,14 +693,9 @@ void PagedAppsGridView::TransitionChanged() {
   gfx::Vector2dF translate;
   const int dir =
       transition.target_page > pagination_model_.selected_page() ? -1 : 1;
-  if (pagination_controller_->scroll_axis() ==
-      PaginationController::SCROLL_AXIS_HORIZONTAL) {
-    const int page_width = page_size.width() + GetPaddingBetweenPages();
-    translate.set_x(page_width * transition.progress * dir);
-  } else {
-    const int page_height = page_size.height() + GetPaddingBetweenPages();
-    translate.set_y(page_height * transition.progress * dir);
-  }
+  const int page_height = page_size.height() + GetPaddingBetweenPages();
+  translate.set_y(page_height * transition.progress * dir);
+
   gfx::Transform transform;
   transform.Translate(translate);
   items_container()->layer()->SetTransform(transform);
@@ -834,8 +797,7 @@ bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
     gfx::PointF root_location = event.root_location_f();
     return root_location.y() - mouse_drag_start_point_.y();
   };
-  if (!IsInFolder() &&
-      (event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
+  if ((event.IsMouseEvent() || event.type() == ui::ET_GESTURE_SCROLL_BEGIN) &&
       !IsTabletMode() &&
       ((pagination_model_.selected_page() == 0 &&
         calculate_offset(event) > 0))) {
@@ -853,36 +815,22 @@ int PagedAppsGridView::GetPageFlipTargetForDrag(const gfx::Point& drag_point) {
   int new_page_flip_target = -1;
 
   // Drag zones are at the edges of the scroll axis.
-  if (IsScrollAxisVertical()) {
-    if (background_cards_.empty() ||
-        !container_delegate_->IsPointWithinPageFlipBuffer(drag_point)) {
-      return new_page_flip_target;
-    }
+  if (background_cards_.empty() ||
+      !container_delegate_->IsPointWithinPageFlipBuffer(drag_point)) {
+    return new_page_flip_target;
+  }
 
-    gfx::RectF background_card_rect_in_grid(
-        background_cards_[GetSelectedPage()]->bounds());
-    View::ConvertRectToTarget(items_container(), this,
-                              &background_card_rect_in_grid);
+  gfx::RectF background_card_rect_in_grid(
+      background_cards_[GetSelectedPage()]->bounds());
+  View::ConvertRectToTarget(items_container(), this,
+                            &background_card_rect_in_grid);
 
-    // Set page flip target when the drag is above or below the background
-    // card of the currently selected page.
-    if (drag_point.y() < background_card_rect_in_grid.y()) {
-      new_page_flip_target = pagination_model_.selected_page() - 1;
-    } else if (drag_point.y() > background_card_rect_in_grid.bottom()) {
-      new_page_flip_target = pagination_model_.selected_page() + 1;
-    }
-
-  } else {
-    // TODO(https://crbug.com/1356661): Remove this - horizontal scroll axis was
-    // only used for folders in the legacy launcher. Folders in new launcher use
-    // scrollable apps grid.
-    if (new_page_flip_target == -1 && drag_point.x() < kPageFlipZoneSize)
-      new_page_flip_target = pagination_model_.selected_page() - 1;
-
-    if (new_page_flip_target == -1 &&
-        drag_point.x() > width() - kPageFlipZoneSize) {
-      new_page_flip_target = pagination_model_.selected_page() + 1;
-    }
+  // Set page flip target when the drag is above or below the background
+  // card of the currently selected page.
+  if (drag_point.y() < background_card_rect_in_grid.y()) {
+    new_page_flip_target = pagination_model_.selected_page() - 1;
+  } else if (drag_point.y() > background_card_rect_in_grid.bottom()) {
+    new_page_flip_target = pagination_model_.selected_page() + 1;
   }
   return new_page_flip_target;
 }

@@ -136,10 +136,6 @@ int ScrollableAppsGridView::GetSelectedPage() const {
   return 0;
 }
 
-bool ScrollableAppsGridView::IsScrollAxisVertical() const {
-  return true;
-}
-
 bool ScrollableAppsGridView::MaybeAutoScroll() {
   ScrollDirection direction;
   if (!IsPointInAutoScrollMargin(last_drag_point(), &direction)) {
