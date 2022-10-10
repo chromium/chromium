@@ -1035,6 +1035,13 @@
       },
     },
   },
+  'nougat': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'N2G48C',
+      },
+    },
+  },
   'nougat-x86-emulator': {
     '$mixin_append': {
       'args': [

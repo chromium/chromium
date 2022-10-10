@@ -4177,7 +4177,7 @@
         'os_type': 'android',
         'skip_merge_script': True,
         'mixins': [
-          'marshmallow',
+          'nougat',
           'bullhead',
         ],
         'test_suites': {
@@ -4322,7 +4322,7 @@
         'skip_merge_script': True,
         'mixins': [
           'has_native_resultdb_integration',
-          'marshmallow',
+          'nougat',
           'bullhead',
         ],
         'test_suites': {
