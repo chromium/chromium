@@ -120,7 +120,7 @@ void MediaControlsHeaderView::SetForceShowCloseButton(bool force_visible) {
 void MediaControlsHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // A valid role must be set prior to setting the name.
   node_data->role = ax::mojom::Role::kPane;
-  node_data->SetName(app_name_view_->GetText());
+  node_data->SetNameChecked(app_name_view_->GetText());
 }
 
 void MediaControlsHeaderView::OnViewFocused(views::View* observed_view) {
