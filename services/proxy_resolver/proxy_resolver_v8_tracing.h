@@ -14,7 +14,7 @@
 
 namespace net {
 class NetLogWithSource;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace proxy_resolver {
@@ -60,7 +60,7 @@ class ProxyResolverV8Tracing {
   // |*request|.
   virtual void GetProxyForURL(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       net::ProxyInfo* results,
       net::CompletionOnceCallback callback,
       std::unique_ptr<net::ProxyResolver::Request>* request,

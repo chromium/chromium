@@ -65,7 +65,7 @@ class ProofVerifierChromiumWithOwnership : public net::ProofVerifierChromium {
                                    UnknownRootAllowlistForHost(host),
                                    // Fine to use an empty NetworkIsolationKey
                                    // here, since this isn't used in Chromium.
-                                   net::NetworkIsolationKey()),
+                                   net::NetworkAnonymizationKey()),
         cert_verifier_(std::move(cert_verifier)) {}
 
  private:

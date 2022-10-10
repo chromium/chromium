@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
@@ -70,12 +70,13 @@ struct ProofVerifyContextChromium : public quic::ProofVerifyContext {
 // is capable of handling multiple simultaneous requests.
 class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
  public:
-  ProofVerifierChromium(CertVerifier* cert_verifier,
-                        CTPolicyEnforcer* ct_policy_enforcer,
-                        TransportSecurityState* transport_security_state,
-                        SCTAuditingDelegate* sct_auditing_delegate,
-                        std::set<std::string> hostnames_to_allow_unknown_roots,
-                        const NetworkIsolationKey& network_isolation_key);
+  ProofVerifierChromium(
+      CertVerifier* cert_verifier,
+      CTPolicyEnforcer* ct_policy_enforcer,
+      TransportSecurityState* transport_security_state,
+      SCTAuditingDelegate* sct_auditing_delegate,
+      std::set<std::string> hostnames_to_allow_unknown_roots,
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   ProofVerifierChromium(const ProofVerifierChromium&) = delete;
   ProofVerifierChromium& operator=(const ProofVerifierChromium&) = delete;
@@ -127,7 +128,7 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
 
   std::set<std::string> hostnames_to_allow_unknown_roots_;
 
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_isolation_key_;
 };
 
 }  // namespace net

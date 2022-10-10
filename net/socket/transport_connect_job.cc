@@ -52,12 +52,12 @@ HostPortPair ToLegacyDestinationEndpoint(
 
 TransportSocketParams::TransportSocketParams(
     Endpoint destination,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     OnHostResolutionCallback host_resolution_callback,
     base::flat_set<std::string> supported_alpns)
     : destination_(std::move(destination)),
-      network_isolation_key_(std::move(network_isolation_key)),
+      network_anonymization_key_(std::move(network_anonymization_key)),
       secure_dns_policy_(secure_dns_policy),
       host_resolution_callback_(std::move(host_resolution_callback)),
       supported_alpns_(std::move(supported_alpns)) {
@@ -259,17 +259,11 @@ int TransportConnectJob::DoResolveHost() {
   if (absl::holds_alternative<url::SchemeHostPort>(params_->destination())) {
     request_ = host_resolver()->CreateRequest(
         absl::get<url::SchemeHostPort>(params_->destination()),
-        net::NetworkAnonymizationKey::
-            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                params_->network_isolation_key()),
-        net_log(), parameters);
+        params_->network_anonymization_key(), net_log(), parameters);
   } else {
     request_ = host_resolver()->CreateRequest(
         absl::get<HostPortPair>(params_->destination()),
-        net::NetworkAnonymizationKey::
-            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                params_->network_isolation_key()),
-        net_log(), parameters);
+        params_->network_anonymization_key(), net_log(), parameters);
   }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,

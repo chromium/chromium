@@ -339,7 +339,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
   void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& key,
+      const net::NetworkAnonymizationKey& key,
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
@@ -351,7 +351,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
       const url::Origin& origin,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateWebTransport(url, origin, net::NetworkIsolationKey(), {},
+    CreateWebTransport(url, origin, net::NetworkAnonymizationKey(), {},
                        std::move(handshake_client));
   }
 
@@ -361,7 +361,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
       std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
       mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateWebTransport(url, origin, net::NetworkIsolationKey(),
+    CreateWebTransport(url, origin, net::NetworkAnonymizationKey(),
                        std::move(fingerprints), std::move(handshake_client));
   }
 

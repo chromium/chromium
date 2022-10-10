@@ -38,11 +38,11 @@ void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
   // conditions.
   net::HostCache::Key key1(hostname, net::DnsQueryType::UNSPECIFIED, 0,
                            net::HostResolverSource::ANY,
-                           net::NetworkIsolationKey());
+                           net::NetworkAnonymizationKey());
   net::HostCache::Key key2(hostname, net::DnsQueryType::A,
                            net::HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6,
                            net::HostResolverSource::ANY,
-                           net::NetworkIsolationKey());
+                           net::NetworkAnonymizationKey());
 
   net::IPAddress address;
   CHECK(address.AssignFromIPLiteral(address_string));

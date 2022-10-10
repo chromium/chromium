@@ -22,7 +22,7 @@ class Origin;
 }  // namespace url
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   WebTransport(
       const GURL& url,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& key,
+      const net::NetworkAnonymizationKey& key,
       const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
           fingerprints,
       NetworkContext* context,

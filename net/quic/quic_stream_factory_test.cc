@@ -13063,10 +13063,12 @@ TEST_P(QuicStreamFactoryTest, HostResolverUsesParams) {
 
   EXPECT_EQ(net::SecureDnsPolicy::kDisable,
             host_resolver_->last_secure_dns_policy());
-  ASSERT_TRUE(host_resolver_->last_request_network_isolation_key().has_value());
-  EXPECT_EQ(kNetworkAnonymizationKey,
-            NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                host_resolver_->last_request_network_isolation_key().value()));
+  ASSERT_TRUE(
+      host_resolver_->last_request_network_anonymization_key().has_value());
+  EXPECT_EQ(
+      kNetworkAnonymizationKey,
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          host_resolver_->last_request_network_anonymization_key().value()));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());

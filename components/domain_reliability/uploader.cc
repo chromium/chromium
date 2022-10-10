@@ -122,8 +122,9 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     request->set_allow_credentials(false);
     request->SetExtraRequestHeaderByName(net::HttpRequestHeaders::kContentType,
                                          kJsonMimeType, true /* overwrite */);
-    request->set_isolation_info(net::IsolationInfo::CreatePartial(
-        net::IsolationInfo::RequestType::kOther, network_anonymization_key));
+    request->set_isolation_info_from_network_anonymization_key(
+        network_anonymization_key);
+    request->SetLoadFlags(request->load_flags() | net::LOAD_DISABLE_CACHE);
     std::vector<char> report_data(report_json.begin(), report_json.end());
     auto upload_reader =
         std::make_unique<net::UploadOwnedBytesElementReader>(&report_data);
