@@ -82,7 +82,7 @@ class FileDescriptorWatcher::Controller::Watcher
 
   // Except for the constructor, every method of this class must run on the same
   // MessagePumpForIO thread.
-  THREAD_CHECKER(thread_checker_);
+  ThreadChecker thread_checker_;
 
   // Whether this Watcher was registered as a DestructionObserver on the
   // MessagePumpForIO thread.
@@ -100,11 +100,11 @@ FileDescriptorWatcher::Controller::Watcher::Watcher(
       mode_(mode),
       fd_(fd) {
   DCHECK(callback_task_runner_);
-  DETACH_FROM_THREAD(thread_checker_);
+  thread_checker_.DetachFromThread();
 }
 
 FileDescriptorWatcher::Controller::Watcher::~Watcher() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   CurrentIOThread::Get()->RemoveDestructionObserver(this);
 
   // Stop watching the descriptor before signalling |on_destroyed_|.
@@ -113,7 +113,7 @@ FileDescriptorWatcher::Controller::Watcher::~Watcher() {
 }
 
 void FileDescriptorWatcher::Controller::Watcher::StartWatching() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(CurrentIOThread::IsSet());
 
   const bool watch_success = CurrentIOThread::Get()->WatchFileDescriptor(
@@ -130,7 +130,7 @@ void FileDescriptorWatcher::Controller::Watcher::OnFileCanReadWithoutBlocking(
     int fd) {
   DCHECK_EQ(fd_, fd);
   DCHECK_EQ(MessagePumpForIO::WATCH_READ, mode_);
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   // Run the callback on the sequence on which the watch was initiated.
   callback_task_runner_->PostTask(
@@ -141,7 +141,7 @@ void FileDescriptorWatcher::Controller::Watcher::OnFileCanWriteWithoutBlocking(
     int fd) {
   DCHECK_EQ(fd_, fd);
   DCHECK_EQ(MessagePumpForIO::WATCH_WRITE, mode_);
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   // Run the callback on the sequence on which the watch was initiated.
   callback_task_runner_->PostTask(
@@ -150,7 +150,7 @@ void FileDescriptorWatcher::Controller::Watcher::OnFileCanWriteWithoutBlocking(
 
 void FileDescriptorWatcher::Controller::Watcher::
     WillDestroyCurrentMessageLoop() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(thread_checker_.CalledOnValidThread());
 
   if (callback_task_runner_->RunsTasksInCurrentSequence()) {
     // |controller_| can be accessed directly when Watcher runs on the same

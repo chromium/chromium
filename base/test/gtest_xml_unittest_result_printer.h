@@ -58,7 +58,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   static XmlUnitTestResultPrinter* instance_;
   raw_ptr<FILE> output_file_{nullptr};
   bool open_failed_{false};
-  THREAD_CHECKER(thread_checker_);
+  ThreadChecker thread_checker_;
 };
 
 }  // namespace base

@@ -43,7 +43,7 @@ class BASE_EXPORT OneShotEvent {
   // migrating old code; usually calling Post() unconditionally will
   // result in more readable code.
   bool is_signaled() const {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(thread_checker_.CalledOnValidThread());
     return signaled_;
   }
 
@@ -85,7 +85,7 @@ class BASE_EXPORT OneShotEvent {
                 scoped_refptr<SingleThreadTaskRunner> runner,
                 const TimeDelta& delay) const;
 
-  THREAD_CHECKER(thread_checker_);
+  ThreadChecker thread_checker_;
 
   bool signaled_;
 

@@ -249,7 +249,7 @@ class TestLauncher {
   // pool thread.  Should be the first member so that it's destroyed last: when
   // destroying other members, especially the worker pool, we may check the code
   // is running on the correct thread.
-  THREAD_CHECKER(thread_checker_);
+  ThreadChecker thread_checker_;
 
   raw_ptr<TestLauncherDelegate> launcher_delegate_;
 

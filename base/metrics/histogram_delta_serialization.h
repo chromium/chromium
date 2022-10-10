@@ -50,7 +50,7 @@ class BASE_EXPORT HistogramDeltaSerialization : public HistogramFlattener {
   void RecordDelta(const HistogramBase& histogram,
                    const HistogramSamples& snapshot) override;
 
-  THREAD_CHECKER(thread_checker_);
+  ThreadChecker thread_checker_;
 
   // Calculates deltas in histogram counters.
   HistogramSnapshotManager histogram_snapshot_manager_;
