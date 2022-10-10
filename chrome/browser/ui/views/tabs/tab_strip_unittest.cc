@@ -195,7 +195,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
     for (auto const& group_view_pair :
-         tab_strip_->tab_container_->GetGroupViews())
+         tab_strip_->tab_container_->get_group_views_for_testing())
       result.push_back(group_view_pair.second.get());
     return result;
   }

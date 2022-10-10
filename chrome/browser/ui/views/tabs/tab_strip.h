@@ -193,7 +193,7 @@ class TabStrip : public views::View,
 
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
-    return tab_container_->GetGroupViews().at(id).get()->header();
+    return tab_container_->GetGroupViews(id)->header();
   }
 
   // Returns the index of the specified view in the model coordinate system, or

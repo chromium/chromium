@@ -468,7 +468,7 @@ void TabContainerImpl::OnGroupVisualsChanged(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData* old_visuals,
     const tab_groups::TabGroupVisualData* new_visuals) {
-  GetGroupViews()[group]->OnGroupVisualsChanged();
+  GetGroupViews(group)->OnGroupVisualsChanged();
   // The group title may have changed size, so update bounds.
   // First exit tab closing mode, unless this change was a collapse, in which
   // case we want to stay in tab closing mode.
@@ -723,8 +723,15 @@ bool TabContainerImpl::InTabClose() {
   return in_tab_close_;
 }
 
-std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
-TabContainerImpl::GetGroupViews() {
+TabGroupViews* TabContainerImpl::GetGroupViews(
+    tab_groups::TabGroupId group_id) const {
+  auto group_views = group_views_.find(group_id);
+  CHECK(group_views != group_views_.end());
+  return group_views->second.get();
+}
+
+const std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
+TabContainerImpl::get_group_views_for_testing() const {
   return group_views_;
 }
 

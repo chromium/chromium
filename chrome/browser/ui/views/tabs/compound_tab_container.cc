@@ -480,10 +480,15 @@ bool CompoundTabContainer::InTabClose() {
   return unpinned_tab_container_->InTabClose();
 }
 
-std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
-CompoundTabContainer::GetGroupViews() {
+TabGroupViews* CompoundTabContainer::GetGroupViews(
+    tab_groups::TabGroupId group_id) const {
+  return unpinned_tab_container_->GetGroupViews(group_id);
+}
+
+const std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
+CompoundTabContainer::get_group_views_for_testing() const {
   // Only the unpinned container can have groups.
-  return unpinned_tab_container_->GetGroupViews();
+  return unpinned_tab_container_->get_group_views_for_testing();  // IN-TEST
 }
 
 int CompoundTabContainer::GetActiveTabWidth() const {

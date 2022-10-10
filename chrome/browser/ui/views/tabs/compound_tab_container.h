@@ -78,8 +78,9 @@ class CompoundTabContainer : public TabContainer {
   void ExitTabClosingMode() override;
   void SetTabSlotVisibility() override;
   bool InTabClose() override;
-  std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
-  GetGroupViews() override;
+  TabGroupViews* GetGroupViews(tab_groups::TabGroupId group_id) const override;
+  const std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
+  get_group_views_for_testing() const override;
   int GetActiveTabWidth() const override;
   int GetInactiveTabWidth() const override;
   gfx::Rect GetIdealBounds(int model_index) const override;

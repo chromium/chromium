@@ -176,7 +176,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
     tab_container_->GetTabAtModelIndex(model_index)->set_group(group);
     tab_strip_controller_->AddTabToGroup(model_index, group);
 
-    auto& group_views = tab_container_->GetGroupViews();
+    const auto& group_views = tab_container_->get_group_views_for_testing();
     if (group_views.find(group) == group_views.end())
       tab_container_->OnGroupCreated(group);
 

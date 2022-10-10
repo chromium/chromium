@@ -197,7 +197,7 @@ class TabContainerTest : public ChromeViewsTestBase {
     tab_container_->GetTabAtModelIndex(model_index)->set_group(group);
     tab_strip_controller_->AddTabToGroup(model_index, group);
 
-    auto& group_views = tab_container_->GetGroupViews();
+    const auto& group_views = tab_container_->get_group_views_for_testing();
     if (group_views.find(group) == group_views.end())
       tab_container_->OnGroupCreated(group);
 
@@ -238,7 +238,8 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   std::vector<TabGroupViews*> ListGroupViews() const {
     std::vector<TabGroupViews*> result;
-    for (auto const& group_view_pair : tab_container_->GetGroupViews())
+    for (auto const& group_view_pair :
+         tab_container_->get_group_views_for_testing())
       result.push_back(group_view_pair.second.get());
     return result;
   }
@@ -250,7 +251,8 @@ class TabContainerTest : public ChromeViewsTestBase {
     views::View::Views all_children = tab_container_->children();
 
     const int num_tab_slot_views =
-        tab_container_->GetTabCount() + tab_container_->GetGroupViews().size();
+        tab_container_->GetTabCount() +
+        tab_container_->get_group_views_for_testing().size();
 
     return views::View::Views(all_children.begin(),
                               all_children.begin() + num_tab_slot_views);
@@ -271,7 +273,7 @@ class TabContainerTest : public ChromeViewsTestBase {
       absl::optional<tab_groups::TabGroupId> curr_group = tab->group();
       if (curr_group.has_value() && curr_group != prev_group) {
         ordered_views.push_back(
-            tab_container_->GetGroupViews()[curr_group.value()]->header());
+            tab_container_->GetGroupViews(curr_group.value())->header());
       }
       prev_group = curr_group;
 
@@ -477,7 +479,7 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
   tab_container_->CompleteAnimationAndLayout();
 
   TabGroupHeader* const group_header =
-      tab_container_->GetGroupViews()[group]->header();
+      tab_container_->GetGroupViews(group)->header();
 
   using DropIndex = BrowserRootView::DropIndex;
 

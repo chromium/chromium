@@ -529,7 +529,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // If this is a header drag, start painting the group highlight.
     TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(views[0]);
     if (header) {
-      tab_strip_->tab_container_->GetGroupViews()[header->group().value()]
+      tab_strip_->tab_container_->GetGroupViews(header->group().value())
           ->highlight()
           ->SetVisible(true);
       // Make sure the bounds of the group views are up to date right now
@@ -562,7 +562,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(view);
       if (header) {
         // Disable the group highlight now that the drag is ended.
-        tab_strip_->tab_container_->GetGroupViews()[header->group().value()]
+        tab_strip_->tab_container_->GetGroupViews(header->group().value())
             ->highlight()
             ->SetVisible(false);
         ideal_bounds =
@@ -1120,10 +1120,10 @@ void TabStrip::ToggleTabGroup(const tab_groups::TabGroupId& group,
     }
 
     const int current_group_width =
-        tab_container_->GetGroupViews()[group]->GetBounds().width();
+        tab_container_->GetGroupViews(group)->GetBounds().width();
     // A collapsed group only has the width of its header, which is slightly
     // smaller for collapsed groups compared to expanded groups.
-    const int collapsed_group_width = tab_container_->GetGroupViews()[group]
+    const int collapsed_group_width = tab_container_->GetGroupViews(group)
                                           ->header()
                                           ->GetCollapsedHeaderWidth();
     const CloseTabSource source =
@@ -1846,15 +1846,6 @@ void TabStrip::Init() {
   SetNotifyEnterExitOnChild(true);
 
   UpdateContrastRatioValues();
-}
-
-std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
-  std::map<tab_groups::TabGroupId, TabGroupHeader*> group_headers;
-  for (const auto& group_view_pair : tab_container_->GetGroupViews()) {
-    group_headers.insert(std::make_pair(group_view_pair.first,
-                                        group_view_pair.second->header()));
-  }
-  return group_headers;
 }
 
 void TabStrip::NewTabButtonPressed(const ui::Event& event) {

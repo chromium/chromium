@@ -135,8 +135,12 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
 
   virtual bool InTabClose() = 0;
 
-  virtual std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroupViews>>&
-  GetGroupViews() = 0;
+  // Returns the TabGroupViews associated with the group `group_id`.
+  virtual TabGroupViews* GetGroupViews(
+      tab_groups::TabGroupId group_id) const = 0;
+  virtual const std::map<tab_groups::TabGroupId,
+                         std::unique_ptr<TabGroupViews>>&
+  get_group_views_for_testing() const = 0;
 
   // Returns the current width of the active tab.
   virtual int GetActiveTabWidth() const = 0;
