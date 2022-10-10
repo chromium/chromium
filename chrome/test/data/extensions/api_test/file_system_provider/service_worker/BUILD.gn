@@ -20,6 +20,8 @@ js_library("service_worker") {
     "copy_entry/test.js",
     "delete_entry/sw.js",
     "delete_entry/test.js",
+    "get_all/sw.js",
+    "get_all/test.js",
     "helpers.js",
     "provider.js",
     "read_directory/sw.js",

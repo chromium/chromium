@@ -1,41 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {mountTestFileSystem, remoteProvider} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {mountTestFileSystem, openFile, readTextFromFile, remoteProvider, startReadTextFromFile} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
-
-/**
- * @param {!FileEntry} fileEntry
- * @returns {!Promise<!File>}
- */
-async function openFile(fileEntry) {
-  return new Promise((resolve, reject) => fileEntry.file(resolve, reject));
-}
-
-/**
- * @param {!File} file
- * @returns {!Promise<string>}
- */
-async function readTextFromFile(file) {
-  const {promise} = startReadTextFromFile(file);
-  return promise;
-}
-
-/**
- * @param {!File} file
- * @returns {{promise: !Promise<string>, reader: !FileReader}}
- */
-function startReadTextFromFile(file) {
-  const reader = new FileReader();
-  const promise = new Promise((resolve, reject) => {
-    reader.onload = e => resolve(reader.result);
-    reader.onerror = e => reject(reader.error);
-    reader.onabort = e => reject(reader.error);
-    reader.readAsText(file);
-  });
-  return {reader, promise};
-}
 
 async function main() {
   await navigator.serviceWorker.ready;

@@ -71,6 +71,38 @@ async function mount(openedFilesLimit) {
   return fileSystem;
 };
 
+/**
+ * @param {!FileEntry} fileEntry
+ * @returns {!Promise<!File>}
+ */
+export async function openFile(fileEntry) {
+  return new Promise((resolve, reject) => fileEntry.file(resolve, reject));
+}
+
+/**
+ * @param {!File} file
+ * @returns {!Promise<string>}
+ */
+export async function readTextFromFile(file) {
+  const {promise} = startReadTextFromFile(file);
+  return promise;
+}
+
+/**
+ * @param {!File} file
+ * @returns {{promise: !Promise<string>, reader: !FileReader}}
+ */
+export function startReadTextFromFile(file) {
+  const reader = new FileReader();
+  const promise = new Promise((resolve, reject) => {
+    reader.onload = e => resolve(reader.result);
+    reader.onerror = e => reject(reader.error);
+    reader.onabort = e => reject(reader.error);
+    reader.readAsText(file);
+  });
+  return {reader, promise};
+}
+
 export class MountedTestFileSystem {
   /** @param {!FileSystem} fileSystem */
   constructor(fileSystem) {
