@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmAnalogGainIncreaseRate" units="changes/minute"
-    expires_after="2022-10-05">
+    expires_after="2023-02-12">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
