@@ -133,52 +133,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.Audio.Agc.ClippingPredictor.F1Score" units="%"
-    expires_after="2022-04-03">
-  <owner>alessiob@chromium.org</owner>
-  <owner>silen@chromium.org</owner>
-  <summary>
-    Logs the F1 score for the clipping predictor used in AgcManagerDirect. A log
-    call is made every 30 seconds during an active WebRTC call using the analog
-    gain controller and the clipping predictor feature.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc.ClippingPredictor.Precision" units="%"
-    expires_after="2022-04-24">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    Logs the precision for the clipping predictor used in AgcManagerDirect. A
-    log call is made every 30 seconds during an active WebRTC call using the
-    analog gain controller and the clipping predictor feature.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc.ClippingPredictor.PredictionInterval"
-    units="frames" expires_after="2022-04-03">
-  <owner>alessiob@chromium.org</owner>
-  <owner>silen@chromium.org</owner>
-  <summary>
-    Logs the time elapsed between a clipping prediction and a matched clipping
-    detection for the clipping predictor used in AgcManagerDirect. A log call is
-    made every time a predicted clipping event is matched (theoretical upper
-    bound: one call every 10 ms) during an active WebRTC call using the analog
-    gain controller and the clipping predictor feature.
-  </summary>
-</histogram>
-
-<histogram name="WebRTC.Audio.Agc.ClippingPredictor.Recall" units="%"
-    expires_after="2022-05-01">
-  <owner>silen@chromium.org</owner>
-  <owner>alessiob@chromium.org</owner>
-  <summary>
-    Logs the recall for the clipping predictor used in AgcManagerDirect. A log
-    call is made every 30 seconds during an active WebRTC call using the analog
-    gain controller and the clipping predictor feature.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.Agc.DigitalGainApplied" units="dB"
     expires_after="2023-02-26">
   <owner>alessiob@chromium.org</owner>
