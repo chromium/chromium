@@ -803,12 +803,26 @@ class UnitTest(unittest.TestCase):
 
     self.check(['run', '-s', '-c', 'debug_goma', '//out/Default',
                 'base_unittests'], mbw=mbw, ret=0)
+
+    # Specify a custom dimension via '-d'.
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
     self.check(['run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7',
                 '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
+
+    # Use the internal swarming server via '--internal'.
+    mbw = self.fake_mbw(files=files)
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
+    mbw.ToSrcRelPath = to_src_rel_path_stub
+    self.check([
+        'run', '-s', '--internal', '-c', 'debug_goma', '//out/Default',
+        'base_unittests'
+    ],
+               mbw=mbw,
+               ret=0)
 
   def test_run_swarmed_task_failure(self):
     files = {

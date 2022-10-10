@@ -376,6 +376,11 @@ class MetaBuildWrapper:
     subp.add_argument('-d', '--dimension', default=[], action='append', nargs=2,
                       dest='dimensions', metavar='FOO bar',
                       help='dimension to filter on')
+    subp.add_argument('--internal',
+                      action='store_true',
+                      help=('Run under the internal swarming server '
+                            '(chrome-swarming) instead of the public server '
+                            '(chromium-swarm).'))
     subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
                       help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
@@ -634,7 +639,8 @@ class MetaBuildWrapper:
     self.Print('')
     if self.args.swarmed:
       cmd, _ = self.GetSwarmingCommand(self.args.target, vals)
-      return self._RunUnderSwarming(self.args.path, self.args.target, cmd)
+      return self._RunUnderSwarming(self.args.path, self.args.target, cmd,
+                                    self.args.internal)
     return self._RunLocallyIsolated(self.args.path, self.args.target)
 
   def CmdZip(self):
@@ -667,9 +673,13 @@ class MetaBuildWrapper:
       if zip_dir:
         self.RemoveDirectory(zip_dir)
 
-  def _RunUnderSwarming(self, build_dir, target, isolate_cmd):
-    cas_instance = 'chromium-swarm'
-    swarming_server = 'chromium-swarm.appspot.com'
+  def _RunUnderSwarming(self, build_dir, target, isolate_cmd, internal):
+    if internal:
+      cas_instance = 'chrome-swarming'
+      swarming_server = 'chrome-swarming.appspot.com'
+    else:
+      cas_instance = 'chromium-swarm'
+      swarming_server = 'chromium-swarm.appspot.com'
     # TODO(dpranke): Look up the information for the target in
     # the //testing/buildbot.json file, if possible, so that we
     # can determine the isolate target, command line, and additional
@@ -737,7 +747,13 @@ class MetaBuildWrapper:
           self.ToSrcRelPath(build_dir),
           '-dump-json',
           json_file,
-      ] + tags + dimensions + ['--'] + list(isolate_cmd)
+      ]
+      if internal:
+        cmd += [
+            '--realm',
+            'chrome:try',
+        ]
+      cmd += tags + dimensions + ['--'] + list(isolate_cmd)
       if self.args.extra_args:
         cmd += self.args.extra_args
       self.Print('')
