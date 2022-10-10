@@ -51,31 +51,27 @@ struct ValueEquals {
   const base::Value* first_;
 };
 
-bool GetBoolValue(const base::Value& dict, const char* key) {
-  const base::Value* value =
-      dict.FindKeyOfType(key, base::Value::Type::BOOLEAN);
-  return value ? value->GetBool() : false;
+bool GetBoolValue(const base::Value::Dict& dict, const char* key) {
+  return dict.FindBool(key).value_or(false);
 }
 
-int GetIntValue(const base::Value& dict, const char* key) {
-  const base::Value* value =
-      dict.FindKeyOfType(key, base::Value::Type::INTEGER);
-  return value ? value->GetInt() : 0;
+int GetIntValue(const base::Value::Dict& dict, const char* key) {
+  return dict.FindInt(key).value_or(0);
 }
 
-bool GetString(const base::Value& dict, const char* key, std::string* result) {
-  // Note: FindPath uses path expansion which is currently required for the
-  // fake shill implementations.
-  const base::Value* v = dict.FindPathOfType(key, base::Value::Type::STRING);
-  if (!v || !v->is_string())
+bool GetString(const base::Value::Dict& dict,
+               const char* path,
+               std::string* result) {
+  const std::string* str_result = dict.FindStringByDottedPath(path);
+  if (!str_result)
     return false;
-  *result = v->GetString();
+  *result = *str_result;
   return true;
 }
 
-std::string GetStringValue(const base::Value& dict, const char* key) {
-  const base::Value* value = dict.FindKeyOfType(key, base::Value::Type::STRING);
-  return value ? value->GetString() : std::string();
+std::string GetStringValue(const base::Value::Dict& dict, const char* key) {
+  const std::string* str_result = dict.FindString(key);
+  return str_result ? *str_result : std::string();
 }
 
 // Returns whether added.
@@ -92,7 +88,7 @@ bool IsPortalledState(const std::string& state) {
          state == shill::kStatePortalSuspected;
 }
 
-int GetStateOrder(const base::Value& dict) {
+int GetStateOrder(const base::Value::Dict& dict) {
   std::string state = GetStringValue(dict, shill::kStateProperty);
   if (state == shill::kStateOnline)
     return 1;
@@ -105,7 +101,7 @@ int GetStateOrder(const base::Value& dict) {
   return 5;
 }
 
-int GetTechnologyOrder(const base::Value& dict) {
+int GetTechnologyOrder(const base::Value::Dict& dict) {
   std::string technology = GetStringValue(dict, shill::kTypeProperty);
   // Note: In Shill, VPN is the highest priority network, but it is generally
   // dependent on the underlying network and gets sorted after that network.
@@ -123,7 +119,7 @@ int GetTechnologyOrder(const base::Value& dict) {
   return 4;
 }
 
-int GetSecurityOrder(const base::Value& dict) {
+int GetSecurityOrder(const base::Value::Dict& dict) {
   std::string security = GetStringValue(dict, shill::kSecurityClassProperty);
   // No security is listed last.
   if (security == shill::kSecurityClassNone)
@@ -140,14 +136,16 @@ int GetSecurityOrder(const base::Value& dict) {
 // Matches Shill's Service::Compare function.
 bool CompareNetworks(const base::Value& a, const base::Value& b) {
   // Connection State: Online, Connected, Portal, Connecting
-  int state_order_a = GetStateOrder(a);
-  int state_order_b = GetStateOrder(b);
+  const base::Value::Dict& a_dict = a.GetDict();
+  const base::Value::Dict& b_dict = b.GetDict();
+  int state_order_a = GetStateOrder(a_dict);
+  int state_order_b = GetStateOrder(b_dict);
   if (state_order_a != state_order_b)
     return state_order_a < state_order_b;
 
   // Connectable (i.e. configured)
-  bool connectable_a = GetBoolValue(a, shill::kConnectableProperty);
-  bool connectable_b = GetBoolValue(b, shill::kConnectableProperty);
+  bool connectable_a = GetBoolValue(a_dict, shill::kConnectableProperty);
+  bool connectable_b = GetBoolValue(b_dict, shill::kConnectableProperty);
   if (connectable_a != connectable_b)
     return connectable_a;
 
@@ -155,28 +153,28 @@ bool CompareNetworks(const base::Value& a, const base::Value& b) {
   // in GetTechnologyOrder.
 
   // Technology
-  int technology_order_a = GetTechnologyOrder(a);
-  int technology_order_b = GetTechnologyOrder(b);
+  int technology_order_a = GetTechnologyOrder(a_dict);
+  int technology_order_b = GetTechnologyOrder(b_dict);
   if (technology_order_a != technology_order_b)
     return technology_order_a < technology_order_b;
 
   // Priority
-  int priority_a = GetIntValue(a, shill::kPriorityProperty);
-  int priority_b = GetIntValue(b, shill::kPriorityProperty);
+  int priority_a = GetIntValue(a_dict, shill::kPriorityProperty);
+  int priority_b = GetIntValue(b_dict, shill::kPriorityProperty);
   if (priority_a != priority_b)
     return priority_a > priority_b;
 
   // TODO: Sort on: Managed
 
   // AutoConnect
-  bool auto_connect_a = GetBoolValue(a, shill::kAutoConnectProperty);
-  bool auto_connect_b = GetBoolValue(b, shill::kAutoConnectProperty);
+  bool auto_connect_a = GetBoolValue(a_dict, shill::kAutoConnectProperty);
+  bool auto_connect_b = GetBoolValue(b_dict, shill::kAutoConnectProperty);
   if (auto_connect_a != auto_connect_b)
     return auto_connect_a;
 
   // Security
-  int security_order_a = GetSecurityOrder(a);
-  int security_order_b = GetSecurityOrder(b);
+  int security_order_a = GetSecurityOrder(a_dict);
+  int security_order_b = GetSecurityOrder(b_dict);
   if (security_order_a != security_order_b)
     return security_order_a < security_order_b;
 
@@ -184,14 +182,14 @@ bool CompareNetworks(const base::Value& a, const base::Value& b) {
   // TODO: Sort on: Has ever connected
 
   // SignalStrength
-  int strength_a = GetIntValue(a, shill::kSignalStrengthProperty);
-  int strength_b = GetIntValue(b, shill::kSignalStrengthProperty);
+  int strength_a = GetIntValue(a_dict, shill::kSignalStrengthProperty);
+  int strength_b = GetIntValue(b_dict, shill::kSignalStrengthProperty);
   if (strength_a != strength_b)
     return strength_a > strength_b;
 
   // Arbitrary identifier: SSID
-  return GetStringValue(a, shill::kSSIDProperty) <
-         GetStringValue(b, shill::kSSIDProperty);
+  return GetStringValue(a_dict, shill::kSSIDProperty) <
+         GetStringValue(b_dict, shill::kSSIDProperty);
 }
 
 void LogErrorCallback(const std::string& error_name,
@@ -391,11 +389,12 @@ void FakeShillManagerClient::ConfigureService(
   ShillServiceClient::TestInterface* service_client =
       ShillServiceClient::Get()->GetTestInterface();
 
+  const base::Value::Dict& properties_dict = properties.GetDict();
   std::string guid;
   std::string type;
   std::string name;
-  if (!GetString(properties, shill::kGuidProperty, &guid) ||
-      !GetString(properties, shill::kTypeProperty, &type)) {
+  if (!GetString(properties_dict, shill::kGuidProperty, &guid) ||
+      !GetString(properties_dict, shill::kTypeProperty, &type)) {
     LOG(ERROR) << "ConfigureService requires GUID and Type to be defined";
     // If the properties aren't filled out completely, then just return an empty
     // object path.
@@ -405,11 +404,11 @@ void FakeShillManagerClient::ConfigureService(
   }
 
   if (type == shill::kTypeWifi) {
-    GetString(properties, shill::kSSIDProperty, &name);
+    GetString(properties_dict, shill::kSSIDProperty, &name);
 
     if (name.empty()) {
       std::string hex_name;
-      GetString(properties, shill::kWifiHexSsid, &hex_name);
+      GetString(properties_dict, shill::kWifiHexSsid, &hex_name);
       if (!hex_name.empty()) {
         std::vector<uint8_t> bytes;
         if (base::HexStringToBytes(hex_name, &bytes)) {
@@ -419,12 +418,12 @@ void FakeShillManagerClient::ConfigureService(
     }
   }
   if (name.empty())
-    GetString(properties, shill::kNameProperty, &name);
+    GetString(properties_dict, shill::kNameProperty, &name);
   if (name.empty())
     name = guid;
 
   std::string ipconfig_path;
-  GetString(properties, shill::kIPConfigProperty, &ipconfig_path);
+  GetString(properties_dict, shill::kIPConfigProperty, &ipconfig_path);
 
   std::string service_path = service_client->FindServiceMatchingGUID(guid);
   if (service_path.empty())
@@ -617,8 +616,8 @@ void FakeShillManagerClient::SetTechnologyInitializing(const std::string& type,
 
 void FakeShillManagerClient::SetTechnologyProhibited(const std::string& type,
                                                      bool prohibited) {
-  std::string prohibited_technologies =
-      GetStringValue(stub_properties_, shill::kProhibitedTechnologiesProperty);
+  std::string prohibited_technologies = GetStringValue(
+      stub_properties_.GetDict(), shill::kProhibitedTechnologiesProperty);
   std::vector<std::string> prohibited_list =
       base::SplitString(prohibited_technologies, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
@@ -748,7 +747,8 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
       continue;
     }
 
-    std::string type = GetStringValue(*properties, shill::kTypeProperty);
+    std::string type =
+        GetStringValue(properties->GetDict(), shill::kTypeProperty);
     if (!TechnologyEnabled(type)) {
       disabled_path_list.push_back(service_path);
       continue;
@@ -768,7 +768,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   complete_path_list.clear();
   visible_services.clear();
   for (const base::Value& dict : complete_dict_list) {
-    std::string service_path = GetStringValue(dict, kPathKey);
+    std::string service_path = GetStringValue(dict.GetDict(), kPathKey);
     complete_path_list.Append(base::Value(service_path));
     if (dict.FindBoolKey(shill::kVisibleProperty).value_or(false))
       visible_services.Append(base::Value(service_path));
@@ -785,7 +785,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   // |new_default_service| may be empty indicating no default network.
   std::string new_default_service;
   if (!complete_dict_list.empty()) {
-    const base::Value& default_network = complete_dict_list[0];
+    const base::Value::Dict& default_network = complete_dict_list[0].GetDict();
     if (IsConnectedState(
             GetStringValue(default_network, shill::kStateProperty))) {
       new_default_service = GetStringValue(default_network, kPathKey);
