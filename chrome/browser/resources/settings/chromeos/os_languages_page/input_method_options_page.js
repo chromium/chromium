@@ -275,11 +275,6 @@ class SettingsInputMethodOptionsPageElement extends
     }
     updatedSettings[this.engineId_][optionName] = newValue;
 
-    if (this.engineId_ === 'zh-t-i0-pinyin') {
-      updatedSettings['pinyin'] = updatedSettings[this.engineId_];
-    } else if (this.engineId_ === 'zh-hant-t-i0-und') {
-      updatedSettings['zhuyin'] = updatedSettings[this.engineId_];
-    }
     this.setPrefValue(this.PREFS_PATH, updatedSettings);
   }
 
