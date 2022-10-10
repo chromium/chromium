@@ -65,26 +65,26 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Unset) {
 }
 
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Empty) {
-  SetPolicyValue(base::ListValue());
+  SetPolicyValue(base::Value(base::Value::Type::LIST));
   CheckAndApplyPolicySettings();
   EXPECT_TRUE(errors().empty());
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  EXPECT_TRUE(value->GetListDeprecated().empty());
+  EXPECT_TRUE(value->GetList().empty());
 }
 
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Valid) {
-  base::ListValue policy_value;
-  policy_value.Append(base::Value("6000"));
-  SetPolicyValue(std::move(policy_value));
+  base::Value::List policy_value;
+  policy_value.Append("6000");
+  SetPolicyValue(base::Value(std::move(policy_value)));
   CheckAndApplyPolicySettings();
   EXPECT_TRUE(errors().empty());
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
-  const auto& element = value->GetListDeprecated()[0];
+  ASSERT_EQ(value->GetList().size(), 1u);
+  const auto& element = value->GetList()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);
@@ -99,17 +99,17 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, NotAList) {
 
 // Non-string types are removed from the list, but the policy is still applied.
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, MixedTypes) {
-  base::ListValue policy_value;
-  policy_value.Append(base::Value(79));
-  policy_value.Append(base::Value("6000"));
-  SetPolicyValue(std::move(policy_value));
+  base::Value::List policy_value;
+  policy_value.Append(79);
+  policy_value.Append("6000");
+  SetPolicyValue(base::Value(std::move(policy_value)));
   CheckAndApplyPolicySettings();
   EXPECT_TRUE(has_error());
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
-  const auto& element = value->GetListDeprecated()[0];
+  ASSERT_EQ(value->GetList().size(), 1u);
+  const auto& element = value->GetList()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);
@@ -129,18 +129,18 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, InvalidStrings) {
       "\"514\"",       // Contains extra quotes.
       "6000",          // Valid.
   };
-  base::ListValue policy_value;
+  base::Value::List policy_value;
   for (const auto& value : kValues) {
-    policy_value.Append(base::Value(value));
+    policy_value.Append(value);
   }
-  SetPolicyValue(std::move(policy_value));
+  SetPolicyValue(base::Value(std::move(policy_value)));
   CheckAndApplyPolicySettings();
   EXPECT_TRUE(has_error());
   auto* value = pref_value();
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_list());
-  ASSERT_EQ(value->GetListDeprecated().size(), 1u);
-  const auto& element = value->GetListDeprecated()[0];
+  ASSERT_EQ(value->GetList().size(), 1u);
+  const auto& element = value->GetList()[0];
   EXPECT_TRUE(element.is_int());
   ASSERT_TRUE(element.GetIfInt());
   EXPECT_EQ(element.GetIfInt().value(), 6000);

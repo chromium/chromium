@@ -44,9 +44,8 @@ bool ExplicitlyAllowedNetworkPortsPolicyHandler::CheckListEntry(
 void ExplicitlyAllowedNetworkPortsPolicyHandler::ApplyList(
     base::Value filtered_list,
     PrefValueMap* prefs) {
-  base::ListValue integer_list;
-  auto list_view = filtered_list.GetListDeprecated();
-  for (const base::Value& value : list_view) {
+  base::Value::List integer_list;
+  for (const base::Value& value : filtered_list.GetList()) {
     const std::string& as_string = value.GetString();
     int as_int;
     const bool success = base::StringToInt(as_string, &as_int);
@@ -54,7 +53,7 @@ void ExplicitlyAllowedNetworkPortsPolicyHandler::ApplyList(
     integer_list.Append(as_int);
   }
   prefs->SetValue(prefs::kExplicitlyAllowedNetworkPorts,
-                  std::move(integer_list));
+                  base::Value(std::move(integer_list)));
 }
 
 }  // namespace policy
