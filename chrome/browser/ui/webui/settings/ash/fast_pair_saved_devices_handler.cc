@@ -49,14 +49,14 @@ base::Value::Dict SavedDeviceToDictionary(const std::string& device_name,
 
 }  // namespace
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 FastPairSavedDevicesHandler::FastPairSavedDevicesHandler()
-    : image_decoder_(
-          std::make_unique<ash::quick_pair::FastPairImageDecoderImpl>()) {}
+    : image_decoder_(std::make_unique<quick_pair::FastPairImageDecoderImpl>()) {
+}
 
 FastPairSavedDevicesHandler::FastPairSavedDevicesHandler(
-    std::unique_ptr<ash::quick_pair::FastPairImageDecoder> image_decoder)
+    std::unique_ptr<quick_pair::FastPairImageDecoder> image_decoder)
     : image_decoder_(std::move(image_decoder)) {}
 
 FastPairSavedDevicesHandler::~FastPairSavedDevicesHandler() = default;
@@ -78,16 +78,15 @@ void FastPairSavedDevicesHandler::HandleRemoveSavedDevice(
   QP_LOG(VERBOSE) << __func__;
   std::vector<uint8_t> account_key;
   base::HexStringToBytes(args[0].GetString(), &account_key);
-  ash::quick_pair::FastPairRepository::Get()
-      ->DeleteAssociatedDeviceByAccountKey(
-          account_key,
-          base::BindOnce(&FastPairSavedDevicesHandler::OnSavedDeviceDeleted,
-                         weak_ptr_factory_.GetWeakPtr()));
+  quick_pair::FastPairRepository::Get()->DeleteAssociatedDeviceByAccountKey(
+      account_key,
+      base::BindOnce(&FastPairSavedDevicesHandler::OnSavedDeviceDeleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FastPairSavedDevicesHandler::OnSavedDeviceDeleted(bool success) {
   QP_LOG(INFO) << __func__ << ": " << (success ? "success" : "failed");
-  ash::quick_pair::RecordSavedDevicesRemoveResult(/*success=*/success);
+  quick_pair::RecordSavedDevicesRemoveResult(/*success=*/success);
 }
 
 void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
@@ -102,7 +101,7 @@ void FastPairSavedDevicesHandler::HandleLoadSavedDevicePage(
 
   loading_saved_device_page_ = true;
   loading_start_time_ = base::TimeTicks::Now();
-  ash::quick_pair::FastPairRepository::Get()->GetSavedDevices(
+  quick_pair::FastPairRepository::Get()->GetSavedDevices(
       base::BindOnce(&FastPairSavedDevicesHandler::OnGetSavedDevices,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -123,13 +122,13 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   if (devices.empty()) {
     QP_LOG(VERBOSE) << __func__ << ": No devices saved to the user's account";
     base::Value::List saved_devices_list;
-    ash::quick_pair::RecordSavedDevicesCount(
+    quick_pair::RecordSavedDevicesCount(
         /*num_devices=*/saved_devices_list.size());
     FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
     loading_saved_device_page_ = false;
     base::TimeDelta total_load_time =
         base::TimeTicks::Now() - loading_start_time_;
-    ash::quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
+    quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
     return;
   }
 
@@ -228,13 +227,13 @@ void FastPairSavedDevicesHandler::DecodingUrlsFinished() {
         /*account_key=*/account_key));
   }
 
-  ash::quick_pair::RecordSavedDevicesCount(
+  quick_pair::RecordSavedDevicesCount(
       /*num_devices=*/saved_devices_list.size());
   FireWebUIListener(kSavedDevicesListMessage, saved_devices_list);
   QP_LOG(VERBOSE) << __func__ << ": Sending device list";
   base::TimeDelta total_load_time =
       base::TimeTicks::Now() - loading_start_time_;
-  ash::quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
+  quick_pair::RecordSavedDevicesTotalUxLoadTime(total_load_time);
 
   // We reset the state here for another page load that may happened while
   // chrome://os-settings is open, since our decoding tasks are completed.
@@ -248,4 +247,4 @@ void FastPairSavedDevicesHandler::OnJavascriptAllowed() {}
 
 void FastPairSavedDevicesHandler::OnJavascriptDisallowed() {}
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

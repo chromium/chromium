@@ -39,8 +39,7 @@ void PersonalizationSection::AddLoadTimeData(
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::PersonalizationHubHandler>());
+  web_ui->AddMessageHandler(std::make_unique<PersonalizationHubHandler>());
 }
 
 int PersonalizationSection::GetSectionNameMessageId() const {

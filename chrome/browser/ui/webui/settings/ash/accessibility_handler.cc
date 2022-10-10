@@ -30,11 +30,8 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 namespace {
-
-using ::ash::AccessibilityManager;
 
 void RecordShowShelfNavigationButtonsValueChange(bool enabled) {
   base::UmaHistogramBoolean(
@@ -210,8 +207,8 @@ void AccessibilityHandler::OnSodaInstallError(
 }
 
 void AccessibilityHandler::MaybeAddDictationLocales() {
-  base::flat_map<std::string, ash::Dictation::LocaleData> locales =
-      ash::Dictation::GetAllSupportedLocales();
+  base::flat_map<std::string, Dictation::LocaleData> locales =
+      Dictation::GetAllSupportedLocales();
 
   // Get application locale.
   std::string application_locale = g_browser_process->GetApplicationLocale();
@@ -284,5 +281,4 @@ std::u16string AccessibilityHandler::GetDictationLocaleDisplayName() {
       /*is_ui=*/true);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

@@ -28,10 +28,11 @@
 using testing::_;
 using testing::Return;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
+
+using ::chromeos::PowerPolicyController;
 
 PrefService* GetPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -208,14 +209,14 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendInitialSettings) {
 // Verifies that WebUI receives updated settings when the lid state changes.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendSettingsForLidStateChanges) {
   chromeos::FakePowerManagerClient::Get()->SetLidState(
-      PowerManagerClient::LidState::NOT_PRESENT, base::TimeTicks());
+      chromeos::PowerManagerClient::LidState::NOT_PRESENT, base::TimeTicks());
 
   DevicePowerSettings settings;
   settings.has_lid = false;
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
   chromeos::FakePowerManagerClient::Get()->SetLidState(
-      PowerManagerClient::LidState::OPEN, base::TimeTicks());
+      chromeos::PowerManagerClient::LidState::OPEN, base::TimeTicks());
   settings.has_lid = true;
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
@@ -439,5 +440,4 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetAdaptiveCharging) {
   EXPECT_EQ(false, pref->GetValue()->GetBool());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

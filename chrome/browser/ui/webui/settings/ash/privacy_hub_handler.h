@@ -12,10 +12,10 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 class PrivacyHubHandler : public content::WebUIMessageHandler,
-                          public ash::PrivacyHubDelegate {
+                          public PrivacyHubDelegate {
  public:
   PrivacyHubHandler();
   ~PrivacyHubHandler() override;
@@ -24,7 +24,7 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
 
   PrivacyHubHandler& operator=(const PrivacyHubHandler&) = delete;
 
-  // ash::PrivacyHubDelegate
+  // PrivacyHubDelegate
   void AvailabilityOfMicrophoneChanged(bool has_active_Input_device) override;
 
   void MicrophoneHardwareToggleChanged(bool muted) override;
@@ -46,6 +46,11 @@ class PrivacyHubHandler : public content::WebUIMessageHandler,
       const base::Value::List& args);
 };
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PrivacyHubHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PRIVACY_HUB_HANDLER_H_

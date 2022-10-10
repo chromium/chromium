@@ -53,8 +53,7 @@ KeyboardsStateResult GetKeyboardsState() {
 
 }  // namespace
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 const char KeyboardHandler::kShowKeysChangedName[] = "show-keys-changed";
 
@@ -105,7 +104,7 @@ void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
 
 void KeyboardHandler::HandleShowKeyboardShortcutViewer(
     const base::Value::List& args) const {
-  ash::ToggleKeyboardShortcutViewer();
+  ToggleKeyboardShortcutViewer();
 }
 
 void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
@@ -116,7 +115,7 @@ void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
 void KeyboardHandler::UpdateKeyboards() {
   bool physical_keyboard = false;
   // In tablet mode, physical keybards are disabled / ignored.
-  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode()) {
+  if (!TabletMode::Get() || !TabletMode::Get()->InTabletMode()) {
     physical_keyboard = true;
   }
   if (!physical_keyboard) {
@@ -158,5 +157,4 @@ void KeyboardHandler::UpdateShowKeys() {
   FireWebUIListener(kShowKeysChangedName, keyboard_params);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

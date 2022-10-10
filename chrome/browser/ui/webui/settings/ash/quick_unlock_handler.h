@@ -12,8 +12,7 @@
 class PrefService;
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Settings WebUI handler for quick unlock settings.
 class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
@@ -42,7 +41,11 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<QuickUnlockHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::QuickUnlockHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_QUICK_UNLOCK_HANDLER_H_

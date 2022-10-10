@@ -10,13 +10,11 @@
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS "Mouse and touchpad" settings page UI handler.
-class PointerHandler
-    : public ::settings::SettingsPageUIHandler,
-      public chromeos::system::PointerDeviceObserver::Observer {
+class PointerHandler : public ::settings::SettingsPageUIHandler,
+                       public system::PointerDeviceObserver::Observer {
  public:
   PointerHandler();
 
@@ -40,11 +38,14 @@ class PointerHandler
   // Initializes the page with the current pointer information.
   void HandleInitialize(const base::Value::List& args);
 
-  std::unique_ptr<chromeos::system::PointerDeviceObserver>
-      pointer_device_observer_;
+  std::unique_ptr<system::PointerDeviceObserver> pointer_device_observer_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PointerHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POINTER_HANDLER_H_

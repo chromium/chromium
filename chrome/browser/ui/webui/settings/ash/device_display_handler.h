@@ -10,8 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS "Displays" settings page UI handler.
 class DisplayHandler : public ::settings::SettingsPageUIHandler {
@@ -34,7 +33,11 @@ class DisplayHandler : public ::settings::SettingsPageUIHandler {
       cros_display_config_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::DisplayHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_DISPLAY_HANDLER_H_

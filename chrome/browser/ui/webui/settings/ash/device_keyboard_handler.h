@@ -10,8 +10,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS "Keyboard" settings page UI handler.
 class KeyboardHandler
@@ -73,7 +72,11 @@ class KeyboardHandler
       observation_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::KeyboardHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_KEYBOARD_HANDLER_H_

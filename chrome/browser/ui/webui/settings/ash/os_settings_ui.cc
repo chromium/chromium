@@ -92,8 +92,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   // TODO(khorimoto): Move to DeviceSection::AddHandler() once |html_source|
   // parameter is removed.
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::StorageHandler>(profile,
-                                                           html_source));
+      std::make_unique<StorageHandler>(profile, html_source));
 
   webui::SetupWebUIDataSource(
       html_source,

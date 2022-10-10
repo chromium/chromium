@@ -13,13 +13,11 @@
 
 class Profile;
 
-namespace chromeos {
-
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS Internet settings page UI handler.
 class InternetHandler
-    : public chromeos::tether::GmsCoreNotificationsStateTracker::Observer,
+    : public tether::GmsCoreNotificationsStateTracker::Observer,
       public ::settings::SettingsPageUIHandler {
  public:
   explicit InternetHandler(Profile* profile);
@@ -34,7 +32,7 @@ class InternetHandler
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::tether::GmsCoreNotificationsStateTracker::Observer:
+  // tether::GmsCoreNotificationsStateTracker::Observer:
   void OnGmsCoreNotificationStateChanged() override;
 
  private:
@@ -59,18 +57,22 @@ class InternetHandler
   gfx::NativeWindow GetNativeWindow();
 
   void SetGmsCoreNotificationsStateTrackerForTesting(
-      chromeos::tether::GmsCoreNotificationsStateTracker*
+      tether::GmsCoreNotificationsStateTracker*
           gms_core_notifications_state_tracker);
 
   std::vector<base::Value> device_names_without_notifications_;
 
   Profile* const profile_;
 
-  chromeos::tether::GmsCoreNotificationsStateTracker*
+  tether::GmsCoreNotificationsStateTracker*
       gms_core_notifications_state_tracker_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::InternetHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_INTERNET_HANDLER_H_

@@ -14,11 +14,10 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class GuestOsHandler : public ::settings::SettingsPageUIHandler,
-                       public chromeos::CrosUsbDeviceObserver {
+                       public CrosUsbDeviceObserver {
  public:
   explicit GuestOsHandler(Profile* profile);
   GuestOsHandler(const GuestOsHandler&) = delete;
@@ -31,7 +30,7 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
  private:
-  // chromeos::SharedUsbDeviceObserver.
+  // SharedUsbDeviceObserver.
   void OnUsbDevicesChanged() override;
 
   // Callback for the "getSharedPathsDisplayText" message.  Converts actual
@@ -61,7 +60,11 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<GuestOsHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::GuestOsHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_GUEST_OS_HANDLER_H_

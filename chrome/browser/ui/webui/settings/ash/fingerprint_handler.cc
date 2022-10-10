@@ -26,8 +26,7 @@
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 namespace {
 
 // The max number of fingerprints that can be stored.
@@ -287,5 +286,4 @@ void FingerprintHandler::OnSetRecordLabel(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(success));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

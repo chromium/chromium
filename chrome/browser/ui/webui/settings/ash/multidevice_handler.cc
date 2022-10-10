@@ -33,24 +33,19 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-using ash::phonehub::util::LogPermissionOnboardingDialogAction;
-using ash::phonehub::util::LogPermissionOnboardingSettingsClicked;
-using ash::phonehub::util::LogPermissionOnboardingSetupMode;
-using ash::phonehub::util::LogPermissionOnboardingSetupResult;
-using ash::phonehub::util::PermissionsOnboardingScreenEvent;
-using ash::phonehub::util::PermissionsOnboardingSetUpMode;
-using ash::phonehub::util::PermissionsOnboardingStep;
+namespace ash::settings {
 
-namespace chromeos {
-
-namespace settings {
+using phonehub::util::LogPermissionOnboardingDialogAction;
+using phonehub::util::LogPermissionOnboardingSettingsClicked;
+using phonehub::util::LogPermissionOnboardingSetupMode;
+using phonehub::util::LogPermissionOnboardingSetupResult;
+using phonehub::util::PermissionsOnboardingScreenEvent;
+using phonehub::util::PermissionsOnboardingSetUpMode;
+using phonehub::util::PermissionsOnboardingStep;
 
 namespace {
 
 const char kCameraRollAccessStatus[] = "cameraRollAccessStatus";
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace multidevice_setup = ::ash::multidevice_setup;
 
 const char kPageContentDataModeKey[] = "mode";
 const char kPageContentDataHostDeviceNameKey[] = "hostDeviceName";
@@ -102,8 +97,8 @@ MultideviceHandler::MultideviceHandler(
     multidevice_setup::AndroidSmsPairingStateTracker*
         android_sms_pairing_state_tracker,
     android_sms::AndroidSmsAppManager* android_sms_app_manager,
-    ash::eche_app::AppsAccessManager* apps_access_manager,
-    ash::phonehub::CameraRollManager* camera_roll_manager)
+    eche_app::AppsAccessManager* apps_access_manager,
+    phonehub::CameraRollManager* camera_roll_manager)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
@@ -690,11 +685,11 @@ void MultideviceHandler::OnNotificationStatusChange(
 }
 
 void MultideviceHandler::OnAppsStatusChange(
-    ash::eche_app::AppsAccessSetupOperation::Status new_status) {
+    eche_app::AppsAccessSetupOperation::Status new_status) {
   FireWebUIListener("settings.onAppsAccessSetupStatusChanged",
                     base::Value(static_cast<int32_t>(new_status)));
 
-  if (ash::eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status))
+  if (eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status))
     apps_access_operation_.reset();
 }
 
@@ -757,7 +752,7 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states[multidevice_setup::mojom::Feature::kPhoneHub]));
   auto cameraRoll_feature_state =
-      base::FeatureList::IsEnabled(chromeos::features::kPhoneHubCameraRoll)
+      base::FeatureList::IsEnabled(ash::features::kPhoneHubCameraRoll)
           ? feature_states
                 [multidevice_setup::mojom::Feature::kPhoneHubCameraRoll]
           : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
@@ -774,7 +769,7 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation]));
   auto eche_feature_state =
-      base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)
+      base::FeatureList::IsEnabled(ash::features::kEcheSWA)
           ? feature_states[multidevice_setup::mojom::Feature::kEche]
           : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
   page_content_dictionary.Set(kPageContentDataPhoneHubAppsStateKey,
@@ -836,8 +831,7 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
   if (camera_roll_manager_) {
     is_camera_roll_file_permission_granted =
         camera_roll_manager_->ui_state() !=
-        ash::phonehub::CameraRollManager::CameraRollUiState::
-            NO_STORAGE_PERMISSION;
+        phonehub::CameraRollManager::CameraRollUiState::NO_STORAGE_PERMISSION;
   }
   page_content_dictionary.Set(kIsCameraRollFilePermissionGranted,
                               is_camera_roll_file_permission_granted);
@@ -922,13 +916,11 @@ void MultideviceHandler::OnScreenLockStatusChanged() {
   // We need to use FireWebUIListener to update value dynamically because
   // loadTimeData is not recreated on refresh.
   const bool is_phone_screen_lock_enabled =
-      static_cast<ash::phonehub::ScreenLockManager::LockStatus>(
+      static_cast<phonehub::ScreenLockManager::LockStatus>(
           prefs_->GetInteger(phonehub::prefs::kScreenLockStatus)) ==
-      ash::phonehub::ScreenLockManager::LockStatus::kLockedOn;
+      phonehub::ScreenLockManager::LockStatus::kLockedOn;
   FireWebUIListener("settings.OnScreenLockStatusChanged",
                     base::Value(is_phone_screen_lock_enabled));
 }
 
-}  // namespace settings
-
-}  // namespace chromeos
+}  // namespace ash::settings

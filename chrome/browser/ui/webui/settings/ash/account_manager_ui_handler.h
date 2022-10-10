@@ -20,14 +20,13 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class AccountManagerUIHandler
     : public ::settings::SettingsPageUIHandler,
       public account_manager::AccountManagerFacade::Observer,
       public signin::IdentityManager::Observer,
-      public ash::AccountAppsAvailability::Observer {
+      public AccountAppsAvailability::Observer {
  public:
   // Accepts non-owning pointers to |account_manager::AccountManager|,
   // |AccountManagerFacade| and |IdentityManager|. Both of these must outlive
@@ -36,7 +35,7 @@ class AccountManagerUIHandler
       account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager,
-      ash::AccountAppsAvailability* account_apps_availability);
+      AccountAppsAvailability* account_apps_availability);
 
   AccountManagerUIHandler(const AccountManagerUIHandler&) = delete;
   AccountManagerUIHandler& operator=(const AccountManagerUIHandler&) = delete;
@@ -63,7 +62,7 @@ class AccountManagerUIHandler
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
-  // |ash::AccountAppsAvailability::Observer| overrides.
+  // |AccountAppsAvailability::Observer| overrides.
   void OnAccountAvailableInArc(
       const ::account_manager::Account& account) override;
   void OnAccountUnavailableInArc(
@@ -136,7 +135,7 @@ class AccountManagerUIHandler
 
   // A non-owning pointer to |AccountAppsAvailability| which is a KeyedService
   // and should outlive this class.
-  ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
+  AccountAppsAvailability* account_apps_availability_ = nullptr;
 
   // An observer for |AccountManagerFacade|. Automatically deregisters when
   // |this| is destructed.
@@ -150,16 +149,20 @@ class AccountManagerUIHandler
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  // An observer for |ash::AccountAppsAvailability|. Registered on
+  // An observer for |AccountAppsAvailability|. Registered on
   // |OnJavascriptAllowed| and deregistered on |OnJavascriptDisallowed|.
-  base::ScopedObservation<ash::AccountAppsAvailability,
-                          ash::AccountAppsAvailability::Observer>
+  base::ScopedObservation<AccountAppsAvailability,
+                          AccountAppsAvailability::Observer>
       account_apps_availability_observation_{this};
 
   base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::AccountManagerUIHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCOUNT_MANAGER_UI_HANDLER_H_

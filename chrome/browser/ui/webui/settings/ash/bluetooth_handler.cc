@@ -11,7 +11,7 @@
 #include "content/public/browser/web_ui.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kRequestFastPairDeviceSupport[] =
@@ -50,10 +50,9 @@ void BluetoothHandler::HandleRequestFastPairDeviceSupport(
     const base::Value::List& args) {
   AllowJavascript();
 
-  base::Value is_supported(
-      ash::quick_pair::IsFastPairSupported(bluetooth_adapter_));
+  base::Value is_supported(quick_pair::IsFastPairSupported(bluetooth_adapter_));
   FireWebUIListener("fast-pair-device-supported-status", is_supported);
 }
 
 }  // namespace settings
-}  // namespace chromeos
+}  // namespace ash

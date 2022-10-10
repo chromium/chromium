@@ -27,4 +27,10 @@ absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::GenerateServerPrinterUrlWithValidScheme;
+using ::chromeos::settings::HasValidServerPrinterScheme;
+}  // namespace ash::settings
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SERVER_PRINTER_URL_UTIL_H_

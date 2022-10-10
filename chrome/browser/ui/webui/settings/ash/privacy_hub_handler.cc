@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 namespace {
 // Translates CameraPrivacySwitch state into base::Value
@@ -29,11 +29,11 @@ base::Value CameraPrivacySwitchStateToBaseValue(
 PrivacyHubHandler::PrivacyHubHandler() = default;
 
 PrivacyHubHandler::~PrivacyHubHandler() {
-  ash::privacy_hub_util::SetFrontend(nullptr);
+  privacy_hub_util::SetFrontend(nullptr);
 }
 
 void PrivacyHubHandler::RegisterMessages() {
-  ash::privacy_hub_util::SetFrontend(this);
+  privacy_hub_util::SetFrontend(this);
   web_ui()->RegisterMessageCallback(
       "getInitialCameraHardwareToggleState",
       base::BindRepeating(&PrivacyHubHandler::HandleInitialCameraSwitchState,
@@ -69,7 +69,7 @@ void PrivacyHubHandler::HandleInitialCameraSwitchState(
   DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
   const auto& callback_id = args[0];
   const base::Value value = CameraPrivacySwitchStateToBaseValue(
-      ash::privacy_hub_util::CameraHWSwitchState());
+      privacy_hub_util::CameraHWSwitchState());
 
   ResolveJavascriptCallback(callback_id, value);
 }
@@ -82,7 +82,7 @@ void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
   DCHECK_EQ(1U, args.size()) << ": Callback ID is required";
   const auto& callback_id = args[0];
   const base::Value value =
-      base::Value(ash::privacy_hub_util::MicrophoneSwitchState());
+      base::Value(privacy_hub_util::MicrophoneSwitchState());
 
   ResolveJavascriptCallback(callback_id, value);
 }
@@ -96,7 +96,7 @@ void PrivacyHubHandler::HandleInitialAvailabilityOfMicrophoneForSimpleUsage(
   const auto& callback_id = args[0];
 
   const base::Value value =
-      base::Value(ash::privacy_hub_util::HasActiveInputDeviceForSimpleUsage());
+      base::Value(privacy_hub_util::HasActiveInputDeviceForSimpleUsage());
 
   ResolveJavascriptCallback(callback_id, value);
 }
@@ -117,4 +117,4 @@ void PrivacyHubHandler::CameraHardwareToggleChanged(
            CameraPrivacySwitchStateToBaseValue(state));
 }
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

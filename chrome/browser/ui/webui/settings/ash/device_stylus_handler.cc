@@ -18,8 +18,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/services/app_service/public/cpp/features.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -154,7 +153,7 @@ void StylusHandler::HandleInitialize(const base::Value::List& args) {
 void StylusHandler::SendHasStylus() {
   DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
   FireWebUIListener("has-stylus-changed",
-                    base::Value(ash::stylus_utils::HasStylusInput()));
+                    base::Value(stylus_utils::HasStylusInput()));
 }
 
 void StylusHandler::HandleShowPlayStoreApps(const base::Value::List& args) {
@@ -178,5 +177,4 @@ void StylusHandler::HandleShowPlayStoreApps(const base::Value::List& args) {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

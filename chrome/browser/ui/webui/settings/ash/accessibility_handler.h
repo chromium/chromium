@@ -12,8 +12,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
                              public speech::SodaInstaller::Observer {
@@ -75,7 +74,11 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<AccessibilityHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::AccessibilityHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCESSIBILITY_HANDLER_H_

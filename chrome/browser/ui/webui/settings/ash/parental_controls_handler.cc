@@ -27,8 +27,7 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 const char kFamilyLinkSiteURL[] = "https://families.google.com/families";
 
@@ -69,7 +68,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
 
   apps::AppRegistryCache& registry = proxy->AppRegistryCache();
   const std::string app_id = arc::ArcPackageNameToAppId(
-      chromeos::ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
+      ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
   if (registry.GetAppType(app_id) != apps::AppType::kUnknown) {
     // Launch FLH app since it is available.
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
@@ -89,12 +88,12 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
     if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
       proxy->LaunchAppWithUrl(
           arc::kPlayStoreAppId, ui::EF_NONE,
-          GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+          GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
           apps::LaunchSource::kFromChromeInternal);
     } else {
       proxy->LaunchAppWithUrl(
           arc::kPlayStoreAppId, ui::EF_NONE,
-          GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+          GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
           apps::mojom::LaunchSource::kFromChromeInternal);
     }
     return;
@@ -108,5 +107,4 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
   Navigate(&params);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

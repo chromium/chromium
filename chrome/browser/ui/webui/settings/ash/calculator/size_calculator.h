@@ -24,9 +24,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
-namespace calculator {
+namespace ash::settings::calculator {
 
 // Base class for the calculation of a specific storage item. Instances of this
 // class rely on their observers calling StartCalculation, and are designed to
@@ -324,8 +322,6 @@ class OtherUsersSizeCalculator : public SizeCalculator {
   base::WeakPtrFactory<OtherUsersSizeCalculator> weak_ptr_factory_{this};
 };
 
-}  // namespace calculator
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings::calculator
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_H_

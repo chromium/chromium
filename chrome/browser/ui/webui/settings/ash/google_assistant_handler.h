@@ -9,11 +9,10 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
-                               chromeos::CrasAudioHandler::AudioObserver {
+                               CrasAudioHandler::AudioObserver {
  public:
   GoogleAssistantHandler();
 
@@ -26,7 +25,7 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::CrasAudioHandler::AudioObserver overrides
+  // CrasAudioHandler::AudioObserver overrides
   void OnAudioNodesChanged() override;
 
  private:
@@ -44,7 +43,11 @@ class GoogleAssistantHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<GoogleAssistantHandler> weak_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::GoogleAssistantHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_GOOGLE_ASSISTANT_HANDLER_H_

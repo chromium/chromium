@@ -9,8 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
  public:
@@ -51,7 +50,11 @@ class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<PeripheralDataAccessHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PeripheralDataAccessHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERIPHERAL_DATA_ACCESS_HANDLER_H_

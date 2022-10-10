@@ -10,8 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -74,5 +73,4 @@ TEST_F(BluetoothHandlerTest, GetRequestFastPairDeviceSupport) {
   EXPECT_FALSE(call_data.arg2()->GetBool());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

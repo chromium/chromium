@@ -8,8 +8,7 @@
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 PointerHandler::PointerHandler() {}
 
@@ -59,5 +58,4 @@ void PointerHandler::HandleInitialize(const base::Value::List& args) {
   pointer_device_observer_->CheckDevices();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

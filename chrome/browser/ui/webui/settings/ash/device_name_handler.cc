@@ -11,8 +11,7 @@
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -87,5 +86,4 @@ void DeviceNameHandler::OnDeviceNameMetadataChanged() {
                     GetDeviceNameMetadata());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

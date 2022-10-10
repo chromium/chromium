@@ -664,26 +664,22 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::ProfileInfoHandler>(profile()));
 
   if (account_manager_facade_) {
-    web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager_, account_manager_facade_, identity_manager_,
-            account_apps_availability_));
+    web_ui->AddMessageHandler(std::make_unique<AccountManagerUIHandler>(
+        account_manager_, account_manager_facade_, identity_manager_,
+        account_apps_availability_));
   }
 
   web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
 
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::QuickUnlockHandler>(profile(),
-                                                               pref_service_));
+      std::make_unique<QuickUnlockHandler>(profile(), pref_service_));
 
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::FingerprintHandler>(profile()));
+  web_ui->AddMessageHandler(std::make_unique<FingerprintHandler>(profile()));
 
   if (!profile()->IsGuestSession() &&
       features::ShouldShowParentalControlSettings(profile())) {
     web_ui->AddMessageHandler(
-        std::make_unique<chromeos::settings::ParentalControlsHandler>(
-            profile()));
+        std::make_unique<ParentalControlsHandler>(profile()));
   }
 }
 

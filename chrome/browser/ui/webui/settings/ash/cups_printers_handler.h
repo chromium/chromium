@@ -15,8 +15,6 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/printing/server_printers_fetcher.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -26,6 +24,10 @@
 namespace base {
 class FilePath;
 }  // namespace base
+
+namespace chromeos {
+struct PrinterAuthenticationInfo;
+}
 
 namespace local_discovery {
 class EndpointResolver;
@@ -38,9 +40,9 @@ struct PrinterStatus;
 class GURL;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
-struct PrinterAuthenticationInfo;
+class ServerPrintersFetcher;
 
 namespace settings {
 
@@ -51,7 +53,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
  public:
   static std::unique_ptr<CupsPrintersHandler> CreateForTesting(
       Profile* profile,
-      scoped_refptr<PpdProvider> ppd_provider,
+      scoped_refptr<chromeos::PpdProvider> ppd_provider,
       std::unique_ptr<PrinterConfigurer> printer_configurer,
       CupsPrintersManager* printers_manager);
 
@@ -71,7 +73,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
  private:
   CupsPrintersHandler(Profile* profile,
-                      scoped_refptr<PpdProvider> ppd_provider,
+                      scoped_refptr<chromeos::PpdProvider> ppd_provider,
                       std::unique_ptr<PrinterConfigurer> printer_configurer,
                       CupsPrintersManager* printers_manager);
 
@@ -100,24 +102,24 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                          const std::string& make_and_model,
                          const std::vector<std::string>& document_formats,
                          bool ipp_everywhere,
-                         const PrinterAuthenticationInfo& auth_info);
+                         const chromeos::PrinterAuthenticationInfo& auth_info);
 
   // Handles the callback for HandleGetPrinterInfo for a discovered printer.
   void OnAutoconfQueriedDiscovered(
       const std::string& callback_id,
-      Printer printer,
+      chromeos::Printer printer,
       printing::PrinterQueryResult result,
       const printing::PrinterStatus& printer_status,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const PrinterAuthenticationInfo& auth_info);
+      const chromeos::PrinterAuthenticationInfo& auth_info);
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,
                      base::Value::Dict info,
-                     PpdProvider::CallbackResultCode res,
-                     const Printer::PpdReference& ppd_ref,
+                     chromeos::PpdProvider::CallbackResultCode res,
+                     const chromeos::Printer::PpdReference& ppd_ref,
                      const std::string& usb_manufacturer);
 
   void HandleAddCupsPrinter(const base::Value::List& args);
@@ -130,7 +132,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // Handles the result of adding a printer which the user specified the
   // location of (i.e. a printer that was not 'discovered' automatically).
   void OnAddedOrEditedSpecifiedPrinter(const std::string& callback_id,
-                                       const Printer& printer,
+                                       const chromeos::Printer& printer,
                                        bool is_printer_edit,
                                        PrinterSetupResult result);
 
@@ -153,14 +155,16 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   void HandleSelectPPDFile(const base::Value::List& args);
 
-  // PpdProvider callback handlers.
-  void ResolveManufacturersDone(const std::string& callback_id,
-                                PpdProvider::CallbackResultCode result_code,
-                                const std::vector<std::string>& available);
-  void ResolvePrintersDone(const std::string& manufacturer,
-                           const std::string& callback_id,
-                           PpdProvider::CallbackResultCode result_code,
-                           const PpdProvider::ResolvedPrintersList& printers);
+  // chromeos::PpdProvider callback handlers.
+  void ResolveManufacturersDone(
+      const std::string& callback_id,
+      chromeos::PpdProvider::CallbackResultCode result_code,
+      const std::vector<std::string>& available);
+  void ResolvePrintersDone(
+      const std::string& manufacturer,
+      const std::string& callback_id,
+      chromeos::PpdProvider::CallbackResultCode result_code,
+      const chromeos::PpdProvider::ResolvedPrintersList& printers);
 
   void HandleStartDiscovery(const base::Value::List& args);
   void HandleStopDiscovery(const base::Value::List& args);
@@ -172,7 +176,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   void HandleGetPrinterPpdManufacturerAndModel(const base::Value::List& args);
   void OnGetPrinterPpdManufacturerAndModel(
       const std::string& callback_id,
-      PpdProvider::CallbackResultCode result_code,
+      chromeos::PpdProvider::CallbackResultCode result_code,
       const std::string& manufacturer,
       const std::string& model);
 
@@ -190,24 +194,25 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Post printer setup callback.
   void OnAddedDiscoveredPrinter(const std::string& callback_id,
-                                const Printer& printer,
+                                const chromeos::Printer& printer,
                                 PrinterSetupResult result_code);
 
   // Code common between the discovered and manual add printer code paths.
-  void OnAddedOrEditedPrinterCommon(const Printer& printer,
+  void OnAddedOrEditedPrinterCommon(const chromeos::Printer& printer,
                                     PrinterSetupResult result_code,
                                     bool is_automatic);
 
   // CupsPrintersManager::Observer override:
-  void OnPrintersChanged(PrinterClass printer_class,
-                         const std::vector<Printer>& printers) override;
+  void OnPrintersChanged(
+      chromeos::PrinterClass printer_class,
+      const std::vector<chromeos::Printer>& printers) override;
 
   // Handles getting the EULA URL if available.
   void HandleGetEulaUrl(const base::Value::List& args);
 
   // Post EULA URL callback.
   void OnGetEulaUrl(const std::string& callback_id,
-                    PpdProvider::CallbackResultCode result,
+                    chromeos::PpdProvider::CallbackResultCode result,
                     const std::string& eula_url);
 
   // ui::SelectFileDialog::Listener override:
@@ -225,10 +230,10 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   // Fires the on-manually-add-discovered-printer event with the appropriate
   // parameters.  See https://crbug.com/835476
-  void FireManuallyAddDiscoveredPrinter(const Printer& printer);
+  void FireManuallyAddDiscoveredPrinter(const chromeos::Printer& printer);
 
   void OnIpResolved(const std::string& callback_id,
-                    const Printer& printer,
+                    const chromeos::Printer& printer,
                     const net::IPEndPoint& endpoint);
 
   void HandleQueryPrintServer(const base::Value::List& args);
@@ -254,19 +259,20 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // currently wants updates about printer availability.  The two vectors track
   // the most recent list of printers in each class.
   bool discovery_active_ = false;
-  std::vector<Printer> discovered_printers_;
-  std::vector<Printer> automatic_printers_;
+  std::vector<chromeos::Printer> discovered_printers_;
+  std::vector<chromeos::Printer> automatic_printers_;
 
   // These must be initialized before printers_manager_, as they are
   // used by callbacks that may be issued immediately by printers_manager_.
   //
   // TODO(crbug/757887) - Remove this subtle initialization constraint.
-  scoped_refptr<PpdProvider> ppd_provider_;
+  scoped_refptr<chromeos::PpdProvider> ppd_provider_;
   std::unique_ptr<PrinterConfigurer> printer_configurer_;
 
   // Cached list of {printer name, PpdReference} pairs for each manufacturer
   // that has been resolved in the lifetime of this object.
-  std::map<std::string, PpdProvider::ResolvedPrintersList> resolved_printers_;
+  std::map<std::string, chromeos::PpdProvider::ResolvedPrintersList>
+      resolved_printers_;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   std::string webui_callback_id_;
@@ -282,6 +288,11 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 };
 
 }  // namespace settings
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::CupsPrintersHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CUPS_PRINTERS_HANDLER_H_

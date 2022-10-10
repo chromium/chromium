@@ -11,8 +11,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Settings handler for the switch access subpage.
 class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
@@ -43,7 +42,11 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   PrefService* prefs_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::SwitchAccessHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SWITCH_ACCESS_HANDLER_H_

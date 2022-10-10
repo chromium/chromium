@@ -116,8 +116,7 @@ MATCHER_P(AccountEmailEqual, other, "") {
 
 }  // namespace
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
  public:
@@ -125,7 +124,7 @@ class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
       AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager,
-      ash::AccountAppsAvailability* apps_availability,
+      AccountAppsAvailability* apps_availability,
       content::WebUI* web_ui)
       : AccountManagerUIHandler(account_manager,
                                 account_manager_facade,
@@ -223,8 +222,8 @@ class AccountManagerUIHandlerTest
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
   }
 
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
+  FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
 
@@ -423,7 +422,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     : public AccountManagerUIHandlerTest {
  public:
   AccountManagerUIHandlerTestWithArcAccountRestrictions() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    feature_list_.InitAndEnableFeature(ash::features::kLacrosSupport);
   }
 
   void SetUpOnMainThread() override {
@@ -433,7 +432,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
         ::GetAccountManagerFacade(profile()->GetPath().value());
 
     account_apps_availability_ =
-        ash::AccountAppsAvailabilityFactory::GetForProfile(profile());
+        AccountAppsAvailabilityFactory::GetForProfile(profile());
 
     handler_ = std::make_unique<TestingAccountManagerUIHandler>(
         account_manager(), account_manager_facade, identity_manager(),
@@ -486,13 +485,13 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     return absl::nullopt;
   }
 
-  ash::AccountAppsAvailability* account_apps_availability() {
+  AccountAppsAvailability* account_apps_availability() {
     return account_apps_availability_;
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  ash::AccountAppsAvailability* account_apps_availability_;
+  AccountAppsAvailability* account_apps_availability_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;
 };
 
@@ -636,5 +635,4 @@ INSTANTIATE_TEST_SUITE_P(
                       GetGaiaDeviceAccountInfo(),
                       GetChildDeviceAccountInfo()));
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

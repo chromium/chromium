@@ -282,13 +282,11 @@ PrivacySection::PrivacySection(Profile* profile,
 PrivacySection::~PrivacySection() = default;
 
 void PrivacySection::AddHandlers(content::WebUI* web_ui) {
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::PeripheralDataAccessHandler>());
+  web_ui->AddMessageHandler(std::make_unique<PeripheralDataAccessHandler>());
 
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::MetricsConsentHandler>(
-          profile(), g_browser_process->metrics_service(),
-          user_manager::UserManager::Get()));
+  web_ui->AddMessageHandler(std::make_unique<MetricsConsentHandler>(
+      profile(), g_browser_process->metrics_service(),
+      user_manager::UserManager::Get()));
 
   if (ash::features::IsCrosPrivacyHubEnabled())
     web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());

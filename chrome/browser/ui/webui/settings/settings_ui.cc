@@ -490,7 +490,7 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     ash::eche_app::EcheAppManager* eche_app_manager =
         ash::eche_app::EcheAppManagerFactory::GetForProfile(profile);
     web_ui()->AddMessageHandler(std::make_unique<
-                                chromeos::settings::MultideviceHandler>(
+                                ash::settings::MultideviceHandler>(
         profile->GetPrefs(),
         ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             profile),

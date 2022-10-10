@@ -10,8 +10,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class PluginVmHandler : public ::settings::SettingsPageUIHandler {
  public:
@@ -39,7 +38,11 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<PluginVmHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PluginVmHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PLUGIN_VM_HANDLER_H_

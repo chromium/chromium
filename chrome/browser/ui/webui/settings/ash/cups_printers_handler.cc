@@ -60,12 +60,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
-using printing::PrinterQueryResult;
+using ::chromeos::PpdProvider;
+using ::chromeos::Printer;
+using ::chromeos::PrinterClass;
+using ::chromeos::Uri;
+using ::printing::PrinterQueryResult;
 
 constexpr int kPpdMaxLineLength = 255;
 
@@ -97,9 +100,9 @@ void RecordIppQueryResult(const PrinterQueryResult& result) {
 // located at |printer_uri|.  Results are reported through |callback|.  The
 // scheme of |printer_uri| must equal "ipp" or "ipps".
 void QueryAutoconf(const Uri& uri, PrinterInfoCallback callback) {
-  QueryIppPrinter(uri.GetHostEncoded(), uri.GetPort(),
-                  uri.GetPathEncodedAsString(), uri.GetScheme() == kIppsScheme,
-                  std::move(callback));
+  QueryIppPrinter(
+      uri.GetHostEncoded(), uri.GetPort(), uri.GetPathEncodedAsString(),
+      uri.GetScheme() == chromeos::kIppsScheme, std::move(callback));
 }
 
 // Returns the list of |printers| formatted as a CupsPrintersList.
@@ -535,7 +538,8 @@ void CupsPrintersHandler::HandleGetPrinterInfo(const base::Value::List& args) {
     return;
   }
 
-  DCHECK(*printer_protocol == kIppScheme || *printer_protocol == kIppsScheme)
+  DCHECK(*printer_protocol == chromeos::kIppScheme ||
+         *printer_protocol == chromeos::kIppsScheme)
       << "Printer info requests only supported for IPP and IPPS printers";
 
   Uri uri(*printer_protocol + url::kStandardSchemeSeparator + *printer_address +
@@ -561,7 +565,7 @@ void CupsPrintersHandler::OnAutoconfQueriedDiscovered(
     const std::string& make_and_model,
     const std::vector<std::string>& /*document_formats*/,
     bool ipp_everywhere,
-    const PrinterAuthenticationInfo& /*auth_info*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
 
   const bool success = result == PrinterQueryResult::kSuccess;
@@ -602,7 +606,7 @@ void CupsPrintersHandler::OnAutoconfQueried(
     const std::string& make_and_model,
     const std::vector<std::string>& document_formats,
     bool ipp_everywhere,
-    const PrinterAuthenticationInfo& /*auth_info*/) {
+    const chromeos::PrinterAuthenticationInfo& /*auth_info*/) {
   RecordIppQueryResult(result);
   const bool success = result == PrinterQueryResult::kSuccess;
 
@@ -639,9 +643,9 @@ void CupsPrintersHandler::OnAutoconfQueried(
     return;
   }
 
-  PrinterSearchData ppd_search_data;
+  chromeos::PrinterSearchData ppd_search_data;
   ppd_search_data.discovery_type =
-      PrinterSearchData::PrinterDiscoveryType::kManual;
+      chromeos::PrinterSearchData::PrinterDiscoveryType::kManual;
   ppd_search_data.make_and_model.push_back(make_and_model);
   ppd_search_data.supported_document_formats = document_formats;
 
@@ -1007,7 +1011,7 @@ void CupsPrintersHandler::FileSelectionCanceled(void* params) {
 void CupsPrintersHandler::VerifyPpdContents(const base::FilePath& path,
                                             const std::string& contents) {
   std::string result;
-  if (PpdLineReader::ContainsMagicNumber(contents, kPpdMaxLineLength))
+  if (chromeos::PpdLineReader::ContainsMagicNumber(contents, kPpdMaxLineLength))
     result = path.value();
 
   ResolveJavascriptCallback(base::Value(webui_callback_id_),
@@ -1366,5 +1370,4 @@ void CupsPrintersHandler::HandleOpenScanningApp(const base::Value::List& args) {
   chrome::ShowScanningApp(profile_);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

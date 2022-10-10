@@ -19,8 +19,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
                            public ArcAppListPrefs::Observer,
@@ -67,7 +66,11 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::AndroidAppsHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ANDROID_APPS_HANDLER_H_

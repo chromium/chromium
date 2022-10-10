@@ -24,13 +24,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
-using ::ash::disks::Disk;
-using ::ash::disks::DiskMountManager;
+using disks::Disk;
+using disks::DiskMountManager;
 
 constexpr char kAndroidEnabled[] = "androidEnabled";
 // Dummy UUID for testing. The UUID is taken from
@@ -212,9 +211,9 @@ void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 
 void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
-    ash::MountError error_code,
+    MountError error_code,
     const DiskMountManager::MountPoint& mount_info) {
-  if (error_code != ash::MountError::kNone)
+  if (error_code != MountError::kNone)
     return;
 
   if (!IsEligibleForAndroidStorage(mount_info.source_path))
@@ -381,5 +380,4 @@ bool StorageHandler::IsEligibleForAndroidStorage(std::string source_path) {
   return !RE2::FullMatch(source_path, special_volume_path_pattern_);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

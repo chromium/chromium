@@ -11,9 +11,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -50,8 +48,8 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
 
-    fake_tracker_ = std::make_unique<
-        chromeos::tether::FakeGmsCoreNotificationsStateTracker>();
+    fake_tracker_ =
+        std::make_unique<tether::FakeGmsCoreNotificationsStateTracker>();
     handler_->SetGmsCoreNotificationsStateTrackerForTesting(
         fake_tracker_.get());
   }
@@ -82,8 +80,7 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
   }
 
   std::unique_ptr<content::TestWebUI> web_ui_;
-  std::unique_ptr<chromeos::tether::FakeGmsCoreNotificationsStateTracker>
-      fake_tracker_;
+  std::unique_ptr<tether::FakeGmsCoreNotificationsStateTracker> fake_tracker_;
   std::unique_ptr<TestInternetHandler> handler_;
 };
 
@@ -119,6 +116,4 @@ TEST_F(InternetHandlerTest, TestSendsDeviceNames_StartsWithDevices) {
       1u /* expected_num_updates */);
 }
 
-}  // namespace settings
-
-}  // namespace chromeos
+}  // namespace ash::settings

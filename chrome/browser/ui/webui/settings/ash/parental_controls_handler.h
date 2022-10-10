@@ -9,8 +9,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome "Parental Controls" settings page UI handler.
 class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
@@ -38,7 +37,11 @@ class ParentalControlsHandler : public ::settings::SettingsPageUIHandler {
   Profile* profile_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::ParentalControlsHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PARENTAL_CONTROLS_HANDLER_H_

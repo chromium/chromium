@@ -25,8 +25,7 @@ namespace crostini {
 enum class CrostiniResult;
 }  // namespace crostini
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Enumeration for device state about remaining space. These values must be
 // kept in sync with settings.StorageSpaceState in JS code.
@@ -44,7 +43,7 @@ const int64_t kSpaceLowBytes = 1 * 1024 * 1024 * 1024;
 
 class StorageHandler : public ::settings::SettingsPageUIHandler,
                        public arc::ArcSessionManagerObserver,
-                       public ash::disks::DiskMountManager::Observer,
+                       public disks::DiskMountManager::Observer,
                        public calculator::SizeCalculator::Observer {
  public:
   StorageHandler(Profile* profile, content::WebUIDataSource* html_source);
@@ -62,13 +61,13 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   // arc::ArcSessionManagerObserver:
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
 
-  // ash::disks::DiskMountManager::Observer:
+  // disks::DiskMountManager::Observer:
   void OnMountEvent(
-      ash::disks::DiskMountManager::MountEvent event,
-      ash::MountError error_code,
-      const ash::disks::DiskMountManager::MountPoint& mount_info) override;
+      disks::DiskMountManager::MountEvent event,
+      MountError error_code,
+      const disks::DiskMountManager::MountPoint& mount_info) override;
 
-  // chromeos::settings::calculator::SizeCalculator::Observer:
+  // calculator::SizeCalculator::Observer:
   void OnSizeCalculated(
       const calculator::SizeCalculator::CalculationType& calculation_type,
       int64_t total_bytes) override;
@@ -129,7 +128,11 @@ class StorageHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::StorageHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_STORAGE_HANDLER_H_

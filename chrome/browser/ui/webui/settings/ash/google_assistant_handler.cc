@@ -19,15 +19,14 @@
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 GoogleAssistantHandler::GoogleAssistantHandler() {
-  chromeos::CrasAudioHandler::Get()->AddAudioObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 GoogleAssistantHandler::~GoogleAssistantHandler() {
-  chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 void GoogleAssistantHandler::OnJavascriptAllowed() {
@@ -45,9 +44,8 @@ void GoogleAssistantHandler::OnAudioNodesChanged() {
   }
 
   pending_hotword_update_ = false;
-  FireWebUIListener(
-      "hotwordDeviceUpdated",
-      base::Value(chromeos::CrasAudioHandler::Get()->HasHotwordDevice()));
+  FireWebUIListener("hotwordDeviceUpdated",
+                    base::Value(CrasAudioHandler::Get()->HasHotwordDevice()));
 }
 
 void GoogleAssistantHandler::RegisterMessages() {
@@ -73,13 +71,13 @@ void GoogleAssistantHandler::RegisterMessages() {
 void GoogleAssistantHandler::HandleShowGoogleAssistantSettings(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
-  ash::AssistantController::Get()->OpenAssistantSettings();
+  AssistantController::Get()->OpenAssistantSettings();
 }
 
 void GoogleAssistantHandler::HandleRetrainVoiceModel(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
-  chromeos::AssistantOptInDialog::Show(ash::FlowType::kSpeakerIdRetrain,
+  chromeos::AssistantOptInDialog::Show(FlowType::kSpeakerIdRetrain,
                                        base::DoNothing());
 }
 
@@ -97,5 +95,4 @@ void GoogleAssistantHandler::HandleInitialized(const base::Value::List& args) {
   AllowJavascript();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

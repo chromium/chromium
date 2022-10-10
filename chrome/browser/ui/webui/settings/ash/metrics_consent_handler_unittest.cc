@@ -39,8 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -53,7 +52,7 @@ constexpr char kNonOwner[] = "non@owner.com";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
-  ash::device_settings_cache::RegisterPrefs(local_state->registry());
+  device_settings_cache::RegisterPrefs(local_state->registry());
   metrics::MetricsService::RegisterPrefs(local_state->registry());
   return local_state;
 }
@@ -130,8 +129,8 @@ class MetricsConsentHandlerTest : public testing::Test {
         account_id, false, user_manager::USER_TYPE_REGULAR, owner.get());
     test_user_manager_->SetOwnerId(account_id);
 
-    EXPECT_THAT(ash::DeviceSettingsService::Get()->GetOwnershipStatus(),
-                Eq(ash::DeviceSettingsService::OWNERSHIP_TAKEN));
+    EXPECT_THAT(DeviceSettingsService::Get()->GetOwnershipStatus(),
+                Eq(DeviceSettingsService::OWNERSHIP_TAKEN));
 
     return owner;
   }
@@ -183,9 +182,9 @@ class MetricsConsentHandlerTest : public testing::Test {
 
     content::RunAllTasksUntilIdle();
 
-    ash::StatsReportingController::Initialize(&pref_service_);
+    StatsReportingController::Initialize(&pref_service_);
 
-    test_user_manager_ = std::make_unique<ash::FakeChromeUserManager>();
+    test_user_manager_ = std::make_unique<FakeChromeUserManager>();
     web_ui_ = std::make_unique<content::TestWebUI>();
 
     test_enabled_state_provider_ =
@@ -259,7 +258,7 @@ class MetricsConsentHandlerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<TestMetricsConsentHandler> handler_;
-  std::unique_ptr<ash::FakeChromeUserManager> test_user_manager_;
+  std::unique_ptr<FakeChromeUserManager> test_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 
   // MetricsService.
@@ -271,10 +270,9 @@ class MetricsConsentHandlerTest : public testing::Test {
 
   // Set up stubs for StatsReportingController.
   ScopedStubInstallAttributes scoped_install_attributes_;
-  ash::FakeSessionManagerClient fake_session_manager_client_;
-  ash::ScopedTestDeviceSettingsService scoped_device_settings_;
-  ash::ScopedTestCrosSettings scoped_cros_settings_{
-      RegisterPrefs(&pref_service_)};
+  FakeSessionManagerClient fake_session_manager_client_;
+  ScopedTestDeviceSettingsService scoped_device_settings_;
+  ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&pref_service_)};
   policy::DevicePolicyBuilder device_policy_;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys{
@@ -302,7 +300,7 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
 
   // Owner should be able to toggle the device stats reporting pref.
   EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
-  EXPECT_THAT(::ash::kStatsReportingPref, Eq(pref_name));
+  EXPECT_THAT(kStatsReportingPref, Eq(pref_name));
   EXPECT_TRUE(is_configurable);
 
   // Toggle true. Consent change should go through.
@@ -316,7 +314,7 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
 
   // Explicitly shutdown controller here because OwnerSettingsService is
   // destructed before TearDown() is called.
-  ash::StatsReportingController::Shutdown();
+  StatsReportingController::Shutdown();
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
@@ -357,7 +355,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
 
   // Explicitly shutdown controller here because OwnerSettingsService is
   // destructed before TearDown() is called.
-  ash::StatsReportingController::Shutdown();
+  StatsReportingController::Shutdown();
 }
 
 TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
@@ -384,7 +382,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 
   // Display device consent.
   EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
-  EXPECT_THAT(::ash::kStatsReportingPref, Eq(pref_name));
+  EXPECT_THAT(kStatsReportingPref, Eq(pref_name));
   EXPECT_FALSE(is_configurable);
 
   // Try to toggle true.
@@ -398,8 +396,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 
   // Explicitly shutdown controller here because OwnerSettingsService is
   // destructed before TearDown() is called.
-  ash::StatsReportingController::Shutdown();
+  StatsReportingController::Shutdown();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

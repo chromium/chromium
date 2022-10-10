@@ -36,8 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -63,11 +62,11 @@ class StorageHandlerTest : public testing::Test {
   void SetUp() override {
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    chromeos::SpacedClient::InitializeFake();
+    SpacedClient::InitializeFake();
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
-    ash::disks::DiskMountManager::InitializeForTesting(
+    disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -131,9 +130,9 @@ class StorageHandlerTest : public testing::Test {
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    ash::disks::DiskMountManager::Shutdown();
+    disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
-    chromeos::SpacedClient::Shutdown();
+    SpacedClient::Shutdown();
     ConciergeClient::Shutdown();
   }
 
@@ -526,5 +525,4 @@ TEST_F(StorageHandlerTest, SystemSize) {
 
 }  // namespace
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

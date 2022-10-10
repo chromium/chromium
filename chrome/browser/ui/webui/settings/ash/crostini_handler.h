@@ -27,8 +27,7 @@ enum class CrostiniResult;
 struct CrostiniDiskInfo;
 }  // namespace crostini
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                         public crostini::CrostiniDialogStatusObserver,
@@ -172,7 +171,11 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<CrostiniHandler> callback_weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::CrostiniHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CROSTINI_HANDLER_H_

@@ -9,8 +9,7 @@
 
 #include "base/values.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome "Personalization Hub" settings page UI handler.
 class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
@@ -32,7 +31,11 @@ class PersonalizationHubHandler : public ::settings::SettingsPageUIHandler {
   void HandleOpenPersonalizationHub(const base::Value::List& args);
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PersonalizationHubHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PERSONALIZATION_HUB_HANDLER_H_

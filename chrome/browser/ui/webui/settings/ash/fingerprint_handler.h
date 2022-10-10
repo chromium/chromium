@@ -16,8 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS fingerprint setup settings page UI handler.
 class FingerprintHandler : public ::settings::SettingsPageUIHandler,
@@ -84,7 +83,11 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<FingerprintHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::FingerprintHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FINGERPRINT_HANDLER_H_

@@ -8,11 +8,9 @@
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/webui/eche_app_ui/apps_access_manager.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 class MultideviceHandlerTest;
-}  // namespace settings
-}  // namespace chromeos
+}
 
 namespace ash {
 namespace eche_app {
@@ -35,7 +33,7 @@ class FakeAppsAccessManager : public AppsAccessManager {
   void OnSetupRequested() override;
 
  private:
-  friend class chromeos::settings::MultideviceHandlerTest;
+  friend class ::ash::settings::MultideviceHandlerTest;
   // AppsAccessManager:
   void SetAccessStatusInternal(AccessStatus access_status) override;
   void NotifyAppsAccessCanceled() override;

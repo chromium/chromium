@@ -17,4 +17,9 @@ int64_t RoundByteSize(int64_t bytes);
 
 }  // namespace chromeos::settings
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::RoundByteSize;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_STORAGE_UTIL_H_

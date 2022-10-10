@@ -27,8 +27,7 @@
 #include "ui/events/ozone/layout/keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 namespace {
 
 struct AssignmentInfo {
@@ -60,13 +59,13 @@ std::string GetStringForKeyboardCode(ui::KeyboardCode key_code) {
 std::string GetSwitchAccessDevice(ui::InputDeviceType source_device_type) {
   switch (source_device_type) {
     case ui::INPUT_DEVICE_INTERNAL:
-      return ash::kSwitchAccessInternalDevice;
+      return kSwitchAccessInternalDevice;
     case ui::INPUT_DEVICE_USB:
-      return ash::kSwitchAccessUsbDevice;
+      return kSwitchAccessUsbDevice;
     case ui::INPUT_DEVICE_BLUETOOTH:
-      return ash::kSwitchAccessBluetoothDevice;
+      return kSwitchAccessBluetoothDevice;
     case ui::INPUT_DEVICE_UNKNOWN:
-      return ash::kSwitchAccessUnknownDevice;
+      return kSwitchAccessUnknownDevice;
   }
 }
 
@@ -81,8 +80,8 @@ SwitchAccessHandler::~SwitchAccessHandler() {
     web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
   }
 
-  if (ash::AccessibilityController::Get())
-    ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
+  if (AccessibilityController::Get())
+    AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }
 
 void SwitchAccessHandler::RegisterMessages() {
@@ -165,13 +164,13 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
   web_ui()->GetWebContents()->GetNativeView()->AddPreTargetHandler(this);
-  ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);
+  AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
     const base::Value::List& args) {
   web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
-  ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
+  AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }
 
 void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
@@ -207,5 +206,4 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
   FireWebUIListener("switch-access-assignments-changed", response);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

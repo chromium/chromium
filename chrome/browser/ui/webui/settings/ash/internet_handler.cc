@@ -33,7 +33,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/events/event_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -221,7 +221,7 @@ void InternetHandler::ShowCarrierAccountDetail(const base::Value::List& args) {
     return;
   }
   const std::string& guid = args[0].GetString();
-  chromeos::NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
+  NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
 }
 
 void InternetHandler::ShowPortalSignin(const base::Value::List& args) {
@@ -239,7 +239,7 @@ void InternetHandler::ShowCellularSetupUI(const base::Value::List& args) {
     return;
   }
   const std::string& guid = args[0].GetString();
-  chromeos::NetworkConnect::Get()->ShowMobileSetup(guid);
+  NetworkConnect::Get()->ShowMobileSetup(guid);
 }
 
 void InternetHandler::SetGmsCoreNotificationsDisabledDeviceNames() {
@@ -278,7 +278,7 @@ gfx::NativeWindow InternetHandler::GetNativeWindow() {
 }
 
 void InternetHandler::SetGmsCoreNotificationsStateTrackerForTesting(
-    chromeos::tether::GmsCoreNotificationsStateTracker*
+    tether::GmsCoreNotificationsStateTracker*
         gms_core_notifications_state_tracker) {
   if (gms_core_notifications_state_tracker_)
     gms_core_notifications_state_tracker_->RemoveObserver(this);
@@ -288,5 +288,4 @@ void InternetHandler::SetGmsCoreNotificationsStateTrackerForTesting(
 }
 
 }  // namespace settings
-
-}  // namespace chromeos
+}  // namespace ash

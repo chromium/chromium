@@ -9,8 +9,7 @@
 #include "chrome/browser/ash/device_name/device_name_store.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // DeviceNameHandler handles calls from WebUI JS related to getting and setting
 // the device name.
@@ -49,7 +48,11 @@ class DeviceNameHandler : public ::settings::SettingsPageUIHandler,
       observation_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::DeviceNameHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_NAME_HANDLER_H_

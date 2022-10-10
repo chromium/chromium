@@ -11,11 +11,10 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/display/types/display_constants.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 DisplayHandler::DisplayHandler() {
-  ash::BindCrosDisplayConfigController(
+  BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
@@ -66,5 +65,4 @@ void DisplayHandler::HandleDragDisplayDelta(const base::Value::List& args) {
   cros_display_config_->DragDisplayDelta(display_id, delta_x, delta_y);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

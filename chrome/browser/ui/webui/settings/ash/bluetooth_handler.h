@@ -10,8 +10,7 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS Bluetooth subpage UI handler.
 class BluetoothHandler : public ::settings::SettingsPageUIHandler {
@@ -38,7 +37,11 @@ class BluetoothHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<BluetoothHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::BluetoothHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_BLUETOOTH_HANDLER_H_

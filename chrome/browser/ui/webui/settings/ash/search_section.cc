@@ -322,8 +322,7 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void SearchSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::SearchEnginesHandler>(profile()));
-  web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::GoogleAssistantHandler>());
+  web_ui->AddMessageHandler(std::make_unique<GoogleAssistantHandler>());
 }
 
 int SearchSection::GetSectionNameMessageId() const {

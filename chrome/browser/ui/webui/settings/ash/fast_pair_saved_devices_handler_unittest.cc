@@ -28,7 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 namespace {
 
@@ -132,7 +132,7 @@ bool VerifyDeviceInList(const base::Value& device,
 class TestFastPairSavedDevicesHandler : public FastPairSavedDevicesHandler {
  public:
   explicit TestFastPairSavedDevicesHandler(
-      std::unique_ptr<ash::quick_pair::FastPairImageDecoder> image_decoder)
+      std::unique_ptr<quick_pair::FastPairImageDecoder> image_decoder)
       : FastPairSavedDevicesHandler(std::move(image_decoder)) {}
   ~TestFastPairSavedDevicesHandler() override = default;
 
@@ -159,7 +159,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
 
     test_image_ = gfx::test::CreateImage(100, 100);
     auto mock_decoder =
-        std::make_unique<ash::quick_pair::MockFastPairImageDecoder>();
+        std::make_unique<quick_pair::MockFastPairImageDecoder>();
     mock_decoder_ = mock_decoder.get();
     // On call to DecodeImage, run the third argument callback with test_image_.
     ON_CALL(*mock_decoder, DecodeImage(testing::_, testing::_, testing::_))
@@ -170,7 +170,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
     handler_->set_web_ui(test_web_ui_.get());
     handler_->RegisterMessages();
     fast_pair_repository_ =
-        std::make_unique<ash::quick_pair::FakeFastPairRepository>();
+        std::make_unique<quick_pair::FakeFastPairRepository>();
   }
 
   content::TestWebUI* test_web_ui() { return test_web_ui_.get(); }
@@ -278,10 +278,9 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<ash::quick_pair::FakeFastPairRepository>
-      fast_pair_repository_;
+  std::unique_ptr<quick_pair::FakeFastPairRepository> fast_pair_repository_;
   gfx::Image test_image_;
-  ash::quick_pair::MockFastPairImageDecoder* mock_decoder_;
+  quick_pair::MockFastPairImageDecoder* mock_decoder_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
   std::unique_ptr<TestFastPairSavedDevicesHandler> handler_;
   base::WeakPtrFactory<FastPairSavedDevicesHandlerTest> weak_ptr_factory_{this};
@@ -619,4 +618,4 @@ TEST_F(FastPairSavedDevicesHandlerTest, RemoveSavedDevice) {
                                        /*num_devices=*/3, 1);
 }
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

@@ -12,8 +12,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 PersonalizationHubHandler::PersonalizationHubHandler() = default;
 
@@ -31,11 +30,10 @@ void PersonalizationHubHandler::HandleOpenPersonalizationHub(
     const base::Value::List& args) {
   CHECK_EQ(0U, args.size());
   // Record entry point metric to Personalization Hub through Settings.
-  ash::personalization_app::LogPersonalizationEntryPoint(
-      ash::PersonalizationEntryPoint::kSettings);
-  ash::LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
-                               ash::SystemWebAppType::PERSONALIZATION);
+  personalization_app::LogPersonalizationEntryPoint(
+      PersonalizationEntryPoint::kSettings);
+  LaunchSystemWebAppAsync(Profile::FromWebUI(web_ui()),
+                          SystemWebAppType::PERSONALIZATION);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

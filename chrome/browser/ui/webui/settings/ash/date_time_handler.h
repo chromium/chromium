@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS date and time settings page UI handler.
 class DateTimeHandler : public ::settings::SettingsPageUIHandler,
@@ -66,7 +65,11 @@ class DateTimeHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<DateTimeHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::DateTimeHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DATE_TIME_HANDLER_H_

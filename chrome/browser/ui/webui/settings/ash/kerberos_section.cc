@@ -99,9 +99,8 @@ void KerberosSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 }
 
 void KerberosSection::AddHandlers(content::WebUI* web_ui) {
-  std::unique_ptr<chromeos::settings::KerberosAccountsHandler>
-      kerberos_accounts_handler =
-          KerberosAccountsHandler::CreateIfKerberosEnabled(profile());
+  std::unique_ptr<KerberosAccountsHandler> kerberos_accounts_handler =
+      KerberosAccountsHandler::CreateIfKerberosEnabled(profile());
   if (kerberos_accounts_handler) {
     // Note that the UI is enabled only if Kerberos is enabled.
     web_ui->AddMessageHandler(std::move(kerberos_accounts_handler));

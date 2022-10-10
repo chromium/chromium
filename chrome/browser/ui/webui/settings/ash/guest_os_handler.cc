@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -70,7 +70,7 @@ void GuestOsHandler::RegisterMessages() {
 }
 
 void GuestOsHandler::OnJavascriptAllowed() {
-  if (auto* detector = chromeos::CrosUsbDetector::Get()) {
+  if (auto* detector = CrosUsbDetector::Get()) {
     cros_usb_device_observation_.Observe(detector);
   }
 }
@@ -127,7 +127,7 @@ void GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady(
 void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
     const base::Value::List& args) {
   CHECK_EQ(4U, args.size());
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
+  CrosUsbDetector* detector = CrosUsbDetector::Get();
   if (!detector)
     return;
 
@@ -144,11 +144,11 @@ void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
 }
 
 void GuestOsHandler::OnUsbDevicesChanged() {
-  chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
+  CrosUsbDetector* detector = CrosUsbDetector::Get();
   DCHECK(detector);  // This callback is called by the detector.
   FireWebUIListener("guest-os-shared-usb-devices-changed",
                     GetSharableUsbDevices(detector));
 }
 
 }  // namespace settings
-}  // namespace chromeos
+}  // namespace ash

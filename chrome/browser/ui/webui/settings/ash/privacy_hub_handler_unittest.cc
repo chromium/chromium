@@ -11,7 +11,7 @@
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 namespace {
 class TestPrivacyHubHandler : public PrivacyHubHandler {
@@ -38,7 +38,7 @@ class PrivacyHubHandlerTest : public testing::Test {
   // constructor  requires CrasAudioHandler to be initialized.
   // ScopedCrasAudioHandlerForTesting is a helper class that initializes
   // CrasAudioHandler in it's constructor.
-  ash::ScopedCrasAudioHandlerForTesting cras_audio_handler_;
+  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
 
   // Has to go before privacy_hub_handler_ as it references its
   // address and destruction order guarantees no invalid pointers.
@@ -261,4 +261,5 @@ TEST_F(PrivacyHubHandlerDeathTest,
       ".*Did not expect arguments.*");
 }
 #endif
-}  // namespace chromeos::settings
+
+}  // namespace ash::settings

@@ -22,12 +22,11 @@ namespace base {
 class TimeTicks;
 }  // namespace base
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS battery status and power settings handler.
 class PowerHandler : public ::settings::SettingsPageUIHandler,
-                     public PowerManagerClient::Observer {
+                     public chromeos::PowerManagerClient::Observer {
  public:
   // Idle behaviors presented in the UI. These are mapped to preferences by
   // HandleSetIdleBehavior(). Values are shared with JS and exposed here for
@@ -67,7 +66,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     // Sets AC idle behavior to |behavior| if |when_on_ac| is true. Otherwise
     // sets battery idle behavior to |behavior|.
     void SetIdleBehavior(IdleBehavior behavior, bool when_on_ac);
-    void SetLidClosedBehavior(PowerPolicyController::Action behavior);
+    void SetLidClosedBehavior(chromeos::PowerPolicyController::Action behavior);
     void SetAdaptiveCharging(bool enabled);
 
    private:
@@ -86,10 +85,10 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // PowerManagerClient implementation.
+  // chromeos::PowerManagerClient implementation.
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
   void PowerManagerRestarted() override;
-  void LidEventReceived(PowerManagerClient::LidState state,
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         base::TimeTicks timestamp) override;
 
  private:
@@ -150,7 +149,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
 
   // Callback used to receive switch states from PowerManagerClient.
   void OnGotSwitchStates(
-      absl::optional<PowerManagerClient::SwitchStates> result);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   // Returns all possible idle behaviors (that a user can choose from) and
   // current idle behavior based on enterprise policy and other factors when on
@@ -166,19 +165,21 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // Used to watch power management prefs for changes so the UI can be notified.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
   // Last lid state received from powerd.
-  PowerManagerClient::LidState lid_state_ = PowerManagerClient::LidState::OPEN;
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // Last values sent by SendPowerManagementSettings(), cached here so
   // SendPowerManagementSettings() can avoid spamming the UI after this class
   // changes multiple prefs at once.
   IdleBehaviorInfo last_ac_idle_info_;
   IdleBehaviorInfo last_battery_idle_info_;
-  PowerPolicyController::Action last_lid_closed_behavior_ =
-      PowerPolicyController::ACTION_SUSPEND;
+  chromeos::PowerPolicyController::Action last_lid_closed_behavior_ =
+      chromeos::PowerPolicyController::ACTION_SUSPEND;
   bool last_lid_closed_controlled_ = false;
   bool last_has_lid_ = true;
   bool last_adaptive_charging_ = false;
@@ -186,7 +187,11 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   base::WeakPtrFactory<PowerHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::PowerHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_POWER_HANDLER_H_

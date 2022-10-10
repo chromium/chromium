@@ -439,8 +439,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
 void AppsSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
-      std::make_unique<chromeos::settings::AndroidAppsHandler>(
-          profile(), app_service_proxy_));
+      std::make_unique<AndroidAppsHandler>(profile(), app_service_proxy_));
   if (arc::IsArcVmEnabled())
     web_ui->AddMessageHandler(std::make_unique<GuestOsHandler>(profile()));
 

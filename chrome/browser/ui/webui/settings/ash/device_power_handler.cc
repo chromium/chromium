@@ -25,14 +25,17 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
 namespace {
+
+using ::chromeos::PowerManagerClient;
+using ::chromeos::PowerPolicyController;
 
 std::u16string GetBatteryTimeText(base::TimeDelta time_left) {
   int hour = 0;
   int min = 0;
-  ash::power_utils::SplitTimeIntoHoursAndMinutes(time_left, &hour, &min);
+  power_utils::SplitTimeIntoHoursAndMinutes(time_left, &hour, &min);
 
   std::u16string time_text;
   if (hour == 0 || min == 0) {
@@ -323,15 +326,14 @@ void PowerHandler::SendBatteryStatus() {
   bool charging = proto->battery_state() ==
                   power_manager::PowerSupplyProperties_BatteryState_CHARGING;
   bool calculating = proto->is_calculating_battery_time();
-  int percent =
-      ash::power_utils::GetRoundedBatteryPercent(proto->battery_percent());
+  int percent = power_utils::GetRoundedBatteryPercent(proto->battery_percent());
   base::TimeDelta time_left;
   bool show_time = false;
 
   if (!calculating) {
     time_left = base::Seconds(charging ? proto->battery_time_to_full_sec()
                                        : proto->battery_time_to_empty_sec());
-    show_time = ash::power_utils::ShouldDisplayBatteryTime(time_left);
+    show_time = power_utils::ShouldDisplayBatteryTime(time_left);
   }
 
   std::u16string status_text;
@@ -608,5 +610,4 @@ bool PowerHandler::IsIdleManaged(PowerSource power_source) {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

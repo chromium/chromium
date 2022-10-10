@@ -14,8 +14,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome OS stylus settings handler.
 class StylusHandler : public ::settings::SettingsPageUIHandler,
@@ -65,7 +64,11 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
       input_observation_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::StylusHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_STYLUS_HANDLER_H_

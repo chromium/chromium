@@ -30,8 +30,7 @@
 using ::testing::Contains;
 using ::testing::Not;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class TestAccessibilityHandler : public AccessibilityHandler {
  public:
@@ -305,5 +304,4 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

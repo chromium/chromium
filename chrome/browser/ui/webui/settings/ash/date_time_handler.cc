@@ -26,8 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -144,16 +143,16 @@ void DateTimeHandler::HandleShowParentAccessForTimeZone(
   DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(
-          ash::SupervisedAction::kUpdateTimezone)) {
+          SupervisedAction::kUpdateTimezone)) {
     OnParentAccessValidation(true);
     return;
   }
 
-  ash::ParentAccessController::Get()->ShowWidget(
+  ParentAccessController::Get()->ShowWidget(
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
       base::BindOnce(&DateTimeHandler::OnParentAccessValidation,
                      weak_ptr_factory_.GetWeakPtr()),
-      ash::SupervisedAction::kUpdateTimezone, false /* extra_dimmer */,
+      SupervisedAction::kUpdateTimezone, false /* extra_dimmer */,
       base::Time::Now());
 }
 
@@ -176,5 +175,4 @@ void DateTimeHandler::SystemClockCanSetTimeChanged(bool can_set_time) {
   FireWebUIListener("can-set-date-time-changed", base::Value(can_set_time));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

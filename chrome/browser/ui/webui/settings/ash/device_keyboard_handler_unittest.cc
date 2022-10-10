@@ -19,8 +19,7 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -331,5 +330,4 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   EXPECT_FALSE(HasAssistantKey());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

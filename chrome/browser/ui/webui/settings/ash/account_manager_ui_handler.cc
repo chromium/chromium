@@ -38,8 +38,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 namespace {
 
@@ -88,9 +87,9 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 }
 
 void ShowToast(const std::string& id,
-               ash::ToastCatalogName catalog_name,
+               ToastCatalogName catalog_name,
                const std::u16string& message) {
-  ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, message));
+  ToastManager::Get()->Show(ToastData(id, catalog_name, message));
 }
 
 class AccountBuilder {
@@ -174,7 +173,7 @@ class AccountBuilder {
     DCHECK(account_.FindBool("isSignedIn"));
     DCHECK(account_.FindBool("unmigrated"));
     DCHECK(account_.FindString("pic"));
-    if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
       DCHECK(account_.FindBool("isAvailableInArc"));
     }
     // "organization" is an optional field.
@@ -192,14 +191,14 @@ AccountManagerUIHandler::AccountManagerUIHandler(
     account_manager::AccountManager* account_manager,
     account_manager::AccountManagerFacade* account_manager_facade,
     signin::IdentityManager* identity_manager,
-    ash::AccountAppsAvailability* account_apps_availability)
+    AccountAppsAvailability* account_apps_availability)
     : account_manager_(account_manager),
       account_manager_facade_(account_manager_facade),
       identity_manager_(identity_manager) {
   DCHECK(account_manager_);
   DCHECK(account_manager_facade_);
   DCHECK(identity_manager_);
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     account_apps_availability_ = account_apps_availability;
     DCHECK(account_apps_availability_);
   }
@@ -258,7 +257,7 @@ void AccountManagerUIHandler::OnCheckDummyGaiaTokenForAllAccounts(
     base::Value callback_id,
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list) {
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     account_apps_availability_->GetAccountsAvailableInArc(
         base::BindOnce(&AccountManagerUIHandler::FinishHandleGetAccounts,
                        weak_factory_.GetWeakPtr(), std::move(callback_id),
@@ -292,7 +291,7 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
         .SetFullName(base::UTF16ToUTF8(user->GetDisplayName()))
         .SetIsSignedIn(true)
         .SetUnmigrated(false);
-    if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
       device_account.SetIsAvailableInArc(true);
     }
     gfx::ImageSkia default_icon =
@@ -370,7 +369,7 @@ base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
         .SetIsSignedIn(!identity_manager_
                             ->HasAccountWithRefreshTokenInPersistentErrorState(
                                 maybe_account_info.account_id));
-    if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
       account.SetIsAvailableInArc(arc_accounts.contains(stored_account));
     }
 
@@ -450,7 +449,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(
   DCHECK(email);
   DCHECK(!email->empty());
 
-  ShowToast(kAccountRemovedToastId, ash::ToastCatalogName::kAccountRemoved,
+  ShowToast(kAccountRemovedToastId, ToastCatalogName::kAccountRemoved,
             l10n_util::GetStringFUTF16(
                 IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE,
                 base::UTF8ToUTF16(*email)));
@@ -458,7 +457,7 @@ void AccountManagerUIHandler::HandleRemoveAccount(
 
 void AccountManagerUIHandler::HandleChangeArcAvailability(
     const base::Value::List& args) {
-  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 
   // 2 args: account, is_available.
   CHECK_GT(args.size(), 1u);
@@ -551,5 +550,4 @@ void AccountManagerUIHandler::RefreshUI() {
   FireWebUIListener("accounts-changed");
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

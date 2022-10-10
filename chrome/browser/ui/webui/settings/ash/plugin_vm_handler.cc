@@ -15,9 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
-
-namespace settings {
+namespace ash::settings {
 
 PluginVmHandler::PluginVmHandler(Profile* profile) : profile_(profile) {}
 
@@ -58,5 +56,4 @@ void PluginVmHandler::HandleRelaunchPluginVm(const base::Value::List& args) {
       ->RelaunchPluginVm();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

@@ -14,8 +14,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class TestDeviceNameHandler : public DeviceNameHandler {
  public:
@@ -205,5 +204,4 @@ TEST_F(DeviceNameHandlerTest, SetDeviceName) {
       DeviceNameStore::DeviceNameState::kCannotBeModifiedBecauseNotDeviceOwner);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

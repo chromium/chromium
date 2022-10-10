@@ -19,8 +19,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 AndroidAppsHandler::AndroidAppsHandler(Profile* profile,
                                        apps::AppServiceProxy* app_service_proxy)
@@ -129,5 +128,4 @@ int64_t AndroidAppsHandler::GetDisplayIdForCurrentProfile() {
       .id();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

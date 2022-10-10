@@ -12,8 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 QuickUnlockHandler::QuickUnlockHandler(Profile* profile,
                                        PrefService* pref_service)
@@ -77,5 +76,4 @@ void QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy() {
                         pref_service_, quick_unlock::Purpose::kAny)));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

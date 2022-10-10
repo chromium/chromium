@@ -24,8 +24,7 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Chrome "Multidevice" (a.k.a. "Connected Devices") settings page UI handler.
 class MultideviceHandler
@@ -35,9 +34,9 @@ class MultideviceHandler
       public android_sms::AndroidSmsAppManager::Observer,
       public phonehub::MultideviceFeatureAccessManager::Observer,
       public phonehub::NotificationAccessSetupOperation::Delegate,
-      public ash::eche_app::AppsAccessManager::Observer,
-      public ash::eche_app::AppsAccessSetupOperation::Delegate,
-      public ash::phonehub::CameraRollManager::Observer,
+      public eche_app::AppsAccessManager::Observer,
+      public eche_app::AppsAccessSetupOperation::Delegate,
+      public phonehub::CameraRollManager::Observer,
       public phonehub::CombinedAccessSetupOperation::Delegate,
       public phonehub::FeatureSetupConnectionOperation::Delegate {
  public:
@@ -49,8 +48,8 @@ class MultideviceHandler
       multidevice_setup::AndroidSmsPairingStateTracker*
           android_sms_pairing_state_tracker,
       android_sms::AndroidSmsAppManager* android_sms_app_manager,
-      ash::eche_app::AppsAccessManager* apps_access_manager,
-      ash::phonehub::CameraRollManager* camera_roll_manager);
+      eche_app::AppsAccessManager* apps_access_manager,
+      phonehub::CameraRollManager* camera_roll_manager);
 
   MultideviceHandler(const MultideviceHandler&) = delete;
   MultideviceHandler& operator=(const MultideviceHandler&) = delete;
@@ -84,9 +83,9 @@ class MultideviceHandler
   void OnNotificationStatusChange(
       phonehub::NotificationAccessSetupOperation::Status new_status) override;
 
-  // ash::eche_app::AppsAccessSetupOperation::Delegate:
+  // eche_app::AppsAccessSetupOperation::Delegate:
   void OnAppsStatusChange(
-      ash::eche_app::AppsAccessSetupOperation::Status new_status) override;
+      eche_app::AppsAccessSetupOperation::Status new_status) override;
 
   // CombinedAccessSetupOperation::Delegate:
   void OnCombinedStatusChange(
@@ -107,10 +106,10 @@ class MultideviceHandler
   // android_sms::AndroidSmsAppManager::Observer:
   void OnInstalledAppUrlChanged() override;
 
-  // ash::eche_app::AppsAccessManager::Observer:
+  // eche_app::AppsAccessManager::Observer:
   void OnAppsAccessChanged() override;
 
-  // ash::phonehub::CameraRollManager::Observer:
+  // phonehub::CameraRollManager::Observer:
   void OnCameraRollViewUiStateUpdated() override;
 
   // Called when the Nearby Share enabled pref changes.
@@ -191,11 +190,10 @@ class MultideviceHandler
       android_sms_pairing_state_tracker_;
   android_sms::AndroidSmsAppManager* android_sms_app_manager_;
 
-  ash::eche_app::AppsAccessManager* apps_access_manager_;
-  std::unique_ptr<ash::eche_app::AppsAccessSetupOperation>
-      apps_access_operation_;
+  eche_app::AppsAccessManager* apps_access_manager_;
+  std::unique_ptr<eche_app::AppsAccessSetupOperation> apps_access_operation_;
 
-  ash::phonehub::CameraRollManager* camera_roll_manager_;
+  phonehub::CameraRollManager* camera_roll_manager_;
 
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>
@@ -210,19 +208,22 @@ class MultideviceHandler
   base::ScopedObservation<phonehub::MultideviceFeatureAccessManager,
                           phonehub::MultideviceFeatureAccessManager::Observer>
       multidevice_feature_access_manager_observation_{this};
-  base::ScopedObservation<ash::eche_app::AppsAccessManager,
-                          ash::eche_app::AppsAccessManager::Observer>
+  base::ScopedObservation<eche_app::AppsAccessManager,
+                          eche_app::AppsAccessManager::Observer>
       apps_access_manager_observation_{this};
-  base::ScopedObservation<ash::phonehub::CameraRollManager,
-                          ash::phonehub::CameraRollManager::Observer>
+  base::ScopedObservation<phonehub::CameraRollManager,
+                          phonehub::CameraRollManager::Observer>
       camera_roll_manager_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};
 };
 
-}  // namespace settings
+}  // namespace ash::settings
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::MultideviceHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_HANDLER_H_

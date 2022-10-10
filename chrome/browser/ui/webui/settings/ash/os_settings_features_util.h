@@ -25,4 +25,10 @@ bool ShouldShowExternalStorageSettings(const Profile* profile);
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings::features {
+using ::chromeos::settings::features::IsGuestModeActive;
+using ::chromeos::settings::features::ShouldShowExternalStorageSettings;
+}  // namespace ash::settings::features
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_FEATURES_UTIL_H_

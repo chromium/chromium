@@ -12,8 +12,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class TestMetricsConsentHandler;
 
@@ -65,7 +64,11 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<MetricsConsentHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::MetricsConsentHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_METRICS_CONSENT_HANDLER_H_

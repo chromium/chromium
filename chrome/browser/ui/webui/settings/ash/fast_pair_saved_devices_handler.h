@@ -14,18 +14,20 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash::quick_pair {
-class FastPairImageDecoder;
-}  // namespace ash::quick_pair
+namespace ash {
 
-namespace chromeos::settings {
+namespace quick_pair {
+class FastPairImageDecoder;
+}
+
+namespace settings {
 
 // Chrome OS Fast Pair Saved Devices subpage UI handler.
 class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
  public:
   FastPairSavedDevicesHandler();
   explicit FastPairSavedDevicesHandler(
-      std::unique_ptr<ash::quick_pair::FastPairImageDecoder> image_decoder);
+      std::unique_ptr<quick_pair::FastPairImageDecoder> image_decoder);
   FastPairSavedDevicesHandler(const FastPairSavedDevicesHandler&) = delete;
   FastPairSavedDevicesHandler& operator=(const FastPairSavedDevicesHandler&) =
       delete;
@@ -52,7 +54,7 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
 
   std::unique_ptr<base::AtomicRefCount> pending_decoding_tasks_count_;
   std::vector<nearby::fastpair::FastPairDevice> devices_;
-  std::unique_ptr<ash::quick_pair::FastPairImageDecoder> image_decoder_;
+  std::unique_ptr<quick_pair::FastPairImageDecoder> image_decoder_;
 
   // For each device image, we need to convert the device image from the proto
   // into a base64 encoded data URL to be displayed in the settings UX because
@@ -66,6 +68,12 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   base::WeakPtrFactory<FastPairSavedDevicesHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos::settings
+}  // namespace settings
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::FastPairSavedDevicesHandler;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAST_PAIR_SAVED_DEVICES_HANDLER_H_
