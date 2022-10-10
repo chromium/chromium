@@ -29,6 +29,12 @@ class DevToolsClient {
   // Session id used to annotate the CDP commands.
   virtual const std::string& SessionId() const = 0;
 
+  // Session id used for CDP traffic tunneling
+  virtual const std::string& TunnelSessionId() const = 0;
+
+  // Set the session id used for CDP traffic tunneling
+  virtual void SetTunnelSessionId(const std::string& session_id) = 0;
+
   virtual bool WasCrashed() = 0;
 
   virtual bool IsNull() const = 0;

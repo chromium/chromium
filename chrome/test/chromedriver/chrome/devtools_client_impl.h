@@ -57,6 +57,8 @@ class SyncWebSocket;
 class DevToolsClientImpl : public DevToolsClient {
  public:
   static const char kBrowserwideDevToolsClientId[];
+  static const char kInfraChannel[];
+  static const char kClientChannelSuffix[];
 
   // Postcondition: !IsNull()
   // Postcondition: !IsConnected()
@@ -102,6 +104,10 @@ class DevToolsClientImpl : public DevToolsClient {
   const std::string& GetId() override;
   // Session id used to annotate the CDP commands.
   const std::string& SessionId() const override;
+  // Session id used for CDP traffic tunneling
+  const std::string& TunnelSessionId() const override;
+  // Set the session id used for CDP traffic tunneling
+  void SetTunnelSessionId(const std::string& session_id) override;
   // If the object IsNull then it cannot be connected to the remote end.
   // Such an object needs to be attached to some !IsNull() parent first.
   // Postcondition: IsNull() == (socket == nullptr && parent == nullptr)
@@ -180,9 +186,11 @@ class DevToolsClientImpl : public DevToolsClient {
     friend class base::RefCounted<ResponseInfo>;
     ~ResponseInfo();
   };
-  Status PostBidiCommandInternal(int bidi_channel, base::Value::Dict command);
+  Status PostBidiCommandInternal(std::string channel,
+                                 base::Value::Dict command);
   Status SendCommandInternal(const std::string& method,
                              const base::Value::Dict& params,
+                             const std::string& session_id,
                              base::Value* result,
                              bool expect_response,
                              bool wait_for_response,
@@ -210,6 +218,7 @@ class DevToolsClientImpl : public DevToolsClient {
   // WebViewImpl that owns this instance; nullptr for browser-wide DevTools.
   raw_ptr<WebViewImpl> owner_;
   const std::string session_id_;
+  std::string tunnel_session_id_;
   // parent_ / children_: it's a flat hierarchy - nesting is at most one level
   // deep. children_ holds child sessions - identified by their session id -
   // which send/receive messages via the socket_ of their parent.

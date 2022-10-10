@@ -23,6 +23,14 @@ const std::string& StubDevToolsClient::SessionId() const {
   return session_id_;
 }
 
+const std::string& StubDevToolsClient::TunnelSessionId() const {
+  return tunnel_session_id_;
+}
+
+void StubDevToolsClient::SetTunnelSessionId(const std::string& session_id) {
+  tunnel_session_id_ = session_id;
+}
+
 bool StubDevToolsClient::IsNull() const {
   return false;
 }

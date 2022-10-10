@@ -31,7 +31,18 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+using testing::Eq;
+using testing::Pointee;
+
 namespace {
+
+testing::AssertionResult StatusOk(const Status& status) {
+  if (status.IsOk()) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure() << status.message();
+  }
+}
 
 bool ParseCommand(const base::Value::Dict& command,
                   int* cmd_id,
@@ -91,22 +102,6 @@ Status SerializeAsJson(const T& value, std::string* json) {
   return Status{kOk};
 }
 
-Status CreateCdpCommand(int cmd_id,
-                        std::string method,
-                        base::Value::Dict params,
-                        std::string session_id,
-                        base::Value::Dict* cmd) {
-  base::Value::Dict dict;
-  dict.Set("id", cmd_id);
-  dict.Set("method", std::move(method));
-  dict.Set("params", std::move(params));
-  if (!session_id.empty()) {
-    dict.Set("sessionId", std::move(session_id));
-  }
-  *cmd = std::move(dict);
-  return Status{kOk};
-}
-
 Status CreateCdpEvent(std::string method,
                       base::Value::Dict params,
                       std::string session_id,
@@ -126,7 +121,7 @@ Status CreateCdpResponse(int cmd_id,
                          std::string session_id,
                          base::Value::Dict* resp) {
   base::Value::Dict dict;
-  dict.Set("id", std::move(cmd_id));
+  dict.Set("id", cmd_id);
   dict.Set("result", std::move(result));
   if (!session_id.empty()) {
     dict.Set("sessionId", std::move(session_id));
@@ -138,23 +133,26 @@ Status CreateCdpResponse(int cmd_id,
 Status CreateBidiCommand(int cmd_id,
                          std::string method,
                          base::Value::Dict params,
+                         const std::string* channel,
                          base::Value::Dict* cmd) {
-  return CreateCdpCommand(cmd_id, std::move(method), std::move(params),
-                          std::string(), cmd);
-}
-
-Status CreateBidiResponse(int cmd_id,
-                          base::Value::Dict result,
-                          base::Value::Dict* resp) {
-  return CreateCdpResponse(cmd_id, std::move(result), std::string(), resp);
+  base::Value::Dict dict;
+  dict.Set("id", cmd_id);
+  dict.Set("method", std::move(method));
+  dict.Set("params", std::move(params));
+  if (channel) {
+    dict.Set("channel", *channel);
+  }
+  *cmd = std::move(dict);
+  return Status{kOk};
 }
 
 Status WrapBidiEventInCdpEvent(const base::Value::Dict& bidi_resp,
                                std::string mapper_session_id,
                                base::Value::Dict* evt) {
   std::string payload;
-  if (!base::JSONWriter::Write(bidi_resp, &payload)) {
-    return Status(kUnknownError, "cannot serialize the string: " + payload);
+  Status status = SerializeAsJson(bidi_resp, &payload);
+  if (status.IsError()) {
+    return status;
   }
   base::Value::Dict params;
   params.Set("name", "sendBidiResponse");
@@ -166,8 +164,16 @@ Status WrapBidiEventInCdpEvent(const base::Value::Dict& bidi_resp,
 Status WrapBidiResponseInCdpEvent(const base::Value::Dict& bidi_resp,
                                   std::string mapper_session_id,
                                   base::Value::Dict* evt) {
-  // response also arrives wrapped into a CDP event
-  return WrapBidiEventInCdpEvent(bidi_resp, std::move(mapper_session_id), evt);
+  std::string payload;
+  Status status = SerializeAsJson(bidi_resp, &payload);
+  if (status.IsError()) {
+    return status;
+  }
+  base::Value::Dict params;
+  params.Set("name", "sendBidiResponse");
+  params.Set("payload", payload);
+  return CreateCdpEvent("Runtime.bindingCalled", std::move(params),
+                        std::move(mapper_session_id), evt);
 }
 
 class MockSyncWebSocket : public SyncWebSocket {
@@ -304,6 +310,7 @@ TEST_F(DevToolsClientImplTest, Ctor1) {
   DevToolsClientImpl client(expected_id, expected_session_id);
   EXPECT_EQ(expected_id, client.GetId());
   EXPECT_EQ(expected_session_id, client.SessionId());
+  EXPECT_EQ(std::string(), client.TunnelSessionId());
   EXPECT_FALSE(client.IsMainPage());
   EXPECT_FALSE(client.IsConnected());
   EXPECT_TRUE(client.IsNull());
@@ -323,6 +330,7 @@ TEST_F(DevToolsClientImplTest, Ctor2) {
                             factory);
   EXPECT_EQ(expected_id, client.GetId());
   EXPECT_EQ(expected_session_id, client.SessionId());
+  EXPECT_EQ(std::string(), client.TunnelSessionId());
   EXPECT_FALSE(client.IsMainPage());
   EXPECT_FALSE(client.IsConnected());
   EXPECT_FALSE(client.IsNull());
@@ -364,6 +372,67 @@ TEST_F(DevToolsClientImplTest, SetMainPage) {
   DevToolsClientImpl client("E2F4", "BC80031", "http://url", factory);
   client.SetMainPage(true);
   EXPECT_TRUE(client.IsMainPage());
+}
+
+TEST_F(DevToolsClientImplTest, SetTunnelSessionId) {
+  SyncWebSocketFactory factory =
+      base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
+  DevToolsClientImpl client("E2F4", "BC80031", "http://url", factory);
+  const std::string expected_wrapper_session_id = "302BBB";
+  client.SetTunnelSessionId(expected_wrapper_session_id);
+  EXPECT_EQ(expected_wrapper_session_id, client.TunnelSessionId());
+}
+
+TEST_F(DevToolsClientImplTest, ConnectWithoutSocket) {
+  DevToolsClientImpl client("page_client", "page_session");
+  Status status = client.ConnectIfNecessary();
+  EXPECT_TRUE(status.IsError());
+}
+
+TEST_F(DevToolsClientImplTest, AttachToNull) {
+  DevToolsClientImpl client("client", "session");
+  EXPECT_TRUE(client.AttachTo(nullptr).IsError());
+}
+
+TEST_F(DevToolsClientImplTest, AttachToClientWithNoSocket) {
+  DevToolsClientImpl client1("client1", "session_1");
+  DevToolsClientImpl client2("client2", "session_2");
+  EXPECT_TRUE(client1.AttachTo(&client2).IsError());
+}
+
+TEST_F(DevToolsClientImplTest, AttachToAnotherRoot) {
+  SyncWebSocketFactory factory =
+      base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
+  DevToolsClientImpl root_client1("root_client_1", "root_session_1",
+                                  "http://url1", factory);
+  DevToolsClientImpl root_client2("root_client_2", "root_session_2",
+                                  "http://url2", factory);
+  DevToolsClientImpl client("page_client", "page_session");
+  ASSERT_TRUE(StatusOk(client.AttachTo(&root_client1)));
+  // Client cannot be re-attached
+  EXPECT_TRUE(client.AttachTo(&root_client2).IsError());
+}
+
+TEST_F(DevToolsClientImplTest, AttachRootToRoot) {
+  SyncWebSocketFactory factory =
+      base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
+  DevToolsClientImpl root_client1("root_client_1", "root_session_1",
+                                  "http://url1", factory);
+  DevToolsClientImpl root_client2("root_client_2", "root_session_2",
+                                  "http://url2", factory);
+  EXPECT_TRUE(root_client2.AttachTo(&root_client1).IsError());
+}
+
+TEST_F(DevToolsClientImplTest, AttachAsGrandChild) {
+  SyncWebSocketFactory factory =
+      base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket>);
+  DevToolsClientImpl root_client("root_client", "root_session", "http://url",
+                                 factory);
+  DevToolsClientImpl child_client("child_client", "child_session");
+  ASSERT_TRUE(StatusOk(child_client.AttachTo(&root_client)));
+  DevToolsClientImpl grand_child_client("grand_child_client",
+                                        "grand_child_session");
+  EXPECT_TRUE(grand_child_client.AttachTo(&child_client).IsError());
 }
 
 namespace {
@@ -884,6 +953,298 @@ TEST(ParseInspectorMessage, Command) {
   ASSERT_FALSE(response.error.length());
   int key = response.result->GetDict().FindInt("key").value_or(-1);
   ASSERT_EQ(1, key);
+}
+
+TEST(ParseInspectorMessage, NoBindingName) {
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(
+      "{\"method\":\"Runtime.bindingCalled\","
+      "\"params\":{\"key\":100},"
+      "\"sessionId\":\"AB3A\"}",
+      -1, &session_id, &type, &event, &response));
+}
+
+TEST(ParseInspectorMessage, UnknownBindingName) {
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(
+      "{\"method\":\"Runtime.bindingCalled\","
+      "\"params\":{\"name\":\"helloWorld\", \"payload\": \"{}\"},"
+      "\"sessionId\":\"AB3A\"}",
+      -1, &session_id, &type, &event, &response));
+  ASSERT_EQ(internal::kEventMessageType, type);
+}
+
+TEST(ParseInspectorMessage, BidiMessageNoPayload) {
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(
+      "{\"method\":\"Runtime.bindingCalled\","
+      "\"params\":{\"name\":\"sendBidiResponse\"},"
+      "\"sessionId\":\"AB3A\"}",
+      -1, &session_id, &type, &event, &response));
+}
+
+TEST(ParseInspectorMessage, BidiMessagePayloadNotADict) {
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(
+      "{\"method\":\"Runtime.bindingCalled\","
+      "\"params\":{\"name\":\"sendBidiResponse\", \"payload\": \"7\"},"
+      "\"sessionId\":\"AB3A\"}",
+      -1, &session_id, &type, &event, &response));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpEvent) {
+  base::Value::Dict cdp_params;
+  cdp_params.Set("data", "hello");
+  // payload_params.
+  base::Value::Dict params;
+  params.Set("cdpMethod", "event");
+  params.Set("cdpSession", "ABC");
+  params.Set("cdpParams", std::move(cdp_params));
+  base::Value::Dict payload;
+  payload.Set("method", "cdp.eventReceived");
+  payload.Set("params", std::move(params));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict evt;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
+  std::string message;
+  SerializeAsJson(evt, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kEventMessageType, type);
+  EXPECT_EQ("ABC", session_id);
+  EXPECT_EQ("event", event.method);
+  ASSERT_TRUE(event.params);
+  EXPECT_THAT(event.params->GetDict().FindString("data"), Pointee(Eq("hello")));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
+  base::Value::Dict cdp_params;
+  cdp_params.Set("data", "hello");
+  // payload_params.
+  base::Value::Dict params;
+  params.Set("cdpMethod", "event");
+  params.Set("cdpParams", std::move(cdp_params));
+  base::Value::Dict payload;
+  payload.Set("method", "cdp.eventReceived");
+  payload.Set("params", std::move(params));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict evt;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
+  std::string message;
+  SerializeAsJson(evt, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kEventMessageType, type);
+  EXPECT_EQ("", session_id);
+  EXPECT_EQ("event", event.method);
+  ASSERT_TRUE(event.params);
+  EXPECT_THAT(event.params->GetDict().FindString("data"), Pointee(Eq("hello")));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
+  // payload_params.
+  base::Value::Dict params;
+  params.Set("cdpMethod", "event");
+  params.Set("cdpSession", "ABC");
+  base::Value::Dict payload;
+  payload.Set("method", "cdp.eventReceived");
+  payload.Set("params", std::move(params));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict evt;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
+  std::string message;
+  SerializeAsJson(evt, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kEventMessageType, type);
+  EXPECT_EQ("ABC", session_id);
+  EXPECT_EQ("event", event.method);
+  ASSERT_TRUE(event.params);
+}
+
+TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
+  // payload_params.
+  base::Value::Dict params;
+  params.Set("cdpSession", "ABC");
+  base::Value::Dict payload;
+  payload.Set("method", "cdp.eventReceived");
+  payload.Set("params", std::move(params));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict evt;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
+  std::string message;
+  SerializeAsJson(evt, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                               &event, &response));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
+  base::Value::Dict payload;
+  payload.Set("method", "cdp.eventReceived");
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict evt;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiEventInCdpEvent(std::move(payload), "333", &evt)));
+  std::string message;
+  SerializeAsJson(evt, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                               &event, &response));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpResponse) {
+  base::Value::Dict result;
+  result.Set("data", "hola");
+  base::Value::Dict payload;
+  payload.Set("id", 11);
+  payload.Set("cdpSession", "ABC");
+  payload.Set("result", std::move(result));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict resp;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
+  std::string message;
+  SerializeAsJson(resp, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kCommandResponseMessageType, type);
+  EXPECT_EQ("ABC", session_id);
+  EXPECT_EQ(11, response.id);
+  ASSERT_TRUE(response.result);
+  EXPECT_THAT(response.result->GetDict().FindString("data"),
+              Pointee(Eq("hola")));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
+  base::Value::Dict result;
+  result.Set("data", "hola");
+  base::Value::Dict payload;
+  payload.Set("id", 11);
+  payload.Set("result", std::move(result));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict resp;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
+  std::string message;
+  SerializeAsJson(resp, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kCommandResponseMessageType, type);
+  EXPECT_EQ("", session_id);
+  EXPECT_EQ(11, response.id);
+  ASSERT_TRUE(response.result);
+  EXPECT_THAT(response.result->GetDict().FindString("data"),
+              Pointee(Eq("hola")));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
+  base::Value::Dict result;
+  result.Set("data", "hola");
+  base::Value::Dict payload;
+  payload.Set("cdpSession", "ABC");
+  payload.Set("result", std::move(result));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict resp;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
+  std::string message;
+  SerializeAsJson(resp, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                               &event, &response));
+}
+
+TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
+  base::Value::Dict payload;
+  payload.Set("id", 11);
+  payload.Set("cdpSession", "ABC");
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict resp;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
+  std::string message;
+  SerializeAsJson(resp, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kCommandResponseMessageType, type);
+  EXPECT_EQ("ABC", session_id);
+  EXPECT_EQ(11, response.id);
+  ASSERT_TRUE(response.result);
+}
+
+TEST(ParseInspectorMessage, TunneledCdpResponseError) {
+  base::Value::Dict error;
+  error.Set("data", "hola");
+  base::Value::Dict payload;
+  payload.Set("id", 11);
+  payload.Set("cdpSession", "ABC");
+  payload.Set("error", std::move(error));
+  payload.Set("channel", DevToolsClientImpl::kInfraChannel);
+  base::Value::Dict resp;
+  ASSERT_TRUE(
+      StatusOk(WrapBidiResponseInCdpEvent(std::move(payload), "333", &resp)));
+  std::string message;
+  SerializeAsJson(resp, &message);
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
+                                              &event, &response));
+  EXPECT_EQ(internal::kCommandResponseMessageType, type);
+  EXPECT_EQ("ABC", session_id);
+  EXPECT_EQ(11, response.id);
+  ASSERT_TRUE(!response.error.empty());
 }
 
 TEST(ParseInspectorError, EmptyError) {
@@ -1590,11 +1951,11 @@ TEST_F(DevToolsClientImplTest, SendCommandAndIgnoreResponse) {
   SyncWebSocketFactory factory =
       base::BindRepeating(&CreateMockSyncWebSocket<MockSyncWebSocket7>);
   DevToolsClientImpl client("id", "", "http://url", factory);
-  ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
+  ASSERT_TRUE(StatusOk(client.ConnectIfNecessary()));
   base::Value::Dict params;
   params.Set("param", 1);
-  ASSERT_EQ(kOk, client.SendCommandAndIgnoreResponse("method", params).code());
-  ASSERT_EQ(kOk, client.SendCommand("method", params).code());
+  ASSERT_TRUE(StatusOk(client.SendCommandAndIgnoreResponse("method", params)));
+  ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
 
 namespace {
@@ -1880,16 +2241,28 @@ std::unique_ptr<SyncWebSocket> CreateMockSyncWebSocket_S(
 
 }  // namespace
 
+TEST_F(DevToolsClientImplTest, AttachToConnected) {
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket<MultiSessionMockSyncWebSocket>);
+  DevToolsClientImpl root_client("root_client", "root_session", "http://url",
+                                 factory);
+  DevToolsClientImpl client("page_client", "page_session");
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(root_client.IsConnected());
+  EXPECT_TRUE(StatusOk(client.AttachTo(&root_client)));
+  EXPECT_TRUE(client.IsConnected());
+}
+
 TEST_F(DevToolsClientImplTest, RoutingChildParent) {
   SyncWebSocketFactory factory = base::BindRepeating(
       &CreateMockSyncWebSocket<MultiSessionMockSyncWebSocket>);
   DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
   DevToolsClientImpl client("child", "child_session");
-  client.AttachTo(&root_client);
-  ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
+  ASSERT_TRUE(StatusOk(client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(client.ConnectIfNecessary()));
   base::Value::Dict params;
   params.Set("param", 1);
-  EXPECT_EQ(kOk, client.SendCommand("method", params).code());
+  ASSERT_TRUE(StatusOk(client.SendCommand("method", params)));
 }
 
 TEST_F(DevToolsClientImplTest, RoutingTwoChildren) {
@@ -1898,33 +2271,27 @@ TEST_F(DevToolsClientImplTest, RoutingTwoChildren) {
   DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
   DevToolsClientImpl red_client("red_client", "red_session");
   DevToolsClientImpl blue_client("blue_client", "blue_session");
-  red_client.AttachTo(&root_client);
-  blue_client.AttachTo(&root_client);
-  ASSERT_EQ(kOk, blue_client.ConnectIfNecessary().code());
-  ASSERT_EQ(kOk, red_client.ConnectIfNecessary().code());
+  ASSERT_TRUE(StatusOk(red_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(blue_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(blue_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(red_client.ConnectIfNecessary()));
   {
     base::Value::Dict params;
     params.Set("ping", 2);
     base::Value result;
-    ASSERT_EQ(
-        kOk,
-        red_client.SendCommandAndGetResult("method", params, &result).code());
+    ASSERT_TRUE(StatusOk(
+        red_client.SendCommandAndGetResult("method", params, &result)));
     ASSERT_TRUE(result.is_dict());
-    absl::optional<int> pong = result.GetDict().FindInt("pong");
-    ASSERT_TRUE(pong);
-    EXPECT_EQ(2, *pong);
+    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 2);
   }
   {
     base::Value::Dict params;
     params.Set("ping", 3);
     base::Value result;
-    ASSERT_EQ(
-        kOk,
-        blue_client.SendCommandAndGetResult("method", params, &result).code());
+    ASSERT_TRUE(StatusOk(
+        blue_client.SendCommandAndGetResult("method", params, &result)));
     ASSERT_TRUE(result.is_dict());
-    absl::optional<int> pong = result.GetDict().FindInt("pong");
-    ASSERT_TRUE(pong);
-    EXPECT_EQ(3, *pong);
+    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 3);
   }
 }
 
@@ -1935,26 +2302,23 @@ TEST_F(DevToolsClientImplTest, RoutingWithEvent) {
   DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
   DevToolsClientImpl red_client("red_client", "red_session");
   DevToolsClientImpl blue_client("blue_client", blue_session);
-  red_client.AttachTo(&root_client);
-  blue_client.AttachTo(&root_client);
+  ASSERT_TRUE(StatusOk(red_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(blue_client.AttachTo(&root_client)));
   PingingListener blue_listener;
   blue_listener.SetPing(71);
-  EXPECT_EQ(71, blue_listener.Ping());
-  EXPECT_NE(71, blue_listener.Pong());
+  ASSERT_EQ(71, blue_listener.Ping());
+  ASSERT_NE(71, blue_listener.Pong());
   blue_listener.AttachTo(&blue_client);
-  ASSERT_EQ(kOk, blue_client.ConnectIfNecessary().code());
-  ASSERT_EQ(kOk, red_client.ConnectIfNecessary().code());
+  ASSERT_TRUE(StatusOk(blue_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(red_client.ConnectIfNecessary()));
   {
     base::Value::Dict params;
     params.Set("ping", 12);
     base::Value result;
-    ASSERT_EQ(
-        kOk,
-        red_client.SendCommandAndGetResult("method", params, &result).code());
+    ASSERT_TRUE(StatusOk(
+        red_client.SendCommandAndGetResult("method", params, &result)));
     ASSERT_TRUE(result.is_dict());
-    absl::optional<int> pong = result.GetDict().FindInt("pong");
-    ASSERT_TRUE(pong);
-    EXPECT_EQ(12, *pong);
+    EXPECT_EQ(result.GetDict().FindInt("pong").value_or(-1), 12);
   }
 
   EXPECT_EQ(71, blue_listener.Ping());
@@ -1972,6 +2336,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   Status CreateDefaultBidiResponse(int cmd_id,
                                    std::string method,
                                    base::Value::Dict params,
+                                   const std::string* channel,
                                    base::Value::Dict* response) {
     base::Value::Dict result;
     absl::optional<int> ping = params.FindInt("ping");
@@ -1981,7 +2346,14 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       result.Set("param", 1);
     }
 
-    return CreateBidiResponse(cmd_id, std::move(result), response);
+    base::Value::Dict dict;
+    dict.Set("id", std::move(cmd_id));
+    dict.Set("result", std::move(result));
+    if (channel) {
+      dict.Set("channel", *channel);
+    }
+    *response = std::move(dict);
+    return Status{kOk};
   }
 
   virtual bool OnPureCdpCommand(SessionState* session_state,
@@ -1995,29 +2367,46 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
 
   virtual Status CreateCdpOverBidiResponse(SessionState* session_state,
                                            int cmd_id,
-                                           std::string method,
-                                           base::Value::Dict params,
-                                           std::string session_id,
+                                           std::string cdp_method,
+                                           base::Value::Dict cdp_params,
+                                           std::string cdp_session,
+                                           const std::string* channel,
                                            base::Value::Dict* response) {
-    return CreateDefaultCdpResponse(cmd_id, std::move(method),
-                                    std::move(params), std::move(session_id),
-                                    response);
+    base::Value::Dict result;
+    absl::optional<int> ping = cdp_params.FindInt("ping");
+    if (ping) {
+      result.Set("pong", *ping);
+    } else {
+      result.Set("param", 1);
+    }
+
+    base::Value::Dict dict;
+    dict.Set("id", cmd_id);
+    dict.Set("result", std::move(result));
+    if (channel) {
+      dict.Set("channel", *channel);
+    }
+    if (!cdp_session.empty()) {
+      dict.Set("cdpSession", std::move(cdp_session));
+    }
+    *response = std::move(dict);
+    return Status{kOk};
   }
 
   virtual bool OnCdpOverBidiCommand(SessionState* session_state,
                                     int cmd_id,
-                                    std::string method,
-                                    base::Value::Dict params,
-                                    std::string session_id) {
-    EXPECT_STREQ("method", method.c_str());
-    EXPECT_GE(cmd_id, 0);
-    if (method != "method" || cmd_id < 0) {
+                                    std::string cdp_method,
+                                    base::Value::Dict cdp_params,
+                                    std::string cdp_session,
+                                    const std::string* channel) {
+    EXPECT_STREQ("method", cdp_method.c_str());
+    if (cdp_method != "method") {
       return false;
     }
     base::Value::Dict response;
     Status status = CreateCdpOverBidiResponse(
-        session_state, -cmd_id, std::move(method), std::move(params),
-        std::move(session_id), &response);
+        session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
+        std::move(cdp_session), channel, &response);
     EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
       return false;
@@ -2044,11 +2433,12 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnPureBidiCommand(SessionState* session_state,
                                  int cmd_id,
                                  std::string method,
-                                 base::Value::Dict params) {
+                                 base::Value::Dict params,
+                                 const std::string* channel) {
     EXPECT_STREQ("method", method.c_str());
     base::Value::Dict bidi_response;
     Status status = CreateDefaultBidiResponse(
-        cmd_id, std::move(method), std::move(params), &bidi_response);
+        cmd_id, std::move(method), std::move(params), channel, &bidi_response);
     EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
       return false;
@@ -2074,8 +2464,9 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
   virtual bool OnBidiCommand(SessionState* session_state,
                              int cmd_id,
                              std::string method,
-                             base::Value::Dict params) {
-    if (method == "PROTO.cdp.sendCommand") {
+                             base::Value::Dict params,
+                             const std::string* channel) {
+    if (method == "cdp.sendCommand") {
       const std::string* cdp_method = params.FindString("cdpMethod");
       const std::string* cdp_session = params.FindString("cdpSession");
       const base::Value::Dict* cdp_params = params.FindDict("cdpParams");
@@ -2085,16 +2476,11 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       if (!cdp_method || !cdp_session || !cdp_params) {
         return false;
       }
-      // The service bidi commands must always have negative id
-      EXPECT_LT(cmd_id, 0);
-      if (cmd_id >= 0) {
-        return false;
-      }
-      return OnCdpOverBidiCommand(session_state, -cmd_id, *cdp_method,
-                                  cdp_params->Clone(), *cdp_session);
+      return OnCdpOverBidiCommand(session_state, cmd_id, *cdp_method,
+                                  cdp_params->Clone(), *cdp_session, channel);
     } else {
       return OnPureBidiCommand(session_state, cmd_id, std::move(method),
-                               std::move(params));
+                               std::move(params), channel);
     }
   }
 
@@ -2159,6 +2545,7 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     absl::optional<int> bidi_cmd_id = bidi_dict.FindInt("id");
     const std::string* bidi_method = bidi_dict.FindString("method");
     const base::Value::Dict* bidi_params = bidi_dict.FindDict("params");
+    const std::string* bidi_channel = bidi_dict.FindString("channel");
     EXPECT_TRUE(bidi_cmd_id);
     EXPECT_NE(bidi_method, nullptr);
     EXPECT_NE(bidi_params, nullptr);
@@ -2185,11 +2572,59 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     }
 
     return OnBidiCommand(session_state, *bidi_cmd_id, *bidi_method,
-                         bidi_params->Clone());
+                         bidi_params->Clone(), bidi_channel);
   }
 
   std::string wrapper_session_;
 };
+
+class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
+ public:
+  explicit MultiSessionMockSyncWebSocket3(std::string wrapper_session,
+                                          int* wrapped_ping_counter)
+      : BidiMockSyncWebSocket(wrapper_session),
+        wrapped_ping_counter_(wrapped_ping_counter) {}
+  ~MultiSessionMockSyncWebSocket3() override = default;
+
+  Status CreateCdpOverBidiResponse(SessionState* session_state,
+                                   int cmd_id,
+                                   std::string cdp_method,
+                                   base::Value::Dict cdp_params,
+                                   std::string cdp_session,
+                                   const std::string* channel,
+                                   base::Value::Dict* response) override {
+    base::Value::Dict result;
+    absl::optional<int> ping = cdp_params.FindInt("wrapped-ping");
+    EXPECT_TRUE(ping);
+    if (!ping) {
+      return Status{kUnknownError, "wrapped-ping is missing"};
+    }
+    result.Set("wrapped-pong", *ping);
+    if (wrapped_ping_counter_) {
+      ++(*wrapped_ping_counter_);
+    }
+
+    base::Value::Dict dict;
+    dict.Set("id", cmd_id);
+    dict.Set("result", std::move(result));
+    if (channel) {
+      dict.Set("channel", *channel);
+    }
+    if (!cdp_session.empty()) {
+      dict.Set("cdpSession", std::move(cdp_session));
+    }
+    *response = std::move(dict);
+    return Status{kOk};
+  }
+
+  int* wrapped_ping_counter_ = nullptr;
+};
+
+template <typename T>
+std::unique_ptr<SyncWebSocket> CreateMockSyncWebSocket_S_IPtr(std::string s,
+                                                              int* iptr) {
+  return std::unique_ptr<SyncWebSocket>(new T(s, iptr));
+}
 
 class BidiEventListener : public DevToolsEventListener {
  public:
@@ -2237,23 +2672,20 @@ TEST_F(DevToolsClientImplTest, BidiCommand) {
   SyncWebSocketFactory factory = base::BindRepeating(
       &CreateMockSyncWebSocket_S<BidiMockSyncWebSocket>, mapper_session);
   DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
-  DevToolsClientImpl red_client("red_client", mapper_session);
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
   BidiEventListener bidi_listener;
-  red_client.AddListener(&bidi_listener);
-  red_client.AttachTo(&root_client);
-  root_client.ConnectIfNecessary();
-  red_client.ConnectIfNecessary();
+  mapper_client.AddListener(&bidi_listener);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
   base::Value::Dict params;
   params.Set("ping", 196);
   base::Value::Dict bidi_cmd;
-  Status status =
-      CreateBidiCommand(111, "method", std::move(params), &bidi_cmd);
-  ASSERT_TRUE(status.IsOk()) << status.message();
-  status = red_client.PostBidiCommand(std::move(bidi_cmd));
-  ASSERT_TRUE(status.IsOk()) << status.message();
 
-  status = red_client.HandleReceivedEvents();
-  ASSERT_TRUE(status.IsOk()) << status.message();
+  ASSERT_TRUE(StatusOk(
+      CreateBidiCommand(111, "method", std::move(params), nullptr, &bidi_cmd)));
+  ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
+  ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
 
   ASSERT_EQ(static_cast<size_t>(1), bidi_listener.payload_list.size());
   const base::Value::Dict& payload = bidi_listener.payload_list.front();
@@ -2269,25 +2701,320 @@ TEST_F(DevToolsClientImplTest, BidiCommandIds) {
   SyncWebSocketFactory factory = base::BindRepeating(
       &CreateMockSyncWebSocket_S<BidiMockSyncWebSocket>, mapper_session);
   DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
-  DevToolsClientImpl red_client("red_client", mapper_session);
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
   BidiEventListener bidi_listener;
-  red_client.AddListener(&bidi_listener);
-  red_client.AttachTo(&root_client);
-  root_client.ConnectIfNecessary();
-  red_client.ConnectIfNecessary();
+  mapper_client.AddListener(&bidi_listener);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
 
   for (int cmd_id : {2, 3, 11, 1000021, 1000022, 1000023}) {
     base::Value::Dict bidi_cmd;
-    Status status =
-        CreateBidiCommand(cmd_id, "method", base::Value::Dict(), &bidi_cmd);
-    ASSERT_TRUE(status.IsOk()) << status.message();
-    status = red_client.PostBidiCommand(std::move(bidi_cmd));
-    ASSERT_TRUE(status.IsOk()) << status.message();
-    status = red_client.HandleReceivedEvents();
-    ASSERT_TRUE(status.IsOk()) << status.message();
+    ASSERT_TRUE(StatusOk(CreateBidiCommand(
+        cmd_id, "method", base::Value::Dict(), nullptr, &bidi_cmd)));
+    ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
+    ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
     ASSERT_EQ(static_cast<size_t>(1), bidi_listener.payload_list.size());
     const base::Value::Dict& payload = bidi_listener.payload_list.front();
     ASSERT_EQ(cmd_id, payload.FindInt("id").value_or(-1));
     bidi_listener.payload_list.clear();
+  }
+}
+
+TEST_F(DevToolsClientImplTest, CdpCommandTunneling) {
+  int wrapped_counter = 0;
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S_IPtr<MultiSessionMockSyncWebSocket3>,
+      "mapper_session", &wrapped_counter);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  DevToolsClientImpl page_client("page_client", "blue_session");
+  DevToolsClientImpl mapper_client("mapper_client", "mapper_session");
+  ASSERT_TRUE(StatusOk(page_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(page_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
+  // Set wrapper sessions after all connections to avoid handshake mocking
+  page_client.SetTunnelSessionId(mapper_client.SessionId());
+  {
+    base::Value::Dict params;
+    params.Set("wrapped-ping", 13);
+    base::Value result;
+    ASSERT_TRUE(StatusOk(
+        page_client.SendCommandAndGetResult("method", params, &result)));
+    EXPECT_EQ(wrapped_counter, 1);
+    ASSERT_TRUE(result.is_dict());
+    EXPECT_EQ(result.GetDict().FindInt("wrapped-pong").value_or(-1), 13);
+  }
+}
+
+namespace {
+class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
+ public:
+  explicit MultiSessionMockSyncWebSocket4(std::string wrapper_session)
+      : BidiMockSyncWebSocket(wrapper_session) {}
+  ~MultiSessionMockSyncWebSocket4() override = default;
+
+  bool OnCdpOverBidiCommand(SessionState* session_state,
+                            int cmd_id,
+                            std::string cdp_method,
+                            base::Value::Dict cdp_params,
+                            std::string cdp_session,
+                            const std::string* channel) override {
+    EXPECT_STREQ("method", cdp_method.c_str());
+    if (cdp_method != "method") {
+      return false;
+    }
+
+    base::Value::Dict cdp_evt_params;
+    cdp_evt_params.Set("source", "cdp-over-bidi");
+    base::Value::Dict bidi_params;
+    bidi_params.Set("cdpParams", std::move(cdp_evt_params));
+    bidi_params.Set("cdpSession", cdp_session);
+    bidi_params.Set("cdpMethod", "event");
+    base::Value::Dict bidi_evt;
+    bidi_evt.Set("method", "cdp.eventReceived");
+    bidi_evt.Set("params", std::move(bidi_params));
+    if (channel) {
+      bidi_evt.Set("channel", *channel);
+    }
+    base::Value::Dict evt;
+    Status status = WrapBidiEventInCdpEvent(bidi_evt, wrapper_session_, &evt);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    std::string message;
+    status = SerializeAsJson(evt, &message);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    queued_response_.push(message);
+
+    base::Value::Dict response;
+    status = CreateCdpOverBidiResponse(
+        session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
+        std::move(cdp_session), channel, &response);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    status = WrapBidiResponseInCdpEvent(response, wrapper_session_, &evt);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    status = SerializeAsJson(evt, &message);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    queued_response_.push(std::move(message));
+
+    return true;
+  }
+
+  bool OnPureBidiCommand(SessionState* session_state,
+                         int cmd_id,
+                         std::string method,
+                         base::Value::Dict params,
+                         const std::string* channel) override {
+    EXPECT_STREQ("method", method.c_str());
+    if (method != "method") {
+      return false;
+    }
+
+    base::Value::Dict bidi_evt;
+    bidi_evt.Set("method", "event");
+    base::Value::Dict bidi_evt_params;
+    bidi_evt_params.Set("source", "bidi");
+    bidi_evt.Set("params", std::move(bidi_evt_params));
+    if (channel) {
+      bidi_evt.Set("channel", *channel);
+    }
+    base::Value::Dict evt;
+    Status status = WrapBidiEventInCdpEvent(bidi_evt, wrapper_session_, &evt);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    std::string message;
+    status = SerializeAsJson(evt, &message);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    queued_response_.push(message);
+
+    base::Value::Dict bidi_response;
+    status = CreateDefaultBidiResponse(
+        cmd_id, std::move(method), std::move(params), channel, &bidi_response);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    status = WrapBidiResponseInCdpEvent(bidi_response, wrapper_session_, &evt);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    status = SerializeAsJson(evt, &message);
+    EXPECT_TRUE(status.IsOk()) << status.message();
+    if (status.IsError()) {
+      return false;
+    }
+    queued_response_.push(message);
+    return true;
+  }
+};
+
+class CdpEventListener : public DevToolsEventListener {
+ public:
+  CdpEventListener() = default;
+  ~CdpEventListener() override = default;
+
+  Status OnEvent(DevToolsClient* client,
+                 const std::string& method,
+                 const base::DictionaryValue& params_dv) override {
+    base::Value::Dict data;
+    data.Set("method", method);
+    data.Set("params", params_dv.GetDict().Clone());
+    event_list.push_back(std::move(data));
+    return Status(kOk);
+  }
+
+  std::vector<base::Value::Dict> event_list;
+};
+
+}  // namespace
+
+TEST_F(DevToolsClientImplTest, BidiEvent) {
+  std::string mapper_session = "mapper_session";
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S<MultiSessionMockSyncWebSocket4>,
+      mapper_session);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
+  BidiEventListener bidi_listener;
+  mapper_client.AddListener(&bidi_listener);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
+  base::Value::Dict bidi_cmd;
+  ASSERT_TRUE(StatusOk(CreateBidiCommand(37, "method", base::Value::Dict(),
+                                         nullptr, &bidi_cmd)));
+  ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
+  ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
+
+  ASSERT_EQ(static_cast<size_t>(2), bidi_listener.payload_list.size());
+  const base::Value::Dict& payload = bidi_listener.payload_list.front();
+  EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
+  EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
+              Pointee(Eq("bidi")));
+}
+
+TEST_F(DevToolsClientImplTest, BidiEventCrossRouting) {
+  std::string mapper_session = "mapper_session";
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S<MultiSessionMockSyncWebSocket4>,
+      mapper_session);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  // Green is the BiDiMapper in this test
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
+  DevToolsClientImpl page_client("page_client", "blue_session");
+  BidiEventListener bidi_listener;
+  mapper_client.AddListener(&bidi_listener);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(page_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(page_client.ConnectIfNecessary()));
+  page_client.SetTunnelSessionId(mapper_client.SessionId());
+
+  base::Value::Dict bidi_cmd;
+  ASSERT_TRUE(StatusOk(CreateBidiCommand(414, "method", base::Value::Dict(),
+                                         nullptr, &bidi_cmd)));
+  // The messasge is dispatched from a non-BiDiMapper client
+  ASSERT_TRUE(StatusOk(page_client.PostBidiCommand(std::move(bidi_cmd))));
+  ASSERT_TRUE(StatusOk(page_client.HandleReceivedEvents()));
+
+  // BiDi commands can be sent from any client
+  // but events and responses must arrive to the BiDiMapper client
+  ASSERT_EQ(static_cast<size_t>(2), bidi_listener.payload_list.size());
+  const base::Value::Dict& payload = bidi_listener.payload_list.front();
+  EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
+  EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
+              Pointee(Eq("bidi")));
+}
+
+TEST_F(DevToolsClientImplTest, CdpEventTunneling) {
+  std::string mapper_session = "mapper_session";
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S<MultiSessionMockSyncWebSocket4>,
+      mapper_session);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  DevToolsClientImpl page_client("page_client", "red_session");
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
+  BidiEventListener mapper_bidi_listener;
+  mapper_client.AddListener(&mapper_bidi_listener);
+  CdpEventListener red_cdp_listener;
+  page_client.AddListener(&red_cdp_listener);
+  ASSERT_TRUE(StatusOk(page_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(page_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
+  page_client.SetTunnelSessionId(mapper_client.SessionId());
+  base::Value result;
+  page_client.SendCommandAndGetResult("method", base::Value::Dict(), &result);
+
+  ASSERT_EQ(static_cast<size_t>(0), mapper_bidi_listener.payload_list.size());
+  ASSERT_EQ(static_cast<size_t>(1), red_cdp_listener.event_list.size());
+  const base::Value::Dict& payload = red_cdp_listener.event_list.front();
+  EXPECT_THAT(payload.FindString("method"), Pointee(Eq("event")));
+  EXPECT_THAT(payload.FindStringByDottedPath("params.source"),
+              Pointee(Eq("cdp-over-bidi")));
+}
+
+TEST_F(DevToolsClientImplTest, BidiChannels) {
+  // Corner cases for channels
+  std::string mapper_session = "mapper_session";
+  SyncWebSocketFactory factory = base::BindRepeating(
+      &CreateMockSyncWebSocket_S<MultiSessionMockSyncWebSocket4>,
+      mapper_session);
+  DevToolsClientImpl root_client("root", "root_session", "http://url", factory);
+  DevToolsClientImpl mapper_client("mapper_client", mapper_session);
+  BidiEventListener mapper_bidi_listener;
+  mapper_client.AddListener(&mapper_bidi_listener);
+  ASSERT_TRUE(StatusOk(mapper_client.AttachTo(&root_client)));
+  ASSERT_TRUE(StatusOk(root_client.ConnectIfNecessary()));
+  ASSERT_TRUE(StatusOk(mapper_client.ConnectIfNecessary()));
+
+  for (std::string channel : {DevToolsClientImpl::kInfraChannel,
+                              DevToolsClientImpl::kClientChannelSuffix, ""}) {
+    base::Value::Dict bidi_cmd;
+    ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::Value::Dict(),
+                                           &channel, &bidi_cmd)));
+    ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
+    ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
+    ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
+    for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
+      EXPECT_THAT(payload.FindString("channel"), Pointee(Eq(channel)));
+    }
+    mapper_bidi_listener.payload_list.clear();
+  }
+
+  // no channel case
+  {
+    base::Value::Dict bidi_cmd;
+    ASSERT_TRUE(StatusOk(CreateBidiCommand(1, "method", base::Value::Dict(),
+                                           nullptr, &bidi_cmd)));
+    ASSERT_TRUE(StatusOk(mapper_client.PostBidiCommand(std::move(bidi_cmd))));
+    ASSERT_TRUE(StatusOk(mapper_client.HandleReceivedEvents()));
+    ASSERT_EQ(static_cast<size_t>(2), mapper_bidi_listener.payload_list.size());
+    for (const base::Value::Dict& payload : mapper_bidi_listener.payload_list) {
+      EXPECT_EQ(nullptr, payload.FindString("channel"));
+    }
+    mapper_bidi_listener.payload_list.clear();
   }
 }
