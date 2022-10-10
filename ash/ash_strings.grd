@@ -3325,6 +3325,9 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_SHOW_TOAST" translateable="false" desc="Label for accelerator action - Show Toast.">
         Show Toast
       </message>
+      <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_SYSTEM_UI_STYLE_VIEWER" translateable="false" desc="Label for accelerator action - System UI Style Viewer.">
+        System UI Style Viewer
+      </message>
       <message name="IDS_ASH_ACCELERATOR_ACTION_DEBUG_TUCK_FLOATED_WINDOW_LEFT" translateable="false" desc="Label for accelerator action - Tuck floated window to leftt.">
         Tuck floated window to left
       </message>

@@ -19,6 +19,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/style/style_viewer/system_ui_components_style_viewer_view.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
@@ -276,6 +277,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
           ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/false, /*has_dismiss_button=*/true,
           /*custom_dismiss_text=*/u"Dismiss"));
+      break;
+    case DEBUG_SYSTEM_UI_STYLE_VIEWER:
+      SystemUIComponentsStyleViewerView::CreateAndShowWidget();
       break;
     case DEBUG_TOGGLE_DARK_MODE:
       HandleToggleDarkMode();

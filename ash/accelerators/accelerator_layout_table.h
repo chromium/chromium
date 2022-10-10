@@ -16,7 +16,7 @@
 namespace {
 
 // Derived from the actions listed in `ash/accelerators/accelerator_table.h`.
-constexpr int kNumAcceleratorActions = 142;
+constexpr int kNumAcceleratorActions = 143;
 
 }  // namespace
 
