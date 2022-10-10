@@ -711,3 +711,12 @@ TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
  * @const
  */
 TestFileSystemProvider.INITIAL_TEXT = 'Hello world. How are you today?';
+
+// Service worker entry point.
+export function serviceWorkerMain(serviceWorker) {
+  const provider =
+      new TestFileSystemProvider(TestFileSystemProvider.FILESYSTEM_ID);
+
+  provider.setUpProviderListeners();
+  provider.setUpCommandListener(serviceWorker);
+}
