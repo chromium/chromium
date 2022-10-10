@@ -141,6 +141,14 @@ bool UpdateScreen::MaybeSkip(WizardContext& context) {
     exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
     return true;
   }
+
+  if (g_browser_process->local_state()->GetBoolean(
+          "EnrollmentRecoveryRequired")) {
+    LOG(WARNING) << "Skip OOBE Update because of recovery mode enrollment.";
+    exit_callback_.Run(VersionUpdater::Result::UPDATE_SKIPPED);
+    return true;
+  }
+
   return false;
 }
 
