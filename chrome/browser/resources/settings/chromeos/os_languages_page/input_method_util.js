@@ -82,6 +82,7 @@ export const OptionType = {
   JAPANESE_SECTION_SHORTCUT: 'JapaneseSectionShortcut',
   JAPANESE_KEYMAP_STYLE: 'JapaneseKeymapStyle',
   JAPANESE_MANAGE_USER_DICTIONARY: 'JapaneseManageUserDictionary',
+  JAPANESE_CLEAR_PERSONALIZATION_DATA: 'JapaneseClearPersonalizationData',
   // Options for Korean input method.
   KOREAN_ENABLE_SYLLABLE_INPUT: 'koreanEnableSyllableInput',
   KOREAN_KEYBOARD_LAYOUT: 'koreanKeyboardLayout',
@@ -187,7 +188,17 @@ export const OPTION_DEFAULT = {
 export const UiType = {
   DROPDOWN: 'dropdown',
   LINK: 'link',
+  SUBMENU_BUTTON: 'submenuButton',
   TOGGLE_BUTTON: 'toggleButton',
+};
+
+/**
+ * All possible submenu button types.
+ *
+ * @enum {string}
+ */
+export const SubmenuButton = {
+  JAPANESE_CLEAR_PERSONALIZATION_DATA: 'SubmenuButtonClearPersonalizedData',
 };
 
 /**
@@ -276,9 +287,10 @@ const Settings = {
       // correct values are the ones from the legacy settings page that used to
       // be found in
       // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
+      // This is still missing 2 settings, but will do that separately.
       title: SettingsHeaders.PRIVACY,
       optionNames: [{
-        name: OptionType.JAPANESE_INPUT_MODE,
+        name: OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA,
       }],
     },
   ],
@@ -487,10 +499,13 @@ export function getOptionUiType(option) {
     case OptionType.EDIT_USER_DICT:
     case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return UiType.LINK;
+    case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
+      return UiType.SUBMENU_BUTTON;
     default:
       assertNotReached();
   }
 }
+
 export function isOptionLabelTranslated(option) {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
@@ -576,6 +591,8 @@ export function getOptionLabelName(option) {
       return 'inputMethodOptionsJapaneseNumberOfSuggestions';
     case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionary';
+    case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
+      return 'inputMethodOptionsJapaneseClearPersonalizationData';
     case OptionType.XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
     case OptionType.EDIT_USER_DICT:
@@ -879,6 +896,18 @@ export function getOptionUrl(option) {
   }
   if (option === OptionType.JAPANESE_MANAGE_USER_DICTIONARY) {
     return routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY;
+  }
+  return undefined;
+}
+
+/**
+ * @param {!OptionType} option The option type.
+ * @return {SubmenuButton|undefined} The submenu button type for
+ * |option|, returns undefined if |option| does not have a submenu button type.
+ */
+export function getSubmenuButtonType(option) {
+  if (option === OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
+    return SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA;
   }
   return undefined;
 }

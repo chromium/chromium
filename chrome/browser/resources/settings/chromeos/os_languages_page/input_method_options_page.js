@@ -8,10 +8,12 @@
  */
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '../../settings_shared.css.js';
+import './os_japanese_clear_ime_data_dialog.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -21,7 +23,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, UiType} from './input_method_util.js';
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -77,6 +79,12 @@ class SettingsInputMethodOptionsPageElement extends
         type: Array,
         value: [],
       },
+
+      /** @private */
+      showClearPersonalizedData_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -114,6 +122,20 @@ class SettingsInputMethodOptionsPageElement extends
         `Input method ID '${this.id_}' is invalid`);
     this.engineId_ = getFirstPartyInputMethodEngineId(this.id_);
     this.populateOptionSections_();
+  }
+
+  onSubmenuButtonClick_(e) {
+    if (e.target.getAttribute('submenu-button-type') ===
+        SubmenuButton.JAPANESE_CLEAR_PERSONALIZATION_DATA) {
+      this.showClearPersonalizedData_ = true;
+      return;
+    }
+    console.error(`SubmenuButton with invalid type clicked : ${
+        e.target.getAttribute('submenu-button-type')}`);
+  }
+
+  onClearPersonalizedDataClose_() {
+    this.showClearPersonalizedData_ = false;
   }
 
   /**
@@ -160,6 +182,7 @@ class SettingsInputMethodOptionsPageElement extends
 
       const subtitleStringName = getOptionSubtitleName(name);
       const subtitle = subtitleStringName && this.i18n(subtitleStringName);
+
       return {
         name: name,
         uiType: uiType,
@@ -171,6 +194,9 @@ class SettingsInputMethodOptionsPageElement extends
         dependentOptions: option.dependentOptions ?
             option.dependentOptions.map(t => makeOption({name: t})) :
             [],
+        submenuButtonType: this.isSubmenuButton_(uiType) ?
+            getSubmenuButtonType(name) :
+            undefined,
       };
     };
 
@@ -305,6 +331,16 @@ class SettingsInputMethodOptionsPageElement extends
    */
   isToggleButton_(item) {
     return item === UiType.TOGGLE_BUTTON;
+  }
+
+
+  /**
+   * @param {!UiType} item
+   * @return {boolean} true if |item| is a toggle button.
+   * @private
+   */
+  isSubmenuButton_(item) {
+    return item === UiType.SUBMENU_BUTTON;
   }
 
   /**

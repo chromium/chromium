@@ -33,6 +33,7 @@ web_component_files = [
   "chromeos/os_languages_page/input_page.js",
   "chromeos/os_languages_page/os_add_languages_dialog.js",
   "chromeos/os_languages_page/os_edit_dictionary_page.js",
+  "chromeos/os_languages_page/os_japanese_clear_ime_data_dialog.js",
   "chromeos/os_languages_page/os_japanese_manage_user_dictionary_page.js",
   "chromeos/os_languages_page/os_languages_page_v2.js",
   "chromeos/os_languages_page/os_languages_section.js",

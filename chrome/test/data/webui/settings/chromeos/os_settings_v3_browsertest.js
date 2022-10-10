@@ -380,6 +380,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_bluetooth_change_device_name_dialog_tests.js',
  ],
  ['OsEditDictionaryPage', 'os_edit_dictionary_page_test.js'],
+ [
+   'OsClearPersonalizationDataPage',
+   'os_clear_personalization_data_page_test.js'
+ ],
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  [

@@ -18,14 +18,23 @@
     <div class="list-frame">
       <template is="dom-repeat" items="[[section.options]]" as="option">
         <div class="list-item">
-          <div class="start" id="option-label" aria-hidden="true">
-            [[option.label]]
-            <template is="dom-if" if="[[option.subtitle)]]">
-              <span class="secondary label subtitle">
-                [[option.subtitle]]
-              </span>
-            </template>
-          </div>
+          <template is="dom-if" if="[[isSubmenuButton_(option.uiType)]]">
+            <cr-button class="margin-matches-padding"
+                       submenu-button-type$="[[option.submenuButtonType]]"
+                       on-click="onSubmenuButtonClick_">
+              [[option.label]]
+            </cr-button>
+          </template>
+          <template is="dom-if" if="[[!isSubmenuButton_(option.uiType)]]">
+            <div class="start" id="option-label" aria-hidden="true">
+              [[option.label]]
+              <template is="dom-if" if="[[option.subtitle)]]">
+                <span class="secondary label subtitle">
+                  [[option.subtitle]]
+                </span>
+              </template>
+            </div>
+          </template>
           <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
             <cr-toggle checked="{{option.value}}"
                 on-click="onToggleButtonOrDropdownChange_"
@@ -89,3 +98,10 @@
     </div>
   </template>
 </div>
+
+<template is="dom-if" if="[[showClearPersonalizedData_]]" restamp>
+  <os-settings-japanese-clear-ime-data-dialog languages="[[languages]]"
+      language-helper="[[languageHelper]]"
+      on-close="onClearPersonalizedDataClose_">
+  </os-settings-japanese-clear-ime-data-dialog>
+</template>

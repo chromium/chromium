@@ -744,6 +744,9 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY" desc="Label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
     Manage user dictionaries
   </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CLEAR_PERSONALIZATION_DATA" desc="The label for the button leading to the page within japanese input settings which can be used to clear personalization data for Japanese input. In Japanese, this should be '入力履歴の消去...'.">
+    Clear personalization data...
+  </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY_SUBTITLE" desc="Subheading for the label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
     Add your own words to the user dictionaries in order to customize the conversion candidates.
   </message>

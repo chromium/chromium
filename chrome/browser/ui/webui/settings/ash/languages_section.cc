@@ -304,6 +304,8 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS},
       {"inputMethodOptionsJapaneseManageUserDictionary",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY},
+      {"inputMethodOptionsJapaneseClearPersonalizationData",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CLEAR_PERSONALIZATION_DATA},
       {"inputMethodOptionsJapaneseManageUserDictionarySubtitle",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY_SUBTITLE},
       {"inputMethodOptionsPinyinChinesePunctuation",

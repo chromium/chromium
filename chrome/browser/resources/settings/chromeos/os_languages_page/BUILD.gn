@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":languages_types",
     ":os_add_languages_dialog",
     ":os_edit_dictionary_page",
+    ":os_japanese_clear_ime_data_dialog",
     ":os_japanese_manage_user_dictionary_page",
     ":os_languages_page_v2",
     ":os_languages_section",
@@ -70,6 +71,12 @@ js_library("languages_browser_proxy") {
   extra_sources = [
     "$interfaces_path/input_method_private_interface.js",
     "$interfaces_path/language_settings_private_interface.js",
+  ]
+}
+
+js_library("os_japanese_clear_ime_data_dialog") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
