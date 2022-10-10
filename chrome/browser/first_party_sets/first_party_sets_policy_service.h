@@ -32,8 +32,7 @@ class FirstPartySetsPolicyService
     : public KeyedService,
       public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
-  FirstPartySetsPolicyService(content::BrowserContext* context,
-                              const base::Value::Dict* policy);
+  explicit FirstPartySetsPolicyService(content::BrowserContext* context);
   FirstPartySetsPolicyService(const FirstPartySetsPolicyService&) = delete;
   FirstPartySetsPolicyService& operator=(const FirstPartySetsPolicyService&) =
       delete;

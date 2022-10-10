@@ -8,13 +8,11 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/common/content_features.h"
 
 namespace first_party_sets {
 
@@ -43,21 +41,6 @@ FirstPartySetsPolicyServiceFactory::GetInstance() {
   return base::Singleton<FirstPartySetsPolicyServiceFactory>::get();
 }
 
-// static
-const base::Value::Dict*
-FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-    const Profile& profile) {
-  if (profile.IsSystemProfile() || profile.IsGuestSession())
-    return nullptr;
-
-  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-    return nullptr;
-  }
-
-  return &profile.GetPrefs()->GetDict(
-      first_party_sets::kFirstPartySetsOverrides);
-}
-
 void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
     TestingFactory test_factory) {
   *GetTestingFactory() = std::move(test_factory);
@@ -82,12 +65,7 @@ KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
   if (!GetTestingFactory()->is_null()) {
     return GetTestingFactory()->Run(context).release();
   }
-  Profile* profile = Profile::FromBrowserContext(context);
-  // profile is guaranteed to be non-null since we create this factory with a
-  // non-null `context` from the ProfileNetworkContextService.
-  DCHECK(profile);
-  return new FirstPartySetsPolicyService(
-      context, GetOverridesPolicyForProfile(*profile));
+  return new FirstPartySetsPolicyService(context);
 }
 
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()

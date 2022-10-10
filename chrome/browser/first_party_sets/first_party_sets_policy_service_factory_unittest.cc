@@ -35,25 +35,6 @@ class FirstPartySetsPolicyServiceFactoryTest : public testing::Test {
       TestingProfileManager(TestingBrowserProcess::GetGlobal());
 };
 
-TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledForGuestProfiles) {
-  TestingProfile* profile = profile_manager().CreateGuestProfile();
-
-  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-                *profile),
-            nullptr);
-}
-
-TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledByFeature) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kFirstPartySets);
-  TestingProfile* profile =
-      profile_manager().CreateTestingProfile("TestProfile");
-
-  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-                *profile),
-            nullptr);
-}
-
 TEST_F(FirstPartySetsPolicyServiceFactoryTest,
        ServiceCreatedRegardlessIfPolicyEnabled) {
   base::test::ScopedFeatureList features;
@@ -81,15 +62,6 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
   enabled_profile->GetPrefs()->SetDict(
       first_party_sets::kFirstPartySetsOverrides,
       std::move(empty_lists.GetDict()));
-
-  // Ensure `GetOverridesPolicyForProfile` isn't reliant on the enabled pref.
-  EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-                *disabled_profile),
-            nullptr);
-  EXPECT_EQ(*FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-                *disabled_profile),
-            *FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
-                *enabled_profile));
 
   // Ensure that the Service creation isn't reliant on the enabled pref.
   EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetForBrowserContext(

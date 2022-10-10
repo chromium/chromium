@@ -40,7 +40,96 @@ class MockFirstPartySetsAccessDelegate
   MOCK_METHOD1(SetEnabled, void(bool));
 };
 
-class FirstPartySetsPolicyServiceTest : public testing::Test {
+class DefaultFirstPartySetsPolicyServiceTest : public testing::Test {
+ public:
+  DefaultFirstPartySetsPolicyServiceTest() = default;
+
+  void SetUp() override {
+    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+    mock_delegate_receiver_.Bind(
+        mock_delegate_remote_.BindNewPipeAndPassReceiver());
+  }
+
+ protected:
+  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
+  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_receiver_{&mock_delegate};
+  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_remote_;
+
+ private:
+  content::BrowserTaskEnvironment env_;
+};
+
+TEST_F(DefaultFirstPartySetsPolicyServiceTest, DisabledByFeature) {
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  // Ensure NotifyReady is called with the empty config.
+  base::RunLoop loop;
+  network::mojom::FirstPartySetsReadyEventPtr actual;
+  EXPECT_CALL(mock_delegate, NotifyReady(_))
+      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
+        actual = std::move(ptr);
+        loop.Quit();
+      });
+  loop.Run();
+
+  EXPECT_FALSE(actual.is_null());
+  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+}
+
+TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kFirstPartySets);
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile.get());
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  // Ensure NotifyReady is called with the empty config.
+  base::RunLoop loop;
+  network::mojom::FirstPartySetsReadyEventPtr actual;
+  EXPECT_CALL(mock_delegate, NotifyReady(_))
+      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
+        actual = std::move(ptr);
+        loop.Quit();
+      });
+  loop.Run();
+
+  EXPECT_FALSE(actual.is_null());
+  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+}
+
+TEST_F(DefaultFirstPartySetsPolicyServiceTest, EnabledForLegitProfile) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kFirstPartySets);
+  TestingProfile profile;
+  FirstPartySetsPolicyService* service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+  service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
+
+  // Ensure NotifyReady is called with the empty config.
+  base::RunLoop loop;
+  network::mojom::FirstPartySetsReadyEventPtr actual;
+  EXPECT_CALL(mock_delegate, NotifyReady(_))
+      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
+        actual = std::move(ptr);
+        loop.Quit();
+      });
+  loop.Run();
+
+  EXPECT_FALSE(actual.is_null());
+  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+}
+
+class FirstPartySetsPolicyServiceTest
+    : public DefaultFirstPartySetsPolicyServiceTest {
  public:
   FirstPartySetsPolicyServiceTest() {
     // Enable base::Feature for all tests since only the pref can change
@@ -49,9 +138,7 @@ class FirstPartySetsPolicyServiceTest : public testing::Test {
   }
 
   void SetUp() override {
-    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
-    mock_delegate_receiver_.Bind(
-        mock_delegate_remote_.BindNewPipeAndPassReceiver());
+    DefaultFirstPartySetsPolicyServiceTest::SetUp();
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -73,16 +160,9 @@ class FirstPartySetsPolicyServiceTest : public testing::Test {
   }
 
  protected:
-  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
-  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_receiver_{&mock_delegate};
-  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
-      mock_delegate_remote_;
-
   FirstPartySetsPolicyService* service() { return service_; }
 
  private:
-  content::BrowserTaskEnvironment env_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   base::test::ScopedFeatureList features_;
   FirstPartySetsPolicyService* service_;

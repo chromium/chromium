@@ -85,7 +85,6 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
 // Verifies that policy defaults are used when not specified.
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest, PolicyDefaults) {
   base::RunLoop loop;
-  base::Value::Dict policy;
   BrowserContextKeyedServiceFactory::TestingFactory factory =
       base::BindLambdaForTesting([&](content::BrowserContext* context) {
         Profile* profile = Profile::FromBrowserContext(context);
@@ -99,8 +98,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest, PolicyDefaults) {
                 ->IsDefaultValue());
         loop.Quit();
         return base::WrapUnique<KeyedService>(
-            new ::first_party_sets::FirstPartySetsPolicyService(context,
-                                                                &policy));
+            new ::first_party_sets::FirstPartySetsPolicyService(context));
       });
 
   ::first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance()
@@ -115,7 +113,6 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest, PolicyDefaults) {
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                        EnabledPolicySetAndUsed) {
   base::RunLoop loop;
-  base::Value::Dict policy;
   BrowserContextKeyedServiceFactory::TestingFactory factory =
       base::BindLambdaForTesting([&](content::BrowserContext* context) {
         Profile* profile = Profile::FromBrowserContext(context);
@@ -134,8 +131,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                   false);
         loop.Quit();
         return base::WrapUnique<KeyedService>(
-            new ::first_party_sets::FirstPartySetsPolicyService(context,
-                                                                &policy));
+            new ::first_party_sets::FirstPartySetsPolicyService(context));
       });
 
   ::first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance()
@@ -152,7 +148,6 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                        BothPoliciesSetAndUsed) {
   base::RunLoop loop;
-  base::Value::Dict policy;
   base::Value expected_overrides = base::JSONReader::Read(R"(
              {
                 "replacements": [],
@@ -181,8 +176,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                     expected_overrides.GetDict());
         loop.Quit();
         return base::WrapUnique<KeyedService>(
-            new ::first_party_sets::FirstPartySetsPolicyService(context,
-                                                                &policy));
+            new ::first_party_sets::FirstPartySetsPolicyService(context));
       });
 
   ::first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance()

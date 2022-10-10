@@ -4,10 +4,13 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/first_party_sets_handler.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
@@ -23,30 +26,56 @@ network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
   return ready_event;
 }
 
+const base::Value::Dict* GetOverridesPolicyForProfile(
+    const PrefService* prefs) {
+  return prefs ? &prefs->GetDict(first_party_sets::kFirstPartySetsOverrides)
+               : nullptr;
+}
+
+bool GetEnabledPolicyForProfile(const PrefService* prefs) {
+  return prefs &&
+         prefs->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
+}
+
 }  // namespace
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
-    content::BrowserContext* browser_context,
-    const base::Value::Dict* policy)
+    content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browser_context);
+
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    config_ = net::FirstPartySetsContextConfig();
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // profile is guaranteed to be non-null since we create this service with a
+  // non-null `context`.
+  DCHECK(profile);
+  // Checks that `profile` isn't a system profile or a guest profile before
+  // returning a pointer to the value of the First-Party Sets Overrides policy.
+  if (profile->IsSystemProfile() || profile->IsGuestSession()) {
+    config_ = net::FirstPartySetsContextConfig();
+    return;
+  }
+
   // Immediately send `policy` to the FirstPartySetsHandler to retrieve its
   // associated FirstPartySetsContextConfig. We can do this since the value of
   // the FirstPartySets Overrides policy doesn't dynamically refresh, and all
   // delegates for `context` will have the same `policy` and thus the same
   // config.
-  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  PrefService* prefs = profile->GetPrefs();
   content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
-      policy, base::BindOnce(
-                  &FirstPartySetsPolicyService::OnProfileConfigReady,
-                  weak_factory_.GetWeakPtr(),
-                  // We should only clear site data if First-Party Sets is
-                  // enabled when the service is created, to allow users to
-                  // play with the FPS enabled setting without affecting
-                  // user experience during the browser session.
-                  prefs && prefs->GetBoolean(
-                               prefs::kPrivacySandboxFirstPartySetsEnabled)));
+      GetOverridesPolicyForProfile(prefs),
+      base::BindOnce(&FirstPartySetsPolicyService::OnProfileConfigReady,
+                     weak_factory_.GetWeakPtr(),
+                     // We should only clear site data if First-Party Sets is
+                     // enabled when the service is created, to allow users to
+                     // play with the FPS enabled setting without affecting
+                     // user experience during the browser session.
+                     GetEnabledPolicyForProfile(prefs)));
 }
 
 FirstPartySetsPolicyService::~FirstPartySetsPolicyService() = default;
