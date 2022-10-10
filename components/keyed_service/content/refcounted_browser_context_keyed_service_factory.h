@@ -85,6 +85,9 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   // Interface for people building a concrete FooServiceFactory: --------------
 
   // Finds which browser context (if any) to use.
+  //
+  // Should return nullptr when the service should not be created for the given
+  // |context|.
   virtual content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const;
 
@@ -104,6 +107,14 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
 
   // All subclasses of BrowserContextKeyedServiceFactory must return a
   // KeyedService instead of just a BrowserContextKeyedBase.
+  //
+  // This should not return nullptr; instead, return nullptr from
+  // `GetBrowserContextToUse()`.
+  // NOTE: There is a //chrome-specific exception to this rule for a
+  // ChromeOS-specific case until crbug.com/1284664 is resolved. See
+  // documentation on //chrome's //
+  // `RefcountedProfileKeyedServiceFactory::BuildServiceInstanceFor()` for
+  // details.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const = 0;
 
