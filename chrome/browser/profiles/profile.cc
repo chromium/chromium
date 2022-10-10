@@ -87,6 +87,10 @@ const char kDevToolsOTRProfileIDPrefix[] = "Devtools::BrowserContext";
 const char kMediaRouterOTRProfileIDPrefix[] = "MediaRouter::Presentation";
 const char kTestOTRProfileIDPrefix[] = "Test::OTR";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kCaptivePortalOTRProfileIDPrefix[] = "CaptivePortal::Signin";
+#endif
+
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
 }  // namespace
@@ -96,13 +100,22 @@ Profile::OTRProfileID::OTRProfileID(const std::string& profile_id)
 
 bool Profile::OTRProfileID::AllowsBrowserWindows() const {
   // Non-Primary OTR profiles are not supposed to create Browser windows.
-  // DevTools::BrowserContext and MediaRouter::Presentation are an
-  // exception to this ban.
-  return *this == PrimaryID() ||
-         base::StartsWith(profile_id_, kDevToolsOTRProfileIDPrefix,
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(profile_id_, kMediaRouterOTRProfileIDPrefix,
-                          base::CompareCase::SENSITIVE);
+  // DevTools::BrowserContext, MediaRouter::Presentation, and
+  // CaptivePortal::Signin are exceptions to this ban.
+  if (*this == PrimaryID() ||
+      base::StartsWith(profile_id_, kDevToolsOTRProfileIDPrefix,
+                       base::CompareCase::SENSITIVE) ||
+      base::StartsWith(profile_id_, kMediaRouterOTRProfileIDPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    return true;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::StartsWith(profile_id_, kCaptivePortalOTRProfileIDPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    return true;
+  }
+#endif
+  return false;
 }
 
 // static
@@ -129,6 +142,13 @@ Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForDevTools() {
 Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForMediaRouter() {
   return CreateUnique(kMediaRouterOTRProfileIDPrefix);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// static
+Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForCaptivePortal() {
+  return CreateUnique(kCaptivePortalOTRProfileIDPrefix);
+}
+#endif
 
 // static
 Profile::OTRProfileID Profile::OTRProfileID::CreateUniqueForTesting() {

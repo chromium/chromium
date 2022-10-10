@@ -285,4 +285,18 @@ TEST_F(NetworkPortalSigninControllerTest2022Update, NoProbeUrl) {
   EXPECT_EQ(controller_->tab_url(), expected_url);
 }
 
+TEST_F(NetworkPortalSigninControllerTest2022Update, IsNewOTRProfile) {
+  SimulateLogin();
+  std::string expected_url = SetProbeUrl(kTestPortalUrl);
+  controller_->ShowSignin();
+  EXPECT_EQ(controller_->tab_url(), expected_url);
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* default_otr_profile =
+      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_NE(profile, default_otr_profile);
+  EXPECT_NE(controller_->profile(), profile);
+  EXPECT_NE(controller_->profile(), default_otr_profile);
+  EXPECT_TRUE(controller_->profile()->IsOffTheRecord());
+}
+
 }  // namespace ash

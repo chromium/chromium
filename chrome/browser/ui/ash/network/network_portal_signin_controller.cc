@@ -49,10 +49,14 @@ bool ProxyActive(Profile* profile) {
 }
 
 Profile* GetOTROrActiveProfile() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  // We use a separate signin OTR profile to avoid passing existing OTR cookies
+  // to the captive portal signin page, see b/245578628 for details.
   Profile* otr_profile =
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  return otr_profile ? otr_profile : profile;
+      ProfileManager::GetActiveUserProfile()->GetOffTheRecordProfile(
+          Profile::OTRProfileID::CreateUniqueForCaptivePortal(),
+          /*create_if_needed=*/true);
+  DCHECK(otr_profile);
+  return otr_profile;
 }
 
 }  // namespace

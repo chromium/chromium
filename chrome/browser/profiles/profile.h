@@ -105,6 +105,11 @@ class Profile : public content::BrowserContext {
     // Creates a unique OTR profile id to be used for media router.
     static OTRProfileID CreateUniqueForMediaRouter();
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // Creates a unique OTR profile id to be used for captive portal signin on
+    // ChromeOS.
+    static OTRProfileID CreateUniqueForCaptivePortal();
+#endif
     // Creates a unique OTR profile id for tests.
     static OTRProfileID CreateUniqueForTesting();
 
