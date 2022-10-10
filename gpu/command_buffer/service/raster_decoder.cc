@@ -901,7 +901,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   const bool is_drdc_enabled_;
 
-  raw_ptr<gl::GLApi> api_ = nullptr;
+  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
 
   base::WeakPtrFactory<DecoderContext> weak_ptr_factory_{this};
 };

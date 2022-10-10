@@ -44,7 +44,7 @@ class EGLImageBacking::TextureHolder : public base::RefCounted<TextureHolder> {
       texture_->RemoveLightweightRef(!context_lost_);
   }
 
-  const raw_ptr<gles2::Texture> texture_ = nullptr;
+  const raw_ptr<gles2::Texture, DanglingUntriaged> texture_ = nullptr;
   const scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   bool context_lost_ = false;
 };

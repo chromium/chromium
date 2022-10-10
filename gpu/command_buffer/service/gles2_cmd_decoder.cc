@@ -2668,7 +2668,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   scoped_refptr<ShaderTranslatorInterface> fragment_translator_;
 
   // Cached from ContextGroup
-  raw_ptr<const Validators> validators_;
+  raw_ptr<const Validators, DanglingUntriaged> validators_;
   scoped_refptr<FeatureInfo> feature_info_;
 
   int frame_number_;
