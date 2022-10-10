@@ -1036,13 +1036,15 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
-// Schedule a call to `saveFieldTrialValuesForExtensions` for deferred
-// execution.
-- (void)scheduleSaveFieldTrialValuesForExtensions {
+// Schedule a call to `scheduleSaveFieldTrialValuesForExternals` for deferred
+// execution. Externals can be extensions or 1st party apps.
+- (void)scheduleSaveFieldTrialValuesForExternals {
+  __weak __typeof(self) weakSelf = self;
   [[DeferredInitializationRunner sharedInstance]
       enqueueBlockNamed:kSaveFieldTrialValues
                   block:^{
-                    [self saveFieldTrialValuesForExtensions];
+                    [weakSelf saveFieldTrialValuesForExtensions];
+                    [weakSelf saveFieldTrialValuesForGroupApp];
                   }];
 }
 
@@ -1164,7 +1166,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self startFreeMemoryMonitoring];
   [self scheduleAppDistributionPings];
   [self initializeMailtoHandling];
-  [self scheduleSaveFieldTrialValuesForExtensions];
+  [self scheduleSaveFieldTrialValuesForExternals];
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleFaviconsCleanup];
 }
