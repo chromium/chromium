@@ -20,6 +20,7 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -39,7 +40,13 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
-#endif
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include <vector>
+
+#include "content/public/common/webplugininfo.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
@@ -247,6 +254,10 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
+
+#if BUILDFLAG(ENABLE_PPAPI)
+  std::vector<content::WebPluginInfo> plugins_;
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID)

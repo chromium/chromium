@@ -69,7 +69,11 @@ class SandboxMacTest : public base::MultiProcessTest {
     sandbox::SeatbeltExecClient client;
     client.SetProfile(profile);
     SetupSandboxParameters(sandbox_type,
-                           *base::CommandLine::ForCurrentProcess(), &client);
+                           *base::CommandLine::ForCurrentProcess(),
+#if BUILDFLAG(ENABLE_PPAPI)
+                           /*plugins=*/{},
+#endif
+                           &client);
 
     pipe_ = client.GetReadFD();
     ASSERT_GE(pipe_, 0);

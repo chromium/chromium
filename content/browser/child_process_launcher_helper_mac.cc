@@ -18,11 +18,18 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "sandbox/policy/mac/sandbox_mac.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
+
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "content/public/browser/plugin_service.h"
+#include "content/public/common/webplugininfo.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
+#endif
 
 namespace content {
 namespace internal {
@@ -35,6 +42,13 @@ ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+
+#if BUILDFLAG(ENABLE_PPAPI)
+  auto sandbox_type =
+      sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
+  if (sandbox_type == sandbox::mojom::Sandbox::kPpapi)
+    PluginService::GetInstance()->GetInternalPlugins(&plugins_);
+#endif
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>
@@ -83,6 +97,9 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     seatbelt_exec_client_->SetProfile(profile);
 
     SetupSandboxParameters(sandbox_type, *command_line_.get(),
+#if BUILDFLAG(ENABLE_PPAPI)
+                           plugins_,
+#endif
                            seatbelt_exec_client_.get());
 
     int pipe = seatbelt_exec_client_->GetReadFD();
