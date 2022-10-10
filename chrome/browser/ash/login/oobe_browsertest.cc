@@ -115,29 +115,14 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));
 
-  // Create does not make sense in the context of AuthSession,
-  // so we only check passed params when AuthSession feature
-  // is disabled.
-  if (!IsFeatureEnabledInThisTestCase(
-          features::kUseAuthsessionAuthentication)) {
-    // Key that was passed as mount authentication does not actually matter,
-    // but checking it for the sake of completeness.
-    const cryptohome::AuthorizationRequest& cryptohome_auth =
-        FakeUserDataAuthClient::Get()->get_last_mount_authentication();
-    EXPECT_TRUE(cryptohome_auth.key().data().label().empty());
-    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
-              cryptohome_auth.key().data().type());
-    EXPECT_FALSE(cryptohome_auth.key().secret().empty());
-
-    const ::user_data_auth::MountRequest& last_mount_request =
-        FakeUserDataAuthClient::Get()->get_last_mount_request();
-    ASSERT_TRUE(last_mount_request.has_create());
-    ASSERT_EQ(1, last_mount_request.create().keys_size());
-    EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
-              last_mount_request.create().keys(0).data().type());
-    EXPECT_EQ(kCryptohomeGaiaKeyLabel,
-              last_mount_request.create().keys(0).data().label());
-    EXPECT_FALSE(last_mount_request.create().keys(0).secret().empty());
+  if (IsFeatureEnabledInThisTestCase(features::kUseAuthFactors)) {
+    // Verify the parameters that were passed to the latest AddCredentials call.
+    const user_data_auth::AddAuthFactorRequest& request =
+        FakeUserDataAuthClient::Get()->get_last_add_authfactor_request();
+    EXPECT_EQ(request.auth_factor().label(), kCryptohomeGaiaKeyLabel);
+    EXPECT_FALSE(request.auth_input().password_input().secret().empty());
+    EXPECT_EQ(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD,
+              request.auth_factor().type());
   } else {
     // Verify the parameters that were passed to the latest AddCredentials call.
     const cryptohome::AuthorizationRequest& cryptohome_auth =
@@ -162,8 +147,8 @@ IN_PROC_BROWSER_TEST_P(OobeTest, Accelerator) {
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 }
 
-const auto kAllFeatureVariations = FeatureAsParameterInterface<1>::Generator(
-    {&features::kUseAuthsessionAuthentication});
+const auto kAllFeatureVariations =
+    FeatureAsParameterInterface<1>::Generator({&features::kUseAuthFactors});
 
 INSTANTIATE_TEST_SUITE_P(All,
                          OobeTest,

@@ -306,6 +306,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_add_credentials_request_.authorization();
   }
 
+  const ::user_data_auth::AddAuthFactorRequest&
+  get_last_add_authfactor_request() const {
+    return last_add_auth_factor_request_;
+  }
+
   const ::user_data_auth::AuthenticateAuthFactorRequest&
   get_last_authenticate_auth_factor_request() const {
     return last_authenticate_auth_factor_request_;
@@ -403,6 +408,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // AuthenticateAuthFactor() call.
   ::user_data_auth::AuthenticateAuthFactorRequest
       last_authenticate_auth_factor_request_;
+
+  // The AddAuthFactorRequest passed in for the last AddAuthFactor() call.
+  ::user_data_auth::AddAuthFactorRequest last_add_auth_factor_request_;
 
   // The auth sessions on file.
   base::flat_map<std::string, AuthSessionData> auth_sessions_;

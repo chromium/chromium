@@ -1355,6 +1355,7 @@ void FakeUserDataAuthClient::AddAuthFactor(
     const ::user_data_auth::AddAuthFactorRequest& request,
     AddAuthFactorCallback callback) {
   ::user_data_auth::AddAuthFactorReply reply;
+  last_add_auth_factor_request_ = request;
 
   auto error = ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session =
