@@ -8311,22 +8311,22 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "FirstScriptLazy_20220914",
+                    "name": "Eager_20221010",
                     "params": {
-                        "compile-strategy": "first-script-lazy",
+                        "compile-strategy": "eager",
                         "inline-script-timeout": "5ms",
                         "preload-processing-mode": "immediate"
                     },
                     "enable_features": [
                         "AvoidEarlyExtensionScriptContextCreation",
                         "PrecompileInlineScripts",
+                        "PretokenizeCSS",
                         "ThreadedPreloadScanner"
                     ]
                 }
@@ -8448,28 +8448,6 @@
                     "disable_features": [
                         "OmniboxTriggerForPrerender2",
                         "SupportSearchSuggestionForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PretokenizeCSS": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PretokenizeCSS"
                     ]
                 }
             ]
