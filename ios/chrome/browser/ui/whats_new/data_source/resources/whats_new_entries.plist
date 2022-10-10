@@ -12,7 +12,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>search_tabs_banner</string>
             <key>IconImageName</key>
             <string>magnifyingglass</string>
             <key>IconBackgroundColor</key>
@@ -40,7 +40,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>new_overflow_menu_banner</string>
             <key>IconImageName</key>
             <string>ellipsis</string>
             <key>IconBackgroundColor</key>
@@ -67,7 +67,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>shared_highlighting_banner</string>
             <key>IconImageName</key>
             <string>square.and.arrow.up</string>
             <key>IconBackgroundColor</key>
@@ -95,7 +95,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>add_passwords_manually_banner</string>
             <key>IconImageName</key>
             <string>password_key</string>
             <key>IconBackgroundColor</key>
@@ -126,7 +126,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>use_chrome_by_default_banner</string>
             <key>IconImageName</key>
             <string>fullcolor_branding_icon</string>
             <key>IconBackgroundColor</key>
@@ -154,7 +154,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>passwords_in_other_apps_banner</string>
             <key>IconImageName</key>
             <string>password_key</string>
             <key>IconBackgroundColor</key>
@@ -181,7 +181,7 @@
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_SUBTITLE</string>
             <key>BannerImageName</key>
-            <string>default_browser_screen_banner</string>
+            <string>autofill_banner</string>
             <key>IconImageName</key>
             <string>pencil.and.ellipsis.rectangle</string>
             <key>IconBackgroundColor</key>
