@@ -247,6 +247,24 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return global_rule_set_->WatchedSelectorsRuleSet();
   }
 
+  // Helper class for making sure RuleSets that are ensured when collecting
+  // sheets for a TreeScope are not shared between two equal sheets which
+  // contain @layer rules since anonymous layers need to be unique.
+  class RuleSetScope {
+    STACK_ALLOCATED();
+
+   public:
+    RuleSetScope() = default;
+
+    // Ensure a RuleSet for the passed in css_sheet
+    RuleSet* RuleSetForSheet(StyleEngine& engine, CSSStyleSheet* css_sheet);
+
+   private:
+    // Keep track of ensured RuleSets with @layer rules to detect
+    // StyleSheetContents sharing.
+    HeapHashSet<Member<const RuleSet>> layer_rule_sets_;
+  };
+
   RuleSet* RuleSetForSheet(CSSStyleSheet&);
   void MediaQueryAffectingValueChanged(MediaValueChange change);
   void UpdateActiveStyle();

@@ -50,6 +50,8 @@ DocumentStyleSheetCollection::DocumentStyleSheetCollection(
 void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
     StyleEngine& engine,
     DocumentStyleSheetCollector& collector) {
+  StyleEngine::RuleSetScope rule_set_scope;
+
   for (Node* n : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*n);
 
@@ -63,12 +65,13 @@ void DocumentStyleSheetCollection::CollectStyleSheetsFromCandidates(
 
     collector.AppendSheetForList(sheet);
     if (!candidate.CanBeActivated(
-            GetDocument().GetStyleEngine().PreferredStylesheetSetName()))
+            GetDocument().GetStyleEngine().PreferredStylesheetSetName())) {
       continue;
+    }
 
     CSSStyleSheet* css_sheet = To<CSSStyleSheet>(sheet);
-    collector.AppendActiveStyleSheet(
-        std::make_pair(css_sheet, engine.RuleSetForSheet(*css_sheet)));
+    collector.AppendActiveStyleSheet(std::make_pair(
+        css_sheet, rule_set_scope.RuleSetForSheet(engine, css_sheet)));
   }
   if (!GetTreeScope().HasAdoptedStyleSheets())
     return;
