@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/color_analysis.h"
 
 namespace app_list {
 namespace reorder {
