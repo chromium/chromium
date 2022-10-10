@@ -734,10 +734,12 @@ void CacheStorageManager::GetStorageKeys(
       usage_tuples;
 
   // Note that we don't want `GetStorageKeysAndLastModifiedOnTaskRunner()` to
-  // call `QuotaManagerProxy::UpdateOrCreateBucket()` because this method is
-  // sometimes used by the QuotaManager to bootstrap the quota database (and
-  // a call to `UpdateOrCreateBucket` could create a deadlock). We don't need
-  // the bucket ID to build a list of StorageKeys anyway.
+  // call `QuotaManagerProxy::UpdateOrCreateBucket()` because doing so creates
+  // a deadlock. Specifically, `GetStorageKeys()` would wait for the bucket
+  // information to be returned and the QuotaManager won't respond with
+  // bucket information until the `GetStorageKeys()` call finishes (as part of
+  // the QuotaDatabase bootstrapping process). We don't need the bucket ID to
+  // build a list of StorageKeys anyway.
   cache_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
