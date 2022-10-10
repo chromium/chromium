@@ -217,7 +217,6 @@ source_set("popup_internal") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]
