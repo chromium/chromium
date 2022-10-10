@@ -1216,10 +1216,11 @@
           'shards': 5,
         }
       },
-      'chromeos-octopus-chrome': {
-        'experiment_percentage': 100,
-      },
     },
+    # TODO(b/248270560): Restore if the DUT pool is ever stabilized.
+    'remove_from': [
+      'chromeos-octopus-chrome',
+    ],
   },
   'chrome_all_tast_tests_with_lacros': {
     'modifications': {
