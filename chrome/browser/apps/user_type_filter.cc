@@ -36,18 +36,9 @@ std::string DetermineUserType(Profile* profile) {
 
 bool UserTypeMatchesJsonUserType(const std::string& user_type,
                                  const std::string& app_id,
-                                 const base::Value* json_root,
-                                 const base::ListValue* default_user_types) {
-  DCHECK(json_root);
-
-  if (!json_root->is_dict()) {
-    LOG(ERROR) << "Non-dictionary Json is passed to user type filter for "
-               << app_id << ".";
-    return false;
-  }
-
-  const base::Value* value =
-      json_root->FindKeyOfType(kKeyUserType, base::Value::Type::LIST);
+                                 const base::Value::Dict& json_root,
+                                 const base::Value::List* default_user_types) {
+  const base::Value::List* value = json_root.FindList(kKeyUserType);
   if (!value) {
     if (!default_user_types) {
       LOG(ERROR) << "Json has no user type filter for " << app_id << ".";
@@ -59,7 +50,7 @@ bool UserTypeMatchesJsonUserType(const std::string& user_type,
   }
 
   bool user_type_match = false;
-  for (const auto& it : value->GetListDeprecated()) {
+  for (const auto& it : *value) {
     if (!it.is_string()) {
       LOG(ERROR) << "Invalid user type value for " << app_id << ".";
       return false;

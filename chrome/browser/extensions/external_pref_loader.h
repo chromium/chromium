@@ -80,7 +80,7 @@ class ExternalPrefLoader : public ExternalLoader {
   // |path| is only used for informational purposes (outputted when an error
   // occurs). An empty dictionary is returned in case of failure (e.g. invalid
   // path or json content).
-  static std::unique_ptr<base::DictionaryValue> ExtractExtensionPrefs(
+  static base::Value::Dict ExtractExtensionPrefs(
       base::ValueDeserializer* deserializer,
       const base::FilePath& path);
 
@@ -100,14 +100,14 @@ class ExternalPrefLoader : public ExternalLoader {
   // regarding which extensions to install. |prefs| will be modified to
   // receive the extracted extension information.
   // Must be called from the File thread.
-  void ReadExternalExtensionPrefFile(base::DictionaryValue* prefs);
+  void ReadExternalExtensionPrefFile(base::Value::Dict& prefs);
 
   // Extracts the information contained in standalone external extension
   // json files (<extension id>.json) regarding what external extensions
   // to install. |prefs| will be modified to receive the extracted extension
   // information.
   // Must be called from the File thread.
-  void ReadStandaloneExtensionPrefFiles(base::DictionaryValue* prefs);
+  void ReadStandaloneExtensionPrefFiles(base::Value::Dict& prefs);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnPrioritySyncReady(PrioritySyncReadyWaiter* waiter);

@@ -18,8 +18,9 @@ ExternalTestingLoader::ExternalTestingLoader(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JSONStringValueDeserializer deserializer(json_data);
   base::FilePath fake_json_path = fake_base_path.AppendASCII("fake.json");
-  testing_prefs_ =
-      ExternalPrefLoader::ExtractExtensionPrefs(&deserializer, fake_json_path);
+  testing_prefs_ = base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+      base::Value(ExternalPrefLoader::ExtractExtensionPrefs(&deserializer,
+                                                            fake_json_path))));
 }
 
 const base::FilePath ExternalTestingLoader::GetBaseCrxFilePath() {

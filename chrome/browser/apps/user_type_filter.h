@@ -6,13 +6,9 @@
 #define CHROME_BROWSER_APPS_USER_TYPE_FILTER_H_
 
 #include <string>
+#include "base/values.h"
 
 class Profile;
-
-namespace base {
-class Value;
-class ListValue;
-}  // namespace base
 
 namespace apps {
 
@@ -41,8 +37,8 @@ std::string DetermineUserType(Profile* profile);
 // Safe to call on non-UI thread.
 bool UserTypeMatchesJsonUserType(const std::string& user_type,
                                  const std::string& app_id,
-                                 const base::Value* json_root,
-                                 const base::ListValue* default_user_types);
+                                 const base::Value::Dict& json_root,
+                                 const base::Value::List* default_user_types);
 
 }  // namespace apps
 

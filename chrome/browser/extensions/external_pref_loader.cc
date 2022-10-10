@@ -21,6 +21,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/value_iterators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/user_type_filter.h"
@@ -257,29 +258,27 @@ void ExternalPrefLoader::OnPrioritySyncReady(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static.
-std::unique_ptr<base::DictionaryValue>
-ExternalPrefLoader::ExtractExtensionPrefs(base::ValueDeserializer* deserializer,
-                                          const base::FilePath& path) {
+base::Value::Dict ExternalPrefLoader::ExtractExtensionPrefs(
+    base::ValueDeserializer* deserializer,
+    const base::FilePath& path) {
   std::string error_msg;
   std::unique_ptr<base::Value> extensions =
       deserializer->Deserialize(nullptr, &error_msg);
   if (!extensions) {
     LOG(WARNING) << "Unable to deserialize json data: " << error_msg
                  << " in file " << path.value() << ".";
-    return std::make_unique<base::DictionaryValue>();
+    return base::Value::Dict();
   }
 
-  std::unique_ptr<base::DictionaryValue> ext_dictionary =
-      base::DictionaryValue::From(std::move(extensions));
-  if (ext_dictionary)
-    return ext_dictionary;
+  if (extensions->is_dict())
+    return std::move(*extensions).TakeDict();
 
   LOG(WARNING) << "Expected a JSON dictionary in file " << path.value() << ".";
-  return std::make_unique<base::DictionaryValue>();
+  return base::Value::Dict();
 }
 
 void ExternalPrefLoader::LoadOnFileThread() {
-  auto prefs = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict prefs;
 
   // TODO(skerner): Some values of base_path_id_ will cause
   // base::PathService::Get() to return false, because the path does
@@ -288,35 +287,33 @@ void ExternalPrefLoader::LoadOnFileThread() {
   // OS developer builds and linux install packages.
   // Tracked as crbug.com/70402 .
   if (base::PathService::Get(base_path_id_, &base_path_)) {
-    ReadExternalExtensionPrefFile(prefs.get());
+    ReadExternalExtensionPrefFile(prefs);
 
-    if (!prefs->DictEmpty())
+    if (!prefs.empty())
       LOG(WARNING) << "You are using an old-style extension deployment method "
                       "(external_extensions.json), which will soon be "
                       "deprecated. (see http://developer.chrome.com/"
                       "extensions/external_extensions.html)";
 
-    ReadStandaloneExtensionPrefFiles(prefs.get());
+    ReadStandaloneExtensionPrefFiles(prefs);
   }
 
   if (base_path_id_ == chrome::DIR_EXTERNAL_EXTENSIONS)
-    UMA_HISTOGRAM_COUNTS_100("Extensions.ExternalJsonCount", prefs->DictSize());
+    UMA_HISTOGRAM_COUNTS_100("Extensions.ExternalJsonCount", prefs.size());
 
   // If we have any records to process, then we must have
   // read at least one .json file.  If so, then we should have
   // set |base_path_|.
-  if (!prefs->DictEmpty())
+  if (!prefs.empty())
     CHECK(!base_path_.empty());
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadFinished, this,
+      FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadFinishedWithDict, this,
                                 std::move(prefs)));
 }
 
 void ExternalPrefLoader::ReadExternalExtensionPrefFile(
-    base::DictionaryValue* prefs) {
-  CHECK(nullptr != prefs);
-
+    base::Value::Dict& prefs) {
   base::FilePath json_file = base_path_.Append(kExternalExtensionJson);
 
   if (!base::PathExists(json_file)) {
@@ -344,16 +341,12 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
   }
 
   JSONFileValueDeserializer deserializer(json_file);
-  std::unique_ptr<base::DictionaryValue> ext_prefs =
-      ExtractExtensionPrefs(&deserializer, json_file);
-  if (ext_prefs)
-    prefs->MergeDictionary(ext_prefs.get());
+  auto ext_prefs = ExtractExtensionPrefs(&deserializer, json_file);
+  prefs.Merge(std::move(ext_prefs));
 }
 
 void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
-    base::DictionaryValue* prefs) {
-  CHECK(nullptr != prefs);
-
+    base::Value::Dict& prefs) {
   // First list the potential .json candidates.
   std::set<base::FilePath> candidates =
       GetPrefsCandidateFilesFromFolder(base_path_);
@@ -363,9 +356,9 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
   }
 
   // TODO(crbug.com/1407498): Remove this once migration is completed.
-  std::unique_ptr<base::ListValue> default_user_types;
+  std::unique_ptr<base::Value::List> default_user_types;
   if (options_ & USE_USER_TYPE_PROFILE_FILTER) {
-    default_user_types = std::make_unique<base::ListValue>();
+    default_user_types = std::make_unique<base::Value::List>();
     default_user_types->Append(base::Value(apps::kUserTypeUnmanaged));
   }
 
@@ -386,21 +379,18 @@ void ExternalPrefLoader::ReadStandaloneExtensionPrefFiles(
              << extension_candidate_path.LossyDisplayName();
 
     JSONFileValueDeserializer deserializer(extension_candidate_path);
-    std::unique_ptr<base::DictionaryValue> ext_prefs =
+    auto ext_prefs =
         ExtractExtensionPrefs(&deserializer, extension_candidate_path);
-    if (!ext_prefs)
-      continue;
 
     if (options_ & USE_USER_TYPE_PROFILE_FILTER &&
-        !apps::UserTypeMatchesJsonUserType(user_type_, id /* app_id */,
-                                           ext_prefs.get(),
-                                           default_user_types.get())) {
+        !apps::UserTypeMatchesJsonUserType(
+            user_type_, id /* app_id */, ext_prefs, default_user_types.get())) {
       // Already logged.
       continue;
     }
 
     DVLOG(1) << "Adding extension with id: " << id;
-    prefs->SetKey(id, base::Value::FromUniquePtrValue(std::move(ext_prefs)));
+    prefs.Set(id, std::move(ext_prefs));
   }
 }
 
