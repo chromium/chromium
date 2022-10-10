@@ -51,6 +51,12 @@ export class XfNudge extends HTMLElement {
    */
   private content_: string = '';
 
+  /**
+   * How many times the nudge has been repositioned, this is reset when the
+   * nudge is hidden.
+   */
+  private repositions_: number = 0;
+
   constructor() {
     super();
 
@@ -93,6 +99,7 @@ export class XfNudge extends HTMLElement {
     // to position the nudge the next time it is shown.
     this.dot_.style.left = `-${DOT_DIAMETER_PX}px`;
     this.bubble_.style.left = '-296px';
+    this.repositions_ = 0;
   }
 
   /**
@@ -118,6 +125,8 @@ export class XfNudge extends HTMLElement {
     } else {
       this.positionBubbleHorizontal_(anchorRect);
     }
+
+    this.repositions_++;
   }
 
   /**
@@ -170,6 +179,14 @@ export class XfNudge extends HTMLElement {
    */
   get bubbleRect() {
     return this.bubble_.getBoundingClientRect();
+  }
+
+  /**
+   * Returns the number of repositions for the nudge that is currently showing.
+   * This is reset when the nudge is hidden.
+   */
+  get repositions() {
+    return this.repositions_;
   }
 
   /**

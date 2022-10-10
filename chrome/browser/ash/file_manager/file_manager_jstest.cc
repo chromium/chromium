@@ -334,3 +334,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfDlpRestrictionDetailsDialog) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfNudge) {
   RunTestURL("widgets/xf_nudge_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {
+  RunTestURL("containers/nudge_container_unittest.js");
+}
