@@ -12,8 +12,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,7 +58,7 @@ class NetworkEventsObserverTest
   ~NetworkEventsObserverTest() override = default;
 
   void SetUp() override {
-    ::ash::cros_healthd::FakeCrosHealthd::Initialize();
+    ash::DebugDaemonClient::InitializeFake();
 
     ::chromeos::LoginState::Initialize();
     ::chromeos::LoginState::Get()->SetLoggedInStateAndPrimaryUser(
@@ -88,7 +88,7 @@ class NetworkEventsObserverTest
 
   void TearDown() override {
     ::chromeos::LoginState::Shutdown();
-    ::ash::cros_healthd::FakeCrosHealthd::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
   }
 
   base::test::TaskEnvironment task_environment_;

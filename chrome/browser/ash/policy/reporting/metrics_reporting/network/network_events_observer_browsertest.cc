@@ -11,9 +11,9 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -111,10 +111,8 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
       ::reporting::Destination::EVENT_METRIC);
 
   EnablePolicy();
-  ash::cros_healthd::FakeCrosHealthd::Get()
-      ->EmitConnectionStateChangedEventForTesting(
-          kWifiGuid,
-          chromeos::network_health::mojom::NetworkState::kNotConnected);
+  ash::ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty, base::Value(shill::kStateIdle));
 
   const Record& record = GetNextRecord(&missive_observer_);
   MetricData record_data;
@@ -141,10 +139,9 @@ IN_PROC_BROWSER_TEST_F(NetworkEventsBrowserTest,
   network_handler_test_helper_->ConfigureService(service_config_low_signal);
 
   EnablePolicy();
-  ash::cros_healthd::FakeCrosHealthd::Get()
-      ->EmitSignalStrengthChangedEventForTesting(
-          kWifiGuid,
-          chromeos::network_health::mojom::UInt32Value::New(kSignalStrength));
+  ash::ShillServiceClient::Get()->GetTestInterface()->SetServiceProperty(
+      kWifiServicePath, shill::kSignalStrengthProperty,
+      base::Value(kSignalStrength));
 
   const Record& record = GetNextRecord(&missive_observer_);
   MetricData record_data;

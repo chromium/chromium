@@ -13,11 +13,11 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/wifi_signal_strength_rssi_fetcher.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 
 namespace reporting {
@@ -103,7 +103,7 @@ void NetworkEventsObserver::OnSignalStrengthChanged(
 }
 
 void NetworkEventsObserver::AddObserver() {
-  ash::cros_healthd::ServiceConnection::GetInstance()->AddNetworkObserver(
+  ash::network_health::NetworkHealthManager::GetInstance()->AddObserver(
       BindNewPipeAndPassRemote());
 }
 
