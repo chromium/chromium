@@ -259,8 +259,9 @@ class Driver(object):
             sanitizer = self._port.output_contains_sanitizer_messages(
                 self.error_from_test)
             if sanitizer:
-                self.error_from_test = 'OUTPUT CONTAINS "sanitizer",' + \
-                    ' so we are treating this test as if it crashed, even though it did not.\n\n' + self.error_from_test
+                self.error_from_test = b'OUTPUT CONTAINS "sanitizer",' + \
+                    b' so we are treating this test as if it crashed, even though it did not.\n\n' + \
+                    self.error_from_test
                 crashed = True
                 self._crashed_process_name = 'unknown process name'
                 self._crashed_pid = 0
