@@ -27096,7 +27096,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'example_value': ['https://example1.com', 'https://[*.]example2.com', 'https://foo.example3.com/path'],
+      'example_value': ['https://example1.com', 'example2.com', 'https://foo.example3.com/path'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': True,
@@ -27105,19 +27105,18 @@
       'id': 826,
       'caption': '''Enable attestation flow for a list of URLs''',
       'tags': [],
+      # TODO(b:252749979): Change URL blocklist filter format URL to help center article.
       'desc': '''Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs.
 
       Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
 
       Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
 
-      URLs must have HTTPS scheme, e.g. "https://example.com".
-
       Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
       For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://www.chromium.org/administrators/url-blocklist-filter-format.''',
     },
     {
       'name': 'DeviceLoginScreenContextAwareAccessSignalsAllowlist',
@@ -27129,7 +27128,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'example_value': ['https://example1.com', 'https://[*.]example2.com', 'https://foo.example3.com/path'],
+      'example_value': ['https://example1.com', 'example2.com', 'https://foo.example3.com/path'],
       'features': {
         'dynamic_refresh': True,
         'cloud_only': True,
@@ -27143,13 +27142,11 @@
 
       Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
 
-      URLs must have HTTPS scheme, e.g. "https://example.com".
-
       Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
       This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://www.chromium.org/administrators/url-blocklist-filter-format.''',
     },
     {
       'name': 'DeviceQuickFixBuildToken',

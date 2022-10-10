@@ -2249,11 +2249,9 @@ IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
 
 // Verify that device trust is available for URLs that match a pattern
 // from allowed URLs list.
-// TODO(b:249437331): Fix regex compatibility for Device Trust
-IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest,
-                       DISABLED_PolicyRegexSuccess) {
+IN_PROC_BROWSER_TEST_P(SAMLDeviceTrustEnrolledTest, PolicyRegexSuccess) {
   SetDeviceContextAwareAccessSignalsAllowlistPolicy(
-      {"[*.]" + fake_saml_idp()->GetIdpDomain()});
+      {fake_saml_idp()->GetIdpDomain()});
 
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kSixthUserCorpExampleTestEmail);
