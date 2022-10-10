@@ -2051,7 +2051,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.TailoredSecurityConsented{Status}{PromptType}Outcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2022-11-22">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-05-22">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

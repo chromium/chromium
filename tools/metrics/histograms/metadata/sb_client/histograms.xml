@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.FlatBufferScorer.CreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="2022-10-25">
+    enum="SBClientPhishingScorerCreationStatus" expires_after="2023-04-25">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

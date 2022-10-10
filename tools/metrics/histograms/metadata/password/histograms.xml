@@ -3450,7 +3450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
-    enum="BooleanSent" expires_after="2022-10-06">
+    enum="BooleanSent" expires_after="2023-04-06">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
