@@ -56,7 +56,7 @@ class CONTENT_EXPORT NetworkQualityObserverImpl
   net::EffectiveConnectionType last_notified_type_;
   net::nqe::internal::NetworkQuality last_notified_network_quality_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace content

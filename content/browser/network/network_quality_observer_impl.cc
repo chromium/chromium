@@ -63,14 +63,14 @@ NetworkQualityObserverImpl::NetworkQualityObserverImpl(
 }
 
 NetworkQualityObserverImpl::~NetworkQualityObserverImpl() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   network_quality_tracker_->RemoveRTTAndThroughputEstimatesObserver(this);
   network_quality_tracker_->RemoveEffectiveConnectionTypeObserver(this);
 }
 
 void NetworkQualityObserverImpl::OnEffectiveConnectionTypeChanged(
     net::EffectiveConnectionType type) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (last_notified_type_ == type)
     return;
@@ -91,7 +91,7 @@ void NetworkQualityObserverImpl::OnEffectiveConnectionTypeChanged(
 
 void NetworkQualityObserverImpl::OnRenderProcessHostCreated(
     content::RenderProcessHost* rph) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Notify the newly created renderer of the current network quality.
   rph->GetRendererInterface()->OnNetworkQualityChanged(
@@ -104,7 +104,7 @@ void NetworkQualityObserverImpl::OnRTTOrThroughputEstimatesComputed(
     base::TimeDelta http_rtt,
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Check if any of the network quality metrics changed meaningfully.
   bool http_rtt_changed = MetricChangedMeaningfully(
