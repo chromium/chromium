@@ -5183,6 +5183,11 @@
           'isolated_scripts': 'ios_simulator_noncq_tests'
         },
       },
+      'mac-arm64-on-arm64-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
       'mac-arm64-rel': {
         'additional_compile_targets': [
           'all',
