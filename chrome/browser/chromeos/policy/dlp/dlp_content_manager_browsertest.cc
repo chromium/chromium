@@ -149,8 +149,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
   base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
 
-  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
-                                                         cb.Get());
+  helper_->GetContentManager()->CheckPrintingRestriction(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+      cb.Get());
 
   // Start printing and check that there is no notification when printing is not
   // restricted.
@@ -485,13 +486,15 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   EXPECT_CALL(cb, Run(true)).Times(1);
   EXPECT_CALL(cb, Run(false)).Times(1);
 
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   // Printing should first be allowed.
-  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents, rfh_id,
                                                          cb.Get());
 
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, kPrintRestricted);
-  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents, rfh_id,
                                                          cb.Get());
 
   // Setup the mock for the printing manager to invoke
@@ -533,8 +536,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   // CheckPrintingRestriction() directly or indirectly.
   base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
   EXPECT_CALL(cb, Run(true)).Times(1);
-  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
-                                                         cb.Get());
+  helper_->GetContentManager()->CheckPrintingRestriction(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+      cb.Get());
 
   MockPrintManager* print_manager = GetPrintManager(web_contents);
   EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting).Times(1);

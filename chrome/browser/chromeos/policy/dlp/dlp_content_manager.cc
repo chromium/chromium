@@ -118,9 +118,10 @@ bool DlpContentManager::IsScreenShareBlocked(
 
 void DlpContentManager::CheckPrintingRestriction(
     content::WebContents* web_contents,
+    content::GlobalRenderFrameHostId rfh_id,
     OnDlpRestrictionCheckedCallback callback) {
   const RestrictionLevelAndUrl restriction_info =
-      GetPrintingRestrictionInfo(web_contents);
+      GetPrintingRestrictionInfo(web_contents, rfh_id);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
   DlpBooleanHistogram(dlp::kPrintingBlockedUMA, IsBlocked(restriction_info));
   DlpBooleanHistogram(dlp::kPrintingWarnedUMA, IsWarn(restriction_info));
@@ -547,11 +548,12 @@ void DlpContentManager::RemoveFromConfidential(
 }
 
 RestrictionLevelAndUrl DlpContentManager::GetPrintingRestrictionInfo(
-    content::WebContents* web_contents) const {
+    content::WebContents* web_contents,
+    content::GlobalRenderFrameHostId rfh_id) const {
   // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedded
   // WebContents.
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHostId(rfh_id);
   web_contents =
       guest_view ? guest_view->embedder_web_contents() : web_contents;
 

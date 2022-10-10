@@ -231,14 +231,14 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestricted(
   // `OnDlpPrintingRestrictionsChecked` as a wrapper callback to proceed with
   // scanning if needed afterwards.
   policy::DlpContentManager::Get()->CheckPrintingRestriction(
-      web_contents(),
+      web_contents(), rfh_id,
       base::BindOnce(&PrintViewManager::OnDlpPrintingRestrictionsChecked,
                      weak_factory_.GetWeakPtr(), rfh_id, std::move(callback)));
 #elif BUILDFLAG(IS_CHROMEOS)
   // Don't print DLP restricted content on Chrome OS, and use `callback`
   // directly since scanning isn't an option.
   policy::DlpContentManager::Get()->CheckPrintingRestriction(
-      web_contents(), std::move(callback));
+      web_contents(), rfh_id, std::move(callback));
 #elif BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   RejectPrintPreviewRequestIfRestrictedByContentAnalysis(rfh_id,
                                                          std::move(callback));

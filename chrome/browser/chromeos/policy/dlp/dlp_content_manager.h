@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -65,6 +66,7 @@ class DlpContentManager : public DlpContentObserver,
   // Depending on the result, calls |callback| and passes an indicator whether
   // to proceed or not.
   void CheckPrintingRestriction(content::WebContents* web_contents,
+                                content::GlobalRenderFrameHostId rfh_id,
                                 OnDlpRestrictionCheckedCallback callback);
 
   // Returns whether screenshots should be restricted for extensions API.
@@ -305,7 +307,8 @@ class DlpContentManager : public DlpContentObserver,
   // Returns which level and url of printing restriction is currently enforced
   // for |web_contents|.
   RestrictionLevelAndUrl GetPrintingRestrictionInfo(
-      content::WebContents* web_contents) const;
+      content::WebContents* web_contents,
+      content::GlobalRenderFrameHostId rfh_id) const;
 
   // Returns confidential info for screen share of a single |web_contents|.
   ConfidentialContentsInfo GetScreenShareConfidentialContentsInfoForWebContents(

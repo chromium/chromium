@@ -601,9 +601,11 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
 
   // No restrictions are enforced for web_contents: allow.
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
                         /*total_count=*/1,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -613,7 +615,7 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingRestricted);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kPrintingRestricted);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
                         /*total_count=*/2,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -629,7 +631,7 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   VerifyHistogramCounts(/*blocked_count=*/1, /*warned_count=*/0,
                         /*total_count=*/3,
                         /*blocked_suffix=*/dlp::kPrintingBlockedUMA,
@@ -652,12 +654,14 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
   EXPECT_CALL(cb, Run(true)).Times(3);
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kPrintingWarned);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
 
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[0],
@@ -675,7 +679,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
       GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, true, 1);
 
   // Check again: allow based on cached user's response - no dialog is shown.
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
 
   EXPECT_EQ(events_.size(), 3u);
   EXPECT_THAT(events_[2],
@@ -694,7 +698,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
 
   EXPECT_EQ(events_.size(), 3u);
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
@@ -721,12 +725,14 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
   EXPECT_CALL(cb, Run(true)).Times(1);   // WebContents destroyed.
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
   // Warn restriction is enforced: reject since the user canceled.
   helper_.ChangeConfidentiality(web_contents.get(), kPrintingWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kPrintingWarned);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   EXPECT_EQ(events_.size(), 1u);
   EXPECT_THAT(events_[0],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -740,7 +746,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
       GetDlpHistogramPrefix() + dlp::kPrintingWarnProceededUMA, false, 1);
 
   // Check again: since the user previously cancelled, dialog is shown again.
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   EXPECT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -757,7 +763,7 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckPrintingRestriction(web_contents.get(), cb.Get());
+  GetManager()->CheckPrintingRestriction(web_contents.get(), rfh_id, cb.Get());
   EXPECT_EQ(events_.size(), 2u);
   VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/2,
                         /*total_count=*/3,
