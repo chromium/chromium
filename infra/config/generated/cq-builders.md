@@ -43,8 +43,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [fuchsia_x64](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia_x64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia_x64""))
 
-* [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator""))
-
 * [lacros-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""lacros-amd64-generic-rel""))
 
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""lacros-arm-generic-rel""))
