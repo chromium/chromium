@@ -1,12 +1,16 @@
 <style include="print-management-shared print-management-fonts">
   :host {
-    @apply --print-management-default-font;
     color: var(--print-management-default-text-color);
+    font-family: var(--print-management-default-font-family);
+    font-size: var(--print-management-default-font-size);
+    font-weight: var(--print-management-default-font-weight);
   }
 
   .collapsed-status {
-    @apply --print-management-header-font;
     color: var(--cros-color-prominent);
+    font-family: var(--print-management-header-font-family);
+    font-size: var(--print-management-header-font-size);
+    font-weight: var(--print-management-header-font-weight);
   }
 
   /* Override focus CSS for selectable items. */

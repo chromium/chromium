@@ -4,8 +4,10 @@
   }
 
   .column-headers {
-    @apply --print-management-header-font;
     color: var(--print-management-header-text-color);
+    font-family: var(--print-management-header-font-family);
+    font-size: var(--print-management-header-font-size);
+    font-weight: var(--print-management-header-font-weight);
     line-height: 20px;
     min-height: var(--cr-section-min-height);
   }
@@ -23,7 +25,9 @@
   }
 
   #clearAllButton {
-    @apply --print-management-button-font;
+    font-family: var(--print-management-button-font-family);
+    font-size: var(--print-management-button-font-size);
+    font-weight: var(--print-management-button-font-weight);
   }
 
   #clearAllContainer {
@@ -61,8 +65,10 @@
   }
 
   #printJobTitle {
-    @apply --print-management-title-font;
     color: var(--print-management-title-text-color);
+    font-family: var(--print-management-title-font-family);
+    font-size: var(--print-management-title-font-size);
+    font-weight: var(--print-management-title-font-weight);
     line-height: 28px;
     margin: 0;
   }
@@ -82,8 +88,8 @@
   h1 {
     font-size: 200%;
     font-weight: 500;
-    margin-bottom: 0px;
-    margin-top: 0px;
+    margin-bottom: 0;
+    margin-top: 0;
   }
 </style>
 
