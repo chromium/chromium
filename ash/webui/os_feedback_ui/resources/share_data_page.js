@@ -136,6 +136,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     // ShareDataPageElement's context.
     this.$.userEmailDropDown.addEventListener(
         'change', this.handleUserEmailDropDownChanged_.bind(this));
+
+    // Set up listener that whenever the switching page from Search page to
+    // Share Data page, the shadow shield effect will depend on whether
+    // the container is scrollable.
+    window.addEventListener('continue-click', (event) => {
+      if (event.detail.currentState === 'searchPage') {
+        const container = this.shadowRoot.querySelector('#scrollContainer');
+        const shadowShield = this.shadowRoot.querySelector('#shadowShield');
+        shadowShield.classList.toggle(
+            'scrolling-shield',
+            container.scrollHeight > container.clientHeight);
+      }
+    });
   }
 
   /**
