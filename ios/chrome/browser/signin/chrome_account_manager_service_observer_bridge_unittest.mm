@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -55,7 +56,7 @@ TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityListChanged) {
 
 // Tests that `onIdentityChanged` is forwarded.
 TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityChanged) {
-  ChromeIdentity* identity = [[ChromeIdentity alloc] init];
+  id<SystemIdentity> identity = [FakeChromeIdentity fakeIdentity1];
 
   OCMExpect([test_observer_ identityChanged:identity]);
   observer_bridge_->OnIdentityChanged(identity);

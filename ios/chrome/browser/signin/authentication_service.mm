@@ -602,9 +602,10 @@ void AuthenticationService::HandleForgottenIdentity(
     return;
   }
 
-  ChromeIdentity* authenticated_identity =
+  id<SystemIdentity> authenticated_identity =
       GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (authenticated_identity && authenticated_identity != invalid_identity) {
+  if (authenticated_identity &&
+      ![authenticated_identity isEqual:invalid_identity]) {
     // `authenticated_identity` exists and is a valid identity. Nothing to do
     // here.
     return;

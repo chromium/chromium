@@ -34,8 +34,8 @@ class ResizedAvatarCacheTest : public PlatformTest {
 
   ios::FakeChromeIdentityService* identity_service_ = nil;
   ResizedAvatarCache* resized_avatar_cache_ = nil;
-  ChromeIdentity* identity1_ = nil;
-  ChromeIdentity* identity2_ = nil;
+  id<SystemIdentity> identity1_ = nil;
+  id<SystemIdentity> identity2_ = nil;
 };
 
 // Tests that the default avatar is the same between 2 identities.
