@@ -36,6 +36,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
@@ -91,6 +92,7 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
     notification_service_ = std::make_unique<NotificationServiceImpl>();
 
 #if BUILDFLAG(IS_WIN)
+    base::win::EnableHighDPISupport();
     // Ole must be initialized before starting message pump, so that TSF
     // (Text Services Framework) module can interact with the message pump
     // on Windows 8 Metro mode.

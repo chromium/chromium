@@ -70,6 +70,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/rand_util.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -244,6 +245,21 @@ int UtilityMain(MainFunctionParams parameters) {
   if (base::win::GetVersion() < base::win::Version::WIN11) {
     HMODULE shell32_pin = ::LoadLibrary(L"shell32.dll");
     UNREFERENCED_PARAMETER(shell32_pin);
+  }
+
+  // Not all utility processes require DPI awareness as this context only
+  // pertains to certain workloads & impacted system API calls (e.g. UX
+  // scaling or per-monitor windowing). We do not blanket apply DPI awareness
+  // as utility processes running within a kService sandbox with the Win32K
+  // Lockdown policy applied may crash when calling EnableHighDPISupport. See
+  // crbug.com/978133.
+  if (sandbox_type == sandbox::mojom::Sandbox::kMediaFoundationCdm) {
+    // The Media Foundation Utility Process needs to be marked as DPI aware so
+    // the Media Engine & CDM can correctly identify the target monitor for
+    // video output. This is required to ensure that the proper monitor is
+    // queried for hardware capabilities & any settings are applied to the
+    // correct monitor.
+    base::win::EnableHighDPISupport();
   }
 
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
