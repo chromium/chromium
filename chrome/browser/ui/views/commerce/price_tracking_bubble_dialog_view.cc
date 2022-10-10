@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 
+#include "base/callback_helpers.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
@@ -44,12 +46,12 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     content::WebContents* web_contents,
     Profile* profile,
     const GURL& url,
+    ui::ImageModel image_model,
     OnTrackPriceCallback on_track_price_callback,
     Type type)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       profile_(profile),
       url_(url),
-      action_callback_(std::move(on_track_price_callback)),
       type_(type) {
   SetShowCloseButton(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -57,13 +59,9 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  auto run_callback = [](PriceTrackingBubbleDialogView* bubble, bool is_track) {
-    std::move(bubble->action_callback_).Run(is_track);
-  };
-
   auto folder_name = GetMostRecentlyModifiedUserBookmarkFolderName(profile_);
 
-  if (type == PriceTrackingBubbleDialogView::Type::TYPE_FUE) {
+  if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     SetTitle(l10n_util::GetStringUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE_FIRST_RUN));
     SetButtonLabel(ui::DIALOG_BUTTON_OK,
@@ -72,8 +70,12 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON));
-    SetAcceptCallback(
-        base::BindOnce(run_callback, base::Unretained(this), true));
+    SetAcceptCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnAccepted,
+                                     weak_factory_.GetWeakPtr(),
+                                     std::move(on_track_price_callback)));
+    SetCancelCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnCanceled,
+                                     weak_factory_.GetWeakPtr(),
+                                     base::DoNothing()));
     auto body_text = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION_FIRST_RUN, folder_name);
     body_label_ = AddChildView(CreateBodyLabel(body_text));
@@ -86,8 +88,12 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(
                        IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON));
-    SetCancelCallback(
-        base::BindOnce(run_callback, base::Unretained(this), false));
+    SetAcceptCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnAccepted,
+                                     weak_factory_.GetWeakPtr(),
+                                     base::DoNothing()));
+    SetCancelCallback(base::BindOnce(&PriceTrackingBubbleDialogView::OnCanceled,
+                                     weak_factory_.GetWeakPtr(),
+                                     std::move(on_track_price_callback)));
 
     auto body_text = l10n_util::GetStringFUTF16(
         IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION, folder_name);
@@ -101,6 +107,8 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
     body_label_->AddStyleRange(
         gfx::Range(offset, offset + folder_name.length()), style_info);
   }
+  SetMainImage(std::move(image_model));
+  body_label_->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 PriceTrackingBubbleDialogView::~PriceTrackingBubbleDialogView() = default;
@@ -118,10 +126,35 @@ void PriceTrackingBubbleDialogView::ShowBookmarkEditor() {
           ->GetMostRecentlyAddedUserNodeForURL(url_);
 
   if (node && native_parent) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"));
+
     BookmarkEditor::Show(native_parent, profile_,
                          BookmarkEditor::EditDetails::EditNode(node),
                          BookmarkEditor::SHOW_TREE);
   }
+}
+
+void PriceTrackingBubbleDialogView::OnAccepted(
+    OnTrackPriceCallback on_track_price_callback) {
+  if (type_ == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.FirstRunBubbleTrackedPrice"));
+  }
+
+  std::move(on_track_price_callback).Run(true);
+}
+
+void PriceTrackingBubbleDialogView::OnCanceled(
+    OnTrackPriceCallback on_track_price_callback) {
+  if (type_ == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.FirstRunBubbleDismissed"));
+  } else if (type_ == PriceTrackingBubbleDialogView::Type::TYPE_NORMAL) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.PriceTracking.Confirmation.Untrack"));
+  }
+  std::move(on_track_price_callback).Run(false);
 }
 
 // PriceTrackingBubbleCoordinator
@@ -135,12 +168,22 @@ void PriceTrackingBubbleCoordinator::Show(
     content::WebContents* web_contents,
     Profile* profile,
     const GURL& url,
+    ui::ImageModel image_model,
     PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
     PriceTrackingBubbleDialogView::Type type) {
   DCHECK(!tracker_.view());
 
+  if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.PriceTracking.FirstRunBubbleShown"));
+  } else if (type == PriceTrackingBubbleDialogView::Type::TYPE_NORMAL) {
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.PriceTracking.ConfirmationShown"));
+  }
+
   auto bubble = std::make_unique<PriceTrackingBubbleDialogView>(
-      anchor_view_, web_contents, profile, url, std::move(callback), type);
+      anchor_view_, web_contents, profile, url, std::move(image_model),
+      std::move(callback), type);
   tracker_.SetView(bubble.get());
   PriceTrackingBubbleDialogView::CreateBubble(std::move(bubble))->Show();
 }

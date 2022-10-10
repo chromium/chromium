@@ -121,6 +121,7 @@
   }
 
   .item-image {
+    border-radius: 4px;
     display: flex;
     height: 100%;
     margin-inline-start: 16px;
@@ -130,6 +131,7 @@
 
   .product-image {
     background: var(--product-image-background);
+    border-radius: 4px;
     height: 100%;
     margin: auto;
     object-fit: contain;
@@ -244,6 +246,7 @@
   <template is="dom-if" if="[[open_]]" restamp>
     <template is="dom-repeat" items="[[productInfos]]">
       <button class="product-item" role="treeitem"
+          aria-labelledby$="productInfo-[[index]]"
           on-click="onProductClick_"
           on-auxclick="onProductAuxClick_"
           on-contextmenu="onProductContextMenu_">
@@ -259,7 +262,7 @@
                   [[getFaviconUrl_(item.info.productUrl.url)]]">
           </div>
         </template>
-        <div class="product-info">
+        <div class="product-info" id="productInfo-[[index]]">
           <span class="product-title">[[item.info.title]]</span>
           <span class="product-domain">[[item.info.domain]]</span>
           <template is="dom-if" if="[[!item.info.previousPrice]]" restamp>

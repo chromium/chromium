@@ -13,7 +13,11 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -74,9 +78,13 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   }
 
   void CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type type) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(1, 1);
     bubble_coordinator_->Show(browser()->tab_strip_model()->GetWebContentsAt(0),
-                              profile(), GURL(kTestURL), Callback().Get(),
-                              type);
+                              profile(), GURL(kTestURL),
+                              ui::ImageModel::FromImage(gfx::Image(
+                                  gfx::ImageSkia::CreateFrom1xBitmap(bitmap))),
+                              Callback().Get(), type);
   }
 
   base::MockCallback<PriceTrackingBubbleDialogView::OnTrackPriceCallback>&
@@ -104,7 +112,8 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+  CreateBubbleViewAndShow(
+      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);
@@ -152,7 +161,8 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, NormalBubble) {
 }
 
 TEST_F(PriceTrackingBubbleDialogViewUnitTest, AcceptFUEBubble) {
-  CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_FUE);
+  CreateBubbleViewAndShow(
+      PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
   EXPECT_TRUE(bubble);

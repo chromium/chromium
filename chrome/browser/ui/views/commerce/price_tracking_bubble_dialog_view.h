@@ -23,12 +23,21 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
  public:
   using OnTrackPriceCallback = base::OnceCallback<void(bool)>;
 
-  enum Type { TYPE_FUE, TYPE_NORMAL };
+  enum Type {
+    // Shows if Price Tracking is disabled and user has never acted on it
+    // before.
+    TYPE_FIRST_USE_EXPERIENCE,
+    // Shows if Price Tracking is enabled or user has been through the
+    // FIRST_USE_EXPERIENCE
+    // bubble.
+    TYPE_NORMAL
+  };
 
   PriceTrackingBubbleDialogView(View* anchor_view,
                                 content::WebContents* web_contents,
                                 Profile* profile,
                                 const GURL& url,
+                                ui::ImageModel image_model,
                                 OnTrackPriceCallback on_track_price_callback,
                                 Type type);
   ~PriceTrackingBubbleDialogView() override;
@@ -38,10 +47,11 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
 
  private:
   void ShowBookmarkEditor();
+  void OnAccepted(OnTrackPriceCallback on_track_price_callback);
+  void OnCanceled(OnTrackPriceCallback on_track_price_callback);
 
   const raw_ptr<Profile> profile_;
   const GURL url_;
-  OnTrackPriceCallback action_callback_;
   const Type type_;
   raw_ptr<views::StyledLabel> body_label_;
 
@@ -56,6 +66,7 @@ class PriceTrackingBubbleCoordinator {
   void Show(content::WebContents* web_contents,
             Profile* profile,
             const GURL& url,
+            ui::ImageModel image_model,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             PriceTrackingBubbleDialogView::Type type);
 

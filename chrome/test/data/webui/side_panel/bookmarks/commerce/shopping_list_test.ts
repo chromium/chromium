@@ -367,4 +367,22 @@ suite('SidePanelShoppingListTest', () => {
     checkProductElementRender(productElements[0]!, updatedProduct);
     checkProductElementRender(productElements[1]!, products[1]!);
   });
+
+  test('UntrackedItemsResetsWithProductInfos', async () => {
+    let actionButton = getProductElements(shoppingList)[0]!.querySelector(
+                           '.action-button')! as HTMLElement;
+    actionButton.click();
+    const id = await shoppingListApi.whenCalled('untrackPriceForBookmark');
+    assertEquals(id, products[0]!.bookmarkId);
+    checkActionButtonStatus(actionButton, false);
+
+    // Reset shoppingList.productInfos to empty and then re-initialize it, the
+    // untracked items list should be reset to empty.
+    shoppingList.productInfos = [];
+    shoppingList.productInfos = products.slice();
+
+    actionButton = getProductElements(shoppingList)[0]!.querySelector(
+                       '.action-button')! as HTMLElement;
+    checkActionButtonStatus(actionButton, true);
+  });
 });

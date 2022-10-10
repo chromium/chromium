@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -14,7 +15,6 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -59,9 +59,13 @@ ShoppingListUiTabHelper::ShoppingListUiTabHelper(
       content::WebContentsUserData<ShoppingListUiTabHelper>(*content),
       shopping_service_(shopping_service),
       prefs_(prefs) {
-  // TODO(1360846): Consider using the in-memory cache instead.
-  image_fetcher_ = image_fetcher_service->GetImageFetcher(
-      image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  if (image_fetcher_service) {
+    // TODO(1360846): Consider using the in-memory cache instead.
+    image_fetcher_ = image_fetcher_service->GetImageFetcher(
+        image_fetcher::ImageFetcherConfig::kNetworkOnly);
+  } else {
+    CHECK_IS_TEST();
+  }
   scoped_observation_.Observe(
       BookmarkModelFactory::GetForBrowserContext(content->GetBrowserContext()));
 }
@@ -74,8 +78,13 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShouldShowPriceTrackFUEBubble, true);
 }
 
-void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (!shopping_service_ || !IsShoppingListAllowedForEnterprise(prefs_))
+void ShoppingListUiTabHelper::NavigationEntryCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  last_fetched_image_ = gfx::Image();
+  last_fetched_image_url_ = GURL();
+
+  if (!shopping_service_ || !prefs_ ||
+      !IsShoppingListAllowedForEnterprise(prefs_))
     return;
 
   // Cancel any pending callbacks by invalidating any weak pointers.
@@ -85,9 +94,20 @@ void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  UpdatePriceTrackingIconView();
 }
 
 void ShoppingListUiTabHelper::BookmarkModelChanged() {}
+
+void ShoppingListUiTabHelper::BookmarkNodeRemoved(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& no_longer_bookmarked) {
+  UpdatePriceTrackingIconView();
+}
 
 void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
     bookmarks::BookmarkModel* model,
@@ -95,6 +115,10 @@ void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
   if (!commerce::IsProductBookmark(model, node))
     return;
   UpdatePriceTrackingIconView();
+}
+
+bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
+  return !last_fetched_image_.IsEmpty();
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
@@ -126,7 +150,7 @@ void ShoppingListUiTabHelper::HandleImageFetcherResponse(
   last_fetched_image_url_ = image_url;
   last_fetched_image_ = image;
 
-  // TODO(meiliang): Trigger UI here.
+  UpdatePriceTrackingIconView();
 }
 
 const gfx::Image& ShoppingListUiTabHelper::GetProductImage() {
@@ -142,6 +166,10 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   DCHECK(browser);
+
+  if (!browser || !browser->window()) {
+    return;
+  }
 
   browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceTracking);
 }

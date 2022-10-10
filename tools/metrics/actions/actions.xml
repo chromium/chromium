@@ -5962,6 +5962,114 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Commerce.PriceTracking.BookmarkDialogPriceTrackViewShown">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the bookmark star icon and the price track view is
+    shown inside the bookmark bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.BookmarkDialogPriceTrackViewTrackedPrice">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users clicks the toggle button in the bookmark bubble to track
+    the product.
+  </description>
+</action>
+
+<action
+    name="Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users clicks the toggle button in the bookmark bubble to
+    untrack the product.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.Confirmation.Untrack">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the &quot;Untrack&quot; button to untrack the
+    product in the confirmation bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.ConfirmationShown">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the price tracking icon view and shows the
+    confirmation bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the bookmark folder name shown in the confirmation
+    bubble to launch the bookmark editor.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.FirstRunBubbleDismissed">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the &quot;Cancel&quot; button to dismiss the
+    confirmation bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.FirstRunBubbleShown">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the price tracking icon view and shows the first
+    run experience bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.FirstRunBubbleTrackedPrice">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the &quot;Track price&quot; button to track the
+    product in the first run experience bubble.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.OmniboxChip.Tracked">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the price tracking icon view to track the product.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.OmniboxChipClicked">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when users click the price tracking icon view regarless of the icon
+    view state.
+  </description>
+</action>
+
+<action name="Commerce.PriceTracking.OmniboxChipShown">
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Records when price tracking icon view shown regarless of the icon view
+    state.
+  </description>
+</action>
+
 <action name="Commerce.PriceTracking.SidePanel.ClickedTrackedProduct">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -5975,7 +6083,7 @@ should be able to be added at any place in this file.
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
-    Triggered when users stop tracking price for a product from side panel via
+    Triggered when users start tracking price for a product from side panel via
     bell button.
   </description>
 </action>
@@ -5984,7 +6092,7 @@ should be able to be added at any place in this file.
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
-    Triggered when users stop tracking price for a product from side panel via
+    Triggered when users start tracking price for a product from side panel via
     context menu.
   </description>
 </action>

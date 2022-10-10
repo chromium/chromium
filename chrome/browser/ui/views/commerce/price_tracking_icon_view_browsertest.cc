@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -11,10 +12,15 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+namespace {
+const char kTestURL[] = "about:blank";
+}  // namespace
 
 class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
  public:
@@ -26,8 +32,10 @@ class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
   void ShowUi(const std::string& name) override {
     auto* icon_view = GetChip();
     if (name == "forced_show_tracking_price") {
+      SimulateServerPriceTrackState(true);
       icon_view->ForceVisibleForTesting(/*is_tracking_price=*/true);
     } else if (name == "forced_show_track_price") {
+      SimulateServerPriceTrackState(false);
       icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
     } else {
       NOTREACHED();
@@ -71,6 +79,14 @@ class PriceTrackingIconViewBrowserTest : public UiBrowserTest {
     return matched_view
                ? views::AsViewClass<PriceTrackingIconView>(matched_view)
                : nullptr;
+  }
+
+  void SimulateServerPriceTrackState(bool is_price_tracked) {
+    bookmarks::BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+
+    commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTestURL), 0,
+                                 is_price_tracked);
   }
 };
 

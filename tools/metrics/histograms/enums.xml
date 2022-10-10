@@ -89675,6 +89675,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="PDP with cluster ID"/>
 </enum>
 
+<enum name="ShoppingSubscriptionsRequestStatus">
+  <summary>The different statuses of a shopping subscriptions request.</summary>
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Server failed to parse the request"/>
+  <int value="2"
+      label="Server successfully parsed the request, but failed afterwards"/>
+  <int value="3"
+      label="Local storage failed to load, create, or delete subscriptions"/>
+  <int value="4" label="Dropped since last sync with server failed"/>
+  <int value="5" label="Invalid argument"/>
+  <int value="6"
+      label="The request was lost somewhere unknown and never came back. This
+             is used for monitoring purpose only and should never happen if
+             the subscriptions work correctly."/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

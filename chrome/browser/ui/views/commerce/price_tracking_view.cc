@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
+
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,27 +34,26 @@ constexpr int kHorizontalSpacing = 16;
 
 PriceTrackingView::PriceTrackingView(Profile* profile,
                                      GURL page_url,
+                                     ui::ImageModel product_image,
                                      bool is_price_track_enabled)
     : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
   // image column
-  auto product_image_containter = std::make_unique<views::BoxLayoutView>();
+  auto* product_image_containter =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
   product_image_containter->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   product_image_containter->SetProperty(
       views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kHorizontalSpacing));
-  // place holder product image
-  auto* placeholder = product_image_containter->AddChildView(
-      std::make_unique<views::ImageView>());
-  placeholder->SetImageSize(gfx::Size(kProductImageSize, kProductImageSize));
-  placeholder->SetPreferredSize(
-      gfx::Size(kProductImageSize, kProductImageSize));
-  // TODO(meiliang@): Use correct color and corner radius.
-  placeholder->SetBorder(views::CreateRoundedRectBorder(
-      1, 4, SkColorSetA(gfx::kGoogleGrey900, 0x24)));
-  placeholder->SetBackground(
-      views::CreateSolidBackground(SkColorSetA(gfx::kGoogleGrey900, 0x24)));
-  AddChildView(std::move(product_image_containter));
-  // TODO(meiliang): Use image fetcher to fetch image.
+  // Set product image.
+  product_image_containter->AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImageSize(gfx::Size(kProductImageSize, kProductImageSize))
+          .SetPreferredSize(gfx::Size(kProductImageSize, kProductImageSize))
+          // TODO(meiliang@): Verify color and corner radius with UX.
+          .SetBorder(views::CreateRoundedRectBorder(
+              1, 4, SkColorSetA(gfx::kGoogleGrey900, 0x24)))
+          .SetImage(product_image)
+          .Build());
 
   // Text column
   auto text_container = std::make_unique<views::FlexLayoutView>();
@@ -62,15 +64,18 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE),
           views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   // Body label
   body_label_ = text_container->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION),
+      l10n_util::GetStringUTF16(
+          IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   body_label_->SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(kLableSpacing, 0, 0, 0));
   body_label_->SetAllowCharacterBreak(true);
   body_label_->SetMultiLine(true);
   body_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  body_label_->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
   AddChildView(std::move(text_container));
 
   // Toggle button column
@@ -89,6 +94,9 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
                           kProductImageSize -
                           toggle_button_->GetPreferredSize().width();
   body_label_->SizeToFit(label_width);
+
+  base::RecordAction(base::UserMetricsAction(
+      "Commerce.PriceTracking.BookmarkDialogPriceTrackViewShown"));
 }
 
 PriceTrackingView::~PriceTrackingView() = default;
@@ -105,6 +113,14 @@ std::u16string PriceTrackingView::GetToggleAccessibleName() {
 
 void PriceTrackingView::OnToggleButtonPressed(const GURL url) {
   is_price_track_enabled_ = !is_price_track_enabled_;
+  if (is_price_track_enabled_) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.BookmarkDialogPriceTrackViewTrackedPrice"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"));
+  }
+
   toggle_button_->SetAccessibleName(GetToggleAccessibleName());
   UpdatePriceTrackingState(url);
 }
@@ -114,6 +130,9 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
       BookmarkModelFactory::GetForBrowserContext(profile_);
   const bookmarks::BookmarkNode* node =
       model->GetMostRecentlyAddedUserNodeForURL(url);
+  if (profile_ && is_price_track_enabled_) {
+    commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
+  }
   commerce::SetPriceTrackingStateForBookmark(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile_), model,
       node, is_price_track_enabled_,

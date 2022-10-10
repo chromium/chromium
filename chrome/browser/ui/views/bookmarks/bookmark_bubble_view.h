@@ -16,6 +16,10 @@ namespace bookmarks {
 class BookmarkBubbleObserver;
 }
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace views {
 class BubbleDialogDelegate;
 class Button;
@@ -30,6 +34,7 @@ class BookmarkBubbleView {
   BookmarkBubbleView& operator=(const BookmarkBubbleView&) = delete;
 
   static void ShowBubble(views::View* anchor_view,
+                         content::WebContents* web_contents,
                          views::Button* highlighted_button,
                          bookmarks::BookmarkBubbleObserver* observer,
                          std::unique_ptr<BubbleSyncPromoDelegate> delegate,

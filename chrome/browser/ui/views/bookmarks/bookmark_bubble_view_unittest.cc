@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -69,6 +70,9 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
 
     bookmarks::AddIfNotBookmarked(bookmark_model_, GURL(kTestBookmarkURL),
                                   std::u16string());
+
+    AddTab(browser(), GURL(kTestBookmarkURL));
+    browser()->tab_strip_model()->ActivateTabAt(0);
   }
 
   void TearDown() override {
@@ -102,9 +106,10 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
   // Creates a bookmark bubble view.
   void CreateBubbleView() {
     // Create a fake anchor view for the bubble.
-    BookmarkBubbleView::ShowBubble(anchor_widget_->GetContentsView(), nullptr,
-                                   nullptr, nullptr, profile(),
-                                   GURL(kTestBookmarkURL), true);
+    BookmarkBubbleView::ShowBubble(
+        anchor_widget_->GetContentsView(),
+        browser()->tab_strip_model()->GetActiveWebContents(), nullptr, nullptr,
+        nullptr, profile(), GURL(kTestBookmarkURL), true);
   }
 
   PriceTrackingView* GetPriceTrackingView() {
@@ -119,10 +124,30 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
                         : nullptr;
   }
 
+  void SimulateProductImageIsAvailable(bool with_valid_image) {
+    MockShoppingListUiTabHelper::CreateForWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
+        MockShoppingListUiTabHelper::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents()));
+    EXPECT_CALL(*mock_tab_helper_, GetProductImage);
+    if (with_valid_image) {
+      const gfx::Image image = mock_tab_helper_->GetValidProductImage();
+      ON_CALL(*mock_tab_helper_, GetProductImage)
+          .WillByDefault(
+              testing::ReturnRef(mock_tab_helper_->GetValidProductImage()));
+    } else {
+      ON_CALL(*mock_tab_helper_, GetProductImage)
+          .WillByDefault(
+              testing::ReturnRef(mock_tab_helper_->GetInvalidProductImage()));
+    }
+  }
+
  private:
   views::UniqueWidgetPtr anchor_widget_;
   base::test::ScopedFeatureList test_features_;
   raw_ptr<BookmarkModel> bookmark_model_;
+  raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.
@@ -152,10 +177,13 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
   commerce::MockShoppingService* mock_shopping_service =
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+
+  SimulateProductImageIsAvailable(/*with_valid_image=*/true);
+
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
   CreateBubbleView();
-  // Verify the view is displayed with toggle off
+  // Verify the view is displayed with toggle off.
   auto* price_tracking_view = GetPriceTrackingView();
   EXPECT_TRUE(price_tracking_view);
   EXPECT_FALSE(price_tracking_view->IsToggleOn());
@@ -166,7 +194,22 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden) {
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
   mock_shopping_service->SetResponseForGetProductInfoForUrl(absl::nullopt);
+
   CreateBubbleView();
+  auto* price_tracking_view = GetPriceTrackingView();
+  EXPECT_FALSE(price_tracking_view);
+}
+
+TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden_ImageNotAvailable) {
+  commerce::MockShoppingService* mock_shopping_service =
+      static_cast<commerce::MockShoppingService*>(
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetResponseForGetProductInfoForUrl(
+      commerce::ProductInfo());
+  SimulateProductImageIsAvailable(/*with_valid_image=*/false);
+
+  CreateBubbleView();
+  // Verify the view is hidden.
   auto* price_tracking_view = GetPriceTrackingView();
   EXPECT_FALSE(price_tracking_view);
 }
@@ -182,6 +225,7 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
           commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
   mock_shopping_service->SetResponseForGetProductInfoForUrl(
       commerce::ProductInfo());
+  SimulateProductImageIsAvailable(/*with_valid_image=*/true);
 
   CreateBubbleView();
   auto* price_tracking_view = GetPriceTrackingView();

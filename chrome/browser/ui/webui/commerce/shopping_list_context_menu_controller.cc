@@ -28,7 +28,6 @@ ShoppingListContextMenuController::ShoppingListContextMenuController(
       menu_model_(menu_model) {}
 
 void ShoppingListContextMenuController::AddPriceTrackingItemForBookmark() {
-  DCHECK_EQ(menu_model_->GetItemCount(), 0UL);
   if (commerce::IsBookmarkPriceTracked(bookmark_model_, bookmark_node_)) {
     menu_model_->AddItem(
         IDC_BOOKMARK_BAR_UNTRACK_PRICE_FOR_SHOPPING_BOOKMARK,

@@ -28,6 +28,9 @@ class PriceTrackingIconView : public PageActionIconView {
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 
+  // IconLabelBubbleView:
+  bool ShouldShowLabel() const override;
+
   void ForceVisibleForTesting(bool is_tracking_price);
   const std::u16string& GetIconLabelForTesting();
 
@@ -39,16 +42,15 @@ class PriceTrackingIconView : public PageActionIconView {
   void EnablePriceTracking(bool enable);
   void SetVisualState(bool enable);
   void OnPriceTrackingServerStateUpdated(bool success);
+  bool ShouldShow();
   bool IsPriceTracking() const;
+  bool ShouldShowFirstUseExperienceBubble() const;
 
   raw_ptr<Profile> profile_;
   PriceTrackingBubbleCoordinator bubble_coordinator_;
 
   raw_ptr<const gfx::VectorIcon> icon_;
   std::u16string tooltip_text_and_accessibleName_;
-
-  // Currently, these are being set by test.
-  bool is_visible_ = false;
 
   base::WeakPtrFactory<PriceTrackingIconView> weak_ptr_factory_{this};
 };

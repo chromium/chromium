@@ -22,7 +22,6 @@ class GURL;
 class PrefService;
 
 namespace content {
-class Page;
 class WebContents;
 }  // namespace content
 
@@ -48,28 +47,37 @@ class ShoppingListUiTabHelper
 
   // Get the image for the last fetched product URL. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
-  const gfx::Image& GetProductImage();
+  virtual const gfx::Image& GetProductImage();
+  // Return whether the PriceTrackingIconView is visible.
+  virtual bool ShouldShowPriceTrackingIconView();
 
   // The URL for the last fetched product image. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
   const GURL& GetProductImageURL();
 
   // content::WebContentsObserver implementation
-  void PrimaryPageChanged(content::Page& page) override;
+  void NavigationEntryCommitted(
+      const content::LoadCommittedDetails& load_details) override;
 
   // bookmarks::BaseBookmarkModelObserver
   void BookmarkModelChanged() override;
+  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
+                           const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked) override;
   void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
                                const bookmarks::BookmarkNode* node) override;
 
- private:
-  friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
-
+ protected:
   ShoppingListUiTabHelper(
       content::WebContents* contents,
       ShoppingService* shopping_service,
       image_fetcher::ImageFetcherService* image_fetcher_service,
       PrefService* prefs);
+
+ private:
+  friend class content::WebContentsUserData<ShoppingListUiTabHelper>;
 
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info);

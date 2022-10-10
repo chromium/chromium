@@ -514,9 +514,9 @@ void ToolbarView::ShowBookmarkBubble(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   delegate = std::make_unique<BookmarkBubbleSignInDelegate>(profile);
 #endif
-  BookmarkBubbleView::ShowBubble(anchor_view, bookmark_star_icon, observer,
-                                 std::move(delegate), profile, url,
-                                 already_bookmarked);
+  BookmarkBubbleView::ShowBubble(
+      anchor_view, GetWebContents(), bookmark_star_icon, observer,
+      std::move(delegate), profile, url, already_bookmarked);
 }
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {

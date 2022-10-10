@@ -10,11 +10,13 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -26,10 +28,13 @@ class PriceTrackingUtilsTest : public testing::Test {
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     shopping_service_ = std::make_unique<MockShoppingService>();
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterPrefs(pref_service_->registry());
   }
 
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -328,6 +333,56 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_ImageRemoved) {
   EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
 
   EXPECT_TRUE(meta.lead_image().url().empty());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_TitleUpdated) {
+  ProductInfo new_info;
+  const uint64_t cluster_id = 12345L;
+  const std::string new_title = "New Title";
+  new_info.title = new_title;
+  new_info.product_cluster_id = cluster_id;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()->set_title("Nonempty Title");
+  meta.mutable_shopping_specifics()->set_product_cluster_id(cluster_id);
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(new_title, meta.shopping_specifics().title());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NonemptyTitleKept) {
+  ProductInfo new_info;
+  const uint64_t cluster_id = 12345L;
+  const std::string title = "Nonempty Title";
+  new_info.title = "";
+  new_info.product_cluster_id = cluster_id;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()->set_title(title);
+  meta.mutable_shopping_specifics()->set_product_cluster_id(cluster_id);
+
+  EXPECT_FALSE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(title, meta.shopping_specifics().title());
+}
+
+TEST_F(PriceTrackingUtilsTest, MaybeEnableEmailNotifications) {
+  // Verify the initial pref values.
+  ASSERT_EQ(false, pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
+
+  MaybeEnableEmailNotifications(pref_service_.get());
+
+  // Verify the updated pref values.
+  ASSERT_EQ(true, pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
+
+  // Mock that user has customized the email pref setting, in which case we
+  // shouldn't auto enable it.
+  pref_service_->SetBoolean(kPriceEmailNotificationsEnabled, false);
+
+  MaybeEnableEmailNotifications(pref_service_.get());
+
+  ASSERT_EQ(false, pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
 }
 
 }  // namespace

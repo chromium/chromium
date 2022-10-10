@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/grit/chromium_strings.h"
@@ -30,9 +31,11 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -168,6 +171,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 // static
 void BookmarkBubbleView::ShowBubble(
     views::View* anchor_view,
+    content::WebContents* web_contents,
     views::Button* highlighted_button,
     bookmarks::BookmarkBubbleObserver* observer,
     std::unique_ptr<BubbleSyncPromoDelegate> delegate,
@@ -232,13 +236,19 @@ void BookmarkBubbleView::ShowBubble(
     absl::optional<commerce::ProductInfo> product_info =
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
             ->GetAvailableProductInfoForUrl(url);
-    if (product_info.has_value()) {
+    auto* tab_helper =
+        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+    CHECK(tab_helper);
+
+    const gfx::Image& product_image = tab_helper->GetProductImage();
+    if (product_info.has_value() && !product_image.IsEmpty()) {
       bool is_price_tracked =
           commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
       dialog_model_builder.AddSeparator().AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              std::make_unique<PriceTrackingView>(profile, url,
-                                                  is_price_tracked),
+              std::make_unique<PriceTrackingView>(
+                  profile, url, ui::ImageModel::FromImage(product_image),
+                  is_price_tracked),
               views::BubbleDialogModelHost::FieldType::kControl),
           kPriceTrackingBookmarkViewElementId);
     }

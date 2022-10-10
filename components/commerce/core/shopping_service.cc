@@ -101,7 +101,8 @@ ShoppingService::ShoppingService(
         new AccountChecker(pref_service, identity_manager, url_loader_factory));
   }
 
-  if (identity_manager && account_checker_ && subscription_proto_db) {
+  if (IsProductInfoApiEnabled() && identity_manager && account_checker_ &&
+      subscription_proto_db) {
     subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
         identity_manager, url_loader_factory, subscription_proto_db,
         account_checker_.get());
