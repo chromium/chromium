@@ -11962,20 +11962,20 @@
     "WebRTC-FrameBuffer3": [
         {
             "platforms": [
-                "windows",
-                "mac",
+                "android",
+                "android_webview",
                 "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
                 "linux",
-                "ios",
-                "android",
-                "android_weblayer",
-                "android_webview"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
-                    "name": "arm:SyncDecoding,_Beta"
+                    "name": "arm:SyncDecoding,_Beta50",
+                    "enable_features": [
+                        "WebRtcMetronome"
+                    ]
                 }
             ]
         }
