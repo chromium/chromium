@@ -1474,69 +1474,6 @@ TEST_F(FrameFetchContextTest, TopFrameOriginDetached) {
   EXPECT_EQ(origin, GetTopFrameOrigin());
 }
 
-// Verify the value of the sec-bfcache-experiment HTTP header varies according
-// to whether BackForwardCacheExperimentHTTPHeader and BackForwardCacheSameSite
-// is enabled or not.
-TEST_F(FrameFetchContextTest, SameSiteBackForwardCache) {
-  base::FieldTrialParams params;
-
-  {
-    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(false);
-    params[features::kBackForwardCacheABExperimentGroup] = "foo";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is not enabled and
-    // BackForwardCacheSameSite's experiment group is "foo".
-    EXPECT_EQ(String(),
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    ScopedBackForwardCacheExperimentHTTPHeaderForTest back_forward_cache(true);
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite's experiment group is not set.
-    EXPECT_EQ(String(),
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    params[features::kBackForwardCacheABExperimentGroup] = "control";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite's experiment group is "control".
-    EXPECT_EQ("control",
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-
-  {
-    params[features::kBackForwardCacheABExperimentGroup] = "enabled";
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        features::kBackForwardCacheABExperimentControl, params);
-    ResourceRequest resource_request("http://www.example.com");
-    GetFetchContext()->AddAdditionalRequestHeaders(resource_request);
-
-    // BackForwardCacheExperimentHTTPHeader is enabled and
-    // BackForwardCacheSameSite experiment group is "enabled".
-    EXPECT_EQ("enabled",
-              resource_request.HttpHeaderField("Sec-bfcache-experiment"));
-  }
-}
-
 // Tests that CanRequestCanRequestBasedOnSubresourceFilterOnly will block ads
 // or not correctly, depending on the FilterPolicy.
 TEST_F(FrameFetchContextSubresourceFilterTest,

@@ -713,27 +713,6 @@ bool BaseFetchContext::ShouldSendClientHint(
   return IsClientHintSentByDefault(type) || hints_preferences.ShouldSend(type);
 }
 
-void BaseFetchContext::AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
-    ResourceRequest& request) {
-  if (!RuntimeEnabledFeatures::BackForwardCacheExperimentHTTPHeaderEnabled(
-          GetExecutionContext())) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheABExperimentControl)) {
-    return;
-  }
-  // Send the 'Sec-bfcache-experiment' HTTP header to indicate which
-  // BackForwardCacheSameSite experiment group we're in currently.
-  UseCounter::Count(GetExecutionContext(),
-                    WebFeature::kBackForwardCacheExperimentHTTPHeader);
-  auto experiment_group = base::GetFieldTrialParamValueByFeature(
-      features::kBackForwardCacheABExperimentControl,
-      features::kBackForwardCacheABExperimentGroup);
-  request.SetHttpHeaderField("Sec-bfcache-experiment",
-                             experiment_group.c_str());
-}
-
 void BaseFetchContext::Trace(Visitor* visitor) const {
   visitor->Trace(fetcher_properties_);
   FetchContext::Trace(visitor);

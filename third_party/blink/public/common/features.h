@@ -362,10 +362,6 @@ enum class CheckOfflineCapabilityMode {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<CheckOfflineCapabilityMode>
     kCheckOfflineCapabilityParam;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheABExperimentControl);
-BLINK_COMMON_EXPORT
-extern const char kBackForwardCacheABExperimentGroup[];
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreferCompositingToLCDText);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

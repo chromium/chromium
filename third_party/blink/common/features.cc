@@ -833,17 +833,6 @@ const base::FeatureParam<CheckOfflineCapabilityMode>
                                  CheckOfflineCapabilityMode::kWarnOnly,
                                  &check_offline_capability_types};
 
-// The "BackForwardCacheABExperimentControl" feature indicates the state of the
-// same-site BackForwardCache experiment. This information is used when sending
-// the "Sec-bfcache-experiment" HTTP Header on resource requests. The header
-// value is determined by the value of the "experiment_group_for_http_header"
-// feature parameter.
-BASE_FEATURE(kBackForwardCacheABExperimentControl,
-             "BackForwardCacheABExperimentControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kBackForwardCacheABExperimentGroup[] =
-    "experiment_group_for_http_header";
-
 // Whether we should composite a PLSA (paint layer scrollable area) even if it
 // means losing lcd text.
 BASE_FEATURE(kPreferCompositingToLCDText,

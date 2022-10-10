@@ -778,12 +778,6 @@
     "args": [ "--enable-features=RestrictGamepadAccess" ]
   },
   {
-    "prefix": "bfcache-experiment-control",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "http/tests/origin_trials/webexposed/bfcache-experiment-http-header-origin-trial.php" ],
-    "args": [ "--enable-features=BackForwardCacheABExperimentControl" ]
-  },
-  {
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

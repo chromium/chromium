@@ -142,9 +142,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   // TODO(yhirano): Remove this.
   virtual void AddConsoleMessage(ConsoleMessage*) const = 0;
 
-  void AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
-      ResourceRequest& request);
-
   virtual ExecutionContext* GetExecutionContext() const = 0;
 
  private:
