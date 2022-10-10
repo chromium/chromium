@@ -131,14 +131,21 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
     auto* video_backing =
         static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(texture_->service_id());
-    GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
-                                     gles2::Texture::BOUND);
+
+    // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
+    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
+      GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
+                                       gles2::Texture::BOUND);
+    }
+
     return true;
   }
 
   void EndAccess() override {
-    GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
-                                     gles2::Texture::UNBOUND);
+    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
+      GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
+                                       gles2::Texture::UNBOUND);
+    }
   }
 
  private:
@@ -181,7 +188,12 @@ class VideoSurfaceTextureImageBacking::
     auto* video_backing =
         static_cast<VideoSurfaceTextureImageBacking*>(backing());
     video_backing->BeginGLReadAccess(passthrough_texture_->service_id());
-    passthrough_texture_->set_is_bind_pending(false);
+
+    // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
+    if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
+      passthrough_texture_->set_is_bind_pending(false);
+    }
+
     return true;
   }
 
