@@ -27,7 +27,7 @@ void WaylandProxyImpl::SetDelegate(WaylandProxy::Delegate* delegate) {
   delegate_ = delegate;
   if (delegate_)
     connection_->wayland_window_manager()->AddObserver(this);
-  else if (!delegate_)
+  else
     connection_->wayland_window_manager()->RemoveObserver(this);
 }
 
