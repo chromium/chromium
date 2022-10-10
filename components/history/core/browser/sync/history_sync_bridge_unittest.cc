@@ -205,6 +205,10 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
     return sync_pb::EntitySpecifics::default_instance();
   }
 
+  base::WeakPtr<syncer::ModelTypeChangeProcessor> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   std::unique_ptr<ModelTypeChangeProcessor> CreateForwardingProcessor() {
     return base::WrapUnique<ModelTypeChangeProcessor>(
         new syncer::ForwardingModelTypeChangeProcessor(this));
@@ -223,6 +227,8 @@ class FakeModelTypeChangeProcessor : public syncer::ModelTypeChangeProcessor {
   // Set of storage keys of all unsynced entities (i.e. with local changes that
   // are pending commit).
   std::set<std::string> unsynced_entities_;
+
+  base::WeakPtrFactory<FakeModelTypeChangeProcessor> weak_ptr_factory_{this};
 };
 
 class HistorySyncBridgeTest : public testing::Test {

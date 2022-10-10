@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -367,7 +367,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_METADATA);
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_METADATA,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError>

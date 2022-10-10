@@ -50,6 +50,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
+  base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
 
  private:
   raw_ptr<ModelTypeChangeProcessor> other_;

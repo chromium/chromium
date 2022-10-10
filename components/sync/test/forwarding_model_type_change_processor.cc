@@ -109,4 +109,11 @@ ForwardingModelTypeChangeProcessor::GetPossiblyTrimmedRemoteSpecifics(
   return other_->GetPossiblyTrimmedRemoteSpecifics(storage_key);
 }
 
+base::WeakPtr<ModelTypeChangeProcessor>
+ForwardingModelTypeChangeProcessor::GetWeakPtr() {
+  // Note: Don't bother with a separate WeakPtrFactory for the forwarding
+  // processor; just hand out a WeakPtr directly to the real processor.
+  return other_->GetWeakPtr();
+}
+
 }  // namespace syncer

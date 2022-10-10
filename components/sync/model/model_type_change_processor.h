@@ -136,6 +136,8 @@ class ModelTypeChangeProcessor {
   // available.
   virtual const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const = 0;
+
+  virtual base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() = 0;
 };
 
 }  // namespace syncer

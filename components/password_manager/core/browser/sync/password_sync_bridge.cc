@@ -8,7 +8,8 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/callback.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -17,7 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -322,8 +322,11 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
     return;
   }
 
+  // Note: No `error_callback` is required since any errors are handled
+  // explicitly via TakeError() below.
   syncer::SyncMetadataStoreChangeList metadata_change_list(
-      password_store_sync_->GetMetadataStore(), syncer::PASSWORDS);
+      password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
+      /*error_callback=*/base::DoNothing());
 
   for (const PasswordStoreChange& change : local_changes) {
     const std::string storage_key =
@@ -577,8 +580,11 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
 
     // Persist the metadata changes.
     // TODO(mamir): add some test coverage for the metadata persistence.
+    // Note: No `error_callback` is required since any errors are handled
+    // explicitly via TakeError() below.
     syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
-        password_store_sync_->GetMetadataStore(), syncer::PASSWORDS);
+        password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
+        /*error_callback=*/base::DoNothing());
     // |metadata_change_list| must have been created via
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
@@ -753,8 +759,11 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
 
     // Persist the metadata changes.
     // TODO(mamir): add some test coverage for the metadata persistence.
+    // Note: No `error_callback` is required since any errors are handled
+    // explicitly via TakeError() below.
     syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
-        password_store_sync_->GetMetadataStore(), syncer::PASSWORDS);
+        password_store_sync_->GetMetadataStore(), syncer::PASSWORDS,
+        /*error_callback=*/base::DoNothing());
     // |metadata_change_list| must have been created via
     // CreateMetadataChangeList() so downcasting is safe.
     static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())

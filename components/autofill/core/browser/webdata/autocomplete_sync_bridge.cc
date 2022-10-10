@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -323,7 +322,9 @@ std::unique_ptr<MetadataChangeList>
 AutocompleteSyncBridge::CreateMetadataChangeList() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL);
+      GetAutofillTable(), syncer::AUTOFILL,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 optional<syncer::ModelError> AutocompleteSyncBridge::MergeSyncData(
@@ -417,9 +418,8 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
     return;
   }
 
-  auto metadata_change_list =
-      std::make_unique<syncer::SyncMetadataStoreChangeList>(GetAutofillTable(),
-                                                            syncer::AUTOFILL);
+  std::unique_ptr<MetadataChangeList> metadata_change_list =
+      CreateMetadataChangeList();
   for (const auto& change : changes) {
     const std::string storage_key = GetStorageKeyFromModel(change.key());
     switch (change.type()) {
@@ -466,9 +466,6 @@ void AutocompleteSyncBridge::ActOnLocalChanges(
   // the metadata change list) because the open WebDatabase transaction is
   // committed by the AutofillWebDataService when the original local write
   // operation (that triggered this notification to the bridge) finishes.
-
-  if (optional<ModelError> error = metadata_change_list->TakeError())
-    change_processor()->ReportError(*error);
 }
 
 void AutocompleteSyncBridge::LoadMetadata() {

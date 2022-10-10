@@ -88,6 +88,10 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               GetPossiblyTrimmedRemoteSpecifics,
               (const std::string& storage_key),
               (const override));
+  MOCK_METHOD(base::WeakPtr<ModelTypeChangeProcessor>,
+              GetWeakPtr,
+              (),
+              (override));
 
   // Returns a processor that forwards all calls to
   // |this|. |*this| must outlive the returned processor.

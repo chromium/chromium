@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/big_endian.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -105,7 +106,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 TypedURLSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      sync_metadata_database_, syncer::TYPED_URLS);
+      sync_metadata_database_, syncer::TYPED_URLS,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> TypedURLSyncBridge::MergeSyncData(

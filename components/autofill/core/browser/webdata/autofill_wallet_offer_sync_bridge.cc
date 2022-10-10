@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -79,7 +80,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER);
+      GetAutofillTable(), syncer::AUTOFILL_WALLET_OFFER,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> AutofillWalletOfferSyncBridge::MergeSyncData(

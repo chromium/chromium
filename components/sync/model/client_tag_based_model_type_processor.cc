@@ -1263,4 +1263,10 @@ ClientTagBasedModelTypeProcessor::GetPossiblyTrimmedRemoteSpecifics(
   return entity->metadata().possibly_trimmed_base_specifics();
 }
 
+base::WeakPtr<ModelTypeChangeProcessor>
+ClientTagBasedModelTypeProcessor::GetWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_ptr_factory_for_controller_.GetWeakPtr();
+}
+
 }  // namespace syncer

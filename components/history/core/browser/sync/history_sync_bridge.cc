@@ -5,6 +5,7 @@
 #include "components/history/core/browser/sync/history_sync_bridge.h"
 
 #include "base/auto_reset.h"
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -442,7 +443,9 @@ std::unique_ptr<syncer::MetadataChangeList>
 HistorySyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      sync_metadata_database_, syncer::HISTORY);
+      sync_metadata_database_, syncer::HISTORY,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 absl::optional<syncer::ModelError> HistorySyncBridge::MergeSyncData(
@@ -681,16 +684,6 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
     change_processor()->Put(storage_key, std::move(entity_data),
                             metadata_change_list.get());
   }
-
-  // `metadata_change_list` must have been created via
-  // CreateMetadataChangeList(), so downcasting is safe.
-  absl::optional<syncer::ModelError> metadata_error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
-  if (metadata_error) {
-    change_processor()->ReportError(metadata_error.value());
-  }
 }
 
 void HistorySyncBridge::OnURLsModified(HistoryBackend* history_backend,
@@ -777,16 +770,6 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
     std::string storage_key = GetStorageKey(*entity_data);
     change_processor()->Put(storage_key, std::move(entity_data),
                             metadata_change_list.get());
-  }
-
-  // `metadata_change_list` must have been created via
-  // CreateMetadataChangeList(), so downcasting is safe.
-  absl::optional<syncer::ModelError> metadata_error =
-      static_cast<syncer::SyncMetadataStoreChangeList*>(
-          metadata_change_list.get())
-          ->TakeError();
-  if (metadata_error) {
-    change_processor()->ReportError(metadata_error.value());
   }
 }
 

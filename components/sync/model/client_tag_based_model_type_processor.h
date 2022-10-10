@@ -91,6 +91,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override;
+  base::WeakPtr<ModelTypeChangeProcessor> GetWeakPtr() override;
 
   // ModelTypeProcessor implementation.
   void ConnectSync(std::unique_ptr<CommitQueue> worker) override;
@@ -292,7 +293,7 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
 
   // WeakPtrFactory for this processor for ModelTypeController (only gets
   // invalidated during destruction).
-  base::WeakPtrFactory<ModelTypeControllerDelegate>
+  base::WeakPtrFactory<ClientTagBasedModelTypeProcessor>
       weak_ptr_factory_for_controller_{this};
 
   // WeakPtrFactory for this processor which will be sent to sync thread.

@@ -12,23 +12,28 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_metadata_store.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
 class EntityMetadata;
+class ModelTypeState;
 }  // namespace sync_pb
 
 namespace syncer {
 
 // A thin wrapper around an SyncMetadataStore that implements sync's
 // MetadataChangeList interface. Changes are passed directly into the store and
-// not stored inside this object. Since the store calls can fail, |TakeError()|
-// must be called before this object is destroyed to check whether any
-// operations failed.
+// not stored inside this object.
 class SyncMetadataStoreChangeList : public MetadataChangeList {
  public:
-  SyncMetadataStoreChangeList(SyncMetadataStore* store, syncer::ModelType type);
+  using ErrorCallback = base::RepeatingCallback<void(const ModelError&)>;
+
+  // If an error happened during any Update*/Clear* operation, then
+  // `error_callback` will be called during destruction and passed the error.
+  // Should typically be bound to ModelTypeChangeProcessor::ReportError().
+  SyncMetadataStoreChangeList(SyncMetadataStore* store,
+                              ModelType type,
+                              ErrorCallback error_callback);
   ~SyncMetadataStoreChangeList() override;
 
   // MetadataChangeList implementation.
@@ -38,19 +43,28 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
-  absl::optional<syncer::ModelError> TakeError();
+
+  // Allows querying and manually handling any error, instead of relying on the
+  // error callback passed to the constructor.
+  // TODO(crbug.com/1356990): Consider removing this method. Callers can use
+  // ModelTypeChangeProcessor::GetError() instead.
+  absl::optional<ModelError> TakeError();
 
   const SyncMetadataStore* GetMetadataStoreForTesting() const;
 
  private:
+  void SetError(ModelError error);
+
   // The metadata store to store metadata in; always outlives |this|.
   raw_ptr<SyncMetadataStore> store_;
 
   // The sync model type for this metadata.
-  syncer::ModelType type_;
+  ModelType type_;
 
   // The first error encountered by this object, if any.
-  absl::optional<syncer::ModelError> error_;
+  absl::optional<ModelError> error_;
+
+  const ErrorCallback error_callback_;
 };
 
 }  // namespace syncer
