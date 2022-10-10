@@ -586,12 +586,12 @@ FT_BEGIN_HEADER
   /**************************************************************************
    *
    * Define `TT_CONFIG_OPTION_POSTSCRIPT_NAMES` if you want to be able to
-   * load and enumerate the glyph Postscript names in a TrueType or OpenType
+   * load and enumerate Postscript names of glyphs in a TrueType or OpenType
    * file.
    *
-   * Note that when you do not compile the 'psnames' module by undefining the
-   * above `FT_CONFIG_OPTION_POSTSCRIPT_NAMES`, the 'sfnt' module will
-   * contain additional code used to read the PS Names table from a font.
+   * Note that if you do not compile the 'psnames' module by undefining the
+   * above `FT_CONFIG_OPTION_POSTSCRIPT_NAMES` macro, the 'sfnt' module will
+   * contain additional code to read the PostScript name table from a font.
    *
    * (By default, the module uses 'psnames' to extract glyph names.)
    */
