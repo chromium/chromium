@@ -5,6 +5,8 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_SYSTEM_CARET_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_SYSTEM_CARET_WIN_H_
 
+#include <type_traits>
+
 #include <oleacc.h>
 #include <wrl/client.h>
 
@@ -48,7 +50,12 @@ class AX_EXPORT AXSystemCaretWin : private AXPlatformNodeDelegateBase {
   bool ShouldIgnoreHoveredStateForTesting() override;
   const ui::AXUniqueId& GetUniqueId() const override;
 
-  raw_ptr<AXPlatformNodeWin, DanglingUntriaged> caret_;
+  static void AXPlatformNodeWinDeleter(AXPlatformNodeWin* ptr);
+
+  using deleter = std::integral_constant<
+      decltype(AXSystemCaretWin::AXPlatformNodeWinDeleter)*,
+      AXSystemCaretWin::AXPlatformNodeWinDeleter>;
+  std::unique_ptr<AXPlatformNodeWin, deleter> caret_;
   gfx::AcceleratedWidget event_target_;
   AXNodeData data_;
   ui::AXUniqueId unique_id_;

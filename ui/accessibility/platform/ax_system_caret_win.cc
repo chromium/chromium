@@ -16,9 +16,15 @@
 
 namespace ui {
 
+// static
+void AXSystemCaretWin::AXPlatformNodeWinDeleter(AXPlatformNodeWin* ptr) {
+  ptr->Destroy();
+}
+
 AXSystemCaretWin::AXSystemCaretWin(gfx::AcceleratedWidget event_target)
     : event_target_(event_target) {
-  caret_ = static_cast<AXPlatformNodeWin*>(AXPlatformNodeWin::Create(this));
+  caret_.reset(
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeWin::Create(this)));
   // The caret object is not part of the accessibility tree and so doesn't need
   // a node ID. A globally unique ID is used when firing Win events, retrieved
   // via |unique_id|.
@@ -42,7 +48,6 @@ AXSystemCaretWin::~AXSystemCaretWin() {
     ::NotifyWinEvent(EVENT_OBJECT_DESTROY, event_target_, OBJID_CARET,
                      -caret_->GetUniqueId());
   }
-  caret_->Destroy();
 }
 
 Microsoft::WRL::ComPtr<IAccessible> AXSystemCaretWin::GetCaret() const {
