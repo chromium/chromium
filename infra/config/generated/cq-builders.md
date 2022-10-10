@@ -507,6 +507,9 @@ as required builders.
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
 
+* [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator""))
+  * Experiment percentage: 1.0
+
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0
 
