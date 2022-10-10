@@ -104,7 +104,7 @@ enum AuthenticationState {
   BOOL _shouldFetchUserPolicy;
 
   Browser* _browser;
-  ChromeIdentity* _identityToSignIn;
+  id<SystemIdentity> _identityToSignIn;
   NSString* _identityToSignInHostedDomain;
 
   // Token to have access to user policies from dmserver.
@@ -120,11 +120,12 @@ enum AuthenticationState {
 
 @synthesize handlingError = _handlingError;
 @synthesize dispatcher = _dispatcher;
+@synthesize identity = _identityToSignIn;
 
 #pragma mark - Public methods
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                       identity:(ChromeIdentity*)identity
+                       identity:(id<SystemIdentity>)identity
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
@@ -172,10 +173,6 @@ enum AuthenticationState {
 - (void)setPresentingViewController:
     (UIViewController*)presentingViewController {
   _presentingViewController = presentingViewController;
-}
-
-- (ChromeIdentity*)identity {
-  return _identityToSignIn;
 }
 
 #pragma mark - State machine management
@@ -404,7 +401,7 @@ enum AuthenticationState {
 }
 
 - (void)checkSigninSteps {
-  ChromeIdentity* currentIdentity =
+  id<SystemIdentity> currentIdentity =
       AuthenticationServiceFactory::GetForBrowserState(
           _browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
@@ -415,7 +412,7 @@ enum AuthenticationState {
   }
 }
 
-- (void)signInIdentity:(ChromeIdentity*)identity {
+- (void)signInIdentity:(id<SystemIdentity>)identity {
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);

@@ -12,11 +12,11 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 class PrefService;
 @protocol SigninPresenter;
 @class SigninPromoViewConfigurator;
 @protocol SigninPromoViewConsumer;
+@protocol SystemIdentity;
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -58,7 +58,7 @@ class PrefRegistrySyncable;
 //  - SigninPromoViewModeSigninWithAccount
 //  - SigninPromoViewModeSyncWithPrimaryAccount
 // Otherwise contains nil.
-@property(nonatomic, strong, readonly) ChromeIdentity* identity;
+@property(nonatomic, strong, readonly) id<SystemIdentity> identity;
 
 // Sign-in promo view state.
 @property(nonatomic, assign) ios::SigninPromoViewState signinPromoViewState;

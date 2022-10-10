@@ -191,7 +191,7 @@
   if (signinResult == SigninCoordinatorResultSuccess) {
     DCHECK(completionInfo);
     [self.consistencyPromoSigninMediator
-        chromeIdentityAdded:completionInfo.identity];
+        systemIdentityAdded:completionInfo.identity];
   }
   RecordConsistencyPromoUserAction(
       signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED);

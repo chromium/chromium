@@ -51,7 +51,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
   void SetUpMainChromeBrowserStateWithSignedInUser() {
     SetUpMainChromeBrowserStateNotSignedIn();
 
-    ChromeIdentity* chrome_identity =
+    id<SystemIdentity> chrome_identity =
         [FakeChromeIdentity identityWithEmail:@"john.appleseed@gmail.com"
                                        gaiaID:@"1234"
                                          name:@"John"];

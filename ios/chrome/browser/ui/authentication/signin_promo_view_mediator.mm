@@ -408,7 +408,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Redefined to be readwrite.
-@property(nonatomic, strong, readwrite) ChromeIdentity* identity;
+@property(nonatomic, strong, readwrite) id<SystemIdentity> identity;
 @property(nonatomic, assign, readwrite, getter=isSigninInProgress)
     BOOL signinInProgress;
 
@@ -535,14 +535,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
     _accessPoint = accessPoint;
     _presenter = presenter;
 
-    ChromeIdentity* defaultIdentity = [self defaultIdentity];
-    if (defaultIdentity) {
-      [self setIdentity:defaultIdentity];
-    }
-
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+
+    id<SystemIdentity> defaultIdentity = [self defaultIdentity];
+    if (defaultIdentity) {
+      self.identity = defaultIdentity;
+    }
   }
   return self;
 }
@@ -662,7 +662,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 // Returns the identity for the sync promo. This should be the signed in promo,
 // if the user is signed in. If not signed in, the default identity from
 // AccountManagerService.
-- (ChromeIdentity*)defaultIdentity {
+- (id<SystemIdentity>)defaultIdentity {
   if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     return self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
@@ -671,14 +671,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Sets the Chrome identity to display in the sign-in promo.
-- (void)setIdentity:(ChromeIdentity*)identity {
+- (void)setIdentity:(id<SystemIdentity>)identity {
   _identity = identity;
-  if (!self.identity) {
+  if (!_identity) {
     self.identityAvatar = nil;
   } else {
     self.identityAvatar =
         self.accountManagerService->GetIdentityAvatarWithIdentity(
-            identity, IdentityAvatarSize::SmallSize);
+            _identity, IdentityAvatarSize::SmallSize);
   }
 }
 
@@ -721,7 +721,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
 }
 
 // Starts sign-in process with the Chrome identity from `identity`.
-- (void)showSigninWithIdentity:(ChromeIdentity*)identity
+- (void)showSigninWithIdentity:(id<SystemIdentity>)identity
                    promoAction:(signin_metrics::PromoAction)promoAction {
   self.signinPromoViewState = ios::SigninPromoViewState::UsedAtLeastOnce;
   self.signinInProgress = YES;
@@ -787,9 +787,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  ChromeIdentity* newIdentity = [self defaultIdentity];
-  if (![self.identity isEqual:newIdentity]) {
-    [self setIdentity:newIdentity];
+  id<SystemIdentity> currentIdentity = self.identity;
+  id<SystemIdentity> defaultIdentity = [self defaultIdentity];
+  if (![currentIdentity isEqual:defaultIdentity]) {
+    self.identity = defaultIdentity;
     [self sendConsumerNotificationWithIdentityChanged:YES];
   }
 }

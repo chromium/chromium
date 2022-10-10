@@ -65,7 +65,7 @@ class AuthenticationFlowTest : public PlatformTest {
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForBrowserState(
             browser_state_.get());
-    NSArray<ChromeIdentity*>* identities =
+    NSArray<id<SystemIdentity>>* identities =
         account_manager_service->GetAllIdentities();
     identity1_ = identities[0];
     identity2_ = identities[1];
@@ -99,7 +99,7 @@ class AuthenticationFlowTest : public PlatformTest {
   // Creates a new AuthenticationFlow with default values for fields that are
   // not directly useful.
   void CreateAuthenticationFlow(PostSignInAction postSignInAction,
-                                ChromeIdentity* identity) {
+                                id<SystemIdentity> identity) {
     view_controller_ = [OCMockObject niceMockForClass:[UIViewController class]];
     authentication_flow_ =
         [[AuthenticationFlow alloc] initWithBrowser:browser_.get()
@@ -123,7 +123,7 @@ class AuthenticationFlowTest : public PlatformTest {
     [performer_ verify];
   }
 
-  void SetSigninSuccessExpectations(ChromeIdentity* identity,
+  void SetSigninSuccessExpectations(id<SystemIdentity> identity,
                                     NSString* hosted_domain) {
     [[performer_ expect] signInIdentity:identity
                        withHostedDomain:hosted_domain
@@ -135,9 +135,9 @@ class AuthenticationFlowTest : public PlatformTest {
   AuthenticationFlow* authentication_flow_ = nullptr;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
-  ChromeIdentity* identity1_ = nullptr;
-  ChromeIdentity* identity2_ = nullptr;
-  ChromeIdentity* managed_identity_ = nullptr;
+  id<SystemIdentity> identity1_ = nil;
+  id<SystemIdentity> identity2_ = nil;
+  id<SystemIdentity> managed_identity_ = nil;
   OCMockObject* performer_ = nil;
   signin_ui::CompletionCallback sign_in_completion_;
   UIViewController* view_controller_;

@@ -13,10 +13,10 @@
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @class ConsistencyPromoSigninMediator;
 class PrefService;
 @class SigninCompletionInfo;
+@protocol SystemIdentity;
 
 namespace signin {
 class IdentityManager;
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
 - (void)disconnectWithResult:(SigninCoordinatorResult)signinResult;
 
 // Records when an identity is added by a subscreen of the web sign-in dialogs.
-- (void)chromeIdentityAdded:(ChromeIdentity*)identity;
+- (void)systemIdentityAdded:(id<SystemIdentity>)identity;
 
 // Starts the sign-in flow.
 - (void)signinWithAuthenticationFlow:(AuthenticationFlow*)authenticationFlow;

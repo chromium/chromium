@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 
 #import "base/cancelable_callback.h"
+#import "base/mac/foundation_util.h"
 #import "base/threading/thread_task_runner_handle.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -50,7 +51,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 @property(nonatomic, assign) PrefService* userPrefService;
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 // Identity for the sign-in in progress.
-@property(nonatomic, assign) ChromeIdentity* signingIdentity;
+@property(nonatomic, assign) id<SystemIdentity> signingIdentity;
 // Duration before sign-in timeout. The property is overwritten in unittests.
 @property(nonatomic, assign, readonly) NSInteger signinTimeoutDurationSeconds;
 
@@ -93,15 +94,16 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       DCHECK(self.signingIdentity);
-      ChromeIdentity* defaultIdentity =
+      id<SystemIdentity> signingIdentity = self.signingIdentity;
+      id<SystemIdentity> defaultIdentity =
           self.accountManagerService->GetDefaultIdentity();
       DCHECK(defaultIdentity);
-      if ([self.addedGaiaIDs containsObject:self.signingIdentity.gaiaID]) {
+      if ([self.addedGaiaIDs containsObject:signingIdentity.gaiaID]) {
         // Added identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
                 SIGNED_IN_WITH_ADDED_ACCOUNT);
-      } else if ([defaultIdentity isEqual:self.signingIdentity]) {
+      } else if ([defaultIdentity isEqual:signingIdentity]) {
         // Default identity.
         RecordConsistencyPromoUserAction(
             signin_metrics::AccountConsistencyPromoAction::
@@ -133,7 +135,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   _identityManagerObserverBridge.reset();
 }
 
-- (void)chromeIdentityAdded:(ChromeIdentity*)identity {
+- (void)systemIdentityAdded:(id<SystemIdentity>)identity {
   [self.addedGaiaIDs addObject:identity.gaiaID];
 }
 
@@ -217,7 +219,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       // an account change event must come from the consistency sheet.
       // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
       DCHECK(self.signingIdentity);
-      ChromeIdentity* signedInIdentity =
+      id<SystemIdentity> signedInIdentity =
           self.authenticationService->GetPrimaryIdentity(
               signin::ConsentLevel::kSignin);
       DCHECK([signedInIdentity isEqual:self.signingIdentity]);
@@ -242,7 +244,8 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     // sign-in.
     return;
   }
-  if (!self.signingIdentity) {
+  id<SystemIdentity> signingIdentity = self.signingIdentity;
+  if (!signingIdentity) {
     // TODO(crbug.com/1204528): This case should not happen, but
     // `onAccountsInCookieUpdated:error:` can be called twice when there is an
     // error. Once this bug is fixed, this `if` should be replaced with
@@ -260,10 +263,10 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
       self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
     }
-    DCHECK(self.signingIdentity);
-    [self.delegate
-        consistencyPromoSigninMediatorSignInDone:self
-                                    withIdentity:self.signingIdentity];
+    ChromeIdentity* chromeIdentity =
+        base::mac::ObjCCastStrict<ChromeIdentity>(signingIdentity);
+    [self.delegate consistencyPromoSigninMediatorSignInDone:self
+                                               withIdentity:chromeIdentity];
     return;
   }
   [self cancelSigninWithError:ConsistencyPromoSigninMediatorErrorGeneric];

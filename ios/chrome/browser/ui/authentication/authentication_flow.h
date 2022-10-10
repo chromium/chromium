@@ -13,8 +13,8 @@
 @class AuthenticationFlowPerformer;
 class Browser;
 @protocol BrowsingDataCommands;
-@class ChromeIdentity;
 @class UIViewController;
+@protocol SystemIdentity;
 
 // Handles completion of AuthenticationFlow operations.
 @protocol AuthenticationFlowDelegate <NSObject>
@@ -40,7 +40,7 @@ class Browser;
 //   signed in.
 // * `presentingViewController` is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
-                       identity:(ChromeIdentity*)identity
+                       identity:(id<SystemIdentity>)identity
                postSignInAction:(PostSignInAction)postSignInAction
        presentingViewController:(UIViewController*)presentingViewController
     NS_DESIGNATED_INITIALIZER;
@@ -67,7 +67,7 @@ class Browser;
 @property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
 // Identity to sign-in.
-@property(nonatomic, strong, readonly) ChromeIdentity* identity;
+@property(nonatomic, strong, readonly) id<SystemIdentity> identity;
 
 @end
 

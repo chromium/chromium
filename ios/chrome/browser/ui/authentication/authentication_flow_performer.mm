@@ -100,7 +100,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 }
 
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
-               forIdentity:(ChromeIdentity*)identity {
+               forIdentity:(id<SystemIdentity>)identity {
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();
   NSString* hostedDomain =
@@ -122,7 +122,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
           });
 }
 
-- (void)signInIdentity:(ChromeIdentity*)identity
+- (void)signInIdentity:(id<SystemIdentity>)identity
       withHostedDomain:(NSString*)hostedDomain
         toBrowserState:(ChromeBrowserState*)browserState {
   AuthenticationServiceFactory::GetForBrowserState(browserState)
@@ -144,7 +144,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                 /*force_clear_browsing_data=*/false, nil);
 }
 
-- (void)promptMergeCaseForIdentity:(ChromeIdentity*)identity
+- (void)promptMergeCaseForIdentity:(id<SystemIdentity>)identity
                            browser:(Browser*)browser
                     viewController:(UIViewController*)viewController {
   DCHECK(browser);
@@ -175,7 +175,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
         base::SysUTF8ToNSString(primaryAccountInfo.hosted_domain);
     [self promptSwitchFromManagedEmail:lastSyncingEmail
                       withHostedDomain:hostedDomain
-                               toEmail:[identity userEmail]
+                               toEmail:identity.userEmail
                         viewController:viewController
                                browser:browser];
     return;
@@ -185,7 +185,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                             delegate:self
                   importDataDelegate:self
                            fromEmail:lastSyncingEmail
-                             toEmail:[identity userEmail]];
+                             toEmail:identity.userEmail];
   [_delegate presentViewController:_navigationController
                           animated:YES
                         completion:nil];
@@ -241,15 +241,16 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                              }];
 }
 
-- (BOOL)shouldHandleMergeCaseForIdentity:(ChromeIdentity*)identity
+- (BOOL)shouldHandleMergeCaseForIdentity:(id<SystemIdentity>)identity
                             browserState:(ChromeBrowserState*)browserState {
-  CoreAccountId lastSignedInAccountId = CoreAccountId::FromString(
+  const std::string currentSignedInEmail =
+      base::SysNSStringToUTF8(identity.userEmail);
+  const CoreAccountId lastSignedInAccountId = CoreAccountId::FromString(
       browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastAccountId));
-  CoreAccountId currentSignedInAccountId =
+  const CoreAccountId currentSignedInAccountId =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->PickAccountIdForAccount(
-              base::SysNSStringToUTF8([identity gaiaID]),
-              base::SysNSStringToUTF8([identity userEmail]));
+          ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
+                                    currentSignedInEmail);
   if (!lastSignedInAccountId.empty()) {
     // Merge case exists if the id of the previously signed in account is
     // different from the one of the account being signed in.
@@ -258,10 +259,8 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
   // kGoogleServicesLastAccountId pref might not have been populated yet,
   // check the old kGoogleServicesLastUsername pref.
-  std::string lastSignedInEmail =
+  const std::string lastSignedInEmail =
       browserState->GetPrefs()->GetString(prefs::kGoogleServicesLastUsername);
-  std::string currentSignedInEmail =
-      base::SysNSStringToUTF8([identity userEmail]);
   return !lastSignedInEmail.empty() &&
          !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
 }
@@ -358,14 +357,14 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 }
 
 - (void)registerUserPolicy:(ChromeBrowserState*)browserState
-               forIdentity:(ChromeIdentity*)identity {
+               forIdentity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
   DCHECK(policy::IsUserPolicyEnabled());
 
-  std::string userEmail = base::SysNSStringToUTF8([identity userEmail]);
+  std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
   CoreAccountId accountID =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->PickAccountIdForAccount(base::SysNSStringToUTF8([identity gaiaID]),
+          ->PickAccountIdForAccount(base::SysNSStringToUTF8(identity.gaiaID),
                                     userEmail);
 
   policy::UserPolicySigninService* userPolicyService =
@@ -392,7 +391,7 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 - (void)fetchUserPolicy:(ChromeBrowserState*)browserState
             withDmToken:(NSString*)dmToken
                clientID:(NSString*)clientID
-               identity:(ChromeIdentity*)identity {
+               identity:(id<SystemIdentity>)identity {
   // Should only fetch user policies when the feature is enabled.
   DCHECK(policy::IsUserPolicyEnabled());
 
@@ -402,11 +401,11 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
   policy::UserPolicySigninService* policy_service =
       policy::UserPolicySigninServiceFactory::GetForBrowserState(browserState);
-  const std::string userEmail = base::SysNSStringToUTF8([identity userEmail]);
+  const std::string userEmail = base::SysNSStringToUTF8(identity.userEmail);
 
-  AccountId accountID = AccountId::FromUserEmailGaiaId(
-      gaia::CanonicalizeEmail(userEmail),
-      base::SysNSStringToUTF8([identity gaiaID]));
+  AccountId accountID =
+      AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(userEmail),
+                                     base::SysNSStringToUTF8(identity.gaiaID));
 
   __weak __typeof(self) weakSelf = self;
 

@@ -277,7 +277,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSigninStarted:mediator]);
   SigninWithMediator(mediator, identity3, /*signin_success=*/YES);
-  [mediator chromeIdentityAdded:identity3];
+  [mediator systemIdentityAdded:identity3];
   SigninAndSimulateCookies(mediator, identity3);
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 

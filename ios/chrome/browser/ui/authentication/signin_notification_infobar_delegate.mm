@@ -58,7 +58,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   DCHECK(auth_service);
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   ChromeAccountManagerService* accountManagerService =
