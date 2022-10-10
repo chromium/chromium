@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
