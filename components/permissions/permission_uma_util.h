@@ -256,6 +256,31 @@ enum class PermissionPredictionSource {
   kMaxValue = SERVER_SIDE,
 };
 
+// This enum backs up the 'PageInfoDialogAccessType' histogram enum.
+// It is used for collecting page info access type metrics in the context of
+// the confirmation chip.
+enum class PageInfoDialogAccessType {
+  // The user opened page info by clicking on the lock in a situation that is
+  // considered independent of the display of a confirmation chip.
+  LOCK_CLICK = 0,
+  // The user opened page info by clicking on the lock while a confirmation chip
+  // was being displayed.
+  LOCK_CLICK_DURING_CONFIRMATION_CHIP = 1,
+  // The user opened page info by clicking on the confirmation chip while it was
+  // being displayed.
+  CONFIRMATION_CHIP_CLICK = 2,
+  // The user opened page info by clicking on the lock within
+  // 'kConfirmationConsiderationDurationForUma' after confirmation chip has
+  // collapsed. This click may be considered influenced by the displaying of the
+  // confirmation chip.
+  LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP = 3,
+
+  // Always keep at the end.
+  kMaxValue = LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP
+};
+
+constexpr auto kConfirmationConsiderationDurationForUma = base::Seconds(20);
+
 // Provides a convenient way of logging UMA for permission related operations.
 class PermissionUmaUtil {
  public:
@@ -365,6 +390,9 @@ class PermissionUmaUtil {
       RequestType request_type,
       bool is_on_device,
       bool is_heldback);
+
+  static void RecordPageInfoDialogAccessType(
+      PageInfoDialogAccessType access_type);
 
   static std::string GetPermissionActionString(
       PermissionAction permission_action);

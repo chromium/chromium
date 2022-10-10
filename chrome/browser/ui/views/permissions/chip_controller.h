@@ -150,14 +150,14 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void ClosePermissionPromptBubbleWithReason(
       views::Widget::ClosedReason reason);
 
-  // Statistics.
-  void RecordChipButtonPressed(const char* recordKey);
+  // Statistics
+  void RecordRequestChipButtonPressed(const char* recordKey);
 
   // Event handling.
   void ObservePromptBubble();
   void OnPromptBubbleDismissed();
   void OnPromptExpired();
-  void OnChipButtonPressed();
+  void OnRequestChipButtonPressed();
   void OnExpandAnimationEnded();
   void OnChipVisibilityChanged();
 
@@ -196,8 +196,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   raw_ptr<Browser> browser_;
 
-  // The time when the chip was displayed.
-  base::TimeTicks chip_shown_time_;
+  // The time when the request chip was displayed.
+  base::TimeTicks request_chip_shown_time_;
 
   // A timer used to dismiss the permission request after it's been collapsed
   // for a while.

@@ -240,6 +240,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.ConfirmationChip.PageInfoDialogAccessType"
+    enum="PageInfoDialogAccessType" expires_after="2023-10-31">
+  <owner>fjacky@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Record each time the page info bubble is opened through either the lock icon
+    or the confirmation chip, how it was opened and how the opening related to
+    the confirmation chip.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.CrowdDeny.DidHoldbackQuietUi" enum="Boolean"
     expires_after="2022-12-11">
   <owner>andypaicu@chromium.org</owner>

@@ -166,7 +166,6 @@ void ChipController::InitializePermissionPrompt(
   chip_->SetVisible(false);
   permission_prompt_model_ =
       std::make_unique<PermissionPromptChipModel>(delegate);
-  chip_shown_time_ = base::TimeTicks::Now();
 
   if (active_chip_permission_request_manager_.has_value()) {
     active_chip_permission_request_manager_.value()->RemoveObserver(this);
@@ -182,10 +181,12 @@ void ChipController::ShowPermissionPrompt(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   InitializePermissionPrompt(web_contents, delegate);
+
+  request_chip_shown_time_ = base::TimeTicks::Now();
+
   AnnouncePermissionRequestForAccessibility(
       permission_prompt_model_->GetAccessibilityChipText());
   chip_->SetVisible(true);
-  chip_shown_time_ = base::TimeTicks::Now();
 
   SyncChipWithModel();
 
@@ -193,8 +194,8 @@ void ChipController::ShowPermissionPrompt(
       chip_.get(), this,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(
           chip_.get())));
-  chip_->SetCallback(base::BindRepeating(&ChipController::OnChipButtonPressed,
-                                         base::Unretained(this)));
+  chip_->SetCallback(base::BindRepeating(
+      &ChipController::OnRequestChipButtonPressed, base::Unretained(this)));
   chip_->ResetAnimation();
   ObservePromptBubble();
 
@@ -290,11 +291,14 @@ void ChipController::ShowPageInfoDialog() {
                          base::Unretained(this)));
   bubble->GetWidget()->Show();
   bubble_tracker.SetView(bubble);
+  permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
+      permissions::PageInfoDialogAccessType::CONFIRMATION_CHIP_CLICK);
 }
 
 void ChipController::OnPageInfoBubbleClosed(
     views::Widget::ClosedReason closed_reason,
     bool reload_prompt) {
+  GetLocationBarView()->ResetConfirmationChipShownTime();
   HideChip();
 }
 
@@ -303,6 +307,7 @@ void ChipController::CollapseConfirmation() {
       base::BindRepeating(&ChipController::HideChip, base::Unretained(this)));
   chip_->AnimateCollapse(kConfirmationCollapseDuration);
   is_confirmation_showing_ = false;
+  GetLocationBarView()->ResetConfirmationChipShownTime();
 }
 
 bool ChipController::should_start_open_for_testing() {
@@ -387,7 +392,7 @@ void ChipController::OpenPermissionPromptBubble() {
         new PermissionPromptBubbleView(
             browser_,
             permission_prompt_model_->GetDelegate().value()->GetWeakPtr(),
-            chip_shown_time_, PermissionPromptStyle::kChip);
+            request_chip_shown_time_, PermissionPromptStyle::kChip);
     bubble_tracker.SetView(prompt_bubble);
     prompt_bubble->Show();
   } else if (permission_prompt_model_->GetPromptStyle() ==
@@ -430,9 +435,9 @@ void ChipController::ClosePermissionPromptBubbleWithReason(
   GetBubbleWidget()->CloseWithReason(reason);
 }
 
-void ChipController::RecordChipButtonPressed(const char* recordKey) {
-  base::UmaHistogramMediumTimes(recordKey,
-                                base::TimeTicks::Now() - chip_shown_time_);
+void ChipController::RecordRequestChipButtonPressed(const char* recordKey) {
+  base::UmaHistogramMediumTimes(
+      recordKey, base::TimeTicks::Now() - request_chip_shown_time_);
 }
 
 void ChipController::ObservePromptBubble() {
@@ -470,17 +475,17 @@ void ChipController::OnPromptExpired() {
   }
 }
 
-void ChipController::OnChipButtonPressed() {
+void ChipController::OnRequestChipButtonPressed() {
   if (permission_prompt_model_ &&
       (!IsBubbleShowing() ||
        permission_prompt_model_->ShouldBubbleStartOpen())) {
     // Only record if its the first interaction.
     if (permission_prompt_model_->GetPromptStyle() ==
         PermissionPromptStyle::kChip) {
-      RecordChipButtonPressed("Permissions.Chip.TimeToInteraction");
+      RecordRequestChipButtonPressed("Permissions.Chip.TimeToInteraction");
     } else if (permission_prompt_model_->GetPromptStyle() ==
                PermissionPromptStyle::kQuietChip) {
-      RecordChipButtonPressed("Permissions.QuietChip.TimeToInteraction");
+      RecordRequestChipButtonPressed("Permissions.QuietChip.TimeToInteraction");
     }
   }
 

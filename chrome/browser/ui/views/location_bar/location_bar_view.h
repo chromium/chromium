@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -248,6 +249,16 @@ class LocationBarView : public LocationBar,
     return content_setting_views_;
   }
 
+  void RecordPageInfoMetrics();
+
+  void ResetConfirmationChipShownTime() {
+    confirmation_chip_collapsed_time_ = base::TimeTicks::Now();
+  }
+
+  void SetConfirmationChipShownTimeForTesting(base::TimeTicks time) {
+    confirmation_chip_collapsed_time_ = time;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
@@ -462,6 +473,9 @@ class LocationBarView : public LocationBar,
   const bool is_popup_mode_;
 
   bool is_initialized_ = false;
+
+  // Used for metrics collection.
+  base::TimeTicks confirmation_chip_collapsed_time_ = base::TimeTicks();
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

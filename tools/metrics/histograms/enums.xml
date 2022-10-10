@@ -75565,6 +75565,14 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PageInfoDialogAccessType">
+  <int value="0" label="Click on lock without confirmation chip context"/>
+  <int value="1" label="Click on lock while confirmation chip is displayed"/>
+  <int value="2" label="Click on confirmation chip"/>
+  <int value="3"
+      label="Click on lock within 20 seconds after confirmation chip collapse"/>
+</enum>
+
 <enum name="PageLoadBackForwardCacheEvent">
   <int value="0" label="Enter back-forward cache"/>
   <int value="1" label="Restore from back-forward cache"/>

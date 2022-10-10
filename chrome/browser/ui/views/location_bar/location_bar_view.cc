@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1433,7 +1434,34 @@ bool LocationBarView::ShowPageInfoDialog() {
                          weak_factory_.GetWeakPtr()));
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
+  RecordPageInfoMetrics();
   return true;
+}
+
+void LocationBarView::RecordPageInfoMetrics() {
+  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
+      chip_controller_) {
+    bool confirmation_chip_collapsed_recently =
+        base::TimeTicks::Now() - confirmation_chip_collapsed_time_ <=
+        permissions::kConfirmationConsiderationDurationForUma;
+
+    if (!chip_controller_->chip()->GetVisible() &&
+        !confirmation_chip_collapsed_recently) {
+      permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
+          permissions::PageInfoDialogAccessType::LOCK_CLICK);
+    } else if (chip_controller_->chip()->GetVisible()) {
+      permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
+          permissions::PageInfoDialogAccessType::
+              LOCK_CLICK_DURING_CONFIRMATION_CHIP);
+    } else {
+      permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
+          permissions::PageInfoDialogAccessType::
+              LOCK_CLICK_SHORTLY_AFTER_CONFIRMATION_CHIP);
+    }
+  } else {
+    permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
+        permissions::PageInfoDialogAccessType::LOCK_CLICK);
+  }
 }
 
 ui::ImageModel LocationBarView::GetLocationIcon(
