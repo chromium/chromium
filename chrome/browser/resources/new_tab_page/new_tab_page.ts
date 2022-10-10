@@ -17,7 +17,6 @@ export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {IframeElement} from './iframe.js';
-export {LensUploadDialogElement} from './lens_upload_dialog.js';
 export {LogoElement} from './logo.js';
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
