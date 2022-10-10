@@ -86,15 +86,15 @@ class BrowsingTopicsCalculator {
   // Get the top `kBrowsingTopicsNumberOfTopTopicsPerEpoch` topics. If there
   // aren't enough topics, pad with random ones. Return the result topics, and
   // the starting index of the padded topics (or
-  // `kBrowsingTopicsNumberOfTopTopicsPerEpoch` if there's no padded topics).
-  // Precondition: the hosts in `history_hosts_count` should exist in
-  // `host_topics_map`.
+  // `kBrowsingTopicsNumberOfTopTopicsPerEpoch` if there's no padded topics),
+  // and the number of topics associated with `history_hosts_count`.
   void DeriveTopTopics(
       const std::map<HashedHost, size_t>& history_hosts_count,
       const std::map<HashedHost, std::set<Topic>>& host_topics_map,
       size_t taxonomy_size,
       std::vector<Topic>& top_topics,
-      size_t& padded_top_topics_start_index);
+      size_t& padded_top_topics_start_index,
+      size_t& history_topics_count);
 
   void OnGetRecentBrowsingTopicsApiUsagesCompleted(
       browsing_topics::ApiUsageContextQueryResult result);

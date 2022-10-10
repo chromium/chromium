@@ -55,6 +55,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.EpochTopicsCalculation.HistoryTopicsCount"
+    units="topics" expires_after="2023-10-10">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Records the count of topics derived from history hosts in the past epoch
+    (week). Recorded during each (weekly) topics calculation after the top
+    topics are derived. In case of a calculation failure (e.g. permission
+    denied, etc.), this metric won't be recorded.
+  </summary>
+</histogram>
+
 <histogram
     name="BrowsingTopics.EpochTopicsCalculation.ObservationContextDomainsCountPerTopTopic"
     units="context domains" expires_after="2023-03-14">

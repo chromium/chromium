@@ -228,9 +228,11 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
     const std::map<HashedHost, std::set<Topic>>& host_topics_map,
     size_t taxonomy_size,
     std::vector<Topic>& top_topics,
-    size_t& padded_top_topics_start_index) {
+    size_t& padded_top_topics_start_index,
+    size_t& history_topics_count) {
   DCHECK(top_topics.empty());
   DCHECK_EQ(padded_top_topics_start_index, 0u);
+  DCHECK_EQ(history_topics_count, 0u);
 
   // Derive the frequency of each topic, by summing up the frequencies of the
   // associated hosts. TODO(yaoxia): consider applying inverse frequency of
@@ -247,6 +249,8 @@ void BrowsingTopicsCalculator::DeriveTopTopics(
       topics_count[topic] += host_count;
     }
   }
+
+  history_topics_count = topics_count.size();
 
   DCHECK_LE(
       static_cast<size_t>(
@@ -425,8 +429,14 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
 
   std::vector<Topic> top_topics;
   size_t padded_top_topics_start_index = 0u;
+  size_t history_topics_count = 0u;
   DeriveTopTopics(history_hosts_count_, host_topics_map, *taxonomy_size,
-                  top_topics, padded_top_topics_start_index);
+                  top_topics, padded_top_topics_start_index,
+                  history_topics_count);
+
+  base::UmaHistogramCounts1000(
+      "BrowsingTopics.EpochTopicsCalculation.HistoryTopicsCount",
+      history_topics_count);
 
   base::UmaHistogramCounts100(
       "BrowsingTopics.EpochTopicsCalculation.TopTopicsCountBeforePadding",
