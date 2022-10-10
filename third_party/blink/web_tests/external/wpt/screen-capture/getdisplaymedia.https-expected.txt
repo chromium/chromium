@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 54 tests; 49 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 tests; 51 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
 FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
@@ -40,7 +40,9 @@ PASS getDisplayMedia({"video":{"width":{"max":-1}}}) must fail with Overconstrai
 PASS getDisplayMedia({"video":{"height":{"max":-1}}}) must fail with OverconstrainedError
 PASS getDisplayMedia({"video":{"frameRate":{"max":-1}}}) must fail with OverconstrainedError
 PASS getDisplayMedia() resolves with stream with video track
-PASS getDisplayMedia() with getSettings
+PASS getDisplayMedia({"video":{"displaySurface":"monitor"}}) with getSettings
+PASS getDisplayMedia({"video":{"displaySurface":"window"}}) with getSettings
+PASS getDisplayMedia({"video":{"displaySurface":"browser"}}) with getSettings
 PASS displaySurface is supported
 PASS getDisplayMedia({"video":{"displaySurface":"monitor"}}) must succeed
 PASS getDisplayMedia({"video":{"displaySurface":"window"}}) must succeed

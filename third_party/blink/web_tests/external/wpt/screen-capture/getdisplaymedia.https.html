@@ -197,16 +197,19 @@ promise_test(async t => {
   assert_equals(track.readyState, "ended");
 }, 'getDisplayMedia() resolves with stream with video track');
 
-promise_test(async t => {
-  const stream = await getDisplayMedia({video: true});
-  t.add_cleanup(() => stopTracks(stream));
-  const settings = stream.getVideoTracks()[0].getSettings();
-  assert_any(
-      assert_equals, settings.displaySurface,
-      ['monitor', 'window', 'browser']);
-  assert_any(assert_equals, settings.logicalSurface, [true, false]);
-  assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
-}, 'getDisplayMedia() with getSettings');
+{
+  const displaySurfaces = ['monitor', 'window', 'browser'];
+  displaySurfaces.forEach((displaySurface) => {
+    promise_test(async t => {
+      const stream = await getDisplayMedia({video: {displaySurface}});
+      t.add_cleanup(() => stopTracks(stream));
+      const settings = stream.getVideoTracks()[0].getSettings();
+      assert_equals(settings.displaySurface, displaySurface);
+      assert_any(assert_equals, settings.logicalSurface, [true, false]);
+      assert_any(assert_equals, settings.cursor, ['never', 'always', 'motion']);
+    }, `getDisplayMedia({"video":{"displaySurface":"${displaySurface}"}}) with getSettings`);
+  })
+}
 
 {
   const properties = ["displaySurface"];
