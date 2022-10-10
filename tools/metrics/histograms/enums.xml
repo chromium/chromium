@@ -59946,6 +59946,7 @@ from previous Chrome versions.
   <int value="-88638121" label="AutofillFixFillableFieldTypes:enabled"/>
   <int value="-88273414" label="ContentSuggestionsShowSummary:enabled"/>
   <int value="-87405369" label="PageInfoDiscoverability:enabled"/>
+  <int value="-86857743" label="OsSettingsSearchFeedback:disabled"/>
   <int value="-86788587" label="allow-autofill-sync-credential"/>
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
@@ -62457,6 +62458,7 @@ from previous Chrome versions.
   <int value="1434502662" label="NtpDummyModules:enabled"/>
   <int value="1434515920" label="ReaderModeInCCT:enabled"/>
   <int value="1435251818" label="AutofillNoLocalSaveOnUploadSuccess:enabled"/>
+  <int value="1436115897" label="OsSettingsSearchFeedback:enabled"/>
   <int value="1436454450" label="InterestFeedV2:disabled"/>
   <int value="1437413720" label="CooperativeScheduling:disabled"/>
   <int value="1438417722" label="MessagesForAndroidReaderMode:enabled"/>

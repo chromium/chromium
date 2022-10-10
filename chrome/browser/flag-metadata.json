@@ -5259,6 +5259,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "os-settings-search-feedback",
+    "owners": [ "wesokuhara", "cros-settings@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "osk-resizes-visual-viewport",
     "owners": [ "bokan", "rendering-core-dev@chromium.org" ],
     "expiry_milestone": 116

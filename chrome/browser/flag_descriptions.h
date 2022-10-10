@@ -3372,6 +3372,9 @@ extern const char kNearbySharingWifiLanDescription[];
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 
+extern const char kOsSettingsSearchFeedbackName[];
+extern const char kOsSettingsSearchFeedbackDescription[];
+
 extern const char kPartialSplit[];
 extern const char kPartialSplitDescription[];
 

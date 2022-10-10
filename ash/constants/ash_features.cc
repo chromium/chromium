@@ -1470,6 +1470,12 @@ BASE_FEATURE(kOsSettingsAppNotificationsPage,
              "OsSettingsAppNotificationsPage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables search result feedback in ChromeOS Settings when no search results
+// are returned.
+BASE_FEATURE(kOsSettingsSearchFeedback,
+             "OsSettingsSearchFeedback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOverviewButton,
              "OverviewButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2749,6 +2755,10 @@ bool IsOobeRemoveShutdownButtonEnabled() {
 
 bool IsOobeThemeSelectionEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeThemeSelection);
+}
+
+bool IsOsSettingsSearchFeedbackEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsSearchFeedback);
 }
 
 bool IsPcieBillboardNotificationEnabled() {

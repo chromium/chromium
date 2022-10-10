@@ -5903,6 +5903,12 @@ const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
+const char kOsSettingsSearchFeedbackName[] =
+    "ChromeOS Settings Search Feedback";
+const char kOsSettingsSearchFeedbackDescription[] =
+    "Enables search result feedback in ChromeOS Settings when no search "
+    "results are returned.";
+
 const char kPartialSplit[] = "Partial Split";
 const char kPartialSplitDescription[] =
     "Enables the option to snap two windows into 2/3 and 1/3 for split view.";
