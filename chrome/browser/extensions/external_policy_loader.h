@@ -13,10 +13,6 @@
 
 class Profile;
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 
 // A specialization of the ExternalProvider that uses extension management
@@ -44,7 +40,7 @@ class ExternalPolicyLoader : public ExternalLoader,
   void OnExtensionManagementSettingsChanged() override;
 
   // Adds an extension to be updated to the pref dictionary.
-  static void AddExtension(base::DictionaryValue* dict,
+  static void AddExtension(base::Value::Dict& dict,
                            const std::string& extension_id,
                            const std::string& update_url);
 

@@ -67,7 +67,7 @@ class ExtensionInstallForceListPolicyHandler
  private:
   // Parses the data in |policy_value| and writes them to |extension_dict|.
   bool ParseList(const base::Value* policy_value,
-                 base::DictionaryValue* extension_dict,
+                 base::Value::Dict* extension_dict,
                  policy::PolicyErrorMap* errors);
 };
 

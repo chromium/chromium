@@ -737,10 +737,10 @@ ExtensionManagement::GetInstallListByMode(
          installation_mode == INSTALLATION_RECOMMENDED);
 
   auto extension_dict = std::make_unique<base::DictionaryValue>();
-  for (const auto& entry : settings_by_id_) {
-    if (entry.second->installation_mode == installation_mode) {
-      ExternalPolicyLoader::AddExtension(extension_dict.get(), entry.first,
-                                         entry.second->update_url);
+  for (const auto& [id, settings] : settings_by_id_) {
+    if (settings->installation_mode == installation_mode) {
+      ExternalPolicyLoader::AddExtension(extension_dict->GetDict(), id,
+                                         settings->update_url);
     }
   }
   return extension_dict;

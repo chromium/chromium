@@ -175,6 +175,10 @@ class ExtensionManagementServiceTest : public testing::Test {
     SetPref(managed, path, base::Value::ToUniquePtrValue(std::move(value)));
   }
 
+  void SetPref(bool managed, const char* path, base::Value::Dict dict) {
+    SetPref(managed, path, base::Value(std::move(dict)));
+  }
+
   void RemovePref(bool managed, const char* path) {
     if (managed)
       pref_service_->RemoveManagedPref(path);
@@ -498,12 +502,11 @@ TEST_F(ExtensionManagementServiceTest, LegacyAllowlist) {
 // Verify that preference controlled by legacy ExtensionInstallForcelist policy
 // is handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyInstallForcelist) {
-  base::DictionaryValue forced_list_pref;
-  ExternalPolicyLoader::AddExtension(
-      &forced_list_pref, kTargetExtension, kExampleUpdateUrl);
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
+                                     kExampleUpdateUrl);
 
-  SetPref(true, pref_names::kInstallForceList,
-          forced_list_pref.CreateDeepCopy());
+  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ExtensionManagement::INSTALLATION_FORCED);
   CheckAutomaticallyInstalledUpdateUrl(kTargetExtension, kExampleUpdateUrl);
@@ -512,8 +515,7 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallForcelist) {
 
   // Verify that install forcelist preference set by user is ignored.
   RemovePref(true, pref_names::kInstallForceList);
-  SetPref(false, pref_names::kInstallForceList,
-          forced_list_pref.CreateDeepCopy());
+  SetPref(false, pref_names::kInstallForceList, forced_list_pref.Clone());
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ExtensionManagement::INSTALLATION_ALLOWED);
 }
@@ -523,14 +525,13 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallForcelist) {
 // |kExtensionSettings| pref.
 TEST_F(ExtensionManagementServiceTest,
        InstallUpdateUrlEnforcedForceInstalledPref) {
-  base::DictionaryValue forced_list_pref;
-  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension,
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
                                      kExampleUpdateUrl);
-  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension2,
                                      kExampleUpdateUrl);
 
-  SetPref(true, pref_names::kInstallForceList,
-          forced_list_pref.CreateDeepCopy());
+  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ExtensionManagement::INSTALLATION_FORCED);
   EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
@@ -556,11 +557,10 @@ TEST_F(ExtensionManagementServiceTest,
 // |kExtensionSettings|.
 TEST_F(ExtensionManagementServiceTest,
        InstallUpdateUrlEnforcedForceInstalledPrefMissing) {
-  base::DictionaryValue forced_list_pref;
-  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension2,
                                      kExampleUpdateUrl);
-  SetPref(true, pref_names::kInstallForceList,
-          forced_list_pref.CreateDeepCopy());
+  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
 
   EXPECT_EQ(GetInstallationModeById(kTargetExtension2),
             ExtensionManagement::INSTALLATION_FORCED);
@@ -599,14 +599,13 @@ TEST_F(ExtensionManagementServiceTest,
 // URL.
 TEST_F(ExtensionManagementServiceTest,
        InstallUpdateUrlEnforcedWebstoreUpdateUrl) {
-  base::DictionaryValue forced_list_pref;
-  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension,
+  base::Value::Dict forced_list_pref;
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension,
                                      extension_urls::kChromeWebstoreUpdateURL);
-  ExternalPolicyLoader::AddExtension(&forced_list_pref, kTargetExtension2,
+  ExternalPolicyLoader::AddExtension(forced_list_pref, kTargetExtension2,
                                      kExampleUpdateUrl);
 
-  SetPref(true, pref_names::kInstallForceList,
-          forced_list_pref.CreateDeepCopy());
+  SetPref(true, pref_names::kInstallForceList, forced_list_pref.Clone());
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ExtensionManagement::INSTALLATION_FORCED);
   EXPECT_EQ(GetInstallationModeById(kTargetExtension2),

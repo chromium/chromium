@@ -52,13 +52,11 @@ class MockExternalPolicyProviderVisitor
 
   // Initialize a provider with |policy_forcelist|, and check that it installs
   // exactly the extensions specified in |expected_extensions|.
-  void Visit(const base::DictionaryValue& policy_forcelist,
+  void Visit(const base::Value::Dict& policy_forcelist,
              const std::set<std::string>& expected_extensions) {
     profile_ = std::make_unique<TestingProfile>();
     profile_->GetTestingPrefService()->SetManagedPref(
-        pref_names::kInstallForceList,
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(policy_forcelist.Clone())));
+        pref_names::kInstallForceList, base::Value(policy_forcelist.Clone()));
     provider_ = std::make_unique<ExternalProviderImpl>(
         this,
         new ExternalPolicyLoader(
@@ -123,14 +121,14 @@ class MockExternalPolicyProviderVisitor
 };
 
 TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {
-  base::DictionaryValue forced_extensions;
+  base::Value::Dict forced_extensions;
   std::set<std::string> expected_extensions;
   extensions::ExternalPolicyLoader::AddExtension(
-      &forced_extensions, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      forced_extensions, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "http://www.example.com/crx?a=5;b=6");
   expected_extensions.insert("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   extensions::ExternalPolicyLoader::AddExtension(
-      &forced_extensions, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      forced_extensions, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       "https://clients2.google.com/service/update2/crx");
   expected_extensions.insert("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 
@@ -139,19 +137,18 @@ TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {
 }
 
 TEST_F(ExternalPolicyLoaderTest, InvalidEntriesIgnored) {
-  base::DictionaryValue forced_extensions;
+  base::Value::Dict forced_extensions;
   std::set<std::string> expected_extensions;
 
   extensions::ExternalPolicyLoader::AddExtension(
-      &forced_extensions, "cccccccccccccccccccccccccccccccc",
+      forced_extensions, "cccccccccccccccccccccccccccccccc",
       "http://www.example.com/crx");
   expected_extensions.insert("cccccccccccccccccccccccccccccccc");
 
   // Add invalid entries.
-  forced_extensions.SetStringKey("invalid", "http://www.example.com/crx");
-  forced_extensions.SetStringKey("dddddddddddddddddddddddddddddddd",
-                                 std::string());
-  forced_extensions.SetStringKey("invalid", "bad");
+  forced_extensions.Set("invalid", "http://www.example.com/crx");
+  forced_extensions.Set("dddddddddddddddddddddddddddddddd", std::string());
+  forced_extensions.Set("invalid", "bad");
 
   MockExternalPolicyProviderVisitor mv;
   mv.Visit(forced_extensions, expected_extensions);

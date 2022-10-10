@@ -271,7 +271,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, CheckPolicySettings) {
 
 TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   base::ListValue policy;
-  base::DictionaryValue expected;
+  base::Value::Dict expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = nullptr;
@@ -290,20 +290,20 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
-  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
+  EXPECT_EQ(expected, handler.GetPolicyDict(policy_map));
 
   // Add a correct entry to the policy. The pref should contain a corresponding
   // entry.
   policy.Append("abcdefghijklmnopabcdefghijklmnop;http://example.com");
   extensions::ExternalPolicyLoader::AddExtension(
-      &expected, "abcdefghijklmnopabcdefghijklmnop", "http://example.com");
+      expected, "abcdefghijklmnopabcdefghijklmnop", "http://example.com");
   policy_map.Set(policy::key::kExtensionInstallForcelist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, policy.Clone(), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
-  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
+  EXPECT_EQ(expected, handler.GetPolicyDict(policy_map));
 
   // Add a correct entry with an omitted update URL. The pref should contain now
   // two entries, with the default update URL substituted for the new entry.
@@ -312,7 +312,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   // it must be carefully thought out.
   policy.Append("bcdefghijklmnopabcdefghijklmnopa");
   extensions::ExternalPolicyLoader::AddExtension(
-      &expected, "bcdefghijklmnopabcdefghijklmnopa",
+      expected, "bcdefghijklmnopabcdefghijklmnopa",
       "https://clients2.google.com/service/update2/crx");
   policy_map.Set(policy::key::kExtensionInstallForcelist,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -320,7 +320,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
-  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
+  EXPECT_EQ(expected, handler.GetPolicyDict(policy_map));
 
   // Add an invalid entry. The pref should still contain two previous entries.
   policy.Append("invalid");
@@ -330,7 +330,7 @@ TEST(ExtensionInstallForceListPolicyHandlerTest, ApplyPolicySettings) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   EXPECT_TRUE(prefs.GetValue(pref_names::kInstallForceList, &value));
   EXPECT_EQ(expected, *value);
-  EXPECT_EQ(expected.GetDict(), handler.GetPolicyDict(policy_map));
+  EXPECT_EQ(expected, handler.GetPolicyDict(policy_map));
 }
 
 TEST(ExtensionURLPatternListPolicyHandlerTest, CheckPolicySettings) {

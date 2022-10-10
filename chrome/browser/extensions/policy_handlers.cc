@@ -94,16 +94,17 @@ void ExtensionInstallForceListPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* value = nullptr;
-  base::DictionaryValue dict;
+  base::Value::Dict dict;
   if (CheckAndGetValue(policies, nullptr, &value) && value &&
       ParseList(value, &dict, nullptr)) {
-    prefs->SetValue(pref_names::kInstallForceList, std::move(dict));
+    prefs->SetValue(pref_names::kInstallForceList,
+                    base::Value(std::move(dict)));
   }
 }
 
 bool ExtensionInstallForceListPolicyHandler::ParseList(
     const base::Value* policy_value,
-    base::DictionaryValue* extension_dict,
+    base::Value::Dict* extension_dict,
     policy::PolicyErrorMap* errors) {
   if (!policy_value)
     return true;
@@ -152,7 +153,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     }
 
     if (extension_dict) {
-      ExternalPolicyLoader::AddExtension(extension_dict, extension_id,
+      ExternalPolicyLoader::AddExtension(*extension_dict, extension_id,
                                          update_url);
     }
   }
