@@ -66,19 +66,19 @@ void PopunderPreventer::WillActivateWebContents(
 }
 
 void PopunderPreventer::AddPotentialPopunder(content::WebContents* popup) {
-  content::WebContents* actual_activating_contents = activating_contents_.get();
+  content::WebContents* top_level_activating_contents =
+      activating_contents_.get();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // If the dialog was triggered via an PDF, get the actual web contents that
+  // If the dialog was triggered via an PDF, get the top level web contents that
   // embeds the PDF.
-  guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(actual_activating_contents);
-  if (guest)
-    actual_activating_contents = guest->embedder_web_contents();
+  top_level_activating_contents =
+      guest_view::GuestViewBase::GetTopLevelWebContents(
+          top_level_activating_contents);
 #endif
 
   WebContentsSet popup_opener_set = BuildOpenerSet(popup);
   WebContentsSet activator_opener_set =
-      BuildOpenerSet(actual_activating_contents);
+      BuildOpenerSet(top_level_activating_contents);
 
   WebContentsSet common_openers = base::STLSetIntersection<WebContentsSet>(
       popup_opener_set, activator_opener_set);
