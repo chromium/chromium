@@ -238,6 +238,7 @@ class FuchsiaPort(base.Port):
             target_args.out_dir = self._build_path()
             target_args.target_cpu = self._target_cpu()
             target_args.fuchsia_out_dir = self.get_option('fuchsia_out_dir')
+            target_args.custom_image = self.get_option('custom_image')
             target_args.ssh_config = self.get_option('fuchsia_ssh_config')
             target_args.host = self.get_option('fuchsia_host')
             target_args.port = self.get_option('fuchsia_port')

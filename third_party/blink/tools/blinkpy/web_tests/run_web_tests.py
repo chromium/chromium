@@ -162,6 +162,9 @@ def parse_args(args):
                                    'to x64.')),
         optparse.make_option('--fuchsia-out-dir',
                              help=('Path to Fuchsia build output directory.')),
+        optparse.make_option('--custom-image',
+                             help=('Specify an image used for booting up the '
+                                   'emulator.')),
         optparse.make_option(
             '--fuchsia-ssh-config',
             help=('The path to the SSH configuration used for '
