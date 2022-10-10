@@ -70,26 +70,14 @@ class BertModelExecutorTest : public testing::Test {
   std::unique_ptr<BertModelHandler> model_handler_;
 };
 
-// TODO(crbug.com/1337687): Test is timing out on many platforms.
-TEST_F(BertModelExecutorTest, DISABLED_ValidBertModel) {
+// TODO(crbug.com/1337687): Running the model is slow and times out tests on
+// many platforms. Ideally, we can schedule this to run infrequently but for
+// now we will only load the model.
+TEST_F(BertModelExecutorTest, ValidBertModel) {
   CreateModelHandler();
 
   PushModelFileToModelExecutor(/*is_valid=*/true);
   EXPECT_TRUE(model_handler()->ModelAvailable());
-
-  std::string input = "some text";
-  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-  model_handler()->ExecuteModelWithInput(
-      base::BindOnce(
-          [](base::RunLoop* run_loop,
-             const absl::optional<std::vector<tflite::task::core::Category>>&
-                 output) {
-            EXPECT_TRUE(output.has_value());
-            run_loop->Quit();
-          },
-          run_loop.get()),
-      input);
-  run_loop->Run();
 }
 
 TEST_F(BertModelExecutorTest, InvalidBertModel) {
