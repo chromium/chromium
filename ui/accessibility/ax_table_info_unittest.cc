@@ -433,32 +433,34 @@ TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
   EXPECT_EQ(8, table_info->row_nodes[1]->id());
 }
 
-TEST_F(AXTableInfoTest, HeadersWithSpans) {
-  // Row and column headers spanning multiple cells.
-  // In the figure below, 5 and 6 are headers.
+TEST_F(AXTableInfoTest, RowHeadersWithSpans) {
+  // Row headers spanning vertically and horizontally.
+  // In the figure below, 5 and 6 are both row headers.
   //
-  //     +---+---+
-  //     |   5   |
+  // +---+---+---+
+  // |   5   | 9 |
   // +---+---+---+
   // |   | 7 |
   // + 6 +---+---+
   // |   |   | 8 |
   // +---+   +---+
+
   AXTreeUpdate initial_state;
   initial_state.root_id = 1;
-  initial_state.nodes.resize(8);
+  initial_state.nodes.resize(9);
   MakeTable(&initial_state.nodes[0], 1, 0, 0);
   initial_state.nodes[0].child_ids = {2, 3, 4};
   MakeRow(&initial_state.nodes[1], 2, 0);
-  initial_state.nodes[1].child_ids = {5};
+  initial_state.nodes[1].child_ids = {5, 9};
   MakeRow(&initial_state.nodes[2], 3, 1);
   initial_state.nodes[2].child_ids = {6, 7};
   MakeRow(&initial_state.nodes[3], 4, 2);
   initial_state.nodes[3].child_ids = {8};
-  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 1, 1, 2);
+  MakeRowHeader(&initial_state.nodes[4], 5, 0, 0, 1, 2);
   MakeRowHeader(&initial_state.nodes[5], 6, 1, 0, 2, 1);
   MakeCell(&initial_state.nodes[6], 7, 1, 1);
   MakeCell(&initial_state.nodes[7], 8, 2, 2);
+  MakeCell(&initial_state.nodes[8], 9, 0, 2);
   AXTree tree(initial_state);
 
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root()->children()[0]);
@@ -468,22 +470,16 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_TRUE(table_info);
 
   EXPECT_EQ(3U, table_info->row_headers.size());
-  EXPECT_EQ(0U, table_info->row_headers[0].size());
+  EXPECT_EQ(1U, table_info->row_headers[0].size());
+  EXPECT_EQ(5, table_info->row_headers[0][0]);
   EXPECT_EQ(1U, table_info->row_headers[1].size());
   EXPECT_EQ(6, table_info->row_headers[1][0]);
   EXPECT_EQ(1U, table_info->row_headers[1].size());
   EXPECT_EQ(6, table_info->row_headers[2][0]);
 
-  EXPECT_EQ(3U, table_info->col_headers.size());
-  EXPECT_EQ(0U, table_info->col_headers[0].size());
-  EXPECT_EQ(1U, table_info->col_headers[1].size());
-  EXPECT_EQ(5, table_info->col_headers[1][0]);
-  EXPECT_EQ(1U, table_info->col_headers[2].size());
-  EXPECT_EQ(5, table_info->col_headers[2][0]);
-
-  EXPECT_EQ(0, table_info->cell_ids[0][0]);
+  EXPECT_EQ(5, table_info->cell_ids[0][0]);
   EXPECT_EQ(5, table_info->cell_ids[0][1]);
-  EXPECT_EQ(5, table_info->cell_ids[0][2]);
+  EXPECT_EQ(9, table_info->cell_ids[0][2]);
   EXPECT_EQ(6, table_info->cell_ids[1][0]);
   EXPECT_EQ(7, table_info->cell_ids[1][1]);
   EXPECT_EQ(0, table_info->cell_ids[1][2]);
@@ -495,6 +491,161 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_EQ(2, table_info->row_nodes[0]->id());
   EXPECT_EQ(3, table_info->row_nodes[1]->id());
   EXPECT_EQ(4, table_info->row_nodes[2]->id());
+}
+
+TEST_F(AXTableInfoTest, MultipleRowHeadersInSameRow) {
+  // In the figure below, 3 and 4 are both row headers.
+  // Row header 3 spans two columns.
+  //
+  // +---+---+---+---+
+  // |   3   | 4 | 5 |
+  // +---+---+---+---+
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(5);
+  MakeTable(&initial_state.nodes[0], 1, 0, 0);
+  initial_state.nodes[0].child_ids = {2};
+  MakeRow(&initial_state.nodes[1], 2, 0);
+  initial_state.nodes[1].child_ids = {3, 4, 5};
+  MakeRowHeader(&initial_state.nodes[2], 3, 0, 0, 1, 2);
+  MakeRowHeader(&initial_state.nodes[3], 4, 0, 2, 1, 1);
+  MakeCell(&initial_state.nodes[4], 5, 0, 3);
+  AXTree tree(initial_state);
+
+  AXTableInfo* table_info = GetTableInfo(&tree, tree.root()->children()[0]);
+  EXPECT_FALSE(table_info);
+
+  table_info = GetTableInfo(&tree, tree.root());
+  EXPECT_TRUE(table_info);
+
+  EXPECT_EQ(1U, table_info->row_headers.size());
+  EXPECT_EQ(2U, table_info->row_headers[0].size());
+  EXPECT_EQ(3, table_info->row_headers[0][0]);
+  EXPECT_EQ(4, table_info->row_headers[0][1]);
+
+  EXPECT_EQ(3, table_info->cell_ids[0][0]);
+  EXPECT_EQ(3, table_info->cell_ids[0][1]);
+  EXPECT_EQ(4, table_info->cell_ids[0][2]);
+  EXPECT_EQ(5, table_info->cell_ids[0][3]);
+
+  EXPECT_EQ(1u, table_info->row_nodes.size());
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+}
+
+TEST_F(AXTableInfoTest, ColumnHeadersWithSpans) {
+  // Column headers spanning vertically and horizontally.
+  // In the figure below, 5 and 6 are both column headers.
+  //
+  // +---+---+---+
+  // |   5   |   |
+  // +---+---+ 6 +
+  //     | 7 |   |
+  // +---+---+---+
+  // | 8 |   | 9 |
+  // +---+   +---+
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(9);
+  MakeTable(&initial_state.nodes[0], 1, 0, 0);
+  initial_state.nodes[0].child_ids = {2, 3, 4};
+  MakeRow(&initial_state.nodes[1], 2, 0);
+  initial_state.nodes[1].child_ids = {5, 6};
+  MakeRow(&initial_state.nodes[2], 3, 1);
+  initial_state.nodes[2].child_ids = {7};
+  MakeRow(&initial_state.nodes[3], 4, 2);
+  initial_state.nodes[3].child_ids = {8, 9};
+  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 0, 1, 2);
+  MakeColumnHeader(&initial_state.nodes[5], 6, 0, 2, 2, 1);
+  MakeCell(&initial_state.nodes[6], 7, 1, 1);
+  MakeCell(&initial_state.nodes[7], 8, 2, 0);
+  MakeCell(&initial_state.nodes[8], 9, 2, 2);
+  AXTree tree(initial_state);
+
+  AXTableInfo* table_info = GetTableInfo(&tree, tree.root()->children()[0]);
+  EXPECT_FALSE(table_info);
+
+  table_info = GetTableInfo(&tree, tree.root());
+  EXPECT_TRUE(table_info);
+
+  EXPECT_EQ(3U, table_info->col_headers.size());
+  EXPECT_EQ(1U, table_info->col_headers[0].size());
+  EXPECT_EQ(5, table_info->col_headers[0][0]);
+  EXPECT_EQ(1U, table_info->col_headers[1].size());
+  EXPECT_EQ(5, table_info->col_headers[1][0]);
+  EXPECT_EQ(1U, table_info->col_headers[2].size());
+  EXPECT_EQ(6, table_info->col_headers[2][0]);
+
+  EXPECT_EQ(5, table_info->cell_ids[0][0]);
+  EXPECT_EQ(5, table_info->cell_ids[0][1]);
+  EXPECT_EQ(6, table_info->cell_ids[0][2]);
+  EXPECT_EQ(0, table_info->cell_ids[1][0]);
+  EXPECT_EQ(7, table_info->cell_ids[1][1]);
+  EXPECT_EQ(6, table_info->cell_ids[1][2]);
+  EXPECT_EQ(8, table_info->cell_ids[2][0]);
+  EXPECT_EQ(0, table_info->cell_ids[2][1]);
+  EXPECT_EQ(9, table_info->cell_ids[2][2]);
+
+  EXPECT_EQ(3u, table_info->row_nodes.size());
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
+  EXPECT_EQ(4, table_info->row_nodes[2]->id());
+}
+
+TEST_F(AXTableInfoTest, MultipleColumnHeadersInSameColumn) {
+  // In the figure below, 6 and 7 are both column headers.
+  // Column header 6 spans two rows.
+  //
+  // +---+
+  // |   |
+  // + 6 +
+  // |   |
+  // +---+
+  // | 7 |
+  // +---+
+  // | 8 |
+  // +---+
+
+  AXTreeUpdate initial_state;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(8);
+  MakeTable(&initial_state.nodes[0], 1, 0, 0);
+  initial_state.nodes[0].child_ids = {2, 3, 4, 5};
+  MakeRow(&initial_state.nodes[1], 2, 0);
+  initial_state.nodes[1].child_ids = {6};
+  MakeRow(&initial_state.nodes[2], 3, 1);
+  initial_state.nodes[2].child_ids = {};
+  MakeRow(&initial_state.nodes[3], 4, 2);
+  initial_state.nodes[3].child_ids = {7};
+  MakeRow(&initial_state.nodes[4], 5, 3);
+  initial_state.nodes[4].child_ids = {8};
+  MakeColumnHeader(&initial_state.nodes[5], 6, 0, 0, 2, 1);
+  MakeColumnHeader(&initial_state.nodes[6], 7, 2, 0, 1, 1);
+  MakeCell(&initial_state.nodes[7], 8, 3, 0);
+  AXTree tree(initial_state);
+
+  AXTableInfo* table_info = GetTableInfo(&tree, tree.root()->children()[0]);
+  EXPECT_FALSE(table_info);
+
+  table_info = GetTableInfo(&tree, tree.root());
+  EXPECT_TRUE(table_info);
+
+  EXPECT_EQ(1U, table_info->col_headers.size());
+  EXPECT_EQ(2U, table_info->col_headers[0].size());
+  EXPECT_EQ(6, table_info->col_headers[0][0]);
+  EXPECT_EQ(7, table_info->col_headers[0][1]);
+
+  EXPECT_EQ(6, table_info->cell_ids[0][0]);
+  EXPECT_EQ(6, table_info->cell_ids[1][0]);
+  EXPECT_EQ(7, table_info->cell_ids[2][0]);
+  EXPECT_EQ(8, table_info->cell_ids[3][0]);
+
+  EXPECT_EQ(4u, table_info->row_nodes.size());
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
+  EXPECT_EQ(4, table_info->row_nodes[2]->id());
+  EXPECT_EQ(5, table_info->row_nodes[3]->id());
 }
 
 #if BUILDFLAG(IS_MAC)

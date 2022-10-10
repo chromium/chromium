@@ -370,9 +370,22 @@ void AXTableInfo::BuildCellAndHeaderVectorsFromCellData() {
         DCHECK_LT(c, col_count);
         AXNode* cell = cell_data.cell;
         if (cell->GetRole() == ax::mojom::Role::kColumnHeader) {
+          // If this is a column header spanning vertically, we'll encounter
+          // this cell multiple times as we scan down the column. Don't add it
+          // twice just because it takes up more than one space in the table.
+          if (!col_headers[c].empty() && col_headers[c].back() == cell->id()) {
+            continue;
+          }
           col_headers[c].push_back(cell->id());
           all_headers.push_back(cell->id());
         } else if (cell->GetRole() == ax::mojom::Role::kRowHeader) {
+          // If this is a row header spanning horizontally, we'll encounter this
+          // cell multiple times as we scan across the row.
+          // Don't add it twice just because it takes up more than one space in
+          // the table.
+          if (!row_headers[r].empty() && row_headers[r].back() == cell->id()) {
+            continue;
+          }
           row_headers[r].push_back(cell->id());
           all_headers.push_back(cell->id());
         }
