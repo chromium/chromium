@@ -22,11 +22,6 @@ void AppListA11yAnnouncer::Shutdown() {
   announcement_view_ = nullptr;
 }
 
-void AppListA11yAnnouncer::AnnouncePeekingState() {
-  Announce(l10n_util::GetStringUTF16(
-      IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT));
-}
-
 void AppListA11yAnnouncer::AnnounceFullscreenState() {
   Announce(l10n_util::GetStringUTF16(
       IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT));

@@ -51,9 +51,6 @@ namespace ash {
 
 namespace {
 
-// The height of the peeking app list, measured from the bottom of the screen.
-constexpr int kPeekingHeight = 284;
-
 // The size of app info dialog in fullscreen app list.
 constexpr int kAppInfoDialogWidth = 512;
 constexpr int kAppInfoDialogHeight = 384;
@@ -232,11 +229,6 @@ void AppListView::StateAnimationMetricsReporter::RecordMetricsInClamshell(
     case AppListViewState::kClosed:
       UMA_HISTOGRAM_PERCENTAGE(
           "Apps.StateTransition.AnimationSmoothness.Close.ClamshellMode",
-          value);
-      break;
-    case AppListViewState::kPeeking:
-      UMA_HISTOGRAM_PERCENTAGE(
-          "Apps.StateTransition.AnimationSmoothness.Peeking.ClamshellMode",
           value);
       break;
     case AppListViewState::kFullscreenAllApps:
@@ -738,30 +730,10 @@ void AppListView::SetChildViewsForStateTransition(
         AppListState::kStateApps, !is_side_shelf_);
   }
 
-  // Set the apps to the initial page when PEEKING.
-  if (target_state == AppListViewState::kPeeking)
-    SelectInitialAppsPage();
-
   if (target_state == AppListViewState::kClosed && is_side_shelf_) {
     // Reset the search box to be shown again. This is done after the animation
     // is complete normally, but there is no animation when |is_side_shelf_|.
     search_box_view_->ClearSearchAndDeactivateSearchBox();
-  }
-}
-
-void AppListView::ConvertAppListStateToFullscreenEquivalent(
-    AppListViewState* state) {
-  if (!(is_side_shelf_ || delegate_->IsInTabletMode()))
-    return;
-
-  // If side shelf or tablet mode are active, all transitions should be
-  // made to the tablet mode/side shelf friendly versions.
-  if (*state == AppListViewState::kPeeking) {
-    // FULLSCREEN_ALL_APPS->PEEKING in tablet/side shelf mode should close
-    // instead of going to PEEKING.
-    *state = app_list_state_ == AppListViewState::kFullscreenAllApps
-                 ? AppListViewState::kClosed
-                 : AppListViewState::kFullscreenAllApps;
   }
 }
 
@@ -783,7 +755,7 @@ void AppListView::RecordStateTransitionForUma(AppListViewState new_state) {
   AppListStateTransitionSource transition =
       GetAppListStateTransitionSource(new_state);
   // kMaxAppListStateTransition denotes a transition we are not interested in
-  // recording (ie. PEEKING->PEEKING).
+  // recording (ie. FullscreenAllApps->FullscreenAllApps).
   if (transition == kMaxAppListStateTransition)
     return;
 
@@ -792,6 +764,8 @@ void AppListView::RecordStateTransitionForUma(AppListViewState new_state) {
 }
 
 void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
+  // TODO(crbug.com/1371211): Check if we still need this function in
+  // productivity launcher
   if (new_state == app_list_state_)
     return;
 
@@ -799,9 +773,6 @@ void AppListView::MaybeCreateAccessibilityEvent(AppListViewState new_state) {
     return;
 
   switch (new_state) {
-    case AppListViewState::kPeeking:
-      a11y_announcer_->AnnouncePeekingState();
-      break;
     case AppListViewState::kFullscreenAllApps:
       a11y_announcer_->AnnounceFullscreenState();
       break;
@@ -856,25 +827,12 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
     case AppListViewState::kClosed:
       // CLOSED->X transitions are not useful for UMA.
       return kMaxAppListStateTransition;
-    case AppListViewState::kPeeking:
-      // After Productivity launcher was set to default, we stopped logging
-      // these metrics.
-      // AppListViewStates kPeeking and kHalf states are being removed.
-      // (crbug.com/1359096)
-      return kMaxAppListStateTransition;
     case AppListViewState::kFullscreenAllApps:
       switch (target_state) {
         case AppListViewState::kClosed:
           return kFullscreenAllAppsToClosed;
         case AppListViewState::kFullscreenSearch:
           return kFullscreenAllAppsToFullscreenSearch;
-        case AppListViewState::kPeeking:
-          // After Productivity launcher was set to default, we stopped logging
-          // these metrics.
-          // AppListViewStates kPeeking and kHalf states are being removed.
-          // (crbug.com/1359096)
-          NOTREACHED();
-          return kMaxAppListStateTransition;
         case AppListViewState::kFullscreenAllApps:
           // FULLSCREEN_ALL_APPS->FULLSCREEN_ALL_APPS is used when resetting the
           // widget positon after a failed state transition. Not useful for UMA.
@@ -890,13 +848,6 @@ AppListStateTransitionSource AppListView::GetAppListStateTransitionSource(
           // FULLSCREEN_SEARCH->FULLSCREEN_SEARCH is used when resetting the
           // widget position after a failed state transition. Not useful for
           // UMA.
-          return kMaxAppListStateTransition;
-        case AppListViewState::kPeeking:
-          // After Productivity launcher was set to default, we stopped logging
-          // these metrics.
-          // AppListViewStates kPeeking and kHalf states are being removed.
-          // (crbug.com/1359096)
-          NOTREACHED();
           return kMaxAppListStateTransition;
       }
   }
@@ -1026,10 +977,6 @@ bool AppListView::ShouldScrollDismissAppList(const gfx::Point& location,
         adjusted_offset < 0) {
       return true;
     }
-
-    // For upward touchpad or mousewheel scrolling, expand to full screen.
-    if (app_list_state_ == AppListViewState::kPeeking && adjusted_offset < 0)
-      return true;
   }
   return false;
 }
@@ -1070,14 +1017,6 @@ bool AppListView::HandleScroll(const gfx::Point& location,
     return true;
   }
 
-  // For upward touchpad or mousewheel scrolling, expand to full screen.
-  // For downward, dismiss the peeking launcher.
-  if (app_list_state_ == AppListViewState::kPeeking &&
-      delegate_->AdjustAppListViewScrollOffset(offset.y(), type) > 0) {
-    SetState(AppListViewState::kFullscreenAllApps);
-    return true;
-  }
-
   // In fullscreen, forward events to `apps_grid_view`. For example, this allows
   // scroll events to the right of the page switcher (not inside the apps grid)
   // to switch pages.
@@ -1089,10 +1028,7 @@ bool AppListView::HandleScroll(const gfx::Point& location,
 }
 
 void AppListView::SetState(AppListViewState new_state) {
-  AppListViewState new_state_override = new_state;
-  ConvertAppListStateToFullscreenEquivalent(&new_state_override);
-
-  target_app_list_state_ = new_state_override;
+  target_app_list_state_ = new_state;
 
   // Update the contents view state to match the app list view state.
   // Updating the contents view state may cause a nested `SetState()` call.
@@ -1103,7 +1039,7 @@ void AppListView::SetState(AppListViewState new_state) {
   base::WeakPtr<AppListView> set_state_request =
       set_state_weak_factory_.GetWeakPtr();
 
-  SetChildViewsForStateTransition(new_state_override);
+  SetChildViewsForStateTransition(new_state);
 
   // Bail out if `SetChildViewForStateTransition()` caused another call to
   // `SetState()`.
@@ -1116,21 +1052,21 @@ void AppListView::SetState(AppListViewState new_state) {
   if (Shell::HasInstance() &&
       WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
           ->PersistentDeskBarHeightInChange() &&
-      app_list_state_ == new_state_override) {
+      app_list_state_ == new_state) {
     return;
   }
 
-  MaybeCreateAccessibilityEvent(new_state_override);
+  MaybeCreateAccessibilityEvent(new_state);
 
   // Prepare state transition notifier for the new state transition.
-  state_transition_notifier_->Reset(new_state_override);
+  state_transition_notifier_->Reset(new_state);
 
-  StartAnimationForState(new_state_override);
-  MaybeIncreasePrivacyInfoRowShownCounts(new_state_override);
-  RecordStateTransitionForUma(new_state_override);
-  app_list_state_ = new_state_override;
+  StartAnimationForState(new_state);
+  MaybeIncreasePrivacyInfoRowShownCounts(new_state);
+  RecordStateTransitionForUma(new_state);
+  app_list_state_ = new_state;
   if (delegate_)
-    delegate_->OnViewStateChanged(new_state_override);
+    delegate_->OnViewStateChanged(new_state);
 
   if (GetWidget()->IsActive()) {
     // Reset the focus to initially focused view. This should be
@@ -1167,10 +1103,6 @@ void AppListView::UpdateWindowTitle() {
       return;
     }
     switch (target_app_list_state_) {
-      case AppListViewState::kPeeking:
-        window->SetTitle(l10n_util::GetStringUTF16(
-            IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT));
-        break;
       case AppListViewState::kFullscreenAllApps:
         window->SetTitle(l10n_util::GetStringUTF16(
             IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT));
@@ -1307,12 +1239,7 @@ void AppListView::ApplyBoundsAnimation(AppListViewState target_state,
 
 void AppListView::SetStateFromSearchBoxView(bool search_box_is_empty,
                                             bool triggered_by_contents_change) {
-  // TODO(https://crbug.com/1356661): Remove peeking and half launcher cases.
   switch (target_app_list_state_) {
-    case AppListViewState::kPeeking:
-      if (!search_box_is_empty || search_box_view()->is_search_box_active())
-        SetState(AppListViewState::kFullscreenSearch);
-      break;
     case AppListViewState::kFullscreenSearch:
       if (search_box_is_empty && !triggered_by_contents_change)
         SetState(AppListViewState::kFullscreenAllApps);
@@ -1364,8 +1291,6 @@ int AppListView::GetHeightForState(AppListViewState state) const {
     case AppListViewState::kFullscreenAllApps:
     case AppListViewState::kFullscreenSearch:
       return GetFullscreenStateHeight();
-    case AppListViewState::kPeeking:
-      return kPeekingHeight;
     case AppListViewState::kClosed:
       return 0;
   }
@@ -1518,8 +1443,7 @@ void AppListView::OnParentWindowBoundsChanged() {
 }
 
 bool AppListView::ShouldIgnoreScrollEvents() {
-  if (app_list_state_ != AppListViewState::kPeeking &&
-      app_list_state_ != AppListViewState::kFullscreenAllApps)
+  if (app_list_state_ != AppListViewState::kFullscreenAllApps)
     return true;
   return GetWidget()->GetLayer()->GetAnimator()->is_animating() ||
          GetRootAppsGridView()->pagination_model()->has_transition();
@@ -1542,8 +1466,6 @@ int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
     return fullscreen_height;
 
   switch (state) {
-    case AppListViewState::kPeeking:
-      return display.bounds().height() - kPeekingHeight;
     case AppListViewState::kFullscreenAllApps:
     case AppListViewState::kFullscreenSearch:
       return fullscreen_height;

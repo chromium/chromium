@@ -850,9 +850,8 @@ void AppsContainerView::UpdateControlVisibility(
   if (app_list_state == AppListViewState::kClosed)
     return;
 
-  SetCanProcessEventsWithinSubtree(
-      app_list_state == AppListViewState::kFullscreenAllApps ||
-      app_list_state == AppListViewState::kPeeking);
+  SetCanProcessEventsWithinSubtree(app_list_state ==
+                                   AppListViewState::kFullscreenAllApps);
 
   apps_grid_view_->UpdateControlVisibility(app_list_state);
   page_switcher_->SetVisible(
@@ -1283,6 +1282,10 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
       cached_container_margins_.search_box_size == search_box_size) {
     return cached_container_margins_.margins;
   }
+
+  // `app_list_config_` is required for apps_grid_view to calculate the tile
+  // grid sizes.
+  DCHECK(app_list_config_);
 
   // For productivity launcher, the `grid_layout`'s rows will be ignored because
   // the vertical margin will be constant.

@@ -331,9 +331,6 @@ void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
       // Only exists in clamshell mode with ProductivityLauncher disabled.
       UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunchedClosed, launched_from);
       break;
-    case AppListViewState::kPeeking:
-      NOTREACHED();
-      break;
     case AppListViewState::kFullscreenAllApps:
       if (is_tablet_mode) {
         if (app_list_shown) {

@@ -298,7 +298,7 @@ TEST_P(HomeButtonTest, ClickToOpenAppList) {
   GetAppListTestHelper()->CheckVisibility(true);
   // ProductivityLauncher does not have states like peeking.
   if (!features::IsProductivityLauncherEnabled())
-    GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
+    GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   GetEventGenerator()->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);

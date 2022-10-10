@@ -295,10 +295,6 @@ ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
 enum class AppListViewState {
   // Closes |app_list_main_view_| and dismisses the delegate.
   kClosed,
-  // The initial state for the app list when neither maximize or side shelf
-  // modes are active. If set, the widget will peek over the shelf by
-  // kPeekingAppListHeight DIPs.
-  kPeeking,
   // Default app list state in maximize and side shelf modes. Entered from an
   // upward swipe from |PEEKING| or from clicking the chevron.
   kFullscreenAllApps,

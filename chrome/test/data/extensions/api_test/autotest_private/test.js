@@ -433,38 +433,6 @@ var defaultTests = [
   },
 
   // This test verifies that api to wait for launcher state transition
-  // to peeking works as expected
-  // TODO(crbug.com/1364795): Remove this test when the peeking state is
-  // removed in autotest_private.idl
-  function waitForLauncherStatePeeking() {
-    var togglePeeking = newAccelerator('search', false /* shift */);
-    chrome.autotestPrivate.activateAccelerator(
-        togglePeeking, function(success) {
-          chrome.test.assertNoLastError();
-          chrome.test.assertFalse(success);
-          togglePeeking.pressed = false;
-          chrome.autotestPrivate.activateAccelerator(
-              togglePeeking, function(success) {
-                chrome.test.assertNoLastError();
-                chrome.test.assertTrue(success);
-                chrome.autotestPrivate.waitForLauncherState(
-                    'Peeking', function() {
-                      if (chrome.runtime.lastError) {
-                        var errorMessage = chrome.runtime.lastError.message;
-                        closeLauncher(chrome.test.callbackPass(function() {
-                          chrome.test.assertEq(
-                              'Not supported for bubble launcher',
-                              errorMessage);
-                        }));
-                        return;
-                      }
-                      closeLauncher(chrome.test.callbackPass());
-                    });
-              });
-        });
-  },
-
-  // This test verifies that api to wait for launcher state transition
   // works as expected
   function waitForLauncherStateFullscreen() {
     var toggleFullscreen = newAccelerator('search', true /* shift */);

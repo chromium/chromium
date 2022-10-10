@@ -191,8 +191,6 @@ std::ostream& operator<<(std::ostream& os, AppListViewState state) {
   switch (state) {
     case AppListViewState::kClosed:
       return os << "Closed";
-    case AppListViewState::kPeeking:
-      return os << "Peeking";
     case AppListViewState::kFullscreenAllApps:
       return os << "FullscreenAllApps";
     case AppListViewState::kFullscreenSearch:

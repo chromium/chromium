@@ -334,9 +334,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Set child views for |target_state|.
   void SetChildViewsForStateTransition(AppListViewState target_state);
 
-  // Converts |state| to the fullscreen equivalent.
-  void ConvertAppListStateToFullscreenEquivalent(AppListViewState* state);
-
   // Gets the animation duration that transition to |taget_state| should have.
   base::TimeDelta GetStateTransitionAnimationDuration(
       AppListViewState target_state);

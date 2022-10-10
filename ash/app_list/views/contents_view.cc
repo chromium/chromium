@@ -596,6 +596,14 @@ void ContentsView::UpdateYPositionAndOpacity() {
                                : pagination_model_.selected_page();
   const AppListState current_state = GetStateForPageIndex(current_page);
 
+  // The search box bounds are determined by the apps container internal
+  // margins, which depend on the apps container view size and app list config.
+  // Make sure the apps container bounds are set before calculating search box
+  // bounds, so `apps_container_view_` has up to date AppListConfig when
+  // AppsContainerView::CalculateMarginsForAvailableBounds() gets called when
+  // calculating search box y position.
+  apps_container_view_->SetBoundsRect(GetContentsBounds());
+
   SearchBoxView* search_box = GetSearchBoxView();
   const gfx::Rect search_box_bounds = GetSearchBoxBounds(current_state);
   const gfx::Rect search_rect =
@@ -785,8 +793,6 @@ int ContentsView::GetSearchBoxTopForViewState(
           ->CalculateMarginsForAvailableBounds(
               GetContentsBounds(), GetSearchBoxSize(AppListState::kStateApps))
           .top();
-    case AppListViewState::kPeeking:
-      return GetPeekingSearchBoxTopMarginOnPage(state);
   }
 }
 

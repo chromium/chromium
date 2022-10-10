@@ -476,23 +476,8 @@ void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   }
 }
 
-void AssistantPageView::MaybeUpdateAppListState(int child_height) {
-  auto* app_list_view = contents_view()->app_list_view();
-  auto* widget = app_list_view->GetWidget();
-
-  // |app_list_view| may not be initialized.
-  if (!widget || !widget->IsVisible())
-    return;
-
-  // Update app list view state for |assistant_page_view_|.
-  // Embedded Assistant Ui only has two sizes. The only state change is from
-  // |kPeeking| to |kFullscreenAllApps| state.
-  if (app_list_view->app_list_state() != AppListViewState::kPeeking)
-    return;
-
-  if (child_height > GetPreferredHeightForAppListState(app_list_view))
-    app_list_view->SetState(AppListViewState::kFullscreenSearch);
-}
+// TODO(crbug.com/1359096): Clean up this function and its relative code path.
+void AssistantPageView::MaybeUpdateAppListState(int child_height) {}
 
 BEGIN_METADATA(AssistantPageView, views::View)
 END_METADATA

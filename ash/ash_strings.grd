@@ -5247,9 +5247,6 @@ New install
       <message name="IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that all of their apps are showing, as opposed to showing only suggested apps">
         Launcher, all apps
       </message>
-      <message name="IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing a small version of the app list">
-        Launcher, partial view
-      </message>
       <message name="IDS_APP_LIST_LAUNCHER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing the search results">
         Launcher
       </message>

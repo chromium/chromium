@@ -103,15 +103,10 @@ void AppListNotifierImplOld::OnViewStateChanged(ash::AppListViewState view) {
   //     UI actions (like dragging the launcher around) that end up back in
   //     the same location.
   //
-  //  2. kPeeking to kFullscreenAllApps. This doesn't change the displayed
-  //     chip results.
-  //
   //  We should also ignore this if the call comes while the launcher is not
   //  shown at all. This happens, for example, in the transition between
   //  clamshell and tablet modes.
-  if (!shown_ || view_ == view ||
-      (view_ == ash::AppListViewState::kPeeking &&
-       view == ash::AppListViewState::kFullscreenAllApps)) {
+  if (!shown_ || view_ == view) {
     return;
   }
   view_ = view;
@@ -124,8 +119,7 @@ void AppListNotifierImplOld::OnViewStateChanged(ash::AppListViewState view) {
     DoStateTransition(Location::kTile, State::kNone);
   }
 
-  if (view == ash::AppListViewState::kPeeking ||
-      view == ash::AppListViewState::kFullscreenAllApps) {
+  if (view == ash::AppListViewState::kFullscreenAllApps) {
     DoStateTransition(Location::kChip, State::kShown);
   } else {
     DoStateTransition(Location::kChip, State::kNone);

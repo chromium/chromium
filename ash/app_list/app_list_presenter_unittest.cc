@@ -314,10 +314,6 @@ class AppListPresenterNonBubbleTest : public AppListPresenterTest {
     feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
   }
 
-  int GetPeekingHeight() {
-    return GetAppListView()->GetHeightForState(AppListViewState::kPeeking);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -3044,40 +3040,6 @@ TEST_P(AppListPresenterTest, UpdateDisplayNotCloseAppList) {
   // Updating the display should not close the app list.
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
-}
-
-// Tests the app list window's bounds under multi-displays environment.
-TEST_F(AppListPresenterNonBubbleTest, AppListWindowBounds) {
-  // Set up a screen with two displays (horizontally adjacent).
-  UpdateDisplay("1024x768,1024x768");
-  const gfx::Size display_size(1024, 768);
-
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(2u, root_windows.size());
-
-  // Test the app list window's bounds on primary display.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckVisibility(true);
-  const gfx::Rect primary_display_rect(
-      gfx::Point(0, display_size.height() - GetPeekingHeight()), display_size);
-  EXPECT_EQ(
-      primary_display_rect,
-      GetAppListView()->GetWidget()->GetNativeView()->GetBoundsInScreen());
-
-  // Close the app list on primary display.
-  GetAppListTestHelper()->DismissAndRunLoop();
-  GetAppListTestHelper()->CheckVisibility(false);
-
-  // Test the app list window's bounds on secondary display.
-  GetAppListTestHelper()->ShowAndRunLoop(GetSecondaryDisplay().id());
-  GetAppListTestHelper()->CheckVisibility(true);
-  const gfx::Rect secondary_display_rect(
-      gfx::Point(display_size.width(),
-                 display_size.height() - GetPeekingHeight()),
-      display_size);
-  EXPECT_EQ(
-      secondary_display_rect,
-      GetAppListView()->GetWidget()->GetNativeView()->GetBoundsInScreen());
 }
 
 // Tests that the app list window's bounds and the search box bounds are updated

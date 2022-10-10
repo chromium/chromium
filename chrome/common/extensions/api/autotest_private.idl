@@ -105,7 +105,6 @@ namespace autotestPrivate {
 
   enum LauncherStateType {
     Closed,
-    Peeking,
     FullscreenAllApps,
     FullscreenSearch
   };

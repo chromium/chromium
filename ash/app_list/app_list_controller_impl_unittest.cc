@@ -216,7 +216,7 @@ TEST_F(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
   const std::vector<ShelfAlignment> alignments(
       {ShelfAlignment::kLeft, ShelfAlignment::kRight, ShelfAlignment::kBottom});
   for (ShelfAlignment alignment : alignments) {
-    ShowAppListNow(AppListViewState::kPeeking);
+    ShowAppListNow(AppListViewState::kFullscreenAllApps);
     EXPECT_TRUE(Shell::Get()
                     ->app_list_controller()
                     ->fullscreen_presenter()
@@ -339,7 +339,7 @@ TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {
 
   // Show the AppListView and click on the search box with mouse so the
   // VirtualKeyboard is shown. Wait until the virtual keyboard shows.
-  ShowAppListNow(AppListViewState::kPeeking);
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
   GetSearchBoxView()->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetVirtualKeyboardWindow()->IsVisible());
@@ -377,7 +377,7 @@ TEST_F(AppListControllerImplTest, CheckAppListViewBoundsWhenDismissVKeyboard) {
 // (see https://crbug.com/948344)
 // TODO(crbug.com/1120501): Test is flaky on ASAN builds.
 TEST_F(AppListControllerImplTest, MAYBE_CloseNotificationWithAppListShown) {
-  ShowAppListNow(AppListViewState::kPeeking);
+  ShowAppListNow(AppListViewState::kFullscreenAllApps);
 
   // Add one notification.
   ASSERT_EQ(

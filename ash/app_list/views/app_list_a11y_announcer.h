@@ -30,10 +30,6 @@ class AppListA11yAnnouncer {
   void Shutdown();
 
   // Modifies the announcement view to verbalize that app list transitioned to
-  // peeking state.
-  void AnnouncePeekingState();
-
-  // Modifies the announcement view to verbalize that app list transitioned to
   // fullscreen state.
   void AnnounceFullscreenState();
 

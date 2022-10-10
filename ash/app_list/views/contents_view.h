@@ -256,7 +256,7 @@ class ASH_EXPORT ContentsView : public views::View,
   // Owned by the views hierarchy.
   AppListView* const app_list_view_;
 
-  AppListViewState target_view_state_ = AppListViewState::kPeeking;
+  AppListViewState target_view_state_ = AppListViewState::kFullscreenAllApps;
 
   // Maps State onto |view_model_| indices.
   std::map<AppListState, int> state_to_view_;

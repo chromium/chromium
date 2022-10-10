@@ -160,7 +160,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
       app_list_view_ = new AppListView(&view_delegate_);
       app_list_view_->InitView(GetContext());
       view_ = app_list_view_->search_box_view();
-      app_list_view_->Show(AppListViewState::kPeeking, false);
+      app_list_view_->Show(AppListViewState::kFullscreenAllApps, false);
     }
   }
 
