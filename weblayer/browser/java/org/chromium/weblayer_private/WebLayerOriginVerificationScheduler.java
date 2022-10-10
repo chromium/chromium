@@ -42,6 +42,9 @@ public class WebLayerOriginVerificationScheduler {
     private static final String STATEMENT_NAMESPACE_KEY = "namespace";
     private static final String STATEMENT_SITE_KEY = "site";
 
+    private static final String HTTP_SCHEME = "http";
+    private static final String HTTPS_SCHEME = "https";
+
     private static WebLayerOriginVerificationScheduler sInstance;
     private WebLayerOriginVerifier mOriginVerifier;
 
@@ -89,6 +92,12 @@ public class WebLayerOriginVerificationScheduler {
             return;
         }
         if (mOriginVerifier.skipOriginVerification()) {
+            listener.onResult(true);
+            return;
+        }
+
+        String urlScheme = origin.uri().getScheme();
+        if (!urlScheme.equals(HTTPS_SCHEME) && !urlScheme.equals(HTTP_SCHEME)) {
             listener.onResult(true);
             return;
         }
