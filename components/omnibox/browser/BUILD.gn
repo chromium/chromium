@@ -475,10 +475,14 @@ if (is_android) {
 
   android_library("junit_test_support") {
     testonly = true
-    sources = [ "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java" ]
+    sources = [
+      "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/AutocompleteMatchBuilder.java",
+      "//components/omnibox/browser/android/java/src/org/chromium/components/omnibox/GroupConfigTestSupport.java",
+    ]
     deps = [
       "//components/omnibox/browser:browser_java",
       "//components/query_tiles:query_tile_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
       "//url:gurl_java",
       "//url:gurl_junit_test_support",

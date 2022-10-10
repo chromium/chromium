@@ -86,9 +86,6 @@ public class HeaderProcessor implements DropdownItemProcessor {
         }
     }
 
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {}
-
     /**
      * Signals that native initialization has completed.
      * And cache the feature flag value from the flag.
@@ -108,10 +105,5 @@ public class HeaderProcessor implements DropdownItemProcessor {
 
         mUseUpdatedHeaderPadding =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_HEADER_PADDING_UPDATE);
-    }
-
-    @Override
-    public boolean allowBackgroundRounding() {
-        return false;
     }
 }

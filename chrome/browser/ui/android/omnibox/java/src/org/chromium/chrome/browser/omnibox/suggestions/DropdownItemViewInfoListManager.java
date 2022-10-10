@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupSection;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -32,6 +33,7 @@ class DropdownItemViewInfoListManager {
     private int mLayoutDirection;
     private @BrandedColorScheme int mBrandedColorScheme;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
+    private boolean mDropdownItemRoundingEnabled;
 
     DropdownItemViewInfoListManager(@NonNull ModelList managedModel, @NonNull Context context) {
         assert managedModel != null : "Must specify a non-null model.";
@@ -107,6 +109,10 @@ class DropdownItemViewInfoListManager {
         mGroupsCollapsedState.clear();
     }
 
+    void onNativeInitialized() {
+        mDropdownItemRoundingEnabled = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
+    }
+
     /**
      * Specify the input list of DropdownItemViewInfo elements.
      *
@@ -129,12 +135,16 @@ class DropdownItemViewInfoListManager {
         int deviceType = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 ? SuggestionCommonProperties.FormFactor.TABLET
                 : SuggestionCommonProperties.FormFactor.PHONE;
-        DropdownItemViewInfo prevSuggestionWithBackground = null;
+        DropdownItemViewInfo previousItem = null;
         boolean inDropdownItemBackgroundRoundingGroup = false;
         int groupVerticalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
         int suggestionVerticalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_vertical_margin);
+
+        GroupSection previousSection = null;
+        GroupSection currentSection;
+
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             final DropdownItemViewInfo item = mSourceViewInfoList.get(i);
             final PropertyModel model = item.model;
@@ -142,37 +152,24 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
 
-            // Add the background to suggestions.
-            if (item.processor.allowBackgroundRounding()) {
-                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED,
-                        !inDropdownItemBackgroundRoundingGroup);
-                // The default value is false, so we do not need to assign false to
-                // BG_BOTTOM_CORNER_ROUNDED here.
+            if (mDropdownItemRoundingEnabled && item.processor.allowBackgroundRounding()) {
+                var groupConfig = groupsDetails.get(item.groupId);
+                currentSection = groupConfig != null ? groupConfig.getSection()
+                                                     : GroupSection.SECTION_DEFAULT;
+                var applyRounding = currentSection != previousSection;
+                var verticalMargin = applyRounding ? groupVerticalMargin : suggestionVerticalMargin;
 
-                if (inDropdownItemBackgroundRoundingGroup) {
-                    // This is not the first in the group, use the normal margin.
-                    model.set(DropdownCommonProperties.TOP_MARGIN, suggestionVerticalMargin);
-                    model.set(DropdownCommonProperties.BOTTOM_MARGIN, 0);
-                } else {
-                    // First one in the group, this suggestion should use the group margin. Except
-                    // for the first group since dropdown has the margin.
-                    model.set(DropdownCommonProperties.TOP_MARGIN,
-                            prevSuggestionWithBackground == null ? 0 : groupVerticalMargin);
-                    model.set(DropdownCommonProperties.BOTTOM_MARGIN, 0);
+                model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
+                model.set(DropdownCommonProperties.TOP_MARGIN, verticalMargin);
+
+                if (previousItem != null) {
+                    previousItem.model.set(
+                            DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, applyRounding);
+                    previousItem.model.set(DropdownCommonProperties.BOTTOM_MARGIN, verticalMargin);
                 }
 
-                prevSuggestionWithBackground = item;
-                inDropdownItemBackgroundRoundingGroup = true;
-            } else {
-                // If the current suggestion does not support background, we should round corner the
-                // bottom of the previous suggestion's background.
-                if (prevSuggestionWithBackground != null) {
-                    prevSuggestionWithBackground.model.set(
-                            DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
-                    prevSuggestionWithBackground.model.set(
-                            DropdownCommonProperties.BOTTOM_MARGIN, groupVerticalMargin);
-                }
-                inDropdownItemBackgroundRoundingGroup = false;
+                previousItem = item;
+                previousSection = currentSection;
             }
 
             final boolean groupIsDefaultCollapsed = getGroupCollapsedState(item.groupId);
@@ -182,11 +179,8 @@ class DropdownItemViewInfoListManager {
         }
 
         // round the bottom corners of the last suggestion.
-        if (prevSuggestionWithBackground != null) {
-            prevSuggestionWithBackground.model.set(
-                    DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
-            // No margin for the very last suggestion since the dropdown has the margin.
-            prevSuggestionWithBackground.model.set(DropdownCommonProperties.BOTTOM_MARGIN, 0);
+        if (previousItem != null) {
+            previousItem.model.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
         }
 
         mManagedModel.set(suggestionsList);

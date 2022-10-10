@@ -39,15 +39,4 @@ public class DividerLineProcessor implements DropdownItemProcessor {
     public PropertyModel createModel() {
         return new PropertyModel(SuggestionCommonProperties.ALL_KEYS);
     }
-
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {}
-
-    @Override
-    public void onNativeInitialized() {}
-
-    @Override
-    public boolean allowBackgroundRounding() {
-        return false;
-    }
 }

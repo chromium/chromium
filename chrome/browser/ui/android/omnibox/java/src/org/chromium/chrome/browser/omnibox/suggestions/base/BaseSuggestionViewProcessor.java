@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -38,7 +37,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
     private final int mSuggestionSizePx;
-    private boolean mDropdownItemRoundingEnabled;
 
     /**
      * @param context Current context.
@@ -70,11 +68,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      */
     protected int getDecorationImageSize() {
         return mDecorationImageSizePx;
-    }
-
-    @Override
-    public void onNativeInitialized() {
-        mDropdownItemRoundingEnabled = OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext);
     }
 
     @Override
@@ -224,13 +217,5 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      */
     protected Context getContext() {
         return mContext;
-    }
-
-    @Override
-    public void onUrlFocusChange(boolean hasFocus) {}
-
-    @Override
-    public boolean allowBackgroundRounding() {
-        return mDropdownItemRoundingEnabled;
     }
 }

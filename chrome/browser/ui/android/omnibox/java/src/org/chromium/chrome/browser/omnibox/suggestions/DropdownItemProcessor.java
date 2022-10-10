@@ -31,12 +31,12 @@ public interface DropdownItemProcessor {
     /**
      * @see org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlFocusChange(boolean)
      */
-    void onUrlFocusChange(boolean hasFocus);
+    default void onUrlFocusChange(boolean hasFocus) {}
 
     /**
      * Signals that native initialization has completed.
      */
-    void onNativeInitialized();
+    default void onNativeInitialized() {}
 
     /**
      * Signals that the dropdown list is about to be populated with new content.
@@ -46,5 +46,7 @@ public interface DropdownItemProcessor {
     /**
      * Return if the suggestion view can have background rounding.
      */
-    boolean allowBackgroundRounding();
+    default boolean allowBackgroundRounding() {
+        return false;
+    }
 }
