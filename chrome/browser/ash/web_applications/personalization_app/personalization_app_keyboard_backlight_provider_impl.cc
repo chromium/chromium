@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_analysis.h"
 
 namespace ash::personalization_app {
 
