@@ -4,6 +4,7 @@
 
 import '../widgets/xf_nudge.js';
 
+import {str} from '../common/js/util.js';
 import {xfm} from '../common/js/xfm.js';
 import {NudgeDirection, XfNudge} from '../widgets/xf_nudge.js';
 
@@ -52,6 +53,11 @@ export class NudgeContainer {
    * run callback is running at a time.
    */
   private requestAnimationFrameId_: number|undefined = undefined;
+
+  /**
+   * True if the expiry period on the nudge is observed. False otherwise.
+   */
+  private expiryPeriodEnabled_: boolean = true;
 
   constructor() {
     this.anchorAriaDescribedbyElement_.id = 'nudge-content';
@@ -144,8 +150,9 @@ export class NudgeContainer {
     const info = nudgeInfo[nudge];
     const anchor = info.anchor() as HTMLElement;
 
-    // Don't show the nudge if it's expired.
-    if (info.expiryDate && info.expiryDate < new Date()) {
+    // Don't show the nudge if it's expired and the expiry period is enabled.
+    if (info.expiryDate && info.expiryDate < new Date() &&
+        this.expiryPeriodEnabled_) {
       return;
     }
 
@@ -221,6 +228,13 @@ export class NudgeContainer {
   }
 
   /**
+   * Used to override the expiry period for nudges in test.
+   */
+  set setExpiryPeriodEnabledForTesting(value: boolean) {
+    this.expiryPeriodEnabled_ = value;
+  }
+
+  /**
    * Handle key down events such that any "Escape", "Enter" or "Space" should
    * close the nudge.
    */
@@ -289,19 +303,49 @@ export class NudgeContainer {
 /**
  * An enum of nudges that can be shown, only a single nudge is shown at a time.
  */
-export const enum NudgeType {
+export enum NudgeType {
   TEST_NUDGE = 'test-nudge',
+  TRASH_NUDGE = 'trash-nudge',
+}
+
+/**
+ * Type to define the callback used that gets the anchor element from the DOM.
+ */
+interface NudgeInfo {
+  // The anchor that the nudge will appear near. The location of the nudge
+  // relative to the anchor is dictated by the `direction`.
+  anchor: () => HTMLElement | null;
+
+  // The string contents of the nudge.
+  content: string;
+
+  // The direction that nudge appears relative to the anchor. For more
+  // explanation on the various `NudgeDirection`'s look in `xf_nudge.ts` file.
+  direction: NudgeDirection;
+
+  // The date the nudge expires, after this date even if the nudge is invoked it
+  // will not appear.
+  expiryDate: Date;
 }
 
 /**
  * A mapping of nudges to their information that can be shown throughout the
  * Files app.
  */
-export const nudgeInfo = {
-  [NudgeType.TEST_NUDGE]: {
-    anchor: (): HTMLElement | null => document.querySelector('div#test'),
+export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
+  [NudgeType['TEST_NUDGE']]: {
+    anchor: () => document.querySelector<HTMLDivElement>('div#test'),
     content: 'Test content',
     direction: NudgeDirection.BOTTOM_ENDWARD,
     expiryDate: new Date(2999, 1, 1),
+  },
+  // A nudge that is shown when an item is first sent to the trash.
+  [NudgeType['TRASH_NUDGE']]: {
+    anchor: () =>
+        document.querySelector<HTMLSpanElement>('span[root-type-icon="trash"]'),
+    content: str('TRASH_NUDGE_LABEL'),
+    direction: NudgeDirection.BOTTOM_ENDWARD,
+    // Expire this after 4 releases (expires when M112 hits Stable).
+    expiryDate: new Date(2023, 4, 6),
   },
 };

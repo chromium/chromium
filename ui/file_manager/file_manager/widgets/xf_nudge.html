@@ -27,9 +27,11 @@
   border-radius: 18px;
 }
 
-#bubble > slot[name='icon']::slotted(*) {
-  --ea-icon-size: 20px;
-  color: var(--cros-button-icon-color-primary);
+#bubble > .icon {
+  -webkit-mask-image: url(/foreground/images/files/ui/nudge_star_icon.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-button-icon-color-primary);
   height: 20px;
   margin-inline-end: 12px;
   width: 20px;
@@ -43,7 +45,7 @@
 <div aria-hidden="true" id="container">
   <div id="dot"></div>
   <div id="bubble">
-    <slot class="icon" name="icon"></slot>
+    <span class="icon"></span>
     <span id="text"></span>
   </div>
 </div>

@@ -475,6 +475,9 @@
   <message name="IDS_FILE_BROWSER_EMPTY_TRASH_BUTTON_LABEL" desc="Context menu item that empties (permanently deletes all items in) the trash / recycle bin.">
     Empty trash now
   </message>
+  <message name="IDS_FILE_BROWSER_TRASH_NUDGE_LABEL" desc="Shown when a user trashes a file for the the first time">
+    Deleted files are now moved to trash
+  </message>
   <message name="IDS_FILE_BROWSER_PASTE_BUTTON_LABEL" desc="Context menu item that pastes the file(s) in the clipboard.">
     Paste
   </message>

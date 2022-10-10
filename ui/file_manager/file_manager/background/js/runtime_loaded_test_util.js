@@ -1239,3 +1239,18 @@ test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
   }
   callback(false);
 };
+
+/**
+ * Disables the nudge expiry period for testing.
+ *
+ * @param {Window} contentWindow Window the banner controller exists.
+ * @param {function(boolean)} callback Callback function to be called with a
+ *    boolean indicating success or failure.
+ * @suppress {missingProperties} nudgeContainer is only defined for foreground
+ *    Window so it isn't visible in the background.
+ */
+test.util.async.disableNudgeExpiry = async (contentWindow, callback) => {
+  contentWindow.fileManager.ui_.nudgeContainer
+      .setExpiryPeriodEnabledForTesting = false;
+  callback(true);
+};

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DialogType} from '../dialog_type.js';
-import {addEntries, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, ENTRIES, repeatUntil, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -1027,4 +1027,52 @@ testcase.trashCantRenameFilesInTrashRoot = async () => {
   await remoteCall.waitForElement(appId, contextMenuSelector);
   await remoteCall.waitForElement(
       appId, contextMenuSelector + ' [command="#rename"][disabled][hidden]');
+};
+
+/**
+ * Tests that the trash nudge is shown on the first trash but is not shown on
+ * subsequent trashes.
+ * NOTE: The nudge has an expiry period, this will override the expiry period.
+ */
+testcase.trashNudgeShownOnFirstTrashOperation = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  // Disable the nudge expiry.
+  await remoteCall.disableNudgeExpiry(appId);
+
+  // Select hello.txt and send it to the Trash, this file should not be removed
+  // in between enabling and disabling the feature.
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="hello.txt"]');
+
+  // Verify the dot has been placed somewhere visible.
+  let nudgeDot = await remoteCall.waitForElementStyles(
+      appId, ['xf-nudge', '#dot'], ['left']);
+  chrome.test.assertTrue(nudgeDot.renderedLeft > 0);
+  chrome.test.assertTrue(nudgeDot.renderedTop > 0);
+
+  // The nudge is dismissed through keyboard and mouse events which are "faked"
+  // in the integration test harness. So send a blur event to the anchor to
+  // ensure the nudge gets removed instead.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['span[root-type-icon="trash"]', 'blur']));
+  await repeatUntil(async () => {
+    const nudgeDot = await remoteCall.waitForElementStyles(
+        appId, ['xf-nudge', '#dot'], ['left']);
+    return nudgeDot.renderedLeft < 0;
+  });
+
+  // Select and trash the file "world.ogv".
+  await remoteCall.waitUntilSelected(appId, 'world.ogv');
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="world.ogv"]');
+
+  // Ensure the nudge doesn't show up again after the first trash.
+  nudgeDot = await remoteCall.waitForElementStyles(
+      appId, ['xf-nudge', '#dot'], ['left']);
+  chrome.test.assertTrue(nudgeDot.renderedLeft < 0);
 };

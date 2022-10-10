@@ -887,4 +887,14 @@ export class RemoteCallFilesApp extends RemoteCall {
         'deepQueryAllElements', appId, ['#autocomplete-list li']);
     return elements.map((element) => element.text);
   }
+
+  /**
+   * Disable nudges from expiring for testing.
+   * @param {string} appId App window Id
+   */
+  async disableNudgeExpiry(appId) {
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    chrome.test.assertTrue(
+        await this.callRemoteTestUtil('disableNudgeExpiry', appId, []));
+  }
 }

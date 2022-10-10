@@ -9,6 +9,7 @@ import {DialogType} from '../../../common/js/dialog_type.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
+import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
 import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
@@ -381,6 +382,13 @@ export class FileManagerUI {
      * @const
      */
     this.actionsSubmenu = new ActionsSubmenu(this.fileContextMenu);
+
+    /**
+     * The container that maintains the lifetime of nudges.
+     * @public {!NudgeContainer}
+     * @const
+     */
+    this.nudgeContainer = new NudgeContainer();
 
     /**
      * @type {!FilesToast}

@@ -17,6 +17,7 @@ import {TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
+import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -1184,6 +1185,8 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
         fileManager.fileOperationManager.willUseTrash(
             fileManager.volumeManager, entries) &&
         fileManager.trashEnabled) {
+      fileManager.ui.nudgeContainer.showNudge(NudgeType['TRASH_NUDGE']);
+
       chrome.fileManagerPrivate.startIOTask(
           chrome.fileManagerPrivate.IOTaskType.TRASH, entries,
           /*params=*/ {});
