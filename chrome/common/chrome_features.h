@@ -566,6 +566,12 @@ BASE_DECLARE_FEATURE(kRequestDesktopSiteForTablets);
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckNotificationPermissions);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsMinEnagementLimit;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsLowEnagementLimit;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kSafetyCheckUnusedSitePermissions);

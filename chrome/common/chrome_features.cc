@@ -981,6 +981,15 @@ BASE_FEATURE(kSafetyCheckNotificationPermissions,
              "SafetyCheckNotificationPermissions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsMinEnagementLimit{
+        &kSafetyCheckNotificationPermissions,
+        "min-engagement-notification-count", 0};
+const base::FeatureParam<int>
+    kSafetyCheckNotificationPermissionsLowEnagementLimit{
+        &kSafetyCheckNotificationPermissions,
+        "low-engagement-notification-count", 4};
+
 // Enables unused site permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",

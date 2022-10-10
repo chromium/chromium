@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -584,14 +585,18 @@ bool ShouldAddToNotificationPermissionReviewList(
   // more than 3. Otherwise, the notification permission should not be added
   // to review list.
   double score = service->GetScore(url);
+  int low_engagement_notification_limit =
+      features::kSafetyCheckNotificationPermissionsLowEnagementLimit.Get();
   bool is_low_engagement =
       !site_engagement::SiteEngagementService::IsEngagementAtLeast(
           score, blink::mojom::EngagementLevel::MEDIUM) &&
-      notification_count > 3;
+      notification_count > low_engagement_notification_limit;
+  int min_engagement_notification_limit =
+      features::kSafetyCheckNotificationPermissionsMinEnagementLimit.Get();
   bool is_minimal_engagement =
       !site_engagement::SiteEngagementService::IsEngagementAtLeast(
           score, blink::mojom::EngagementLevel::LOW) &&
-      notification_count > 0;
+      notification_count > min_engagement_notification_limit;
 
   return is_minimal_engagement || is_low_engagement;
 }
