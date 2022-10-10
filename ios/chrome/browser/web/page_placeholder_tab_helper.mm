@@ -7,6 +7,7 @@
 #import "base/bind.h"
 #import "base/check_op.h"
 #import "base/threading/thread_task_runner_handle.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -18,7 +19,7 @@
 
 namespace {
 // Placeholder will not be displayed longer than this time.
-const double kPlaceholderMaxDisplayTimeInSeconds = 1.5;
+constexpr base::TimeDelta kPlaceholderMaxDisplayTime = base::Seconds(1.5);
 
 // Placeholder removal will include a fade-out animation of this length.
 const NSTimeInterval kPlaceholderFadeOutAnimationLengthInSeconds = 0.5;
@@ -126,7 +127,7 @@ void PagePlaceholderTabHelper::AddPlaceholder() {
       FROM_HERE,
       base::BindOnce(&PagePlaceholderTabHelper::RemovePlaceholder,
                      weak_factory_.GetWeakPtr()),
-      base::Seconds(kPlaceholderMaxDisplayTimeInSeconds));
+      kPlaceholderMaxDisplayTime);
 }
 
 void PagePlaceholderTabHelper::DisplaySnapshotImage(UIImage* snapshot) {
