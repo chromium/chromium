@@ -315,6 +315,11 @@ tast_disabled_tests_from_chrome_all = [
   "lacros.AudioPinnedStream.record",
   "lacros.AudioPlay",
   "lacros.AudioRecord",
+
+  # https://crbug.com/1356506
+  "inputs.PhysicalKeyboardCantoneseTyping",
+  "inputs.PhysicalKeyboardCantoneseTyping.lacros",
+  "inputs.VirtualKeyboardChangeInput.a11y",
 ]
 
 # To create filters to be used on specific builders add them like this:
