@@ -10,10 +10,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/url_data_source.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
+#include "url/gurl.h"
 
 class Profile;
 class SkBitmap;
@@ -24,7 +26,6 @@ class SimpleURLLoader;
 }  // namespace network
 
 namespace signin {
-struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
@@ -40,7 +41,9 @@ class IdentityManager;
 //
 // If the source is an animated image, it will be re-encoded as an animated
 // WebP image; otherwise it will be re-encoded as a static PNG image.
-// TODO(b/251540838): Add attribute to always encode into static image.
+// If static-encode attribute is set to true, it will always be re-encoded as
+// a static PNG image. See the example as follows:
+//   chrome://image?url=<external image URL>&staticEncode=true
 //
 // If the image source points to Google Photos storage, meaning it needs an auth
 // token to be downloaded, you can use the is-google-photos attribute as
@@ -92,14 +95,24 @@ class SanitizedImageSource : public content::URLDataSource {
   }
 
  private:
-  void StartImageDownload(
-      GURL image_url,
-      content::URLDataSource::GotDataCallback callback,
-      absl::optional<signin::AccessTokenInfo> access_token_info);
+  struct RequestAttributes {
+    RequestAttributes();
+    RequestAttributes(const RequestAttributes&);
+    ~RequestAttributes();
+
+    GURL image_url = GURL();
+    bool static_encode = false;
+    absl::optional<signin::AccessTokenInfo> access_token_info;
+  };
+
+  void StartImageDownload(RequestAttributes request_attributes,
+                          content::URLDataSource::GotDataCallback callback);
   void OnImageLoaded(std::unique_ptr<network::SimpleURLLoader> loader,
+                     RequestAttributes request_attributes,
                      content::URLDataSource::GotDataCallback callback,
                      std::unique_ptr<std::string> body);
   void OnAnimationDecoded(
+      RequestAttributes request_attributes,
       content::URLDataSource::GotDataCallback callback,
       std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames);
 
