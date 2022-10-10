@@ -44,7 +44,7 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
     return;
   }
 
-  ChromeIdentity* account_info =
+  id<SystemIdentity> account_info =
       AuthenticationServiceFactory::GetForBrowserState(browser_state_)
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   auto* signed_in_user_info = report->mutable_chrome_signed_in_user();
