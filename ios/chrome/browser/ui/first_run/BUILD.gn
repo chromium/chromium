@@ -151,7 +151,6 @@ source_set("utils") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/settings/sync/utils",
-    "//ios/chrome/browser/ui/util",
     "//ios/web/public/thread",
     "//ui/gfx",
   ]
@@ -227,7 +226,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/fancy_ui",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:test_support",
