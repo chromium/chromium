@@ -591,6 +591,15 @@ void LocationBarView::Layout() {
   constexpr int kTextJogIndentDp = 11;
   int leading_edit_item_padding = should_indent ? kTextJogIndentDp : 0;
 
+  // Additionally, the text should be indented further if a chip is visible
+  // and the lock icon is hidden. This is treated separately, because the
+  // indentation constant has a distinct value.
+  if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
+      ShouldChipOverrideLocationIcon()) {
+    constexpr int kTextIndentLocationBarIconOverriddenDp = 8;
+    leading_edit_item_padding += kTextIndentLocationBarIconOverriddenDp;
+  }
+
   // We always subtract the left padding of the OmniboxView itself to allow for
   // an extended I-beam click target without affecting actual layout.
   leading_edit_item_padding -= omnibox_view_->GetInsets().left();
