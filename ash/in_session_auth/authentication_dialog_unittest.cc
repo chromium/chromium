@@ -6,11 +6,13 @@
 
 #include <cctype>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "ash/public/cpp/test/mock_in_session_auth_token_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -39,8 +41,17 @@ base::UnguessableToken kToken = base::UnguessableToken::Create();
 
 }  // namespace
 
-class AuthenticationDialogTest : public AshTestBase {
+class AuthenticationDialogTest : public AshTestBase,
+                                 public testing::WithParamInterface<bool> {
  public:
+  AuthenticationDialogTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
+    }
+  }
+
   void SetUp() override {
     AshTestBase::SetUp();
     UserDataAuthClient::InitializeFake();
@@ -51,10 +62,18 @@ class AuthenticationDialogTest : public AshTestBase {
                         bool /*ephemeral*/,
                         AuthSessionIntent /*intent*/,
                         AuthPerformer::StartSessionCallback callback) {
-    user_context->SetSessionAuthFactors(
-        SessionAuthFactors{{cryptohome::KeyDefinition::CreateForPassword(
-            "secret", KeyLabel(kCryptohomeGaiaKeyLabel), 0)}});
-
+    if (features::IsUseAuthFactorsEnabled()) {
+      cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
+                                    KeyLabel(kCryptohomeGaiaKeyLabel)};
+      cryptohome::AuthFactorCommonMetadata metadata{};
+      cryptohome::AuthFactor factor{std::move(ref), std::move(metadata)};
+      user_context->SetSessionAuthFactors(
+          SessionAuthFactors{{std::move(factor)}});
+    } else {
+      user_context->SetSessionAuthFactors(
+          SessionAuthFactors{{cryptohome::KeyDefinition::CreateForPassword(
+              "secret", KeyLabel(kCryptohomeGaiaKeyLabel), 0)}});
+    }
     std::move(callback).Run(true, std::move(user_context), absl::nullopt);
   }
 
@@ -111,6 +130,7 @@ class AuthenticationDialogTest : public AshTestBase {
     generator->ClickLeftButton();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<bool> success_;
   base::UnguessableToken token_;
   base::raw_ptr<AuthenticationDialog> dialog_;
@@ -119,21 +139,21 @@ class AuthenticationDialogTest : public AshTestBase {
   std::unique_ptr<AuthenticationDialog::TestApi> test_api_;
 };
 
-TEST_F(AuthenticationDialogTest, CallbackCalledOnCancel) {
+TEST_P(AuthenticationDialogTest, CallbackCalledOnCancel) {
   CreateAndShowDialog();
   dialog_->Cancel();
   EXPECT_TRUE(success_.has_value());
   EXPECT_EQ(success_.value(), false);
 }
 
-TEST_F(AuthenticationDialogTest, CallbackCalledOnClose) {
+TEST_P(AuthenticationDialogTest, CallbackCalledOnClose) {
   CreateAndShowDialog();
   dialog_->Close();
   EXPECT_TRUE(success_.has_value());
   EXPECT_EQ(success_.value(), false);
 }
 
-TEST_F(AuthenticationDialogTest, CorrectPasswordProvided) {
+TEST_P(AuthenticationDialogTest, CorrectPasswordProvided) {
   CreateAndShowDialog();
   TypePassword(kExpectedPassword);
 
@@ -156,7 +176,7 @@ TEST_F(AuthenticationDialogTest, CorrectPasswordProvided) {
   EXPECT_EQ(token_, kToken);
 }
 
-TEST_F(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
+TEST_P(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
   CreateAndShowDialog();
   TypePassword("ytrewq");
 
@@ -188,7 +208,7 @@ TEST_F(AuthenticationDialogTest, IncorrectPasswordProvidedThenCorrect) {
   EXPECT_EQ(token_, kToken);
 }
 
-TEST_F(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
+TEST_P(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
   CreateAndShowDialog();
   TypePassword(kExpectedPassword);
 
@@ -218,5 +238,7 @@ TEST_F(AuthenticationDialogTest, AuthSessionRestartedWhenExpired) {
   EXPECT_TRUE(success_.value());
   EXPECT_EQ(token_, kToken);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, AuthenticationDialogTest, ::testing::Bool());
 
 }  // namespace ash
