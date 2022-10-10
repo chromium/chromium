@@ -193,6 +193,7 @@ void FastPairPairerImpl::OnHandshakeComplete(
     QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
                     << " because: " << failure.value();
     std::move(pair_failed_callback_).Run(device_, failure.value());
+    // |this| may be destroyed after this line.
     return;
   }
 
@@ -201,6 +202,7 @@ void FastPairPairerImpl::OnHandshakeComplete(
     QP_LOG(WARNING) << __func__ << ": Device lost during handshake.";
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
+    // |this| may be destroyed after this line.
     return;
   }
 
@@ -281,6 +283,7 @@ void FastPairPairerImpl::OnPairConnected(
                        "device due to error: "
                     << error.value();
     std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
+    // |this| may be destroyed after this line.
     RecordPairDeviceErrorReason(error.value());
     return;
   }
@@ -301,6 +304,7 @@ void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
   QP_LOG(WARNING) << __func__ << " " << error_message;
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
+  // |this| may be destroyed after this line.
 }
 
 void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
@@ -346,6 +350,7 @@ void FastPairPairerImpl::OnPasskeyResponse(
                     << ": Failed to write passkey. Error: " << failure.value();
     RecordWritePasskeyCharacteristicPairFailure(failure.value());
     std::move(pair_failed_callback_).Run(device_, failure.value());
+    // |this| may be destroyed after this line.
     return;
   }
 
@@ -362,6 +367,7 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     QP_LOG(WARNING) << "Missing decrypted passkey from parse.";
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyDecryptFailure);
+    // |this| may be destroyed after this line.
     RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
@@ -373,6 +379,7 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
         << ". Actual: " << MessageTypeToString(passkey->message_type);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kIncorrectPasskeyResponseType);
+    // |this| may be destroyed after this line.
     RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
@@ -382,6 +389,7 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
                   << ". Actual: " << passkey->passkey;
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyMismatch);
+    // |this| may be destroyed after this line.
     RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
@@ -399,6 +407,7 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     QP_LOG(ERROR) << "Bluetooth pairing device lost during write to passkey.";
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
+    // |this| may be destroyed after this line.
     return;
   }
 
