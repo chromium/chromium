@@ -296,6 +296,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_LENS_SEARCH_UPLOAD_DIALOG_TEXT_PLACEHOLDER},
       {"lensSearchUploadDialogSearchButtonLabel",
        IDS_LENS_SEARCH_UPLOAD_DIALOG_SEARCH_BUTTON_LABEL},
+      {"lensSearchUploadDialogDragDropTitle",
+       IDS_LENS_SEARCH_UPLOAD_DIALOG_DRAG_DROP_TITLE},
 
       // Logo/doodle.
       {"copyLink", IDS_NTP_DOODLE_SHARE_DIALOG_COPY_LABEL},

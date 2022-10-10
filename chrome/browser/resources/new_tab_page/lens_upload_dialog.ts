@@ -8,6 +8,20 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './lens_upload_dialog.html.js';
+
+enum DialogState {
+  // Dialog is currently hidden from the user.
+  HIDDEN,
+  // Dialog is open and awaiting user input.
+  NORMAL,
+  // User is dragging a file over the UI
+  DRAGGING,
+  // User dropped a file and a request to Lens is started
+  LOADING,
+  // User selected a file that resulted in an error
+  ERROR,
+}
+
 export interface LensUploadDialogElement {
   $: {
     dialog: HTMLDivElement,
@@ -26,13 +40,41 @@ export class LensUploadDialogElement extends PolymerElement {
 
   static get properties() {
     return {
-      isHidden_: Boolean,
+      dialogState_: {
+        type: DialogState,
+      },
+      isHidden_: {
+        type: Boolean,
+        computed: `computeIsHidden_(dialogState_)`,
+      },
+      isNormal_: {
+        type: Boolean,
+        computed: `computeIsNormal_(dialogState_)`,
+        reflectToAttribute: true,
+      },
+      isDragging_: {
+        type: Boolean,
+        computed: `computeIsDragging_(dialogState_)`,
+        reflectToAttribute: true,
+      },
     };
   }
 
-  private isHidden_: boolean = true;
   private outsideClickHandler_: (event: MouseEvent) => void;
+  private dialogState_ = DialogState.HIDDEN;
   private outsideClickHandlerAttached_ = false;
+
+  private computeIsHidden_(dialogState: DialogState): boolean {
+    return dialogState === DialogState.HIDDEN;
+  }
+
+  private computeIsNormal_(dialogState: DialogState): boolean {
+    return dialogState === DialogState.NORMAL;
+  }
+
+  private computeIsDragging_(dialogState: DialogState): boolean {
+    return dialogState === DialogState.DRAGGING;
+  }
 
   constructor() {
     super();
@@ -54,7 +96,7 @@ export class LensUploadDialogElement extends PolymerElement {
   }
 
   openDialog() {
-    this.isHidden_ = false;
+    this.dialogState_ = DialogState.NORMAL;
     // Click handler needs to be attached outside of the initial event handler,
     // otherwise the click of the icon which initially opened the dialog would
     // also be registered in the outside click handler, causing the dialog to
@@ -63,7 +105,7 @@ export class LensUploadDialogElement extends PolymerElement {
   }
 
   closeDialog() {
-    this.isHidden_ = true;
+    this.dialogState_ = DialogState.HIDDEN;
     this.detachOutsideClickHandler_();
     this.dispatchEvent(new Event('close-lens-search'));
   }

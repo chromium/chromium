@@ -7302,6 +7302,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_SEARCH_BUTTON_LABEL" desc="Label for button which allows the user to submit URL for upload.">
         Search
       </message>
+      <message name="IDS_LENS_SEARCH_UPLOAD_DIALOG_DRAG_DROP_TITLE" desc="Message to user when they are dragging an image over the image drop zone.">
+        Drop an image here
+      </message>
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD" desc="The tooltip for the icon that shows the save credit card bubble">
         Save card
       </message>
