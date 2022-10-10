@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
+
 namespace ash {
 namespace test {
 
