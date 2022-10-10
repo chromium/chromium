@@ -9,7 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog.h"
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #include "content/public/browser/web_contents.h"

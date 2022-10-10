@@ -3433,7 +3433,7 @@ if (!is_android) {
         "../browser/ui/views/safe_browsing/deep_scanning_failure_modal_dialog_browsertest.cc",
         "../browser/ui/views/safe_browsing/password_reuse_modal_warning_dialog_browsertest.cc",
         "../browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc",
-        "../browser/ui/views/safe_browsing/tailored_security_desktop_dialog_browsertest.cc",
+        "../browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager_browsertest.cc",
         "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_browsertest.cc",
         "../browser/ui/views/session_crashed_bubble_view_browsertest.cc",
         "../browser/ui/views/side_search/default_search_icon_source_browsertest.cc",

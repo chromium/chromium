@@ -25,7 +25,7 @@
 #else
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog.h"
+#include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #endif
 
 namespace safe_browsing {
