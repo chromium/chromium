@@ -262,7 +262,8 @@ bool GLImageProcessorBackend::InitializeTask() {
   // Create a shader program to convert an MM21 buffer into an NV12 buffer.
   GLuint program = glCreateProgram();
   constexpr GLchar kVertexShader[] =
-      "#version 300 es\n"
+      "#version 320 es\n"
+      "#extension GL_ARM_internal : enable\n"
       "out vec2 texPos;\n"
       "void main() {\n"
       "  vec2 pos[4];\n"
@@ -292,43 +293,49 @@ bool GLImageProcessorBackend::InitializeTask() {
   // detiled coordinates. In practice, this second sample pass usually hits the
   // GPU's cache, so this doesn't influence DRAM bandwidth too negatively.
   constexpr GLchar kFragmentShader[] =
-      R"(#version 300 es
+      R"(#version 320 es
       #extension GL_EXT_YUV_target : require
-      precision highp float;
-      precision highp int;
+      #extension GL_ARM_internal : enable
+      #pragma disable_alpha_to_coverage
+      precision mediump float;
+      precision mediump int;
       uniform __samplerExternal2DY2YEXT tex;
-      const ivec2 kYTileDims = ivec2(16, 32);
-      const ivec2 kUVTileDims = ivec2(8, 16);
-      uniform int width;
-      uniform int height;
+      const uvec2 kYTileDims = uvec2(16, 32);
+      const uvec2 kUVTileDims = uvec2(8, 16);
+      uniform uint width;
+      uniform uint height;
       in vec2 texPos;
       layout(yuv) out vec4 fragColor;
       void main() {
-        int col = int(round(texPos.x*float(width)));
-        int row = int(round(texPos.y*float(height)));
-        ivec2 iCoord = ivec2(col, row);
-        ivec2 tileCoords = iCoord / kYTileDims;
-        int numTilesPerRow = width / kYTileDims.x;
-        int tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
-        ivec2 inTileCoord = iCoord % kYTileDims;
-        int offsetInTile = (inTileCoord.y * kYTileDims.x) + inTileCoord.x;
-        int linearIndex = tileIdx * kYTileDims.x * kYTileDims.y + offsetInTile;
-        int detiledY = linearIndex / width;
-        int detiledX = linearIndex % width;
+        uvec2 iCoord = uvec2(gl_FragPositionARM.xy);
+        uvec2 tileCoords = iCoord / kYTileDims;
+        uint numTilesPerRow = width / kYTileDims.x;
+        uint tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
+        uvec2 inTileCoord = iCoord % kYTileDims;
+        uint offsetInTile = (inTileCoord.y * kYTileDims.x) + inTileCoord.x;
+        highp uint linearIndex = tileIdx;
+        linearIndex = linearIndex * kYTileDims.x;
+        linearIndex = linearIndex * kYTileDims.y;
+        linearIndex = linearIndex + offsetInTile;
+        uint detiledY = linearIndex / width;
+        uint detiledX = linearIndex % width;
         fragColor = vec4(0, 0, 0, 1);
         fragColor.r = texelFetch(tex, ivec2(detiledX, detiledY), 0).r;
-        iCoord = iCoord / 2;
+        iCoord = iCoord / uint(2);
         tileCoords = iCoord / kUVTileDims;
-        int uvWidth = width / 2;
+        uint uvWidth = width / uint(2);
         numTilesPerRow = uvWidth / kUVTileDims.x;
         tileIdx = (tileCoords.y * numTilesPerRow) + tileCoords.x;
         inTileCoord = iCoord % kUVTileDims;
         offsetInTile = (inTileCoord.y * kUVTileDims.x) + inTileCoord.x;
-        linearIndex = tileIdx * kUVTileDims.x * kUVTileDims.y + offsetInTile;
+        linearIndex = tileIdx;
+        linearIndex = linearIndex * kUVTileDims.x;
+        linearIndex = linearIndex * kUVTileDims.y;
+        linearIndex = linearIndex + offsetInTile;
         detiledY = linearIndex / uvWidth;
         detiledX = linearIndex % uvWidth;
-        detiledY = detiledY * 2;
-        detiledX = detiledX * 2;
+        detiledY = detiledY * uint(2);
+        detiledX = detiledX * uint(2);
         fragColor.gb = texelFetch(tex, ivec2(detiledX, detiledY), 0).gb;
       })";
   if (!CreateAndAttachShader(program, GL_FRAGMENT_SHADER, kFragmentShader,
@@ -359,10 +366,10 @@ bool GLImageProcessorBackend::InitializeTask() {
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glUniform1i(glGetUniformLocation(program, "tex"), 0);
-  glUniform1i(glGetUniformLocation(program, "width"),
-              ALIGN(output_visible_size.width(), kTileWidth));
-  glUniform1i(glGetUniformLocation(program, "height"),
-              ALIGN(output_visible_size.height(), kTileHeight));
+  glUniform1ui(glGetUniformLocation(program, "width"),
+               ALIGN(output_visible_size.width(), kTileWidth));
+  glUniform1ui(glGetUniformLocation(program, "height"),
+               ALIGN(output_visible_size.height(), kTileHeight));
   glViewport(0, 0, output_visible_size.width(), output_visible_size.height());
 
   // This glGetError() blocks until all the commands above have executed. This
