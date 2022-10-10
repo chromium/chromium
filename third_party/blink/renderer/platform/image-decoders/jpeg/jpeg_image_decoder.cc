@@ -213,33 +213,30 @@ void term_source(j_decompress_ptr jd);
 void error_exit(j_common_ptr cinfo);
 void emit_message(j_common_ptr cinfo, int msg_level);
 
-static unsigned ReadUint16(JOCTET* data, bool is_big_endian) {
+static unsigned ReadUint16(const uint8_t* data, bool is_big_endian) {
   if (is_big_endian)
-    return (GETJOCTET(data[0]) << 8) | GETJOCTET(data[1]);
-  return (GETJOCTET(data[1]) << 8) | GETJOCTET(data[0]);
+    return (data[0] << 8) | data[1];
+  return (data[1] << 8) | data[0];
 }
 
-static unsigned ReadUint32(JOCTET* data, bool is_big_endian) {
+static unsigned ReadUint32(const uint8_t* data, bool is_big_endian) {
   if (is_big_endian)
-    return (GETJOCTET(data[0]) << 24) | (GETJOCTET(data[1]) << 16) |
-           (GETJOCTET(data[2]) << 8) | GETJOCTET(data[3]);
-  return (GETJOCTET(data[3]) << 24) | (GETJOCTET(data[2]) << 16) |
-         (GETJOCTET(data[1]) << 8) | GETJOCTET(data[0]);
+    return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+  return (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
 }
 
-static JOCTET* ReadPointerOffset(JOCTET* data,
-                                 JOCTET* start,
-                                 JOCTET* end,
-                                 bool is_big_endian) {
+static const uint8_t* ReadPointerOffset(const uint8_t* data,
+                                        const uint8_t* start,
+                                        const uint8_t* end,
+                                        bool is_big_endian) {
   unsigned max_offset = base::checked_cast<unsigned>(end - start);
   unsigned offset = ReadUint32(data, is_big_endian);
   if (offset > max_offset)
     return nullptr;
-
   return start + offset;
 }
 
-static float ReadUnsignedRational(JOCTET* data, bool is_big_endian) {
+static float ReadUnsignedRational(const uint8_t* data, bool is_big_endian) {
   unsigned nom = ReadUint32(data, is_big_endian);
   unsigned denom = ReadUint32(data + 4, is_big_endian);
   if (!denom)
@@ -306,9 +303,9 @@ static gfx::Size ExtractDensityCorrectedSize(
   return physical_size;
 }
 
-static void ReadExifDirectory(JOCTET* dir_start,
-                              JOCTET* data_start,
-                              JOCTET* data_end,
+static void ReadExifDirectory(const uint8_t* dir_start,
+                              const uint8_t* data_start,
+                              const uint8_t* data_end,
                               bool is_big_endian,
                               DecodedImageMetaData& metadata,
                               bool is_root = true) {
@@ -330,7 +327,8 @@ static void ReadExifDirectory(JOCTET* dir_start,
     return;
 
   unsigned tag_count = ReadUint16(dir_start, is_big_endian);
-  JOCTET* ifd = dir_start + 2;  // Skip over the uint16 that was just read.
+  const uint8_t* ifd =
+      dir_start + 2;  // Skip over the uint16 that was just read.
 
   // Every ifd entry is 2 bytes of tag, 2 bytes of contents datatype,
   // 4 bytes of number-of-elements, and 4 bytes of either offset to the
@@ -341,7 +339,7 @@ static void ReadExifDirectory(JOCTET* dir_start,
     unsigned tag = ReadUint16(ifd, is_big_endian);
     unsigned type = ReadUint16(ifd + 2, is_big_endian);
     unsigned count = ReadUint32(ifd + 4, is_big_endian);
-    JOCTET* value_ptr = ifd + 8;
+    const uint8_t* value_ptr = ifd + 8;
 
     // EXIF stores the value with an offset if it's bigger than 4 bytes, e.g. for rational values.
     if (type == kUnsignedRationalType) {
@@ -405,7 +403,7 @@ static void ReadExifDirectory(JOCTET* dir_start,
 
       case ExifTags::kExifOffsetTag:
         if (type == kUnsignedLongType && count == 1 && is_root) {
-          JOCTET* subdir =
+          const uint8_t* subdir =
               ReadPointerOffset(value_ptr, data_start, data_end, is_big_endian);
 
           if (subdir) {
@@ -438,9 +436,9 @@ static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData
     // the number of ifd entries, followed by that many entries.
     // When touching this code, it's useful to look at the tiff spec:
     // http://partners.adobe.com/public/developer/en/tiff/TIFF6.pdf
-    JOCTET* data_end = marker->data + marker->data_length;
-    JOCTET* data_start = marker->data + kOffsetToTiffData;
-    JOCTET* ifd0 = data_start + ifd_offset;
+    const uint8_t* data_end = marker->data + marker->data_length;
+    const uint8_t* data_start = marker->data + kOffsetToTiffData;
+    const uint8_t* ifd0 = data_start + ifd_offset;
 
     ReadExifDirectory(ifd0, data_start, data_end, is_big_endian, metadata);
   }
