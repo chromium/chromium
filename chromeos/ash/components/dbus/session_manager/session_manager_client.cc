@@ -466,6 +466,29 @@ class SessionManagerClientImpl : public SessionManagerClient {
     return true;
   }
 
+  bool BlockingRequestBrowserDataBackwardMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) override {
+    dbus::MethodCall method_call(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionManagerStartBrowserDataBackwardMigration);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(cryptohome_id.account_id());
+    dbus::ScopedDBusError error;
+    std::unique_ptr<dbus::Response> response =
+        blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
+                                                             &error);
+    if (!response) {
+      LOG(ERROR) << "BlockingRequestBrowserDataBackwardMigration failed"
+                 << (error.is_set()
+                         ? base::StringPrintf(" :%s:%s", error.name(),
+                                              error.message())
+                         : ".");
+      return false;
+    }
+
+    return true;
+  }
+
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override {
     dbus::MethodCall method_call(
         login_manager::kSessionManagerInterface,

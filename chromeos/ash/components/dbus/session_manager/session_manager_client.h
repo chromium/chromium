@@ -270,9 +270,18 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // upon next ash-chrome restart. The method returns true if the DBus call was
   // successful. The callback is passed true if the DBus call is successful and
   // false otherwise.
+  // This method is blocking. Do not use unless necessary.
   virtual bool RequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& mode) = 0;
+
+  // Makes session_manager add some flags to carry out browser data backward
+  // migration upon next ash-chrome restart. The method returns true if the DBus
+  // call was successful. The callback is passed true if the DBus call is
+  // successful and false otherwise.
+  // This method is blocking. Do not use unless necessary.
+  virtual bool BlockingRequestBrowserDataBackwardMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) = 0;
 
   // Map that is used to describe the set of active user sessions where |key|
   // is cryptohome id and |value| is user_id_hash.

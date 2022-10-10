@@ -113,6 +113,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool RequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& mode) override;
+  bool BlockingRequestBrowserDataBackwardMigration(
+      const cryptohome::AccountIdentifier& cryptohome_id) override;
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override;
   void RetrieveDevicePolicy(RetrievePolicyCallback callback) override;
   RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
@@ -353,6 +355,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
     return request_browser_data_migration_mode_value_;
   }
 
+  bool request_browser_data_backward_migration_called() const {
+    return request_browser_data_migration_called_;
+  }
+
  private:
   // Called in response to writing owner key file specified in new device
   // policy - used for in-memory fake only.
@@ -430,6 +436,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool request_browser_data_migration_called_ = false;
   bool request_browser_data_migration_mode_called_ = false;
   std::string request_browser_data_migration_mode_value_ = "invalid";
+
+  bool request_browser_data_backward_migration_called_ = false;
 
   // Contains last request passed to StartArcMiniContainer
   arc::StartArcMiniInstanceRequest last_start_arc_mini_container_request_;

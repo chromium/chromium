@@ -435,6 +435,12 @@ bool FakeSessionManagerClient::RequestBrowserDataMigration(
   return true;
 }
 
+bool FakeSessionManagerClient::BlockingRequestBrowserDataBackwardMigration(
+    const cryptohome::AccountIdentifier& cryptohome_id) {
+  request_browser_data_backward_migration_called_ = true;
+  return true;
+}
+
 void FakeSessionManagerClient::RetrieveActiveSessions(
     ActiveSessionsCallback callback) {
   PostReply(FROM_HERE, std::move(callback), user_sessions_);
