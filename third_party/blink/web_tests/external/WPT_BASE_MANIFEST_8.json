@@ -275454,6 +275454,10 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
+      "font-palette-values-valid-expected.txt": [
+       "be5b205e314f55cf7151293ff06def1061a77f14",
+       []
+      ],
       "font-size-adjust-computed-expected.txt": [
        "c824213e0a9e82e61b31deac83c0dcdaecc30276",
        []
@@ -339939,7 +339943,7 @@
      []
     ],
     "getdisplaymedia.https-expected.txt": [
-     "4cdf6f2574d11071332d57eef4113c77b312ee9d",
+     "baa9eb85b191ff7a5e4d747e2935ad1ef5408cb6",
      []
     ],
     "idlharness.https.window-expected.txt": [
@@ -394515,6 +394519,13 @@
        {}
       ]
      ],
+     "font-palette-vs-shorthand.html": [
+      "6c5cc97da94162edf86374032dfd257eeded61c0",
+      [
+       null,
+       {}
+      ]
+     ],
      "font-shorthand-serialization-001.html": [
       "e44cc7b7c8ddb8de06c6366f251afc96affdd89d",
       [
@@ -394785,14 +394796,14 @@
        ]
       ],
       "font-palette-values-invalid.html": [
-       "d439f6440fc6246c23db5d01c010f7702a629a8e",
+       "2056055f3412d5d63cfc079b082dded04cb653a1",
        [
         null,
         {}
        ]
       ],
       "font-palette-values-valid.html": [
-       "e6e3dda9eb1ced5b187137bceb2a85ee8207e700",
+       "3c0c0626f5871b4fce1ca9ceec4c01491a83faa5",
        [
         null,
         {}
@@ -542063,7 +542074,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "69b47474be0192f5fa860fec89133b14320f0760",
+     "c92a7154ee6728c1841a2e7e130f71ba521ae14e",
      [
       null,
       {
