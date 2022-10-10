@@ -12,8 +12,7 @@ namespace domain_reliability {
 namespace features {
 
 // Partitions Domain Reliability beacons and upload by NetworkIsolationKey.
-DOMAIN_RELIABILITY_EXPORT extern const base::Feature
-    kPartitionDomainReliabilityByNetworkIsolationKey;
+DOMAIN_RELIABILITY_EXPORT BASE_DECLARE_FEATURE(kPartitionDomainReliabilityByNetworkIsolationKey);
 
 }  // namespace features
 }  // namespace domain_reliability
