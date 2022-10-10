@@ -17,6 +17,8 @@
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_pairing_delegate.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,6 +43,7 @@ namespace device {
 namespace {
 
 using ::testing::_;
+using ::testing::Return;
 using ::testing::StrictMock;
 
 int8_t ToInt8(BluetoothTest::TestRSSI rssi) {
@@ -133,6 +136,56 @@ TEST(BluetoothDeviceTest, CanonicalizeAddressFormat_RejectsInvalidFormats) {
     std::array<uint8_t, 6> parsed;
     EXPECT_FALSE(ParseBluetoothAddress(kInvalidFormats[i], parsed));
   }
+}
+
+TEST(BluetoothDeviceTest, GattConnectionErrorReentrancy) {
+  constexpr char kTestDeviceAddress[] = "00:11:22:33:44:55";
+
+  auto adapter = base::MakeRefCounted<MockBluetoothAdapter>();
+  MockBluetoothDevice device(adapter.get(),
+                             /*bluetooth_class=*/0, "Test Device",
+                             kTestDeviceAddress,
+                             /*initially_paired=*/false,
+                             /*connected=*/false);
+
+  EXPECT_CALL(*adapter, GetDevice(kTestDeviceAddress))
+      .WillRepeatedly(Return(&device));
+
+  EXPECT_CALL(device, CreateGattConnection(_, _))
+      .Times(2)
+      .WillRepeatedly([&](BluetoothDevice::GattConnectionCallback callback,
+                          absl::optional<BluetoothUUID> service_uuid) {
+        device.BluetoothDevice::CreateGattConnection(std::move(callback),
+                                                     service_uuid);
+      });
+  EXPECT_CALL(device, CreateGattConnectionImpl(_))
+      .WillOnce([&](absl::optional<BluetoothUUID> service_uuid) {
+        device.DidConnectGatt(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+      });
+  EXPECT_CALL(device, IsGattConnected())
+      .WillOnce(Return(false))
+      .WillOnce(Return(true));
+
+  // Trigger potential re-entrancy problems by calling CreateGattConnection()
+  // from within the callback passed to CreateGattConnection().
+  device.CreateGattConnection(
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<BluetoothGattConnection> connection,
+              absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+            EXPECT_FALSE(connection);
+            EXPECT_EQ(error_code,
+                      BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+            device.CreateGattConnection(
+                base::BindLambdaForTesting(
+                    [&](std::unique_ptr<BluetoothGattConnection> connection,
+                        absl::optional<BluetoothDevice::ConnectErrorCode>
+                            error_code) {
+                      EXPECT_TRUE(connection);
+                      EXPECT_FALSE(error_code);
+                    }),
+                /*service_uuid=*/absl::nullopt);
+          }),
+      /*service_uuid=*/absl::nullopt);
 }
 
 #if BUILDFLAG(IS_WIN)

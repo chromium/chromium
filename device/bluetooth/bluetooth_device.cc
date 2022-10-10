@@ -595,18 +595,22 @@ void BluetoothDevice::DidConnectGatt(absl::optional<ConnectErrorCode> error) {
 
     target_service_.reset();
 
-    for (auto& callback : create_gatt_connection_callbacks_)
+    // Callbacks may call back into this code. Move the callback list onto the
+    // stack to avoid potential re-entrancy bugs.
+    auto callbacks = std::move(create_gatt_connection_callbacks_);
+    for (auto& callback : callbacks)
       std::move(callback).Run(/*connection=*/nullptr, error.value());
-    create_gatt_connection_callbacks_.clear();
     return;
   }
 
-  for (auto& callback : create_gatt_connection_callbacks_) {
+  // Callbacks may call back into this code. Move the callback list onto the
+  // stack to avoid potential re-entrancy bugs.
+  auto callbacks = std::move(create_gatt_connection_callbacks_);
+  for (auto& callback : callbacks) {
     std::move(callback).Run(CreateBluetoothGattConnectionObject(),
                             /*error_code=*/absl::nullopt);
   }
 
-  create_gatt_connection_callbacks_.clear();
   GetAdapter()->NotifyDeviceChanged(this);
 }
 
