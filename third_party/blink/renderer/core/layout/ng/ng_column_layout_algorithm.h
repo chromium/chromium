@@ -144,8 +144,6 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // the first piece of content of the multicol container. It is used to check
   // if we're at a valid class A  breakpoint (between block-level siblings).
   bool has_processed_first_child_ = false;
-
-  bool has_processed_first_column_ = false;
 };
 
 }  // namespace blink

@@ -988,17 +988,6 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
     const auto& first_column =
         To<NGPhysicalBoxFragment>(new_columns[0].Fragment());
-    if (!has_processed_first_column_) {
-      has_processed_first_column_ = true;
-
-      // According to the spec, we should only look for a baseline in the first
-      // column.
-      //
-      // TODO(layout-dev): It might make sense to look for baselines inside
-      // every column that's first in a row, not just the first column in the
-      // multicol container.
-      PropagateBaselineFromChild(first_column, row_offset);
-    }
 
     // Only the first column in a row may attempt to place any unpositioned
     // list-item. This matches the behavior in Gecko, and also to some extent
@@ -1017,6 +1006,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
   for (auto result_with_offset : new_columns) {
     const NGPhysicalBoxFragment& column = result_with_offset.Fragment();
     container_builder_.AddChild(column, result_with_offset.offset);
+    PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
   }
 
   if (min_break_appeal)
@@ -1146,21 +1136,21 @@ void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
 void NGColumnLayoutAlgorithm::PropagateBaselineFromChild(
     const NGPhysicalBoxFragment& child,
     LayoutUnit block_offset) {
-  // Bail if a baseline was already found.
-  if (container_builder_.FirstBaseline())
-    return;
+  NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(), child);
 
-  // According to the spec, multicol containers have no "last baseline set", so,
-  // unless we're looking for a "first baseline set", we have no work to do.
-  if (ConstraintSpace().BaselineAlgorithmType() ==
-      NGBaselineAlgorithmType::kInlineBlock)
-    return;
+  // Only propagate the first-baseline from the first-column.
+  if (child.IsFirstForNode() && !container_builder_.FirstBaseline()) {
+    if (auto first_baseline = fragment.FirstBaseline())
+      container_builder_.SetFirstBaseline(block_offset + *first_baseline);
+  }
 
-  NGBoxFragment logical_fragment(ConstraintSpace().GetWritingDirection(),
-                                 child);
-
-  if (auto baseline = logical_fragment.FirstBaseline())
-    container_builder_.SetFirstBaseline(block_offset + *baseline);
+  // The last-baseline is the lowest last-baseline of all fragments.
+  if (auto last_baseline = fragment.LastBaseline()) {
+    LayoutUnit baseline =
+        std::max(block_offset + *last_baseline,
+                 container_builder_.LastBaseline().value_or(LayoutUnit::Min()));
+    container_builder_.SetLastBaseline(baseline);
+  }
   container_builder_.SetUseLastBaselineForInlineBaseline();
 }
 
