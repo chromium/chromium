@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_favicon_request_handler.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 
 #include "base/logging.h"
 #include "components/favicon/core/favicon_service.h"

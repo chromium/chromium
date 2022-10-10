@@ -17,9 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_favicon_request_handler.h"
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -54,6 +52,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/favicon/large_icon_service_factory.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 #endif
 
 using content::WebContents;
@@ -194,17 +197,17 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       url_(url),
       reason_(reason),
       frame_id_(frame_id),
-      interstitial_navigation_id_(interstitial_navigation_id),
-      favicon_handler_(SupervisedUserFaviconRequestHandler(
-          url_.GetWithEmptyPath(),
-          LargeIconServiceFactory::GetForBrowserContext(profile_))) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+      interstitial_navigation_id_(interstitial_navigation_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (supervised_users::IsLocalWebApprovalsEnabled()) {
+    favicon_handler_ = std::make_unique<SupervisedUserFaviconRequestHandler>(
+        url_.GetWithEmptyPath(),
+        LargeIconServiceFactory::GetForBrowserContext(profile_));
     // Prefetch the favicon which will be rendered as part of the web approvals
     // ParentAccessDialog. Pass in DoNothing() for the favicon fetched callback
     // because if the favicon is by the time the user triggers the opening of
     // the ParentAccessDialog, we show the default favicon.
-    favicon_handler_.StartFaviconFetch(base::DoNothing());
+    favicon_handler_->StartFaviconFetch(base::DoNothing());
   }
 #endif
 }
@@ -279,7 +282,10 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
 
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
-  gfx::ImageSkia favicon = favicon_handler_.GetFaviconOrFallback();
+  gfx::ImageSkia favicon;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  favicon = favicon_handler_->GetFaviconOrFallback();
+#endif
   supervised_user_service->web_approvals_manager().RequestLocalApproval(
       web_contents(), url_, GetActiveUserFirstName(), favicon,
       std::move(callback));

@@ -7698,8 +7698,6 @@ static_library("browser") {
       "supervised_user/supervised_user_constants.h",
       "supervised_user/supervised_user_denylist.cc",
       "supervised_user/supervised_user_denylist.h",
-      "supervised_user/supervised_user_favicon_request_handler.cc",
-      "supervised_user/supervised_user_favicon_request_handler.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
       "supervised_user/supervised_user_google_auth_navigation_throttle.h",
       "supervised_user/supervised_user_interstitial.cc",
@@ -7731,6 +7729,12 @@ static_library("browser") {
       "supervised_user/web_approvals_manager.cc",
       "supervised_user/web_approvals_manager.h",
     ]
+    if (is_chromeos) {
+      sources += [
+        "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
+        "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
+      ]
+    }
     deps += [
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
       "//chrome/browser/supervised_user/supervised_user_error_page",
