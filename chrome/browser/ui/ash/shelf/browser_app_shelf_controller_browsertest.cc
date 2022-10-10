@@ -600,8 +600,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   }
 }
 
+// Flakily fails: https://crbug.com/1373054
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
-                       ActivateAndMinimizeWindows) {
+                       DISABLED_ActivateAndMinimizeWindows) {
   if (!HasLacrosArgument()) {
     return;
   }
