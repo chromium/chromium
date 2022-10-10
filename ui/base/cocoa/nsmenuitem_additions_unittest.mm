@@ -359,6 +359,70 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   // Change away from Command-QWERTY
   SetIsInputSourceCommandQwertyForTesting(false);
 
+  // With Dvorak Right or Left, some of the number row keys produce
+  // letters. Ensure that we ignore the key code when taking input
+  // from Dvorak RL.
+
+  const NSUInteger keyCodeForEightKey = 28;
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForNumericKeypadEightKey = 91;
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForNumericKeypadEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForFiveKey = 23;
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  const NSUInteger keyCodeForNumericKeypadFiveKey = 87;
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForNumericKeypadFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  SetIsInputSourceDvorakRightOrLeftForTesting(true);
+
+  // Under Dvorak Right, the eight key is the letter "f".
+  key = KeyEvent(0x100110, @"f", @"f", keyCodeForEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+
+  // Pressing the eight key on the numeric keypad should switch tabs.
+  key = KeyEvent(0x100110, @"8", @"8", keyCodeForNumericKeypadEightKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"8", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  // Under Dvorak Left, the five key is the letter "f".
+  key = KeyEvent(0x100110, @"f", @"f", keyCodeForFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+
+  // Pressing the five key on the numeric keypad should switch tabs.
+  key = KeyEvent(0x100110, @"5", @"5", keyCodeForNumericKeypadFiveKey);
+  item = MenuItem(@"f", NSEventModifierFlagCommand);
+  ExpectKeyDoesntFireItem(key, item);
+  item = MenuItem(@"5", NSEventModifierFlagCommand);
+  ExpectKeyFiresItem(key, item);
+
+  SetIsInputSourceDvorakRightOrLeftForTesting(false);
+
   // cmd-shift-z on dvorak layout (so that we get a ':')
   key = KeyEvent(0x12010a, @";", @":", 6);
   ExpectKeyFiresItem(key, MenuItem(@":", NSEventModifierFlagCommand));

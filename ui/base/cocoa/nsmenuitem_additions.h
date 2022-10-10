@@ -26,6 +26,9 @@ namespace cocoa {
 void COMPONENT_EXPORT(UI_BASE)
     SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty);
 
+void COMPONENT_EXPORT(UI_BASE)
+    SetIsInputSourceDvorakRightOrLeftForTesting(bool is_dvorak_right_or_left);
+
 // Returns whether the named keyboard layout has the command-qwerty behavior,
 // meaning that the layout acts as though it was QWERTY when the command key is
 // held.

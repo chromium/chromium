@@ -15,15 +15,25 @@ namespace cocoa {
 
 namespace {
 bool g_is_input_source_command_qwerty = false;
+bool g_is_input_source_dvorak_right_or_left = false;
 }  // namespace
 
 void SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty) {
   g_is_input_source_command_qwerty = is_command_qwerty;
 }
 
+void SetIsInputSourceDvorakRightOrLeftForTesting(bool is_dvorak_right_or_left) {
+  g_is_input_source_dvorak_right_or_left = is_dvorak_right_or_left;
+}
+
 bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
          [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
+}
+
+bool IsKeyboardLayoutDvorakRightOrLeft(NSString* layout_id) {
+  return [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Right"] ||
+         [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Left"];
 }
 
 NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
@@ -86,6 +96,8 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
       inputSource.get(), kTISPropertyInputSourceID);
   ui::cocoa::g_is_input_source_command_qwerty =
       ui::cocoa::IsKeyboardLayoutCommandQwerty(layoutId);
+  ui::cocoa::g_is_input_source_dvorak_right_or_left =
+      ui::cocoa::IsKeyboardLayoutDvorakRightOrLeft(layoutId);
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -185,12 +197,14 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
     eventString = [NSString stringWithFormat:@"%C", shifted_character];
   }
 
-  // On all keyboards, treat cmd + <number key> as the equivalent numerical key.
-  // This is technically incorrect, since the actual character produced may not
-  // be a number key, but this causes Chrome to match platform behavior. For
-  // example, on the Czech keyboard, we want to interpret cmd + '+' as cmd +
-  // '1', even though the '1' character normally requires cmd + shift + '+'.
-  if (eventModifiers == NSEventModifierFlagCommand) {
+  // On all keyboards except Dvorak-Right/Left, treat cmd + <number key> as the
+  // equivalent numerical key. This is technically incorrect, since the actual
+  // character produced may not be a number key, but this causes Chrome to match
+  // platform behavior. For example, on the Czech keyboard, we want to interpret
+  // cmd + '+' as cmd + '1', even though the '1' character normally requires
+  // cmd + shift + '+'.
+  if (!ui::cocoa::g_is_input_source_dvorak_right_or_left &&
+      eventModifiers == NSEventModifierFlagCommand) {
     ui::KeyboardCode windows_keycode =
         ui::KeyboardCodeFromKeyCode(event.keyCode);
     if (windows_keycode >= ui::VKEY_0 && windows_keycode <= ui::VKEY_9) {
