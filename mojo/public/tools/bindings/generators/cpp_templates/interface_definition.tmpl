@@ -10,7 +10,7 @@
 {%- macro alloc_params(struct, params, message, method_number, is_response) %}
   bool success = true;
 {%-   for param in struct.packed.packed_fields_in_ordinal_order %}
-  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}}{};
+  {{param.field.kind|cpp_wrapper_call_type}} p_{{param.field.name}} = mojo::DefaultConstructTraits::CreateInstance<{{param.field.kind|cpp_wrapper_call_type}}>();
 {%-   endfor %}
   {{struct.name}}DataView input_data_view({{params}}, {{message}});
   {{struct_macros.deserialize(struct, "input_data_view", "p_%s", "success")}}

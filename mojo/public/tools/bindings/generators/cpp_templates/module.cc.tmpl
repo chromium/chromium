@@ -29,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "mojo/public/cpp/bindings/default_construct_traits.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
@@ -198,7 +199,7 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
 {%-     set response_type = method.response_parameters[0].kind|cpp_wrapper_call_type -%}
 {{response_type}} {{interface.name}}AsyncWaiter::{{method.name}}(
     {{interface_macros.declare_params("", method.parameters)}}) {
-  {{response_type}} async_wait_result;
+  {{response_type}} async_wait_result = mojo::DefaultConstructTraits::CreateInstance<{{response_type}}>();
   {{method.name}}(
 {%-   for param in method.parameters -%}
         std::move({{param.name}}),
