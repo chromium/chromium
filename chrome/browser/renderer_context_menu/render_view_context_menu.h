@@ -269,6 +269,7 @@ class RenderViewContextMenu
   void AppendClickToCallItem();
 #endif
   void AppendRegionSearchItem();
+  void AppendLiveCaptionItem();
   bool AppendFollowUnfollowItem();
   void AppendSendTabToSelfItem(bool add_separator);
   void AppendUserNotesItems();
@@ -323,6 +324,7 @@ class RenderViewContextMenu
   void ExecMute();
   void ExecLoop();
   void ExecControls();
+  void ExecLiveCaption();
   void ExecRotateCW();
   void ExecRotateCCW();
   void ExecReloadPackagedApp();

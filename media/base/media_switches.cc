@@ -709,6 +709,11 @@ BASE_FEATURE(kLiveCaptionMultiLanguage,
              "LiveCaptionMultiLanguage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable Live Caption from the right click menu.
+BASE_FEATURE(kLiveCaptionRightClick,
+             "LiveCaptionRightClick",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Live Caption runs system-wide on ChromeOS, as opposed to just in the browser.
 BASE_FEATURE(kLiveCaptionSystemWideOnChromeOS,
              "LiveCaptionSystemWideOnChromeOS",

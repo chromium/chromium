@@ -120,6 +120,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/lens/lens_features.h"
+#include "components/live_caption/caption_util.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -450,13 +451,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_RUN_PDF_OCR, 122},
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
        {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
+       {IDC_LIVE_CAPTION, 125},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 125}});
+       {0, 126}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -1785,6 +1787,7 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+  AppendLiveCaptionItem();
   AppendMediaRouterItem();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (IsRegionSearchEnabled()) {
@@ -2239,6 +2242,17 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   }
 }
 
+void RenderViewContextMenu::AppendLiveCaptionItem() {
+  if (captions::IsLiveCaptionFeatureSupported() &&
+      base::FeatureList::IsEnabled(media::kLiveCaptionRightClick)) {
+    PrefService* prefs = GetPrefs(browser_context_);
+    int string_id = prefs->GetBoolean(prefs::kLiveCaptionEnabled)
+                        ? IDS_CONTENT_CONTEXT_LIVE_CAPTION_DISABLE
+                        : IDS_CONTENT_CONTEXT_LIVE_CAPTION_ENABLE;
+    menu_model_.AddItemWithStringId(IDC_LIVE_CAPTION, string_id);
+  }
+}
+
 // Menu delegate functions -----------------------------------------------------
 
 bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
@@ -2305,6 +2319,9 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_RELOAD:
       return IsReloadEnabled();
+
+    case IDC_LIVE_CAPTION:
+      return true;
 
     case IDC_VIEW_SOURCE:
     case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
@@ -2757,6 +2774,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_RELOAD:
       chrome::Reload(GetBrowser(), WindowOpenDisposition::CURRENT_TAB);
+      break;
+
+    case IDC_LIVE_CAPTION:
+      ExecLiveCaption();
       break;
 
     case IDC_CONTENT_CONTEXT_RELOAD_PACKAGED_APP:
@@ -3715,6 +3736,14 @@ void RenderViewContextMenu::ExecControls() {
                       blink::mojom::MediaPlayerAction(
                           blink::mojom::MediaPlayerActionType::kControls,
                           !IsCommandIdChecked(IDC_CONTENT_CONTEXT_CONTROLS)));
+}
+
+void RenderViewContextMenu::ExecLiveCaption() {
+  PrefService* prefs = GetPrefs(browser_context_);
+  bool is_enabled = !prefs->GetBoolean(prefs::kLiveCaptionEnabled);
+  prefs->SetBoolean(prefs::kLiveCaptionEnabled, is_enabled);
+  base::UmaHistogramBoolean("Accessibility.LiveCaption.EnableFromContextMenu",
+                            is_enabled);
 }
 
 void RenderViewContextMenu::ExecRotateCW() {
