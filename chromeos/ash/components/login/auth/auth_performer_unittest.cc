@@ -95,9 +95,9 @@ void ExpectKeyLabel(
   EXPECT_EQ(request.authorization().key().data().label(), label);
 }
 
-class AuthPerformerTest : public testing::Test {
+class AuthPerformerTestBase : public testing::Test {
  public:
-  AuthPerformerTest()
+  AuthPerformerTestBase()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {
     CryptohomeMiscClient::InitializeFake();
@@ -105,7 +105,7 @@ class AuthPerformerTest : public testing::Test {
     context_ = std::make_unique<UserContext>();
   }
 
-  ~AuthPerformerTest() override {
+  ~AuthPerformerTestBase() override {
     chromeos::SystemSaltGetter::Shutdown();
     CryptohomeMiscClient::Shutdown();
   }
@@ -116,7 +116,17 @@ class AuthPerformerTest : public testing::Test {
   std::unique_ptr<UserContext> context_;
 };
 
-class AuthPerformerWithAuthFactorsTest : public AuthPerformerTest {
+class AuthPerformerWithKeysTest : public AuthPerformerTestBase {
+ public:
+  AuthPerformerWithKeysTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kUseAuthFactors);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class AuthPerformerWithAuthFactorsTest : public AuthPerformerTestBase {
  public:
   AuthPerformerWithAuthFactorsTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kUseAuthFactors);
@@ -128,7 +138,7 @@ class AuthPerformerWithAuthFactorsTest : public AuthPerformerTest {
 
 // Checks that a key that has no type is recognized during StartAuthSession() as
 // a password knowledge key.
-TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
+TEST_F(AuthPerformerWithKeysTest, StartWithUntypedPasswordKey) {
   // Arrange: cryptohome replies with a key that has no |type| set.
   EXPECT_CALL(mock_client_, StartAuthSession(_, _))
       .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
@@ -158,7 +168,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedPasswordKey) {
 
 // Checks that a key that has no type is recognized during StartAuthSession() as
 // a kiosk key for a kiosk user.
-TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
+TEST_F(AuthPerformerWithKeysTest, StartWithUntypedKioskKey) {
   // Arrange: user is kiosk, and cryptohome replies with a key that has no
   // |type| set.
   context_ = std::make_unique<UserContext>(user_manager::USER_TYPE_KIOSK_APP,
@@ -191,7 +201,7 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
 
 // Checks that AuthenticateUsingKnowledgeKey (which will be called with "gaia"
 // label after online authentication) correctly falls back to "legacy-0" label.
-TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
+TEST_F(AuthPerformerWithKeysTest, KnowledgeKeyCorrectLabelFallback) {
   SetupUserWithLegacyPassword(context_.get());
   // Password knowledge key in user context.
   *context_->GetKey() = Key("secret");
@@ -220,7 +230,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
 
 // Checks that AuthenticateUsingKnowledgeKey called with "pin" key does not
 // fallback to "legacy-0" label.
-TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
+TEST_F(AuthPerformerWithKeysTest, KnowledgeKeyNoFallbackOnPin) {
   SetupUserWithLegacyPassword(context_.get());
   // Simulate the already started auth session.
   context_->SetAuthSessionId("123");
@@ -252,7 +262,7 @@ TEST_F(AuthPerformerTest, KnowledgeKeyNoFallbackOnPin) {
             user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND);
 }
 
-TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
+TEST_F(AuthPerformerWithKeysTest, AuthenticateWithPasswordCorrectLabel) {
   SetupUserWithLegacyPassword(context_.get());
   // Simulate the already started auth session.
   context_->SetAuthSessionId("123");
@@ -277,7 +287,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordCorrectLabel) {
   ASSERT_FALSE(result.Get<1>().has_value());
 }
 
-TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
+TEST_F(AuthPerformerWithKeysTest, AuthenticateWithPasswordBadLabel) {
   SetupUserWithLegacyPassword(context_.get());
   // Simulate the already started auth session.
   context_->SetAuthSessionId("123");
@@ -299,7 +309,7 @@ TEST_F(AuthPerformerTest, AuthenticateWithPasswordBadLabel) {
 }
 
 // Checks how AuthSessionStatus works when cryptohome returns an error.
-TEST_F(AuthPerformerTest, AuthSessionStatusOnError) {
+TEST_F(AuthPerformerWithKeysTest, AuthSessionStatusOnError) {
   AuthPerformer performer(&mock_client_);
   context_->SetAuthSessionId("123");
 
@@ -329,7 +339,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnError) {
 }
 
 // Checks how AuthSessionStatus works when session is not valid.
-TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSession) {
+TEST_F(AuthPerformerWithKeysTest, AuthSessionStatusOnInvalidSession) {
   AuthPerformer performer(&mock_client_);
   context_->SetAuthSessionId("123");
 
@@ -359,7 +369,8 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSession) {
 
 // Checks how AuthSessionStatus works when session was just invalidated
 // (cryptohome still finds authsession, but it is already marked as invalid).
-TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSessionAnotherFlow) {
+TEST_F(AuthPerformerWithKeysTest,
+       AuthSessionStatusOnInvalidSessionAnotherFlow) {
   AuthPerformer performer(&mock_client_);
   context_->SetAuthSessionId("123");
 
@@ -388,7 +399,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusOnInvalidSessionAnotherFlow) {
 }
 
 // Checks how AuthSessionStatus works when session is not authenticated.
-TEST_F(AuthPerformerTest, AuthSessionStatusWhenNotAuthenticated) {
+TEST_F(AuthPerformerWithKeysTest, AuthSessionStatusWhenNotAuthenticated) {
   AuthPerformer performer(&mock_client_);
   context_->SetAuthSessionId("123");
 
@@ -418,7 +429,7 @@ TEST_F(AuthPerformerTest, AuthSessionStatusWhenNotAuthenticated) {
 }
 
 // Checks how AuthSessionStatus works when session is authenticated.
-TEST_F(AuthPerformerTest, AuthSessionStatusWhenAuthenticated) {
+TEST_F(AuthPerformerWithKeysTest, AuthSessionStatusWhenAuthenticated) {
   AuthPerformer performer(&mock_client_);
   context_->SetAuthSessionId("123");
 
