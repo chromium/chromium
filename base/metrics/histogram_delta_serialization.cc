@@ -42,7 +42,7 @@ HistogramDeltaSerialization::~HistogramDeltaSerialization() = default;
 void HistogramDeltaSerialization::PrepareAndSerializeDeltas(
     std::vector<std::string>* serialized_deltas,
     bool include_persistent) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   serialized_deltas_ = serialized_deltas;
   // Note: Before serializing, we set the kIPCSerializationSourceFlag for all
@@ -68,7 +68,7 @@ void HistogramDeltaSerialization::DeserializeAndAddSamples(
 void HistogramDeltaSerialization::RecordDelta(
     const HistogramBase& histogram,
     const HistogramSamples& snapshot) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(0, snapshot.TotalCount());
 
   Pickle pickle;

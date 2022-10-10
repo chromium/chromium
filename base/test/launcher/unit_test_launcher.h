@@ -158,7 +158,7 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
 
   void OnTestTimedOut(const CommandLine& cmd_line) override;
 
-  ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   raw_ptr<UnitTestPlatformDelegate> platform_delegate_;
 

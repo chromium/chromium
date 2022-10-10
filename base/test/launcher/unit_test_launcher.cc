@@ -375,11 +375,11 @@ UnitTestLauncherDelegate::UnitTestLauncherDelegate(
       timeout_callback_(timeout_callback) {}
 
 UnitTestLauncherDelegate::~UnitTestLauncherDelegate() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 bool UnitTestLauncherDelegate::GetTests(std::vector<TestIdentifier>* output) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return platform_delegate_->GetTests(output);
 }
 

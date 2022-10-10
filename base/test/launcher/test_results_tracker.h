@@ -148,7 +148,7 @@ class TestResultsTracker {
     int line;
   };
 
-  ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   // Print tests that leak files and/or directories in their temp dir.
   bool print_temp_leaks_ = false;

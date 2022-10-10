@@ -41,26 +41,26 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
   AutoOpenCloseEvent(const AutoOpenCloseEvent&) = delete;
   AutoOpenCloseEvent& operator=(const AutoOpenCloseEvent&) = delete;
   ~AutoOpenCloseEvent() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
         this);
   }
 
   void Begin() {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     start_time_ = TRACE_TIME_TICKS_NOW();
     TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
         category, event_name_, static_cast<void*>(this), start_time_);
   }
   void End() {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     TRACE_EVENT_ASYNC_END0(category, event_name_, static_cast<void*>(this));
     start_time_ = base::TimeTicks();
   }
 
   // AsyncEnabledStateObserver implementation
   void OnTraceLogEnabled() override {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (!start_time_.is_null()) {
       TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
           category, event_name_, static_cast<void*>(this), start_time_);
@@ -71,7 +71,7 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
  private:
   const char* const event_name_;
   base::TimeTicks start_time_;
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
   WeakPtrFactory<AutoOpenCloseEvent> weak_factory_{this};
 };
 

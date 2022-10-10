@@ -812,7 +812,7 @@ class TestRunner {
   // stderr.
   static void NullXmlErrorFunc(void* context, const char* message, ...) {}
 
-  ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   std::vector<std::string> tests_to_run_;
   const raw_ptr<TestLauncher> launcher_;
@@ -832,7 +832,7 @@ class TestRunner {
 };
 
 void TestRunner::Run(const std::vector<std::string>& test_names) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // No sequence runners, fail immediately.
   CHECK_GT(runner_count_, 0u);
   tests_to_run_ = test_names;
@@ -853,7 +853,7 @@ void TestRunner::Run(const std::vector<std::string>& test_names) {
 
 void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
                                 const FilePath& last_task_temp_dir) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // delete previous temporary directory
   if (!last_task_temp_dir.empty() &&
       !DeletePathRecursively(last_task_temp_dir)) {
@@ -2130,7 +2130,7 @@ void TestLauncher::OnTestIterationFinished() {
 }
 
 void TestLauncher::OnOutputTimeout() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   AutoLock lock(*GetLiveProcessesLock());
 

@@ -40,10 +40,10 @@ struct OneShotEvent::TaskInfo {
 OneShotEvent::OneShotEvent() : signaled_(false) {
   // It's acceptable to construct the OneShotEvent on one thread, but
   // immediately move it to another thread.
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 }
 OneShotEvent::OneShotEvent(bool signaled) : signaled_(signaled) {
-  thread_checker_.DetachFromThread();
+  DETACH_FROM_THREAD(thread_checker_);
 }
 OneShotEvent::~OneShotEvent() {}
 
@@ -60,7 +60,7 @@ void OneShotEvent::PostDelayed(const Location& from_here,
 }
 
 void OneShotEvent::Signal() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   CHECK(!signaled_) << "Only call Signal once.";
 
@@ -89,7 +89,7 @@ void OneShotEvent::PostImpl(const Location& from_here,
                             OnceClosure task,
                             scoped_refptr<SingleThreadTaskRunner> runner,
                             const TimeDelta& delay) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_signaled()) {
     if (delay.is_zero())
