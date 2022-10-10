@@ -20,7 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -141,7 +141,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
     return ptr_factory_.GetWeakPtr();
   }
 
-  LeveledLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
+  PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
 
   // in_flight_memory() is used to keep track of all memory scheduled to be
   // written using ScheduleTask. This is reported to memory dumps.
@@ -216,7 +216,7 @@ class CONTENT_EXPORT IndexedDBTransaction {
 
   bool used_ = false;
   State state_ = CREATED;
-  LeveledLockHolder locks_receiver_;
+  PartitionedLockHolder locks_receiver_;
   bool is_commit_pending_ = false;
 
   // We are owned by the connection object, but during force closes sometimes

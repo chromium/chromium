@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 
 #include <utility>
 
@@ -13,31 +13,31 @@
 
 namespace content {
 
-DisjointRangeLockManager::LockRequest::LockRequest() = default;
-DisjointRangeLockManager::LockRequest::LockRequest(
+PartitionedLockManagerImpl::LockRequest::LockRequest() = default;
+PartitionedLockManagerImpl::LockRequest::LockRequest(
     LockType type,
-    base::WeakPtr<LeveledLockHolder> locks_holder,
+    base::WeakPtr<PartitionedLockHolder> locks_holder,
     base::OnceClosure acquired_callback)
     : requested_type(type),
       locks_holder(std::move(locks_holder)),
       acquired_callback(std::move(acquired_callback)) {}
-DisjointRangeLockManager::LockRequest::LockRequest(LockRequest&&) noexcept =
+PartitionedLockManagerImpl::LockRequest::LockRequest(LockRequest&&) noexcept =
     default;
-DisjointRangeLockManager::LockRequest::~LockRequest() = default;
-DisjointRangeLockManager::Lock::Lock() = default;
-DisjointRangeLockManager::Lock::Lock(Lock&&) noexcept = default;
-DisjointRangeLockManager::Lock::~Lock() = default;
-DisjointRangeLockManager::Lock& DisjointRangeLockManager::Lock::operator=(
-    DisjointRangeLockManager::Lock&&) noexcept = default;
+PartitionedLockManagerImpl::LockRequest::~LockRequest() = default;
+PartitionedLockManagerImpl::Lock::Lock() = default;
+PartitionedLockManagerImpl::Lock::Lock(Lock&&) noexcept = default;
+PartitionedLockManagerImpl::Lock::~Lock() = default;
+PartitionedLockManagerImpl::Lock& PartitionedLockManagerImpl::Lock::operator=(
+    PartitionedLockManagerImpl::Lock&&) noexcept = default;
 
-DisjointRangeLockManager::DisjointRangeLockManager(int level_count)
+PartitionedLockManagerImpl::PartitionedLockManagerImpl(int level_count)
     : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   locks_.resize(level_count);
 }
 
-DisjointRangeLockManager::~DisjointRangeLockManager() = default;
+PartitionedLockManagerImpl::~PartitionedLockManagerImpl() = default;
 
-int64_t DisjointRangeLockManager::LocksHeldForTesting() const {
+int64_t PartitionedLockManagerImpl::LocksHeldForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t locks = 0;
   for (const LockLevelMap& map : locks_) {
@@ -47,7 +47,7 @@ int64_t DisjointRangeLockManager::LocksHeldForTesting() const {
   }
   return locks;
 }
-int64_t DisjointRangeLockManager::RequestsWaitingForTesting() const {
+int64_t PartitionedLockManagerImpl::RequestsWaitingForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int64_t requests = 0;
   for (const LockLevelMap& map : locks_) {
@@ -58,9 +58,9 @@ int64_t DisjointRangeLockManager::RequestsWaitingForTesting() const {
   return requests;
 }
 
-bool DisjointRangeLockManager::AcquireLocks(
-    base::flat_set<LeveledLockRequest> lock_requests,
-    base::WeakPtr<LeveledLockHolder> locks_holder,
+bool PartitionedLockManagerImpl::AcquireLocks(
+    base::flat_set<PartitionedLockRequest> lock_requests,
+    base::WeakPtr<PartitionedLockHolder> locks_holder,
     LocksAcquiredCallback callback) {
   if (!locks_holder)
     return false;
@@ -80,7 +80,7 @@ bool DisjointRangeLockManager::AcquireLocks(
       base::BindOnce(
           [](scoped_refptr<base::SequencedTaskRunner> runner,
              scoped_refptr<base::RefCountedData<bool>> run_synchronously,
-             base::WeakPtr<LeveledLockHolder> holder,
+             base::WeakPtr<PartitionedLockHolder> holder,
              LocksAcquiredCallback callback) {
             // All locks have been acquired.
             if (!holder || callback.IsCancelled() || callback.is_null())
@@ -92,7 +92,7 @@ bool DisjointRangeLockManager::AcquireLocks(
           },
           task_runner_, run_callback_synchonously, locks_holder,
           std::move(callback)));
-  for (LeveledLockRequest& request : lock_requests) {
+  for (PartitionedLockRequest& request : lock_requests) {
     bool success = AcquireLock(std::move(request), locks_holder,
                                all_locks_acquired_barrier);
     if (!success) {
@@ -105,8 +105,8 @@ bool DisjointRangeLockManager::AcquireLocks(
   return true;
 }
 
-DisjointRangeLockManager::TestLockResult DisjointRangeLockManager::TestLock(
-    LeveledLockRequest request) {
+PartitionedLockManagerImpl::TestLockResult PartitionedLockManagerImpl::TestLock(
+    PartitionedLockRequest request) {
   if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
     return TestLockResult::kInvalid;
   if (request.range.begin >= request.range.end)
@@ -135,8 +135,9 @@ DisjointRangeLockManager::TestLockResult DisjointRangeLockManager::TestLock(
                                           : TestLockResult::kLocked;
 }
 
-void DisjointRangeLockManager::RemoveLockRange(int level,
-                                               const LeveledLockRange& range) {
+void PartitionedLockManagerImpl::RemoveLockRange(
+    int level,
+    const PartitionedLockRange& range) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LT(level, static_cast<int>(locks_.size()));
   auto& level_locks = locks_[level];
@@ -147,9 +148,9 @@ void DisjointRangeLockManager::RemoveLockRange(int level,
   }
 }
 
-bool DisjointRangeLockManager::AcquireLock(
-    LeveledLockRequest request,
-    base::WeakPtr<LeveledLockHolder> locks_holder,
+bool PartitionedLockManagerImpl::AcquireLock(
+    PartitionedLockRequest request,
+    base::WeakPtr<PartitionedLockHolder> locks_holder,
     base::OnceClosure acquired_callback) {
   DCHECK(locks_holder);
   if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
@@ -180,7 +181,7 @@ bool DisjointRangeLockManager::AcquireLock(
     ++lock.acquired_count;
     lock.lock_mode = request.type;
     auto released_callback = base::BindOnce(
-        &DisjointRangeLockManager::LockReleased, weak_factory_.GetWeakPtr());
+        &PartitionedLockManagerImpl::LockReleased, weak_factory_.GetWeakPtr());
     locks_holder->locks.emplace_back(std::move(request.range), request.level,
                                      std::move(released_callback));
     std::move(acquired_callback).Run();
@@ -194,7 +195,8 @@ bool DisjointRangeLockManager::AcquireLock(
   return true;
 }
 
-void DisjointRangeLockManager::LockReleased(int level, LeveledLockRange range) {
+void PartitionedLockManagerImpl::LockReleased(int level,
+                                              PartitionedLockRange range) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LT(level, static_cast<int>(locks_.size()));
   auto& level_locks = locks_[level];
@@ -222,8 +224,9 @@ void DisjointRangeLockManager::LockReleased(int level, LeveledLockRange range) {
 
       ++lock.acquired_count;
       lock.lock_mode = requester.requested_type;
-      auto released_callback = base::BindOnce(
-          &DisjointRangeLockManager::LockReleased, weak_factory_.GetWeakPtr());
+      auto released_callback =
+          base::BindOnce(&PartitionedLockManagerImpl::LockReleased,
+                         weak_factory_.GetWeakPtr());
       // Grant the lock.
       requester.locks_holder->locks.emplace_back(range, level,
                                                  std::move(released_callback));
@@ -236,9 +239,9 @@ void DisjointRangeLockManager::LockReleased(int level, LeveledLockRange range) {
 }
 
 // static
-bool DisjointRangeLockManager::IsRangeDisjointFromNeighbors(
+bool PartitionedLockManagerImpl::IsRangeDisjointFromNeighbors(
     const LockLevelMap& map,
-    const LeveledLockRange& range) {
+    const PartitionedLockRange& range) {
   DCHECK_EQ(map.count(range), 1ull);
   auto it = map.find(range);
   auto next_it = it;

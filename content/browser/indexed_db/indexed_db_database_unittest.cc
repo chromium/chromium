@@ -18,7 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"
 #include "content/browser/indexed_db/indexed_db.h"
@@ -106,7 +106,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  DisjointRangeLockManager lock_manager_;
+  PartitionedLockManagerImpl lock_manager_;
 
   base::WeakPtrFactory<IndexedDBDatabaseTest> weak_factory_{this};
 };
@@ -551,7 +551,7 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
   scoped_refptr<MockIndexedDBCallbacks> request_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
   raw_ptr<IndexedDBTransaction> transaction_ = nullptr;
-  DisjointRangeLockManager lock_manager_;
+  PartitionedLockManagerImpl lock_manager_;
   bool error_called_ = false;
 
   leveldb::Status commit_success_;

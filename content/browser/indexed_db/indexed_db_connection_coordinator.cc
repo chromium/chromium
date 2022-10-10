@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -214,9 +214,10 @@ class IndexedDBConnectionCoordinator::OpenRequest
     DCHECK_GT(new_version, old_version);
 
     if (!has_connections) {
-      std::vector<LeveledLockManager::LeveledLockRequest> lock_requests = {
-          {kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata_.id),
-           LeveledLockManager::LockType::kExclusive}};
+      std::vector<PartitionedLockManager::PartitionedLockRequest>
+          lock_requests = {{kDatabaseRangeLockLevel,
+                            GetDatabaseLockRange(db_->metadata_.id),
+                            PartitionedLockManager::LockType::kExclusive}};
       state_ = RequestState::kPendingLocks;
       db_->lock_manager_->AcquireLocks(
           std::move(lock_requests), lock_receiver_.weak_factory.GetWeakPtr(),
@@ -261,9 +262,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
 
   void OnNoConnections() override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    std::vector<LeveledLockManager::LeveledLockRequest> lock_requests = {
-        {kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
-         LeveledLockManager::LockType::kExclusive}};
+    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
+        {{kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
+          PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
     db_->lock_manager_->AcquireLocks(
         std::move(lock_requests), lock_receiver_.weak_factory.GetWeakPtr(),
@@ -368,7 +369,7 @@ class IndexedDBConnectionCoordinator::OpenRequest
   }
 
  private:
-  LeveledLockHolder lock_receiver_;
+  PartitionedLockHolder lock_receiver_;
 
   std::unique_ptr<IndexedDBPendingConnection> pending_;
 
@@ -405,9 +406,10 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   void Perform(bool has_connections) override {
     if (!has_connections) {
       // No connections, so delete immediately.
-      std::vector<LeveledLockManager::LeveledLockRequest> lock_requests = {
-          {kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
-           LeveledLockManager::LockType::kExclusive}};
+      std::vector<PartitionedLockManager::PartitionedLockRequest>
+          lock_requests = {{kDatabaseRangeLockLevel,
+                            GetDatabaseLockRange(db_->metadata().id),
+                            PartitionedLockManager::LockType::kExclusive}};
       state_ = RequestState::kPendingLocks;
       db_->lock_manager_->AcquireLocks(
           std::move(lock_requests), lock_receiver_.AsWeakPtr(),
@@ -434,9 +436,9 @@ class IndexedDBConnectionCoordinator::DeleteRequest
 
   void OnNoConnections() override {
     DCHECK(state_ == RequestState::kPendingNoConnections);
-    std::vector<LeveledLockManager::LeveledLockRequest> lock_requests = {
-        {kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
-         LeveledLockManager::LockType::kExclusive}};
+    std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
+        {{kDatabaseRangeLockLevel, GetDatabaseLockRange(db_->metadata().id),
+          PartitionedLockManager::LockType::kExclusive}};
     state_ = RequestState::kPendingLocks;
     db_->lock_manager_->AcquireLocks(
         std::move(lock_requests), lock_receiver_.AsWeakPtr(),
@@ -511,7 +513,7 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   }
 
  private:
-  LeveledLockHolder lock_receiver_;
+  PartitionedLockHolder lock_receiver_;
   scoped_refptr<IndexedDBCallbacks> callbacks_;
   base::OnceClosure on_database_deleted_;
 

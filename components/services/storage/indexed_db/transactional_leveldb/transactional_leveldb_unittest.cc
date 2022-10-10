@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
@@ -66,7 +66,7 @@ class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
 
   leveldb::Status OpenLevelDBDatabase() {
     CHECK(leveldb_);
-    lock_manager_ = std::make_unique<DisjointRangeLockManager>(1);
+    lock_manager_ = std::make_unique<PartitionedLockManagerImpl>(1);
     std::unique_ptr<LevelDBScopes> scopes = std::make_unique<LevelDBScopes>(
         std::vector<uint8_t>{'a'}, 1024ul, leveldb_, lock_manager_.get(),
         base::DoNothing());
@@ -87,7 +87,7 @@ class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
  protected:
   DefaultTransactionalLevelDBFactory transactional_leveldb_factory_;
   std::unique_ptr<TransactionalLevelDBDatabase> transactional_leveldb_database_;
-  std::unique_ptr<DisjointRangeLockManager> lock_manager_;
+  std::unique_ptr<PartitionedLockManagerImpl> lock_manager_;
 };
 
 TEST_F(TransactionalLevelDBDatabaseTest, CorruptionTest) {

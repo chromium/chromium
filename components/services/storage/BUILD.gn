@@ -114,14 +114,14 @@ source_set("storage") {
 
 component("lock_manager") {
   sources = [
-    "indexed_db/locks/disjoint_range_lock_manager.cc",
-    "indexed_db/locks/disjoint_range_lock_manager.h",
-    "indexed_db/locks/leveled_lock.cc",
-    "indexed_db/locks/leveled_lock.h",
-    "indexed_db/locks/leveled_lock_manager.cc",
-    "indexed_db/locks/leveled_lock_manager.h",
-    "indexed_db/locks/leveled_lock_range.cc",
-    "indexed_db/locks/leveled_lock_range.h",
+    "indexed_db/locks/partitioned_lock.cc",
+    "indexed_db/locks/partitioned_lock.h",
+    "indexed_db/locks/partitioned_lock_manager.cc",
+    "indexed_db/locks/partitioned_lock_manager.h",
+    "indexed_db/locks/partitioned_lock_manager_impl.cc",
+    "indexed_db/locks/partitioned_lock_manager_impl.h",
+    "indexed_db/locks/partitioned_lock_range.cc",
+    "indexed_db/locks/partitioned_lock_range.h",
   ]
   deps = [ "//base" ]
   defines = [ "IS_LOCK_MANAGER_IMPL" ]
@@ -189,8 +189,8 @@ source_set("tests") {
     "dom_storage/session_storage_metadata_unittest.cc",
     "dom_storage/session_storage_namespace_impl_unittest.cc",
     "dom_storage/storage_area_impl_unittest.cc",
-    "indexed_db/locks/disjoint_range_lock_manager_unittest.cc",
-    "indexed_db/locks/leveled_lock_manager_unittest.cc",
+    "indexed_db/locks/partitioned_lock_manager_impl_unittest.cc",
+    "indexed_db/locks/partitioned_lock_manager_unittest.cc",
     "indexed_db/scopes/leveldb_scope_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_coding_unittest.cc",
     "indexed_db/scopes/leveldb_scopes_tasks_unittest.cc",

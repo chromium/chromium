@@ -26,7 +26,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
@@ -133,7 +133,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     virtual ~Transaction();
 
-    virtual void Begin(std::vector<LeveledLock> locks);
+    virtual void Begin(std::vector<PartitionedLock> locks);
 
     // CommitPhaseOne determines what blobs (if any) need to be written to disk
     // and updates the primary blob journal, and kicks off the async writing

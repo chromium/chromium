@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/locks/lock.h"
 
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 

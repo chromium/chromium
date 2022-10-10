@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 
 namespace web_app {
 
@@ -51,7 +51,7 @@ class WebAppLockManager {
       base::OnceClosure on_lock_acquired);
 
  private:
-  content::DisjointRangeLockManager lock_manager_{2};
+  content::PartitionedLockManagerImpl lock_manager_{2};
 };
 
 }  // namespace web_app

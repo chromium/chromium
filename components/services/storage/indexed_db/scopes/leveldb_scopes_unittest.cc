@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
@@ -27,7 +27,7 @@ class LevelDBScopesStartupTest : public LevelDBScopesTestBase {
 TEST_F(LevelDBScopesStartupTest, CleanupOnRecovery) {
   const int64_t kScopeToCleanUp = 19;
   SetUpRealDatabase();
-  DisjointRangeLockManager lock_manager(3);
+  PartitionedLockManagerImpl lock_manager(3);
   WriteScopesMetadata(kScopeToCleanUp, true);
 
   leveldb::Status failure_callback = leveldb::Status::OK();
@@ -60,7 +60,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   const std::string kKeyWithinCleanupDeleteRange = "b2";
   const std::string kCleanupDeleteRangeEnd = "b3";
   SetUpRealDatabase();
-  DisjointRangeLockManager lock_manager(3);
+  PartitionedLockManagerImpl lock_manager(3);
 
   // Tests that the revert execution on startup is performed correctly. This
   // includes:
@@ -102,7 +102,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
 
   // Verify that the lock was grabbed.
   bool lock_grabbed = false;
-  LeveledLockHolder locks_receiver;
+  PartitionedLockHolder locks_receiver;
   lock_manager.AcquireLocks(
       {CreateSimpleExclusiveLock()}, locks_receiver.AsWeakPtr(),
       base::BindLambdaForTesting([&]() { lock_grabbed = true; }));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -12,8 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -57,44 +57,44 @@ std::string IntegerKey(size_t num) {
   return base::StringPrintf("%010zd", num);
 }
 
-class DisjointRangeLockManagerTest : public testing::Test {
+class PartitionedLockManagerImplTest : public testing::Test {
  public:
-  DisjointRangeLockManagerTest() = default;
-  ~DisjointRangeLockManagerTest() override = default;
+  PartitionedLockManagerImplTest() = default;
+  ~PartitionedLockManagerImplTest() override = default;
 
  private:
   base::test::TaskEnvironment task_env_;
 };
 
-TEST_F(DisjointRangeLockManagerTest, BasicAcquisition) {
+TEST_F(PartitionedLockManagerImplTest, BasicAcquisition) {
   const size_t kTotalLocks = 10;
-  DisjointRangeLockManager lock_manager(1);
+  PartitionedLockManagerImpl lock_manager(1);
 
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   base::RunLoop loop;
-  LeveledLockHolder holder1;
-  LeveledLockHolder holder2;
+  PartitionedLockHolder holder1;
+  PartitionedLockHolder holder2;
   {
     BarrierBuilder barrier(loop.QuitClosure());
 
-    std::vector<LeveledLockManager::LeveledLockRequest> locks1_requests;
+    std::vector<PartitionedLockManager::PartitionedLockRequest> locks1_requests;
     for (size_t i = 0; i < kTotalLocks / 2; ++i) {
-      LeveledLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
-      locks1_requests.emplace_back(0, std::move(range),
-                                   LeveledLockManager::LockType::kExclusive);
+      PartitionedLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      locks1_requests.emplace_back(
+          0, std::move(range), PartitionedLockManager::LockType::kExclusive);
     }
     EXPECT_TRUE(lock_manager.AcquireLocks(locks1_requests, holder1.AsWeakPtr(),
                                           barrier.AddClosure()));
 
     // Now acquire kTotalLocks/2 locks starting at (kTotalLocks-1) to verify
     // they acquire in the correct order.
-    std::vector<LeveledLockManager::LeveledLockRequest> locks2_requests;
+    std::vector<PartitionedLockManager::PartitionedLockRequest> locks2_requests;
     for (size_t i = kTotalLocks - 1; i >= kTotalLocks / 2; --i) {
-      LeveledLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
-      locks2_requests.emplace_back(0, std::move(range),
-                                   LeveledLockManager::LockType::kExclusive);
+      PartitionedLockRange range = {IntegerKey(i), IntegerKey(i + 1)};
+      locks2_requests.emplace_back(
+          0, std::move(range), PartitionedLockManager::LockType::kExclusive);
     }
     EXPECT_TRUE(lock_manager.AcquireLocks(locks2_requests, holder2.AsWeakPtr(),
                                           barrier.AddClosure()));
@@ -126,29 +126,29 @@ TEST_F(DisjointRangeLockManagerTest, BasicAcquisition) {
   holder2.locks.clear();
 }
 
-TEST_F(DisjointRangeLockManagerTest, Shared) {
-  DisjointRangeLockManager lock_manager(1);
+TEST_F(PartitionedLockManagerImplTest, Shared) {
+  PartitionedLockManagerImpl lock_manager(1);
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
+  PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
 
-  LeveledLockHolder locks_holder1;
-  LeveledLockHolder locks_holder2;
+  PartitionedLockHolder locks_holder1;
+  PartitionedLockHolder locks_holder2;
   base::RunLoop loop;
   {
     BarrierBuilder barrier(loop.QuitClosure());
-    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+    EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, LeveledLockManager::LockType::kShared}));
+                  {0, range, PartitionedLockManager::LockType::kShared}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, LeveledLockManager::LockType::kShared}},
+        {{0, range, PartitionedLockManager::LockType::kShared}},
         locks_holder1.AsWeakPtr(), barrier.AddClosure()));
-    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+    EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, LeveledLockManager::LockType::kShared}));
+                  {0, range, PartitionedLockManager::LockType::kShared}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, LeveledLockManager::LockType::kShared}},
+        {{0, range, PartitionedLockManager::LockType::kShared}},
         locks_holder2.AsWeakPtr(), barrier.AddClosure()));
   }
   loop.Run();
@@ -158,27 +158,27 @@ TEST_F(DisjointRangeLockManagerTest, Shared) {
   EXPECT_TRUE(locks_holder2.locks.begin()->is_locked());
 }
 
-TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
-  DisjointRangeLockManager lock_manager(1);
+TEST_F(PartitionedLockManagerImplTest, SharedAndExclusiveQueuing) {
+  PartitionedLockManagerImpl lock_manager(1);
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
-  LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
+  PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
 
-  LeveledLockHolder shared_lock1_holder;
-  LeveledLockHolder shared_lock2_holder;
-  LeveledLockHolder exclusive_lock3_holder;
-  LeveledLockHolder shared_lock3_holder;
+  PartitionedLockHolder shared_lock1_holder;
+  PartitionedLockHolder shared_lock2_holder;
+  PartitionedLockHolder exclusive_lock3_holder;
+  PartitionedLockHolder shared_lock3_holder;
 
   {
     base::RunLoop loop;
     {
       BarrierBuilder barrier(loop.QuitClosure());
       EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, LeveledLockManager::LockType::kShared}},
+          {{0, range, PartitionedLockManager::LockType::kShared}},
           shared_lock1_holder.AsWeakPtr(), barrier.AddClosure()));
       EXPECT_TRUE(lock_manager.AcquireLocks(
-          {{0, range, LeveledLockManager::LockType::kShared}},
+          {{0, range, PartitionedLockManager::LockType::kShared}},
           shared_lock2_holder.AsWeakPtr(), barrier.AddClosure()));
     }
     loop.Run();
@@ -187,20 +187,20 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   // Exclusive request is blocked, shared is free.
-  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kLocked,
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
             lock_manager.TestLock(
-                {0, range, LeveledLockManager::LockType::kExclusive}));
-  EXPECT_EQ(
-      DisjointRangeLockManager::TestLockResult::kFree,
-      lock_manager.TestLock({0, range, LeveledLockManager::LockType::kShared}));
+                {0, range, PartitionedLockManager::LockType::kExclusive}));
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
+            lock_manager.TestLock(
+                {0, range, PartitionedLockManager::LockType::kShared}));
 
   // Both of the following locks should be queued - the exclusive is next in
   // line, then the shared lock will come after it.
   EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, LeveledLockManager::LockType::kExclusive}},
+      {{0, range, PartitionedLockManager::LockType::kExclusive}},
       exclusive_lock3_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(lock_manager.AcquireLocks(
-      {{0, range, LeveledLockManager::LockType::kShared}},
+      {{0, range, PartitionedLockManager::LockType::kShared}},
       shared_lock3_holder.AsWeakPtr(), base::DoNothing()));
   // Flush the task queue.
   {
@@ -232,12 +232,12 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(1ll, lock_manager.RequestsWaitingForTesting());
 
   // Both exclusive and shared requests are blocked.
-  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kLocked,
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
             lock_manager.TestLock(
-                {0, range, LeveledLockManager::LockType::kExclusive}));
-  EXPECT_EQ(
-      DisjointRangeLockManager::TestLockResult::kLocked,
-      lock_manager.TestLock({0, range, LeveledLockManager::LockType::kShared}));
+                {0, range, PartitionedLockManager::LockType::kExclusive}));
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kLocked,
+            lock_manager.TestLock(
+                {0, range, PartitionedLockManager::LockType::kShared}));
 
   exclusive_lock3_holder.locks.clear();
 
@@ -254,25 +254,25 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 }
 
-TEST_F(DisjointRangeLockManagerTest, LevelsOperateSeparately) {
-  DisjointRangeLockManager lock_manager(2);
+TEST_F(PartitionedLockManagerImplTest, LevelsOperateSeparately) {
+  PartitionedLockManagerImpl lock_manager(2);
   base::RunLoop loop;
-  LeveledLockHolder l0_lock_holder;
-  LeveledLockHolder l1_lock_holder;
+  PartitionedLockHolder l0_lock_holder;
+  PartitionedLockHolder l1_lock_holder;
   {
     BarrierBuilder barrier(loop.QuitClosure());
-    LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
-    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+    PartitionedLockRange range = {IntegerKey(0), IntegerKey(1)};
+    EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {0, range, LeveledLockManager::LockType::kExclusive}));
+                  {0, range, PartitionedLockManager::LockType::kExclusive}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{0, range, LeveledLockManager::LockType::kExclusive}},
+        {{0, range, PartitionedLockManager::LockType::kExclusive}},
         l0_lock_holder.AsWeakPtr(), barrier.AddClosure()));
-    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+    EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kFree,
               lock_manager.TestLock(
-                  {1, range, LeveledLockManager::LockType::kExclusive}));
+                  {1, range, PartitionedLockManager::LockType::kExclusive}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
-        {{1, range, LeveledLockManager::LockType::kExclusive}},
+        {{1, range, PartitionedLockManager::LockType::kExclusive}},
         l1_lock_holder.AsWeakPtr(), barrier.AddClosure()));
   }
   loop.Run();
@@ -285,16 +285,16 @@ TEST_F(DisjointRangeLockManagerTest, LevelsOperateSeparately) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
 }
 
-TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
-  DisjointRangeLockManager lock_manager(2);
-  LeveledLockHolder locks_holder;
-  LeveledLockRange range1 = {IntegerKey(0), IntegerKey(2)};
-  LeveledLockRange range2 = {IntegerKey(1), IntegerKey(3)};
+TEST_F(PartitionedLockManagerImplTest, InvalidRequests) {
+  PartitionedLockManagerImpl lock_manager(2);
+  PartitionedLockHolder locks_holder;
+  PartitionedLockRange range1 = {IntegerKey(0), IntegerKey(2)};
+  PartitionedLockRange range2 = {IntegerKey(1), IntegerKey(3)};
 
   // Invalid because the ranges intersect.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range1, LeveledLockManager::LockType::kShared},
-       {0, range2, LeveledLockManager::LockType::kShared}},
+      {{0, range1, PartitionedLockManager::LockType::kShared},
+       {0, range2, PartitionedLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
@@ -302,34 +302,34 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
 
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{-1, range1, LeveledLockManager::LockType::kShared}},
+      {{-1, range1, PartitionedLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
             lock_manager.TestLock(
-                {-1, range1, LeveledLockManager::LockType::kShared}));
+                {-1, range1, PartitionedLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   // Invalid level.
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{4, range1, LeveledLockManager::LockType::kShared}},
+      {{4, range1, PartitionedLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
             lock_manager.TestLock(
-                {4, range1, LeveledLockManager::LockType::kShared}));
+                {4, range1, PartitionedLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
   // Invalid range.
-  LeveledLockRange range3 = {IntegerKey(2), IntegerKey(1)};
+  PartitionedLockRange range3 = {IntegerKey(2), IntegerKey(1)};
   EXPECT_FALSE(lock_manager.AcquireLocks(
-      {{0, range3, LeveledLockManager::LockType::kShared}},
+      {{0, range3, PartitionedLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
-  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+  EXPECT_EQ(PartitionedLockManagerImpl::TestLockResult::kInvalid,
             lock_manager.TestLock(
-                {0, range3, LeveledLockManager::LockType::kShared}));
+                {0, range3, PartitionedLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());

@@ -15,7 +15,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -121,8 +121,8 @@ const constexpr int kDatabaseRangeLockLevel = 0;
 const constexpr int kObjectStoreRangeLockLevel = 1;
 const constexpr int kIndexedDBLockLevelCount = 2;
 
-CONTENT_EXPORT LeveledLockRange GetDatabaseLockRange(int64_t database_id);
-CONTENT_EXPORT LeveledLockRange
+CONTENT_EXPORT PartitionedLockRange GetDatabaseLockRange(int64_t database_id);
+CONTENT_EXPORT PartitionedLockRange
 GetObjectStoreLockRange(int64_t database_id, int64_t object_store_id);
 
 // TODO(dmurph): Modify all decoding methods to return something more sensible,
@@ -146,8 +146,8 @@ class KeyPrefix {
   static const size_t kMaxObjectStoreIdSizeBits = 3;
   static const size_t kMaxIndexIdSizeBits = 2;
 
-  static const size_t kMaxDatabaseIdSizeBytes =
-      1ULL << kMaxDatabaseIdSizeBits;  // 8
+  static const size_t kMaxDatabaseIdSizeBytes = 1ULL
+                                                << kMaxDatabaseIdSizeBits;  // 8
   static const size_t kMaxObjectStoreIdSizeBytes =
       1ULL << kMaxObjectStoreIdSizeBits;                                   // 8
   static const size_t kMaxIndexIdSizeBytes = 1ULL << kMaxIndexIdSizeBits;  // 4
@@ -346,12 +346,7 @@ class ObjectStoreMetaDataKey {
 
 class IndexMetaDataKey {
  public:
-  enum MetaDataType {
-    NAME = 0,
-    UNIQUE = 1,
-    KEY_PATH = 2,
-    MULTI_ENTRY = 3
-  };
+  enum MetaDataType { NAME = 0, UNIQUE = 1, KEY_PATH = 2, MULTI_ENTRY = 3 };
 
   IndexMetaDataKey();
   static bool Decode(base::StringPiece* slice, IndexMetaDataKey* result);

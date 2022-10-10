@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_IMPL_H_
+#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_IMPL_H_
 
 #include <list>
 #include <vector>
@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace content {
 
@@ -33,18 +33,19 @@ namespace content {
 //   needed (where old locks will continue to be held), then all locks must be
 //   released first, and then all necessary locks acquired in one acquisition
 //   call.
-class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
-    : public LeveledLockManager {
+class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManagerImpl
+    : public PartitionedLockManager {
  public:
   // Creates a lock manager with the given number of levels, the comparator for
   // leveldb keys, and the current task runner that we are running on. The task
   // runner will be used for the lock acquisition callbacks.
-  explicit DisjointRangeLockManager(int level_count);
+  explicit PartitionedLockManagerImpl(int level_count);
 
-  DisjointRangeLockManager(const DisjointRangeLockManager&) = delete;
-  DisjointRangeLockManager& operator=(const DisjointRangeLockManager&) = delete;
+  PartitionedLockManagerImpl(const PartitionedLockManagerImpl&) = delete;
+  PartitionedLockManagerImpl& operator=(const PartitionedLockManagerImpl&) =
+      delete;
 
-  ~DisjointRangeLockManager() override;
+  ~PartitionedLockManagerImpl() override;
 
   int64_t LocksHeldForTesting() const override;
   int64_t RequestsWaitingForTesting() const override;
@@ -54,17 +55,17 @@ class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
   // * |range.begin| < |range.end| using the |comparator| above,
   // * range disjoint from other lock ranges (which is an implementation
   //   invariant).
-  bool AcquireLocks(base::flat_set<LeveledLockRequest> lock_requests,
-                    base::WeakPtr<LeveledLockHolder> locks_holder,
+  bool AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
+                    base::WeakPtr<PartitionedLockHolder> locks_holder,
                     LocksAcquiredCallback callback) override;
 
   enum class TestLockResult { kInvalid, kLocked, kFree };
   // Tests to see if the given lock request can be acquired.
-  TestLockResult TestLock(LeveledLockRequest lock_requests);
+  TestLockResult TestLock(PartitionedLockRequest lock_requests);
 
   // Remove the given lock range at the given level. The lock range must not be
   // in use. Use this if the lock will never be used again.
-  void RemoveLockRange(int level, const LeveledLockRange& range);
+  void RemoveLockRange(int level, const PartitionedLockRange& range);
 
  private:
   struct LockRequest {
@@ -72,12 +73,12 @@ class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
     LockRequest();
     LockRequest(LockRequest&&) noexcept;
     LockRequest(LockType type,
-                base::WeakPtr<LeveledLockHolder> locks_holder,
+                base::WeakPtr<PartitionedLockHolder> locks_holder,
                 base::OnceClosure callback);
     ~LockRequest();
 
     LockType requested_type = LockType::kShared;
-    base::WeakPtr<LeveledLockHolder> locks_holder;
+    base::WeakPtr<PartitionedLockHolder> locks_holder;
     base::OnceClosure acquired_callback;
   };
 
@@ -103,25 +104,25 @@ class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
     std::list<LockRequest> queue;
   };
 
-  using LockLevelMap = base::flat_map<LeveledLockRange, Lock>;
+  using LockLevelMap = base::flat_map<PartitionedLockRange, Lock>;
 
-  bool AcquireLock(LeveledLockRequest request,
-                   base::WeakPtr<LeveledLockHolder> locks_holder,
+  bool AcquireLock(PartitionedLockRequest request,
+                   base::WeakPtr<PartitionedLockHolder> locks_holder,
                    base::OnceClosure acquired_callback);
 
-  void LockReleased(int level, LeveledLockRange range);
+  void LockReleased(int level, PartitionedLockRange range);
 
   static bool IsRangeDisjointFromNeighbors(const LockLevelMap& map,
-                                           const LeveledLockRange& range);
+                                           const PartitionedLockRange& range);
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // This vector should never be modified after construction.
   std::vector<LockLevelMap> locks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<DisjointRangeLockManager> weak_factory_{this};
+  base::WeakPtrFactory<PartitionedLockManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_DISJOINT_RANGE_LOCK_MANAGER_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_IMPL_H_

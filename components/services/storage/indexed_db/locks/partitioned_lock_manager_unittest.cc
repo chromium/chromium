@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 #include "base/bind.h"
 #include "base/test/bind.h"
@@ -11,15 +11,15 @@
 namespace content {
 namespace {
 
-TEST(LeveledLockManager, TestRangePopulation) {
-  LeveledLockRange range = {"1", "2"};
+TEST(PartitionedLockManager, TestRangePopulation) {
+  PartitionedLockRange range = {"1", "2"};
   EXPECT_EQ("1", range.begin);
   EXPECT_EQ("2", range.end);
   EXPECT_TRUE(range.IsValid());
 }
 
-TEST(LeveledLockManager, TestInvalidRange) {
-  LeveledLockRange range = {"2", "1"};
+TEST(PartitionedLockManager, TestInvalidRange) {
+  PartitionedLockRange range = {"2", "1"};
   EXPECT_FALSE(range.IsValid());
   range = {"2", "2"};
   EXPECT_FALSE(range.IsValid());

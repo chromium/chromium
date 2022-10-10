@@ -665,8 +665,8 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
   // TODO(dmurph) Have these factories be given in the constructor, or as
   // arguments to this method.
   DefaultLevelDBScopesFactory scopes_factory;
-  std::unique_ptr<DisjointRangeLockManager> lock_manager =
-      std::make_unique<DisjointRangeLockManager>(kIndexedDBLockLevelCount);
+  std::unique_ptr<PartitionedLockManagerImpl> lock_manager =
+      std::make_unique<PartitionedLockManagerImpl>(kIndexedDBLockLevelCount);
   IndexedDBDataLossInfo data_loss_info;
   std::unique_ptr<IndexedDBBackingStore> backing_store;
   bool disk_full = false;

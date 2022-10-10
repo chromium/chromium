@@ -20,7 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_tasks.h"
@@ -35,7 +35,7 @@ namespace content {
 LevelDBScopes::LevelDBScopes(std::vector<uint8_t> metadata_key_prefix,
                              size_t max_write_batch_size,
                              scoped_refptr<LevelDBState> level_db,
-                             LeveledLockManager* lock_manager,
+                             PartitionedLockManager* lock_manager,
                              TearDownCallback tear_down_callback)
     : metadata_key_prefix_(std::move(metadata_key_prefix)),
       max_write_batch_size_bytes_(max_write_batch_size),
@@ -136,16 +136,17 @@ leveldb::Status LevelDBScopes::Initialize() {
     // The commit point isn't there, so that scope needs to be reverted.
     // Acquire all locks necessary to undo the scope to prevent user-created
     // scopes for reading or writing changes that will be undone.
-    LeveledLockRange range;
-    base::flat_set<LeveledLockManager::LeveledLockRequest> lock_requests;
+    PartitionedLockRange range;
+    base::flat_set<PartitionedLockManager::PartitionedLockRequest>
+        lock_requests;
     lock_requests.reserve(scope_metadata.locks().size());
     for (const auto& lock : scope_metadata.locks()) {
       range.begin = lock.range().begin();
       range.end = lock.range().end();
       lock_requests.emplace(lock.level(), range,
-                            LeveledLockManager::LockType::kExclusive);
+                            PartitionedLockManager::LockType::kExclusive);
     }
-    LeveledLockHolder receiver;
+    PartitionedLockHolder receiver;
     bool locks_acquired = lock_manager_->AcquireLocks(
         std::move(lock_requests), receiver.weak_factory.GetWeakPtr(),
         base::DoNothing());
@@ -240,7 +241,7 @@ leveldb::Status LevelDBScopes::StartRecoveryAndCleanupTasks(
 }
 
 std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
-    std::vector<LeveledLock> locks,
+    std::vector<PartitionedLock> locks,
     std::vector<std::pair<std::string, std::string>> empty_ranges) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(recovery_finished_);
@@ -248,7 +249,7 @@ std::unique_ptr<LevelDBScope> LevelDBScopes::CreateScope(
   ++next_scope_id_;
   auto rollback_callback = base::BindOnce(
       [](base::WeakPtr<LevelDBScopes> scopes, int64_t scope_id,
-         std::vector<LeveledLock> locks) {
+         std::vector<PartitionedLock> locks) {
         if (!scopes)
           return leveldb::Status::OK();
         return scopes->Rollback(scope_id, std::move(locks));
@@ -287,7 +288,7 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
 }
 
 leveldb::Status LevelDBScopes::Rollback(int64_t scope_id,
-                                        std::vector<LeveledLock> locks) {
+                                        std::vector<PartitionedLock> locks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto task = std::make_unique<RevertScopeTask>(
       level_db_, metadata_key_prefix_, scope_id, max_write_batch_size_bytes_);
@@ -316,7 +317,7 @@ void LevelDBScopes::OnCleanupTaskResult(base::OnceClosure on_complete,
 }
 
 void LevelDBScopes::OnRevertTaskResult(int64_t scope_id,
-                                       std::vector<LeveledLock> locks,
+                                       std::vector<PartitionedLock> locks,
                                        leveldb::Status result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (UNLIKELY(!result.ok())) {

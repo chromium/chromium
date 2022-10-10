@@ -17,11 +17,11 @@ message LevelDBScopesMetadata {
 }
 
 message LevelDBScopesScopeMetadata {
-  message LevelDBLeveledLock {
+  message LevelDBPartitionedLock {
     int64 level = 1;
     LevelDBScopesKeyRange range = 2;
   }
-  repeated LevelDBLeveledLock locks = 1;
+  repeated LevelDBPartitionedLock locks = 1;
 
   // If this is true, don't execute cleanup tasks when cleaning up this scope.
   bool ignore_cleanup_tasks = 2;

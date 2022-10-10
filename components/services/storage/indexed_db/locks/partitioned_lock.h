@@ -2,43 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_LEVELED_LOCK_H_
-#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_LEVELED_LOCK_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_
+#define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_
 
 #include <iosfwd>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_range.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_range.h"
 
 namespace content {
 
-// Represents a granted lock in the LeveledLockManager. When this object is
+// Represents a granted lock in the PartitionedLockManager. When this object is
 // destroyed, the lock is released. Since default construction is supported,
 // |is_locked()| can be used to inquire locked status. Also, |Release()| can
 // be called to manually release the lock, which appropriately updates the
 // |is_locked()| result.
-class COMPONENT_EXPORT(LOCK_MANAGER) LeveledLock {
+class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
  public:
   using LockReleasedCallback =
-      base::OnceCallback<void(int level, LeveledLockRange range)>;
+      base::OnceCallback<void(int level, PartitionedLockRange range)>;
 
-  LeveledLock();
+  PartitionedLock();
 
-  LeveledLock(const LeveledLock&) = delete;
-  LeveledLock& operator=(const LeveledLock&) = delete;
+  PartitionedLock(const PartitionedLock&) = delete;
+  PartitionedLock& operator=(const PartitionedLock&) = delete;
 
-  ~LeveledLock();
-  LeveledLock(LeveledLock&&) noexcept;
+  ~PartitionedLock();
+  PartitionedLock(PartitionedLock&&) noexcept;
   // |lock_released_callback| is called when the lock is released, either by
   // destruction of this object or by the |Released()| call. It will be called
   // synchronously on the sequence runner this lock is released on.
-  LeveledLock(LeveledLockRange range,
-              int level,
-              LockReleasedCallback lock_released_callback);
+  PartitionedLock(PartitionedLockRange range,
+                  int level,
+                  LockReleasedCallback lock_released_callback);
   // The lock in |other| is not released, and |this| must not be holding a lock.
-  LeveledLock& operator=(LeveledLock&& other) noexcept;
+  PartitionedLock& operator=(PartitionedLock&& other) noexcept;
 
   // Returns true if this object is holding a lock.
   bool is_locked() const { return !lock_released_callback_.is_null(); }
@@ -51,10 +51,10 @@ class COMPONENT_EXPORT(LOCK_MANAGER) LeveledLock {
   void Release();
 
   int level() const { return level_; }
-  const LeveledLockRange& range() const { return range_; }
+  const PartitionedLockRange& range() const { return range_; }
 
  private:
-  LeveledLockRange range_;
+  PartitionedLockRange range_;
   int level_ = 0;
   // Closure to run when the lock is released. The lock is held when this is
   // non-null.
@@ -63,18 +63,18 @@ class COMPONENT_EXPORT(LOCK_MANAGER) LeveledLock {
 
 // Logging support.
 COMPONENT_EXPORT(LOCK_MANAGER)
-std::ostream& operator<<(std::ostream& out, const LeveledLock& range);
+std::ostream& operator<<(std::ostream& out, const PartitionedLock& range);
 
 // Equality doesn't take into account whether the lock 'is_locked()' or not,
 // only the level and the range.
 COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator==(const LeveledLock& x, const LeveledLock& y);
+bool operator==(const PartitionedLock& x, const PartitionedLock& y);
 COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator!=(const LeveledLock& x, const LeveledLock& y);
+bool operator!=(const PartitionedLock& x, const PartitionedLock& y);
 // Comparison operator to allow sorting for locking / unlocking order.
 COMPONENT_EXPORT(LOCK_MANAGER)
-bool operator<(const LeveledLock& x, const LeveledLock& y);
+bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 
 }  // namespace content
 
-#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_LEVELED_LOCK_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_H_

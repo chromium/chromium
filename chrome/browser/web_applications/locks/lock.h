@@ -12,7 +12,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 
 namespace content {
-struct LeveledLockHolder;
+struct PartitionedLockHolder;
 }
 
 namespace web_app {
@@ -62,7 +62,7 @@ class Lock {
     kMaxValue = kApp,
   };
 
-  std::unique_ptr<content::LeveledLockHolder> holder_;
+  std::unique_ptr<content::PartitionedLockHolder> holder_;
   const base::flat_set<AppId> app_ids_{};
   const Type type_;
 

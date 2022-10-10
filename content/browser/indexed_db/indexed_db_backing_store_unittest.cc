@@ -32,7 +32,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager_impl.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -363,11 +363,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
     lock_manager_ = bucket_state_handle_.bucket_state()->lock_manager();
   }
 
-  std::vector<LeveledLock> CreateDummyLock() {
+  std::vector<PartitionedLock> CreateDummyLock() {
     base::RunLoop loop;
-    LeveledLockHolder locks_receiver;
+    PartitionedLockHolder locks_receiver;
     bool success = lock_manager_->AcquireLocks(
-        {{0, {"01", "11"}, LeveledLockManager::LockType::kShared}},
+        {{0, {"01", "11"}, PartitionedLockManager::LockType::kShared}},
         locks_receiver.AsWeakPtr(),
         base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     EXPECT_TRUE(success);
@@ -465,7 +465,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
-  raw_ptr<DisjointRangeLockManager> lock_manager_;
+  raw_ptr<PartitionedLockManagerImpl> lock_manager_;
 
   IndexedDBBucketStateHandle bucket_state_handle_;
   raw_ptr<TestableIndexedDBBackingStore> backing_store_ = nullptr;
@@ -1348,16 +1348,16 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   if (TestType() != ExternalObjectTestType::kOnlyFileSystemAccessHandles) {
     EXPECT_TRUE(backing_store()->IsBlobCleanupPending());
 #if DCHECK_IS_ON()
-  EXPECT_EQ(3,
-            backing_store()->NumAggregatedJournalCleaningRequestsForTesting());
+    EXPECT_EQ(
+        3, backing_store()->NumAggregatedJournalCleaningRequestsForTesting());
 #endif
-  for (int i = 3; i < IndexedDBBackingStore::kMaxJournalCleanRequests; ++i) {
-    backing_store()->StartJournalCleaningTimer();
-  }
-  EXPECT_NE(0U, backing_store()->removals().size());
-  EXPECT_TRUE(CheckBlobRemovals());
+    for (int i = 3; i < IndexedDBBackingStore::kMaxJournalCleanRequests; ++i) {
+      backing_store()->StartJournalCleaningTimer();
+    }
+    EXPECT_NE(0U, backing_store()->removals().size());
+    EXPECT_TRUE(CheckBlobRemovals());
 #if DCHECK_IS_ON()
-  EXPECT_EQ(3, backing_store()->NumBlobFilesDeletedForTesting());
+    EXPECT_EQ(3, backing_store()->NumBlobFilesDeletedForTesting());
 #endif
   }
 

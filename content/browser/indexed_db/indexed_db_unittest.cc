@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -609,8 +609,8 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
   auto create_transaction_callback1 =
       base::BindOnce(&CreateAndBindTransactionPlaceholder);
   auto connection = std::make_unique<IndexedDBPendingConnection>(
-      callbacks, db_callbacks,
-      transaction_id, IndexedDBDatabaseMetadata::DEFAULT_VERSION,
+      callbacks, db_callbacks, transaction_id,
+      IndexedDBDatabaseMetadata::DEFAULT_VERSION,
       std::move(create_transaction_callback1));
   factory->Open(u"db", std::move(connection), bucket_locator,
                 context()->GetDataPath(bucket_locator));
@@ -631,11 +631,11 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
   EXPECT_FALSE(factory->IsBackingStoreOpen(bucket_locator));
 }
 
-TEST(LeveledLockManager, TestRangeDifferences) {
-  LeveledLockRange range_db1;
-  LeveledLockRange range_db2;
-  LeveledLockRange range_db1_os1;
-  LeveledLockRange range_db1_os2;
+TEST(PartitionedLockManager, TestRangeDifferences) {
+  PartitionedLockRange range_db1;
+  PartitionedLockRange range_db2;
+  PartitionedLockRange range_db1_os1;
+  PartitionedLockRange range_db1_os2;
   for (int64_t i = 0; i < 512; ++i) {
     range_db1 = GetDatabaseLockRange(i);
     range_db2 = GetDatabaseLockRange(i + 1);

@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/storage/indexed_db/locks/leveled_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 
 #include <ostream>
 
 namespace content {
 
-LeveledLock::LeveledLock() = default;
+PartitionedLock::PartitionedLock() = default;
 
-LeveledLock::~LeveledLock() {
+PartitionedLock::~PartitionedLock() {
   Release();
 }
 
-LeveledLock::LeveledLock(LeveledLock&& other) noexcept {
+PartitionedLock::PartitionedLock(PartitionedLock&& other) noexcept {
   DCHECK(!this->is_locked())
       << "Cannot move a lock onto an active lock: " << *this;
   this->range_ = std::move(other.range_);
@@ -22,14 +22,14 @@ LeveledLock::LeveledLock(LeveledLock&& other) noexcept {
   this->lock_released_callback_ = std::move(other.lock_released_callback_);
   DCHECK(!other.is_locked());
 }
-LeveledLock::LeveledLock(LeveledLockRange range,
-                         int level,
-                         LockReleasedCallback lock_released_callback)
+PartitionedLock::PartitionedLock(PartitionedLockRange range,
+                                 int level,
+                                 LockReleasedCallback lock_released_callback)
     : range_(std::move(range)),
       level_(level),
       lock_released_callback_(std::move(lock_released_callback)) {}
 
-LeveledLock& LeveledLock::operator=(LeveledLock&& other) noexcept {
+PartitionedLock& PartitionedLock::operator=(PartitionedLock&& other) noexcept {
   DCHECK(!this->is_locked())
       << "Cannot move a lock onto an active lock: " << *this;
   this->range_ = std::move(other.range_);
@@ -39,29 +39,29 @@ LeveledLock& LeveledLock::operator=(LeveledLock&& other) noexcept {
   return *this;
 }
 
-void LeveledLock::Release() {
+void PartitionedLock::Release() {
   if (is_locked())
     std::move(lock_released_callback_).Run(level_, range_);
 }
 
-std::ostream& operator<<(std::ostream& out, const LeveledLock& lock) {
-  return out << "<LeveledLock>{is_locked_: " << lock.is_locked()
+std::ostream& operator<<(std::ostream& out, const PartitionedLock& lock) {
+  return out << "<PartitionedLock>{is_locked_: " << lock.is_locked()
              << ", level_: " << lock.level() << ", range_: " << lock.range()
              << "}";
 }
 
-bool operator<(const LeveledLock& x, const LeveledLock& y) {
+bool operator<(const PartitionedLock& x, const PartitionedLock& y) {
   if (x.level() != y.level())
     return x.level() < y.level();
   if (x.range().begin != y.range().begin)
     return x.range().begin < y.range().begin;
   return x.range().end < y.range().end;
 }
-bool operator==(const LeveledLock& x, const LeveledLock& y) {
+bool operator==(const PartitionedLock& x, const PartitionedLock& y) {
   return x.level() == y.level() && x.range().begin == y.range().begin &&
          x.range().end == y.range().end;
 }
-bool operator!=(const LeveledLock& x, const LeveledLock& y) {
+bool operator!=(const PartitionedLock& x, const PartitionedLock& y) {
   return !(x == y);
 }
 

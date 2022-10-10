@@ -200,7 +200,7 @@ IndexedDBFakeBackingStore::FakeTransaction::FakeTransaction(
           mode),
       result_(result) {}
 void IndexedDBFakeBackingStore::FakeTransaction::Begin(
-    std::vector<LeveledLock> locks) {}
+    std::vector<PartitionedLock> locks) {}
 leveldb::Status IndexedDBFakeBackingStore::FakeTransaction::CommitPhaseOne(
     BlobWriteCallback callback) {
   return std::move(callback).Run(

@@ -21,8 +21,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/base_tracing.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock.h"
-#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
@@ -156,7 +156,7 @@ IndexedDBDatabase::IndexedDBDatabase(
     TasksAvailableCallback tasks_available_callback,
     std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const Identifier& unique_identifier,
-    LeveledLockManager* transaction_lock_manager)
+    PartitionedLockManager* transaction_lock_manager)
     : backing_store_(backing_store),
       metadata_(name,
                 kInvalidId,
@@ -178,17 +178,17 @@ void IndexedDBDatabase::RegisterAndScheduleTransaction(
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::RegisterAndScheduleTransaction",
                "txn.id", transaction->id());
-  std::vector<LeveledLockManager::LeveledLockRequest> lock_requests;
+  std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests;
   lock_requests.reserve(1 + transaction->scope().size());
   lock_requests.emplace_back(
       kDatabaseRangeLockLevel, GetDatabaseLockRange(id()),
       transaction->mode() == blink::mojom::IDBTransactionMode::VersionChange
-          ? LeveledLockManager::LockType::kExclusive
-          : LeveledLockManager::LockType::kShared);
-  LeveledLockManager::LockType lock_type =
+          ? PartitionedLockManager::LockType::kExclusive
+          : PartitionedLockManager::LockType::kShared);
+  PartitionedLockManager::LockType lock_type =
       transaction->mode() == blink::mojom::IDBTransactionMode::ReadOnly
-          ? LeveledLockManager::LockType::kShared
-          : LeveledLockManager::LockType::kExclusive;
+          ? PartitionedLockManager::LockType::kShared
+          : PartitionedLockManager::LockType::kExclusive;
   for (int64_t object_store : transaction->scope()) {
     lock_requests.emplace_back(kObjectStoreRangeLockLevel,
                                GetObjectStoreLockRange(id(), object_store),
