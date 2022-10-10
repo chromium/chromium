@@ -51,3 +51,9 @@
 
 # TODO(crbug/1369234)
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
+
+# TODO(crbug/1369381)
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testSwipeExpand
+
+# TODO(crbug/1370814)
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSiteExceptionCookiesBlocked

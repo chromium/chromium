@@ -27,7 +27,7 @@
 -All/DumpAccessibilityTreeTest.AccessibilityNoSourceVideo/android
 
 # TODO(crbug.com/1368352)
--FindRequestManagers/FindRequestManagerTestWithTestConfig.NavigateFrameDuringFind/1
+-FindRequestManagers/FindRequestManagerTestWithTestConfig.NavigateFrameDuringFind/*
 
 # TODO(crbug.com/1368744)
 -All/DumpAccessibilityTreeTest.AccessibilityButtonNameCalc/android
@@ -40,3 +40,9 @@
 
 # TODO(crbug.com/1370573)
 -SignedExchangeSubresourcePrefetchBrowserTest.MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
+
+# TODO(crbug.com/1373194)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginDocumentReusedAsNavigation/*
+
+# TODO(crbug.com/1373197)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginSignedExchangeWithPreload/*
