@@ -66,6 +66,8 @@ class FileSearchProvider : public SearchProvider {
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
 
+  std::vector<base::FilePath> trash_paths_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSearchProvider> weak_factory_{this};
 };

@@ -6,21 +6,27 @@
 
 #include <cctype>
 #include <cmath>
+#include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "components/prefs/pref_service.h"
 
 namespace app_list {
 
@@ -89,7 +95,8 @@ std::string CreateFnmatchQuery(const std::u16string& query_input) {
 std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::u16string& query,
-    const base::TimeTicks& query_start_time) {
+    const base::TimeTicks& query_start_time,
+    const std::vector<base::FilePath> trash_paths) {
   base::FileEnumerator enumerator(
       root_path,
       /*recursive=*/true,
@@ -101,6 +108,14 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
   std::vector<FileSearchProvider::FileInfo> matched_paths;
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
+    // Exclude any paths that are parented at an enabled trash location.
+    if (base::ranges::any_of(trash_paths,
+                             [&path](const base::FilePath& trash_path) {
+                               return trash_path.IsParent(path);
+                             })) {
+      continue;
+    }
+
     matched_paths.emplace_back(
         path, enumerator.GetInfo().IsDirectory(),
         base::Time::FromTimeT(enumerator.GetInfo().stat().st_atime));
@@ -114,6 +129,17 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
   }
   UMA_HISTOGRAM_BOOLEAN("Apps.AppList.FileSearchProvider.TimedOut", timed_out);
   return matched_paths;
+}
+
+// Verify whether trash is enabled by feature flag and whether the enterprise
+// policy is not disabling the feature. This can dynamically disable the trash
+// functionality, so verify it every time.
+bool IsTrashEnabled(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
+         profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
 }
 
 }  // namespace
@@ -144,10 +170,26 @@ void FileSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
+  // Generate a vector of `base::FilePath`s that can be handed to the
+  // `SearchFilesByPattern`. Trash can be dynamically turned on/off via an
+  // enterprise policy, so this needs to be verified on search instead of
+  // precomputed.
+  if (trash_paths_.empty()) {
+    auto enabled_trash_locations =
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
+            profile_, /*base_path=*/base::FilePath());
+    for (const auto& it : enabled_trash_locations) {
+      trash_paths_.emplace_back(
+          it.first.Append(it.second.relative_folder_path));
+    }
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(SearchFilesByPattern, root_path_, query,
-                     query_start_time_),
+      base::BindOnce(
+          SearchFilesByPattern, root_path_, query, query_start_time_,
+          (IsTrashEnabled(profile_) ? trash_paths_
+                                    : std::vector<base::FilePath>())),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }
