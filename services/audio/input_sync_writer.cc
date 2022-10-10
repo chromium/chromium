@@ -5,6 +5,7 @@
 #include "services/audio/input_sync_writer.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -14,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "services/audio/input_glitch_counter.h"
 
 namespace audio {
 
@@ -49,7 +51,8 @@ InputSyncWriter::InputSyncWriter(
     base::MappedReadOnlyRegion shared_memory,
     std::unique_ptr<base::CancelableSyncSocket> socket,
     uint32_t shared_memory_segment_count,
-    const media::AudioParameters& params)
+    const media::AudioParameters& params,
+    std::unique_ptr<InputGlitchCounter> glitch_counter)
     : log_callback_(std::move(log_callback)),
       socket_(std::move(socket)),
       shared_memory_region_(std::move(shared_memory.region)),
@@ -58,7 +61,8 @@ InputSyncWriter::InputSyncWriter(
           (CHECK(shared_memory_segment_count > 0),
            shared_memory_mapping_.size() / shared_memory_segment_count)),
       creation_time_(base::TimeTicks::Now()),
-      audio_bus_memory_size_(media::AudioBus::CalculateMemorySize(params)) {
+      audio_bus_memory_size_(media::AudioBus::CalculateMemorySize(params)),
+      glitch_counter_(std::move(glitch_counter)) {
   // We use CHECKs since this class is used for IPC.
   DCHECK(log_callback_);
   CHECK(socket_);
@@ -71,6 +75,7 @@ InputSyncWriter::InputSyncWriter(
   DVLOG(1) << "shared memory size: " << shared_memory_mapping_.size();
   DVLOG(1) << "shared memory segment count: " << shared_memory_segment_count;
   DVLOG(1) << "audio bus memory size: " << audio_bus_memory_size_;
+  DCHECK(glitch_counter_);
 
   audio_buses_.resize(shared_memory_segment_count);
 
@@ -87,72 +92,7 @@ InputSyncWriter::InputSyncWriter(
   }
 }
 
-InputSyncWriter::~InputSyncWriter() {
-  // We log the following:
-  // - Percentage of data written to fifo (and not to shared memory).
-  // - Percentage of data dropped (fifo reached max size or socket buffer full).
-  // - Glitch yes/no (at least 1 drop).
-
-  // The amount of data that has either been dropped or successfully written.
-  // This number does not include data that is in the fifo, which we do not know
-  // if it would have been dropped or successfully written.
-  size_t total_processed_data_count =
-      dropped_data_count_ + successful_write_count_;
-
-  DCHECK_LE(trailing_shared_memory_full_count_, shared_memory_full_count_);
-  DCHECK_LE(trailing_shared_memory_full_count_, write_count_);
-  DCHECK_LE(trailing_dropped_data_count_, dropped_data_count_);
-  DCHECK_LE(trailing_dropped_data_count_, total_processed_data_count);
-
-  // Subtract 'trailing' counts that will happen if the renderer process was
-  // killed or e.g. the page refreshed while the input device was open etc.
-  // This trims off the end of both the error and write counts so that we
-  // preserve the proportion of counts before the teardown period.
-  shared_memory_full_count_ -= trailing_shared_memory_full_count_;
-  write_count_ -= trailing_shared_memory_full_count_;
-  dropped_data_count_ -= trailing_dropped_data_count_;
-  total_processed_data_count -= trailing_dropped_data_count_;
-
-  if (write_count_ == 0 || total_processed_data_count == 0)
-    return;
-
-  base::UmaHistogramEnumeration("Media.AudioCapturerAudioGlitches",
-                                dropped_data_count_ == 0
-                                    ? AudioGlitchResult::kNoGlitches
-                                    : AudioGlitchResult::kGlitches);
-
-  const int kPermilleScaling = 1000;
-  // 10%: if we have more that 10% of callbacks having issues, the details are
-  // not very interesting any more, so we just log all those cases together to
-  // have a better resolution for lower values.
-  const int kHistogramRange = kPermilleScaling / 10;
-
-  // 30 s for 10 ms buffers.
-  const int kShortStreamMaxCallbackCount = 3000;
-  const std::string suffix =
-      write_count_ < kShortStreamMaxCallbackCount ? "Short" : "Long";
-
-  int missed_deadline =
-      std::ceil(kPermilleScaling *
-                static_cast<double>(shared_memory_full_count_) / write_count_);
-
-  base::UmaHistogramCustomCounts(
-      "Media.AudioCapturerMissedReadDeadline2." + suffix,
-      std::min(missed_deadline, kHistogramRange), 0, kHistogramRange + 1, 100);
-
-  int dropped_data =
-      std::ceil(kPermilleScaling * static_cast<double>(dropped_data_count_) /
-                total_processed_data_count);
-
-  base::UmaHistogramCustomCounts("Media.AudioCapturerDroppedData2." + suffix,
-                                 std::min(dropped_data, kHistogramRange), 0,
-                                 kHistogramRange + 1, 100);
-
-  std::string log_string = base::StringPrintf(
-      "AISW: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
-      dropped_data_count_, total_processed_data_count);
-  log_callback_.Run(log_string);
-}
+InputSyncWriter::~InputSyncWriter() = default;
 
 // static
 std::unique_ptr<InputSyncWriter> InputSyncWriter::Create(
@@ -181,9 +121,11 @@ std::unique_ptr<InputSyncWriter> InputSyncWriter::Create(
     return nullptr;
   }
 
+  auto glitch_counter = std::make_unique<InputGlitchCounter>(log_callback);
+
   return std::make_unique<InputSyncWriter>(
       std::move(log_callback), std::move(shared_memory), std::move(socket),
-      shared_memory_segment_count, params);
+      shared_memory_segment_count, params, std::move(glitch_counter));
 }
 
 base::ReadOnlySharedMemoryRegion InputSyncWriter::TakeSharedMemoryRegion() {
@@ -197,7 +139,6 @@ void InputSyncWriter::Write(const media::AudioBus* data,
                             base::TimeTicks capture_time) {
   TRACE_EVENT1("audio", "InputSyncWriter::Write", "capture time (ms)",
                (capture_time - base::TimeTicks()).InMillisecondsF());
-  ++write_count_;
   CheckTimeSinceLastWrite();
 
   // Check that the renderer side has read data so that we don't overwrite data
@@ -218,27 +159,23 @@ void InputSyncWriter::Write(const media::AudioBus* data,
     }
   }
 
+  const size_t segment_count = audio_buses_.size();
+  // If the shared memory is full, then we consider the deadline to be missed.
+  glitch_counter_->ReportMissedReadDeadline(number_of_filled_segments_ ==
+                                            segment_count);
+
   // If there is data in the fifo, write as much of it to shared memory as
   // possible.
   if (!overflow_data_.empty()) {
-    const size_t segment_count = audio_buses_.size();
     auto data_it = overflow_data_.begin();
 
     while (data_it != overflow_data_.end() &&
            number_of_filled_segments_ < segment_count) {
-      // Write parameters to shared memory.
-      if (WriteDataToCurrentSegment(*data_it->audio_bus_, data_it->volume_,
-                                    data_it->key_pressed_,
-                                    data_it->capture_time_)) {
-        ++successful_write_count_;
-        trailing_shared_memory_full_count_ = 0;
-        trailing_dropped_data_count_ = 0;
-      } else {
-        // This happens only if writing to the socket buffer fails, which should
-        // be rare.
-        ++dropped_data_count_;
-        ++trailing_dropped_data_count_;
-      }
+      // Write parameters to shared memory, and report whether it was dropped.
+      const bool successful_write = WriteDataToCurrentSegment(
+          *data_it->audio_bus_, data_it->volume_, data_it->key_pressed_,
+          data_it->capture_time_);
+      glitch_counter_->ReportDroppedData(!successful_write);
       ++data_it;
     }
 
@@ -255,24 +192,13 @@ void InputSyncWriter::Write(const media::AudioBus* data,
   // put it in the fifo.
   if (number_of_filled_segments_ < audio_buses_.size()) {
     DCHECK(overflow_data_.empty());
-    if (WriteDataToCurrentSegment(*data, volume, key_pressed, capture_time)) {
-      ++successful_write_count_;
-      trailing_shared_memory_full_count_ = 0;
-      trailing_dropped_data_count_ = 0;
-    } else {
-      // This happens only if writing to the socket buffer fails, which should
-      // be rare.
-      ++dropped_data_count_;
-      ++trailing_dropped_data_count_;
-    }
+    const bool successful_write =
+        WriteDataToCurrentSegment(*data, volume, key_pressed, capture_time);
+    glitch_counter_->ReportDroppedData(!successful_write);
   } else {
     if (!PushDataToFifo(*data, volume, key_pressed, capture_time)) {
-      ++dropped_data_count_;
-      ++trailing_dropped_data_count_;
+      glitch_counter_->ReportDroppedData(true);
     }
-
-    ++shared_memory_full_count_;
-    ++trailing_shared_memory_full_count_;
   }
 }
 
@@ -315,23 +241,21 @@ bool InputSyncWriter::PushDataToFifo(const media::AudioBus& data,
   TRACE_EVENT1("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
                (capture_time - base::TimeTicks()).InMillisecondsF());
   if (overflow_data_.size() == kMaxOverflowBusesSize) {
-    // We use |dropped_data_count_| for capping number of log messages.
-    // |dropped_data_count_| also includes socket Send() errors, but those
-    // should be rare.
     TRACE_EVENT_INSTANT0(
         "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
         TRACE_EVENT_SCOPE_THREAD);
-    if (dropped_data_count_ <= 50 && dropped_data_count_ % 10 == 0) {
+    if (fifo_full_count_ <= 50 && fifo_full_count_ % 10 == 0) {
       static const char* error_message = "AISW: No room in fifo.";
       LOG(WARNING) << error_message;
       log_callback_.Run(error_message);
-      if (dropped_data_count_ == 50) {
+      if (fifo_full_count_ == 50) {
         static const char* cap_error_message =
             "AISW: Log cap reached, suppressing further fifo overflow logs.";
         LOG(WARNING) << cap_error_message;
         log_callback_.Run(error_message);
       }
     }
+    ++fifo_full_count_;
     return false;
   }
 

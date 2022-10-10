@@ -17,6 +17,7 @@
 #include "base/sync_socket.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "input_glitch_counter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
@@ -42,7 +43,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
       base::MappedReadOnlyRegion shared_memory,
       std::unique_ptr<base::CancelableSyncSocket> socket,
       uint32_t shared_memory_segment_count,
-      const media::AudioParameters& params);
+      const media::AudioParameters& params,
+      std::unique_ptr<InputGlitchCounter> glitch_counter);
 
   InputSyncWriter(const InputSyncWriter&) = delete;
   InputSyncWriter& operator=(const InputSyncWriter&) = delete;
@@ -134,30 +136,12 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // ensure the we don't overwrite data that hasn't been read yet.
   size_t number_of_filled_segments_ = 0;
 
-  // Counts the total number of calls to InputSyncWriter::Write().
-  size_t write_count_ = 0;
-
-  // Counts the number of calls to InputSyncWriter::Write() when the shared
-  // memory is full and we instead have to attempt to write to the fifo.
-  size_t shared_memory_full_count_ = 0;
-
-  // Counts the number of times that data is dropped, due to either the fifo or
-  // the socket buffer being full.
-  size_t dropped_data_count_ = 0;
-
-  // Counts the number of times we have written data to the shared memory and
-  // successfully communicated the write over the socket.
-  size_t successful_write_count_ = 0;
+  // Used for logging.
+  size_t fifo_full_count_ = 0;
 
   // Denotes that the most recent socket error has been logged. Used to avoid
   // log spam.
   bool had_socket_error_ = false;
-
-  // Counts the missed deadlines and drops we get during renderer process
-  // teardown so that we can account for that (subtract) when we calculate the
-  // overall counts.
-  size_t trailing_shared_memory_full_count_ = 0;
-  size_t trailing_dropped_data_count_ = 0;
 
   // Vector of audio buses allocated during construction and deleted in the
   // destructor.
@@ -189,6 +173,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
   };
 
   std::vector<OverflowData> overflow_data_;
+
+  std::unique_ptr<InputGlitchCounter> glitch_counter_;
 };
 
 }  // namespace audio

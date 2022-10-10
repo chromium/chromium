@@ -1338,8 +1338,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AudioCapturerDroppedData10sIntervals" units="drops"
+    expires_after="2023-10-05">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    The number of input audio data blocks that were dropped at the
+    browser/renderer boundary due to for example buffer overflow in the writer
+    side buffer or in the socket. This value is aggregated over a period of 1000
+    input data pushes (every 10 seconds for buffer size 10 ms) and is logged at
+    the end of each collection interval. Not recorded for streams with less than
+    1000 input data pushes.
+  </summary>
+</histogram>
+
 <histogram name="Media.AudioCapturerDroppedData2.{Duration}" units="permille"
     expires_after="2023-10-05">
+  <obsolete>
+    Deprecated in favor of Media.AudioCapturerDroppedData10sIntervals and
+    Media.AudioCapturerDroppedDataBelow10s. Data is no longer collected.
+  </obsolete>
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <summary>
@@ -1354,8 +1372,38 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.AudioCapturerDroppedDataBelow10s" units="drops"
+    expires_after="2023-10-05">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    The number of input audio data blocks that were dropped at the
+    browser/renderer boundary due to for example buffer overflow in the writer
+    side buffer or in the socket. This value is only logged for streams with
+    less than 1000 input data pushes (10 seconds for buffer size 10 ms).
+  </summary>
+</histogram>
+
+<histogram name="Media.AudioCapturerMissedReadDeadline10sIntervals"
+    units="misses" expires_after="2023-10-05">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    The number of times input audio data blocks that had to be buffered because
+    there was not room in the shared memory ring buffer on the browser/renderer
+    boundary. This happens if the reading side hasn't read data in time. This
+    value is aggregated over a period of 1000 input data pushes (every 10
+    seconds for buffer size 10 ms) and is logged at the end of each collection
+    interval. Not recorded for streams with less than 1000 input data pushes.
+  </summary>
+</histogram>
+
 <histogram name="Media.AudioCapturerMissedReadDeadline2.{Duration}"
     units="permille" expires_after="2023-10-05">
+  <obsolete>
+    Deprecated in favor of Media.AudioCapturerMissedReadDeadline10sIntervals and
+    Media.AudioCapturerMissedReadDeadlineBelow10s. Data is no longer collected.
+  </obsolete>
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
   <summary>
@@ -1369,6 +1417,19 @@ chromium-metrics-reviews@google.com.
     <variant name="Long" summary="Streams equal or longer than 3000 callbacks"/>
     <variant name="Short" summary="Streams shorter than 3000 callbacks"/>
   </token>
+</histogram>
+
+<histogram name="Media.AudioCapturerMissedReadDeadlineBelow10s" units="misses"
+    expires_after="2023-10-05">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    The number of times input audio data blocks that had to be buffered because
+    there was not room in the shared memory ring buffer on the browser/renderer
+    boundary. This happens if the reading side hasn't read data in time. This
+    value is only logged for streams with less than 1000 input data pushes (10
+    seconds for buffer size 10 ms).
+  </summary>
 </histogram>
 
 <histogram name="Media.AudioCodec" enum="AudioCodec" expires_after="never">
