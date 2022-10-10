@@ -28,8 +28,7 @@ void LogInvalidReason(InvalidStudyReason reason) {
 bool ValidateStudyAndComputeTotalProbability(
     const Study& study,
     base::FieldTrial::Probability* total_probability,
-    bool* all_assignments_to_one_group,
-    std::vector<std::string>* associated_features) {
+    bool* all_assignments_to_one_group) {
   if (study.name().empty()) {
     LogInvalidReason(InvalidStudyReason::kBlankStudyName);
     DVLOG(1) << "study with missing study name";
@@ -98,23 +97,7 @@ bool ValidateStudyAndComputeTotalProbability(
   base::FieldTrial::Probability divisor = 0;
   bool multiple_assigned_groups = false;
 
-  std::set<std::string> features_to_associate;
-
   for (const auto& experiment : study.experiment()) {
-    // Note: This checks for ACTIVATE_ON_QUERY, since there is no reason to
-    // have this association with ACTIVATE_ON_STARTUP (where the trial starts
-    // active), as well as allowing flexibility to disable this behavior in the
-    // future from the server by introducing a new activation type.
-    if (study.activation_type() == Study_ActivationType_ACTIVATE_ON_QUERY) {
-      const auto& features = experiment.feature_association();
-      for (const auto& feature : features.enable_feature()) {
-        features_to_associate.insert(feature);
-      }
-      for (const auto& feature : features.disable_feature()) {
-        features_to_associate.insert(feature);
-      }
-    }
-
     if (experiment.has_google_web_experiment_id() &&
         experiment.has_google_web_trigger_experiment_id()) {
       LogInvalidReason(InvalidStudyReason::kTriggerAndNonTriggerExperimentId);
@@ -150,15 +133,6 @@ bool ValidateStudyAndComputeTotalProbability(
     }
   }
 
-  // Ensure that groups that don't explicitly enable/disable any features get
-  // associated with all features in the study (i.e. so "Default" group gets
-  // reported).
-  if (!features_to_associate.empty()) {
-    associated_features->insert(associated_features->end(),
-                                features_to_associate.begin(),
-                                features_to_associate.end());
-  }
-
   *total_probability = divisor;
   *all_assignments_to_one_group = !multiple_assigned_groups;
   return true;
@@ -181,15 +155,13 @@ bool ProcessedStudy::Init(const Study* study) {
   bool all_assignments_to_one_group = false;
   std::vector<std::string> associated_features;
   if (!ValidateStudyAndComputeTotalProbability(*study, &total_probability,
-                                               &all_assignments_to_one_group,
-                                               &associated_features)) {
+                                               &all_assignments_to_one_group)) {
     return false;
   }
 
   study_ = study;
   total_probability_ = total_probability;
   all_assignments_to_one_group_ = all_assignments_to_one_group;
-  associated_features_.swap(associated_features);
   return true;
 }
 

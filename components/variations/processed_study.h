@@ -59,10 +59,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
     return all_assignments_to_one_group_;
   }
 
-  const std::vector<std::string>& associated_features() const {
-    return associated_features_;
-  }
-
   bool ShouldStudyUseLowEntropy() const;
 
   // Returns the entropy provider that should be used to select a group for
@@ -87,12 +83,6 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
 
   // Whether all assignments are to a single group.
   bool all_assignments_to_one_group_ = false;
-
-  // A list of feature names associated with this study by default. Studies
-  // might have groups that do not specify any feature associations – this is
-  // often the case for a default group, for example. The features listed here
-  // will be associated with all such groups.
-  std::vector<std::string> associated_features_;
 };
 
 }  // namespace variations

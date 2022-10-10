@@ -130,6 +130,32 @@ void ForceExperimentState(
   }
 }
 
+// Associates features for groups that do not specify them manually.
+void AssociateDefaultFeatures(const Study& study,
+                              base::FieldTrial* trial,
+                              base::FeatureList* feature_list) {
+  // Note: We only compute feature associations for ACTIVATE_ON_QUERY studies,
+  // since these associations are only used to determine that the trial has
+  // been queried when the feature is queried.
+  if (study.activation_type() != Study_ActivationType_ACTIVATE_ON_QUERY)
+    return;
+
+  std::set<std::string> features_to_associate;
+  for (const auto& experiment : study.experiment()) {
+    const auto& features = experiment.feature_association();
+    for (const auto& feature : features.enable_feature()) {
+      features_to_associate.insert(feature);
+    }
+    for (const auto& feature : features.disable_feature()) {
+      features_to_associate.insert(feature);
+    }
+  }
+  for (const auto& feature_name : features_to_associate) {
+    feature_list->RegisterFieldTrialOverride(
+        feature_name, base::FeatureList::OVERRIDE_USE_DEFAULT, trial);
+  }
+}
+
 // Registers feature overrides for the chosen experiment in the specified study.
 void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
                               base::FieldTrial* trial,
@@ -164,10 +190,7 @@ void RegisterFeatureOverrides(const ProcessedStudy& processed_study,
   // Associate features for groups that do not specify them manually (e.g.
   // "Default" group), so that such groups are reported.
   if (!experiment.has_feature_association()) {
-    for (const auto& feature_name : processed_study.associated_features()) {
-      feature_list->RegisterFieldTrialOverride(
-          feature_name, base::FeatureList::OVERRIDE_USE_DEFAULT, trial);
-    }
+    AssociateDefaultFeatures(study, trial, feature_list);
   }
 }
 
