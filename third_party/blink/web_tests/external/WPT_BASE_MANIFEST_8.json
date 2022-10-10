@@ -142142,7 +142142,7 @@
       ]
      ],
      "baseline-008.html": [
-      "89381ab3d5950bb6487d3c78678ce2eb4057b9fe",
+      "beb19ca44741aad5bc8f4fd55af8694d615972c5",
       [
        null,
        [
@@ -302703,6 +302703,10 @@
       "3c086eba4b94d008892cbbe3b1b07cda02014efb",
       []
      ],
+     "cssstyledeclaration-csstext-all-shorthand-expected.txt": [
+      "2a5760cd78da8ef5b1b2333dae9a0feede431806",
+      []
+     ],
      "cssstyledeclaration-csstext-expected.txt": [
       "5313c13a7a426063057b8d902880f400cf63028f",
       []
@@ -309651,7 +309655,7 @@
      []
     ],
     "OWNERS": [
-     "7f44d1b6e2ffff87a3e265b9ba62518534468d80",
+     "8a638a4d46a9e97a2fd2a4f3043ad63762ba98a1",
      []
     ],
     "README.md": [
@@ -336199,7 +336203,7 @@
      []
     ],
     "OWNERS": [
-     "7f44d1b6e2ffff87a3e265b9ba62518534468d80",
+     "8a638a4d46a9e97a2fd2a4f3043ad63762ba98a1",
      []
     ],
     "README.md": [
@@ -392630,6 +392634,27 @@
         {}
        ]
       ],
+      "flex-align-baseline-multicol-001.html": [
+       "14db395889a8570deb331d48a8b90364677f9d5c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-multicol-002.html": [
+       "cf663a25ddcca08d548fe3aafbc614e64d4d3af8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-multicol-003.html": [
+       "663c351ede53442cc34539e456138cd021d428da",
+       [
+        null,
+        {}
+       ]
+      ],
       "flex-align-baseline-overflow-001.html": [
        "382112ed210b8563c73a4449847754ced0221cbb",
        [
@@ -395778,6 +395803,27 @@
       ],
       "grid-align-baseline-line-clamp-003.tentative.html": [
        "689c952dbba7ca0464590155317f4341b91b1407",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-multicol-001.html": [
+       "d7d6faabb1afac1bfd97def7017e51ec31fa5924",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-multicol-002.html": [
+       "d237f4c2e2b0f1eee8369e7ba76af04edb8f27c3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-multicol-003.html": [
+       "52b2403f881ddc1bdb8ceab1c387547f5dd255b4",
        [
         null,
         {}
@@ -415156,6 +415202,13 @@
      ],
      "cssstyledeclaration-cssfontrule.tentative.html": [
       "2efab276c5bf3a7e66be5bdd0ae1c4d6b697944b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cssstyledeclaration-csstext-all-shorthand.html": [
+      "6619538cf109e0fed0a15ba37eddba72e708abdd",
       [
        null,
        {}
@@ -441706,35 +441759,35 @@
      ]
     ],
     "feature-policy-header-policy-allowed-for-all.https.sub.html": [
-     "bfbdd6a20c93dc013d0008cf8b80bbcd7aee00a6",
+     "a036859451ee5bdf2a3a333f06f651de958e4008",
      [
       null,
       {}
      ]
     ],
     "feature-policy-header-policy-allowed-for-self.https.sub.html": [
-     "8641746ec8fb9db9af9f284d098b32b8663ca85c",
+     "b6fbdd2cc2449c902afe8b57bbeb62b99a3a3125",
      [
       null,
       {}
      ]
     ],
     "feature-policy-header-policy-allowed-for-some.https.sub.html": [
-     "d89ccef5c90676f0a682dbf07a3da20d3f017a83",
+     "5eda8baa0849c6803a5ae7ebf789dc7e96dbe92a",
      [
       null,
       {}
      ]
     ],
     "feature-policy-header-policy-declined.https.sub.html": [
-     "ebe09ec9873d6ef2c1946e0c408d9582923889cc",
+     "17378e3e13f2dc0de2606e16f6fbab3bf3a39f4a",
      [
       null,
       {}
      ]
     ],
     "feature-policy-header-policy-disallowed-for-all.https.sub.html": [
-     "971af0fa070d9ad40fd4f693500c38b8c85af0ef",
+     "936f26193787a722fa30b201a73ac252476c4561",
      [
       null,
       {}
@@ -441817,7 +441870,7 @@
      ]
     ],
     "permissions-policy-header-policy-allowed-for-self.https.sub.html": [
-     "5c4c6568f2fc6161de8d5017576c2606acfc11ab",
+     "32df2b71c328f06de73af6ceb42171039de6f1c7",
      [
       null,
       {}
@@ -524121,7 +524174,7 @@
      ]
     ],
     "permissions-policy-header-policy-allowed-for-all.https.sub.html": [
-     "a089866c7af7ac4a798844cff3fd1a938bb5cede",
+     "16a2b60c75d5f870a8364d2a2bdf913112f6b58c",
      [
       null,
       {}
@@ -524135,14 +524188,14 @@
      ]
     ],
     "permissions-policy-header-policy-allowed-for-self.https.sub.html": [
-     "dba317e64e441fe5da5f6f6a79576cbf89ef27bb",
+     "363ff0b9819f7139d51867141d0a40108e981ea5",
      [
       null,
       {}
      ]
     ],
     "permissions-policy-header-policy-allowed-for-some.https.sub.html": [
-     "0035eea7d5e04e1155d452246925a7a7560fd951",
+     "e9d8ac145866eaff144f4d5b87197c3c40e44673",
      [
       null,
       {}
@@ -524156,14 +524209,14 @@
      ]
     ],
     "permissions-policy-header-policy-declined.https.sub.html": [
-     "247f23893ba09cbe2639c4df01aa70b4fa553595",
+     "f02cdce7d1e7db0f5416a3085eacb628eb715dc4",
      [
       null,
       {}
      ]
     ],
     "permissions-policy-header-policy-disallowed-for-all.https.sub.html": [
-     "6c6f6ef73f382e9915b091ae315ca9b053c4e39f",
+     "f787b7de12ad9408535fa315aad1b2857c08d6aa",
      [
       null,
       {}
