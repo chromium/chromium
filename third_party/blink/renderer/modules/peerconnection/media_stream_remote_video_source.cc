@@ -399,8 +399,8 @@ void MediaStreamRemoteVideoSource::RequestRefreshFrame() {
   }
 }
 
-base::WeakPtr<MediaStreamVideoSource> MediaStreamRemoteVideoSource::GetWeakPtr()
-    const {
+base::WeakPtr<MediaStreamVideoSource>
+MediaStreamRemoteVideoSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

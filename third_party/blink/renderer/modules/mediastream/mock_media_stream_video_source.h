@@ -86,7 +86,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   // Implements blink::MediaStreamVideoSource.
   void RequestRefreshFrame() override;
   void OnHasConsumers(bool has_consumers) override;
-  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
  protected:
   // Implements MediaStreamSource.

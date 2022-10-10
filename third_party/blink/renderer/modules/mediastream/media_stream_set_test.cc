@@ -32,7 +32,7 @@ class MockLocalMediaStreamVideoSource : public blink::MediaStreamVideoSource {
             blink::scheduler::GetSingleThreadTaskRunnerForTesting()) {}
 
  private:
-  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override {
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
 

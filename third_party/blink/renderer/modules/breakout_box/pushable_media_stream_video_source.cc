@@ -174,7 +174,7 @@ void PushableMediaStreamVideoSource::StopSourceImpl() {
 }
 
 base::WeakPtr<MediaStreamVideoSource>
-PushableMediaStreamVideoSource::GetWeakPtr() const {
+PushableMediaStreamVideoSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
@@ -189,7 +189,7 @@ PushableMediaStreamVideoSource::GetFeedbackCallback() const {
       GetTaskRunner(),
       WTF::BindRepeating(
           &PushableMediaStreamVideoSource::ProcessFeedbackInternal,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetMutableWeakPtr()));
 }
 
 void PushableMediaStreamVideoSource::ProcessFeedbackInternal(

@@ -99,7 +99,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<uint32_t> GetNextCropVersion() override;
 #endif
   uint32_t GetCropVersion() const override;
-  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,

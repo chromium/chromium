@@ -222,7 +222,7 @@ uint32_t MediaStreamVideoCapturerSource::GetCropVersion() const {
 }
 
 base::WeakPtr<MediaStreamVideoSource>
-MediaStreamVideoCapturerSource::GetWeakPtr() const {
+MediaStreamVideoCapturerSource::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

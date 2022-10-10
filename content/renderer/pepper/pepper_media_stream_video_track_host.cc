@@ -444,7 +444,7 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
       host_->frame_deliverer_ = nullptr;
   }
 
-  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const final {
+  base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() final {
     return weak_factory_.GetWeakPtr();
   }
 
