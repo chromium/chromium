@@ -165,11 +165,11 @@ void HTMLScriptElement::setInnerTextForBinding(
       string_or_trusted_script, GetExecutionContext(), exception_state);
   if (exception_state.HadException())
     return;
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
-  // On setting, the innerText [...] perform the regular steps, and then set
-  // content object's [[ScriptText]] internal slot value [...].
-  HTMLElement::setInnerText(value);
+  // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
+  // "On setting the innerText [...]: Set [[ScriptText]] internal slot value to
+  // the stringified attribute value. Perform the usual attribute setter steps."
   script_text_internal_slot_ = ParkableString(value.Impl());
+  HTMLElement::setInnerText(value);
 }
 
 void HTMLScriptElement::setTextContentForBinding(
@@ -179,19 +179,15 @@ void HTMLScriptElement::setTextContentForBinding(
       TrustedTypesCheckForScript(value, GetExecutionContext(), exception_state);
   if (exception_state.HadException())
     return;
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
-  // On setting, [..] textContent [..] perform the regular steps, and then set
-  // content object's [[ScriptText]] internal slot value [...].
-  Node::setTextContent(string);
-  script_text_internal_slot_ = ParkableString(string.Impl());
+  setTextContent(string);
 }
 
 void HTMLScriptElement::setTextContent(const String& string) {
-  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
-  // On setting, [..] textContent [..] perform the regular steps, and then set
-  // content object's [[ScriptText]] internal slot value [...].
-  Node::setTextContent(string);
+  // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
+  // "On setting [.. textContent ..]: Set [[ScriptText]] internal slot value to
+  // the stringified attribute value. Perform the usual attribute setter steps."
   script_text_internal_slot_ = ParkableString(string.Impl());
+  Node::setTextContent(string);
 }
 
 void HTMLScriptElement::setAsync(bool async) {
