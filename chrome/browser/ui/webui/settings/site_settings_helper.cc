@@ -760,6 +760,7 @@ std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
     ContentSettingsType content_type) {
   ContentSettingsForOneType entries;
   map->GetSettingsForOneType(content_type, &entries);
+  // Exclude any entries that don't represent a single webby top-frame origin.
   base::EraseIf(entries, [](const ContentSettingPatternSource& e) {
     return !content_settings::PatternAppliesToSingleOrigin(
                e.primary_pattern, e.secondary_pattern) ||

@@ -915,3 +915,26 @@ TEST(ContentSettingsPatternTest, FileSchemeHasPath) {
   EXPECT_TRUE(Pattern("file:///foo/bar/").HasPath());
   EXPECT_TRUE(Pattern("file:///foo/bar/test.html").HasPath());
 }
+
+TEST(ContentSettingsPatternTest, MatchesSingleOrigin) {
+  EXPECT_FALSE(Pattern("*").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("*://example.com:443").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("https://[*.]example.com:443").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("https://example.com:*").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("*://[*.]example.com:*").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("https://*").MatchesSingleOrigin());
+  EXPECT_FALSE(Pattern("file:///*").MatchesSingleOrigin());
+
+  EXPECT_TRUE(Pattern("https://example.com:443").MatchesSingleOrigin());
+  EXPECT_TRUE(Pattern("file:///foo/bar/example.txt").MatchesSingleOrigin());
+
+  // URL conversion.
+  EXPECT_FALSE(ContentSettingsPattern::FromURL(GURL("https://example.com"))
+                   .MatchesSingleOrigin());
+  EXPECT_TRUE(
+      ContentSettingsPattern::FromURLNoWildcard(GURL("https://example.com"))
+          .MatchesSingleOrigin());
+  EXPECT_TRUE(
+      ContentSettingsPattern::FromURL(GURL("file:///foo/bar/example.txt"))
+          .MatchesSingleOrigin());
+}

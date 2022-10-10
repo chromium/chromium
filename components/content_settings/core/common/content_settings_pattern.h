@@ -211,6 +211,10 @@ class ContentSettingsPattern {
   // True if this pattern matches all hosts (i.e. it has a host wildcard).
   bool MatchesAllHosts() const;
 
+  // True if this pattern matches a single origin (i.e. it's the narrowest kind
+  // of a pattern, with no wildcards).
+  bool MatchesSingleOrigin() const;
+
   // True if this pattern has domain wildcard.
   bool HasDomainWildcard() const;
 

@@ -582,6 +582,11 @@ bool ContentSettingsPattern::MatchesAllHosts() const {
   return parts_.has_domain_wildcard && parts_.host.empty();
 }
 
+bool ContentSettingsPattern::MatchesSingleOrigin() const {
+  return !parts_.is_scheme_wildcard && !parts_.has_domain_wildcard &&
+         !parts_.is_port_wildcard && !parts_.is_path_wildcard;
+}
+
 bool ContentSettingsPattern::HasDomainWildcard() const {
   return parts_.has_domain_wildcard && !parts_.host.empty();
 }

@@ -58,13 +58,11 @@ base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value) {
   return base::Value::FromUniquePtrValue(std::move(value));
 }
 
-// Whether |pattern| applies to a single origin.
 bool PatternAppliesToSingleOrigin(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
-  const GURL url(primary_pattern.ToString());
   // Default settings and other patterns apply to multiple origins.
-  if (url::Origin::Create(url).opaque())
+  if (!primary_pattern.MatchesSingleOrigin())
     return false;
   // Embedded content settings only match when |url| is embedded in another
   // origin, so ignore non-wildcard secondary patterns.
