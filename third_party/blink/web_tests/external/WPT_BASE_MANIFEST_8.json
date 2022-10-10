@@ -274947,6 +274947,10 @@
       "b2c06f72be49fb1e9ecd45b0fa3b209882e13cbd",
       []
      ],
+     "font-palette-vs-shorthand-expected.txt": [
+      "b9913eda83a45350b9a28884869a8fe5dcbe31b7",
+      []
+     ],
      "font-size-adjust-001-ref.html": [
       "609e8d1d4bfd7429bcfbc971c9d765b56f497b7c",
       []
@@ -314380,12 +314384,12 @@
          "49ce6bd52a5a829799078823c8f3b7a450a28233",
          []
         ],
-        "executor.html": [
-         "9aec26345177df1859a48426dd6169c0d2d2cefa",
+        "executor.sub.html": [
+         "38f4429d91e4ee9f203fe312043cec23298c205a",
          []
         ],
         "remote-context-helper.js": [
-         "300eded282e098b2b338e3b6c22e3178da39e7ec",
+         "7a4b399af885780f81fc9c4934123598705fdaa0",
          []
         ]
        }
@@ -334764,7 +334768,7 @@
     },
     "mime-types": {
      "README.md": [
-      "4b3c81386697d51451b666bc434e042d4949341e",
+      "eb5fba0ef00504e17aef47a725e55bb934a15e39",
       []
      ],
      "charset-parameter.window-expected.txt": [
@@ -334772,11 +334776,11 @@
       []
      ],
      "parsing.any-expected.txt": [
-      "08508ea98985defa40ef86a62e6935406f7e863c",
+      "cb0045038362f60d60bf92584cf2712fc5b95dab",
       []
      ],
      "parsing.any.worker-expected.txt": [
-      "08508ea98985defa40ef86a62e6935406f7e863c",
+      "cb0045038362f60d60bf92584cf2712fc5b95dab",
       []
      ],
      "resources": {
@@ -457380,6 +457384,13 @@
          {}
         ]
        ],
+       "document-state.tentative.https.html": [
+        "d0e629f63124579a2f4360403119dcd9fcb31190",
+        [
+         null,
+         {}
+        ]
+       ],
        "event-order": {
         "after-load-hash-twice.html": [
          "75889ef5175fa6b44281a4d5a138f8a02064baff",
@@ -514368,14 +514379,14 @@
     },
     "mime-types": {
      "charset-parameter.window.js": [
-      "ddac81b74d3b41652e28d39c299d4f8ebf0c118c",
+      "5dc46562543bf8557c2e0f0a3f4c5396e6ea71d8",
       [
        "mimesniff/mime-types/charset-parameter.window.html",
        {}
       ]
      ],
      "parsing.any.js": [
-      "ae396c4f095b6a6d190a25fe2a0231c53f19b29a",
+      "93be6bfb1394f672abcbe82491a559564ec85cf9",
       [
        "mimesniff/mime-types/parsing.any.html",
        {

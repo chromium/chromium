@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL CSS Fonts Module Level 4: interaction of font-palette and font shorthand assert_equals: expected "" but got "50px colr"
-FAIL CSS Fonts Module Level 4: interaction of font-palette and font shorthand 1 assert_equals: expected "normal" but got "dark"
-FAIL CSS Fonts Module Level 4: interaction of font-palette and font shorthand 2 assert_equals: expected "" but got "50px colr"
-PASS CSS Fonts Module Level 4: interaction of font-palette and font shorthand 3
-Harness: the test ran to completion.
-
