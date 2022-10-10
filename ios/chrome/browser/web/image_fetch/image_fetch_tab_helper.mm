@@ -25,7 +25,7 @@
 #endif
 
 const char kUmaGetImageDataByJsResult[] =
-    "ContextMenu.iOS.GetImageDataByJsResult";
+    "Mobile.ContextMenu.GetImageDataByJsResult";
 
 namespace {
 // Key for image_fetcher

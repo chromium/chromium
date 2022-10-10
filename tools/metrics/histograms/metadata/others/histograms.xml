@@ -3068,9 +3068,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.iOS.CopyImage" enum="ContextMenuIOSCopyImage"
-    expires_after="2021-12-05">
+    expires_after="M108">
   <obsolete>
-    Previously removed from code.
+    Replaced by Mobile.ContextMenu.CopyImage
   </obsolete>
   <owner>mrsuyi@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -3081,7 +3081,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.iOS.GetImageDataByJsResult"
-    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2022-10-16">
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="M108">
+  <obsolete>
+    Replaced by Mobile.ContextMenu.GetImageDataByJsResult
+  </obsolete>
   <owner>mrsuyi@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -3092,7 +3095,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.iOS.LensSupportStatus" enum="IOSLensSupportStatus"
-    expires_after="2023-02-26">
+    expires_after="M108">
+  <obsolete>
+    Replaced by Mobile.ContextMenu.LensSupportStatus
+  </obsolete>
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -3103,7 +3109,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.iOS.LensWebUploadStatus"
-    enum="IOSLensWebUploadStatus" expires_after="2023-06-23">
+    enum="IOSLensWebUploadStatus" expires_after="M108">
+  <obsolete>
+    Replaced by Mobile.ContextMenu.LensWebUploadStatus
+  </obsolete>
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -3113,7 +3122,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.iOS.LensWebUploadTime" units="ms"
-    expires_after="2023-06-28">
+    expires_after="M108">
+  <obsolete>
+    Replaced by Mobile.ContextMenu.LensWebUploadTime
+  </obsolete>
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>

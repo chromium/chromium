@@ -24,11 +24,9 @@
 #endif
 
 namespace {
-// Name of the UMA ContextMenu.iOS.CopyImage histogram.
-const char kUmaContextMenuCopyImage[] = "ContextMenu.iOS.CopyImage";
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Enum for the ContextMenu.iOS.CopyImage UMA histogram to report
+// Enum for the Mobile.ContextMenu.CopyImage UMA histogram to report
 // the results of Copy Image.
 enum class ContextMenuCopyImage {
   // Copy Image is called.
@@ -53,7 +51,7 @@ const int kAlertDelayInMs = 300;
 // A speical id indicates that last copy is finished or canceled and next
 // copy has not started.
 const int kNoActiveCopy = 0;
-}
+}  // namespace
 
 @interface ImageCopier ()
 // The browser.
@@ -161,7 +159,7 @@ const int kNoActiveCopy = 0;
 }
 
 - (void)recordCopyImageUMA:(ContextMenuCopyImage)UMAEnum {
-  UMA_HISTOGRAM_ENUMERATION(kUmaContextMenuCopyImage, UMAEnum);
+  UMA_HISTOGRAM_ENUMERATION("Mobile.ContextMenu.CopyImage", UMAEnum);
 }
 
 @end

@@ -104,6 +104,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mobile.ContextMenu.CopyImage" enum="ContextMenuIOSCopyImage"
+    expires_after="2023-10-16">
+  <owner>djean@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Logged when &quot;copy image&quot; from context menu is invoked. Log the
+    events happening during the copying image procedure.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.ContextMenu.EntryPoints" enum="IOSMenuScenario"
     expires_after="2023-04-01">
   <owner>seblalancette@chromium.org</owner>
@@ -112,6 +122,49 @@ chromium-metrics-reviews@google.com.
     Tracks which context menu was shown. To drill down into a specific context
     menu's usage, take a look at its actions' histogram (the format for actions
     histograms is Mobile.ContextMenu.*.Actions). Currently only on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.ContextMenu.GetImageDataByJsResult"
+    enum="ContextMenuIOSGetImageDataByJsResult" expires_after="2023-10-16">
+  <owner>djean@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <summary>
+    Result of getting image data by JavaScript for CopyImage, SaveImage and
+    SearchByImage from iOS context menu. Recorded when the JavaScript returns,
+    or fails for timeout.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.ContextMenu.LensSupportStatus"
+    enum="IOSLensSupportStatus" expires_after="2023-02-26">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Whether or not Lens is supported, and if not, the reason why. Recorded only
+    if the feature is enabled when the long-press context menu is shown for an
+    image.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.ContextMenu.LensWebUploadStatus"
+    enum="IOSLensWebUploadStatus" expires_after="2023-06-23">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    The status of the upload of image data to Lens. Recorded only when the Lens
+    feature is triggered via the context menu entry from an image long-press.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.ContextMenu.LensWebUploadTime" units="ms"
+    expires_after="2023-06-28">
+  <owner>hujasonx@google.com</owner>
+  <owner>lens-in-bling-team@google.com</owner>
+  <summary>
+    Logs the time it takes to upload image data to the Lens Web servers.
+    Recorded only when the Lens feature is triggered via the context menu entry
+    from an image long-press.
   </summary>
 </histogram>
 

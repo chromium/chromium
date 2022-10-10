@@ -9,4 +9,4 @@
 #endif
 
 const char kIOSLensSupportStatusHistogram[] =
-    "ContextMenu.iOS.LensSupportStatus";
+    "Mobile.ContextMenu.LensSupportStatus";
