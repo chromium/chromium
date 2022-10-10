@@ -410,6 +410,22 @@
       "chrome-untrusted://demo-mode-app/*"
     ]
   },
+  "metricsPrivateIndividualApis.recordMediumTime": {
+    "dependencies": [],
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://demo-mode-app/*"
+    ]
+  },
+  "metricsPrivateIndividualApis.recordEnumerationValue": {
+    "dependencies": [],
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://demo-mode-app/*"
+    ]
+  },
   "mimeHandlerPrivate": {
     "dependencies": ["manifest:mime_types_handler"],
     "contexts": ["blessed_extension"]

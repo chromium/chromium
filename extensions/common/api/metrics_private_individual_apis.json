@@ -14,6 +14,25 @@
         "parameters": [
           {"name": "name", "type": "string"}
         ]
+      },
+      {
+        "name": "recordMediumTime",
+        "type": "function",
+        "description": "Records an elapsed time of no more than 3 minutes.  The sample value is specified in milliseconds.",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "integer"}
+        ]
+      },
+      {
+        "name": "recordEnumerationValue",
+        "type": "function",
+        "description": "Records an enumeration value to the given metric. Analogous to base::UmaHistogramEnumeration(). Use recordSparseValue for sparse enums or enums not starting at 0.",
+        "parameters": [
+          {"name": "metricName", "type": "string"},
+          {"name": "value", "type": "integer"},
+          {"name": "enumSize", "type": "integer"}
+        ]
       }
     ],
     "events": []

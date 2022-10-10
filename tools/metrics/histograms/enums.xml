@@ -24822,6 +24822,19 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Highlights App"/>
 </enum>
 
+<enum name="DemoModeHighlightsAction">
+  <int value="0" label="Home button click"/>
+  <int value="1" label="Easy button click"/>
+  <int value="2" label="Fast button click"/>
+  <int value="3" label="Powerful button click"/>
+  <int value="4" label="Secure button click"/>
+  <int value="5" label="Display button click"/>
+  <int value="6" label="Keyboard button click"/>
+  <int value="7" label="Graphics button click"/>
+  <int value="8" label="Game button click"/>
+  <int value="9" label="Peripherals button click"/>
+</enum>
+
 <enum name="DemoModeIdleLogoutWarningEvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Canceled"/>

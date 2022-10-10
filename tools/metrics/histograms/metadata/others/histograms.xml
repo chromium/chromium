@@ -85,6 +85,19 @@ chromium-metrics-reviews@google.com.
       summary="the message introducing price chips"/>
 </variants>
 
+<variants name="HighlightsPageName">
+  <variant name="DisplayPage" summary="Highlights app Display page"/>
+  <variant name="EasyPage" summary="Highlights app Easy page"/>
+  <variant name="FastPage" summary="Highlights app Fast page"/>
+  <variant name="GamePage" summary="Highlights app Game page"/>
+  <variant name="GraphicsPage" summary="Highlights app Graphics page"/>
+  <variant name="HomePage" summary="Highlights app Home page"/>
+  <variant name="KeyboardPage" summary="Highlights app Keyboard page"/>
+  <variant name="PeripheralsPage" summary="Highlights app Peripherals page"/>
+  <variant name="PowerfulPage" summary="Highlights app Powerful page"/>
+  <variant name="SecurePage" summary="Highlights app Secure page"/>
+</variants>
+
 <variants name="ImportantFileClients">
   <variant name="" summary="Unknown file"/>
   <variant name=".BookmarkStorage" summary="Bookmarks file"/>
@@ -4657,6 +4670,28 @@ chromium-metrics-reviews@google.com.
     the first user activity to the last user activity. This metric rounds the
     duration to the nearest second and uses exponential bucketing capped at 1
     hour.
+  </summary>
+</histogram>
+
+<histogram name="DemoMode.Highlights.FirstInteraction"
+    enum="DemoModeHighlightsAction" expires_after="2023-05-22">
+  <owner>lbowen@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The first interaction (button clicks) after entering the Highlights app. The
+    metric will be emitted once the user clicks on a button in Hightlights app,
+    e.g. pillar page button or the home button on the home page.
+  </summary>
+</histogram>
+
+<histogram name="DemoMode.Highlights.PageStayDuration.{HighlightsPageName}"
+    units="seconds" expires_after="2023-05-22">
+  <owner>lbowen@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <summary>
+    The time duration a user stays in each page of the Highlights app, e.g. the
+    home page, each pillar page. The metric will be emitted when the user enters
+    another page or exits the Highlights app.
   </summary>
 </histogram>
 

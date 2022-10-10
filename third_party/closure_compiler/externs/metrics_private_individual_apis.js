@@ -24,3 +24,23 @@ chrome.metricsPrivateIndividualApis = {};
  * @see https://developer.chrome.com/extensions/metricsPrivateIndividualApis#method-recordUserAction
  */
 chrome.metricsPrivateIndividualApis.recordUserAction = function(name) {};
+
+/**
+ * Records an elapsed time of no more than 3 minutes.  The sample value is
+ * specified in milliseconds.
+ * @param {string} metricName
+ * @param {number} value
+ */
+chrome.metricsPrivateIndividualApis.recordMediumTime = function(
+    metricName, value) {};
+
+/**
+ * Records an enumeration value to the given metric. Analogous to
+ * base::UmaHistogramEnumeration(). Use recordSparseValue for sparse enums or
+ * enums not starting at 0.
+ * @param {string} metricName
+ * @param {number} value
+ * @param {number} enumSize
+ */
+chrome.metricsPrivateIndividualApis.recordEnumerationValue = function(
+    metricName, value, enumSize) {};
