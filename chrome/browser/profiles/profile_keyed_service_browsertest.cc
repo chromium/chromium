@@ -4,6 +4,7 @@
 
 #include <sstream>
 
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -46,19 +47,19 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
 
   std::vector<KeyedServiceBaseFactory*> keyedServiceFactories;
   keyedServiceFactories.reserve(nodes.size());
-  std::transform(nodes.begin(), nodes.end(),
-                 std::back_inserter(keyedServiceFactories),
-                 [](DependencyNode* node) {
-                   return static_cast<KeyedServiceBaseFactory*>(node);
-                 });
+  base::ranges::transform(nodes, std::back_inserter(keyedServiceFactories),
+                          [](DependencyNode* node) {
+                            return static_cast<KeyedServiceBaseFactory*>(node);
+                          });
   return keyedServiceFactories;
 }
 
+// Returns a string representation of the elements of `set1` which are absent
+// from `set2`.
 std::string GetDifferenceString(const std::set<std::string>& set1,
                                 const std::set<std::string>& set2) {
   std::vector<std::string> differences;
-  std::set_difference(set1.begin(), set1.end(), set2.begin(), set2.end(),
-                      std::back_inserter(differences));
+  base::ranges::set_difference(set1, set2, std::back_inserter(differences));
 
   return differences.empty() ? "None" : base::JoinString(differences, ", ");
 }
@@ -88,7 +89,7 @@ std::string DisplaySetDifference(
 void TestKeyedProfileServicesActives(
     Profile* profile,
     const std::set<std::string>& expected_active_services_names) {
-  static const std::vector<KeyedServiceBaseFactory*> keyedServiceFactories =
+  const std::vector<KeyedServiceBaseFactory*> keyedServiceFactories =
       GetKeyedServiceBaseFactories();
 
   std::set<std::string> active_services_names;
@@ -104,6 +105,25 @@ void TestKeyedProfileServicesActives(
 }
 
 }  // namespace
+
+TEST(ProfileKeyedService_DisplaySetDifferenceTest, UnexpectedActiveService) {
+  std::string message =
+      DisplaySetDifference(/*expected_active_services_names=*/{},
+                           /*active_services_names=*/{"unexpected"});
+  EXPECT_THAT(message,
+              testing::ContainsRegex("Missing Expected Services:\\s+None"));
+  EXPECT_THAT(message,
+              testing::ContainsRegex("Added Extra Services:\\s+unexpected"));
+}
+
+TEST(ProfileKeyedService_DisplaySetDifferenceTest, MissingExpectedService) {
+  std::string message =
+      DisplaySetDifference(/*expected_active_services_names=*/{"missing"},
+                           /*active_services_names=*/{});
+  EXPECT_THAT(message,
+              testing::ContainsRegex("Missing Expected Services:\\s+missing"));
+  EXPECT_THAT(message, testing::ContainsRegex("Added Extra Services:\\s+None"));
+}
 
 // If you are adding a new keyed service and this test fails:
 // - determine if your service is intended to be created for the System profile
