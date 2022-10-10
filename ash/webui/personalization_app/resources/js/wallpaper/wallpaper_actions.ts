@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Action} from 'chrome://resources/ash/common/store/store.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+import {isPngDataUrl} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
 
@@ -372,10 +374,10 @@ export function setImagesForCollectionAction(
 
 export type SetDefaultImageThumbnailAction = Action&{
   name: WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL,
-  thumbnail: string,
+  thumbnail: Url,
 };
 
-export function setDefaultImageThumbnailAction(thumbnail: string):
+export function setDefaultImageThumbnailAction(thumbnail: Url):
     SetDefaultImageThumbnailAction {
   return {
     thumbnail,
@@ -386,14 +388,14 @@ export function setDefaultImageThumbnailAction(thumbnail: string):
 export type SetLocalImageDataAction = Action&{
   name: WallpaperActionName.SET_LOCAL_IMAGE_DATA,
   id: string,
-  data: string,
+  data: Url,
 };
 
 /**
  * Set the thumbnail data for a local image.
  */
 export function setLocalImageDataAction(
-    filePath: FilePath, data: string): SetLocalImageDataAction {
+    filePath: FilePath, data: Url): SetLocalImageDataAction {
   return {
     id: filePath.path,
     data,
@@ -448,8 +450,8 @@ export type SetSelectedImageAction = Action&{
 export function setSelectedImageAction(image: CurrentWallpaper|
                                        null): SetSelectedImageAction {
   assert(
-      image === null || image.url.url.startsWith('data:image/png;base64'),
-      'only data urls are supported');
+      image === null || isPngDataUrl(image.url),
+      'only png data urls are supported');
   return {
     image,
     name: WallpaperActionName.SET_SELECTED_IMAGE,

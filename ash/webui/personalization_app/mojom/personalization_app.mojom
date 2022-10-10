@@ -251,14 +251,14 @@ interface WallpaperProvider {
     // Device default image is a special case of an image stored on disk. It is
     // stored in a special directory and the file is not accessible to the user.
     // If this device has a default image, return a thumbnail representation of
-    // it. |data| will be empty string on failure or if the device has no
+    // it. |data| will be empty url on failure or if the device has no
     // default image.
-    GetDefaultImageThumbnail() => (string data);
+    GetDefaultImageThumbnail() => (url.mojom.Url data);
 
     // Fetch a thumbnail data url for the given local image path. |data| will be
-    // empty string on failure.
+    // empty on failure.
     GetLocalImageThumbnail(mojo_base.mojom.FilePath file_path) =>
-        (string data);
+        (url.mojom.Url data);
 
     // Binds a listener to start receiving updates on wallpaper changes.
     SetWallpaperObserver(pending_remote<WallpaperObserver> observer);

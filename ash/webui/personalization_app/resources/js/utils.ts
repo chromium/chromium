@@ -86,3 +86,9 @@ export function getSanitizedDefaultImageUrl(url: Url): Url {
 
   return {url: 'chrome://image/?' + url.url};
 }
+
+export function isPngDataUrl(maybeDataUrl: Url|null|
+                             undefined): maybeDataUrl is Url {
+  return !!maybeDataUrl && typeof maybeDataUrl.url === 'string' &&
+      maybeDataUrl.url.startsWith('data:image/png;base64');
+}

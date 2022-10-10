@@ -91,7 +91,7 @@ void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosPhotos(
 
 void FakePersonalizationAppWallpaperProvider::GetDefaultImageThumbnail(
     GetDefaultImageThumbnailCallback callback) {
-  std::move(callback).Run(std::string());
+  std::move(callback).Run(GURL());
 }
 
 void FakePersonalizationAppWallpaperProvider::GetLocalImages(
@@ -102,7 +102,7 @@ void FakePersonalizationAppWallpaperProvider::GetLocalImages(
 void FakePersonalizationAppWallpaperProvider::GetLocalImageThumbnail(
     const base::FilePath& path,
     GetLocalImageThumbnailCallback callback) {
-  std::move(callback).Run(std::string());
+  std::move(callback).Run(GURL());
 }
 
 void FakePersonalizationAppWallpaperProvider::SetWallpaperObserver(

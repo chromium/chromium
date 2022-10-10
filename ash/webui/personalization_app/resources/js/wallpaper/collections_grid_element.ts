@@ -16,7 +16,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getCountText, isNonEmptyArray, isSelectionEvent} from '../utils.js';
+import {getCountText, isNonEmptyArray, isPngDataUrl, isSelectionEvent} from '../utils.js';
 
 import {getTemplate} from './collections_grid_element.html.js';
 import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
@@ -85,15 +85,15 @@ function getGooglePhotosTile(): ImageTile {
 
 function getImages(
     localImages: Array<FilePath|DefaultImageSymbol>,
-    localImageData: Record<string|DefaultImageSymbol, string>): Url[] {
+    localImageData: Record<string|DefaultImageSymbol, Url>): Url[] {
   if (!localImageData || !Array.isArray(localImages)) {
     return [];
   }
   const result = [];
   for (const image of localImages) {
     const key = getPathOrSymbol(image);
-    const data = {url: localImageData[key]};
-    if (!!data.url && data.url.length > 0) {
+    const data = localImageData[key];
+    if (isPngDataUrl(data)) {
       result.push(data);
     }
     // Add at most |kMaximumLocalImagePreviews| thumbnail urls.
@@ -111,7 +111,7 @@ function getImages(
 function getLocalTile(
     localImages: Array<FilePath|DefaultImageSymbol>,
     localImagesLoading: boolean,
-    localImageData: Record<FilePath['path']|DefaultImageSymbol, string>):
+    localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>):
     ImageTile|LoadingTile {
   if (localImagesLoading) {
     return {type: TileType.LOADING};
@@ -131,7 +131,7 @@ function getLocalTile(
   // Count all images that failed to load and subtract them from "My Images"
   // count.
   const failureCount = Object.values(localImageData).reduce((result, next) => {
-    return next === '' ? result + 1 : result;
+    return !isPngDataUrl(next) ? result + 1 : result;
   }, 0);
 
   return {
@@ -215,7 +215,7 @@ export class CollectionsGrid extends WithPersonalizationStore {
   private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
   private localImages_: Array<FilePath|DefaultImageSymbol>|null;
   private localImagesLoading_: boolean;
-  private localImageData_: Record<string|DefaultImageSymbol, string>;
+  private localImageData_: Record<string|DefaultImageSymbol, Url>;
   private tiles_: Tile[];
   private loadedCollectionIdPhotos_: Set<string>;
 
@@ -371,7 +371,7 @@ export class CollectionsGrid extends WithPersonalizationStore {
   private onLocalImagesChanged_(
       localImages: Array<FilePath|DefaultImageSymbol>|null,
       localImagesLoading: boolean,
-      localImageData: Record<FilePath['path']|DefaultImageSymbol, string>) {
+      localImageData: Record<FilePath['path']|DefaultImageSymbol, Url>) {
     if (!Array.isArray(localImages) || !localImageData) {
       return;
     }

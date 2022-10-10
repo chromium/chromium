@@ -127,7 +127,7 @@ suite('LocalImagesTest', function() {
         assertEquals(2, ironList.items!.length);
         let imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
         assertEquals(1, imgTags.length);
-        assertEquals('data://localimage0data', imgTags![0]!.src);
+        assertEquals('data:image/png;base64,localimage0data', imgTags![0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -135,7 +135,7 @@ suite('LocalImagesTest', function() {
           'LocalImage1.png': false,
         };
         personalizationStore.data.wallpaper.local.data = {
-          'LocalImage0.png': 'data://localimage0data',
+          'LocalImage0.png': 'data:image/png;base64,localimage0data',
           'LocalImage1.png': null,
         };
         personalizationStore.notifyObservers();
@@ -143,7 +143,7 @@ suite('LocalImagesTest', function() {
         // Still only first thumbnail displayed.
         imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
         assertEquals(1, imgTags.length);
-        assertEquals('data://localimage0data', imgTags![0]!.src);
+        assertEquals('data:image/png;base64,localimage0data', imgTags![0]!.src);
       });
 
   test(
@@ -155,8 +155,10 @@ suite('LocalImagesTest', function() {
             {path: '/test/LocalImage1.png'},
           ],
           data: {
-            '/test/LocalImage0.png': 'data://localimage0data',
-            '/test/LocalImage1.png': 'data://localimage1data',
+            '/test/LocalImage0.png':
+                {url: 'data:image/png;base64,localimage0data'},
+            '/test/LocalImage1.png':
+                {url: 'data:image/png;base64,localimage1data'},
           },
         };
         // Done loading.
@@ -225,8 +227,8 @@ suite('LocalImagesTest', function() {
     personalizationStore.data.wallpaper.local = {
       images: [kDefaultImageSymbol, ...wallpaperProvider.localImages!],
       data: {
-        [kDefaultImageSymbol]: wallpaperProvider.defaultImageThumbnail,
         ...wallpaperProvider.localImageData,
+        [kDefaultImageSymbol]: wallpaperProvider.defaultImageThumbnail,
       },
     };
 

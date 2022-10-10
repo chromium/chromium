@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentWallpaper, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentWallpaper, DefaultImageSymbol, FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, kDefaultImageSymbol, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -93,8 +94,9 @@ export class TestWallpaperProvider extends
     this.localImages = [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}];
 
     this.localImageData = {
-      'LocalImage0.png': 'data://localimage0data',
-      'LocalImage1.png': 'data://localimage1data',
+      [kDefaultImageSymbol]: {url: ''},
+      'LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
+      'LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
     };
 
     this.currentWallpaper = {
@@ -119,8 +121,9 @@ export class TestWallpaperProvider extends
   private googlePhotosPhotosByAlbumIdResumeTokens_:
       Record<string, string|undefined> = {};
   localImages: FilePath[]|null;
-  localImageData: Record<string, string>;
-  defaultImageThumbnail: string = 'data://default_image_thumbnail';
+  localImageData: Record<string|DefaultImageSymbol, Url>;
+  defaultImageThumbnail:
+      Url = {url: 'data:image/png;base64,default_image_thumbnail'};
   currentWallpaper: CurrentWallpaper;
   selectWallpaperResponse = true;
   selectGooglePhotosPhotoResponse = true;
@@ -196,7 +199,7 @@ export class TestWallpaperProvider extends
     return Promise.resolve({response});
   }
 
-  getDefaultImageThumbnail(): Promise<{data: string}> {
+  getDefaultImageThumbnail(): Promise<{data: Url}> {
     this.methodCalled('getDefaultImageThumbnail');
     return Promise.resolve({data: this.defaultImageThumbnail});
   }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 
@@ -84,7 +85,7 @@ export interface LoadingState {
  */
 export interface LocalState {
   images: Array<FilePath|DefaultImageSymbol>|null;
-  data: Record<FilePath['path']|DefaultImageSymbol, string>;
+  data: Record<FilePath['path']|DefaultImageSymbol, Url>;
 }
 
 export enum DailyRefreshType {
@@ -129,7 +130,7 @@ export function emptyState(): WallpaperState {
         photosByAlbumId: {},
       },
     },
-    local: {images: null, data: {[kDefaultImageSymbol]: ''}},
+    local: {images: null, data: {[kDefaultImageSymbol]: {url: ''}}},
     currentSelected: null,
     pendingSelected: null,
     dailyRefresh: null,

@@ -27,6 +27,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -295,7 +296,7 @@ void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(
   base::FilePath default_wallpaper_path =
       wallpaper_controller->GetDefaultWallpaperPath(user->GetType());
   if (default_wallpaper_path.empty()) {
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(GURL());
     return;
   }
   image_util::DecodeImageFile(
@@ -729,11 +730,11 @@ void PersonalizationAppWallpaperProviderImpl::OnGetDefaultImage(
   if (image.isNull()) {
     // Do not call |mojom::ReportBadMessage| here. The message is valid, but the
     // file may be corrupt or unreadable.
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(GURL());
     return;
   }
   std::move(callback).Run(
-      webui::GetBitmapDataUrl(*GetResizedImage(image).bitmap()));
+      GURL(webui::GetBitmapDataUrl(*GetResizedImage(image).bitmap())));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnGetLocalImages(
@@ -750,10 +751,10 @@ void PersonalizationAppWallpaperProviderImpl::OnGetLocalImageThumbnail(
   if (error != base::File::Error::FILE_OK) {
     // Do not call |mojom::ReportBadMessage| here. The message is valid, but
     // the file may be corrupt or unreadable.
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(GURL());
     return;
   }
-  std::move(callback).Run(webui::GetBitmapDataUrl(*bitmap));
+  std::move(callback).Run(GURL(webui::GetBitmapDataUrl(*bitmap)));
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected(

@@ -17,11 +17,12 @@ import '../../css/common.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isSelectionEvent} from '../utils.js';
+import {isPngDataUrl, isSelectionEvent} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
@@ -79,7 +80,7 @@ export class LocalImages extends WithPersonalizationStore {
 
   private wallpaperProvider_: WallpaperProviderInterface;
   private images_: Array<FilePath|DefaultImageSymbol>|null;
-  private imageData_: Record<FilePath['path']|DefaultImageSymbol, string>;
+  private imageData_: Record<FilePath['path']|DefaultImageSymbol, Url>;
   private imageDataLoading_:
       Record<FilePath['path']|DefaultImageSymbol, boolean>;
   private currentSelected_: CurrentWallpaper|null;
@@ -131,7 +132,7 @@ export class LocalImages extends WithPersonalizationStore {
     this.imagesToDisplay_ = (images || []).filter(image => {
       const key = getPathOrSymbol(image);
       if (this.imageDataLoading_[key] === false) {
-        return !!this.imageData_[key];
+        return isPngDataUrl(this.imageData_[key]);
       }
       return true;
     });
@@ -152,7 +153,8 @@ export class LocalImages extends WithPersonalizationStore {
     for (let i = this.imagesToDisplay_.length - 1; i >= 0; i--) {
       const image = this.imagesToDisplay_[i];
       const key = getPathOrSymbol(image);
-      const failed = imageDataLoading[key] === false && !imageData[key];
+      const failed =
+          imageDataLoading[key] === false && !isPngDataUrl(imageData[key]);
       if (failed) {
         this.splice('imagesToDisplay_', i, 1);
       }
@@ -217,13 +219,17 @@ export class LocalImages extends WithPersonalizationStore {
       return false;
     }
     const key = getPathOrSymbol(image);
-    return !!imageData[key] && imageDataLoading[key] === false;
+    return isPngDataUrl(imageData[key]) && imageDataLoading[key] === false;
   }
 
   private getImageData_(
       image: FilePath|DefaultImageSymbol,
       imageData: LocalImages['imageData_']): string {
-    return imageData[getPathOrSymbol(image)];
+    if (!isPngDataUrl(imageData[getPathOrSymbol(image)])) {
+      console.error('Requested image data of an image that failed to load');
+      return '';
+    }
+    return imageData[getPathOrSymbol(image)].url;
   }
 
   private getImageDataId_(image: FilePath|DefaultImageSymbol): string {

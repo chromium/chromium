@@ -9,7 +9,7 @@ import {Actions} from '../personalization_actions.js';
 import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
-import {isNonEmptyArray} from '../utils.js';
+import {isNonEmptyArray, isPngDataUrl} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
 import {isDefaultImage, isFilePath} from './utils.js';
@@ -237,7 +237,7 @@ function localReducer(
     _: PersonalizationState): WallpaperState['local'] {
   switch (action.name) {
     case WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL:
-      if (action.thumbnail) {
+      if (isPngDataUrl(action.thumbnail)) {
         return {
           images: [
             kDefaultImageSymbol,
@@ -253,7 +253,7 @@ function localReducer(
         images: Array.isArray(state.images) ?
             state.images.filter(img => isFilePath(img)) :
             null,
-        data: {...state.data, [kDefaultImageSymbol]: ''},
+        data: {...state.data, [kDefaultImageSymbol]: {url: ''}},
       };
 
     case WallpaperActionName.SET_LOCAL_IMAGES: {
@@ -284,7 +284,7 @@ function localReducer(
               return result;
             },
             // Set the default value for |kDefaultImageSymbol| here.
-            {[kDefaultImageSymbol]: ''} as typeof state.data),
+            {[kDefaultImageSymbol]: {url: ''}} as typeof state.data),
       };
     }
     case WallpaperActionName.SET_LOCAL_IMAGE_DATA:
