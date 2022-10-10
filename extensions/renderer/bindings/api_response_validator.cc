@@ -119,6 +119,7 @@ void APIResponseValidator::ValidateEvent(
   static constexpr char const* kBrokenSignaturesToIgnore[] = {
       "automationInternal.onAccessibilityEvent",
       "chromeWebViewInternal.onClicked",
+      "input.ime.onFocus",
       "inputMethodPrivate.onFocus",
       "test.onMessage",
       // https://crbug.com/1343611.
