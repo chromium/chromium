@@ -23,9 +23,13 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image.h"
 
 namespace autofill_private = extensions::api::autofill_private;
 
@@ -168,7 +172,15 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   if (!credit_card.nickname().empty()) {
     card.nickname = base::UTF16ToUTF8(credit_card.nickname());
   }
-  card.image_src = CardNetworkToIconResourceIdString(credit_card.network());
+  gfx::Image* card_art_image = nullptr;
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardArtImage)) {
+    card_art_image =
+        personal_data.GetCreditCardArtImageForUrl(credit_card.card_art_url());
+  }
+  card.image_src =
+      card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
+                     : CardNetworkToIconResourceIdString(credit_card.network());
 
   // Create card metadata and add it to |card|.
   card.metadata.emplace();
