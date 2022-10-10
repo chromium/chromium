@@ -180,7 +180,7 @@ std::tuple<float, float, float> LchToLab(float l,
 }
 std::tuple<float, float, float> LabToLCH(float l, float a, float b) {
   return std::make_tuple(l, std::sqrt(a * a + b * b),
-                         gfx::RadToDeg(std::atan2f(b, a)));
+                         gfx::RadToDeg(atan2f(b, a)));
 }
 
 std::tuple<float, float, float> LabToXYZD50(float l, float a, float b) {
