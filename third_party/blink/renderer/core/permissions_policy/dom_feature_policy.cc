@@ -123,17 +123,8 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
     }
     Vector<String> result;
     for (const auto& origin_with_possible_wildcards : allowed_origins) {
-      if (!origin_with_possible_wildcards.has_subdomain_wildcard) {
-        result.push_back(WTF::String::FromUTF8(
-            origin_with_possible_wildcards.origin.Serialize()));
-      } else {
-        // Restore the missing wildcard from the front so this permissions
-        // policy element is inspectable. This looks different from when the
-        // wildcard wasn't supported as a %2A will be used instead of a *.
-        result.push_back(WTF::String::FromUTF8(
-                             origin_with_possible_wildcards.origin.Serialize())
-                             .Replace("://", "://*."));
-      }
+      result.push_back(
+          WTF::String::FromUTF8(origin_with_possible_wildcards.Serialize()));
     }
     return result;
   }

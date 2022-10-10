@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
@@ -1619,7 +1620,7 @@ bool ManifestParser::ParseIsolatedStorage(const JSONObject* object) {
 Vector<blink::ParsedPermissionsPolicyDeclaration>
 ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
   PermissionsPolicyParser::Node policy{
-      PermissionsPolicyParser::NodeType::kHeader};
+      OriginWithPossibleWildcards::NodeType::kHeader};
 
   JSONValue* json_value = object->Get("permissions_policy");
   if (!json_value)

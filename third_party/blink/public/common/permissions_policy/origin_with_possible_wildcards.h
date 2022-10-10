@@ -16,6 +16,12 @@ namespace blink {
 // or https://test.example.foo.com/ but does not match https://foo.com/.
 // Origins that do have wildcards cannot be opaque.
 struct BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
+  // Indicates the source of a parsed permissions policy. kHeader represents a
+  // permissions policy in an HTTP header. kAttribute represents an iframe allow
+  // policy. kUnknown indicated an unknown source. This affects which wildcards
+  // types are permitted in allowlist origins.
+  enum NodeType { kHeader, kAttribute, kUnknown };
+
   OriginWithPossibleWildcards();
   OriginWithPossibleWildcards(const url::Origin& origin,
                               bool has_subdomain_wildcard);
@@ -23,6 +29,17 @@ struct BLINK_COMMON_EXPORT OriginWithPossibleWildcards {
   OriginWithPossibleWildcards& operator=(
       const OriginWithPossibleWildcards& rhs);
   ~OriginWithPossibleWildcards();
+
+  // This constructs a OriginWithPossibleWildcards from an allowlist_entry which
+  // might or might not have a subdomain wildcard (only if the type is kHeader).
+  // This does not support special types like *, 'self', 'src', or 'none'.
+  static OriginWithPossibleWildcards Parse(const std::string& allowlist_entry,
+                                           const NodeType type);
+
+  // This should neatly undo the work of Parse, which is to say it
+  // serializes the origin and inserts a *. back into the front of the host
+  // if there was a subdomain wildcard.
+  std::string Serialize() const;
 
   // If there is no subdomain wildcard, this function returns true if the
   // origins match.

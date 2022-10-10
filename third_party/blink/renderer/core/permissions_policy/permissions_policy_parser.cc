@@ -112,7 +112,7 @@ class ParsingContext {
 
   absl::optional<ParsedPermissionsPolicyDeclaration> ParseFeature(
       const PermissionsPolicyParser::Declaration& declaration_node,
-      const PermissionsPolicyParser::NodeType type);
+      const OriginWithPossibleWildcards::NodeType type);
 
   struct ParsedAllowlist {
     std::vector<blink::OriginWithPossibleWildcards> allowed_origins;
@@ -126,8 +126,9 @@ class ParsingContext {
       const String& feature_name);
 
   // Parse allowlist for feature.
-  ParsedAllowlist ParseAllowlist(const Vector<String>& origin_strings,
-                                 const PermissionsPolicyParser::NodeType type);
+  ParsedAllowlist ParseAllowlist(
+      const Vector<String>& origin_strings,
+      const OriginWithPossibleWildcards::NodeType type);
 
   void ReportFeatureUsage(mojom::blink::PermissionsPolicyFeature feature);
   void ReportFeatureUsageLegacy(mojom::blink::PermissionsPolicyFeature feature);
@@ -280,10 +281,10 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
 
 ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     const Vector<String>& origin_strings,
-    const PermissionsPolicyParser::NodeType type) {
+    const OriginWithPossibleWildcards::NodeType type) {
   // The source of the PermissionsPolicyParser::Node must have an explicit
   // source so that we know which wildcards can be enabled.
-  DCHECK_NE(PermissionsPolicyParser::NodeType::kUnknown, type);
+  DCHECK_NE(OriginWithPossibleWildcards::NodeType::kUnknown, type);
   ParsedAllowlist allowlist;
   if (origin_strings.empty()) {
     // If a policy entry has no listed origins (e.g. "feature_name1" in
@@ -314,13 +315,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // Determine the target of the declaration. This may be a specific
       // origin, either explicitly written, or one of the special keywords
       // 'self' or 'src'. ('src' can only be used in the iframe allow
-      // attribute.)
-      url::Origin target_origin;
-
-      // Determine if there is a wildcard subdomain in the target origin
+      // attribute.) Also determine if this target has a subdomain wildcard
       // (e.g., https://*.google.com).
-      bool has_subdomain_wildcard = false;
-      wtf_size_t wildcard_pos = kNotFound;
+      OriginWithPossibleWildcards origin_with_possible_wildcards;
 
       // If the iframe will have an opaque origin (for example, if it is
       // sandboxed, or has a data: URL), then 'src' needs to refer to the
@@ -333,7 +330,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // 'self' origin is used if the origin is exactly 'self'.
       if (EqualIgnoringASCIICase(origin_string, "'self'")) {
         allowlist_includes_self_ = true;
-        target_origin = self_origin_->ToUrlOrigin();
+        origin_with_possible_wildcards =
+            OriginWithPossibleWildcards(self_origin_->ToUrlOrigin(),
+                                        /*has_subdomain_wildcard=*/false);
       }
       // 'src' origin is used if |src_origin| is available and the
       // origin is a match for 'src'. |src_origin| is only set
@@ -341,7 +340,9 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       else if (src_origin_ && EqualIgnoringASCIICase(origin_string, "'src'")) {
         allowlist_includes_src_ = true;
         if (!src_origin_->IsOpaque()) {
-          target_origin = src_origin_->ToUrlOrigin();
+          origin_with_possible_wildcards =
+              OriginWithPossibleWildcards(src_origin_->ToUrlOrigin(),
+                                          /*has_subdomain_wildcard=*/false);
         } else {
           target_is_opaque = true;
         }
@@ -352,38 +353,13 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
         allowlist_includes_star_ = true;
         target_is_all = true;
       }
-      // If there's a subdomain wildcard in the `origin_string` of a permissions
-      // policy, then we can parse it out and update `has_subdomain_wildcard`.
-      // We know there's a subdomain wildcard because there is a exactly one `*`
-      // and it's after the scheme and before the rest of the host.
-      else if (base::FeatureList::IsEnabled(
-                   features::kWildcardSubdomainsInPermissionsPolicy) &&
-               type == PermissionsPolicyParser::NodeType::kHeader &&
-               (wildcard_pos = origin_string.Find("://*.")) != kNotFound &&
-               origin_string.find('*') == origin_string.ReverseFind('*')) {
-        // We need a copy as Remove modifies the original.
-        String origin_string_copy(origin_string);
-        origin_string_copy.Remove(wildcard_pos + 3, 2);
-        scoped_refptr<SecurityOrigin> parsed_origin =
-            SecurityOrigin::CreateFromString(origin_string_copy);
-        if (!parsed_origin->IsOpaque()) {
-          target_origin = parsed_origin->ToUrlOrigin();
-          has_subdomain_wildcard = true;
-          allowlist_includes_origin_ = true;
-        } else {
-          logger_.Warn("Unrecognized origin with subdomain wildcard: '" +
-                       origin_string + "'.");
-          continue;
-        }
-      }
       // Otherwise, parse the origin string and verify that the result is
       // valid. Invalid strings will produce an opaque origin, which will
       // result in an error message.
       else {
-        scoped_refptr<SecurityOrigin> parsed_origin =
-            SecurityOrigin::CreateFromString(origin_string);
-        if (!parsed_origin->IsOpaque()) {
-          target_origin = parsed_origin->ToUrlOrigin();
+        origin_with_possible_wildcards =
+            OriginWithPossibleWildcards::Parse(origin_string.Utf8(), type);
+        if (!origin_with_possible_wildcards.origin.opaque()) {
           allowlist_includes_origin_ = true;
         } else {
           logger_.Warn("Unrecognized origin: '" + origin_string + "'.");
@@ -397,8 +373,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       } else if (target_is_opaque) {
         allowlist.matches_opaque_src = true;
       } else {
-        allowlist.allowed_origins.emplace_back(target_origin,
-                                               has_subdomain_wildcard);
+        allowlist.allowed_origins.emplace_back(origin_with_possible_wildcards);
       }
     }
   }
@@ -417,7 +392,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
 
 absl::optional<ParsedPermissionsPolicyDeclaration> ParsingContext::ParseFeature(
     const PermissionsPolicyParser::Declaration& declaration_node,
-    const PermissionsPolicyParser::NodeType type) {
+    const OriginWithPossibleWildcards::NodeType type) {
   absl::optional<mojom::blink::PermissionsPolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature)
@@ -468,7 +443,7 @@ ParsedPermissionsPolicy ParsingContext::ParsePolicyFromNode(
 PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
     const String& policy) {
   PermissionsPolicyParser::Node root{
-      PermissionsPolicyParser::NodeType::kAttribute};
+      OriginWithPossibleWildcards::NodeType::kAttribute};
 
   if (policy.length() > MAX_LENGTH_PARSE) {
     logger_.Error("Feature policy declaration exceeds size limit(" +
@@ -549,7 +524,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
   }
 
   PermissionsPolicyParser::Node ir_root{
-      PermissionsPolicyParser::NodeType::kHeader};
+      OriginWithPossibleWildcards::NodeType::kHeader};
   for (const auto& feature_entry : root.value()) {
     const auto& key = feature_entry.first;
     const char* feature_name = key.c_str();

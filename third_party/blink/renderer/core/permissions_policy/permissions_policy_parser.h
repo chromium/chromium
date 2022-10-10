@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PERMISSIONS_POLICY_PERMISSIONS_POLICY_PARSER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
@@ -56,11 +57,11 @@ class CORE_EXPORT PermissionsPolicyParser {
     String feature_name;
     Vector<String> allowlist;
   };
-  enum NodeType { kHeader, kAttribute, kUnknown };
   // We need to keep track of the source of the list of declarations as
   // different features (e.g., wildcards) might be active per-context.
   struct Node {
-    NodeType type{kUnknown};
+    OriginWithPossibleWildcards::NodeType type{
+        OriginWithPossibleWildcards::NodeType::kUnknown};
     Vector<Declaration> declarations;
   };
 
