@@ -6,7 +6,6 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

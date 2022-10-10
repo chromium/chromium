@@ -56,7 +56,6 @@ source_set("unit_tests") {
     ":bubble",
     "//base",
     "//base:i18n",
-    "//ios/chrome/browser/ui/util",
     "//testing/gtest",
   ]
   frameworks = [ "CoreGraphics.framework" ]
