@@ -3356,6 +3356,16 @@ class AssistantInteractionHelper
       AssistantInteractionResolution resolution) override {
     interaction_in_progress_ = false;
 
+    CHECK(on_interaction_finished_callback_)
+        << "on_interaction_finished_callback_ is not set.";
+
+    if (resolution != AssistantInteractionResolution::kNormal) {
+      SendErrorResponse(
+          base::StringPrintf("Interaction closed with resolution %s",
+                             ResolutionToString(resolution).c_str()));
+      return;
+    }
+
     // Only invoke the callback when |result_| is not empty to avoid an early
     // return before the entire session is completed. This happens when
     // sending queries to modify device settings, e.g. "turn on bluetooth",
@@ -3366,15 +3376,7 @@ class AssistantInteractionHelper
       return;
 
     query_status_.Set("queryResponse", std::move(result_));
-
-    if (on_interaction_finished_callback_) {
-      if (resolution == AssistantInteractionResolution::kNormal) {
-        SendSuccessResponse();
-      } else {
-        SendErrorResponse("Interaction closed with resolution " +
-                          ResolutionToString(resolution));
-      }
-    }
+    SendSuccessResponse();
   }
 
   void OnHtmlResponse(const std::string& response,
