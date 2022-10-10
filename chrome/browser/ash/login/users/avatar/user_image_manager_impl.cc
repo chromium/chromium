@@ -524,8 +524,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   base::Value::Dict entry;
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
-  // Change to set to true after fixing caching of animated avatars
-  entry.Set(kImageCacheUpdated, false);
+  entry.Set(kImageCacheUpdated, true);
   if (!image_url_.is_empty())
     entry.Set(kImageURLNodeName, image_url_.spec());
 
