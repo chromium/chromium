@@ -263,6 +263,11 @@ class CreateSessionDescriptionRequest
       if (desc) {
         desc->ToString(&value);
         value = "type: " + desc->type() + ", sdp: " + value;
+
+        // The descriptor string can differ when replaying for unknown reasons,
+        // so for now we force it to match.
+        value.resize(recordreplay::RecordReplayValue("CreateSessionDescriptionRequest::OnSuccess value length", value.length()));
+        recordreplay::RecordReplayBytes("CreateSessionDescriptionRequest::OnSuccess value contents", &value[0], value.length());
       }
       tracker->TrackSessionDescriptionCallback(
           handler_.get(), action_, "OnSuccess", String::FromUTF8(value));
