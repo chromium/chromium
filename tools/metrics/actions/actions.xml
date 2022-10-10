@@ -19737,6 +19737,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileShareMenuMarkupPDF">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    User pressed &quot;Markup&quot; from the share action menu.
+  </description>
+</action>
+
 <action name="MobileShareMenuPrint">
   <owner>gambard@chromium.org</owner>
   <owner>seblalancette@chromium.org</owner>
@@ -19756,6 +19764,12 @@ should be able to be added at any place in this file.
     User requested the desktop or mobile version of a site web from the share
     menu.
   </description>
+</action>
+
+<action name="MobileShareMenuSaveFile">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>User saved a file from share action menu.</description>
 </action>
 
 <action name="MobileShareMenuSaveImage">

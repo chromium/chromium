@@ -61,7 +61,9 @@ enum class ShareActionType {
   NativeSocialApp = 14,
   ThirdPartyMessagingApp = 15,
   ThirdPartyContentApp = 16,
-  kMaxValue = ThirdPartyContentApp
+  SaveFile = 17,
+  Markup = 18,
+  kMaxValue = Markup
 };
 
 ShareActionType MapActionType(ActivityType type) {
@@ -78,6 +80,12 @@ ShareActionType MapActionType(ActivityType type) {
 
     case activity_type_util::NATIVE_SAVE_IMAGE:
       return ShareActionType::SaveImage;
+
+    case activity_type_util::NATIVE_SAVE_FILE:
+      return ShareActionType::SaveFile;
+
+    case activity_type_util::NATIVE_MARKUP:
+      return ShareActionType::Markup;
 
     case activity_type_util::FIND_IN_PAGE:
       return ShareActionType::FindInPage;

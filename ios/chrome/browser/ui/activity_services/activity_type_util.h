@@ -45,6 +45,8 @@ enum ActivityType {
   THIRD_PARTY_INSTAPAPER,
   SEND_TAB_TO_SELF,
   GENERATE_QR_CODE,
+  NATIVE_SAVE_FILE,
+  NATIVE_MARKUP,
   // UNKNOWN must be the last type.
   UNKNOWN,
 };

@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_activity_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/ui/activity_services/activity_service_histograms.h"
+#import "ios/chrome/browser/ui/activity_services/activity_type_util.h"
 #import "ios/chrome/browser/ui/open_in/open_in_activity_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,8 +33,21 @@
                     applicationActivities:activities]) {
     self.fileURL = fileURL;
     __weak __typeof__(self) weakSelf = self;
-    self.completionWithItemsHandler = ^(NSString*, BOOL, NSArray*, NSError*) {
+    self.completionWithItemsHandler = ^(NSString* activityType, BOOL completed,
+                                        NSArray* returnedItems,
+                                        NSError* activityError) {
       [weakSelf activityViewCompletionHandler];
+
+      if (activityType && completed) {
+        activity_type_util::ActivityType type =
+            activity_type_util::TypeFromString(activityType);
+        activity_type_util::RecordMetricForActivity(type);
+        RecordActivityForScenario(type, ActivityScenario::TabShareButton);
+      } else {
+        // Share action was cancelled.
+        base::RecordAction(base::UserMetricsAction("MobileShareMenuCancel"));
+        RecordCancelledScenario(ActivityScenario::TabShareButton);
+      }
     };
   }
   return self;
