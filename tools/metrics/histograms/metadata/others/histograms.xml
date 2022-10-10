@@ -8148,59 +8148,60 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.ErrorOrResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M89">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <summary>
     The net error or HTTP response code of a mixed content resource request that
-    was autoupgraded to HTTPS
+    was autoupgraded to HTTPS. This histogram was expired from M80 to M108.
   </summary>
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Failure.IsAd" enum="Boolean"
-    expires_after="M89">
+    expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <summary>
     Whether or not an autoupgrade mixed content request was for a resource we
-    know to be an ad
+    know to be an ad. This histogram was expired from M80 to M108.
   </summary>
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Failure.Type"
-    enum="ResourceType" expires_after="M89">
+    enum="ResourceType" expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     Logs the type of each resource request that is autoupgraded to HTTPS and
-    fails to load.
+    fails to load. This histogram was expired from M80 to M108.
   </summary>
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Response.Type"
-    enum="ResourceType" expires_after="M89">
+    enum="ResourceType" expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     Logs the type of each resource request that was autoupgraded to HTTPS and
-    resulted in a response.
+    resulted in a response. This histogram was expired from M80 to M108.
   </summary>
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Start.Type"
-    enum="ResourceType" expires_after="M89">
+    enum="ResourceType" expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     Logs the type of each resource request that is autoupgraded to HTTPS. This
-    is logged when the request is started.
+    is logged when the request is started. This histogram was expired from M80
+    to M108.
   </summary>
 </histogram>
 
 <histogram name="MixedAutoupgrade.ResourceRequest.Status"
-    enum="MixedContentAutoupgradeStatus" expires_after="M89">
+    enum="MixedContentAutoupgradeStatus" expires_after="M112">
   <owner>carlosil@chromium.org</owner>
   <summary>
     The status of a mixed content resource request that was autoupgraded to
-    HTTPS
+    HTTPS. This histogram was expired from M80 to M108.
   </summary>
 </histogram>
 
