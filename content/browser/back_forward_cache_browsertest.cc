@@ -1750,9 +1750,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
   }
 }
 
-// TODO(https://crbug.com/1275493): Flaky on various builders.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_SubframeTextInputStateUpdated) {
+                       SubframeTextInputStateUpdated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
@@ -1816,7 +1815,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     EXPECT_TRUE(rfh_a->IsInBackForwardCache());
     EXPECT_TRUE(rfh_b->IsInBackForwardCache());
     EXPECT_TRUE(rfh_subframe_a->IsInBackForwardCache());
-    EXPECT_EQ(current_frame_host(), web_contents()->GetFocusedFrame());
+    EXPECT_NE(rfh_subframe_a, web_contents()->GetFocusedFrame());
   }
 
   {
