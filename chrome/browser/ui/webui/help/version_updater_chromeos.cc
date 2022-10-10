@@ -363,6 +363,16 @@ void VersionUpdaterCros::UpdateStatusChanged(
       NOTREACHED();
   }
 
+  // If the current auto update is non-interactive and will be deferred, ignore
+  // update status change and show UPDATED instead. The NEARLY_UPDATED or
+  // DEFERRED status will still be shown, because user may need to interact with
+  // UI to apply the update and reboot the device.
+  if (my_status != NEARLY_UPDATED && my_status != DEFERRED &&
+      !status.is_interactive() && status.will_defer_update()) {
+    my_status = UPDATED;
+    progress = 0;
+  }
+
   callback_.Run(my_status, progress, status.is_enterprise_rollback(),
                 status.will_powerwash_after_reboot(), version, size, message);
   last_operation_ = status.current_operation();

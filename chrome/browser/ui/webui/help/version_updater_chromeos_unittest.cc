@@ -218,6 +218,53 @@ TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_CallbackDuringUpdates) {
   version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
 }
 
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_SetToUpdatedForNonInteractiveDeferredUpdate) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  // The update is non-interactive and will be deferred.
+  status.set_is_interactive(false);
+  status.set_will_defer_update(true);
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect to set status to `UPDATED`.
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::UPDATED, 0, _, _, _, _, _))
+      .Times(1);
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_UpdatedButDeferred) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  // The update is deferred.
+  status.set_is_interactive(false);
+  status.set_will_defer_update(true);
+  status.set_current_operation(update_engine::Operation::UPDATED_BUT_DEFERRED);
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect the status to be `DEFERRED`.
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::DEFERRED, _, _, _, _, _, _))
+      .Times(1);
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_UpdatedNeedReboot) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  status.set_is_interactive(false);
+  status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect the status to be `NEARLY_UPDATED`.
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(VersionUpdater::NEARLY_UPDATED, _, _, _, _, _, _))
+      .Times(1);
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
 TEST_F(VersionUpdaterCrosTest, ToggleFeature) {
   EXPECT_EQ(0, fake_update_engine_client_->toggle_feature_count());
   version_updater_->ToggleFeature("feature-foo", true);
