@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,9 +39,9 @@ const char kErrorNotOnLoginOrLockScreen[] =
 const bool kCanBeClosedByUser = false;
 const char kUrl[] = "test.html";
 
-const char kWhitelistedExtensionID1[] =
+const char kAllowlistedExtensionID1[] =
     "oclffehlkdgibkainkilopaalpdobkan";  // Login screen APIs test extension
-const char kWhitelistedExtensionID2[] =
+const char kAllowlistedExtensionID2[] =
     "lpimkpkllnkdlcigdbgmabfplniahkgm";  // Imprivata (login screen)
 const char kPermissionName[] = "loginScreenUi";
 
@@ -134,8 +134,8 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
         session_manager::SessionState::LOGIN_PRIMARY);
 
     extension_ = extensions::ExtensionBuilder(
-                     /*extension_name=*/"LoginScreenUi test extension")
-                     .SetID(kWhitelistedExtensionID1)
+                     /*name=*/"LoginScreenUi test extension")
+                     .SetID(kAllowlistedExtensionID1)
                      .SetLocation(ManifestLocation::kExternalPolicy)
                      .AddPermission(kPermissionName)
                      .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -299,8 +299,8 @@ TEST_F(LoginScreenExtensionUiHandlerUnittest, WindowClosedOnUnlock) {
 
 TEST_F(LoginScreenExtensionUiHandlerUnittest, OnlyOneWindow) {
   scoped_refptr<const extensions::Extension> other_extension =
-      extensions::ExtensionBuilder(/*extension_name=*/"Imprivata")
-          .SetID(kWhitelistedExtensionID2)
+      extensions::ExtensionBuilder(/*name=*/"Imprivata")
+          .SetID(kAllowlistedExtensionID2)
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -378,8 +378,8 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   // |other_profile_extension| is not enabled in the sign-in profile's
   // extensions registry.
   scoped_refptr<const extensions::Extension> other_profile_extension =
-      extensions::ExtensionBuilder("other profile" /*extension_name*/)
-          .SetID(kWhitelistedExtensionID2)  // whitelisted
+      extensions::ExtensionBuilder(/*name=*/"other profile")
+          .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddPermission(kPermissionName)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
@@ -390,8 +390,8 @@ TEST_F(LoginScreenExtensionUiHandlerDeathUnittest, NotAllowed) {
   // |no_permission_extension| is enabled in the sign-in profile's extensions
   // registry, but doesn't have the needed "loginScreenUi" permission.
   scoped_refptr<const extensions::Extension> no_permission_extension =
-      extensions::ExtensionBuilder("no permission extension" /*extension_name*/)
-          .SetID(kWhitelistedExtensionID2)  // whitelisted
+      extensions::ExtensionBuilder(/*name=*/"no permission extension")
+          .SetID(kAllowlistedExtensionID2)  // allowlisted
           .SetLocation(ManifestLocation::kExternalPolicy)
           .AddFlags(extensions::Extension::FOR_LOGIN_SCREEN)
           .Build();

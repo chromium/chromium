@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,8 @@ class ResultCatcher;
 namespace chromeos {
 
 // This browser test uses a test extension to test certain API calls on the
-// login screen. The extension is whitelisted to run as a force-installed "login
-// screen extension" and is also whitelisted for the following APIs:
+// login screen. The extension is allowlisted to run as a force-installed "login
+// screen extension" and is also allowlisted for the following APIs:
 // * loginScreenUi
 // * storage
 // * login
