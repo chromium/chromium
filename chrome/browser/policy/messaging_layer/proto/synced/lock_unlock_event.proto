@@ -13,7 +13,7 @@ import "session_affiliated_user.proto";
 package ash.reporting;
 
 enum UnlockType {
-  UNKNOWN = 0;
+  UNLOCK_TYPE_UNKNOWN = 0;
   PASSWORD = 1;
   PIN = 2;
   FINGERPRINT = 3;

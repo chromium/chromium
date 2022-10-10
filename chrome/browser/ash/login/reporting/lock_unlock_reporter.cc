@@ -43,7 +43,7 @@ UnlockType GetUnlockTypeForEvent(
       converted_unlock_type = UnlockType::EASY_UNLOCK;
       break;
     case session_manager::UnlockType::UNKNOWN:
-      converted_unlock_type = UnlockType::UNKNOWN;
+      converted_unlock_type = UnlockType::UNLOCK_TYPE_UNKNOWN;
       break;
   }
   return converted_unlock_type;
