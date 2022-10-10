@@ -20,7 +20,7 @@
   </head>
   <body>
     <intro-app></intro-app>
-    <if expr="not chromeos_lacros">
+    <if expr="enable_dice_support">
       <script type="module" src="dice_app.js"></script>
     </if>
     <if expr="chromeos_lacros">

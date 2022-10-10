@@ -10,6 +10,7 @@ import("//build/config/features.gni")
 import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/signin/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -99,6 +100,7 @@ chrome_grit_defines = [
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_nacl=$enable_nacl",
   "enable_plugins=$enable_plugins",
+  "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
   "enable_service_discovery=$enable_service_discovery",

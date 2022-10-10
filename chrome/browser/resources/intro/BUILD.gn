@@ -15,8 +15,7 @@ build_webui("build") {
 
   if (is_chromeos_lacros) {
     web_component_files = [ "lacros_app.ts" ]
-  }
-  if (enable_dice_support) {
+  } else if (enable_dice_support) {
     web_component_files = [ "dice_app.ts" ]
   }
 
