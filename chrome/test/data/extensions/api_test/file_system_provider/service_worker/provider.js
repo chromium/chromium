@@ -62,6 +62,22 @@ export class TestFileSystemProvider {
           modificationTime: new Date(2014, 4, 28, 10, 39, 15)
         },
       },
+      ['/' + TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY]: {
+        metadata: {
+          isDirectory: true,
+          name: TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY,
+          size: 0,
+          modificationTime: new Date(2014, 4, 28, 10, 39, 15),
+        },
+      },
+      ['/' + TestFileSystemProvider.FILE_DELETE]: {
+        metadata: {
+          isDirectory: false,
+          name: TestFileSystemProvider.FILE_DELETE,
+          size: 0,
+          modificationTime: new Date(2014, 4, 28, 10, 39, 15),
+        },
+      },
       // Read error
       ['/' + TestFileSystemProvider.FILE_FAIL]: {
         metadata: {
@@ -159,6 +175,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCloseFileRequested', true);
     this.setHandlerEnabled('onCopyEntryRequested', true);
     this.setHandlerEnabled('onCreateFileRequested', true);
+    this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
     this.setHandlerEnabled('onOpenFileRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
@@ -648,6 +665,43 @@ export class TestFileSystemProvider {
     metadata.size = newContents.length;
     onSuccess();
   }
+
+  /**
+   * FSP: implementation of deleting an entry within the same file system.
+   *
+   * @param {!chrome.fileSystemProvider.DeleteEntryRequestedOptions} options
+   *  Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *  callback with an error code.
+   */
+  onDeleteEntryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.entryPath === '/') {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (options.entryPath ===
+        '/' + TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY) {
+      if (options.recursive)
+        onSuccess();
+      else
+        onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    if (options.entryPath === '/' + TestFileSystemProvider.FILE_DELETE) {
+      onSuccess();
+      return;
+    }
+
+    onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+  }
 };
 
 /**
@@ -711,6 +765,22 @@ TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
  * @const
  */
 TestFileSystemProvider.INITIAL_TEXT = 'Hello world. How are you today?';
+
+/**
+ * Non-empty directory. Can only be deleted recursively.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY = 'non-empty-directory';
+
+/**
+ * File to be deleted.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_DELETE = 'file-delete.txt';
 
 // Service worker entry point.
 export function serviceWorkerMain(serviceWorker) {

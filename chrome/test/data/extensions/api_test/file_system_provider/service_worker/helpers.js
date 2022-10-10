@@ -103,6 +103,20 @@ export class MountedTestFileSystem {
         (resolve, reject) =>
             this.fileSystem.root.getFile(path, options, resolve, reject));
   }
+
+  /**
+   * Get a directory entry from the root of the mounted filesystem.
+   *
+   * @param {string} path
+   * @param {{create: (boolean|undefined), exclusive: (boolean|undefined)}}
+   *  options
+   * @returns {!Promise<!DirectoryEntry>}
+   */
+  async getDirectoryEntry(path, options) {
+    return new Promise(
+        (resolve, reject) =>
+            this.fileSystem.root.getDirectory(path, options, resolve, reject));
+  }
 };
 
 /**
