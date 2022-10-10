@@ -350,9 +350,13 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
   RecordDialogEvent(DialogEvent::kShowProfileCustomization);
   if (!dialog_delegate_) {
     // Modal dialog doesn't exist yet, create a new one.
+    // TODO(crbug.com/1373101): Add a callback for handling customization result
+    // in `SigninViewControllerDelegate::CreateProfileCustomizationDelegate()`
+    // and pass it to `ProfileCustomizationUI::Initialize()`.
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-            browser_, /*is_local_profile_creation=*/false));
+            browser_, /*is_local_profile_creation=*/false,
+            /*show_profile_switch_iph=*/true));
     return;
   }
 
