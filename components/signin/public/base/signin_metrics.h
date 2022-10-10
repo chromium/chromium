@@ -190,6 +190,7 @@ enum class AccessPoint : int {
   ACCESS_POINT_NTP_FEED_TOP_PROMO = 37,
   ACCESS_POINT_SETTINGS_SYNC_OFF_ROW = 38,
   ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO = 39,
+  ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN = 40,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

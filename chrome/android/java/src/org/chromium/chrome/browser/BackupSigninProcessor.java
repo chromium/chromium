@@ -75,25 +75,25 @@ public final class BackupSigninProcessor {
     private static void signinAndEnableSync(@NonNull Account account, Activity activity) {
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                // TODO(crbug.com/1371130): Use a dedicated SigninAccessPoint.
-                .signinAndEnableSync(SigninAccessPoint.START_PAGE, account, new SignInCallback() {
-                    @Override
-                    public void onSignInComplete() {
-                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), true);
-                        // TODO(crbug.com/1371130): Use a dedicated SyncFirstSetupCompleteSource.
-                        SyncService.get().setFirstSetupComplete(
-                                SyncFirstSetupCompleteSource.BASIC_FLOW);
-                        setBackupFlowSigninComplete();
-                    }
+                .signinAndEnableSync(SigninAccessPoint.POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
+                        account, new SignInCallback() {
+                            @Override
+                            public void onSignInComplete() {
+                                UnifiedConsentServiceBridge
+                                        .setUrlKeyedAnonymizedDataCollectionEnabled(
+                                                Profile.getLastUsedRegularProfile(), true);
+                                SyncService.get().setFirstSetupComplete(
+                                        SyncFirstSetupCompleteSource.ANDROID_BACKUP_RESTORE);
+                                setBackupFlowSigninComplete();
+                            }
 
-                    @Override
-                    public void onSignInAborted() {
-                        // If sign-in failed, give up and mark as complete.
-                        // TODO(crbug.com/1371130): Measure how often this happens.
-                        setBackupFlowSigninComplete();
-                    }
-                });
+                            @Override
+                            public void onSignInAborted() {
+                                // If sign-in failed, give up and mark as complete.
+                                // TODO(crbug.com/1371130): Measure how often this happens.
+                                setBackupFlowSigninComplete();
+                            }
+                        });
     }
 
     /**

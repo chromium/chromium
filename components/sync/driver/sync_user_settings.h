@@ -27,7 +27,8 @@ enum class SyncFirstSetupCompleteSource {
   ADVANCED_FLOW_INTERRUPTED_TURN_SYNC_ON = 2,
   ADVANCED_FLOW_INTERRUPTED_LEAVE_SYNC_OFF = 3,
   ENGINE_INITIALIZED_WITH_AUTO_START = 4,
-  kMaxValue = ENGINE_INITIALIZED_WITH_AUTO_START,
+  ANDROID_BACKUP_RESTORE = 5,
+  kMaxValue = ANDROID_BACKUP_RESTORE,
 };
 
 // This class encapsulates all the user-configurable bits of Sync.

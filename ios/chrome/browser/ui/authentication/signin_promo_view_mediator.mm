@@ -89,6 +89,8 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
         ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
     case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return false;
   }
@@ -151,6 +153,8 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -215,6 +219,8 @@ void RecordImpressionsTilDismissHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -279,6 +285,8 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED() << "Unexpected value for access point "
                    << static_cast<int>(access_point);
@@ -332,6 +340,8 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }
@@ -383,6 +393,8 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return nullptr;
   }

@@ -400,6 +400,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;
@@ -526,6 +527,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "
                    << static_cast<int>(access_point);
