@@ -21,7 +21,7 @@ void RemoteTrustTokenQueryAnswerer::HasTrustTokens(
   if (!cached_answerer_ || !cached_answerer_.is_connected()) {
     UpdateCachedAnswerer();
   }
-  return cached_answerer_->HasTrustTokens(
+  cached_answerer_->HasTrustTokens(
       issuer,
       base::BindOnce(&RemoteTrustTokenQueryAnswerer::OnHasTrustTokensCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -46,7 +46,7 @@ void RemoteTrustTokenQueryAnswerer::HasRedemptionRecord(
   }
   // TODO(behamilton): If the network service crashes while this request
   // has been queued the callback will never be called.
-  return cached_answerer_->HasRedemptionRecord(
+  cached_answerer_->HasRedemptionRecord(
       issuer,
       base::BindOnce(
           &RemoteTrustTokenQueryAnswerer::OnHasRedemptionRecordCompleted,
