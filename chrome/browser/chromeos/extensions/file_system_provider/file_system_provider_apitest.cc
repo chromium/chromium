@@ -366,6 +366,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, DeleteEntry) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadDirectory) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/read_directory",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, ReadFile) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/read_file",
                                {.extension_url = "test.html"},

@@ -191,6 +191,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
     this.setHandlerEnabled('onOpenFileRequested', true);
+    this.setHandlerEnabled('onReadDirectoryRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
     this.setHandlerEnabled('onRemoveWatcherRequested', true);
     this.setHandlerEnabled('onWriteFileRequested', true);
@@ -561,6 +562,38 @@ export class TestFileSystemProvider {
 
     onSuccess();
   };
+
+  /**
+   * Returns entries in the requested directory.
+   *
+   * @param {!chrome.fileSystemProvider.ReadDirectoryRequestedOptions} options
+   *     Options.
+   * @param {function(Array<Object>, boolean)} onSuccess Success callback with
+   *     a list of entries. May be called multiple times.
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback with an error code.
+   */
+  onReadDirectoryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    const entry = this.findEntryByPath(options.directoryPath);
+    if (!entry.metadata.isDirectory) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+
+    const children = Object.values(entry.children);
+    // Send one-by-one to have multiple result callbacks.
+    for (let i = 0; i < children.length; i++) {
+      onSuccess(
+          [children[i].metadata],
+          /*hasMore=*/ i < children.length - 1);
+    }
+  }
+
 
   /**
    * FSP: requests reading contents of a file, previously opened with <code>
