@@ -272,6 +272,12 @@
   }
 }
 
+#pragma mark - ToolbarCommands
+
+- (void)triggerToolbarSlideInAnimation {
+  [self.viewController triggerToolbarSlideInAnimationFromBelow:NO];
+}
+
 - (void)onFakeboxAnimationComplete {
   self.viewController.view.hidden = NO;
 }

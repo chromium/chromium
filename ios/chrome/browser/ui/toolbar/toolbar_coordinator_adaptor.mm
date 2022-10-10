@@ -64,6 +64,12 @@
   }
 }
 
+- (void)triggerToolbarSlideInAnimation {
+  for (id<ToolbarCommands> coordinator in self.coordinators) {
+    [coordinator triggerToolbarSlideInAnimation];
+  }
+}
+
 #pragma mark - SideSwipeToolbarInteracting
 
 - (BOOL)isInsideToolbar:(CGPoint)point {

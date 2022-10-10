@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
+#import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -281,6 +282,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     self.lensWebPageLoadTriggeredFromInputSelection = NO;
     self.loadingWebState = nil;
     [self dismissViewController];
+
+    // As this was a successful Lens Web results page load, trigger the toolbar
+    // slide-in animation.
+    CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+    id<ToolbarCommands> toolbarCommandsHandler =
+        HandlerForProtocol(dispatcher, ToolbarCommands);
+    [toolbarCommandsHandler triggerToolbarSlideInAnimation];
   }
 }
 

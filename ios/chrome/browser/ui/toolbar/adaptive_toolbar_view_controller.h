@@ -56,6 +56,9 @@
 - (void)resetAfterSideSwipeSnapshot;
 // Sets the toolbar location bar alpha and vertical offset based on `progress`.
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress;
+// Triggers the slide-in animation for the toolbar with direction determined
+// from `fromBelow`.
+- (void)triggerToolbarSlideInAnimationFromBelow:(BOOL)fromBelow;
 
 @end
 

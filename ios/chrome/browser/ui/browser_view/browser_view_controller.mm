@@ -3639,7 +3639,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // The LensCoordinator needs the content area of the webView with the
   // header and footer toolbars visible.
-  UIEdgeInsets viewportInsets = UIEdgeInsetsZero;
+  UIEdgeInsets viewportInsets = self.rootSafeAreaInsets;
   if (!IsRegularXRegularSizeClass(self)) {
     viewportInsets.bottom = [self secondaryToolbarHeightWithInset];
   }

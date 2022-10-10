@@ -36,4 +36,10 @@
   [super start];
 }
 
+#pragma mark - ToolbarCommands
+
+- (void)triggerToolbarSlideInAnimation {
+  [self.viewController triggerToolbarSlideInAnimationFromBelow:YES];
+}
+
 @end

@@ -136,6 +136,10 @@
   [toolsMenuButton triggerAnimation];
 }
 
+- (void)triggerToolbarSlideInAnimation {
+  // Implemented in primary and secondary toolbars directly.
+}
+
 #pragma mark - ToolbarCoordinatee
 
 - (id<PopupMenuUIUpdating>)popupMenuUIUpdater {
