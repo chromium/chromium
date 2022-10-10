@@ -3076,7 +3076,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
     )");
 
   ASSERT_EQ(1u, console_observer.messages().size());
@@ -3189,7 +3189,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       .WillByDefault(testing::Return(true));
 
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
     )");
 
   EXPECT_TRUE(console_observer.messages().empty());
@@ -3214,11 +3214,11 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       .WillByDefault(testing::Return(true));
 
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: -1, value: 2});
+      privateAggregation.sendHistogramReport({bucket: -1n, value: 2});
     )");
 
   ASSERT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("TypeError: Bucket must be either an integer Number or BigInt",
+  EXPECT_EQ("TypeError: BigInt must be non-negative",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
@@ -3266,8 +3266,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
       .WillByDefault(testing::Return(true));
 
   ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
-      privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
     )");
 
   EXPECT_TRUE(console_observer.messages().empty());

@@ -676,7 +676,7 @@ TEST_F(SharedStorageAddModuleTest,
   SimulateAddModule(R"(
     class TestClass {
       async run() {
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
       }
     }
 
@@ -694,7 +694,7 @@ TEST_F(SharedStorageAddModuleTest,
   SimulateAddModule(R"(
     class TestClass {
       async run() {
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
       }
     }
 
@@ -1458,7 +1458,7 @@ TEST_F(SharedStorageRunOperationTest,
   SimulateAddModule(R"(
       class TestClass {
         async run() {
-          privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
         }
       }
 
@@ -1479,7 +1479,7 @@ TEST_F(SharedStorageRunOperationTest,
   SimulateAddModule(R"(
       class TestClass {
         async run() {
-          privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
         }
       }
 
@@ -2294,23 +2294,11 @@ class SharedStoragePrivateAggregationTest
 
 TEST_F(SharedStoragePrivateAggregationTest, BasicTest) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
-      /*expected_bucket=*/1, /*expected_value=*/2);
-}
-
-TEST_F(SharedStoragePrivateAggregationTest, BigIntBucket) {
-  ExecuteScriptAndValidateContribution(
       "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
       /*expected_bucket=*/1, /*expected_value=*/2);
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, ZeroBucket) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 0, value: 2});",
-      /*expected_bucket=*/0, /*expected_value=*/2);
-}
-
-TEST_F(SharedStoragePrivateAggregationTest, ZeroBigIntBucket) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.sendHistogramReport({bucket: 0n, value: 2});",
       /*expected_bucket=*/0, /*expected_value=*/2);
@@ -2318,7 +2306,7 @@ TEST_F(SharedStoragePrivateAggregationTest, ZeroBigIntBucket) {
 
 TEST_F(SharedStoragePrivateAggregationTest, ZeroValue) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 0});",
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: 0});",
       /*expected_bucket=*/1, /*expected_value=*/0);
 }
 
@@ -2337,15 +2325,6 @@ TEST_F(SharedStoragePrivateAggregationTest, MaxBucket) {
       /*expected_bucket=*/absl::Uint128Max(), /*expected_value=*/2);
 }
 
-TEST_F(SharedStoragePrivateAggregationTest, NonIntegerBucket_Rejected) {
-  std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1.5, value: 2});");
-
-  EXPECT_EQ(error_str,
-            "https://example.test/:1 Uncaught TypeError: Bucket must be either "
-            "an integer Number or BigInt.");
-}
-
 TEST_F(SharedStoragePrivateAggregationTest, TooLargeBucket_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.sendHistogramReport({bucket: "
@@ -2358,16 +2337,6 @@ TEST_F(SharedStoragePrivateAggregationTest, TooLargeBucket_Rejected) {
 TEST_F(SharedStoragePrivateAggregationTest, NegativeBucket_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.sendHistogramReport({bucket: "
-      "-1, value: 2});");
-
-  EXPECT_EQ(error_str,
-            "https://example.test/:1 Uncaught TypeError: Bucket must be either "
-            "an integer Number or BigInt.");
-}
-
-TEST_F(SharedStoragePrivateAggregationTest, NegativeBigIntBucket_Rejected) {
-  std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: "
       "-1n, value: 2});");
 
   EXPECT_EQ(error_str,
@@ -2375,9 +2344,18 @@ TEST_F(SharedStoragePrivateAggregationTest, NegativeBigIntBucket_Rejected) {
             "non-negative.");
 }
 
+TEST_F(SharedStoragePrivateAggregationTest, NonBigIntBucket_Rejected) {
+  std::string error_str = ExecuteScriptReturningError(
+      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});");
+
+  EXPECT_EQ(
+      error_str,
+      "https://example.test/:1 Uncaught TypeError: bucket must be a BigInt.");
+}
+
 TEST_F(SharedStoragePrivateAggregationTest, NonIntegerValue_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 2.3});");
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2.3});");
 
   EXPECT_EQ(error_str,
             "https://example.test/:1 Uncaught TypeError: Value must be an "
@@ -2386,7 +2364,7 @@ TEST_F(SharedStoragePrivateAggregationTest, NonIntegerValue_Rejected) {
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeValue_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: -1});");
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: -1});");
 
   EXPECT_EQ(error_str,
             "https://example.test/:1 Uncaught TypeError: Value must be "
@@ -2432,8 +2410,8 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleRequests) {
 
   ExecuteScriptExpectNoError(
       R"(
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
-        privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
       )");
 }
 
@@ -2441,7 +2419,7 @@ TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithNoDebugKey) {
   ExecuteScriptAndValidateContribution(
       R"(
         privateAggregation.enableDebugMode();
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
       )",
       /*expected_bucket=*/1,
       /*expected_value=*/2,
@@ -2453,22 +2431,8 @@ TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithNoDebugKey) {
 TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithDebugKey) {
   ExecuteScriptAndValidateContribution(
       R"(
-        privateAggregation.enableDebugMode({debug_key: 1234});
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
-      )",
-      /*expected_bucket=*/1,
-      /*expected_value=*/2,
-      /*expected_debug_mode_details=*/
-      content::mojom::DebugModeDetails::New(
-          /*is_enabled=*/true,
-          /*debug_key=*/content::mojom::DebugKey::New(1234u)));
-}
-
-TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithBigIntDebugKey) {
-  ExecuteScriptAndValidateContribution(
-      R"(
         privateAggregation.enableDebugMode({debug_key: 1234n});
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
       )",
       /*expected_bucket=*/1,
       /*expected_value=*/2,
@@ -2480,20 +2444,11 @@ TEST_F(SharedStoragePrivateAggregationTest, DebugModeWithBigIntDebugKey) {
 
 TEST_F(SharedStoragePrivateAggregationTest, NegativeDebugKey_Rejected) {
   std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.enableDebugMode({debug_key: -1});");
+      "privateAggregation.enableDebugMode({debug_key: -1n});");
 
   EXPECT_EQ(error_str,
-            "https://example.test/:1 Uncaught TypeError: debug_key must be "
-            "either a non-negative integer Number or BigInt.");
-}
-
-TEST_F(SharedStoragePrivateAggregationTest, NonIntegerDebugKey_Rejected) {
-  std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.enableDebugMode({debug_key: 1.5});");
-
-  EXPECT_EQ(error_str,
-            "https://example.test/:1 Uncaught TypeError: debug_key must be "
-            "either a non-negative integer Number or BigInt.");
+            "https://example.test/:1 Uncaught TypeError: BigInt must be "
+            "non-negative.");
 }
 
 TEST_F(SharedStoragePrivateAggregationTest, TooLargeDebugKey_Rejected) {
@@ -2505,11 +2460,20 @@ TEST_F(SharedStoragePrivateAggregationTest, TooLargeDebugKey_Rejected) {
             "https://example.test/:1 Uncaught TypeError: BigInt is too large.");
 }
 
+TEST_F(SharedStoragePrivateAggregationTest, NonBigIntDebugKey_Rejected) {
+  std::string error_str = ExecuteScriptReturningError(
+      "privateAggregation.enableDebugMode({debug_key: 1});");
+
+  EXPECT_EQ(error_str,
+            "https://example.test/:1 Uncaught TypeError: debug_key must be a "
+            "BigInt.");
+}
+
 TEST_F(SharedStoragePrivateAggregationTest,
        InvalidEnableDebugModeArgument_Rejected) {
   // The debug key is not wrapped in a dictionary.
   std::string error_str =
-      ExecuteScriptReturningError("privateAggregation.enableDebugMode(1234);");
+      ExecuteScriptReturningError("privateAggregation.enableDebugMode(1234n);");
 
   EXPECT_EQ(error_str,
             "https://example.test/:1 Uncaught TypeError: Invalid argument in "
@@ -2530,7 +2494,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 
   // Note that the first call still applies to future requests.
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
@@ -2543,7 +2507,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
 TEST_F(SharedStoragePrivateAggregationTest,
        EnableDebugModeCalledAfterRequest_DoesntApply) {
   ExecuteScriptAndValidateContribution(
-      "privateAggregation.sendHistogramReport({bucket: 1, value: 2});",
+      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
       /*expected_bucket=*/1,
       /*expected_value=*/2,
       /*expected_debug_mode_details=*/
@@ -2591,8 +2555,8 @@ TEST_F(SharedStoragePrivateAggregationTest, MultipleDebugModeRequests) {
   ExecuteScriptExpectNoError(
       R"(
         privateAggregation.enableDebugMode({debug_key: 1234n});
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
-        privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
       )");
 }
 

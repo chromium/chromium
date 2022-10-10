@@ -299,7 +299,7 @@ std::string MakeBidScript(const url::Origin& seller,
       }
       if (browserSignals.dataVersion !== undefined)
         throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
-      privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+      privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
       return result;
     }
 
@@ -385,7 +385,7 @@ std::string MakeBidScript(const url::Origin& seller,
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
     }
   )";
   return base::StringPrintf(
@@ -526,7 +526,7 @@ std::string MakeDecisionScript(
         forDebuggingOnly.reportAdAuctionWin(
             buildDebugReportUrl(debugWinReportUrl) + bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
 
       adMetadata.fromComponentAuction = true;
 
@@ -613,7 +613,7 @@ std::string MakeDecisionScript(
         }
         sendReportTo(sendReportUrl + browserSignals.bid);
       }
-      privateAggregation.sendHistogramReport({bucket: 7, value: 8});
+      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
 
       return browserSignals;
     }
@@ -670,7 +670,7 @@ std::string MakeAuctionScriptNoReportUrl(
 
 const char kBasicReportResult[] = R"(
   function reportResult(auctionConfig, browserSignals) {
-    privateAggregation.sendHistogramReport({bucket: 7, value: 8});
+    privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
     sendReportTo("https://reporting.example.com/" + browserSignals.bid);
     registerAdBeacon({
       "click": "https://reporting.example.com/" + 2*browserSignals.bid,
@@ -683,7 +683,7 @@ std::string MakeAuctionScriptReject2(
     const std::string& reject_reason = "not-available") {
   constexpr char kAuctionScriptRejects2[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       if (bid === 2)
         return {desirability: -1, rejectReason: '%s'};
       return bid + 1;
@@ -3297,7 +3297,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
         if (browserSignals.seller == "https://component.seller1.test") {
           return {ad: [], bid: 1, render: "https://component-bid.test/",
                   allowComponentAuction: true};
@@ -3316,7 +3316,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
     }
   )";
 
@@ -3324,7 +3324,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   // on bid and seller, to make sure correct values are plumbed through.
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       if (auctionConfig.seller == "https://adstuff.publisher1.com")
         return {desirability: 20 + bid, allowComponentAuction: true};
       return {desirability: 10 + bid, allowComponentAuction: true};
@@ -3336,7 +3336,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2*browserSignals.desirability,
       });
-      privateAggregation.sendHistogramReport({bucket: 7, value: 8});
+      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
     }
   )";
 
@@ -3628,7 +3628,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+        privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
         return {ad: [], bid: 2, render: interestGroup.ads[0].renderUrl,
                 allowComponentAuction: true};
       }
@@ -3639,7 +3639,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": "https://buyer-reporting.example.com/" + 2*browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 3, value: 4});
+      privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
     }
   )";
 
@@ -3647,7 +3647,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // top-level seller signals are null.
   const std::string kComponentSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -3658,7 +3658,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
         "click": auctionConfig.seller + "/" +
                    (browserSignals.topLevelSellerSignals === null),
       });
-      privateAggregation.sendHistogramReport({bucket: 7, value: 8});
+      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
     }
   )";
 
@@ -3666,7 +3666,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
   // value.
   const std::string kTopLevelSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-      privateAggregation.sendHistogramReport({bucket: 5, value: 6});
+      privateAggregation.sendHistogramReport({bucket: 5n, value: 6});
       return {desirability: 10, allowComponentAuction: true};
     }
 
@@ -3675,7 +3675,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       registerAdBeacon({
         "click": auctionConfig.seller + "/" + 2 * browserSignals.bid,
       });
-      privateAggregation.sendHistogramReport({bucket: 7, value: 8});
+      privateAggregation.sendHistogramReport({bucket: 7n, value: 8});
       // Note that there's no return value here.
     }
   )";

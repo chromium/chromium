@@ -3582,27 +3582,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     expected_pa_requests.push_back(kExpectedRequest1.Clone());
 
     RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(
-            "5",
-            "privateAggregation.sendHistogramReport({bucket: 123, value: 45})"),
-        5, /*expected_errors=*/{},
-        mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
-        std::move(expected_pa_requests));
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5",
-                            "privateAggregation.sendHistogramReport("
-                            "{bucket: 123n, value: 45})"),
+                            "privateAggregation.sendHistogramReport({bucket: "
+                            "123n, value: 45})"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
         /*expected_data_version=*/absl::nullopt,
@@ -3638,7 +3620,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
                                                   value: 1});
         )"),
@@ -3658,7 +3640,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5", R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           error;
         )"),
         0, /*expected_errors=*/
@@ -3683,8 +3665,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript("5",
                             R"(
-            privateAggregation.enableDebugMode({debug_key: 1234});
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
@@ -3713,7 +3695,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         CreateScoreAdScript("5",
                             R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             privateAggregation.sendHistogramReport(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
@@ -3749,7 +3731,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
-        R"(privateAggregation.sendHistogramReport({bucket: 123, value: 45});)",
+        R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
@@ -3794,7 +3776,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
                                                   value: 1});
         )",
@@ -3812,7 +3794,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         R"(5)",
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           error;
         )",
         /*expected_signals_for_winner=*/absl::nullopt,
@@ -3835,8 +3817,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
     RunReportResultCreatedScriptExpectingResult(
         "5",
         R"(
-            privateAggregation.enableDebugMode({debug_key: 1234});
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",
         /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
@@ -3862,7 +3844,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         "5",
         R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             privateAggregation.sendHistogramReport(
                 {bucket: 18446744073709551616n, value: 1});
         )",
@@ -3903,7 +3885,7 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "5",
-          "privateAggregation.sendHistogramReport({bucket: 123, value: 45})"),
+          "privateAggregation.sendHistogramReport({bucket: 123n, value: 45})"),
       0, /*expected_errors=*/
       {"https://url.test/:4 Uncaught ReferenceError: privateAggregation is not "
        "defined."},
@@ -3918,7 +3900,7 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
 TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
-      R"(privateAggregation.sendHistogramReport({bucket: 123, value: 45});)",
+      R"(privateAggregation.sendHistogramReport({bucket: 123n, value: 45});)",
       /*expected_signals_for_winner=*/absl::nullopt,
       /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},

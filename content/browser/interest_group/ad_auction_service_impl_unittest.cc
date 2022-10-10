@@ -5664,7 +5664,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -5755,7 +5755,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -5875,7 +5875,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -5918,7 +5918,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  privateAggregation.sendHistogramReport({bucket: 1, value: 2});
+  privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";

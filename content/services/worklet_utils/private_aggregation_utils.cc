@@ -95,14 +95,6 @@ absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
     return absl::nullopt;
   }
 
-  if (js_debug_key->IsUint32()) {
-    v8::Maybe<uint32_t> maybe_debug_key = js_debug_key->Uint32Value(context);
-    if (maybe_debug_key.IsNothing()) {
-      *error_out = "Failed to interpret value as integer";
-    }
-    return maybe_debug_key.ToChecked();
-  }
-
   if (js_debug_key->IsBigInt()) {
     absl::optional<absl::uint128> maybe_debug_key =
         ConvertBigIntToUint128(js_debug_key->ToBigInt(context), error_out);
@@ -116,8 +108,7 @@ absl::optional<uint64_t> ParseDebugKey(gin::Dictionary dict,
     return absl::Uint128Low64(maybe_debug_key.value());
   }
 
-  *error_out =
-      "debug_key must be either a non-negative integer Number or BigInt";
+  *error_out = "debug_key must be a BigInt";
   return absl::nullopt;
 }
 
@@ -166,15 +157,7 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
   absl::uint128 bucket;
   int value;
 
-  if (js_bucket->IsUint32()) {
-    v8::Maybe<uint32_t> maybe_bucket = js_bucket->Uint32Value(context);
-    if (maybe_bucket.IsNothing()) {
-      isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-          isolate, "Failed to interpret value as integer")));
-      return nullptr;
-    }
-    bucket = maybe_bucket.ToChecked();
-  } else if (js_bucket->IsBigInt()) {
+  if (js_bucket->IsBigInt()) {
     std::string error;
     absl::optional<absl::uint128> maybe_bucket =
         ConvertBigIntToUint128(js_bucket->ToBigInt(context), &error);
@@ -186,8 +169,8 @@ ParseSendHistogramReportArguments(const gin::Arguments& args) {
     }
     bucket = maybe_bucket.value();
   } else {
-    isolate->ThrowException(v8::Exception::TypeError(CreateStringFromLiteral(
-        isolate, "Bucket must be either an integer Number or BigInt")));
+    isolate->ThrowException(v8::Exception::TypeError(
+        CreateStringFromLiteral(isolate, "bucket must be a BigInt")));
     return nullptr;
   }
 

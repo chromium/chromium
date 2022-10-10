@@ -5113,30 +5113,6 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-          )"),
-        /*expected_bid=*/
-        mojom::BidderWorkletBid::New(
-            "\"ad\"", 1, GURL("https://response.test/"),
-            /*ad_components=*/absl::nullopt, base::TimeDelta()),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_errors=*/{},
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
-        /*expected_set_priority=*/absl::nullopt,
-        /*expected_update_priority_signals_overrides=*/{},
-        std::move(expected_pa_requests));
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateGenerateBidScript(
-            R"({ad: "ad", bid:1, render:"https://response.test/" })",
-            /*extra_code=*/R"(
             privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           )"),
         /*expected_bid=*/
@@ -5187,7 +5163,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             privateAggregation.sendHistogramReport(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
@@ -5213,7 +5189,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             error;
           )"),
         /*expected_bid=*/mojom::BidderWorkletBidPtr(),
@@ -5241,8 +5217,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
         CreateGenerateBidScript(
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
-            privateAggregation.enableDebugMode({debug_key: 1234});
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           )"),
         /*expected_bid=*/
         mojom::BidderWorkletBid::New(
@@ -5278,7 +5254,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             R"({ad: "ad", bid:1, render:"https://response.test/" })",
             /*extra_code=*/R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             privateAggregation.sendHistogramReport(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
@@ -5339,20 +5315,6 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
-        )",
-        /*expected_report_url =*/absl::nullopt,
-        /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
-        /*expected_errors=*/{});
-  }
-
-  // BigInt bucket
-  {
-    PrivateAggregationRequests expected_pa_requests;
-    expected_pa_requests.push_back(kExpectedRequest1.Clone());
-
-    RunReportWinWithFunctionBodyExpectingResult(
-        R"(
           privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
         )",
         /*expected_report_url =*/absl::nullopt,
@@ -5383,7 +5345,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           privateAggregation.sendHistogramReport({bucket: 18446744073709551616n,
                                                   value: 1});
         )",
@@ -5399,7 +5361,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           error;
         )",
         /*expected_report_url =*/absl::nullopt,
@@ -5421,8 +5383,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
-            privateAggregation.enableDebugMode({debug_key: 1234});
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.enableDebugMode({debug_key: 1234n});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
         )",
         /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, std::move(expected_pa_requests),
@@ -5448,7 +5410,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
             privateAggregation.enableDebugMode();
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
             privateAggregation.sendHistogramReport(
                 {bucket: 18446744073709551616n, value: 1});
         )",
@@ -5473,7 +5435,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
       CreateGenerateBidScript(
           R"({ad: "ad", bid:1, render:"https://response.test/" })",
           /*extra_code=*/R"(
-            privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+            privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
           )"),
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/absl::nullopt,
@@ -5489,7 +5451,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
 TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(
-          privateAggregation.sendHistogramReport({bucket: 123, value: 45});
+          privateAggregation.sendHistogramReport({bucket: 123n, value: 45});
         )",
       /*expected_report_url =*/absl::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},

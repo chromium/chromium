@@ -651,33 +651,6 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
-    dict.Set("value", 45);
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-
-    content::mojom::AggregatableReportHistogramContribution
-        expected_contribution(/*bucket=*/123, /*value=*/45);
-    auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
-        content::mojom::AggregationServiceMode::kDefault,
-        content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationRequests pa_requests =
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_EQ(pa_requests.size(), 1u);
-    EXPECT_EQ(pa_requests[0], expected_request.Clone());
-  }
-
-  // BigInt bucket
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
@@ -760,7 +733,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 0);
+    dict.Set("bucket", std::string("0"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -787,7 +760,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 0);
 
     Run(scope, script, "test", error_msgs,
@@ -815,7 +788,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
 
     {
       gin::Dictionary dict_1 = gin::Dictionary::CreateEmpty(helper_->isolate());
-      dict_1.Set("bucket", 123);
+      dict_1.Set("bucket", std::string("123"));
       dict_1.Set("value", 45);
 
       Run(scope, script, "test", error_msgs,
@@ -824,7 +797,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     }
     {
       gin::Dictionary dict_2 = gin::Dictionary::CreateEmpty(helper_->isolate());
-      dict_2.Set("bucket", 678);
+      dict_2.Set("bucket", std::string("678"));
       dict_2.Set("value", 90);
 
       Run(scope, script, "test", error_msgs,
@@ -854,34 +827,13 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
   }
 
-  // Non-integer bucket
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 12.3);
-    dict.Set("value", 45);
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
-                    "Bucket must be either an integer Number or BigInt."));
-
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
-                    .empty());
-  }
-
   // Non-integer value
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 4.5);
 
     Run(scope, script, "test", error_msgs,
@@ -917,13 +869,13 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
                     .empty());
   }
 
-  // Negative bucket
+  // Non-BigInt bucket
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", -1);
+    dict.Set("bucket", 123);
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -931,14 +883,14 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:8 Uncaught TypeError: "
-                    "Bucket must be either an integer Number or BigInt."));
+                    "bucket must be a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
                     .empty());
   }
 
-  // Negative BigInt bucket
+  // Negative bucket
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -965,7 +917,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", -1);
 
     Run(scope, script, "test", error_msgs,
@@ -1007,7 +959,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
@@ -1031,7 +983,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -1059,11 +1011,12 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
+    Run(scope, script, "enableDebugMode", error_msgs,
+        WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -1087,7 +1040,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_EQ(pa_requests[0], expected_request.Clone());
   }
 
-  // Debug mode enabled with BigInt debug key
+  // Debug mode enabled with large debug key
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -1097,7 +1050,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -1127,29 +1080,12 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(-1));
+    Run(scope, script, "enableDebugMode", error_msgs,
+        WrapDebugKey(std::string("-1")));
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
-                    "debug_key must be either a non-negative integer Number or "
-                    "BigInt."));
-
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
-                    .empty());
-  }
-
-  // Non-integer debug key
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1.5));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
-                    "debug_key must be either a non-negative integer Number or "
-                    "BigInt."));
+                    "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1166,6 +1102,22 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     EXPECT_THAT(error_msgs,
                 ElementsAre("https://example.org/script.js:21 Uncaught "
                             "TypeError: BigInt is too large."));
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
+  // Non-BigInt debug key
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.org/script.js:21 Uncaught TypeError: "
+                    "debug_key must be a BigInt."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1195,7 +1147,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
+    Run(scope, script, "enableDebugMode", error_msgs,
+        WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
     Run(scope, script, "enableDebugMode", error_msgs);
@@ -1206,7 +1159,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     error_msgs.clear();
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
@@ -1237,14 +1190,15 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
+    Run(scope, script, "enableDebugMode", error_msgs,
+        WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
     content::mojom::AggregatableReportHistogramContribution
@@ -1269,12 +1223,13 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
-    Run(scope, script, "enableDebugMode", error_msgs, WrapDebugKey(1234));
+    Run(scope, script, "enableDebugMode", error_msgs,
+        WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
     {
       gin::Dictionary dict_1 = gin::Dictionary::CreateEmpty(helper_->isolate());
-      dict_1.Set("bucket", 123);
+      dict_1.Set("bucket", std::string("123"));
       dict_1.Set("value", 45);
 
       Run(scope, script, "test", error_msgs,
@@ -1283,7 +1238,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     }
     {
       gin::Dictionary dict_2 = gin::Dictionary::CreateEmpty(helper_->isolate());
-      dict_2.Set("bucket", 678);
+      dict_2.Set("bucket", std::string("678"));
       dict_2.Set("value", 90);
 
       Run(scope, script, "test", error_msgs,
@@ -1353,6 +1308,11 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
 
   const char kScript[] = R"(
     function test(args) {
+      // Passing BigInts in directly is complicated so we construct them from
+      // strings.
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
       privateAggregation.sendHistogramReport(args);
     }
   )";
@@ -1368,14 +1328,14 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", 123);
+    dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
-        ElementsAre("https://example.org/script.js:3 Uncaught ReferenceError: "
+        ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
                     "privateAggregation is not defined."));
 
     PrivateAggregationRequests pa_requests =
