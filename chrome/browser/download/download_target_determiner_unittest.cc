@@ -1034,6 +1034,39 @@ TEST_F(DownloadTargetDeterminerTest, DefaultVirtual) {
   }
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+TEST_F(DownloadTargetDeterminerTest,
+       DetermineIfHandledSafelyHelperSynchronous) {
+  const char16_t kPluginName[] = u"PDF";
+  const char kPdfMimeType[] = "application/pdf";
+  const char kPdfFileType[] = "pdf";
+  content::WebPluginInfo plugin_info;
+  plugin_info.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
+  plugin_info.name = kPluginName;
+  plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
+                                      std::string());
+  content::PluginService::GetInstance()->RegisterInternalPlugin(plugin_info,
+                                                                false);
+
+  const DownloadTestCase download_test_case = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://example.com/foo.txt",
+      kPdfMimeType,
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL("foo.txt"),
+      DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      EXPECT_CRDOWNLOAD};
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(1, download_test_case);
+
+  EXPECT_TRUE(
+      DownloadTargetDeterminer::DetermineIfHandledSafelyHelperSynchronous(
+          item.get(), base::FilePath(), kPdfMimeType));
+}
+#endif
+
 // Test that an inactive download will still get a virtual or local download
 // path.
 TEST_F(DownloadTargetDeterminerTest, InactiveDownload) {

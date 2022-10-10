@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
-#include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -459,19 +458,10 @@ bool DownloadItemModel::ShouldPreferOpeningInBrowser() {
   if (!data->should_prefer_opening_in_browser_ && IsBubbleV2Enabled()) {
     base::FilePath path = GetTargetFilePath();
     std::string mime_type = GetMimeType();
-    base::RunLoop run_loop;
-    DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
-        download_, path, mime_type,
-        base::BindOnce(
-            [](base::OnceClosure quit_run_loop,
-               base::WeakPtr<DownloadUIModel> model, const base::FilePath& path,
-               bool is_handled_safely) {
-              model->DetermineAndSetShouldPreferOpeningInBrowser(
-                  path, is_handled_safely);
-              std::move(quit_run_loop).Run();
-            },
-            run_loop.QuitClosure(), GetWeakPtr(), path));
-    run_loop.Run();
+    DetermineAndSetShouldPreferOpeningInBrowser(
+        path,
+        DownloadTargetDeterminer::DetermineIfHandledSafelyHelperSynchronous(
+            download_, path, mime_type));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return data->should_prefer_opening_in_browser_.value_or(false);
