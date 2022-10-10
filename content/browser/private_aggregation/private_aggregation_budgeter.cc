@@ -287,12 +287,8 @@ void PrivateAggregationBudgeter::ClearDataImpl(
   }
 
   // Ensure we round down to capture any time windows that partially overlap.
-  int64_t serialized_delete_begin =
-      delete_begin.is_min()
-          ? SerializeTimeForStorage(base::Time::Min())
-          : SerializeTimeForStorage(
-                PrivateAggregationBudgetKey::TimeWindow(delete_begin)
-                    .start_time());
+  int64_t serialized_delete_begin = SerializeTimeForStorage(
+      PrivateAggregationBudgetKey::TimeWindow(delete_begin).start_time());
 
   // No need to round up as we compare against the time window's start time.
   int64_t serialized_delete_end = SerializeTimeForStorage(delete_end);

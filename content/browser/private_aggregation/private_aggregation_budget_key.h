@@ -24,14 +24,15 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
 
   // Represents a period of time for which budget usage is recorded. This
   // interval includes the `start_time()` instant but excludes the end time
-  // (`start_time() + kDuration`) instant.
-  // TODO(crbug.com/1353473): Ensure `base::Time::Min()` and nearby times are
-  // handled correctly.
-  class TimeWindow {
+  // (`start_time() + kDuration`) instant. (But note the `base::Time::Min()`
+  // `start_time()` caveat below.) No instant is included in multiple time
+  // windows.
+  class CONTENT_EXPORT TimeWindow {
    public:
     static constexpr base::TimeDelta kDuration = base::Hours(1);
 
     // Constructs the window that the `api_invocation_time` lies within.
+    // `base::Time::Max()` is disallowed.
     explicit TimeWindow(base::Time api_invocation_time);
 
     TimeWindow(const TimeWindow& other) = default;
@@ -40,7 +41,8 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
     base::Time start_time() const { return start_time_; }
 
    private:
-    // Must be 'on the hour' in UTC.
+    // Must be 'on the hour' in UTC, or `base::Time::Min()` for the window that
+    // includes `base::Time::Min()` (as its start time cannot be represented.)
     base::Time start_time_;
 
     // When adding new members, the corresponding `operator==()` definition in

@@ -86,6 +86,41 @@ TEST(PrivateAggregationBudgetKeyTest, StartTimes_FlooredToTheHour) {
             kExampleHourBoundary - base::Hours(1));
 }
 
+TEST(PrivateAggregationBudgetKeyTest, ExtremeStartTimes_HandledCorrectly) {
+  // The earliest window should report an extreme start time as its 'conceptual'
+  // start time can't be represented.
+  EXPECT_EQ(
+      PrivateAggregationBudgetKey::TimeWindow(base::Time::Min()).start_time(),
+      base::Time::Min());
+  EXPECT_EQ(PrivateAggregationBudgetKey::TimeWindow(base::Time::Min() +
+                                                    base::Microseconds(1))
+                .start_time(),
+            base::Time::Min());
+
+  // The second earliest window should report a start time 'on the hour' again.
+  PrivateAggregationBudgetKey::TimeWindow second_earliest_window(
+      base::Time::Min() + PrivateAggregationBudgetKey::TimeWindow::kDuration);
+  EXPECT_NE(second_earliest_window.start_time(), base::Time::Min());
+  EXPECT_LE(
+      second_earliest_window.start_time(),
+      base::Time::Min() + PrivateAggregationBudgetKey::TimeWindow::kDuration);
+  EXPECT_EQ(
+      second_earliest_window.start_time().since_origin().InMicroseconds() %
+          base::Time::kMicrosecondsPerHour,
+      0);
+
+  // `base::Time::Max()` is disallowed, but otherwise the last window should
+  // have no issue rounding down.
+  PrivateAggregationBudgetKey::TimeWindow last_window(base::Time::Max() -
+                                                      base::Microseconds(1));
+  EXPECT_LT(last_window.start_time(), base::Time::Max());
+  EXPECT_EQ(last_window.start_time().since_origin().InMicroseconds() %
+                base::Time::kMicrosecondsPerHour,
+            0);
+  EXPECT_LE(base::Time::Max() - last_window.start_time(),
+            PrivateAggregationBudgetKey::TimeWindow::kDuration);
+}
+
 TEST(PrivateAggregationBudgetKeyTest, UntrustworthyOrigin_KeyCreationFailed) {
   absl::optional<PrivateAggregationBudgetKey> opaque_origin_budget_key =
       PrivateAggregationBudgetKey::Create(
