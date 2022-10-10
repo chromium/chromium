@@ -231,7 +231,6 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/ui/ntp:util",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",

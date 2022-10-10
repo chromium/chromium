@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #import "ios/net/cookies/cookie_store_ios.h"
