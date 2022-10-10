@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
+<translation id="1057925581724305206">Бүрэн HD (1080p)</translation>
 <translation id="1113173431709655881">Камерын горим</translation>
 <translation id="1153190633558910465">Хүснэгтлэхийг унтраах</translation>
 <translation id="1175958423215084756">Холбоос илэрсэн. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Бичсэн зүйл алга</translation>
 <translation id="1838104802459806957">Дээш хазайлгах</translation>
 <translation id="1843105061469674856">Нэмэлт хуудас скан хийх</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Бүрэн нягтрал</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Олон дамжуулалттай видео бичлэг</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Зургийн харьцаа</translation>
 <translation id="5057360777601936059">Tаны камер одоогоор боломжгүй байна.
         Камераа зөв залгасан эсэхээ шалгана уу.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Документын зүүн дээд булан</translation>
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5320594929574852403">Зүүн тийш зөөж байна</translation>
+<translation id="5374917190292010970">4000 (2160p)</translation>
 <translation id="5444515100983837161">Документын бүх ирмэгийг хүрээнд байрлуулна уу. Документ болон дэвсгэр өөр өөр өнгөтэй тохиолдолд илүү сайн скан хийнэ.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-р хуудсыг скан хийж байна</translation>
 <translation id="5671277269877808209">Дөрвөлжин</translation>

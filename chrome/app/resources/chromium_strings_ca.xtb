@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Quan aquesta opció està activada, Chromium allibera memòria de les pestanyes inactives. Així, les pestanyes actives i altres aplicacions disposen de més recursos de l'ordinador i es manté l'agilitat de Chromium. Les pestanyes inactives s'activen de nou automàticament quan hi tornes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">L'Estalvi de memòria ha fet que Chromium sigui més ràpid</translation>
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
 <translation id="1385859895174722837">L'Assistent de Google a Chromium</translation>
 <translation id="1396446129537741364">Chromium està provant de mostrar les contrasenyes.</translation>
@@ -209,6 +210,7 @@
 <translation id="6055895534982063517">Hi ha disponible una versió nova de Chromium, i és més ràpida que mai.</translation>
 <translation id="6063093106622310249">&amp;Obre a Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> s'ha afegit a Chromium</translation>
+<translation id="6072463441809498330">Fes que Chromium sigui més ràpid</translation>
 <translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>
 <translation id="6096348254544841612">Personalitza i controla Chromium. Hi ha una actualització disponible.</translation>
 <translation id="6119438414301547735">Permet que l'extensió mostri sol·licituds d'accés a la barra d'eines de Chromium</translation>

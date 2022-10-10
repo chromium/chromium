@@ -83,11 +83,13 @@
 <translation id="753732157349120914">Таб хооронд шилжүүлэгч</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-н <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{Google-н <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7559245342362162951">Бүлгийн табуудыг бүтэн дэлгэцийн торонд харуулах</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хуваалцах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хуваалцах}}</translation>
 <translation id="7792771145871471484">Зөвлөмжийг шалгах.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэх}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэх}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7885132941432959125">Табыг баруун тийш зөөх</translation>
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
+<translation id="8018192911041116887">Табуудыг хуваалцах</translation>
 <translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>

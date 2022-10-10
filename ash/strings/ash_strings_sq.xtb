@@ -159,6 +159,15 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1797271123677381264">Harrova fjalëkalimin</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
+<translation id="1823280932251546115">Tabakaja e statusit, ora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> u zhgozhdua</translation>
 <translation id="1836215606488044471">Asistenti (po ngarkohet...)</translation>
@@ -459,6 +468,8 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3600061223661453002">Joaktiv</translation>
 <translation id="3604801046548457007">U krijua tavolina e punës <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Ekrani "Braille" është i lidhur.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Aktivizimi i të dhënave celulare do të aktivizojë Bluetooth</translation>
 <translation id="3616883743181209306">Menyja u zhvendos në këndin lart djathtas të ekranit.</translation>
 <translation id="3619536907358025872">Cilësimet e "Regjistrimit të ekranit"</translation>

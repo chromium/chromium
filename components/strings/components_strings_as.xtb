@@ -310,7 +310,7 @@
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">লেটাৰ</translation>
 <translation id="1706625117072057435">জুমৰ স্তৰ</translation>
-<translation id="1706954506755087368">{1,plural, =1{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ কাইলৈৰপৰা মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}one{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পিছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}other{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পিছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}}</translation>
+<translation id="1706954506755087368">{1,plural, =1{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ কাইলৈৰপৰা মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}one{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পাছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}other{এই ছাৰ্ভাৰটোৱে এইটোক <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে, ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ # দিনৰ পাছত মান্য হ’লহেঁতেন। কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে এয়া হ’ব পাৰে।}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" />টো <ph name="VALUE" /> হিচাপে ছেট কৰা নাই বাবে অৱজ্ঞা কৰা হৈছে।</translation>
 <translation id="1711528724596764268">মেচিন লাৰ্নিং আৰু কৃত্ৰিম বুদ্ধিমত্তা</translation>
@@ -712,6 +712,7 @@
 <translation id="2799223571221894425">পুনৰ লঞ্চ কৰক</translation>
 <translation id="2803306138276472711">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ<ph name="SITE" />ত <ph name="BEGIN_LINK" />মালৱেৰ চিনাক্ত কৰিছে<ph name="END_LINK" />। সাধাৰণতে সুৰক্ষিত ৱেবছাইটসমূহ কেতিয়াবা মালৱেৰৰ দ্বাৰা প্ৰভাৱিত হয়।</translation>
 <translation id="2807052079800581569">প্ৰতিচ্ছবিৰ Y স্থান</translation>
+<translation id="2808278141522721006">আপুনি <ph name="SETTINGS" />ত Windows Hello অন অথবা অফ কৰিব পাৰে</translation>
 <translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
 <translation id="2824775600643448204">ঠিকনা আৰু সন্ধানৰ বাৰ</translation>
 <translation id="2826760142808435982">এই সংযোগটো এনক্ৰিপ্ট কৰিবলৈ তথা সেইটোৰ বিশ্বাসযোগ্যতাৰ সত্যাপন কৰিবলৈ <ph name="CIPHER" /> ব্যৱহাৰ কৰা হৈছে আৰু সেইটোৱে <ph name="KX" />ক সলনা সলনিৰ মুখ্য উপায় হিচাপে ব্যৱহাৰ কৰে।</translation>
@@ -778,7 +779,7 @@
 <translation id="299990983510665749">হেচ্চবেক</translation>
 <translation id="3002501248619246229">ইনপুট ট্ৰে’ মিডিয়া পৰীক্ষা কৰক</translation>
 <translation id="3005723025932146533">ছে’ভ কৰা প্ৰতিলিপি দেখুৱাওক</translation>
-<translation id="3008447029300691911"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক। এবাৰ আপুনি নিশ্চিত কৰাৰ পিছত আপোনাৰ কাৰ্ডৰ সবিশেষ এই ছাইটবোৰৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
+<translation id="3008447029300691911"><ph name="CREDIT_CARD" />ৰ CVC দিয়ক। এবাৰ আপুনি নিশ্চিত কৰাৰ পাছত আপোনাৰ কাৰ্ডৰ সবিশেষ এই ছাইটবোৰৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="3013291976881901233">MIDI ডিভাইচবোৰ</translation>
 <translation id="301521992641321250">স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে</translation>
 <translation id="3016780570757425217">আপোনাৰ অৱস্থান জানক</translation>
@@ -880,6 +881,7 @@
 <translation id="3288238092761586174"><ph name="URL" />এ আপোনাৰ পৰিশোধ সত্যাপন কৰিবলৈ অতিৰিক্ত পদক্ষেপ ল’বলগীয়া হ’ব পাৰে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতিৰ বিষয়ে অধিক জানক</translation>
 <translation id="3295444047715739395">Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
+<translation id="3299098170013242198">পাছৱৰ্ড পূৰ কৰিবলৈ Windows Hello অন হৈ আছে</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
 <translation id="3304073249511302126">ব্লুটুথ স্কেনিং</translation>
 <translation id="33073482541490531">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছে। Password Managerএ এই পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
@@ -948,7 +950,7 @@
 <translation id="3462200631372590220">এডভাঞ্চখিনি লুকুৱাওক</translation>
 <translation id="346601286295919445">ৰসায়ন বিজ্ঞান</translation>
 <translation id="3467763166455606212">কার্ডৰ গৰাকীৰ নাম দিয়াটো প্ৰয়োজন</translation>
-<translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, বৰ্তমান খোলা আছে, খোলা থকা টেবটোলৈ যাবলৈ টেব আৰু তাৰ পিছত এণ্টাৰ দবাওক</translation>
+<translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, বৰ্তমান খোলা আছে, খোলা থকা টেবটোলৈ যাবলৈ টেব আৰু তাৰ পাছত এণ্টাৰ দবাওক</translation>
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3477679029130949506">চলচ্চিত্ৰৰ সূচী আৰু থিয়েটাৰৰ শ্ব’ৰ সময়সূচী</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
@@ -1027,6 +1029,7 @@
 <translation id="3678342917559046352">অমান্য এক্সটেনশ্বন: মানটো তলত দিয়া যিকোনো এটা ধৰণৰ হ’ব বুলি আশা কৰা হৈছে: &lt;extension_id&gt; অথবা &lt;extension_id&gt;;&lt;update_url&gt;।</translation>
 <translation id="3678529606614285348">এটা নতুন ৱিণ্ড’ত পৃষ্ঠা খোলক (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">প্ৰমাণপত্ৰৰ তথ্য</translation>
+<translation id="3699374065820972102">পাছৱৰ্ড পূৰ কৰিবলৈ TouchID অন হৈ আছে</translation>
 <translation id="3701427423622901115">ৰিছেট কাৰ্যটো স্বীকাৰ কৰা হ’ল৷</translation>
 <translation id="3704162925118123524">আপুনি ব্যৱহাৰ কৰি থকা নেটৱর্কটোৰ বাবে আপুনি লগ ইনৰ পৃষ্ঠালৈ যাব লগা হ'ব পাৰে।</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1486,6 +1489,7 @@
 <translation id="4900217275619098670">নৱম ৰোল</translation>
 <translation id="4901778704868714008">ছেভ কৰক...</translation>
 <translation id="4905659621780993806">আপোনাৰ প্ৰশাসকে আপোনাৰ ডিভাইচটো <ph name="DATE" />ৰ <ph name="TIME" />ত স্বয়ংক্ৰিয়ভাৱে ৰিষ্টার্ট কৰিব। আপোনাৰ ডিভাইচটো ৰিষ্টার্ট হোৱাৰ পূর্বে যিকোনো খোলা বস্তু ছেভ কৰক।</translation>
+<translation id="4911007278801291296">আপুনি <ph name="SETTINGS" />ত TouchID অন অথবা অফ কৰিব পাৰে</translation>
 <translation id="4913987521957242411">বাওঁফালে ওপৰৰ অংশত পাঞ্চ কৰক</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ইনষ্টল কৰক (ডাউনল’ড কৰাৰ প্ৰয়োজন নাই)</translation>
 <translation id="4923459931733593730">পৰিশোধ</translation>
@@ -1594,7 +1598,7 @@
 <translation id="5161334686036120870">বিষয়:</translation>
 <translation id="5161506081086828129">ষ্টেকাৰ ৯</translation>
 <translation id="5164798890604758545">পাঠ দিলে</translation>
-<translation id="516920405563544094"><ph name="CREDIT_CARD" />ৰ CVCটো দিয়ক। আপুনি নিশ্চিতি প্ৰদান কৰাৰ পিছত আপোনাৰ Google Accountৰ পৰা কাৰ্ডৰ সবিশেষ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
+<translation id="516920405563544094"><ph name="CREDIT_CARD" />ৰ CVCটো দিয়ক। আপুনি নিশ্চিতি প্ৰদান কৰাৰ পাছত আপোনাৰ Google Accountৰ পৰা কাৰ্ডৰ সবিশেষ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5169827969064885044">আপুনি আপোনাৰ প্ৰতিষ্ঠানৰ একাউণ্টটো এক্সেছ কৰিব নোৱাৰা হ‘ব পাৰে বা আপোনাৰ পৰিচয় চুৰি হোৱাৰ নিচিনা ঘটনাৰ মুখামুখী হ‘ব পাৰে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="5171045022955879922">সন্ধান কৰক বা URL টাইপ কৰক</translation>
 <translation id="5171689220826475070">ফেনফ’ল্ড-ইউৰোপীয়</translation>
@@ -1678,6 +1682,7 @@
 <translation id="5357848622083956825">ভিজুৱেল আৰ্ট আৰু ডিজাইন</translation>
 <translation id="536296301121032821">নীতিৰ ছেটিংসমূহ ষ্ট’ৰ কৰিবলৈ সক্ষম নহ’ল</translation>
 <translation id="5363309033720083897">আপোনাৰ প্ৰশাসকে অনুমতি দিয়া ক্ৰমিক পৰ্ট</translation>
+<translation id="5363713372507812442">ভ্ৰমণ সন্ধান কৰক</translation>
 <translation id="5371425731340848620">কাৰ্ড আপডে’ট কৰক</translation>
 <translation id="5377026284221673050">"আপোনাৰ ঘড়ী লেহেমীয়াকৈ চলি আছে" বা "আপোনাৰ ঘড়ী খৰকৈ চলি আছে " বা "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">উপস্থাপন সৃষ্টি কৰাৰ বুটাম, এটা নতুন Google উপস্থাপন Slidesত ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ এণ্টাৰ টিপক</translation>
@@ -2423,6 +2428,7 @@
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">বহল-ফৰ্মেট</translation>
 <translation id="7410471291937727359">মৰম-লগা</translation>
+<translation id="741204030948306876">হয়, মই সন্মত</translation>
 <translation id="7416351320495623771">পাছৱৰ্ড পৰিচালনা কৰক…</translation>
 <translation id="7418620734632363981">প্ৰ’গ্ৰামিং</translation>
 <translation id="7419106976560586862">প্ৰ’ফাইলৰ পথ</translation>
@@ -2982,7 +2988,7 @@
 <translation id="8957210676456822347">কেপটিভ পর্টেল বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="8962950042226115166">সন্দেহজনক ছাইট</translation>
 <translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />পৰামৰ্শ:<ph name="MARKUP_2" />আপোনাৰ এটা ডেটা সংযোগ থকাটো নিশ্চিত কৰক<ph name="MARKUP_3" />এই ৱেবপে‘জটো পিছত ৰিল‘ড কৰক<ph name="MARKUP_4" />আপুনি দিয়া ঠিকনাটো পৰীক্ষা কৰক<ph name="MARKUP_5" /></translation>
+<translation id="8963213021028234748"><ph name="MARKUP_1" />পৰামৰ্শ:<ph name="MARKUP_2" />আপোনাৰ এটা ডেটা সংযোগ থকাটো নিশ্চিত কৰক<ph name="MARKUP_3" />এই ৱেবপে‘জটো পাছত ৰিল‘ড কৰক<ph name="MARKUP_4" />আপুনি দিয়া ঠিকনাটো পৰীক্ষা কৰক<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">কার্ড ছেভ কৰক</translation>
 <translation id="8971063699422889582">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰৰ ম্যাদ উকলিছে।</translation>
 <translation id="8975012916872825179">ফ'ন নম্বৰ, ইমেইল ঠিকনা আৰু শ্বিপিঙৰ ঠিকনাৰ দৰে তথ্য অন্তৰ্ভুক্ত কৰে</translation>

@@ -2402,6 +2402,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3188465121994729530">Glidende gennemsnit</translation>
 <translation id="3189187154924005138">Stor markør</translation>
 <translation id="3190558889382726167">Adgangskoden er blevet gemt</translation>
+<translation id="3192589799003798742">Sådan konfigurerer du Steam på Chromebook</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3193695589337931419">Værktøjer til indsamling af systemsignaler</translation>
 <translation id="3194786596445804250">Vis oplysninger om blokering af tredjepartscookies</translation>
@@ -2541,6 +2542,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3341699307020049241">Pinkoden er forkert. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="3341703758641437857">Tillad adgang til webadresser på filer</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" vil gerne fjerne denne udvidelse.</translation>
+<translation id="3343977377045378693">Gennemfører konfiguration</translation>
 <translation id="3345135638360864351">Din anmodning om at få adgang til dette website kunne ikke sendes til <ph name="NAME" />. Prøv igen.</translation>
 <translation id="3345634917232014253">Sikkerhedstjekket blev udført for et øjeblik siden</translation>
 <translation id="3345886924813989455">Der blev ikke fundet en understøttet browser</translation>
@@ -2552,6 +2554,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3354768182971982851">Gamle versioner af Chrome-apps kan ikke åbnes på Mac-enheder efter december 2022. Du kan tjekke, om en ny version er tilgængelig.</translation>
 <translation id="3354972872297836698">Parringen med enheden <ph name="DEVICE_NAME" /> mislykkedes. Vælg en enhed for at prøve igen</translation>
 <translation id="3355936511340229503">Forbindelsesfejl</translation>
+<translation id="3356036636691722598">Spil på din Chromebook</translation>
 <translation id="3356469410714175391">(Virtuelt kort er aktiveret)</translation>
 <translation id="3356580349448036450">Fuldført</translation>
 <translation id="3359256513598016054">Begrænsninger for certifikatpolitik</translation>
@@ -3460,6 +3463,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4211904048067111541">Brug ikke med Android-apps</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="42137655013211669">Serveren har forbudt dig adgang til denne ressource.</translation>
+<translation id="4214192212360095377">Deaktiver nu</translation>
 <translation id="4217558091331485702">Scan før åbning</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4218081191298393750">Klik på højttalerikonet for at slå lyden fra på denne fane</translation>
@@ -4354,6 +4358,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5089763948477033443">Sidepanelets tilpasningshåndtag</translation>
 <translation id="5090637338841444533">Har ikke tilladelse til at spore din kameraposition</translation>
 <translation id="5093569275467863761">Inkognito-underramme i back/forward-cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Starter installation</translation>
 <translation id="5094176498302660097">Du kan åbne og redigere understøttede filer med denne app via appen Filer eller andre apps. Hvis du vil styre, hvilke filer der som standard skal åbnes i denne app, kan du <ph name="BEGIN_LINK" />se, hvordan du angiver standardapps på din enhed<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Kommunikere med indbyggede apps</translation>
 <translation id="5097002363526479830">Der kunne ikke oprettes forbindelse til netværket "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -6366,6 +6371,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7014174261166285193">Installationen mislykkedes.</translation>
 <translation id="7014480873681694324">Fjern fremhævning</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
+<translation id="7014961128696979283">Åbn Steam</translation>
 <translation id="7015088858756332848">Steam kunne ikke åbnes på Chromebook. Prøv igen</translation>
 <translation id="7017004637493394352">Sig "Hey Google" igen</translation>
 <translation id="7017219178341817193">Tilføj en ny side</translation>
@@ -6757,6 +6763,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7423425410216218516">Synlighed er aktiveret i <ph name="MINUTES" /> minutter</translation>
 <translation id="7423513079490750513">Fjern <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> skal have tilladelse til at køre</translation>
+<translation id="7424153922653300265">Energisparefunktion er aktiveret</translation>
 <translation id="7424818322350938336">Netværket er tilføjet</translation>
 <translation id="7427315069950454694">dine minder i dag</translation>
 <translation id="7427348830195639090">Baggrundsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7994,6 +8001,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="859246725979739260">Dette website er blevet blokeret, så det ikke kan få adgang til din lokation.</translation>
 <translation id="8593121833493516339">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse samlede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Hvis indstillingen til yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Tilpassede filer</translation>
+<translation id="8597404194697561297">Velkommen til Steam på Chromebook</translation>
 <translation id="8597845839771543242">Ejendomsformat:</translation>
 <translation id="8599681327221583254">En eller flere politikker er ikke konfigureret korrekt. Kontakt din administrator</translation>
 <translation id="8599864823732014237">Vil du springe virksomhedstilmeldingen over?</translation>

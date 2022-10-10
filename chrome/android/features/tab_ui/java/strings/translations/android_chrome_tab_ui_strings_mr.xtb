@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">रेटिंग</translation>
 <translation id="3291470810748040983">उघड्या टॅबमध्ये किंमत कमी असताना तुम्हाला सूचना मिळेल</translation>
 <translation id="3328308545011660196">सूचना: <ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
+<translation id="3499853001094440183">टॅब गटामधून काढून टाका</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब कोलॅप्स करा.}other{<ph name="TABS_COUNT_MANY" /> टॅबचा गट असलेले <ph name="TITLE_OF_GROUP" /> टॅब कोलॅप्स करा.}}</translation>
 <translation id="3882834874697329510">कमी किंमत उपलब्ध असताना उघड्या टॅबमध्ये सूचना मिळवण्यासाठी, सेंटिंग्ज मध्ये सूचना सुरू करा.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="6333260925957816943">या स्टोअरविषयी माहिती</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="6510648526783655549">टॅब स्ट्रिप बंद करा</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>

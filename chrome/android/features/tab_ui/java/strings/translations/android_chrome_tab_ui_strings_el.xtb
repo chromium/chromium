@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">αξιολόγηση</translation>
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
+<translation id="3499853001094440183">Κατάργηση ομαδοπ. καρτελών</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="3882834874697329510">Για να λαμβάνετε μια ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα, ενεργοποιήστε τις ειδοποιήσεις στις Ρυθμίσεις.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Επιλογή καρτελών</translation>
 <translation id="6228793724645064692">(αξιολόγηση καταστήματος)</translation>
 <translation id="6333260925957816943">Πληροφορίες για αυτό το κατάστημα</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κατάργηση ομαδοποίησης <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> καρτέλα}other{<ph name="TABS_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="6510648526783655549">Κλείσιμο γραμμής καρτελών</translation>
 <translation id="6549021453810473782">Προβολή πληροφοριών καταστήματος</translation>
 <translation id="6562820390860419811">Μετακίνηση καρτέλας αριστερά</translation>

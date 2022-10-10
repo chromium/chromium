@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">கடவுச்சொல் மறந்துவிட்டது</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="1812997170047690955">எனது திரையில் இருப்பவையா?</translation>
+<translation id="1823280932251546115">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ஈதர்நெட்: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ஷெல்ஃபிலிருந்து அகற்றப்பட்டது</translation>
 <translation id="1836215606488044471">அசிஸ்டண்ட் (ஏற்றுகிறது...)</translation>
@@ -459,6 +468,8 @@
 <translation id="3600061223661453002">முடக்கு</translation>
 <translation id="3604801046548457007">டெஸ்க் <ph name="DESK_TITILE" /> உருவாக்கப்பட்டது</translation>
 <translation id="3606978283550408104">பிரெய்ல் திரை இணைக்கப்பட்டது.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">மொபைல் டேட்டாவை இயக்கினால் புளூடூத் இயக்கப்படும்</translation>
 <translation id="3616883743181209306">திரையின் மேல் வலது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="3619536907358025872">ஸ்கிரீன் கேப்சர் அமைப்புகள்</translation>

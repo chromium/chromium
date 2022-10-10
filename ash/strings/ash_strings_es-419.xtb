@@ -159,6 +159,15 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1797271123677381264">Olvidé mi contraseña</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="1812997170047690955">¿Qué hay en mi pantalla?</translation>
+<translation id="1823280932251546115">Bandeja de estado, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Asistente (cargando…)</translation>
@@ -459,6 +468,8 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3600061223661453002">No</translation>
 <translation id="3604801046548457007">Se creó el escritorio <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Dispositivo braille conectado</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Si habilitas los datos móviles, se habilitará la conexión Bluetooth.</translation>
 <translation id="3616883743181209306">Se movió el menú a la esquina superior derecha de la pantalla.</translation>
 <translation id="3619536907358025872">Configuración de Captura de pantalla</translation>

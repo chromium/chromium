@@ -2373,6 +2373,7 @@
 <translation id="3188465121994729530">औसत चलायमान</translation>
 <translation id="3189187154924005138">ठुलो कर्सर</translation>
 <translation id="3190558889382726167">पासवर्ड सेभ गरियो</translation>
+<translation id="3192589799003798742">Chromebook मा Steam सेटअप गरिँदै छ</translation>
 <translation id="3192947282887913208">अडियो फाइलहरू</translation>
 <translation id="3193695589337931419">सिस्टमको सिग्नलसम्बन्धी युटिलिटीहरू</translation>
 <translation id="3194786596445804250">तेस्रो पक्षीय कुकी ब्लक गर्ने तरिकासम्बन्धी विवरण देखाइयोस्</translation>
@@ -2512,6 +2513,7 @@
 <translation id="3341699307020049241">PIN मिलेन। तपाईं अब <ph name="RETRIES" /> पटक मात्र प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="3341703758641437857">फाइल URLs मा पहुँच अनुमति दिनुहोस्</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" यो विस्तार हटाउन चाहन्छ।</translation>
+<translation id="3343977377045378693">सेटअप गरिँदै छ</translation>
 <translation id="3345135638360864351">यस साइटमा पहुँच गर्न तपाईंको अनुरोध <ph name="NAME" /> मा पठाउन सकिएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3345634917232014253">एकछिन अघि सुरक्षा जाँच गरियो</translation>
 <translation id="3345886924813989455">कुनै समर्थित ब्राउजर भेटिएन</translation>
@@ -2523,6 +2525,7 @@
 <translation id="3354768182971982851">Chrome का पुराना संस्करणका एपहरू डिसेम्बर २०२२ पछि Mac डिभाइसहरूमा मा खुल्ने छैनन्। तपाईं नयाँ संस्करण उपलब्ध छ कि छैन भन्ने कुरा जाँच्न सक्नुहुन्छ।</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिभाइसमा कनेक्ट गर्न सकिएन। तपाईं फेरि कनेक्ट गरी हेर्न चाहनुहुन्छ भने उक्त डिभाइस चयन गर्नुहोस्</translation>
 <translation id="3355936511340229503">जडान त्रुटि</translation>
+<translation id="3356036636691722598">Chromebook मा गेमिङको मजा लिनुहोस्</translation>
 <translation id="3356469410714175391">(भर्चुअल कार्ड सक्रिय गरिएको छ)</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति अवरोधहरू</translation>
@@ -3428,6 +3431,7 @@
 <translation id="4211904048067111541">Android एप चलाउन प्रयोग गर्न छाड्नुहोस्</translation>
 <translation id="42126664696688958">निर्यात गर्नुहोस्</translation>
 <translation id="42137655013211669">सर्भरद्वारा यो संसाधनमा पहुँच गर्न निषेध गरिएको थियो।</translation>
+<translation id="4214192212360095377">अहिले नै अफ गर्नुहोस्</translation>
 <translation id="4217558091331485702">खोल्नुअघि स्क्यान गर्नुहोस्</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4218081191298393750">यो ट्याब म्युट गर्न स्पिकर जनाउने आइकनमा क्लिक गर्नुहोस्</translation>
@@ -4316,6 +4320,7 @@
 <translation id="5089763948477033443">साइड प्यानल रिसाइज ह्यान्डल</translation>
 <translation id="5090637338841444533">तपाईंको क्यामेराको स्थिति ट्र्याक गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="5093569275467863761">इन्कोग्निटो मोडमा ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">इन्स्टल गर्ने कार्य सुरु गरिँदै छ</translation>
 <translation id="5094176498302660097">तपाईं यो एप प्रयोग गरी खोल्न तथा सम्पादन गर्न मिल्ने फाइलहरू Files एप वा अन्य एपमार्फत खोल्न तथा सम्पादन गर्न सक्नुहुन्छ। तपाईं कुन कुन फाइल यो एपमार्फत स्वतः खुल्छ भन्ने कुरा नियन्त्रण गर्न चाहनुहुन्छ भने <ph name="BEGIN_LINK" />डिभाइसमा डिफल्ट एप कसरी तय गर्ने भन्ने कुरा जान्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="5094721898978802975">सहयोगी मुल अनुप्रयोगहरूसँग सञ्चार गर्नुहोस्</translation>
 <translation id="5097002363526479830">नेटवर्क '<ph name="NAME" />' मा जडान हुन असफल भयो: <ph name="DETAILS" /></translation>
@@ -6315,6 +6320,7 @@
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
 <translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
+<translation id="7014961128696979283">Steam लन्च गर्नुहोस्</translation>
 <translation id="7017004637493394352">फेरि "Ok Google" भन्नुहोस्</translation>
 <translation id="7017219178341817193">एउटा नयाँ पृष्ठ थप्नुहोस्</translation>
 <translation id="7017354871202642555">विण्डो कायम भएपछि मोड सेट गर्न सकिँदैन।</translation>
@@ -6704,6 +6710,7 @@
 <translation id="7423425410216218516">पहुँचसम्बन्धी सेटिङ <ph name="MINUTES" /> मिनेटसम्म अन हुन्छ</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> हटाउनुहोस्</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> चलाउन अनुमति दिनु पर्ने हुन्छ</translation>
+<translation id="7424153922653300265">इनर्जी सेभर अन गरिएको छ</translation>
 <translation id="7424818322350938336">नेटवर्क थप गरिएको छ</translation>
 <translation id="7427315069950454694">आजका स्मरणीय क्षणहरू</translation>
 <translation id="7427348830195639090">पृष्ठभूमि पाना: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7934,6 +7941,7 @@
 <translation id="859246725979739260">यो साइटलाई तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्न नपाउने गरी ब्लक गरिएको छ।</translation>
 <translation id="8593121833493516339">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाएर आफ्ना बालकको Android सम्बन्धी अनुभवलाई सुधार गर्न मद्दत गर्नुहोस्। यस्तो डेटा तपाईंका बालकको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। तपाईंका बालकको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलाप सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">अनुकूलित फाइलहरू</translation>
+<translation id="8597404194697561297">Chromebook को Steam मा स्वागत छ</translation>
 <translation id="8597845839771543242">सम्पत्ति ढाँचा:</translation>
 <translation id="8599681327221583254">एक वा सोभन्दा बढी नीतिहरू राम्ररी कन्फिगर गरिएका छैनन्। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्</translation>
 <translation id="8599864823732014237">तपाईं इन्टरप्राइजसम्बन्धी सुविधाहरू प्राप्त गर्न अहिले नै दर्ता गर्न चाहनुहुन्न?</translation>

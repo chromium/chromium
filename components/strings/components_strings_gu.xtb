@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
 <translation id="2803306138276472711">Google Safe Browsing ને તાજેતરમાં <ph name="SITE" /> પર <ph name="BEGIN_LINK" />મૉલવેર મળ્યું<ph name="END_LINK" />. વેબસાઇટ્સ કે જે સામાન્ય રીતે સુરક્ષિત છે તે ક્યારેક મૉલવેરથી દૂષિત હોય છે.</translation>
 <translation id="2807052079800581569">છબીની Y અક્ષ પરની સ્થિતિ</translation>
+<translation id="2808278141522721006">તમે <ph name="SETTINGS" />માં જઈને Windows Hello ચાલુ કે બંધ કરી શકો છો</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
@@ -884,6 +885,7 @@
 <translation id="3288238092761586174">તમારી ચુકવણીની ચકાસણી કરવા માટે <ph name="URL" /> દ્વારા વધારાના પગલાં લેવા જરૂરી હોઈ શકે છે</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> પૉલિસી વિશે વધુ જાણો</translation>
 <translation id="3295444047715739395">Chrome સેટિંગમાં તમારા પાસવર્ડ જુઓ અને તેને મેનેજ કરો</translation>
+<translation id="3299098170013242198">પાસવર્ડ ભરવા માટે Windows Hello ચાલુ છે</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3304073249511302126">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="33073482541490531">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. Password Manager હમણાં જ આ પાસવર્ડ બદલવાનો સુઝાવ આપે છે.</translation>
@@ -1032,6 +1034,7 @@
 <translation id="3678342917559046352">અમાન્ય એક્સ્ટેન્શન: મૂલ્ય નીચેનામાંથી કોઈ એક સ્વરૂપમાં હોવું અપેક્ષિત છે: &lt;extension_id&gt; અથવા &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">એક નવી છુપી વિંડોમાં પેજ ખોલો (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">પ્રમાણપત્ર માહિતી</translation>
+<translation id="3699374065820972102">પાસવર્ડ ભરવા માટે TouchID ચાલુ છે</translation>
 <translation id="3701427423622901115">રીસેટ કરવાનું સ્વીકાર્યું હતું.</translation>
 <translation id="3704162925118123524">તમે ઉપયોગમાં લઈ રહ્યાં છો તે નેટવર્ક માટે, તમારે તેના લૉગ ઇન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1494,6 +1497,7 @@
 <translation id="4900217275619098670">નવમો રોલ</translation>
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4905659621780993806">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે ઑટોમૅટિક રીતે તમારું ડિવાઇસ ફરી શરૂ કરશે. તમારું ડિવાઇસ ફરી શરૂ થાય તે પહેલાં ખુલી હોય એવી કોઈપણ આઇટમ સાચવો.</translation>
+<translation id="4911007278801291296">તમે <ph name="SETTINGS" />માં જઈને TouchID ચાલુ કે બંધ કરી શકો છો</translation>
 <translation id="4913987521957242411">ઉપર ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ને ઇન્સ્ટૉલ કરો (કોઈ ડાઉનલોડ આવશ્યક નથી)</translation>
 <translation id="4923459931733593730">ચુકવણી</translation>
@@ -1687,6 +1691,7 @@
 <translation id="5357848622083956825">વિઝ્યુઅલ આર્ટ અને ડિઝાઇન</translation>
 <translation id="536296301121032821">પૉલિસી સેટિંગ સ્ટોર કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="5363309033720083897">તમારા વ્યવસ્થાપક દ્વારા મંજૂરી આપવામાં આવેલો સીરિયલ પોર્ટ</translation>
+<translation id="5363713372507812442">પ્રવાસો શોધો</translation>
 <translation id="5371425731340848620">કાર્ડને અપડેટ કરો</translation>
 <translation id="5377026284221673050">"તમારી ઘડિયાળ પાછળ છે" અથવા "તમારી ઘડિયાળ આગળ છે" અથવા "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">'પ્રસ્તુતિ બનાવો' બટન, Slidesમાં ઝડપથી કોઈ નવી Google પ્રસ્તુતિ બનાવવા માટે, Enter કી દબાવો</translation>
@@ -2435,6 +2440,7 @@
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">પહોળાઈ-ફૉર્મેટ</translation>
 <translation id="7410471291937727359">મનોરમ</translation>
+<translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7416351320495623771">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="7418620734632363981">પ્રોગ્રામિંગ</translation>
 <translation id="7419106976560586862">પ્રોફાઇલ પાથ</translation>

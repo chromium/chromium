@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">راه‌اندازی مجدد</translation>
 <translation id="2803306138276472711">‏Google Safe Browsing به تازگی در <ph name="SITE" />، ‏<ph name="BEGIN_LINK" />بدافزار شناسایی کرده است<ph name="END_LINK" />. گاهی اوقات وب‌سایت‌هایی که معمولاً ایمن هستند با بدافزار آلوده می‌شوند.</translation>
 <translation id="2807052079800581569">‏موقعیت Y تصویر</translation>
+<translation id="2808278141522721006">‏می‌توانید Windows Hello را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
@@ -884,6 +885,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ممکن است برای تأیید پرداخت شما به انجام مراحل تکمیلی نیاز داشته باشد</translation>
 <translation id="3293642807462928945">درباره خطمشی <ph name="POLICY_NAME" /> بیشتر بدانید</translation>
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
+<translation id="3299098170013242198">‏Windows Hello برای پر کردن گذرواژه‌ها روشن است</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
 <translation id="3304073249511302126">اسکن کردن بلوتوث</translation>
 <translation id="33073482541490531">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. «مدیر گذرواژه» توصیه می‌کند این گذرواژه را همین‌حالا تغییر دهید.</translation>
@@ -1032,6 +1034,7 @@
 <translation id="3678342917559046352">‏پسوند نامعتبر است: انتظار می‌رود مقدار به‌صورت یکی از فرم‌های زیر باشد: &lt;extension_id&gt; یا &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">‏صفحه را در پنجره‌ «ناشناس» جدیدی باز کنید (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">اطلاعات گواهی</translation>
+<translation id="3699374065820972102">‏TouchID برای پر کردن گذرواژه‌ها روشن است</translation>
 <translation id="3701427423622901115">بازنشانی تأیید شد.</translation>
 <translation id="3704162925118123524">شاید شبکه‌ای که استفاده می‌کنید، بازدید از صفحه ورود به سیستم خودش را برای شما ضروری کرده باشد.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1494,6 +1497,7 @@
 <translation id="4900217275619098670">رول نهم</translation>
 <translation id="4901778704868714008">ذخیره...</translation>
 <translation id="4905659621780993806">سرپرستْ دستگاهتان را ساعت <ph name="TIME" /> روز <ph name="DATE" /> به‌طور خودکار بازراه‌اندازی خواهد کرد. قبل‌از بازراه‌اندازی دستگاه، موارد باز را ذخیره کنید.</translation>
+<translation id="4911007278801291296">‏می‌توانید TouchID را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
 <translation id="4913987521957242411">سوراخ سمت راست بالا</translation>
 <translation id="4918221908152712722">نصب <ph name="APP_NAME" /> (بارگیری لازم نیست)</translation>
 <translation id="4923459931733593730">پرداخت</translation>
@@ -1687,6 +1691,7 @@
 <translation id="5357848622083956825">هنرهای تجسمی و طراحی</translation>
 <translation id="536296301121032821">تنظیمات خط‌‌مشی ذخیره نشد</translation>
 <translation id="5363309033720083897">سرپرستتان درگاه سریالی را مجاز کرده است</translation>
+<translation id="5363713372507812442">جستجوی سفرها</translation>
 <translation id="5371425731340848620">به‌روزرسانی کارت</translation>
 <translation id="5377026284221673050">‏«ساعتتان عقب است» یا «ساعتتان جلو است» یا «&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;»</translation>
 <translation id="5379027395132364855">‏دکمه ایجاد ارائه؛ برای ایجاد سریع ارائه جدید در «اسلایدنگار Google»، کلید «ورود» را فشار دهید</translation>
@@ -2435,6 +2440,7 @@
     &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">دوست‌داشتنی</translation>
+<translation id="741204030948306876">بله، موافقم</translation>
 <translation id="7416351320495623771">مدیریت گذرواژه‌ها…</translation>
 <translation id="7418620734632363981">برنامه‌نویسی</translation>
 <translation id="7419106976560586862">مسیر نمایه</translation>

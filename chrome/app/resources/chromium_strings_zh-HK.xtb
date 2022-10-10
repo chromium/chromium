@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1231839967188101156">開啟時，Chromium 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chromium 的運作速度。閒置分頁會在您使用時自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">記憶體節省模式可以提升 Chromium 運作速度</translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
 <translation id="1385859895174722837">Chromium 的「Google 助理」</translation>
 <translation id="1396446129537741364">Chromium 即將顯示密碼。</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">新版 Chromium 現已推出，速度更勝從前。</translation>
 <translation id="6063093106622310249">在 Chromium 中開啟</translation>
 <translation id="6072279588547424923">已將 <ph name="EXTENSION_NAME" /> 加到 Chromium</translation>
+<translation id="6072463441809498330">提升 Chromium 的運作速度</translation>
 <translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
 <translation id="6096348254544841612">自訂和管理 Chromium。有可用的更新。</translation>
 <translation id="6119438414301547735">允許擴充程式在 Chromium 工具列中顯示存取要求</translation>

@@ -133,6 +133,7 @@
 <translation id="3360895254066713204">Chromeৰ সহায়ক</translation>
 <translation id="3379938682270551431">{0,plural, =0{এতিয়া Chrome পুনৰ লঞ্চ হ’ব}=1{১ ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}one{# ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}other{# ছেকেণ্ডত Chrome পুনৰ লঞ্চ হ’ব}}</translation>
 <translation id="3396977131400919238">ইনষ্টলেশ্বনৰ সময়ত অপাৰেটিং ছিষ্টেম সম্পর্কীয় এটা আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি Google Chrome পুনৰ ডাউনল’ড কৰক।</translation>
+<translation id="3426646014273736870">মেম’ৰী সঞ্চয়কাৰীয়ে Chromeক দ্ৰুত কৰি তুলিছে</translation>
 <translation id="3428747202529429621">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা সময়ত অন্য Google এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="3434246496373299699">আপুনি নিজৰ Google একাউণ্টটোৰ জৰিয়তে ছাইন ইন কৰোঁতে Chromeএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব পাৰে</translation>
 <translation id="3451115285585441894">Chromeলৈ যোগ কৰি থকা হৈছে...</translation>
@@ -149,7 +150,7 @@
 <translation id="3673813398384385993">Chromeএ "<ph name="EXTENSION_NAME" />"ত মালৱেৰ থকাটো পাইছে</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux বিকাশৰ পৰিৱেশ<ph name="END_LINK_LINUX_OSS" />ৰ দৰে ChromeOSক অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ দ্বাৰা তৈয়াৰ কৰা হৈছে।</translation>
 <translation id="3716540481907974026">ChromeOS Flexৰ সংস্কৰণ</translation>
-<translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পিছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
+<translation id="3718181793972440140">ইয়াৰ ফলত এই ডিভাইচটোৰ পৰা ১টা বস্তু মচা হ’ব। আপোনাৰ ডেটা পাছত পুনৰুদ্ধাৰ কৰিবলৈ Chromeত <ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰক।</translation>
 <translation id="3735758079232443276">আপুনি Chrome আৰম্ভ কৰিলে কোনটো পৃষ্ঠা দেখুওৱা হ’ব সেয়া "<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনে সলনি কৰিছে।</translation>
 <translation id="3744202345691150878">ChromeOSৰ বাবে সহায় পাওক</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
@@ -234,6 +235,7 @@
 
 Google Chromeএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্ধাৰ কৰিবলৈ সক্ষম নহ'ল।</translation>
 <translation id="5524761631371622910">ট্ৰায়েল অন কৰি থোৱা থাকিলে আৰু যদি আপোনাক Chromeএ যাদৃশ্যিকভাৱে কোনো সক্ৰিয় ট্ৰায়েলত ৰাখিছে, তেন্তে আপোনাৰ ব্ৰাউজিঙৰ ইতিহাসে আপুনি দেখা পোৱা বিজ্ঞাপন আৰু তলত অনুমান কৰা আগ্ৰহসমূহত প্ৰভাৱ পেলায়। আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, Chromeএ প্ৰতি মাহে এক নিৰ্দিষ্ট সময়ৰ অন্তৰে অন্তৰে আপোনাৰ আগ্ৰহসমূহ মচে।</translation>
+<translation id="5530733413481476019">Chromeক দ্ৰুত কৰি তোলক</translation>
 <translation id="556024056938947818">Google Chromeএ পাছৱর্ডসমূহ দেখুৱাবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ক্ষতিকাৰক হ'ব পাৰে বাবে Chromiumএ ইয়াক অৱৰোধ কৰিছে</translation>

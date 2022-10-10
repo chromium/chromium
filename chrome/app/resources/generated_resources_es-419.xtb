@@ -2383,6 +2383,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3188465121994729530">Promedio móvil</translation>
 <translation id="3189187154924005138">Cursor grande</translation>
 <translation id="3190558889382726167">Se guardó la contraseña</translation>
+<translation id="3192589799003798742">Configurando Steam en la Chromebook</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3193695589337931419">Utilidades de las indicaciones del sistema</translation>
 <translation id="3194786596445804250">Mostrar detalles sobre cómo bloquear cookies de terceros</translation>
@@ -2522,6 +2523,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3341699307020049241">El PIN es incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="3341703758641437857">Permitir el acceso a las URL del archivo</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" desea quitar esta extensión.</translation>
+<translation id="3343977377045378693">Realizando la configuración</translation>
 <translation id="3345135638360864351">No se pudo enviar la solicitud de acceso al sitio a <ph name="NAME" />. Vuelve a intentarlo.</translation>
 <translation id="3345634917232014253">Hace un momento, se ejecutó la verificación de seguridad</translation>
 <translation id="3345886924813989455">No se ha encontrado el navegador compatible</translation>
@@ -2533,6 +2535,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3354768182971982851">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Mac después de diciembre de 2022. Puedes comprobar si hay una nueva versión disponible.</translation>
 <translation id="3354972872297836698">No se pudo vincular con el dispositivo <ph name="DEVICE_NAME" />; selecciónalo y vuelve a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
+<translation id="3356036636691722598">Disfruta los juegos en tu Chromebook</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
 <translation id="3356580349448036450">Completo</translation>
 <translation id="3359256513598016054">Restricciones de directivas para certificados</translation>
@@ -3441,6 +3444,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4211904048067111541">Dejar de usar en las apps para Android</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="42137655013211669">El servidor prohibió el acceso a este recurso.</translation>
+<translation id="4214192212360095377">Desactivar ahora</translation>
 <translation id="4217558091331485702">Analizar el archivo antes de abrirlo</translation>
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4218081191298393750">Haz clic en el ícono de altavoz para silenciar esta pestaña</translation>
@@ -4334,6 +4338,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5089763948477033443">Controlador de cambio de tamaño del panel lateral</translation>
 <translation id="5090637338841444533">No puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Comenzando la instalación</translation>
 <translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicarse con aplicaciones nativas en cooperación</translation>
 <translation id="5097002363526479830">Error al conectar a la red "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -6344,6 +6349,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7014480873681694324">Dejar de destacar</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
+<translation id="7014961128696979283">Iniciar Steam</translation>
 <translation id="7015088858756332848">No se pudo iniciar Steam en la Chromebook. Vuelve a intentarlo.</translation>
 <translation id="7017004637493394352">Di "OK Google" otra vez.</translation>
 <translation id="7017219178341817193">Agregar nueva página</translation>
@@ -6735,6 +6741,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7423425410216218516">La visibilidad está activada durante <ph name="MINUTES" /> minutos.</translation>
 <translation id="7423513079490750513">Quitar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> necesita permiso para ejecutarse</translation>
+<translation id="7424153922653300265">Se activó el Ahorro de energía</translation>
 <translation id="7424818322350938336">Se agregó una red</translation>
 <translation id="7427315069950454694">tus recuerdos para hoy</translation>
 <translation id="7427348830195639090">Página de fondo: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7973,6 +7980,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="859246725979739260">Este sitio no tiene permiso para acceder a tu ubicación.</translation>
 <translation id="8593121833493516339">Envía datos de uso y diagnóstico. Para ayudar a mejorar la experiencia de Android de tu hijo, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información no se usará para identificar a tu hijo y ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la "Actividad de web y de aplicaciones adicional" en la Cuenta de Google de tu hijo, es posible que se almacenen estos datos en esa cuenta. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Archivos personalizados</translation>
+<translation id="8597404194697561297">Te damos la bienvenida a Steam en la Chromebook</translation>
 <translation id="8597845839771543242">Formato de la propiedad:</translation>
 <translation id="8599681327221583254">Hay una o más políticas que no se configuraron correctamente. Comunícate con tu administrador</translation>
 <translation id="8599864823732014237">¿Deseas omitir la inscripción empresarial?</translation>

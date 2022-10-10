@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium-ത്തിനെക്കുറിച്ച്</translation>
 <translation id="1203500561924088507">ഇൻസ്റ്റാൾ ചെയ്തതിന് നന്ദി. <ph name="BUNDLE_NAME" /> ഉപയോഗിക്കും മുമ്പ് നിങ്ങളുടെ ബ്രൗസർ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="1231839967188101156">ഓണായിരിക്കുമ്പോൾ, നിഷ്ക്രിയമായ ടാബുകളിൽ നിന്നുള്ള മെമ്മറി Chromium മറ്റ് ആവശ്യങ്ങൾക്ക് ലഭ്യമാക്കും. ഇത് സജീവമായ ടാബുകൾക്കും മറ്റ് ആപ്പുകൾക്കും കൂടുതൽ കമ്പ്യൂട്ടർ ഉറവിടങ്ങൾ നൽകുകയും Chromium-നെ വേഗതയുള്ളതായി നിലനിർത്തുകയും ചെയ്യുന്നു. നിഷ്ക്രിയമായ ടാബുകളിലേക്ക് നിങ്ങൾ മടങ്ങുമ്പോൾ അവ സ്വയമേവ വീണ്ടും സജീവമാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">മെമ്മറി സേവർ Chromium-ന്റെ വേഗത വർദ്ധിപ്പിക്കുന്നു</translation>
 <translation id="1315551408014407711">നിങ്ങളുടെ പുതിയ Chromium പ്രൊഫൈൽ സജ്ജീകരിക്കുക</translation>
 <translation id="1385859895174722837">Chromium-ലെ Google Assistant</translation>
 <translation id="1396446129537741364">Chromium പാസ്‌വേഡുകൾ ദൃശ്യമാക്കാൻ ശ്രമിക്കുന്നു.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Chromium-ത്തിന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്, അത് എന്നത്തേതിലും വേഗതയേറിയതാണ്.</translation>
 <translation id="6063093106622310249">&amp;Chromium-ത്തിൽ തുറക്കുക</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium-ത്തിലേക്ക് ചേർത്തു</translation>
+<translation id="6072463441809498330">Chromium കൂടുതൽ വേഗതയുള്ളതാക്കുക</translation>
 <translation id="608006075545470555">ഈ ബ്രൗസറിലേക്ക് ഔദ്യോഗിക പ്രൊഫൈൽ ചേർക്കുക</translation>
 <translation id="6096348254544841612">Chromium ഇഷ്ടാനുസൃതമാക്കി നിയന്ത്രിക്കുക. അപ്‌ഡേറ്റ് ലഭ്യമാണ്.</translation>
 <translation id="6119438414301547735">Chromium ടൂൾബാറിൽ ആക്‌സസ് അഭ്യർത്ഥനകൾ കാണിക്കാൻ വിപുലീകരണം അനുവദിക്കുക</translation>

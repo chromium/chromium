@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">‏درباره Chromium</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
 <translation id="1231839967188101156">‏وقتی روشن باشد، Chromium حافظه را از برگه‌های غیرفعال آزاد می‌کند. با این کار، منابع بیشتری در رایانه به برگه‌ها و سایر برنامه‌ها اختصاص داده می‌شود و سرعت Chromium حفظ می‌شود. هرزمان به برگه‌های غیرفعال برگردید، به‌طور خودکار دوباره فعال می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">‏«بهینه‌سازی حافظه» سرعت Chromium را بیشتر کرده است</translation>
 <translation id="1315551408014407711">‏راه‌اندازی نمایه Chromium جدید</translation>
 <translation id="1385859895174722837">‏«دستیار Google» در Chromium</translation>
 <translation id="1396446129537741364">‏Chromium می‌خواهد گذرواژه‌ها را نشان دهد.</translation>
@@ -208,6 +209,7 @@
 <translation id="6055895534982063517">‏نسخه جدیدی از Chromium وجود دارد که سریع‌تر از همیشه است.</translation>
 <translation id="6063093106622310249">‏&amp;باز کردن در Chromium</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> به Chromium اضافه شد</translation>
+<translation id="6072463441809498330">‏سرعت Chromium را افزایش دهید</translation>
 <translation id="608006075545470555">افزودن نمایه کاری به این مرورگر</translation>
 <translation id="6096348254544841612">‏سفارشی کردن و کنترل Chromium. به‌روزرسانی‌ در دسترس است.</translation>
 <translation id="6119438414301547735">‏مجاز کردن افزونه برای نمایش درخواست‌های دسترسی در نوارابزار Chromium</translation>

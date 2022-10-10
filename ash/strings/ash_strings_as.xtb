@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">পাছৱৰ্ড পাহৰিলে</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1812997170047690955">মোৰ স্ক্ৰীণত কি আছে?</translation>
+<translation id="1823280932251546115">স্থিতিৰ ট্ৰে’, সময় <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ইথাৰনেট: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />ক আন-পিন কৰা হৈছে</translation>
 <translation id="1836215606488044471">Assistant (ল’ড হৈ আছে...)</translation>
@@ -402,7 +411,7 @@
 <translation id="3290356915286466215">অসুৰক্ষিত</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3307642347673023554">লেপটপ ম’ডলৈ সলনি হ’ল</translation>
-<translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />এ তথাপিও পিছত ছাইন ইন কৰিব পাৰে।</translation>
+<translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" />এ তথাপিও পাছত ছাইন ইন কৰিব পাৰে।</translation>
 <translation id="3321628682574733415">পেৰেণ্ট ক'ডটো ভুল</translation>
 <translation id="3339826665088060472">স্ক্ৰীন কেপচাৰ, স্ক্ৰীনশ্বট আৰু স্ক্ৰীন ৰেকৰ্ডিং কৰিবৰ বাবে সঁজুলি</translation>
 <translation id="3340978935015468852">ছেটিংসমূহ</translation>
@@ -429,7 +438,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
 <translation id="3455468639467374593">টেম্পলে’ট, <ph name="TEMPLATE_NAME" /></translation>
-<translation id="3465223694362104965">আপুনি অন্তিমবাৰ ছাইন ইন কৰাৰ পিছত আন এখন কীব’ৰ্ড সংযোগ কৰা হৈছে। ব্যৱহাৰ কৰাৰ আগেয়ে আপুনি সেইখনক যে বিশ্বাস কৰে তাক নিশ্চিত কৰক।</translation>
+<translation id="3465223694362104965">আপুনি অন্তিমবাৰ ছাইন ইন কৰাৰ পাছত আন এখন কীব’ৰ্ড সংযোগ কৰা হৈছে। ব্যৱহাৰ কৰাৰ আগেয়ে আপুনি সেইখনক যে বিশ্বাস কৰে তাক নিশ্চিত কৰক।</translation>
 <translation id="3465356146291925647">আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
@@ -457,6 +466,8 @@
 <translation id="3600061223661453002">অফ কৰক</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ডেস্কখন সৃষ্টি কৰা হ’ল</translation>
 <translation id="3606978283550408104">ব্ৰেইল ডিছপ্লে’ সংযোগ কৰা হৈছে।</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">ম’বাইল ডেটা সক্ষম কৰিলে ব্লুটুথ সক্ষম হ’ব</translation>
 <translation id="3616883743181209306">স্ক্ৰীনখনৰ ওপৰৰ সোঁফালৰ কোণটোলৈ মেনুখন নিয়া হৈছে।</translation>
 <translation id="3619536907358025872">স্ক্ৰীন কেপচাৰৰ ছেটিং</translation>
@@ -808,7 +819,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />এ আপোনাৰ মনোযোগ বিচাৰি অনুৰোধ কৰিছে।</translation>
 <translation id="5662709761327382534">মাইক্ৰ’ফ’ন ৰেকৰ্ড কৰক <ph name="CURRENT_STATE" />, মাইক্ৰ’ফ’ন ৰেকৰ্ডিং অন কৰিবলৈ এণ্টাৰ টিপক <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
-<translation id="5673434351075758678">আপোনাৰ ছেটিংসমূহ ছিংক কৰাৰ পিছত "<ph name="FROM_LOCALE" />"ৰ পৰা "<ph name="TO_LOCALE" />"লৈ।</translation>
+<translation id="5673434351075758678">আপোনাৰ ছেটিংসমূহ ছিংক কৰাৰ পাছত "<ph name="FROM_LOCALE" />"ৰ পৰা "<ph name="TO_LOCALE" />"লৈ।</translation>
 <translation id="5675363643668471212">শ্বেল্ফৰ বস্তু</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
 <translation id="5678564054339031017">পৰৱৰ্তী সপ্তাহ দেখুৱাওক</translation>
@@ -1419,7 +1430,7 @@
 <translation id="9133335900048457298">সুৰক্ষিত সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="9161053988251441839">পৰামর্শ হিচাপে পোৱা এপ্</translation>
 <translation id="9166331175924255663">নিকটৱৰ্তী শ্বেয়াৰৰ উচ্চ দৃশ্যমানতা ট’গল কৰক।</translation>
-<translation id="9168436347345867845">এইটো পিছত কৰিব</translation>
+<translation id="9168436347345867845">এইটো পাছত কৰিব</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />ৰ বাবে ১ টা ফলাফল দেখুৱাই থকা হৈছে</translation>
 <translation id="9179259655489829027">এই সুবিধাটোৱে আপোনাক যিকোনো ছাইন ইন হৈ থকা ব্যৱহাৰকাৰীৰ প্ৰ’ফাইললৈ পাছৱর্ডৰ অবিহনেই এক্সেছ কৰিবলৈ দিয়ে। আপুনি বিশ্বাস কৰা একাউণ্টসমূহৰ ক্ষেত্ৰতহে কেৱল এই সুবিধা ব্যৱহাৰ কৰক।</translation>
 <translation id="9183456764293710005">পূৰ্ণ স্ক্রীনৰ বিৱৰ্ধক</translation>

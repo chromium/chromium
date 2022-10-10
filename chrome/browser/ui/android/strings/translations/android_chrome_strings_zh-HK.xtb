@@ -339,7 +339,7 @@
 <translation id="2861923151411510142">部分 Chrome 功能將無法再使用</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2871733351037274014">預先載入網頁</translation>
-<translation id="2876136027428473467"><ph name="CHILD_NAME" />想請你核准這個網站：</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" />希望您核准此網站：</translation>
 <translation id="2886836735871983413">在您瀏覽網絡同時，系統會於此處顯示網站清單</translation>
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
@@ -355,7 +355,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存空間</translation>
 <translation id="2932222164150889403">這不會影響您的鍵盤設定</translation>
 <translation id="2936980480904111527">Chrome 通知能提供更簡易的操作體驗</translation>
-<translation id="2940075786175545812">審核網站瀏覽要求的選項</translation>
+<translation id="2940075786175545812">核准或不核准網站的選項</translation>
 <translation id="2942036813789421260">預覽分頁閂咗</translation>
 <translation id="2946420957526726953">正在更新 Chrome 以連接其他裝置</translation>
 <translation id="2951071800649516099">將網頁新增至閱讀清單，以便稍後瀏覽</translation>
@@ -732,7 +732,7 @@
 <translation id="4985248278475639481">關於廣告個人化</translation>
 <translation id="4987271110129728827">找不到該頁面。請檢查拼字，或嘗試執行網絡搜尋。</translation>
 <translation id="4988526792673242964">網頁</translation>
-<translation id="4991110219272367918">審核網站瀏覽要求的選項功能表已關閉</translation>
+<translation id="4991110219272367918">核准或者唔核准網站嘅選項閂咗</translation>
 <translation id="499724277181351974">導覽：<ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">按一下這裡追蹤此網站</translation>
 <translation id="500351648694011114">讓瀏覽變得更輕鬆</translation>
@@ -1105,7 +1105,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
-<translation id="6908998565271542516">審核網站瀏覽要求的選項功能表已完整開啟</translation>
+<translation id="6908998565271542516">核准或者唔核准網站嘅選項宜家顯示喺成個畫面</translation>
 <translation id="6909589135458168665">預先載入網頁</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
@@ -1113,7 +1113,7 @@
 <translation id="6955535239952325894">受管理的瀏覽器已停用此設定</translation>
 <translation id="6963766334940102469">刪除書籤</translation>
 <translation id="696447261358045621">退出無痕模式</translation>
-<translation id="6971862865055170158">拒絕</translation>
+<translation id="6971862865055170158">不核准</translation>
 <translation id="6979737339423435258">所有時間</translation>
 <translation id="6987047470128880212">這部裝置不支援無式痕分頁</translation>
 <translation id="6995899638241819463">密碼因資料外洩而被洩露時接收警告</translation>

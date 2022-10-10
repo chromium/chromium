@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3291470810748040983">Byddwch yn cael hysbysiad pan fydd pris is mewn tab sydd ar agor</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>
+<translation id="3499853001094440183">Dadgrwpio tabiau</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Crebachu <ph name="TABS_COUNT_ONE" /> tab.}zero{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> thab.}many{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> thab.}other{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="3882834874697329510">I gael hysbysiad pan fydd pris is mewn tab sydd ar agor, trowch hysbysiadau ymlaen yn y Gosodiadau.</translation>
@@ -50,6 +51,7 @@
 <translation id="5073204694187207510">Cuddio'r grid sgrîn lawn</translation>
 <translation id="5076161749301278626">Gweld adolygiadau'r siop?</translation>
 <translation id="5082793167783849073">Cymharwch dudalennau'n gyflym drwy wneud grŵp. I ddechrau, cyffyrddwch a daliwch ddolen.</translation>
+<translation id="5453029940327926427">Cau tabiau</translation>
 <translation id="5490235265819901748">Mae'r grŵp tabiau wedi'i ehangu</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>
 <translation id="5533021382642990449">Dangos yn nes ymlaen</translation>
@@ -65,6 +67,8 @@
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
 <translation id="6333260925957816943">Gwybodaeth am y siop hon</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Dadgrwpio'r <ph name="TABS_COUNT_ONE" /> tab a ddewiswyd}zero{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}two{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> dab a ddewiswyd}few{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}many{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}other{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> tab}many{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6510648526783655549">Cau'r stribed tabiau</translation>
 <translation id="6549021453810473782">Gweld gwybodaeth siop</translation>
 <translation id="6562820390860419811">Symud tab i'r chwith</translation>

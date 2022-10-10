@@ -129,6 +129,7 @@
 <translation id="3360895254066713204">Chrome 小幫手</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將在 1 秒後重新啟動}other{Chrome 將在 # 秒後重新啟動}}</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
+<translation id="3426646014273736870">記憶體節省模式可以提升 Chrome 運作速度</translation>
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3434246496373299699">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼</translation>
 <translation id="3451115285585441894">正在新增至 Chrome...</translation>
@@ -228,6 +229,7 @@
 
 Google Chrome 無法復原你的設定。</translation>
 <translation id="5524761631371622910">在試用期間，如果 Chrome 隨機讓你加入試用行列，你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會刪除你的興趣喜好。</translation>
+<translation id="5530733413481476019">提升 Chrome 的運作速度</translation>
 <translation id="556024056938947818">Google Chrome 即將顯示密碼。</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> 可能不安全，因此遭到 Chrome 封鎖。</translation>

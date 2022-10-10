@@ -12,6 +12,7 @@
 <translation id="1131805035311359397">तपाईंका पासवर्डहरू कतै खुलासा भएका छन् कि छैनन् तथा सुरक्षासम्बन्धी अन्य समस्याबाट सुरक्षित छन् कि छैनन् भन्ने कुरा जाँच्न <ph name="BEGIN_LINK" />Chromium मा साइन इन गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1185134272377778587">Chromium का बारेमा</translation>
 <translation id="1203500561924088507">इन्स्टल गर्नुभएकोमा धन्यवाद। <ph name="BUNDLE_NAME" /> प्रयोग गर्नुअघि तपाईंले अनिवार्य रूपमा आफ्नो ब्राउजर रिस्टार्ट गर्नु पर्छ।</translation>
+<translation id="1261119230216066228">मेमोरी सेभरले Chromium लाई अझ छिटो काम गर्ने बनाएको छ</translation>
 <translation id="1315551408014407711">Chromium मा आफ्नो नयाँ प्रोफाइल सेटअप गर्नुहोस्</translation>
 <translation id="1385859895174722837">Chromium मा Google सहायक उपलब्ध छ</translation>
 <translation id="1396446129537741364">Chromium ले पासवर्डहरू देखाउने प्रयास गर्दैछ।</translation>
@@ -208,6 +209,7 @@
 <translation id="6055895534982063517">क्रोमियमको नयाँ संस्करण उपलब्ध छ, र यो अहिलेसम्मकै द्रुत छ।</translation>
 <translation id="6063093106622310249">Chromium मा खोल्नुहोस्</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> लाई Chromium मा थपिएको छ</translation>
+<translation id="6072463441809498330">Chromium लाई अझ छिटो काम गर्ने बनाउनुहोस्</translation>
 <translation id="608006075545470555">यो ब्राउजरमा कार्य प्रोफाइल हाल्नुहोस्</translation>
 <translation id="6096348254544841612">Chromium लाई आफू अनुकूल बनाउने र नियन्त्रण गर्ने कार्य गर्नुहोस्। अद्यावधिक उपलब्ध छ।</translation>
 <translation id="6119438414301547735">एक्स्टेन्सनलाई Chromium टुलबारमा साइट प्रयोग गर्ने अनुमतिसम्बन्धी अनुरोध देखाउने अनुमति दिनुहोस्</translation>

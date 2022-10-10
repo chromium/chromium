@@ -782,7 +782,7 @@
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> का CVC डालें. आपकी तरफ से पुष्टि हो जाने पर, आपके कार्ड के विवरण इस साइट के साथ शेयर किए जाएंगे.</translation>
 <translation id="3013291976881901233">MIDI डिवाइस</translation>
 <translation id="301521992641321250">ऑटोमैटिक रूप से ब्लॉक है</translation>
-<translation id="3016780570757425217">आपका स्‍थान पता करना</translation>
+<translation id="3016780570757425217">आपकी जगह की जानकारी ऐक्सेस करने की</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, सुझाव हटाने के लिए पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="3024663005179499861">गलत नीति प्रकार</translation>
 <translation id="3029752078111257850">दुनिया भर की खबरें</translation>
@@ -2428,6 +2428,7 @@
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">चौड़े पेज वाला फ़ॉर्मैट</translation>
 <translation id="7410471291937727359">प्यारा</translation>
+<translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7416351320495623771">पासवर्ड प्रबंधित करें…</translation>
 <translation id="7418620734632363981">प्रोग्रामिंग</translation>
 <translation id="7419106976560586862">प्रोफ़ाइल पाथ</translation>

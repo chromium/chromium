@@ -159,6 +159,15 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1797271123677381264">Şifremi unuttum</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="1812997170047690955">Ekranımda ne var?</translation>
+<translation id="1823280932251546115">Durum tepsisi, saat <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
 <translation id="1836215606488044471">Asistan (yükleniyor...)</translation>
@@ -459,6 +468,8 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3600061223661453002">Kapalı</translation>
 <translation id="3604801046548457007">Masa <ph name="DESK_TITILE" /> oluşturuldu</translation>
 <translation id="3606978283550408104">Braille ekranı bağlandı.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Mobil veri etkinleştirildiğinde Bluetooth açılır</translation>
 <translation id="3616883743181209306">Menü, ekranın sağ üst köşesine taşındı.</translation>
 <translation id="3619536907358025872">Ekran görüntüsü ayarları</translation>

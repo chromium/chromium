@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">মূল্যাংকন</translation>
 <translation id="3291470810748040983">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে আপুনি এটা সতৰ্কবাৰ্তা লাভ কৰিব</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
+<translation id="3499853001094440183">টেবৰ গোট ভংগ কৰক</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত <ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="3882834874697329510">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে সতৰ্কবাৰ্তা লাভ কৰিবলৈ ছেটিঙলৈ গৈ জাননী অন কৰক।</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
 <translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
 <translation id="6333260925957816943">এই দোকানৰ বিষয়ে তথ্য</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{বাছনি কৰা <ph name="TABS_COUNT_ONE" /> টা টেবৰ গোট ভংগ কৰক}one{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}other{বাছনি কৰা <ph name="TABS_COUNT_MANY" /> টা টেবৰ গোট ভংগ কৰক}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব}one{<ph name="TABS_COUNT_MANY" /> টা টেব}other{<ph name="TABS_COUNT_MANY" /> টা টেব}}</translation>
 <translation id="6510648526783655549">টেবৰ ষ্ট্রিপ বন্ধ কৰক</translation>
 <translation id="6549021453810473782">ষ্ট’ৰৰ তথ্য চাওক</translation>
 <translation id="6562820390860419811">টেবটো বাওঁফাললৈ নিয়ক</translation>

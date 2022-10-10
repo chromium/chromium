@@ -256,6 +256,7 @@
 <translation id="608006075545470555">এই ব্রাউজারে অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6113794647360055231">Chrome আরও ভাল হয়ে উঠেছে</translation>
 <translation id="6145313976051292476">Chrome-এ পিডিএফ ফাইল খুলুন</translation>
+<translation id="6155960517327665396">মেমরি সেভার Chrome-এর স্পিড বাড়িয়ে দেয়</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6235018212288296708">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome এর জন্য ইনবাউন্ড নিয়ম।</translation>
@@ -356,6 +357,7 @@
 <translation id="8286862437124483331">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে। এটির অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="828798499196665338">তোমার অভিভাবক Chrome-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই <ph name="EXTENSION_TYPE_PARAMETER" /> চালু করার অনুমতি নেই।</translation>
 <translation id="8290100596633877290">হোয়া! Google Chrome ক্র্যাশ হয়েছে৷ এখনই পুনঃলঞ্চ করবেন?</translation>
+<translation id="8341646175450781745">চালু থাকাকালীন, Chrome ইনঅ্যাক্টিভ ট্যাব থেকে মেমরি খালি করে। এটি অ্যাক্টিভ ট্যাব এবং অন্যান্য অ্যাপ্লিকেশনের জন্য আরও কম্পিউটার রিসোর্স প্রদান করে এবং Chrome-এর স্পিড বেশি রাখে। আপনার ইনঅ্যাক্টিভ ট্যাবগুলি আবার ব্যবহার করা শুরু করলে অটোমেটিক সেগুলি অ্যাক্টিভ হয়ে যাবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /> বা <ph name="BEGIN_LINK_2" />মতামত পাঠান<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">এই ফাইলটি বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />এই ডেটা আমরা কীভাবে ব্যবহার করি:<ph name="END_BOLD" /> Chrome-এর মাধ্যমে আপনার আগ্রহের বিষয়ে তথ্যগুলি সাইট স্টোর করতে পারে। যেমন, আপনি যদি ম্যারাথনের জন্য জুতো কেনার একটি সাইট ভিজিট করেন, তাহলে সাইটটি আপনার আগ্রহকে ম্যারাথন দৌড় হিসেবে বিবেচনা করবে। পরে আপনি যদি রেসের জন্য রেজিস্ট্রেশন করতে অন্য একটি সাইটে যান, তাহলে আপনার আগ্রহের উপর ভিত্তি করে সাইটটি আপনাকে দৌড়ানোর জুতোর বিজ্ঞাপন দেখাবে।</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>

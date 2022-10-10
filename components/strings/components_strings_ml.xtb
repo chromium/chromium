@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">വീണ്ടും സമാരംഭിക്കുക</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> എന്നതിൽ Google സുരക്ഷിത ബ്രൗസിംഗ് ഈയിടെ <ph name="BEGIN_LINK" />മാൽവെയർ കണ്ടെത്തി<ph name="END_LINK" />. സാധാരണ നിലയിൽ സുരക്ഷിതമായ വെബ്സൈറ്റുകളിൽ ചിലപ്പോൾ മാൽവെയർ ഉണ്ടായേക്കാം.</translation>
 <translation id="2807052079800581569">ചിത്രം Y സ്ഥാനം</translation>
+<translation id="2808278141522721006">നിങ്ങൾക്ക് <ph name="SETTINGS" /> എന്നതിൽ Windows Hello ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യാം</translation>
 <translation id="2820957248982571256">സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="2824775600643448204">വിലാസവും തിരയൽ ബാറും</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ഉപയോഗിച്ച് കണക്ഷൻ എൻക്രിപ്‌റ്റുചെയ്‌ത് പ്രാമാണീകരിക്കുന്നു, ഒപ്പം പ്രധാന എക്‌സേഞ്ച് മെക്കാനിസമായി <ph name="KX" /> ഉപയോഗിക്കുന്നു.</translation>
@@ -883,6 +884,7 @@
 <translation id="3288238092761586174">നിങ്ങളുടെ പേയ്മെന്റ് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="URL" /> അധിക നടപടികൾ സ്വീകരിക്കേണ്ടതായി വന്നേക്കാം</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> നയത്തെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3295444047715739395">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
+<translation id="3299098170013242198">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് Windows Hello ഓണാണ്</translation>
 <translation id="3303855915957856445">തിരയൽ ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="3304073249511302126">Bluetooth സ്‌കാനിംഗ്</translation>
 <translation id="33073482541490531">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. ഈ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ മാറ്റാൻ Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
@@ -1031,6 +1033,7 @@
 <translation id="3678342917559046352">വിപുലീകരണം അസാധുവാണ്: ഈ ഫോർമാറ്റുകളിൽ ഒരെണ്ണം ഉപയോഗിച്ചാണ് മൂല്യം ചേർക്കേണ്ടത് : &lt;extension_id&gt; അല്ലെങ്കിൽ &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">പുതിയ അദൃശ്യ വിൻഡോയിൽ പേജ് തുറക്കുക (കൺട്രോൾ-ഷിഫ്റ്റ്-N)</translation>
 <translation id="3681007416295224113">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
+<translation id="3699374065820972102">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കുന്നതിന് TouchID ഓണാണ്</translation>
 <translation id="3701427423622901115">റീസെറ്റ് അംഗീകരിച്ചിരിക്കുന്നു</translation>
 <translation id="3704162925118123524">നിങ്ങൾ ഉപയോഗിക്കുന്ന നെറ്റ്‌വർക്കിനായി, ഇതിന്റെ ലോഗിൻ പേജ് സന്ദർശിക്കേണ്ടിവരാം.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1493,6 +1496,7 @@
 <translation id="4900217275619098670">ഒൻപതാമത്തെ റോൾ</translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4905659621780993806">നിങ്ങളുടെ അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം <ph name="DATE" />, <ph name="TIME" />-ന് റീസ്റ്റാർട്ട് ചെയ്യും. നിങ്ങളുടെ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുന്നതിന് മുമ്പ് തുറന്നിരിക്കുന്ന ഇനങ്ങളെല്ലാം സംരക്ഷിക്കുക.</translation>
+<translation id="4911007278801291296">നിങ്ങൾക്ക് <ph name="SETTINGS" /> എന്നതിൽ TouchID ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യാം</translation>
 <translation id="4913987521957242411">മുകളിൽ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുക (ഡൗൺലോഡ് ചെയ്യേണ്ടതില്ല)</translation>
 <translation id="4923459931733593730">പേയ്‌മെന്റ് രീതി</translation>
@@ -1686,6 +1690,7 @@
 <translation id="5357848622083956825">ദൃശ്യ കലയും ഡിസൈനും</translation>
 <translation id="536296301121032821">നയ ക്രമീകരണങ്ങൾ സംഭരിക്കുന്നതിൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5363309033720083897">നിങ്ങളുടെ അഡ്മിൻ അനുവദിച്ചിരിക്കുന്ന സീരിയൽ പോർട്ട്</translation>
+<translation id="5363713372507812442">യാത്രകൾ തിരയുക</translation>
 <translation id="5371425731340848620">കാർഡ് അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5377026284221673050">"നിങ്ങളുടെ സമയം പിന്നിലാണ്" അല്ലെങ്കിൽ "നിങ്ങളുടെ സമയം മുന്നിലാണ്" അല്ലെങ്കിൽ "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">'അവതരണം സൃഷ്ടിക്കുക' ബട്ടൺ, Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കാൻ Enter അമർത്തുക</translation>
@@ -2432,6 +2437,7 @@
 നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് എങ്ങനെയാണ് സോഫ്റ്റ്‌വെയർ ശാശ്വതമായി നീക്കംചെയ്യുന്നത് എന്നറിയാൻ &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome സഹായ കേന്ദ്രം&lt;/a&gt; സന്ദർശിക്കുക &lt;/ol&gt;</translation>
 <translation id="741007362987735528">വിസ്‌തൃത-ഫോർമാറ്റ്</translation>
 <translation id="7410471291937727359">മനോഹരമായത്</translation>
+<translation id="741204030948306876">ഞാൻ തയ്യാറാണ്</translation>
 <translation id="7416351320495623771">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="7418620734632363981">പ്രോഗ്രാമിംഗ്</translation>
 <translation id="7419106976560586862">പ്രൊഫൈൽ പാത</translation>

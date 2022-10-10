@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Chromium அறிமுகம்</translation>
 <translation id="1203500561924088507">நிறுவியதற்கு நன்றி. <ph name="BUNDLE_NAME" /> ஐப் பயன்படுத்துவதற்கு முன் உலாவியை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1231839967188101156">இந்த அம்சம் செயலில் இருக்கும்போது செயலில் இல்லாத உலாவிப் பக்கங்களில் இருந்து நினைவகத்தை Chromium காலியாக்கும். இதன்மூலம் செயலில் உள்ள உலாவிப் பக்கங்களுக்கும் பிற ஆப்ஸுக்கும் கம்ப்யூட்டரின் வளங்கள் அதிகமாகக் கிடைப்பதுடன் Chromiumமும் வேகமாக இயங்கும். செயலில் இல்லாத உலாவிப் பக்கங்களுக்கு நீங்கள் செல்லும்போது அவை தானாக மீண்டும் செயல்படத் தொடங்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Chromium வேகத்தை நினைவகச் சேமிப்பான் அதிகரிக்கிறது</translation>
 <translation id="1315551408014407711">உங்கள் புதிய Chromium சுயவிவரத்தை அமைத்திடுங்கள்</translation>
 <translation id="1385859895174722837">Chromiumமில் Google Assistant</translation>
 <translation id="1396446129537741364">Chromium ஆனது கடவுச்சொற்களைக் காட்ட முயற்சிக்கிறது.</translation>
@@ -209,6 +210,7 @@
 <translation id="6055895534982063517">Chromium இன் புதிய பதிப்பு கிடைக்கிறது, அது முன்பு இருந்ததை விடவும் வேகமானது.</translation>
 <translation id="6063093106622310249">Chromium இல் &amp;திற</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> என்ற நீட்டிப்பு Chromium இல் சேர்க்கப்பட்டது</translation>
+<translation id="6072463441809498330">Chromium வேகத்தை அதிகரியுங்கள்</translation>
 <translation id="608006075545470555">இந்த உலாவியில் பணிக் கணக்கைச் சேர்த்தல்</translation>
 <translation id="6096348254544841612">Chromiumஐத் தனிப்பயனாக்கி, கட்டுப்படுத்தலாம். புதுப்பிப்பு உள்ளது.</translation>
 <translation id="6119438414301547735">Chromium கருவிப்பட்டியில் அணுகல் கோரிக்கைகளைக் காட்ட நீட்டிப்புகளை அனுமதி</translation>

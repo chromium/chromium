@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Σχετικά με το Chromium</translation>
 <translation id="1203500561924088507">Ευχαριστούμε για την εγκατάσταση. Πρέπει να επανεκκινήσετε το πρόγραμμα περιήγησής σας πριν από τη χρήση του <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Όταν η ρύθμιση είναι ενεργή, το Chromium αποδεσμεύει μνήμη από τις ανενεργές καρτέλες. Αυτό προσφέρει στις ενεργές καρτέλες και σε άλλες εφαρμογές περισσότερους πόρους υπολογιστή και διατηρεί το Chromium γρήγορο. Οι ανενεργές καρτέλες σας ενεργοποιούνται ξανά αυτόματα, όταν επιστρέψετε σε αυτές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Η Εξοικονόμηση μνήμης έκανε το Chromium πιο γρήγορο</translation>
 <translation id="1315551408014407711">Ρυθμίστε το νέο σας προφίλ στο Chromium</translation>
 <translation id="1385859895174722837">Βοηθός Google στο Chromium</translation>
 <translation id="1396446129537741364">Το Chromium επιχειρεί να εμφανίσει κωδικούς πρόσβασης.</translation>
@@ -209,6 +210,7 @@
 <translation id="6055895534982063517">Υπάρχει μια νέα έκδοση του Chromium και είναι ταχύτερη από ποτέ.</translation>
 <translation id="6063093106622310249">&amp;Άνοιγμα στο Chromium</translation>
 <translation id="6072279588547424923">Η επέκταση <ph name="EXTENSION_NAME" /> έχει προστεθεί στο Chromium</translation>
+<translation id="6072463441809498330">Κάντε το Chromium πιο γρήγορο</translation>
 <translation id="608006075545470555">Προσθήκη προφίλ εργασίας σε αυτό το πρόγραμμα περιήγησης</translation>
 <translation id="6096348254544841612">Προσαρμόστε και ελέγξτε το Chromium. Υπάρχει διαθέσιμη ενημέρωση.</translation>
 <translation id="6119438414301547735">Να επιτρέπεται στην επέκταση να εμφανίζει αιτήματα πρόσβασης στη γραμμή εργαλείων του Chromium</translation>

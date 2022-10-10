@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Naka-off ang Grid</translation>
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Walang na-record</translation>
 <translation id="1838104802459806957">Mag-tilt pataas</translation>
 <translation id="1843105061469674856">Mag-scan ng karagdagang page</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Buong resolution</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Pag-record ng multistream video</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Aspect ratio ng larawan</translation>
 <translation id="5057360777601936059">Kasalukuyang hindi available ang iyong camera.
         Pakitingnan kung maayos na nakakonekta ang camera.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Kaliwang sulok sa itaas ng dokumento</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5320594929574852403">Gumagalaw pakaliwa</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Ilagay sa loob ng frame ang lahat ng gilid ng dokumento. Pinakamahusay na gumagana ang pag-scan kung magkaiba ng kulay ang dokumento at background.</translation>
 <translation id="5662366948659129155">Sina-scan ang page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Parisukat</translation>

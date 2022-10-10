@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
+<translation id="3499853001094440183">ટૅબ અનગ્રૂપ કરો</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="3882834874697329510">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થાય ત્યારે અલર્ટ મેળવવા માટે, સેટિંગમાં જઈને નોટિફિકેશન ચાલુ કરો.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
 <translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="6510648526783655549">ટૅબ સ્ટ્રિપ બંધ કરો</translation>
 <translation id="6549021453810473782">સ્ટોરની માહિતી જુઓ</translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>

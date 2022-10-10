@@ -83,11 +83,13 @@
 <translation id="753732157349120914">ჩანართების გადამრთველი</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა Google-იდან}other{<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა Google-იდან}}</translation>
 <translation id="7559245342362162951">ჯგუფის ჩანართების სრულეკრანიან ბადეში ჩვენება</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის გაზიარება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის გაზიარება}}</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა}other{შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა}}</translation>
 <translation id="7885132941432959125">ჩანართის მარჯვნივ გადატანა</translation>
 <translation id="7966321538264951561">შემოთავაზებების დახურვა.</translation>
+<translation id="8018192911041116887">ჩანართების გაზიარება</translation>
 <translation id="8029301326595421733">ამ მაღაზიის შესახებ ინფორმაცია გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="814503310257431685">ყველას ნახვა</translation>
 <translation id="8205266828577616993">ჩანართის ზემოთ გადატანა</translation>

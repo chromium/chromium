@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">पासवर्ड बिर्सनुभयो</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1812997170047690955">मेरो स्क्रिनमा के छ?</translation>
+<translation id="1823280932251546115">स्ट्याटस ट्रे, समय <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन गरिएको थियो</translation>
 <translation id="1836215606488044471">सहायक (लोड गर्दै...)</translation>
@@ -457,6 +466,8 @@
 <translation id="3600061223661453002">अफ गर्नुहोस्</translation>
 <translation id="3604801046548457007">डेस्क <ph name="DESK_TITILE" /> सिर्जना गरियो</translation>
 <translation id="3606978283550408104">ब्रेल प्रदर्शन जडित छ।</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">तपाईंले मोबाइल डेटा अन गर्नुभयो भने ब्लुटुथ अन हुने छ</translation>
 <translation id="3616883743181209306">मेनु सारेर स्क्रिनको सिरानको दायाँ कुनामा लगियो।</translation>
 <translation id="3619536907358025872">स्क्रिन क्याप्चरसम्बन्धी सेटिङ</translation>

@@ -712,6 +712,7 @@
 <translation id="2799223571221894425">पुन: सुरुवात गर्नुहोस्</translation>
 <translation id="2803306138276472711">Google सुरक्षित ब्राउजि्ले हालै <ph name="SITE" /> मा <ph name="BEGIN_LINK" />मालवेयर पत्ता<ph name="END_LINK" /> लगायो। सामन्यतया सुरक्षित भनिएका वेबसाइटहरू कहिलेकाहीँ मालवेयरद्वारा संक्रमित हुन्छन्।</translation>
 <translation id="2807052079800581569">छविको Y स्थान</translation>
+<translation id="2808278141522721006">तपाईं <ph name="SETTINGS" /> मा गई Windows Hello अन वा अफ गर्न सक्नुहुन्छ</translation>
 <translation id="2820957248982571256">स्क्यान गर्दै...</translation>
 <translation id="2824775600643448204">ठेगाना र खोज पट्टी</translation>
 <translation id="2826760142808435982">यो जडान गुप्तलेख गरिएको र <ph name="CIPHER" /> प्रयोग गर्दै प्रमाणीकरण गरिएको छ र कुञ्जी साट्ने प्रक्रियाको रूपमा <ph name="KX" /> प्रयोग गर्छ।</translation>
@@ -879,6 +880,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ले तपाईंको भुक्तानी पुष्टि गर्नका निम्ति अतिरिक्त चरणहरू पूरा गर्नु पर्ने हुन सक्छ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीतिका बारेमा थप जान्नुहोस्</translation>
 <translation id="3295444047715739395">Chrome ब्राउजरका सेटिङमा गई आफ्ना पासवर्डहरू हेर्नुहोस् तथा व्यवस्थापन गर्नुहोस्</translation>
+<translation id="3299098170013242198">पासवर्डहरू हाल्नका निम्ति Windows Hello अन छ</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3304073249511302126">ब्लुटुथ स्क्यान गर्ने सुविधा</translation>
 <translation id="33073482541490531">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। पासवर्ड म्यानेजर अहिले नै यो पासवर्ड बदल्न सिफारिस गर्छ।</translation>
@@ -1027,6 +1029,7 @@
 <translation id="3678342917559046352">एक्सटेन्सन अवैध छ: यसको मान निम्नमध्ये कुनै फर्म्याटमा राखिनु पर्छ: &lt;extension_id&gt; वा &lt;extension_id&gt;;&lt;update_url&gt;।</translation>
 <translation id="3678529606614285348">पृष्ठलाई नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस् (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
+<translation id="3699374065820972102">पासवर्डहरू हाल्नका निम्ति TouchID अन छ</translation>
 <translation id="3701427423622901115">रिसेट स्वीकार गरियो।</translation>
 <translation id="3704162925118123524">तपाईंले प्रयोग गरिरहनु भएको सञ्जाललाई यसको लगइन पृष्ठ भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1487,6 +1490,7 @@
 <translation id="4900217275619098670">नवौँ रोल</translation>
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4905659621780993806">तपाईंका एड्मिनले तपाईंको डिभाइस <ph name="DATE" /> का दिन <ph name="TIME" /> बजे रिस्टार्ट गर्ने छन्। तपाईंको डिभाइस रिस्टार्ट हुनुअघि खोलिएका सबै वस्तु सेभ गर्नुहोस्।</translation>
+<translation id="4911007278801291296">तपाईं <ph name="SETTINGS" /> मा गई TouchID अन वा अफ गर्न सक्नुहुन्छ</translation>
 <translation id="4913987521957242411">सिरानको बायाँपट्टि प्वाल</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> स्थापना गर्नुहोस् (डाउनलोड गरिराख्नु पर्दैन)</translation>
 <translation id="4923459931733593730">भुक्तानी</translation>
@@ -1679,6 +1683,7 @@
 <translation id="5357848622083956825">भिजुअल आर्ट तथा डिजाइन</translation>
 <translation id="536296301121032821">नीति सेटिङहरू भण्डारण गर्न असफल भयो</translation>
 <translation id="5363309033720083897">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको सिरियल पोर्ट</translation>
+<translation id="5363713372507812442">Search Journeys</translation>
 <translation id="5371425731340848620">कार्ड अपडेट गर्नुहोस्</translation>
 <translation id="5377026284221673050">"तपाईंको घडी ढिला छ" वा "तपाईंको घडी छिटो छ" अथवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">"प्रेजेन्टेसन बनाउनुहोस्" बटन, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Enter थिच्नुहोस्</translation>
@@ -2425,6 +2430,7 @@
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">सुन्दर</translation>
+<translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7416351320495623771">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="7418620734632363981">प्रोग्रामिङ</translation>
 <translation id="7419106976560586862">प्रोफाइल मार्ग</translation>

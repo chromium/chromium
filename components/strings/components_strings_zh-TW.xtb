@@ -714,6 +714,7 @@
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803306138276472711">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />偵測到惡意軟體<ph name="END_LINK" />。即使是平常可以安全使用的網站，有時也會遭到惡意軟體感染。</translation>
 <translation id="2807052079800581569">圖片 Y 位置</translation>
+<translation id="2808278141522721006">你可以前往「<ph name="SETTINGS" />」開啟或關閉 Windows Hello</translation>
 <translation id="2820957248982571256">掃描中...</translation>
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
@@ -883,6 +884,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
+<translation id="3299098170013242198">已開啟 Windows Hello 做為填入密碼時的驗證機制</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3304073249511302126">藍牙掃描</translation>
 <translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
@@ -1031,6 +1033,7 @@
 <translation id="3678342917559046352">副檔名無效：副檔名的格式必須為 &lt;extension_id&gt;、&lt;extension_id&gt; 或 &lt;update_url&gt; 其中之一。</translation>
 <translation id="3678529606614285348">在新的無痕式視窗中開啟網頁 (Ctrl + Shift + N 鍵)</translation>
 <translation id="3681007416295224113">憑證資訊</translation>
+<translation id="3699374065820972102">已開啟 Touch ID 做為填入密碼時的驗證機制</translation>
 <translation id="3701427423622901115">已確認重設。</translation>
 <translation id="3704162925118123524">您可能需要造訪目前所使用網路的登入網頁。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1493,6 +1496,7 @@
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901778704868714008">儲存...</translation>
 <translation id="4905659621780993806">管理員將自動於 <ph name="DATE" /><ph name="TIME" />重新啟動你的裝置。在裝置重新啟動前，請記得儲存開啟的項目。</translation>
+<translation id="4911007278801291296">你可以前往「<ph name="SETTINGS" />」開啟或關閉 Touch ID</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
 <translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無須下載)</translation>
 <translation id="4923459931733593730">付款</translation>
@@ -1686,6 +1690,7 @@
 <translation id="5357848622083956825">視覺藝術與設計</translation>
 <translation id="536296301121032821">無法儲存政策設定</translation>
 <translation id="5363309033720083897">管理員允許使用的序列埠</translation>
+<translation id="5363713372507812442">搜尋瀏覽歷程</translation>
 <translation id="5371425731340848620">更新信用卡</translation>
 <translation id="5377026284221673050">「你的時鐘時間過慢」、「你的時鐘時間過快」或 「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
 <translation id="5379027395132364855">建立簡報的按鈕；按下 Enter 鍵即可在 Google 簡報中快速建立新簡報</translation>
@@ -2434,6 +2439,7 @@
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">可愛</translation>
+<translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7416351320495623771">管理密碼…</translation>
 <translation id="7418620734632363981">程式設計</translation>
 <translation id="7419106976560586862">設定檔路徑</translation>

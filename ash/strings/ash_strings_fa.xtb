@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">فراموش کردن گذرواژه</translation>
 <translation id="181103072419391116">قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="1812997170047690955">چه چیزی در صفحه‌نمایش من نشان داده می‌شود؟</translation>
+<translation id="1823280932251546115">سینی وضعیت، زمان <ph name="TIME" />،
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />،
+        <ph name="PRIVACY" />،
+        <ph name="MANAGED" />،
+        <ph name="NOTIFICATION" />،
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">اترنت: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064">پین <ph name="ITEM_TITLE" /> برداشته شد</translation>
 <translation id="1836215606488044471">دستیار (درحال بار کردن…)</translation>
@@ -459,6 +468,7 @@
 <translation id="3600061223661453002">خاموش</translation>
 <translation id="3604801046548457007">میز <ph name="DESK_TITILE" /> ایجاد شد</translation>
 <translation id="3606978283550408104">نمایشگر بریل متصل شد.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />، <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">فعال کردن داده تلفن همراه، بلوتوث را فعال می‌کند</translation>
 <translation id="3616883743181209306">منو به گوشه چپ بالای صفحه منتقل شد.</translation>
 <translation id="3619536907358025872">تنظیمات ضبط صفحه</translation>

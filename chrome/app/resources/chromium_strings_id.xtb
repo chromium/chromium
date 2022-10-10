@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1231839967188101156">Jika diaktifkan, Chromium akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chromium tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Penghemat Memori Membuat Chromium Lebih Cepat</translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
 <translation id="1385859895174722837">Asisten Google di Chromium</translation>
 <translation id="1396446129537741364">Chromium mencoba menampilkan sandi.</translation>
@@ -209,6 +210,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6055895534982063517">Tersedia Chromium versi baru, dan versi ini lebih cepat dari sebelumnya.</translation>
 <translation id="6063093106622310249">&amp;Buka di Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan ke Chromium</translation>
+<translation id="6072463441809498330">Buat Chromium Lebih Cepat</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja ke browser ini</translation>
 <translation id="6096348254544841612">Sesuaikan dan kontrol Chromium. Update tersedia.</translation>
 <translation id="6119438414301547735">Izinkan ekstensi menampilkan permintaan akses di toolbar Chromium</translation>

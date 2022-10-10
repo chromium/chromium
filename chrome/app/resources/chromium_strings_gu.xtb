@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1203500561924088507">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું બ્રાઉઝર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="1231839967188101156">જ્યારે ચાલુ હોય, ત્યારે Chromium નિષ્ક્રિય ટૅબમાંથી મેમરી ખાલી કરે છે. આ સક્રિય ટૅબ અને અન્ય ઍપને વધુ કમ્પ્યુટર સંસાધનો આપે છે અને Chromiumને વધુ ઝડપી રાખે છે. તમે તમારા નિષ્ક્રિય ટૅબ પર પાછા જાઓ ત્યારે તે ઑટોમૅટિક રીતે ફરી સક્રિય થાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">મેમરી સેવર દ્વારા Chromiumને વધુ ઝડપી બનાવવામાં આવ્યું</translation>
 <translation id="1315551408014407711">તમારી નવી Chromium પ્રોફાઇલ સેટઅપ કરો</translation>
 <translation id="1385859895174722837">Chromiumમાં Google Assistant</translation>
 <translation id="1396446129537741364">Chromium પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Chromiumનું એક નવું વર્ઝન ઉપલબ્ધ છે અને તે પહેલાં કરતાંય વધુ ઝડપી છે.</translation>
 <translation id="6063093106622310249">અને Chromiumમાં ખોલો</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" />ને Chromiumમાં ઉમેરવામાં આવ્યું છે</translation>
+<translation id="6072463441809498330">Chromiumને વધુ ઝડપી બનાવો</translation>
 <translation id="608006075545470555">આ બ્રાઉઝરમાં ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
 <translation id="6096348254544841612">Chromiumને કસ્ટમાઇઝ અને નિયંત્રિત કરો. અપડેટ ઉપલબ્ધ છે.</translation>
 <translation id="6119438414301547735">Chromiumના ટૂલબારમાં ઍક્સેસની વિનંતીઓ બતાવવા માટે એક્સ્ટેન્શનને મંજૂરી આપો</translation>

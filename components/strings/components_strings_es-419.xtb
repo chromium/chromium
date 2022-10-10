@@ -714,6 +714,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803306138276472711">La Navegación segura de Google <ph name="BEGIN_LINK" />detectó software malicioso<ph name="END_LINK" /> en <ph name="SITE" /> recientemente. A veces, los sitios web que suelen ser seguros contienen software malicioso.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
+<translation id="2808278141522721006">Puedes activar o desactivar Windows Hello en <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
 <translation id="2826760142808435982">La conexión se encriptó y autenticó con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio de claves.</translation>
@@ -885,6 +886,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3288238092761586174">Es posible que <ph name="URL" /> deba realizar pasos adicionales para verificar tu pago.</translation>
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y administra tus contraseñas en la configuración de Chrome</translation>
+<translation id="3299098170013242198">Se activó Windows Hello para completar contraseñas</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3304073249511302126">búsqueda de dispositivos Bluetooth</translation>
 <translation id="33073482541490531">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiar la contraseña ahora.</translation>
@@ -1033,6 +1035,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3678342917559046352">La extensión no es válida: Se esperaba que el valor fuera uno de los siguientes formatos: &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abre la página en una nueva ventana de incógnito (Ctrl-mayúscula-N).</translation>
 <translation id="3681007416295224113">Información sobre el certificado</translation>
+<translation id="3699374065820972102">Se activó TouchID para completar contraseñas</translation>
 <translation id="3701427423622901115">Se detectó el restablecimiento.</translation>
 <translation id="3704162925118123524">Es posible que la red que estás usando requiera que visites la página de acceso.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1495,6 +1498,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4900217275619098670">Noveno rollo</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4905659621780993806">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" />. Guarda los elementos abiertos antes de reiniciar el dispositivo.</translation>
+<translation id="4911007278801291296">Puedes activar o desactivar TouchID en <ph name="SETTINGS" /></translation>
 <translation id="4913987521957242411">Perforación en la esquina superior izquierda</translation>
 <translation id="4918221908152712722">Instala <ph name="APP_NAME" /> (no es necesario que descargues la app)</translation>
 <translation id="4923459931733593730">Pago</translation>
@@ -1688,6 +1692,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5357848622083956825">Artes visuales y diseño</translation>
 <translation id="536296301121032821">Error al almacenar la configuración de la política</translation>
 <translation id="5363309033720083897">Puerto en serie que permite tu administrador</translation>
+<translation id="5363713372507812442">Buscar exploraciones</translation>
 <translation id="5371425731340848620">Actualizar tarjeta</translation>
 <translation id="5377026284221673050">"El reloj está atrasado", "El reloj está adelantado" o "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379027395132364855">Botón Crear presentación, presiona Intro para crear una nueva presentación de Google en Presentaciones rápidamente</translation>
@@ -2436,6 +2441,7 @@ Detalles adicionales:
       &lt;/ol&gt;</translation>
 <translation id="741007362987735528">Wide-Format</translation>
 <translation id="7410471291937727359">Lovely</translation>
+<translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7416351320495623771">Administrar contraseñas…</translation>
 <translation id="7418620734632363981">Programación</translation>
 <translation id="7419106976560586862">Ruta del perfil</translation>

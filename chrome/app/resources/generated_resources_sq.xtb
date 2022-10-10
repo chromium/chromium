@@ -2384,6 +2384,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3188465121994729530">Mesatarja e lëvizshme</translation>
 <translation id="3189187154924005138">Kursori i madh</translation>
 <translation id="3190558889382726167">Fjalëkalimi u ruajt</translation>
+<translation id="3192589799003798742">Steam po konfigurohet në Chromebook</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
 <translation id="3193695589337931419">Shërbimet utilitare të sinjalizimeve të sistemit</translation>
 <translation id="3194786596445804250">Shfaq detajet për bllokimin e kukive të palëve të treta</translation>
@@ -2523,6 +2524,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3341699307020049241">Kodi PIN është i pasaktë. Të kanë mbetur <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="3341703758641437857">Lejo qasjen te URL-të e skedarëve</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" dëshiron që ta heqë këtë shtesë.</translation>
+<translation id="3343977377045378693">Konfigurimi po kryhet</translation>
 <translation id="3345135638360864351">Kërkesa jote për qasje te kjo faqe nuk mund të dërgohej te <ph name="NAME" />. Provo përsëri.</translation>
 <translation id="3345634917232014253">Kontrolli i sigurisë u ekzekutua pak më parë</translation>
 <translation id="3345886924813989455">Nuk u gjetën shfletues të mbështetur</translation>
@@ -2534,6 +2536,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3354768182971982851">Versionet e vjetra të aplikacioneve të Chrome nuk do të hapen në pajisjet Mac pas dhjetorit 2022. Mund të kontrollosh nëse ofrohet një version i ri.</translation>
 <translation id="3354972872297836698">Nuk mund të çiftohej me pajisjen <ph name="DEVICE_NAME" />; zgjidh pajisjen për të provuar sërish</translation>
 <translation id="3355936511340229503">Gabim në lidhje</translation>
+<translation id="3356036636691722598">Shijo lojërat në Chromebook</translation>
 <translation id="3356469410714175391">(Karta virtuale është aktivizuar)</translation>
 <translation id="3356580349448036450">Përfundo</translation>
 <translation id="3359256513598016054">Kufizimet e politikës së certifikatës</translation>
@@ -3442,6 +3445,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4211904048067111541">Ndalo përdorimin me aplikacione për Android</translation>
 <translation id="42126664696688958">Eksporto</translation>
 <translation id="42137655013211669">Qasja te ky burim është e ndaluar nga serveri.</translation>
+<translation id="4214192212360095377">Çaktivizo tani</translation>
 <translation id="4217558091331485702">Skano përpara se ta hapësh</translation>
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4218081191298393750">Kliko ikonën e altoparlantit për t'i hequr zërin kësaj skede</translation>
@@ -4335,6 +4339,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5089763948477033443">Doreza e ndryshimit të përmasave për panelin anësor</translation>
 <translation id="5090637338841444533">Nuk lejohen të monitorojnë pozicionin e kamerës</translation>
 <translation id="5093569275467863761">Nënkorniza e memories specifike të faqes së plotë "të fshehtë": <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">Instalimi po fillon</translation>
 <translation id="5094176498302660097">Mund të hapësh dhe të modifikosh skedarët e mbështetur me këtë aplikacion nga aplikacioni "Skedarët" ose aplikacione të tjera. Për të kontrolluar se cilët skedarë hapin këtë aplikacion si parazgjedhje, <ph name="BEGIN_LINK" />mëso se si të caktosh aplikacionet e parazgjedhura në pajisjen tënde<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Komuniko me aplikacionet origjinale bashkëpunuese</translation>
 <translation id="5097002363526479830">Dështoi lidhja me rrjetin "<ph name="NAME" />": <ph name="DETAILS" /></translation>
@@ -6345,6 +6350,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7014174261166285193">Instalimi dështoi.</translation>
 <translation id="7014480873681694324">Hiq theksimin</translation>
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
+<translation id="7014961128696979283">Hap Steam</translation>
 <translation id="7015088858756332848">Steam nuk mund të hapej në Chromebook. Provo përsëri</translation>
 <translation id="7017004637493394352">Thuaj përsëri "Ok Google"</translation>
 <translation id="7017219178341817193">Shto një faqe të re</translation>
@@ -6736,6 +6742,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7423425410216218516">Shikueshmëria është aktive për <ph name="MINUTES" /> minuta</translation>
 <translation id="7423513079490750513">Hiq <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ka nevojë për leje për të vazhduar</translation>
+<translation id="7424153922653300265">"Kursyesi i energjisë" u aktivizua</translation>
 <translation id="7424818322350938336">Rrjeti u shtua</translation>
 <translation id="7427315069950454694">kujtimet e tua për sot</translation>
 <translation id="7427348830195639090">Faqja në sfond: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7972,6 +7979,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="859246725979739260">Ky sajt është bllokuar që të mos ketë qasje te vendndodhja jote.</translation>
 <translation id="8593121833493516339">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Ndihmo në përmirësimin e përvojës së fëmijës tënd me Android duke dërguar automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Nëse "Aktiviteti shtesë i uebit dhe i aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">Skedarë të personalizuar</translation>
+<translation id="8597404194697561297">Mirë se vjen në Steam në Chromebook</translation>
 <translation id="8597845839771543242">Formati i vetisë:</translation>
 <translation id="8599681327221583254">Një apo më shumë politika nuk janë konfiguruar saktë. Kontakto me administratorin tënd.</translation>
 <translation id="8599864823732014237">Të kapërcehet regjistrimi i ndërmarrjes?</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">ரேட்டிங்</translation>
 <translation id="3291470810748040983">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெறுவீர்கள்</translation>
 <translation id="3328308545011660196">பரிந்துரை: <ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
+<translation id="3499853001094440183">பக்கங்களைப் பிரி</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="3882834874697329510">திறந்திருக்கும் தாவலில் குறைவான விலை இருக்கும்போது விழிப்பூட்டலைப் பெற, அமைப்புகளில் அறிவிப்புகளை இயக்குங்கள்.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">தாவல்களைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
 <translation id="6333260925957816943">இந்த ஸ்டோர் குறித்த தகவல்கள்</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பிரிக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பிரிக்கும்}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள்}}</translation>
 <translation id="6510648526783655549">தாவல் பட்டையை மூடும்</translation>
 <translation id="6549021453810473782">ஸ்டோர் தகவலைக் காட்டும்</translation>
 <translation id="6562820390860419811">தாவலை இடப்புறம் நகர்த்து</translation>

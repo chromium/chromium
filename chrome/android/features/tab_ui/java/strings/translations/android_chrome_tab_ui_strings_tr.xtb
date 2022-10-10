@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">puan</translation>
 <translation id="3291470810748040983">Açık bir sekmede daha düşük fiyat varsa uyarı alırsınız</translation>
 <translation id="3328308545011660196">Öneri: <ph name="NUMBER_OF_TABS" /> sekme birbiriyle ilgili görünüyor. Bunlar gruplandırılsın mı?</translation>
+<translation id="3499853001094440183">Sekme grubunu iptal edin</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
 <translation id="3882834874697329510">Açık bir sekmede daha düşük fiyat olduğunda uyarı almak için Ayarlar'da bildirimleri açın.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Sekmeleri seçin</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekme grubunu iptal et}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekme grubunu iptal et}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="6510648526783655549">Sekme şeridini kapat</translation>
 <translation id="6549021453810473782">Mağaza bilgilerini görün</translation>
 <translation id="6562820390860419811">Sekmeyi sola taşı</translation>

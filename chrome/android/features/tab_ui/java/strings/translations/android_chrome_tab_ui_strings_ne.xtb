@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3291470810748040983">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य कम हुँदा तपाईंलाई अलर्ट पठाइने छ</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
+<translation id="3499853001094440183">ट्याबहरू समूहबाट हटाउनुहोस्</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="3882834874697329510">तपाईंले खोल्नुभएको ट्याबमा कुनै वस्तुको मूल्य घट्दा अलर्ट प्राप्त गर्न सेटिङमा गई सूचना प्राप्त गर्ने सुविधा अन गर्नुहोस्।</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">ट्याबहरू चयन गर्नुहोस्</translation>
 <translation id="6228793724645064692">(स्टोरको रेटिङ)</translation>
 <translation id="6333260925957816943">यो स्टोरसम्बन्धी जानकारी</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="6510648526783655549">ट्याब स्ट्रिप बन्द गर्नुहोस्</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>

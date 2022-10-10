@@ -71,6 +71,7 @@
 <translation id="1067048845568873861">Үүсгэсэн</translation>
 <translation id="1067661089446014701">Нэмэлт аюулгүй байдлын үүднээс та төхөөрөмж дээрх нууц үгнүүдээ Google Бүртгэлдээ хадгалахаасаа өмнө шифрлэх боломжтой</translation>
 <translation id="1067922213147265141">Google-н бусад үйлчилгээ</translation>
+<translation id="1069104208554708737">Энэ passkey-г зөвхөн уг төхөөрөмж дээр хадгална</translation>
 <translation id="1069355737714877171"><ph name="PROFILE_NAME" /> нэртэй eSIM профайлыг хасах</translation>
 <translation id="1069814191880976658">Өөр дэлгэц сонгох</translation>
 <translation id="1070377999570795893">Taны компьютерын өөр нэг программ өргөтгөл нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж магад.
@@ -345,6 +346,7 @@
 <translation id="1324106254079708331">Зорилтот халдлагын эрсдэлд байгаа аливаа хүний хувийн Google Бүртгэлийг хамгаалдаг</translation>
 <translation id="1327272175893960498">Kerberos тасалбар</translation>
 <translation id="1327495825214193325">ADB алдаа засахыг идэвхжүүлэхийн тулд энэ <ph name="DEVICE_TYPE" />-г дахин эхлүүлэх шаардлагатай. Үүнийг идэвхгүй болгоход үйлдвэрийн тохиргоонд шинэчлэх шаардлагатай.</translation>
+<translation id="1327527584824210101">Passkey-ээ ашиглана уу</translation>
 <translation id="1327794256477341646">Таны байршил шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1331977651797684645">Би байсан.</translation>
 <translation id="1333489022424033687">Таны төхөөрөмж дээр бусад сайтын хадгалсан өгөгдлийг та устгах хүртэл <ph name="ORIGIN" /> дээрх зарим онцлог ажиллахгүй байж болзошгүй</translation>
@@ -405,6 +407,7 @@
 <translation id="139013308650923562">Таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг зөвшөөрсөн</translation>
 <translation id="1390548061267426325">Энгийн цонх хэлбэрээр нээх</translation>
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> нь <ph name="PRINTER_NAME" />-р хэвлэх зөвшөөрөлгүй. Админтайгаа холбогдоно уу.</translation>
+<translation id="1392047138650695757">Хэрэглэгчийн толь</translation>
 <translation id="1393283411312835250">Нар, үүл</translation>
 <translation id="1395730723686586365">Шинэчлэлт эхэлсэн</translation>
 <translation id="1395832189806039783">Гарын фокусаар зүйл тодруулах</translation>
@@ -1520,6 +1523,7 @@
 <translation id="2356070529366658676">Асуух</translation>
 <translation id="2357330829548294574"><ph name="USER_NAME" />-г хасах</translation>
 <translation id="2358561147588818967">Сайтууд JavaScript ашиглах боломжтой</translation>
+<translation id="2358703245148663432">Өөр төхөөрөмж</translation>
 <translation id="2358777858338503863"><ph name="ORIGIN" /> дээр зөвшөөрөхийн тулд товшино уу:</translation>
 <translation id="2359071692152028734">Linux аппууд хариу өгөхгүй болсон байж болзошгүй.</translation>
 <translation id="2359345697448000899">Хэрэгслүүд цэснээс Өргөтгөлүүд  хэсэг дээр дарж өргөтгөлүүдээ удирдаарай.</translation>
@@ -1879,6 +1883,7 @@
 <translation id="271033894570825754">Шинэ</translation>
 <translation id="2711073837061989559">Туршилтын хугацаа</translation>
 <translation id="2712173769900027643">Зөвшөөрөл авах</translation>
+<translation id="2712207122921938368">Өөр төхөөрөмж дээр passkey үүсгэнэ үү</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
@@ -2389,6 +2394,7 @@
 <translation id="3182749001423093222">Зөв бичгийн алдаа шалгах</translation>
 <translation id="3183139917765991655">Профайл импортлогч</translation>
 <translation id="3183143381919926261">Мобайл дата сүлжээнүүд</translation>
+<translation id="3183613134231754987">Энэ passkey-г зөвхөн Windows Hello-д хадгална. Энэ нь таныг нууцлалтай бүх цонхыг хаасны дараа уг төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="3183944777708523606">Зохион байгуулалтыг хянах</translation>
 <translation id="3184536091884214176">CUPS хэвлэгчийг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Энэ аппыг блоклосон байна}other{Зарим аппыг блоклосон байна}}</translation>
@@ -2866,6 +2872,7 @@
 <translation id="3654045516529121250">Өөрийн нэвтрэх боломжит байдлын тохиргоонуудыг унш</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Энэ нь нэг файл руу байнга нэвтрэх эрхтэй байна.}other{Энэ нь # файл руу байнга нэвтрэх эрхтэй байна.}}</translation>
 <translation id="3658871634334445293">TrackPoint хурдасгуур</translation>
+<translation id="3659550105763988702"><ph name="APP_NAME" />-н passkey-ээ ашиглана уу</translation>
 <translation id="3659929705630080526">Та нэвтрэх кодыг хэт олон удаа буруу оруулсан байна. Дараа дахин оролдоно уу</translation>
 <translation id="3660234220361471169">Найдваргүй</translation>
 <translation id="3664511988987167893">Өргөтгөлийн дүрс тэмдэг</translation>
@@ -3135,6 +3142,7 @@
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> дараах зөвшөөрлүүдийг хүсэж байна: <ph name="FIRST_PERMISSION" /> болон <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Гар сонгох</translation>
 <translation id="3900966090527141178">Нууц үгийг экспортлох</translation>
+<translation id="3902789559055749153">Та <ph name="APP_NAME" />-д passkey-г хэрхэн үүсгэх хүсэлтэй байгаагаа сонгоно уу</translation>
 <translation id="3903187154317825986">Суурилагдсан гар</translation>
 <translation id="3904326018476041253">Байршлын үйлчилгээ</translation>
 <translation id="3904849010307028014">Бүртгэлд тогтмол нэвтрэх зэрэг таны сайттай хийсэн харилцан үйлдэл тулгуурлан тухайн сайт таны хөтчид итгэмжлэгдсэн токен олгох боломжтой. Дараа нь хэрэв таны зочилсон бусад сайт хүчинтэй итгэмжлэгдсэн токен шалгасан, мөн олсон бол тэдгээр сайт тантай бот бус харин хүн шиг хандах магадлал өндөр болно.</translation>
@@ -3463,6 +3471,7 @@
 <translation id="4218081191298393750">Энэ табын дууг хаахын тулд чанга яригчийн дүрс тэмдгийг товшино уу</translation>
 <translation id="4219558185499589032">Box</translation>
 <translation id="4220648711404560261">Идэвхжүүлэх явцад алдаа гарлаа.</translation>
+<translation id="4223845867739585293">Passkey үүсгэнэ үү</translation>
 <translation id="4225397296022057997">Бүх сайтад</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг зөвшөөрдөггүй}other{Зарим өргөтгөлийг зөвшөөрдөггүй}}</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> дээрээ Google Play-с апп болон тоглоомууд суулгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -4101,6 +4110,7 @@
 <translation id="4838907349371614303">Нууц үгийг шинэчилсэн</translation>
 <translation id="4838958829619609362">Сонголт <ph name="LANGUAGE" />-р биш байна</translation>
 <translation id="4839303808932127586">Видеог ... хэлбэрээр хадгалах</translation>
+<translation id="4839910546484524995">Төхөөрөмжөө шалгана уу</translation>
 <translation id="4840096453115567876">Нууцлалтай горимоос ямартай ч гарах уу?</translation>
 <translation id="4841741146571978176">Шаардлагатай виртуал машин байхгүй байна. Үргэлжлүүлэхийн тулд <ph name="VM_TYPE" />-г тохируулж үзнэ үү</translation>
 <translation id="4842976633412754305">Энэ хуудас нь баталгаажаагүй эх үүсвэрээс скриптүүдийг ачаалахыг оролдож байна.</translation>
@@ -5010,6 +5020,7 @@
 <translation id="5729712731028706266">Харах</translation>
 <translation id="5731247495086897348">Хуулан буулгах &amp; Үргэлжлүүлэх</translation>
 <translation id="5732392974455271431">Таны эцэг эх үүнийг блокоос гаргах боломжтой</translation>
+<translation id="5733109311583381874">Хөрвүүлэлтийн хувилбаруудыг өөрчлөхийн тулд та өөрийн үгийг хэрэглэгчийн тольд нэмнэ үү.</translation>
 <translation id="5733866499231170760">ID буруу байна. Таны оруулсан формат буруу байна. Та ID-г зөв форматаар оруулж байгаа болохоо баталгаажуулахын тулд хүлээн авсан зааварчилгаагаа шалгана уу. Хэрэв та энэ асуудлыг шийдвэрлэх боломжгүй бол талбарыг хоосон орхиж, үргэлжлүүлэн суулгана уу.</translation>
 <translation id="5734362860645681824">Харилцаа холбоо</translation>
 <translation id="5734697361979786483">Файл хуваалцахыг нэмэх</translation>
@@ -5117,6 +5128,7 @@
 <translation id="583431638776747">Сайт боломжгүй байсан</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>
+<translation id="5835625581856809102">Та <ph name="APP_NAME" />-д passkey үүсгэхийг хүсэж буй төхөөрөмжөөрөө энэ QR кодыг скан хийнэ үү</translation>
 <translation id="583673505367439042">Сайтууд таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="5836999627049108525">Орчуулах хэл</translation>
 <translation id="583756221537636748">Гэр</translation>
@@ -5354,6 +5366,7 @@
 <translation id="6059276912018042191">Саяхны Chrome табууд</translation>
 <translation id="6059652578941944813">Гэрчилгээний шатлал</translation>
 <translation id="6059925163896151826">USB төхөөрөмж</translation>
+<translation id="6061408389284235459">Мэдэгдлийг <ph name="DEVICE_NAME" />-д илгээсэн</translation>
 <translation id="6063284707309177505">QR код үүсгэх</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" /> Төстэй дуу хоолой эсвэл бичлэгээр <ph name="SUPERVISED_USER_NAME" />-н хувийн илэрцэд хандах боломжтой байж магадгүй. Батарей хэмнэхийн тулд та <ph name="SUPERVISED_USER_NAME" />-н Туслахын тохиргоо хэсэгт энэ төхөөрөмжийг зөвхөн цэнэглэгчид холбогдсон үед “Ok Google”-г асаалттай байлгахаар сонгож болно.</translation>
 <translation id="6064217302520318294">Дэлгэцийн түгжээ</translation>
@@ -5479,6 +5492,7 @@
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
 <translation id="6178682841350631965">Таны нэвтрэх өгөгдлийг шинэчилсэн</translation>
 <translation id="6180510783007738939">Шугамын хэрэгсэл</translation>
+<translation id="6180550893222597997">Та <ph name="APP_NAME" />-д ямар passkey ашиглахыг хүсэж байна вэ?</translation>
 <translation id="6181431612547969857">Татаж авах ажиллагаа хаагдлаа</translation>
 <translation id="6184099524311454384">Табыг хайх</translation>
 <translation id="6185132558746749656">Төхөөрөмжийн байршил</translation>
@@ -5913,6 +5927,7 @@
 <translation id="6596816719288285829">IP хаяг</translation>
 <translation id="6597017209724497268">Жишээ загвар</translation>
 <translation id="6597331566371766302">Дараах өргөтгөлүүдийг танай администратор блоклосон байна:</translation>
+<translation id="6601262427770154296">Хэрэглэгчийн толийг удирдах</translation>
 <translation id="6601612474695404578">Зарим сайт нь хуудсаа ачаалахын тулд гуравдагч талын күүки ашигладаг. Хэрэв сайт ажиллахгүй байвал та күүкиг зөвшөөрч үзэж болно.</translation>
 <translation id="6602937173026466876">Хэвлэгчдээ хандах</translation>
 <translation id="6602956230557165253">Навигац хийхийн тулд зүүн, баруун сумтай түлхүүрүүдийг ашиглах.</translation>
@@ -6271,6 +6286,7 @@
 <translation id="6943060957016121200">Шуурхай модем болгохыг идэвхжүүлэх</translation>
 <translation id="6943176775188458830">Хэвлэхийг цуцлах</translation>
 <translation id="6943939122536910181"><ph name="DEVICE" />-с салсан</translation>
+<translation id="6944708469742828051">Энэ passkey-г зөвхөн Windows Hello-д хадгална</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="694592694773692225">Энэ хуудсанд дахин чиглүүлэлтийг блоклосон байна.</translation>
 <translation id="6947015141909171112">Та жорд зориулсан Хайлтын саяхны үйл ажиллагаандaa тулгуурласан жоруудыг харж байна.
@@ -6521,6 +6537,7 @@
 <translation id="7193051357671784796">Энэ аппыг танай байгууллага нэмсэн байна. Аппыг суулгаж дуусгахын тулд дахин эхлүүлнэ үү.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" />-д хадгалсан нууц үг алга</translation>
 <translation id="7194873994243265344">Энэ файлыг шифрлэсэн тул танай байгууллага үүнийг блоклосон. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.</translation>
+<translation id="7196272782924897510">Өөр төхөөрөмжөөс passkey ашиглах уу?</translation>
 <translation id="7196913789568937443">Google Драйвт нөөцлөх. Өгөгдлөө хялбархнаар сэргээж эсвэл төхөөрөмжийг хүссэн үедээ сэлгээрэй. Таны нөөцлөлтөд аппын өгөгдөл багтдаг. Таны нөөцлөлтийг Google-д байршуулдаг бөгөөд таны Google Бүртгэлийн нууц үгийг ашиглан шифрлэдэг. <ph name="BEGIN_LINK1" />Нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
 <translation id="7197190419934240522">Хөтчийг ашиглах бүрдээ Google Хайлт болон Google smarts-г аваарай</translation>
 <translation id="719791532916917144">Товчлуурын шууд холбоос</translation>
@@ -7020,6 +7037,7 @@
 <translation id="7670483791111801022">Хадмал</translation>
 <translation id="7671130400130574146">Системийн гарчгийн мөр болон хүрээг ашигла</translation>
 <translation id="767127784612208024">Шинэчлэлтийг баталгаажуулахын тулд хүрнэ үү</translation>
+<translation id="7672504401554182757"><ph name="APP_NAME" />-н passkey аль төхөөрөмжид байгааг сонгоно уу</translation>
 <translation id="7672520070349703697"><ph name="PAGE_TITLE" />-н <ph name="HUNG_IFRAME_URL" />.</translation>
 <translation id="7674416868315480713">Linux-д шилжүүлж буй бүх портыг идэвхгүй болгох</translation>
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> апп</translation>
@@ -7129,6 +7147,7 @@
 <translation id="7766807826975222231">Аялцгаая</translation>
 <translation id="7766838926148951335">Зөвшөөрлийг зөвшөөрөх</translation>
 <translation id="7767554953520855281">Таныг дэлгэцээ хуваалцах үед дэлгэрэнгүйг нууна</translation>
+<translation id="7767972280546034736"><ph name="APP_NAME" />-д passkey үүсгэнэ үү</translation>
 <translation id="7768507955883790804">Таныг сайт руу зочлоход энэ тохиргоог сайт автоматаар дагана</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> дахь файлуудыг үзэх боломжтой болно</translation>
 <translation id="7768770796815395237">Өөрчлөх</translation>
@@ -7611,6 +7630,7 @@
 <translation id="820568752112382238">Хамгийн их зочилсон сайт</translation>
 <translation id="8206745257863499010">Bluesy</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
+<translation id="8207404892907560325">Passkey сонгоно уу</translation>
 <translation id="8208216423136871611">Бүү хадгал</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Шинэ мэдэгдэл}other{# шинэ мэдэгдэл}}</translation>
 <translation id="821119981794423735">Нууц үгнүүдийг <ph name="USER_EMAIL" />-н Google Password Manager-т импорт хийхийн тулд CSV файл сонгоно уу</translation>
@@ -7783,6 +7803,7 @@
 <translation id="8376137163494131156">Google Cast-д юу болж байгааг бидэнд хэлнэ үү.</translation>
 <translation id="8376384591331888629">Энэ сайт дээрх гуравдагч талын күүкитэй цуг</translation>
 <translation id="8376451933628734023">Хэрэв энэ веб апп өөрийгөө өөр апп гэж танд итгүүлж, хуурахаар оролдож байвал үүнийг устгана уу.</translation>
+<translation id="8377625247046155446">Энэ passkey-г зөвхөн уг төхөөрөмж дээр хадгална. Энэ нь таныг нууцлалтай бүх цонхыг хаасны дараа уг төхөөрөмж дээр үлдэнэ.</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8379156816349755485">Нэвтрэх үед баталгаажуулалтын өвөрмөц токеныг хадгалах бөгөөд ирээдүйн бүх эрх бүхий таталтад ашиглана.</translation>
 <translation id="8379878387931047019">Энэ төхөөрөмж энэ веб сайтаас хүссэн аюулгүй байдлын түлхүүрийн төрлийг дэмждэггүй</translation>
@@ -8601,6 +8622,7 @@
       <ph name="LIST_ITEM" />Chrome холбоосны оношилгоог ажиллуулах
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Дэлгэцэн доторх дэлгэц</translation>
+<translation id="9166253503936244008">Та <ph name="APP_NAME" />-д ашиглахыг хүсэж буй passkey-тэй төхөөрөмжөөрөө энэ QR кодыг скан хийнэ үү</translation>
 <translation id="9167063903968449027">Унших жагсаалтыг харуулах</translation>
 <translation id="9167450455589251456">Профайлыг дэмждэггүй</translation>
 <translation id="9168436347345867845">Үүнийг дараа хийх</translation>

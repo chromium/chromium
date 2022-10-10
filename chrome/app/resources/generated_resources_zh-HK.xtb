@@ -1128,7 +1128,7 @@
 <translation id="2034346955588403444">新增其他 Wi-Fi 網絡</translation>
 <translation id="2035211704574173780">灰階</translation>
 <translation id="203574396658008164">從上鎖畫面啟用筆記功能</translation>
-<translation id="2036514476578229158">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
+<translation id="2036514476578229158">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="2037445849770872822">您已設定此 Google 帳戶的監控功能。如要設定更多家長監控設定，請選取 [繼續]。
 
 如果不想繼續設定，請立即登出。您對此帳戶作出的變更會在此裝置上反映。
@@ -1250,7 +1250,7 @@
 <translation id="2135787500304447609">繼續(&amp;R)</translation>
 <translation id="2136372518715274136">輸入新密碼</translation>
 <translation id="2136476978468204130">您輸入的密碼短語不正確</translation>
-<translation id="2137891579555018930">正在等待許可...</translation>
+<translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="2139919072249842737">設定按鈕</translation>
 <translation id="2140788884185208305">電池壽命</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
@@ -2401,6 +2401,7 @@
 <translation id="3188465121994729530">移動平均</translation>
 <translation id="3189187154924005138">大型游標</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
+<translation id="3192589799003798742">正在設定 Steam Chromebook 版</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3193695589337931419">系統訊號實用程式</translation>
 <translation id="3194786596445804250">顯示封鎖第三方 Cookie 嘅詳情</translation>
@@ -2540,6 +2541,7 @@
 <translation id="3341699307020049241">PIN 不正確。您還可再試 <ph name="RETRIES" /> 次。</translation>
 <translation id="3341703758641437857">允許存取檔案網址</translation>
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除這個擴充程式。</translation>
+<translation id="3343977377045378693">設定中</translation>
 <translation id="3345135638360864351">您對這個網站的存取權要求無法傳送給 <ph name="NAME" />。請再試一次。</translation>
 <translation id="3345634917232014253">剛才已執行安全檢查</translation>
 <translation id="3345886924813989455">找不到支援的瀏覽器</translation>
@@ -2551,6 +2553,7 @@
 <translation id="3354768182971982851">舊版 Chrome 應用程式在 2022 年 12 月後將無法在 Mac 裝置上開啟。您亦可檢查是否有可用的新版本。</translation>
 <translation id="3354972872297836698">同裝置 <ph name="DEVICE_NAME" /> 配對唔到；請揀裝置之後再試一次</translation>
 <translation id="3355936511340229503">連線錯誤</translation>
+<translation id="3356036636691722598">在 Chromebook 上享受遊戲體驗</translation>
 <translation id="3356469410714175391">(已啟用虛擬卡)</translation>
 <translation id="3356580349448036450">完成</translation>
 <translation id="3359256513598016054">憑證政策限制</translation>
@@ -3459,6 +3462,7 @@
 <translation id="4211904048067111541">停止使用此帳戶登入 Android 應用程式</translation>
 <translation id="42126664696688958">匯出</translation>
 <translation id="42137655013211669">伺服器已禁止存取此資源。</translation>
+<translation id="4214192212360095377">立即關閉</translation>
 <translation id="4217558091331485702">開啟前先掃瞄</translation>
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4218081191298393750">按一下「喇叭」圖示即可將此分頁設定為靜音</translation>
@@ -4124,7 +4128,7 @@
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4862642413395066333">簽署 OCSP 回應</translation>
 <translation id="4863769717153320198">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (預設)</translation>
-<translation id="486459320933704969">你必須獲得家長或監護人許可，才能造訪這個網站</translation>
+<translation id="486459320933704969">您必須獲得家長或監護人許可，才能瀏覽此網站</translation>
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4868281708609571334">訓練「Google 助理」識別<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
@@ -4353,6 +4357,7 @@
 <translation id="5089763948477033443">側面板大小調整控點</translation>
 <translation id="5090637338841444533">不允許追蹤攝錄機位置</translation>
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5094042205195563542">正在開始安裝</translation>
 <translation id="5094176498302660097">您可在「檔案」應用程式或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="5094721898978802975">與合作內置應用程式通訊</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
@@ -6361,6 +6366,7 @@
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7014480873681694324">移除焦點內容</translation>
 <translation id="7014741021609395734">縮放比例</translation>
+<translation id="7014961128696979283">啟動 Steam</translation>
 <translation id="7015088858756332848">無法在 Chromebook 上啟動 Steam，請再試一次</translation>
 <translation id="7017004637493394352">再說一次「Ok Google」</translation>
 <translation id="7017219178341817193">新增網頁</translation>
@@ -6752,6 +6758,7 @@
 <translation id="7423425410216218516">分享設定在 <ph name="MINUTES" /> 分鐘內開啟</translation>
 <translation id="7423513079490750513">移除<ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">需要權限才能執行 <ph name="APP_NAME" /></translation>
+<translation id="7424153922653300265">節能模式已開啟</translation>
 <translation id="7424818322350938336">已新增網絡</translation>
 <translation id="7427315069950454694">今天的回憶</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7990,6 +7997,7 @@
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593121833493516339">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="8596540852772265699">自訂檔</translation>
+<translation id="8597404194697561297">歡迎使用 Steam Chromebook 版</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請聯絡您的管理員</translation>
 <translation id="8599864823732014237">要跳過企業註冊嗎？</translation>
@@ -8681,7 +8689,7 @@
 <translation id="947329552760389097">檢查元素 (&amp;I)</translation>
 <translation id="947526284350604411">您的答案</translation>
 <translation id="947667444780368238">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾中的檔案</translation>
-<translation id="949314938206378263">你已要求造訪這個網站，家長可以透過 Family Link 回覆要求。</translation>
+<translation id="949314938206378263">您已要求瀏覽此網站。家長可透過 Family Link 回覆要求。</translation>
 <translation id="950307215746360464">設定指南</translation>
 <translation id="951991426597076286">拒絕</translation>
 <translation id="952471655966876828">當裝置開啟，而且正在使用時，裝置將會自動連線</translation>

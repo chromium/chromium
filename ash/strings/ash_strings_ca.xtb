@@ -159,6 +159,15 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1797271123677381264">He oblidat la contrasenya</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="1812997170047690955">Què hi ha a la pantalla?</translation>
+<translation id="1823280932251546115">Safata d'estat, hora <ph name="TIME" />,
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />,
+        <ph name="PRIVACY" />,
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />,
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> s'ha deixat de fixar</translation>
 <translation id="1836215606488044471">Assistent (s'està carregant...)</translation>
@@ -459,6 +468,8 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3600061223661453002">Desactivat</translation>
 <translation id="3604801046548457007">S'ha creat l'escriptori <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">S'ha connectat la pantalla Braille.</translation>
+<translation id="3609301425104788351"><ph name="MIC" />,
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">En activar les dades mòbils s'activarà el Bluetooth</translation>
 <translation id="3616883743181209306">El menú s'ha mogut a l'extrem superior dret de la pantalla.</translation>
 <translation id="3619536907358025872">Configuració de la captura de pantalla</translation>

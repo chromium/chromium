@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
+<translation id="3499853001094440183">Mag-ungroup ng mga tab</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="3882834874697329510">Para makakuha ng alerto sa isang bukas na tab kapag may mas mababang presyo, i-on ang mga notification sa Mga Setting.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
 <translation id="6228793724645064692">(rating ng store)</translation>
 <translation id="6333260925957816943">Impormasyon tungkol sa store na ito</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{I-ungroup ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-ungroup ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-ungroup ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
 <translation id="6510648526783655549">Isara ang tab strip</translation>
 <translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
@@ -80,11 +83,13 @@
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review mula sa Google}one{<ph name="REVIEWS_COUNT_MANY" /> review mula sa Google}other{<ph name="REVIEWS_COUNT_MANY" /> na review mula sa Google}}</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Ibahagi ang <ph name="TABS_COUNT_ONE" /> piniling tab}one{Ibahagi ang <ph name="TABS_COUNT_MANY" /> piniling tab}other{Ibahagi ang <ph name="TABS_COUNT_MANY" /> na piniling tab}}</translation>
 <translation id="7792771145871471484">Suriin ang mga suhestyon.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Igrupo ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Igrupo ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Igrupo ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
+<translation id="8018192911041116887">Magbahagi ng mga tab</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="814503310257431685">Tingnan lahat</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>

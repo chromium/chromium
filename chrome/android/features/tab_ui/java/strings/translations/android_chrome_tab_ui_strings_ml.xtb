@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
 <translation id="3291470810748040983">തുറന്നിരിക്കുന്ന ടാബിൽ, വിലക്കുറവുള്ളപ്പോൾ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
+<translation id="3499853001094440183">ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ് ചുരുക്കുക.}other{<ph name="TABS_COUNT_MANY" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ് ചുരുക്കുക.}}</translation>
 <translation id="3882834874697329510">തുറന്നിരിക്കുന്ന ടാബിൽ വിലക്കുറവുള്ളപ്പോൾ അറിയിപ്പ് ലഭിക്കാൻ ക്രമീകരണത്തിൽ അറിയിപ്പുകൾ ഓണാക്കുക.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6510648526783655549">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ അടയ്ക്കുക</translation>
 <translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
