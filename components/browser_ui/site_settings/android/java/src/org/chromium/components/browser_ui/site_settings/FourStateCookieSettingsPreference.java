@@ -82,6 +82,11 @@ public class FourStateCookieSettingsPreference extends Preference
     private RadioGroup mRadioGroup;
     private TextViewWithCompoundDrawables mManagedView;
 
+    // Sometimes UI is initialized before the initializationParams are set. We keep this viewHolder
+    // to properly adjust UI once initializationParams are set. See crbug.com/1371236.
+    // TODO(tommasin) Remove this holder once the FirstPartySets UI will be enabled by default.
+    private PreferenceViewHolder mViewHolder;
+
     public FourStateCookieSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -98,6 +103,7 @@ public class FourStateCookieSettingsPreference extends Preference
      */
     public void setState(Params state) {
         if (mRadioGroup != null) {
+            setRadioButtonsVisibility(state);
             configureRadioButtons(state);
         } else {
             mInitializationParams = state;
@@ -138,33 +144,8 @@ public class FourStateCookieSettingsPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
+        mViewHolder = holder;
         mAllowButton = (RadioButtonWithDescription) holder.findViewById(R.id.allow);
-
-        if (mInitializationParams.isPrivacySandboxFirstPartySetsUIEnabled) {
-            holder.findViewById(R.id.block_third_party_incognito).setVisibility(View.GONE);
-            holder.findViewById(R.id.block_third_party).setVisibility(View.GONE);
-            mBlockThirdPartyIncognitoButton =
-                    (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
-                            R.id.block_third_party_incognito_with_aux);
-            mBlockThirdPartyButton = (RadioButtonWithDescriptionAndAuxButton) holder.findViewById(
-                    R.id.block_third_party_with_aux);
-            mBlockThirdPartyIncognitoButton.setVisibility(View.VISIBLE);
-            mBlockThirdPartyButton.setVisibility(View.VISIBLE);
-            setBlockThirdPartyCookieDescription();
-            // TODO(crbug.com/1349370): Change the buttons class into a
-            // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
-            // PrivacySandboxFirstPartySetsUI feature is launched
-            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyIncognitoButton)
-                    .setAuxButtonClickedListener(this);
-            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyButton)
-                    .setAuxButtonClickedListener(this);
-        } else {
-            mBlockThirdPartyIncognitoButton = (RadioButtonWithDescription) holder.findViewById(
-                    R.id.block_third_party_incognito);
-            mBlockThirdPartyButton =
-                    (RadioButtonWithDescription) holder.findViewById(R.id.block_third_party);
-        }
-
         mBlockButton = (RadioButtonWithDescription) holder.findViewById(R.id.block);
         mRadioGroup = (RadioGroup) holder.findViewById(R.id.radio_button_layout);
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -177,15 +158,44 @@ public class FourStateCookieSettingsPreference extends Preference
                 managedIcon, drawables[1], drawables[2], drawables[3]);
 
         if (mInitializationParams != null) {
+            setRadioButtonsVisibility(mInitializationParams);
             configureRadioButtons(mInitializationParams);
         }
     }
 
-    private void setBlockThirdPartyCookieDescription() {
+    private void setRadioButtonsVisibility(Params params) {
+        if (params.isPrivacySandboxFirstPartySetsUIEnabled) {
+            mViewHolder.findViewById(R.id.block_third_party_incognito).setVisibility(View.GONE);
+            mViewHolder.findViewById(R.id.block_third_party).setVisibility(View.GONE);
+            mBlockThirdPartyIncognitoButton =
+                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
+                            R.id.block_third_party_incognito_with_aux);
+            mBlockThirdPartyButton =
+                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
+                            R.id.block_third_party_with_aux);
+            mBlockThirdPartyIncognitoButton.setVisibility(View.VISIBLE);
+            mBlockThirdPartyButton.setVisibility(View.VISIBLE);
+            setBlockThirdPartyCookieDescription(params);
+            // TODO(crbug.com/1349370): Change the buttons class into a
+            // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
+            // PrivacySandboxFirstPartySetsUI feature is launched
+            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyIncognitoButton)
+                    .setAuxButtonClickedListener(this);
+            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyButton)
+                    .setAuxButtonClickedListener(this);
+        } else {
+            mBlockThirdPartyIncognitoButton = (RadioButtonWithDescription) mViewHolder.findViewById(
+                    R.id.block_third_party_incognito);
+            mBlockThirdPartyButton =
+                    (RadioButtonWithDescription) mViewHolder.findViewById(R.id.block_third_party);
+        }
+    }
+
+    private void setBlockThirdPartyCookieDescription(Params params) {
         Resources resources = getContext().getResources();
         String defaultDescription = resources.getString(
                 R.string.website_settings_category_cookie_block_third_party_addition);
-        if (mInitializationParams.isFirstPartySetsDataAccessEnabled) {
+        if (params.isFirstPartySetsDataAccessEnabled) {
             String fpsAdditionalDescription = resources.getString(
                     R.string.website_settings_category_cookie_block_third_party_fps_addition);
             String description = resources.getString(R.string.concat_two_strings_with_periods,
