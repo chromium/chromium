@@ -34,6 +34,7 @@ source_set("commands") {
     "password_suggestion_commands.h",
     "policy_change_commands.h",
     "popup_menu_commands.h",
+    "price_notifications_commands.h",
     "promos_manager_commands.h",
     "qr_generation_commands.h",
     "qr_scanner_commands.h",

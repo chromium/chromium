@@ -76,6 +76,7 @@
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
+#import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
@@ -201,6 +202,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
                                   PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
+                                  PriceNotificationsCommands,
                                   PromosManagerCommands,
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
@@ -613,6 +615,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
     @protocol(PolicyChangeCommands),
+    @protocol(PriceNotificationsCommands),
     @protocol(TextZoomCommands),
   ];
 
@@ -2003,6 +2006,18 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
                  decisionHandler:decisionHandler];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
+}
+
+#pragma mark - PriceNotificationsCommands
+
+- (void)hidePriceNotifications {
+  // TODO(crbug.com/1368700) Once the price notifications coordinator is
+  // created, add the code to invoke its shutdown code.
+}
+
+- (void)showPriceNotifications {
+  // TODO(crbug.com/1368700) Once the price notifications coordinator is
+  // created, add the code to invoke its startup code.
 }
 
 #pragma mark - PolicyChangeCommands
