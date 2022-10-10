@@ -655,4 +655,46 @@ TEST(AggregatableReportProtoMigrationTest, NoDebugKey_ParsesCorrectly) {
       deserialized_request.value(), expected_request));
 }
 
+TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
+  // An `AggregatableReport` serialized while `debug_key` was stored as a signed
+  // int64 and used a value that was larger than the maximum int64. It was
+  // therefore stored as a negative number.
+  const char kHexEncodedOldProto[] =
+      "0A071205107B18C803126408D0DA8693FDBECF17122431323334353637382D393061622D"
+      "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"
+      "706C652E636F6D20012A0F6578616D706C652D76657273696F6E320B6578616D706C652D"
+      "6170691A0C6578616D706C652D7061746820FFFFFFFFFFFFFFFFFF01";
+
+  std::vector<uint8_t> old_proto;
+  EXPECT_TRUE(base::HexStringToBytes(kHexEncodedOldProto, &old_proto));
+
+  absl::optional<AggregatableReportRequest> deserialized_request =
+      AggregatableReportRequest::Deserialize(old_proto);
+  ASSERT_TRUE(deserialized_request.has_value());
+
+  AggregatableReportRequest expected_request =
+      AggregatableReportRequest::Create(
+          AggregationServicePayloadContents(
+              AggregationServicePayloadContents::Operation::kHistogram,
+              {mojom::AggregatableReportHistogramContribution(
+                  /*bucket=*/123, /*value=*/456)},
+              mojom::AggregationServiceMode::kDefault),
+          AggregatableReportSharedInfo(
+              base::Time::FromJavaTime(1652984901234),
+              base::GUID::ParseLowercase(
+                  "12345678-90ab-4cde-8f12-34567890abcd"),
+              /*reporting_origin=*/
+              url::Origin::Create(GURL("https://example.com")),
+              AggregatableReportSharedInfo::DebugMode::kEnabled,
+              /*additional_fields=*/base::Value::Dict(),
+              /*api_version=*/"example-version",
+              /*api_identifier=*/"example-api"),
+          /*reporting_path=*/"example-path",
+          /*debug_key=*/std::numeric_limits<uint64_t>::max())
+          .value();
+
+  EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+      deserialized_request.value(), expected_request));
+}
+
 }  // namespace content
