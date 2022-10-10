@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller_test.h"
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_account_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_controller.h"
@@ -18,6 +19,16 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+// Dummy interface to allow using @selector(...) in the helper implementation.
+@interface DummyCollectionViewItemForSelector : CollectionViewItem
+
+@property(nonatomic, copy) NSString* detailText;
+
+// The accessory type for the represented cell.
+@property(nonatomic, assign) MDCCollectionViewCellAccessoryType accessoryType;
+
+@end
 
 CollectionViewControllerTest::CollectionViewControllerTest() {}
 
