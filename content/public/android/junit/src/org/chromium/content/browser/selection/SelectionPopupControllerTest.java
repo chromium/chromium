@@ -47,7 +47,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content.browser.ContentClassFactory;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -88,7 +87,6 @@ public class SelectionPopupControllerTest {
     private RenderCoordinatesImpl mRenderCoordinates;
     private ContentResolver mContentResolver;
     private PopupController mPopupController;
-    private ContentClassFactory mOriginalContentClassFactory;
     private GestureListenerManagerImpl mGestureStateListenerManager;
     private RenderFrameHost mRenderFrameHost;
 
@@ -165,12 +163,7 @@ public class SelectionPopupControllerTest {
         mPopupController = Mockito.mock(PopupController.class);
         mGestureStateListenerManager = Mockito.mock(GestureListenerManagerImpl.class);
 
-        mOriginalContentClassFactory = ContentClassFactory.get();
-        ContentClassFactory mockContentClassFactory = Mockito.mock(ContentClassFactory.class);
-        when(mockContentClassFactory.createHandleObserver(
-                     Mockito.any(SelectionPopupControllerImpl.ReadbackViewCallback.class)))
-                .thenReturn(null);
-        ContentClassFactory.set(mockContentClassFactory);
+        SelectionPopupControllerImpl.setDisableMagnifierForTesting(true);
 
         mContentResolver = RuntimeEnvironment.application.getContentResolver();
         // To let isDeviceProvisioned() call in showSelectionMenu() return true.
@@ -193,7 +186,7 @@ public class SelectionPopupControllerTest {
 
     @After
     public void tearDown() {
-        ContentClassFactory.set(mOriginalContentClassFactory);
+        SelectionPopupControllerImpl.setDisableMagnifierForTesting(false);
     }
 
     @Test
@@ -481,51 +474,49 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @Feature({"TextInput", "HandleObserver"})
+    @Feature({"TextInput", "Magnifier"})
     public void testHandleObserverSelectionHandle() {
-        SelectionInsertionHandleObserver handleObserver =
-                Mockito.mock(SelectionInsertionHandleObserver.class);
-        InOrder order = inOrder(handleObserver);
-        mController.setSelectionInsertionHandleObserver(handleObserver);
+        MagnifierAnimator magnifierAnimator = Mockito.mock(MagnifierAnimator.class);
+        InOrder order = inOrder(magnifierAnimator);
+        mController.setMagnifierAnimator(magnifierAnimator);
 
         // Selection handles shown.
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0, 1, 1);
 
         // Selection handles drag started.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
-        order.verify(handleObserver).handleDragStartedOrMoved(0.f, 0.f);
+        order.verify(magnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
-        order.verify(handleObserver).handleDragStartedOrMoved(5.f, 5.f);
+        order.verify(magnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
 
         // Selection handle drag stopped.
         mController.onSelectionEvent(SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED, 0, 0, 1, 1);
-        order.verify(handleObserver).handleDragStopped();
+        order.verify(magnifierAnimator).handleDragStopped();
     }
 
     @Test
-    @Feature({"TextInput", "HandleObserver"})
+    @Feature({"TextInput", "Magnifier"})
     public void testHandleObserverInsertionHandle() {
-        SelectionInsertionHandleObserver handleObserver =
-                Mockito.mock(SelectionInsertionHandleObserver.class);
-        InOrder order = inOrder(handleObserver);
-        mController.setSelectionInsertionHandleObserver(handleObserver);
+        MagnifierAnimator magnifierAnimator = Mockito.mock(MagnifierAnimator.class);
+        InOrder order = inOrder(magnifierAnimator);
+        mController.setMagnifierAnimator(magnifierAnimator);
 
         // Insertion handle shown.
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_SHOWN, 0, 0, 1, 1);
 
         // Insertion handle drag started.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 0.f, 0.f);
-        order.verify(handleObserver).handleDragStartedOrMoved(0.f, 0.f);
+        order.verify(magnifierAnimator).handleDragStartedOrMoved(0.f, 0.f);
 
         // Moving.
         mController.onDragUpdate(TouchSelectionDraggableType.TOUCH_HANDLE, 5.f, 5.f);
-        order.verify(handleObserver).handleDragStartedOrMoved(5.f, 5.f);
+        order.verify(magnifierAnimator).handleDragStartedOrMoved(5.f, 5.f);
 
         // Insertion handle drag stopped.
         mController.onSelectionEvent(SelectionEventType.INSERTION_HANDLE_DRAG_STOPPED, 0, 0, 1, 1);
-        order.verify(handleObserver).handleDragStopped();
+        order.verify(magnifierAnimator).handleDragStopped();
     }
 
     @Test

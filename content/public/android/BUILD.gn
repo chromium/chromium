@@ -310,7 +310,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/selection/MagnifierWrapperImpl.java",
     "java/src/org/chromium/content/browser/selection/PastePopupMenu.java",
     "java/src/org/chromium/content/browser/selection/SelectionIndicesConverter.java",
-    "java/src/org/chromium/content/browser/selection/SelectionInsertionHandleObserver.java",
     "java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java",
     "java/src/org/chromium/content/browser/selection/SmartSelectionClient.java",
     "java/src/org/chromium/content/browser/selection/SmartSelectionEventProcessor.java",

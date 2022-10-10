@@ -13,7 +13,7 @@ import org.chromium.base.Log;
  * MagnifierAnimator adds animation to MagnifierWrapper when there is a change in y direction.
  * MagnifierWrapper class isolated P APIs out so we could write test for MagnifierAnimator.
  */
-public class MagnifierAnimator implements SelectionInsertionHandleObserver {
+public class MagnifierAnimator {
     private static final boolean DEBUG = false;
     private static final String TAG = "Magnifier";
 
@@ -48,7 +48,6 @@ public class MagnifierAnimator implements SelectionInsertionHandleObserver {
         mTargetY = -1.0f;
     }
 
-    @Override
     public void handleDragStartedOrMoved(float x, float y) {
         if (!mMagnifier.isAvailable()) return;
         if (DEBUG) {
@@ -88,7 +87,6 @@ public class MagnifierAnimator implements SelectionInsertionHandleObserver {
         mMagnifierIsShowing = true;
     }
 
-    @Override
     public void handleDragStopped() {
         mMagnifier.dismiss();
         mAnimator.cancel();
