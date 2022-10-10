@@ -144,6 +144,12 @@ bool ReadbackTexturePlaneToMemorySyncSkImage(const VideoFrame& src_frame,
   DCHECK(gr_context);
 
   VideoPixelFormat format = ReadbackFormat(src_frame);
+  if (format == PIXEL_FORMAT_UNKNOWN) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << src_frame.AsHumanReadableString();
+    return false;
+  }
+
   int width = src_frame.columns(src_plane);
   int height = src_frame.rows(src_plane);
   bool has_alpha = !IsOpaque(format) && src_frame.NumTextures() == 1;
@@ -208,6 +214,12 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
                                          size_t dest_stride,
                                          gpu::raster::RasterInterface* ri) {
   VideoPixelFormat format = ReadbackFormat(src_frame);
+  if (format == PIXEL_FORMAT_UNKNOWN) {
+    DLOG(ERROR) << "Readback is not possible for this frame: "
+                << src_frame.AsHumanReadableString();
+    return false;
+  }
+
   bool has_alpha = !IsOpaque(format) && src_frame.NumTextures() == 1;
 
   const gpu::MailboxHolder& holder = src_frame.mailbox_holder(src_plane);
