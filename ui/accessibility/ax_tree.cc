@@ -21,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -789,6 +790,8 @@ AXNode* AXTree::GetFromId(AXNodeID id) const {
 }
 
 void AXTree::Destroy() {
+  base::ElapsedThreadTimer timer;
+
   table_info_map_.clear();
   if (!root_)
     return;
@@ -801,6 +804,9 @@ void AXTree::Destroy() {
     // raw_ptr instance that is allowed to dangle.
     DestroyNodeAndSubtree(root_.ExtractAsDangling(), nullptr);
   }  // tree_update_in_progress.
+
+  UMA_HISTOGRAM_TIMES("Accessibility.Performance.AXTree.Destroy",
+                      timer.Elapsed());
 }
 
 void AXTree::UpdateDataForTesting(const AXTreeData& new_data) {
