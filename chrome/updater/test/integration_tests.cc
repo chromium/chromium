@@ -783,15 +783,7 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
 
 // Tests that installing and uninstalling an old version of the updater from
 // CIPD is possible.
-// TODO(crbug.com/1341471) - this may be slightly flaky as the typelib errors
-// showing up on Windows (which resulted in disabling SelfUpdateFromOldReal) are
-// being investigated. This test is simpler than SelfUpdateFromOldReal.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InstallUninstallLowerVersion DISABLED_InstallUninstallLowerVersion
-#else
-#define MAYBE_InstallUninstallLowerVersion InstallUninstallLowerVersion
-#endif
-TEST_F(IntegrationTest, MAYBE_InstallUninstallLowerVersion) {
+TEST_F(IntegrationTest, InstallUninstallLowerVersion) {
   SetupRealUpdaterLowerVersion();
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
