@@ -1349,24 +1349,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundlePolicy"
-    enum="PeerConnectionBundlePolicy" expires_after="2022-08-28">
+    enum="PeerConnectionBundlePolicy" expires_after="2023-02-28">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Determines whether BUNDLE is configured. Recorded during the first DTLS
     connection establishment. Values are specified in
     https://w3c.github.io/webrtc-pc/#dom-rtcbundlepolicy
+
+    Warning: This histogram was expired from 2022-08-28 to 2022-10-10. Data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundleUsage"
-    enum="PeerConnectionBundleUsage" expires_after="2022-08-28">
+    enum="PeerConnectionBundleUsage" expires_after="2023-02-28">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Determines whether BUNDLE is used in remote offers or answers. Recorded
     during setRemoteDescription calls. Distinguishes between simple, complex,
     datachannel-only and legacy plan-b usage.
+
+    Warning: This histogram was expired from 2022-08-28 to 2022-10-10. Data may
+    be missing.
   </summary>
 </histogram>
 
