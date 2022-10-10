@@ -365,10 +365,10 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(self.browserState);
-  ChromeIdentity* authenticatedIdentity =
+  id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  return [authenticatedIdentity userEmail];
+  return authenticatedIdentity.userEmail;
 }
 
 // The dispatcher used for ApplicationCommands.
@@ -451,13 +451,13 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(self.browserState);
-  ChromeIdentity* authenticatedIdentity =
+  id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   switch (type) {
     case PasswordInfoBarType::SAVE: {
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          [authenticatedIdentity userEmail], isSyncUser,
+          authenticatedIdentity.userEmail, isSyncUser,
           /*password_update*/ false, std::move(form));
       delegate->set_handler(self.applicationCommandsHandler);
 
@@ -486,7 +486,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
         }
 
         auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-            [authenticatedIdentity userEmail], isSyncUser,
+            authenticatedIdentity.userEmail, isSyncUser,
             /*password_update*/ true, std::move(form));
         delegate->set_handler(self.applicationCommandsHandler);
         // If manual save, skip showing banner.
