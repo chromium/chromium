@@ -2405,6 +2405,7 @@ ci.builder(
 ci.builder(
     name = "Blink Unexpected Pass Finder",
     builderless = True,
+    cores = "16",
     console_view_entry = consoles.console_view_entry(
         short_name = "upf",
     ),
