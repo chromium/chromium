@@ -1866,7 +1866,15 @@ bool content::IsNSRange(id value) {
   if ([attribute
           isEqualToString:
               NSAccessibilityTextMarkerRangeForUIElementParameterizedAttribute]) {
-    AXPosition startPosition = _owner->CreateTextPositionAt(0);
+    if (![parameter isKindOfClass:[AXPlatformNodeCocoa class]])
+      return nil;
+
+    BrowserAccessibility* parameter_owner =
+        [(BrowserAccessibilityCocoa*)parameter owner];
+    if (!parameter_owner)
+      return nil;
+
+    AXPosition startPosition = parameter_owner->CreateTextPositionAt(0);
     AXPosition endPosition = startPosition->CreatePositionAtEndOfAnchor();
     AXRange range = AXRange(std::move(startPosition), std::move(endPosition));
     return AXRangeToAXTextMarkerRange(std::move(range));
