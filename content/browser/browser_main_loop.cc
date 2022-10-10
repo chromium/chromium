@@ -1117,6 +1117,15 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
   BrowserCompositorMac::DisableRecyclingForShutdown();
 #endif
 
+#if defined(USE_AURA)
+  if (env_) {
+    // ContextFactory is owned by ImageTransportFactory, which will delete the
+    // object in the `Terminate` call below. We need to make sure aura::Env
+    // doesn't reference it anymore when that happens.
+    env_->set_context_factory(nullptr);
+  }
+#endif
+
 #if defined(USE_AURA) || BUILDFLAG(IS_MAC)
   {
     TRACE_EVENT0("shutdown",
