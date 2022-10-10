@@ -2031,15 +2031,18 @@ void ServiceWorkerVersion::StartWorkerInternal() {
     params->policy_container =
         policy_container_host_->CreatePolicyContainerForBlink();
 
-    if (!client_security_state_) {
-      client_security_state_ = network::mojom::ClientSecurityState::New();
+    if (base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessForWorkers)) {
+      if (!client_security_state_) {
+        client_security_state_ = network::mojom::ClientSecurityState::New();
+      }
+      client_security_state_->ip_address_space =
+          policy_container_host_->ip_address_space();
+      client_security_state_->is_web_secure_context =
+          policy_container_host_->policies().is_web_secure_context;
+      client_security_state_->private_network_request_policy =
+          DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
     }
-    client_security_state_->ip_address_space =
-        policy_container_host_->ip_address_space();
-    client_security_state_->is_web_secure_context =
-        policy_container_host_->policies().is_web_secure_context;
-    client_security_state_->private_network_request_policy =
-        DerivePrivateNetworkRequestPolicy(policy_container_host_->policies());
   }
 
   embedded_worker_->Start(std::move(params),
