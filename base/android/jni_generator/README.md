@@ -253,7 +253,7 @@ If a Java object "owns" a native one, store the pointer via
 the object. For example, have a `close()` that deletes the native object.
 
 The best way to pass "compound" types across in either direction is to
-create an inner class with PODs and a factory function. If possible, make mark
+create an inner class with PODs and a factory function. If possible, mark
 all the fields as "final".
 
 ## Build Rules
