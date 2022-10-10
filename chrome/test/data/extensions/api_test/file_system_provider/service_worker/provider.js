@@ -44,6 +44,69 @@ class Queue {
   }
 };
 
+/**
+ * Splits the path into dir name and base name, e.g. '/a/b/c' -> '/a/b', 'c'.
+ *
+ * @param {string} pathString
+ * @returns {{dirPath: string, fileName:string}}
+ */
+function splitPath(pathString) {
+  const path = pathString.split('/');
+  const fileName = path.pop();
+  return {dirPath: path.join('/'), fileName};
+}
+
+class Entry {
+  /**
+   * @param {{
+   *  name: string,
+   *  isDirectory: boolean,
+   *  size: (number|undefined),
+   *  modificationTime: !Date
+   * }} metadata
+   * @param {?string} contents
+   * @param {Array<!Entry>} children
+   */
+  constructor(metadata, contents, children) {
+    this.metadata = metadata;
+    this.contents = contents;
+    /** @type {!Object<string, !Entry>} */
+    this.children =
+        Object.fromEntries((children || []).map(e => [e.metadata.name, e]));
+  }
+
+  /**
+   * @param {string} name
+   * @param {!Date} modificationTime
+   * @param {string} contents
+   */
+  static file(name, modificationTime, contents) {
+    return new Entry(
+        {
+          name,
+          isDirectory: false,
+          size: contents.length,
+          modificationTime,
+        },
+        contents, null);
+  }
+
+  /**
+   * @param {string} name
+   * @param {!Date} modificationTime
+   * @param {!Array<!Entry>} children
+   */
+  static dir(name, modificationTime, children) {
+    return new Entry(
+        {
+          name,
+          isDirectory: true,
+          modificationTime,
+        },
+        null, children);
+  }
+};
+
 export class TestFileSystemProvider {
   constructor(fileSystemId) {
     this.fileSystemId = fileSystemId;
@@ -51,84 +114,34 @@ export class TestFileSystemProvider {
      * Filesystem contents (data and metadata). The key is a full path, and the
      * value is an object containing metadata and file contents.
      *
-     * @private {!Object<string, !Object>}
+     * @private {!Entry}
      */
-    this.files = {
-      '/': {
-        metadata: {
-          isDirectory: true,
-          name: '',
-          size: 0,
-          modificationTime: new Date(2014, 4, 28, 10, 39, 15)
-        },
-      },
-      ['/' + TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY]: {
-        metadata: {
-          isDirectory: true,
-          name: TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY,
-          size: 0,
-          modificationTime: new Date(2014, 4, 28, 10, 39, 15),
-        },
-      },
-      ['/' + TestFileSystemProvider.FILE_DELETE]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_DELETE,
-          size: 0,
-          modificationTime: new Date(2014, 4, 28, 10, 39, 15),
-        },
-      },
+    this.root = Entry.dir('', new Date(2014, 4, 28, 10, 39, 15), [
       // Read error
-      ['/' + TestFileSystemProvider.FILE_FAIL]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_FAIL,
-          size: TestFileSystemProvider.INITIAL_TEXT.length,
-          modificationTime: new Date(2014, 1, 25, 7, 36, 12),
-        },
-        contents: TestFileSystemProvider.INITIAL_TEXT,
-      },
+      Entry.file(
+          TestFileSystemProvider.FILE_FAIL, new Date(2014, 1, 25, 7, 36, 12),
+          TestFileSystemProvider.INITIAL_TEXT),
       // Read and write blocks indefinitely.
-      ['/' + TestFileSystemProvider.FILE_BLOCKS_FOREVER]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_BLOCKS_FOREVER,
-          size: TestFileSystemProvider.INITIAL_TEXT.length,
-          modificationTime: new Date(2014, 1, 26, 8, 37, 13),
-        },
-        contents: TestFileSystemProvider.INITIAL_TEXT,
-      },
+      Entry.file(
+          TestFileSystemProvider.FILE_BLOCKS_FOREVER,
+          new Date(2014, 1, 26, 8, 37, 13),
+          TestFileSystemProvider.INITIAL_TEXT),
       // Open blocks until unblocked manually.
-      ['/' + TestFileSystemProvider.FILE_STALL_OPEN]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_STALL_OPEN,
-          size: TestFileSystemProvider.INITIAL_TEXT.length,
-          modificationTime: new Date(2014, 1, 26, 8, 37, 13),
-        },
-        contents: TestFileSystemProvider.INITIAL_TEXT,
-      },
+      Entry.file(
+          TestFileSystemProvider.FILE_STALL_OPEN,
+          new Date(2014, 1, 26, 8, 37, 13),
+          TestFileSystemProvider.INITIAL_TEXT),
       // Read blocks until unblocked manually.
-      ['/' + TestFileSystemProvider.FILE_STALL_READ]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_STALL_READ,
-          size: TestFileSystemProvider.INITIAL_TEXT.length,
-          modificationTime: new Date(2014, 1, 26, 8, 37, 13),
-        },
-        contents: TestFileSystemProvider.INITIAL_TEXT,
-      },
+      Entry.file(
+          TestFileSystemProvider.FILE_STALL_READ,
+          new Date(2014, 1, 26, 8, 37, 13),
+          TestFileSystemProvider.INITIAL_TEXT),
       // Read returns data in chunks.
-      ['/' + TestFileSystemProvider.FILE_READ_SUCCESS]: {
-        metadata: {
-          isDirectory: false,
-          name: TestFileSystemProvider.FILE_READ_SUCCESS,
-          size: TestFileSystemProvider.INITIAL_TEXT.length,
-          modificationTime: new Date(2014, 1, 25, 7, 36, 12)
-        },
-        contents: TestFileSystemProvider.INITIAL_TEXT,
-      },
-    };
+      Entry.file(
+          TestFileSystemProvider.FILE_READ_SUCCESS,
+          new Date(2014, 1, 25, 7, 36, 12),
+          TestFileSystemProvider.INITIAL_TEXT),
+    ]);
 
     /**
      * Map of opened files, from a `openRequestId` to `filePath`.
@@ -229,24 +242,29 @@ export class TestFileSystemProvider {
 
   /**
    * Called by the test. Add files to the provider's filesystem.
-   * @param {!Object<string, !Object>} files
+   *
+   * @param {!Object<string, !Entry>} files a map of paths to entries.
    */
   addFiles(files) {
-    // Restore Date objects after receiving data via postMessage.
-    for (const file of Object.values(files)) {
+    for (const path of Object.keys(files)) {
+      const file = files[path];
+      const {dirPath} = splitPath(path);
+      // Restore Date objects after receiving data via postMessage.
       file.metadata.modificationTime = new Date(file.metadata.modificationTime);
+      const entry = new Entry(file.metadata, file.contents, null);
+      this.findEntryByPath(dirPath).children[entry.metadata.name] = entry;
     }
-    this.files = {...this.files, ...files};
   }
 
   /**
    * Called by the test. Gets contents of a given file.
    *
    * @param {string} filePath
-   * @returns The current text contents of the file.
+   * @returns {string|null} The current text contents of the file.
    */
   getFileContents(filePath) {
-    return this.files[filePath].contents;
+    const entry = this.findEntryByPath(filePath);
+    return entry ? entry.contents : null;
   }
 
   /**
@@ -325,6 +343,32 @@ export class TestFileSystemProvider {
     this.stalledRequests = {};
   }
 
+  /**
+   * Finds a file or directory entry by path.
+   *
+   * @param {string} pathString
+   * @returns {?Entry}
+   */
+  findEntryByPath(pathString) {
+    let path = pathString.split('/');
+    if (path[0] != '') {
+      // Must start with "/"
+      return null;
+    }
+    path = path.slice(1);
+
+    let entry = this.root;
+    for (const fileName of path) {
+      const child = entry.children[fileName];
+      if (child) {
+        entry = child;
+      } else {
+        return null;
+      }
+    }
+    return entry;
+  }
+
   onAbortRequested(options, onSuccess, onError) {
     this.recordEvent('onAbortRequested', options);
     if (options.fileSystemId !== this.fileSystemId) {
@@ -349,14 +393,13 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (options.entryPath in this.files) {
+    if (this.findEntryByPath(options.entryPath)) {
       onSuccess();
       return;
     }
 
     onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
   };
-
 
   /**
    * FSP: implementation for the file close request event. The file,
@@ -401,22 +444,23 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (!(options.sourcePath in this.files)) {
+    const source = this.findEntryByPath(options.sourcePath);
+    if (!source) {
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
       return;
     }
 
-    if (options.targetPath in this.files) {
+    if (this.findEntryByPath(options.targetPath)) {
       onError(chrome.fileSystemProvider.ProviderError.EXISTS);
       return;
     }
 
     // Copy the metadata, but change the 'name' field.
-    const source = this.files[options.sourcePath];
     /** @suppress {undefinedVars} */
     const dest = structuredClone(source);
-    dest.name = options.targetPath.split('/').pop();
-    this.files[options.targetPath] = dest;
+    const {dirPath, fileName} = splitPath(options.targetPath);
+    dest.name = fileName;
+    this.findEntryByPath(dirPath).children[dest.name] = dest;
 
     onSuccess();
   }
@@ -441,21 +485,19 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (options.filePath in this.files) {
+    if (this.findEntryByPath(options.filePath)) {
       onError(chrome.fileSystemProvider.ProviderError.EXISTS);
       return;
     }
 
-    this.files[options.filePath] = {
-      metadata: {
-        isDirectory: false,
-        name: options.filePath.split('/').pop(),
-        size: 0,
-        modificationTime: new Date()
-      },
-      contents: '',
-    };
+    const {dirPath, fileName} = splitPath(options.filePath);
+    const dir = this.findEntryByPath(dirPath);
+    if (!dir) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
 
+    dir.children[fileName] = Entry.file(fileName, new Date(), '');
     onSuccess();
   };
 
@@ -475,12 +517,13 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (!(options.entryPath in this.files)) {
+    const entry = this.findEntryByPath(options.entryPath);
+    if (!entry) {
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
       return;
     }
 
-    onSuccess(this.files[options.entryPath].metadata);
+    onSuccess(entry.metadata);
   };
 
   /**
@@ -501,8 +544,8 @@ export class TestFileSystemProvider {
       return;
     }
 
-    const metadata = this.files[options.filePath].metadata;
-    if (!metadata || metadata.is_directory) {
+    const entry = this.findEntryByPath(options.filePath);
+    if (!entry || entry.metadata.isDirectory) {
       onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
       return;
     }
@@ -550,7 +593,8 @@ export class TestFileSystemProvider {
 
     const filePath = this.openedFiles[options.openRequestId];
     if (filePath === '/' + TestFileSystemProvider.FILE_READ_SUCCESS) {
-      sendFileInChunks(this.files[filePath]);
+      const entry = this.findEntryByPath(filePath);
+      sendFileInChunks(entry);
       return;
     }
 
@@ -571,9 +615,9 @@ export class TestFileSystemProvider {
 
     if (filePath === '/' + TestFileSystemProvider.FILE_STALL_READ) {
       // Block the read until it's unblocked.
-      const file = this.files[filePath];
+      const entry = this.findEntryByPath(filePath);
       this.stallRequest('onReadFileRequested', options)
-          .then(() => sendFileInChunks(file));
+          .then(() => sendFileInChunks(entry));
       return;
     }
 
@@ -594,7 +638,7 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (options.entryPath in this.files) {
+    if (!this.findEntryByPath(options.entryPath)) {
       onSuccess();
       return;
     }
@@ -622,13 +666,18 @@ export class TestFileSystemProvider {
     }
 
     const filePath = this.openedFiles[options.openRequestId];
-    if (!(filePath in this.files)) {
+    const entry = this.findEntryByPath(filePath);
+    if (!entry) {
       onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
       return;
     }
 
-    const file = this.files[filePath];
-    const metadata = file.metadata;
+    const metadata = entry.metadata;
+
+    if (metadata.isDirectory) {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
 
     if (filePath === '/' + TestFileSystemProvider.FILE_FAIL) {
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
@@ -652,7 +701,7 @@ export class TestFileSystemProvider {
     }
 
     // Create an array with enough space for new data.
-    const oldArray = new TextEncoder().encode(file.contents || '');
+    const oldArray = new TextEncoder().encode(entry.contents || '');
     const newLength =
         Math.max(oldArray.length, options.offset + options.data.byteLength);
     const newArray = new Uint8Array(new ArrayBuffer(newLength));
@@ -661,7 +710,7 @@ export class TestFileSystemProvider {
     newArray.set(new Uint8Array(options.data), options.offset);
     // Save the new file as text.
     const newContents = new TextDecoder().decode(newArray);
-    file.contents = newContents;
+    entry.contents = newContents;
     metadata.size = newContents.length;
     onSuccess();
   }
@@ -686,21 +735,24 @@ export class TestFileSystemProvider {
       return;
     }
 
-    if (options.entryPath ===
-        '/' + TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY) {
-      if (options.recursive)
-        onSuccess();
-      else
-        onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+    const entry = this.findEntryByPath(options.entryPath);
+    if (!entry) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
       return;
     }
 
-    if (options.entryPath === '/' + TestFileSystemProvider.FILE_DELETE) {
-      onSuccess();
+    if (entry.metadata.isDirectory &&
+        (!options.recursive && Object.keys(entry.children).length > 0)) {
+      // Don't allow non-recursive deletion of non-empty directories.
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
       return;
     }
 
-    onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+    const {dirPath, fileName} = splitPath(options.entryPath);
+    const parentEntry = this.findEntryByPath(dirPath);
+    delete parentEntry.children[fileName];
+
+    onSuccess();
   }
 };
 
@@ -765,22 +817,6 @@ TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
  * @const
  */
 TestFileSystemProvider.INITIAL_TEXT = 'Hello world. How are you today?';
-
-/**
- * Non-empty directory. Can only be deleted recursively.
- *
- * @type {string}
- * @const
- */
-TestFileSystemProvider.TEST_DIR_DELETE_NONEMPTY = 'non-empty-directory';
-
-/**
- * File to be deleted.
- *
- * @type {string}
- * @const
- */
-TestFileSystemProvider.FILE_DELETE = 'file-delete.txt';
 
 // Service worker entry point.
 export function serviceWorkerMain(serviceWorker) {
