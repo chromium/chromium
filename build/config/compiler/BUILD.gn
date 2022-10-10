@@ -1532,6 +1532,15 @@ config("default_warnings") {
     ]
   }
 
+  if (!is_nacl || is_nacl_saigo) {
+    cflags += [
+      # An ABI compat warning we don't care about, https://crbug.com/1102157
+      # TODO(thakis): Push this to the (few) targets that need it,
+      # instead of having a global flag.
+      "-Wno-psabi",
+    ]
+  }
+
   if (is_clang) {
     cflags += [
       "-Wloop-analysis",
@@ -1551,11 +1560,6 @@ config("default_warnings") {
 
       cflags += [
         "-Wenum-compare-conditional",
-
-        # An ABI compat warning we don't care about, https://crbug.com/1102157
-        # TODO(thakis): Push this to the (few) targets that need it,
-        # instead of having a global flag.
-        "-Wno-psabi",
 
         # Ignore warnings about MSVC optimization pragmas.
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
