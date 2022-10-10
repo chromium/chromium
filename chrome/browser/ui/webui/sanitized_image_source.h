@@ -11,16 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/url_data_source.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 
 class Profile;
-
-namespace gfx {
-class Image;
-}  // namespace gfx
-
-namespace image_fetcher {
-class ImageDecoder;
-}  // namespace image_fetcher
+class SkBitmap;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -36,11 +32,15 @@ class IdentityManager;
 // WebUIs. For security reasons WebUIs are not allowed to download and decode
 // external images in their renderer process. The sanitized image source allows
 // external images in WebUIs by downloading the image in the browser process,
-// decoding the image in an isolated utility process, re-encoding the image as
-// PNG and sending the now sanitized image back to the requesting WebUI. You can
-// reach the image source via:
+// decoding the image in an isolated utility process, re-encoding the image and
+// sending the now sanitized image back to the requesting WebUI. You can reach
+// the image source via:
 //
 //   chrome://image?<external image URL>
+//
+// If the source is an animated image, it will be re-encoded as an animated
+// WebP image; otherwise it will be re-encoded as a static PNG image.
+// TODO(b/251540838): Add attribute to always encode into static image.
 //
 // If the image source points to Google Photos storage, meaning it needs an auth
 // token to be downloaded, you can use the is-google-photos attribute as
@@ -48,12 +48,31 @@ class IdentityManager;
 //   chrome://image?url=<external image URL>&isGooglePhotos=true
 class SanitizedImageSource : public content::URLDataSource {
  public:
+  using DecodeAnimationCallback =
+      data_decoder::mojom::ImageDecoder::DecodeAnimationCallback;
+
+  // A delegate class that is faked out for testing purposes.
+  class DataDecoderDelegate {
+   public:
+    DataDecoderDelegate() = default;
+    virtual ~DataDecoderDelegate() = default;
+
+    virtual void DecodeAnimation(const std::string& data,
+                                 DecodeAnimationCallback callback);
+
+   private:
+    // The instance of the Data Decoder used by this DataDecoderDelegate to
+    // perform any image decoding operations. The underlying service instance is
+    // started lazily when needed and torn down when not in use.
+    data_decoder::DataDecoder data_decoder_;
+  };
+
   explicit SanitizedImageSource(Profile* profile);
   // This constructor lets us pass mock dependencies for testing.
   SanitizedImageSource(
       Profile* profile,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<image_fetcher::ImageDecoder> image_decoder);
+      std::unique_ptr<DataDecoderDelegate> delegate);
   SanitizedImageSource(const SanitizedImageSource&) = delete;
   SanitizedImageSource& operator=(const SanitizedImageSource&) = delete;
   ~SanitizedImageSource() override;
@@ -80,15 +99,23 @@ class SanitizedImageSource : public content::URLDataSource {
   void OnImageLoaded(std::unique_ptr<network::SimpleURLLoader> loader,
                      content::URLDataSource::GotDataCallback callback,
                      std::unique_ptr<std::string> body);
-  void OnImageDecoded(content::URLDataSource::GotDataCallback callback,
-                      const gfx::Image& image);
+  void OnAnimationDecoded(
+      content::URLDataSource::GotDataCallback callback,
+      std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames);
+
+  void EncodeAndReplyStaticImage(
+      content::URLDataSource::GotDataCallback callback,
+      const SkBitmap& bitmap);
+  void EncodeAndReplyAnimatedImage(
+      content::URLDataSource::GotDataCallback callback,
+      std::vector<data_decoder::mojom::AnimationFramePtr> mojo_frames);
 
   // Owned by `IdentityManagerFactory` or `IdentityTestEnvironment`.
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  std::unique_ptr<image_fetcher::ImageDecoder> image_decoder_;
+  std::unique_ptr<DataDecoderDelegate> data_decoder_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<SanitizedImageSource> weak_ptr_factory_{this};
