@@ -7,9 +7,9 @@
 
 #include "components/sync/driver/trusted_vault_client.h"
 
-@class ChromeIdentity;
 class ChromeAccountManagerService;
 class TrustedVaultClientBackend;
+@protocol SystemIdentity;
 
 // iOS version of TrustedVaultClient. This class uses the Chrome trusted vault
 // service to store the shared keys.
@@ -46,7 +46,7 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
 
  private:
   // Returns the identity for `account_info`.
-  ChromeIdentity* IdentityForAccount(const CoreAccountInfo& account_info);
+  id<SystemIdentity> IdentityForAccount(const CoreAccountInfo& account_info);
 
   ChromeAccountManagerService* const account_manager_service_ = nullptr;
   TrustedVaultClientBackend* const backend_ = nullptr;

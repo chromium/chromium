@@ -78,7 +78,7 @@ void IOSTrustedVaultClient::ClearDataForAccount(
   // on iOS.
 }
 
-ChromeIdentity* IOSTrustedVaultClient::IdentityForAccount(
+id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(
     const CoreAccountInfo& account_info) {
   return account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
 }
