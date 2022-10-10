@@ -199,6 +199,16 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut_by_user_windowed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All, WebApp) | uninstall_policy_app | check_platform_shortcut_and_icon |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | install_or_shortcut_by_user_windowed | uninstall_policy_app | check_app_in_list_windowed |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | install_or_shortcut_by_user_windowed | uninstall_policy_app | check_platform_shortcut_and_icon |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Windowed, WebShortcut) | launch(StandaloneNotStartUrl) | check_app_navigation(StandaloneNotStartUrl) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Windowed, WebApp) | launch(Standalone) | check_app_navigation(Standalone) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Browser, WebApp) | launch_from_chrome_apps(Standalone) | check_browser_navigation(Standalone) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Browser, WebApp) | launch_from_platform_shortcut(Standalone) | check_browser_navigation(Standalone) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Browser, WebShortcut) | launch_from_chrome_apps(StandaloneNotStartUrl) | check_browser_navigation(StandaloneNotStartUrl) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, Browser, WebShortcut) | launch_from_platform_shortcut(StandaloneNotStartUrl) | check_browser_navigation(StandaloneNotStartUrl) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, WindowOptions::All, WebApp) | check_app_not_in_list(StandaloneNotStartUrl) | check_app_in_list_icon_correct(Standalone) |
+| WMLC | install_policy_app(StandaloneNotStartUrl, WithShortcut, WindowOptions::All, WebShortcut) | check_app_not_in_list(Standalone) | check_app_in_list_icon_correct(StandaloneNotStartUrl) |
+
+
 
 ## Manifest update tests
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
