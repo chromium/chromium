@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -795,6 +796,10 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
 
 // Tests that -applicationDidEnterBackground calls the metrics mediator.
 TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
+  // This is a breakpad only test and can be deprecated once Breakpad is
+  // removed.
+  if (crash_helper::common::CanUseCrashpad())
+    return;
   swizzleSafeModeShouldStart(NO);
   [[getStartupInformationMock() stub] setIsFirstRun:YES];
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];

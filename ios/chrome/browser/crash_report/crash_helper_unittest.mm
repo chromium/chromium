@@ -142,6 +142,10 @@ TEST_F(BreakpadHelperTest, IsUploadingEnabled) {
 }
 
 TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
+  // This is a breakpad only test and can be deprecated once Breakpad is
+  // removed.
+  if (crash_helper::common::CanUseCrashpad())
+    return;
   // Test when crash reporter is disabled.
   crash_helper::SetEnabled(false);
   crash_helper::StartUploadingReportsInRecoveryMode();
@@ -167,6 +171,11 @@ TEST_F(BreakpadHelperTest, StartUploadingReportsInRecoveryMode) {
 }
 
 TEST_F(BreakpadHelperTest, RestoreDefaultConfiguration) {
+  // This is a breakpad only test and can be deprecated once Breakpad is
+  // removed.
+  if (crash_helper::common::CanUseCrashpad())
+    return;
+
   // Test when crash reporter is disabled.
   crash_helper::SetEnabled(false);
   crash_helper::RestoreDefaultConfiguration();

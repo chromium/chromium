@@ -148,6 +148,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public/mojom",
   "+services/network/public/cpp",
+  "+third_party/crashpad/crashpad/client",
   "+third_party/breakpad/breakpad/src/client/ios",
   "+third_party/breakpad/breakpad/src/common",
   "+third_party/libaddressinput",

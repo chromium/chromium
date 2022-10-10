@@ -123,6 +123,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/breakpad:client",
+    "//third_party/crashpad/crashpad/client:common",
     "//third_party/ocmock",
   ]
 }

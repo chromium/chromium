@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
+#import "base/files/scoped_temp_dir.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "components/crash/core/app/crashpad.h"
+#import "components/crash/core/common/reporter_running_ios.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
-#import "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
+#import "third_party/crashpad/crashpad/client/crash_report_database.h"
+#import "third_party/crashpad/crashpad/client/crashpad_client.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -30,6 +34,22 @@ class SafeModeViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
+    if (crash_helper::common::CanUseCrashpad()) {
+      ASSERT_FALSE(crash_reporter::internal::GetCrashReportDatabase());
+      ASSERT_TRUE(database_dir_.CreateUniqueTempDir());
+      database_dir_path_ = database_dir_.GetPath();
+      ASSERT_TRUE(client_.StartCrashpadInProcessHandler(
+          database_dir_path_, "", {},
+          crashpad::CrashpadClient::
+              ProcessPendingReportsObservationCallback()));
+      database_ = crashpad::CrashReportDatabase::Initialize(database_dir_path_);
+      crash_reporter::internal::SetCrashReportDatabaseForTesting(
+          database_.get(), &database_dir_path_);
+
+      crash_reporter::SetCrashpadRunning(true);
+      return;
+    }
+
     mock_breakpad_controller_ =
         [OCMockObject mockForClass:[BreakpadController class]];
 
@@ -44,13 +64,22 @@ class SafeModeViewControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    [[mock_breakpad_controller_ stub] stop];
-    crash_helper::SetEnabled(false);
+    if (crash_helper::common::CanUseCrashpad()) {
+      client_.ResetForTesting();
+      crash_reporter::SetCrashpadRunning(false);
+    } else {
+      [[mock_breakpad_controller_ stub] stop];
+      crash_helper::SetEnabled(false);
+    }
 
     PlatformTest::TearDown();
   }
 
  protected:
+  crashpad::CrashpadClient client_;
+  std::unique_ptr<crashpad::CrashReportDatabase> database_;
+  base::FilePath database_dir_path_;
+  base::ScopedTempDir database_dir_;
   base::test::TaskEnvironment task_environment;
   id mock_breakpad_controller_;
   std::unique_ptr<ScopedBlockSwizzler>
@@ -63,6 +92,18 @@ class SafeModeViewControllerTest : public PlatformTest {
 // on the value of crash_helper::IsEnabled or
 // crash_helper::IsUploadingEnabled.
 TEST_F(SafeModeViewControllerTest, HasSuggestions) {
+  if (crash_helper::common::CanUseCrashpad()) {
+    crash_helper::common::SetUserEnabledUploading(false);
+    EXPECT_FALSE([SafeModeViewController hasSuggestions]);
+
+    crash_reporter::DumpWithoutCrashing();
+    crash_reporter::DumpWithoutCrashing();
+    EXPECT_FALSE([SafeModeViewController hasSuggestions]);
+
+    crash_helper::common::SetUserEnabledUploading(true);
+    EXPECT_TRUE([SafeModeViewController hasSuggestions]);
+    return;
+  }
   // Test when crash reporter is disabled.
   crash_helper::common::SetUserEnabledUploading(false);
   EXPECT_FALSE([SafeModeViewController hasSuggestions]);
