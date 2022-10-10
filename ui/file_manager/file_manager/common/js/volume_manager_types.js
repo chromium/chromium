@@ -50,7 +50,10 @@ VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit = {
 };
 
 /**
- * Type of a root directory.
+ * Type of a navigation root.
+ *
+ * Navigation root are the top-level entries in the navigation tree, in the left
+ * hand side.
  * @enum {string}
  * @const
  */
@@ -170,10 +173,6 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.TRASH,                     // 27
   VolumeManagerCommon.RootType.GUEST_OS,                  // 28
 ];
-console.assert(
-    Object.keys(VolumeManagerCommon.RootType).length ===
-        VolumeManagerCommon.RootTypesForUMA.length,
-    'Members in RootTypesForUMA do not match them in RootTypes.');
 
 /**
  * Error type of VolumeManager.
