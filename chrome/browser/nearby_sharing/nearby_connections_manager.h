@@ -64,7 +64,7 @@ class NearbyConnectionsManager {
     PayloadStatusListener();
     virtual ~PayloadStatusListener();
 
-    base::WeakPtr<PayloadStatusListener> GetWeakPtr() const;
+    base::WeakPtr<PayloadStatusListener> GetWeakPtr();
 
     // Note: |upgraded_medium| is passed in for use in metrics, and it is
     // absl::nullopt if the bandwidth has not upgraded yet or if the upgrade

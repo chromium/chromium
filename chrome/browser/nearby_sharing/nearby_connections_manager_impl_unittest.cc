@@ -356,7 +356,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
 
   void SendPayload(
       int64_t payload_id,
-      const testing::NiceMock<MockPayloadStatusListener>& payload_listener) {
+      testing::NiceMock<MockPayloadStatusListener>& payload_listener) {
     const std::vector<uint8_t> expected_payload(std::begin(kPayload),
                                                 std::end(kPayload));
 

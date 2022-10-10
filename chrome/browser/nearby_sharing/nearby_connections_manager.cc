@@ -48,6 +48,6 @@ NearbyConnectionsManager::PayloadStatusListener::~PayloadStatusListener() =
     default;
 
 base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener>
-NearbyConnectionsManager::PayloadStatusListener::GetWeakPtr() const {
+NearbyConnectionsManager::PayloadStatusListener::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
