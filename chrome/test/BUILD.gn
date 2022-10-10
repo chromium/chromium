@@ -8944,6 +8944,7 @@ test("unit_tests") {
       "../browser/supervised_user/child_accounts/permission_request_creator_apiary_unittest.cc",
       "../browser/supervised_user/kids_chrome_management/kids_access_token_fetcher_unittest.cc",
       "../browser/supervised_user/kids_chrome_management/kids_external_fetcher_unittest.cc",
+      "../browser/supervised_user/kids_chrome_management/kids_profile_manager_unittest.cc",
       "../browser/supervised_user/kids_management_url_checker_client_unittest.cc",
       "../browser/supervised_user/parental_control_metrics_unittest.cc",
       "../browser/supervised_user/supervised_user_favicon_request_handler_unittest.cc",

@@ -7687,6 +7687,8 @@ static_library("browser") {
       "supervised_user/kids_chrome_management/kids_external_fetcher.h",
       "supervised_user/kids_chrome_management/kids_management_service.cc",
       "supervised_user/kids_chrome_management/kids_management_service.h",
+      "supervised_user/kids_chrome_management/kids_profile_manager.cc",
+      "supervised_user/kids_chrome_management/kids_profile_manager.h",
       "supervised_user/kids_management_url_checker_client.cc",
       "supervised_user/kids_management_url_checker_client.h",
       "supervised_user/parental_control_metrics.cc",
