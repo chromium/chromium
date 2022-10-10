@@ -41,7 +41,7 @@ GuestOsMountProviderRegistry::Id GuestOsMountProviderRegistry::Register(
   Id id = next_id_++;
   providers_[id] = std::move(provider);
   for (auto& observer : observers_) {
-    observer.OnRegistered(id, provider.get());
+    observer.OnRegistered(id, providers_[id].get());
   }
   return id;
 }

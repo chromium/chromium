@@ -21,6 +21,7 @@ class MockObserver : public GuestOsMountProviderRegistry::Observer {
  public:
   std::vector<Id> ids_;
   void OnRegistered(Id id, GuestOsMountProvider* provider) override {
+    DCHECK(provider);
     ids_.push_back(id);
   }
   void OnUnregistered(Id id) override {
