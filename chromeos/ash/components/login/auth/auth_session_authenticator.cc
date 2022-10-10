@@ -448,11 +448,14 @@ void AuthSessionAuthenticator::DoUnlock(
     std::move(error_callback).Run(std::move(context), error.value());
     return;
   }
-  LOGIN_LOG(EVENT) << "Regular User Unlock " << user_exists;
 
-  if (!user_exists &&
-      !is_ephemeral_mount_enforced_) {  // Scenario where user does not exist
-                                        // and ephemeral mount is not enforced.
+  bool is_user_ephemeral =
+      is_ephemeral_mount_enforced_ ||
+      (context->GetUserType() == user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  LOGIN_LOG(EVENT) << "Regular User Unlock " << user_exists << " "
+                   << is_ephemeral_mount_enforced_ << " " << is_user_ephemeral;
+
+  if (!user_exists && !is_user_ephemeral) {
     LOGIN_LOG(ERROR)
         << "User directory does not exist for supposedly existing user";
     std::move(error_callback)
@@ -461,7 +464,7 @@ void AuthSessionAuthenticator::DoUnlock(
                  user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND});
     return;
   }
-  DCHECK(user_exists && !is_ephemeral_mount_enforced_);
+  DCHECK(user_exists || is_user_ephemeral);
 
   bool challenge_response_auth = !context->GetChallengeResponseKeys().empty();
 
