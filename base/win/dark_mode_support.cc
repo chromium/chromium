@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include "base/native_library.h"
-#include "base/no_destructor.h"
 #include "base/win/windows_version.h"
 
 namespace {
@@ -53,9 +52,8 @@ struct DarkModeSupport {
 };
 
 const DarkModeSupport& GetDarkModeSupport() {
-  static const base::NoDestructor<DarkModeSupport,
-                                  base::AllowForTriviallyDestructibleType>
-      dark_mode_support([] {
+  static const DarkModeSupport dark_mode_support =
+      [] {
         DarkModeSupport dark_mode_support;
         auto* os_info = base::win::OSInfo::GetInstance();
         // Dark mode only works on WIN10_RS5 and up.
@@ -83,8 +81,8 @@ const DarkModeSupport& GetDarkModeSupport() {
                       MAKEINTRESOURCEA(kUxThemeAllowDarkModeForWindowOrdinal)));
         }
         return dark_mode_support;
-      }());
-  return *dark_mode_support;
+      }();
+  return dark_mode_support;
 }
 
 }  // namespace

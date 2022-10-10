@@ -60,7 +60,7 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   void NotifyPCScanEnabled();
 
  private:
-  template <typename, typename>
+  template <typename>
   friend class base::NoDestructor;
 
   NonScannableAllocatorImpl();

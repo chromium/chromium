@@ -10,28 +10,50 @@
 #include <utility>
 
 namespace base {
-// A tag type used for NoDestructor to allow it to be created for a type that
-// has a trivial destructor. Use for cases where the same class might have
-// different implementations that vary on destructor triviality or when the
-// LSan hiding properties of NoDestructor are needed.
-struct AllowForTriviallyDestructibleType;
 
-// A wrapper that makes it easy to create an object of type T with static
-// storage duration that:
-// - is only constructed on first access
-// - never invokes the destructor
-// in order to satisfy the styleguide ban on global constructors and
-// destructors.
+// Helper type to create a function-local static variable of type `T` when `T`
+// has a non-trivial destructor. Storing a `T` in a `base::NoDestructor<T>` will
+// prevent `~T()` from running, even when the variable goes out of scope.
 //
-// Runtime constant example:
-// const std::string& GetLineSeparator() {
-//  // Forwards to std::string(size_t, char, const Allocator&) constructor.
-//   static const base::NoDestructor<std::string> s(5, '-');
+// Useful when a variable has static storage duration but its type has a
+// non-trivial destructor. Chromium bans global constructors and destructors:
+// using a function-local static variable prevents the former, while using
+// `base::NoDestructor<T>` prevents the latter.
+//
+// ## Caveats
+//
+// - Must only be used as a function-local static variable. Declaring a global
+//   variable of type `base::NoDestructor<T>` will still generate a global
+//   constructor; declaring a local or member variable will lead to memory leaks
+//   or other surprising and undesirable behaviour.
+//
+// - If the data is rarely used, consider creating it on demand rather than
+//   caching it for the lifetime of the program. Though `base::NoDestructor<T>`
+//   does not heap allocate, the compiler still reserves space in bss for
+//   storing `T`, which costs memory at runtime.
+//
+// - If `T` is trivially destructible, do not use `base::NoDestructor<T>`:
+//
+//     const uint64_t GetUnstableSessionSeed() {
+//       // No need to use `base::NoDestructor<T>` as `uint64_t` is trivially
+//       // destructible and does not require a global destructor.
+//       static const uint64_t kSessionSeed = base::RandUint64();
+//       return kSessionSeed;
+//     }
+//
+// ## Example Usage
+//
+// const std::string& GetDefaultText() {
+//   // Required since `static const std::string` requires a global destructor.
+//   static const base::NoDestructor<std::string> s("Hello world!");
 //   return *s;
 // }
 //
-// More complex initialization with a lambda:
-// const std::string& GetSessionNonce() {
+// More complex initialization using a lambda:
+//
+// const std::string& GetRandomNonce() {
+//   // `nonce` is initialized with random data the first time this function is
+//   // called, but its value is fixed thereafter.
 //   static const base::NoDestructor<std::string> nonce([] {
 //     std::string s(16);
 //     crypto::RandString(s.data(), s.size());
@@ -40,29 +62,24 @@ struct AllowForTriviallyDestructibleType;
 //   return *nonce;
 // }
 //
-// NoDestructor<T> stores the object inline, so it also avoids a pointer
-// indirection and a malloc. Also note that since C++11 static local variable
-// initialization is thread-safe and so is this pattern. Code should prefer to
-// use NoDestructor<T> over:
-// - A function scoped static T* or T& that is dynamically initialized.
-// - A global base::LazyInstance<T>.
+// ## Thread safety
 //
-// Note that since the destructor is never run, this *will* leak memory if used
-// as a stack or member variable. Furthermore, a NoDestructor<T> should never
-// have global scope as that may require a static initializer.
-template <typename T, typename O = std::nullptr_t>
+// Initialisation of function-local static variables is thread-safe since C++11.
+// The standard guarantees that:
+//
+// - function-local static variables will be initialised the first time
+//   execution passes through the declaration.
+//
+// - if another thread's execution concurrently passes through the declaration
+//   in the middle of initialisation, that thread will wait for the in-progress
+//   initialisation to complete.
+template <typename T>
 class NoDestructor {
  public:
   static_assert(
-      !std::is_trivially_destructible<T>::value ||
-          std::is_same<O, AllowForTriviallyDestructibleType>::value,
-      "base::NoDestructor is not needed because the templated class has a "
-      "trivial destructor");
-
-  static_assert(std::is_same<O, AllowForTriviallyDestructibleType>::value ||
-                    std::is_same<O, std::nullptr_t>::value,
-                "AllowForTriviallyDestructibleType is the only valid option "
-                "for the second template parameter of NoDestructor");
+      !std::is_trivially_destructible_v<T>,
+      "T is trivially destructible; please use a function-local static "
+      "of type T directly instead");
 
   // Not constexpr; just write static constexpr T x = ...; if the value should
   // be a constexpr.

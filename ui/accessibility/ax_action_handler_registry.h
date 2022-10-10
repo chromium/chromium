@@ -15,7 +15,7 @@
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace base {
-template <typename T, typename O>
+template <typename T>
 class NoDestructor;
 }  // namespace base
 
@@ -76,7 +76,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   void PerformAction(const ui::AXActionData& action_data);
 
  private:
-  friend base::NoDestructor<AXActionHandlerRegistry, std::nullptr_t>;
+  friend base::NoDestructor<AXActionHandlerRegistry>;
 
   // Allows registration of tree ids meant to be internally by AXActionHandler*.
   // These typically involve the creation of a new tree id.

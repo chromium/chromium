@@ -157,10 +157,16 @@ enum class PinchPhase {
 // out exactly which processes need to initialize and shutdown PDFium.
 class PerProcessInitializer final {
  public:
+  ~PerProcessInitializer() {
+    // On some configs, thread checker is trivially destructible, which makes
+    // `PerProcessInitializer` trivially destructible as well. This is a problem
+    // because `base::NoDestructor` only allows non-trivially destructible
+    // types. Force `PerProcessInitializer` to be non-trivially destructible by
+    // declaring a non-default destructor.
+  }
+
   static PerProcessInitializer& GetInstance() {
-    static base::NoDestructor<PerProcessInitializer,
-                              base::AllowForTriviallyDestructibleType>
-        instance;
+    static base::NoDestructor<PerProcessInitializer> instance;
     return *instance;
   }
 

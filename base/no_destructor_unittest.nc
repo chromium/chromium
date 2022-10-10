@@ -11,18 +11,11 @@
 
 namespace base {
 
-#if defined(NCTEST_NODESTRUCTOR_REQUIRES_NONTRIVIAL_DESTRUCTOR) // [r"fatal error: static_assert failed due to requirement '!std::is_trivially_destructible<bool>::value || std::is_same<nullptr_t, base::AllowForTriviallyDestructibleType>::value': base::NoDestructor is not needed because the templated class has a trivial destructor"]
+#if defined(NCTEST_NODESTRUCTOR_REQUIRES_NONTRIVIAL_DESTRUCTOR) // [r"static assertion failed due to requirement '!std::is_trivially_destructible_v<bool>'"]
 
 // Attempt to make a NoDestructor for a type with a trivial destructor.
 void WontCompile() {
   NoDestructor<bool> nd;
-}
-
-#elif defined(NCTEST_NODESTRUCTOR_PARAMETER) // [r"fatal error: static_assert failed due to requirement 'std::is_same<std::string, base::AllowForTriviallyDestructibleType>::value || std::is_same<std::string, nullptr_t>::value': AllowForTriviallyDestructibleType is the only valid option for the second template parameter of NoDestructor"]
-
-// Attempt to make a NoDestructor for a type with an invalid option.
-void WontCompile() {
-  NoDestructor<std::string, std::string> nd;
 }
 
 #endif
