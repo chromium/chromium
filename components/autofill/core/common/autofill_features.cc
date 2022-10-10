@@ -370,13 +370,6 @@ BASE_FEATURE(kAutofillHighlightOnlyChangedValuesInPreviewMode,
              "AutofillHighlightOnlyChangedValuesInPreviewMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls if a server prediction with a prediction source |OVERRIDE| is
-// granted precedence over html type attributes.
-// TODO(crbug.com/1170384) Remove once launched
-BASE_FEATURE(kAutofillServerTypeTakesPrecedence,
-             "AutofillServerTypeTakesPrecedence",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
 BASE_FEATURE(kAutofillKeyboardAccessory,

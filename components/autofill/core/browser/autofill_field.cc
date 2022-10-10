@@ -212,17 +212,12 @@ AutofillType AutofillField::ComputedType() const {
 }
 
 AutofillType AutofillField::Type() const {
-  // If the corresponding feature is enabled, server predictions that are an
-  // override are granted precedence unconditionally.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillServerTypeTakesPrecedence) &&
-      server_type_prediction_is_override() && server_type() != NO_SERVER_DATA) {
+  // Server Overrides are granted precedence unconditionally.
+  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA)
     return AutofillType(server_type());
-  }
 
-  if (overall_type_.GetStorableType() != NO_SERVER_DATA) {
+  if (overall_type_.GetStorableType() != NO_SERVER_DATA)
     return overall_type_;
-  }
   return ComputedType();
 }
 

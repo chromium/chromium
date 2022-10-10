@@ -5015,8 +5015,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameData) {
             uploads.front().single_username_data().prompt_edit());
 }
 
-// Test that server predictions get precedence over htmll types if they are
-// overrides.
+// Test that server overrides get precedence over HTML types.
 TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
   FormData form_data;
   FormFieldData field;
@@ -5042,77 +5041,38 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
 
   std::string response_string = SerializeAndEncode(response);
 
-  // Disable the feature which gives overrides precedence.
-  {
-    base::test::ScopedFeatureList scoped_feature;
-    scoped_feature.InitAndDisableFeature(
-        features::kAutofillServerTypeTakesPrecedence);
+  // Parse the response and update the field type predictions.
+  FormStructure form(form_data);
+  form.DetermineHeuristicTypes(nullptr, nullptr);
+  std::vector<FormStructure*> forms{&form};
+  FormStructure::ParseApiQueryResponse(response_string, forms,
+                                       test::GetEncodedSignatures(forms),
+                                       nullptr, nullptr);
+  ASSERT_EQ(form.field_count(), 2U);
 
-    // Parse the response and update the field type predictions.
-    FormStructure form(form_data);
-    form.DetermineHeuristicTypes(nullptr, nullptr);
-    std::vector<FormStructure*> forms{&form};
-    FormStructure::ParseApiQueryResponse(response_string, forms,
-                                         test::GetEncodedSignatures(forms),
-                                         nullptr, nullptr);
-    ASSERT_EQ(form.field_count(), 2U);
+  // Validate the type predictions.
+  EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
+  EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
+  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
+  EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
+  EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
+  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
 
-    // Validate the type predictions.
-    EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
-    EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
-    EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-    EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
-    EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
-    EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
+  // Validate that the overrides are set correctly.
+  EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
+  EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
 
-    // Validate that the overrides are set correctly.
-    EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
-    EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
+  // Validate that the server prediction won for the first field.
+  EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
+  EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
 
-    // Validate that the html prediction won.
-    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FULL);
-    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
-  }
+  // Validate that the server override cannot be altered.
+  form.field(0)->SetTypeTo(AutofillType(NAME_FULL));
+  EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
 
-  // Enable the feature to give overrides precedence.
-  {
-    base::test::ScopedFeatureList scoped_feature;
-    scoped_feature.InitAndEnableFeature(
-        features::kAutofillServerTypeTakesPrecedence);
-
-    // Parse the response and update the field type predictions.
-    FormStructure form(form_data);
-    form.DetermineHeuristicTypes(nullptr, nullptr);
-    std::vector<FormStructure*> forms{&form};
-    FormStructure::ParseApiQueryResponse(response_string, forms,
-                                         test::GetEncodedSignatures(forms),
-                                         nullptr, nullptr);
-    ASSERT_EQ(form.field_count(), 2U);
-
-    // Validate the type predictions.
-    EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
-    EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
-    EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-    EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
-    EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
-    EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-
-    // Validate that the overrides are set correctly.
-    EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
-    EXPECT_FALSE(form.field(1)->server_type_prediction_is_override());
-
-    // Validate that the server prediction won for the first field.
-    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
-    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
-
-    // Validate that the server override cannot be altered.
-    form.field(0)->SetTypeTo(AutofillType(NAME_FULL));
-    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
-
-    // Validate that that the non-override can be altered.
-    form.field(1)->SetTypeTo(AutofillType(NAME_FIRST));
-    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FIRST);
-  }
+  // Validate that that the non-override can be altered.
+  form.field(1)->SetTypeTo(AutofillType(NAME_FIRST));
+  EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FIRST);
 }
 
 // Test the heuristic prediction for NAME_LAST_SECOND overrides server

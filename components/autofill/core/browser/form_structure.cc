@@ -1859,9 +1859,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                   {", html: ", FieldTypeToStringPiece(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
-        (!base::FeatureList::IsEnabled(
-             features::kAutofillServerTypeTakesPrecedence) ||
-         !field->server_type_prediction_is_override())) {
+        !field->server_type_prediction_is_override()) {
       html_type_description += " (disabling autofill)";
     }
 
@@ -1936,9 +1934,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   {", html: ", FieldTypeToStringPiece(field->html_type())})
             : "";
     if (field->html_type() == HtmlFieldType::kUnrecognized &&
-        (!base::FeatureList::IsEnabled(
-             features::kAutofillServerTypeTakesPrecedence) ||
-         !field->server_type_prediction_is_override())) {
+        !field->server_type_prediction_is_override()) {
       html_type_description += " (disabling autofill)";
     }
 
