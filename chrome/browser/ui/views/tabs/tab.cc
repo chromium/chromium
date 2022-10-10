@@ -68,7 +68,6 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect_conversions.h"
