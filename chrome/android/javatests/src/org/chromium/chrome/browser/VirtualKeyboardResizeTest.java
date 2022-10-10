@@ -248,6 +248,42 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
+     * Same as above but with OSKResizesVisualViewport disabled but
+     * --enable-blink-features=ViewportMetaInteractiveWidgetProperty to enable
+     * only the meta tag.
+     *
+     * Can be removed once flags ship.
+     */
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    @CommandLineFlags.Add({"enable-blink-features=ViewportMetaInteractiveWidgetProperty"})
+    public void testResizeVisualMetaTagFlagDisabled() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html?resize-visual");
+
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+
+        double keyboardHeight = getKeyboardHeightDp();
+
+        // Use less than or equal since the keyboard may actually include accessories like the
+        // Autofill bar. +1 to account for device scale factor rounding.
+        assertWaitForVisualViewportHeight(lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1));
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+
+        // Hide the OSK and ensure the state is correctly restored to the initial height.
+        hideKeyboard();
+        assertWaitForKeyboardStatus(false);
+
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+        assertWaitForVisualViewportHeight(
+                Matchers.closeTo((double) initialVVHeight, /*error=*/1.0));
+    }
+
+    /**
      * Tests the <meta name="viewport" content="interactive-widgets=resize-layout"> tag opts the
      * page back into a mode where the keyboard resizes layout.
      */

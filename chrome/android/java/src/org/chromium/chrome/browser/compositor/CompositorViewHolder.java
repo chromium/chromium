@@ -1554,21 +1554,11 @@ public class CompositorViewHolder extends FrameLayout
                     : VirtualKeyboardMode.RESIZE_LAYOUT;
         }
 
-        assert newMode != VirtualKeyboardMode.RESIZE_VISUAL
-                || ChromeFeatureList.sOSKResizesVisualViewport.isEnabled();
-
         if (mVirtualKeyboardMode == newMode) return;
 
         @VirtualKeyboardMode.EnumType
         int oldMode = mVirtualKeyboardMode;
         mVirtualKeyboardMode = newMode;
-
-        // If this flag isn't enabled there isn't any way the view size can differ from
-        // the visual viewport insets so there's nothing to do. (Because only RESIZE_LAYOUT and
-        // OVERLAYS_CONTENT are the only possibilities. RESIZE_LAYOUT resizes the web contents
-        // container and thus the visual viewport with it; OVERLAYS_CONTENT resizes neither the web
-        // contents or the visual viewport.)
-        if (!ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()) return;
 
         // If we're going into or out of the default OSK resizes visual viewport mode
         // we're changing whether the ApplicationViewportInsetSupplier needs to listen to

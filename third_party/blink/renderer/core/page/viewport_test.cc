@@ -3165,17 +3165,11 @@ class ViewportMetaSimTest : public SimTest {
     request.Complete(html);
     blink::test::RunPendingTasks();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that, when the OSKResizesVisualViewport flag is enabled, the mode isn't
-// set when a interactive-widgets key isn't provided
+// Test that the virtual keyboard mode isn't set when a interactive-widgets key
+// isn't provided.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithFlag) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   // Without a viewport meta tag.
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
@@ -3192,11 +3186,10 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithFlag) {
             ui::mojom::blink::VirtualKeyboardMode::kUnset);
 }
 
-// Test that, when the OSKResizesVisualViewport flag isn't enabled, the mode
-// isn't set when a interactive-widgets key isn't provided
+// Test that, when the interactive-widgets property is disabled, the mode is
+// unset set when interactive-widgets isn't provided
 TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithoutFlag) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kOSKResizesVisualViewport);
+  ScopedViewportMetaInteractiveWidgetPropertyForTest disable(false);
 
   // Without a viewport meta tag.
   LoadPageWithHTML(R"HTML(
@@ -3214,11 +3207,10 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardUnsetWithoutFlag) {
             ui::mojom::blink::VirtualKeyboardMode::kUnset);
 }
 
-// Test that without the OSKResizesVisualViewport flag the interactive-widgets
-// key is not parsed and is treated as an unknown key.
+// Test that, when the interactive-widgets property is disabled, the
+// interactive-widgets key is not parsed and is treated as an unknown key.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardNotParsedWithoutFlag) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kOSKResizesVisualViewport);
+  ScopedViewportMetaInteractiveWidgetPropertyForTest disable(false);
 
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
@@ -3230,12 +3222,9 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardNotParsedWithoutFlag) {
             "The key \"interactive-widgets\" is not recognized and ignored.");
 }
 
-// Test that the OSKResizesVisualViewport flag causes the interactive-widgets
-// key to be parsed.
+// Test that an invalid value to the interactive-widgets property fails to be
+// parsed.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardParsingEnabledByFlag) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="interactive-widgets=invalid-value">
@@ -3250,9 +3239,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardParsingEnabledByFlag) {
 // Test that the resize-layout value is correctly parsed and set on the
 // interactive-widgets key.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   // Blank page to set the default.
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
@@ -3291,9 +3277,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeLayout) {
 // Test that the resize-visual value is correctly parsed and set on the
 // interactive-widgets key.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeVisual) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   // Blank page to set the default.
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
@@ -3315,9 +3298,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardResizeVisual) {
 // Test that the overlays-content value is correctly parsed and set on the
 // interactive-widgets key.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardOverlaysContent) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   // Blank page to set the default.
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
@@ -3342,9 +3322,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardOverlaysContent) {
 TEST_F(ViewportMetaSimTest, VirtualKeyboardAPIOverlaysContent) {
   v8::HandleScope handle_scope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="interactive-widgets=resize-layout">
@@ -3369,9 +3346,6 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardAPIOverlaysContent) {
 // Ensure that updating the content to a bad value causes the mode to become
 // unset.
 TEST_F(ViewportMetaSimTest, VirtualKeyboardUpdateContent) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kOSKResizesVisualViewport);
-
   LoadPageWithHTML(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="interactive-widgets=resize-layout">
