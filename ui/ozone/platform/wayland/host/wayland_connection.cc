@@ -340,7 +340,8 @@ wl::Object<wl_surface> WaylandConnection::CreateSurface() {
 void WaylandConnection::RegisterGlobalObjectFactory(
     const char* interface_name,
     wl::GlobalObjectFactory factory) {
-  DCHECK_EQ(global_object_factories_.count(interface_name), 0U);
+  // If we get duplicate interface names, something is seriously wrong.
+  CHECK_EQ(global_object_factories_.count(interface_name), 0U);
 
   global_object_factories_[interface_name] = factory;
 }

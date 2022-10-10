@@ -30,7 +30,8 @@ void WaylandDrm::Instantiate(WaylandConnection* connection,
                              uint32_t name,
                              const std::string& interface,
                              uint32_t version) {
-  DCHECK_EQ(interface, kInterfaceName);
+  CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
+                                      << "\" but got \"" << interface << "\"";
 
   auto* buffer_factory = connection->wayland_buffer_factory();
   if (buffer_factory->wayland_drm_ ||

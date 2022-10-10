@@ -30,7 +30,8 @@ void WaylandSeat::Instantiate(WaylandConnection* connection,
                               uint32_t name,
                               const std::string& interface,
                               uint32_t version) {
-  DCHECK_EQ(interface, kInterfaceName);
+  CHECK_EQ(interface, kInterfaceName) << "Expected \"" << kInterfaceName
+                                      << "\" but got \"" << interface << "\"";
 
   if (connection->seat_ ||
       !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
