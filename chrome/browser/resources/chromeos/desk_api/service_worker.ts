@@ -92,10 +92,7 @@ class ServiceWorkerImpl implements ServiceWorker {
                         reject(error);
                       });
                 } else {
-                  resolve({
-                    messageType: ResponseType.OPERATION_SUCCESS,
-                    operands: [],
-                  });
+                  reject(new Error('User cancelled desk removal operation'));
                 }
                 this.notificationApi.clear(notificationId);
               });
