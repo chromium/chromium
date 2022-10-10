@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/unified_consent/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::ScopedFeatureList;
@@ -51,6 +52,11 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
     personal_data_manager_->SetAutofillProfileEnabled(true);
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
+
+    // Enable MSBB by default. If MSBB has been explicitly turned off, Fast
+    // Checkout is not supported.
+    profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }
 
   raw_ptr<ChromeAutofillClient> chrome_autofill_client_ = nullptr;
@@ -88,6 +94,20 @@ TEST_F(ChromeAutofillClientTest,
 
   personal_data_manager()->SetAutofillCreditCardEnabled(true);
   personal_data_manager()->SetAutofillProfileEnabled(false);
+  EXPECT_FALSE(client()->IsFastCheckoutSupported());
+}
+
+TEST_F(ChromeAutofillClientTest, NoFastCheckoutSupportWithDisabledMSBB) {
+  ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kFastCheckout,
+       autofill_assistant::features::kAutofillAssistant},
+      {});
+
+  // If MSBB has been explicitly turned off, Fast Checkout is not supported.
+  profile()->GetPrefs()->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+
   EXPECT_FALSE(client()->IsFastCheckoutSupported());
 }
 

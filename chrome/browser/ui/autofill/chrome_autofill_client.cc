@@ -85,6 +85,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
@@ -707,6 +708,13 @@ bool ChromeAutofillClient::IsFastCheckoutSupported() {
   if (!base::FeatureList::IsEnabled(::features::kFastCheckout) ||
       !base::FeatureList::IsEnabled(
           autofill_assistant::features::kAutofillAssistant)) {
+    return false;
+  }
+
+  // Not supported if MakeSearchesAndBrowsingBetter is not enabled. This has
+  // been done to allow for consequent hash dances during consent-less flows.
+  if (!GetPrefs()->GetBoolean(
+          unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)) {
     return false;
   }
 
