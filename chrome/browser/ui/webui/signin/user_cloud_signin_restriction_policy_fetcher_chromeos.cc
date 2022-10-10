@@ -6,7 +6,9 @@
 
 #include "base/command_line.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -21,6 +23,9 @@
 namespace ash {
 
 namespace {
+
+constexpr char kSecondaryGoogleAccountUsageLatencyHistogramName[] =
+    "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency";
 
 const char kAuthorizationHeaderFormat[] = "Bearer %s";
 const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
@@ -179,7 +184,9 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::OnGetUserInfoFailure(
 
 void UserCloudSigninRestrictionPolicyFetcherChromeOS::
     GetSecondaryGoogleAccountUsageInternal() {
+  policy_fetch_start_time_ = base::TimeTicks::Now();
   // Each url loader can only be used for one request.
+  DCHECK(!url_loader_);
   url_loader_ =
       CreateUrlLoader(GURL(GetSecureConnectApiGetAccountSigninRestrictionUrl()),
                       access_token_, kAnnotation);
@@ -195,6 +202,9 @@ void UserCloudSigninRestrictionPolicyFetcherChromeOS::
 void UserCloudSigninRestrictionPolicyFetcherChromeOS::
     OnSecondaryGoogleAccountUsageResult(
         std::unique_ptr<std::string> response_body) {
+  base::UmaHistogramMediumTimes(
+      kSecondaryGoogleAccountUsageLatencyHistogramName,
+      base::TimeTicks::Now() - policy_fetch_start_time_);
   absl::optional<std::string> restriction;
   Status status = Status::kUnknownError;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);

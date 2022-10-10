@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
@@ -15,6 +16,11 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
+
+namespace {
+constexpr char kSecondaryGoogleAccountUsageHistogramName[] =
+    "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status";
+}  // namespace
 
 using SigninRestrictionPolicyFetcher =
     ::ash::UserCloudSigninRestrictionPolicyFetcherChromeOS;
@@ -152,6 +158,9 @@ void SigninHelper::OnGetSecondaryGoogleAccountUsage(
     SigninRestrictionPolicyFetcher::Status status,
     absl::optional<std::string> policy_result,
     const std::string& hosted_domain) {
+  base::UmaHistogramEnumeration(kSecondaryGoogleAccountUsageHistogramName,
+                                status);
+
   if (status ==
       SigninRestrictionPolicyFetcher::Status::kUnsupportedAccountTypeError) {
     // SecondaryGoogleAccountUsage policy does not apply to non enterprise

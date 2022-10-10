@@ -19,6 +19,10 @@ namespace network {
 class SimpleURLLoader;
 }
 
+namespace base {
+class TimeTicks;
+}
+
 namespace ash {
 
 // UserCloudSigninRestrictionPolicyFetcherChromeOS handles requesting
@@ -62,15 +66,18 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
   static const char
       kSecondaryGoogleAccountUsagePolicyValuePrimaryAccountSignin[];
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum Status {
-    kSuccess = 0,
+    kUnknownError = 0,
+    kSuccess,
     kNetworkError,
     kHttpError,
     kParsingResponseError,
     kUnsupportedAccountTypeError,
     kGetTokenError,
     kGetUserInfoError,
-    kUnknownError
+    kMaxValue = kGetUserInfoError,
   };
 
   // Callback invoked when SecondaryGoogleAccountUsage policy value
@@ -148,6 +155,7 @@ class UserCloudSigninRestrictionPolicyFetcherChromeOS
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<policy::UserInfoFetcher> user_info_fetcher_;
   PolicyInfoCallback callback_;
+  base::TimeTicks policy_fetch_start_time_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

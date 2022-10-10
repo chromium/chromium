@@ -84,8 +84,7 @@ class SigninHelper : public GaiaAuthConsumer {
   void UpsertAccount(const std::string& refresh_token);
 
   // Receives the callback for `GetSecondaryGoogleAccountUsage()`.
-  // Virtual for testing.
-  virtual void OnGetSecondaryGoogleAccountUsage(
+  void OnGetSecondaryGoogleAccountUsage(
       ash::UserCloudSigninRestrictionPolicyFetcherChromeOS::Status status,
       absl::optional<std::string> policy_result,
       const std::string& hosted_domain);

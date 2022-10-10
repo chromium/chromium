@@ -88172,6 +88172,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Network error"/>
 </enum>
 
+<enum name="SecondaryGoogleAccountUsagePolicyFetchStatus">
+  <int value="0" label="UnknownError"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="NetworkError"/>
+  <int value="3" label="HttpError"/>
+  <int value="4" label="ParsingResponseError"/>
+  <int value="5" label="UnsupportedAccountTypeError"/>
+  <int value="6" label="GetTokenError"/>
+  <int value="7" label="GetUserInfoError"/>
+</enum>
+
 <enum name="SecureChannelConnectionAttemptFailureReason">
   <int value="0" label="Authentication error"/>
   <int value="1" label="Could not generate advertisement"/>

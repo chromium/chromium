@@ -2246,6 +2246,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
+    units="ms" expires_after="2023-10-04">
+  <owner>rodmartin@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Latency of a SecondaryGoogleAccountUsage policy fetch request. This measures
+    the amount of time required to fetch the policy value of
+    SecondaryGoogleAccountUsage from the Secure Connect API. This is recorded
+    when a user account is added as a secondary account (in-session).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status"
+    enum="SecondaryGoogleAccountUsagePolicyFetchStatus"
+    expires_after="2023-10-04">
+  <owner>rodmartin@google.com</owner>
+  <owner>chromeos-commercial-identity@google.com</owner>
+  <summary>
+    Tracks the result of
+    UserCloudSigninRestrictionPolicyFetcherChromeOS::GetSecondaryGoogleAccountUsage.
+    This is recorded when a user account is added as a secondary account
+    (in-session).
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.SystemFeaturesDisableList" enum="SystemFeature"
     expires_after="2023-06-01">
   <owner>ayaelattar@chromium.org</owner>
