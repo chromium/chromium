@@ -66,9 +66,6 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #if defined(__NR_pwrite64)
     case __NR_pwrite64:
 #endif
-#if defined(__NR_sched_setscheduler)
-    case __NR_sched_setscheduler:
-#endif
 #if defined(__NR_setsockopt)
     case __NR_setsockopt:
 #endif

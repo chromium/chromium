@@ -45,8 +45,6 @@ ResultExpr CdmProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_times:
     case __NR_uname:
       return Allow();
-    case __NR_sched_getaffinity:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
     default:

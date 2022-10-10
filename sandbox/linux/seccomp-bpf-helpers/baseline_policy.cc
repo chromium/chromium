@@ -114,10 +114,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RestrictIoctl();
   }
 
-  if (sysno == __NR_sched_getaffinity) {
-    return Allow();
-  }
-
   // Used when RSS limiting is enabled in sanitizers.
   if (sysno == __NR_getrusage) {
     return RestrictGetrusage();
@@ -229,6 +225,13 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 
   if (sysno == __NR_getpriority || sysno ==__NR_setpriority)
     return RestrictGetSetpriority(current_pid);
+
+  // The scheduling syscalls are used in threading libraries and also heavily in
+  // abseil. See for example https://crbug.com/1370394.
+  if (sysno == __NR_sched_getaffinity || sysno == __NR_sched_getparam ||
+      sysno == __NR_sched_getscheduler || sysno == __NR_sched_setscheduler) {
+    return RestrictSchedTarget(current_pid, sysno);
+  }
 
   if (sysno == __NR_getrandom) {
     return RestrictGetRandom();

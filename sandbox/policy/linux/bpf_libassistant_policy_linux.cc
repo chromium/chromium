@@ -30,10 +30,6 @@ LibassistantProcessPolicy::~LibassistantProcessPolicy() = default;
 
 ResultExpr LibassistantProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
-    case __NR_sched_getparam:
-    case __NR_sched_getscheduler:
-    case __NR_sched_setscheduler:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_socket: {
       const Arg<int> domain(0);
       const Arg<int> type(1);

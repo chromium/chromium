@@ -42,10 +42,6 @@ ResultExpr ImeProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_getrusage:
       return RestrictGetrusage();
 #endif
-#if defined(__NR_sched_getaffinity)
-    case __NR_sched_getaffinity:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
-#endif
     default:
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))

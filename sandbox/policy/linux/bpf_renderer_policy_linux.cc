@@ -103,11 +103,6 @@ ResultExpr RendererProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_getcpu:
 #endif
       return Allow();
-    case __NR_sched_getaffinity:
-    case __NR_sched_getparam:
-    case __NR_sched_getscheduler:
-    case __NR_sched_setscheduler:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
       // See crbug.com/662450 and setrlimit comment above.
       return RestrictPrlimit(GetPolicyPid());

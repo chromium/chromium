@@ -28,8 +28,6 @@ ResultExpr TtsProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
     case __NR_sysinfo:
       return Allow();
-    case __NR_sched_setscheduler:
-      return RestrictSchedTarget(GetPolicyPid(), sysno);
     default:
       break;
   }

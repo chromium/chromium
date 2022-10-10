@@ -53,12 +53,6 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
     case __NR_prlimit64:
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
 
-    case __NR_sched_getaffinity:
-    case __NR_sched_getparam:
-    case __NR_sched_getscheduler:
-    case __NR_sched_setscheduler:
-      return RestrictSchedTarget(GetPolicyPid(), system_call_number);
-
     default:
       if (SyscallSets::IsGoogle3Threading(system_call_number)) {
         return RestrictGoogle3Threading(system_call_number);
