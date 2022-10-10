@@ -202,6 +202,36 @@ std::string UnmaskCardRequest::GetRequestContent() {
       "opt_in_fido_auth",
       base::Value(request_details_.user_response.enable_fido_auth));
 
+  if (request_details_.selected_challenge_option) {
+    base::Value challenge_option(base::Value::Type::DICTIONARY);
+    if (request_details_.selected_challenge_option->type ==
+        CardUnmaskChallengeOptionType::kCvc) {
+      challenge_option.SetKey(
+          "challenge_id",
+          base::Value(request_details_.selected_challenge_option->id));
+      challenge_option.SetKey("cvc_length",
+                              base::Value(base::NumberToString(
+                                  request_details_.selected_challenge_option
+                                      ->challenge_input_length)));
+
+      base::StringPiece cvc_position = "CVC_POSITION_UNKNOWN";
+      switch (request_details_.selected_challenge_option->cvc_position) {
+        case autofill::CvcPosition::kFrontOfCard:
+          cvc_position = "CVC_POSITION_FRONT";
+          break;
+        case autofill::CvcPosition::kBackOfCard:
+          cvc_position = "CVC_POSITION_BACK";
+          break;
+        case autofill::CvcPosition::kUnknown:
+          NOTREACHED();
+          break;
+      }
+      challenge_option.SetKey("cvc_position", base::Value(cvc_position));
+
+      request_dict.SetKey("cvc_challenge_option", std::move(challenge_option));
+    }
+  }
+
   bool is_cvc_auth = !request_details_.user_response.cvc.empty();
   bool is_otp_auth = !request_details_.otp.empty();
   bool is_fido_auth = request_details_.fido_assertion_info.has_value();
