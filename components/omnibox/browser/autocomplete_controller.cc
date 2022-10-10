@@ -945,13 +945,6 @@ void AutocompleteController::UpdateResult(
     preserve_default_match = &last_default_match.value();
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
-  // Only produce Pedals for the default focus case (not on focus or on delete).
-  if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
-    // TODO(tommycli): It sure seems like this should be moved down below
-    // `TransferOldMatches()` along with all the other annotation code.
-    result_.AttachPedalsToMatches(input_, *provider_client_);
-  }
-
   // Need to validate before invoking `TransferOldMatches()` as the old matches
   // are not valid against the current input.
 #if DCHECK_IS_ON()
@@ -979,6 +972,11 @@ void AutocompleteController::UpdateResult(
                           result_.GetMatchDedupComparators());
 
   // Below are all annotations after the match list is ready.
+
+  // Only produce Pedals for the default focus case (not on focus or on delete).
+  if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+    result_.AttachPedalsToMatches(input_, *provider_client_);
+
 #if !BUILDFLAG(IS_IOS)
   // HistoryClusters is not enabled on iOS.
   AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
