@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_AUDIO_AUDIO_EVENTS_OBSERVER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_AUDIO_AUDIO_EVENTS_OBSERVER_H_
 
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_events_observer_base.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 
 namespace reporting {
 
 class AudioEventsObserver
-    : public CrosHealthdEventsObserverBase<
+    : public MojoServiceEventsObserverBase<
           ash::cros_healthd::mojom::CrosHealthdAudioObserver>,
       public ash::cros_healthd::mojom::CrosHealthdAudioObserver {
  public:

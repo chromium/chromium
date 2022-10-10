@@ -11,7 +11,7 @@ namespace reporting {
 using ::ash::cros_healthd::mojom::UsbEventInfoPtr;
 
 UsbEventsObserver::UsbEventsObserver()
-    : CrosHealthdEventsObserverBase<
+    : MojoServiceEventsObserverBase<
           ash::cros_healthd::mojom::CrosHealthdUsbObserver>(this) {}
 
 UsbEventsObserver::~UsbEventsObserver() = default;

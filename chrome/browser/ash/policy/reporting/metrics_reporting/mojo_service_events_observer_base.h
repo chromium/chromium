@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_EVENTS_OBSERVER_BASE_H_
-#define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_EVENTS_OBSERVER_BASE_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_MOJO_SERVICE_EVENTS_OBSERVER_BASE_H_
+#define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_MOJO_SERVICE_EVENTS_OBSERVER_BASE_H_
 
 #include <utility>
 
@@ -17,18 +17,18 @@
 namespace reporting {
 
 // A base class containing common functionalities needed for observing and
-// reporting cros_healthd events.
+// reporting mojo service events.
 template <typename Interface>
-class CrosHealthdEventsObserverBase : public MetricEventObserver {
+class MojoServiceEventsObserverBase : public MetricEventObserver {
  public:
-  explicit CrosHealthdEventsObserverBase(Interface* interface)
+  explicit MojoServiceEventsObserverBase(Interface* interface)
       : receiver_{interface} {}
 
-  CrosHealthdEventsObserverBase(const CrosHealthdEventsObserverBase&) = delete;
-  CrosHealthdEventsObserverBase& operator=(
-      const CrosHealthdEventsObserverBase&) = delete;
+  MojoServiceEventsObserverBase(const MojoServiceEventsObserverBase&) = delete;
+  MojoServiceEventsObserverBase& operator=(
+      const MojoServiceEventsObserverBase&) = delete;
 
-  ~CrosHealthdEventsObserverBase() override = default;
+  ~MojoServiceEventsObserverBase() override = default;
 
   void SetReportingEnabled(bool is_enabled) override {
     is_reporting_enabled_ = is_enabled;
@@ -62,7 +62,7 @@ class CrosHealthdEventsObserverBase : public MetricEventObserver {
     if (is_reporting_enabled_) {
       AddObserver();
       receiver_.set_disconnect_handler(
-          base::BindOnce(&CrosHealthdEventsObserverBase::SetObservation,
+          base::BindOnce(&MojoServiceEventsObserverBase::SetObservation,
                          weak_ptr_factory_.GetWeakPtr()));
     }
   }
@@ -71,8 +71,8 @@ class CrosHealthdEventsObserverBase : public MetricEventObserver {
 
   MetricRepeatingCallback on_event_observed_cb_;
 
-  base::WeakPtrFactory<CrosHealthdEventsObserverBase> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MojoServiceEventsObserverBase> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_EVENTS_OBSERVER_BASE_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_MOJO_SERVICE_EVENTS_OBSERVER_BASE_H_

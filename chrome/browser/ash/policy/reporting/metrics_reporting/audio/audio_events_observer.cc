@@ -12,7 +12,7 @@
 namespace reporting {
 
 AudioEventsObserver::AudioEventsObserver()
-    : CrosHealthdEventsObserverBase<
+    : MojoServiceEventsObserverBase<
           ash::cros_healthd::mojom::CrosHealthdAudioObserver>(this) {}
 
 AudioEventsObserver::~AudioEventsObserver() = default;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_events_observer_base.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/mojo_service_events_observer_base.h"
 
 #include <string>
 #include <utility>
@@ -24,10 +24,10 @@ using ::ash::cros_healthd::mojom::CrosHealthdAudioObserver;
 
 class FakeCrosHealthdAudioObserver
     : public CrosHealthdAudioObserver,
-      public CrosHealthdEventsObserverBase<CrosHealthdAudioObserver> {
+      public MojoServiceEventsObserverBase<CrosHealthdAudioObserver> {
  public:
   FakeCrosHealthdAudioObserver()
-      : CrosHealthdEventsObserverBase<CrosHealthdAudioObserver>(this) {}
+      : MojoServiceEventsObserverBase<CrosHealthdAudioObserver>(this) {}
 
   FakeCrosHealthdAudioObserver(const FakeCrosHealthdAudioObserver&) = delete;
   FakeCrosHealthdAudioObserver& operator=(const FakeCrosHealthdAudioObserver&) =
@@ -52,16 +52,16 @@ class FakeCrosHealthdAudioObserver
   }
 };
 
-class CrosHealthdEventsObserverBaseTest : public ::testing::Test {
+class MojoServiceEventsObserverBaseTest : public ::testing::Test {
  public:
-  CrosHealthdEventsObserverBaseTest() = default;
+  MojoServiceEventsObserverBaseTest() = default;
 
-  CrosHealthdEventsObserverBaseTest(const CrosHealthdEventsObserverBaseTest&) =
+  MojoServiceEventsObserverBaseTest(const MojoServiceEventsObserverBaseTest&) =
       delete;
-  CrosHealthdEventsObserverBaseTest& operator=(
-      const CrosHealthdEventsObserverBaseTest&) = delete;
+  MojoServiceEventsObserverBaseTest& operator=(
+      const MojoServiceEventsObserverBaseTest&) = delete;
 
-  ~CrosHealthdEventsObserverBaseTest() override = default;
+  ~MojoServiceEventsObserverBaseTest() override = default;
 
   void SetUp() override { ::ash::cros_healthd::FakeCrosHealthd::Initialize(); }
 
@@ -71,7 +71,7 @@ class CrosHealthdEventsObserverBaseTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
+TEST_F(MojoServiceEventsObserverBaseTest, Default) {
   FakeCrosHealthdAudioObserver audio_observer;
   MetricData result_metric_data;
   auto cb = base::BindLambdaForTesting([&](MetricData metric_data) {

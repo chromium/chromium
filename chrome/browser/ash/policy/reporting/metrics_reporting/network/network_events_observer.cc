@@ -35,7 +35,7 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 }  // namespace
 
 NetworkEventsObserver::NetworkEventsObserver()
-    : CrosHealthdEventsObserverBase<
+    : MojoServiceEventsObserverBase<
           chromeos::network_health::mojom::NetworkEventsObserver>(this) {}
 
 NetworkEventsObserver::~NetworkEventsObserver() {
@@ -110,7 +110,7 @@ void NetworkEventsObserver::AddObserver() {
 void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CrosHealthdEventsObserverBase<
+  MojoServiceEventsObserverBase<
       ::chromeos::network_health::mojom::NetworkEventsObserver>::
       SetReportingEnabled(is_enabled);
   if (!is_enabled) {
