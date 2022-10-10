@@ -1292,7 +1292,7 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateGetDialogCallerFunction::Run() {
   absl::optional<policy::DlpFilesController::DlpFileDestination> caller =
       SelectFileDialogExtensionUserData::GetDialogCallerForWebContents(
-          this->GetSenderWebContents());
+          GetSenderWebContents());
   base::Value::Dict info;
   if (caller.has_value()) {
     if (caller->url_or_path.has_value()) {
