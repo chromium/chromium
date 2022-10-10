@@ -184,9 +184,7 @@ class SelectToSpeakTestWithLanguageDetection : public SelectToSpeakTest {
   }
 };
 
-// The status tray is not active on official builds.
-// Disable the test on Chromium due to flaky: crbug.com/1165749
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, DISABLED_SpeakStatusTray) {
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
   gfx::Rect tray_bounds = Shell::Get()
                               ->GetPrimaryRootWindowController()
                               ->GetStatusAreaWidget()
