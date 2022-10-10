@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+
+#include <iostream>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -22,8 +24,6 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/resources/grit/webui_generated_resources.h"
-
-#include <iostream>
 
 namespace {
 constexpr gfx::Size kDefaultWindowSize(396, 454);
@@ -45,7 +45,7 @@ class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 EmojiUI::EmojiUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui,
@@ -66,7 +66,7 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
 EmojiUI::~EmojiUI() = default;
 
 void EmojiUI::Show(Profile* profile) {
-  if (ash::TabletMode::Get()->InTabletMode()) {
+  if (TabletMode::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }
@@ -92,8 +92,7 @@ void EmojiUI::Show(Profile* profile) {
   }
 
   gfx::Size window_size =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kImeSystemEmojiPickerExtension)
+      base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerExtension)
           ? kExtensionWindowSize
           : kDefaultWindowSize;
   // This rect is used for positioning the emoji picker. It anchors either top
@@ -142,4 +141,4 @@ void EmojiUI::CreatePageHandler(
       std::move(receiver), web_ui(), this, incognito_mode_, no_text_field_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

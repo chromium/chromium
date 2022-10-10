@@ -45,9 +45,8 @@ non_component_js_files = [
 mojo_js_files = [ "emoji_picker.mojom-webui.js" ]
 mojo_source_files = []
 foreach(f, mojo_js_files) {
-  mojo_source_files += [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji/" + f,
-  ]
+  mojo_source_files +=
+      [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/emoji/" + f ]
 }
 
 resources_grd_file = "$target_gen_dir/resources.grd"
@@ -55,7 +54,7 @@ resources_grd_file = "$target_gen_dir/resources.grd"
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js" ]
+  deps = [ "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js" ]
   sources = mojo_source_files
   outputs = [ "$preprocessed_folder/{{source_file_part}}" ]
 }
@@ -209,7 +208,7 @@ js_library("emoji_picker") {
 
 js_library("emoji_picker_api_proxy") {
   deps = [
-    "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/ash/emoji:mojo_bindings_webui_js",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -292,12 +291,13 @@ js_library("text_group_button") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/emoji",
-                            root_build_dir),
-                  ]
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" + rebase_path(".", root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/emoji",
+                root_build_dir),
+      ]
   deps = [
     ":constants",
     ":emoji_button",

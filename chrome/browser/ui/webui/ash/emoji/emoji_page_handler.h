@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_EMOJI_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_EMOJI_PAGE_HANDLER_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
+
 class EmojiUI;
 
 class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
@@ -42,5 +43,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   bool incognito_mode_;
   bool no_text_field_;
 };
-}  // namespace chromeos
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_
+
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EMOJI_EMOJI_PAGE_HANDLER_H_

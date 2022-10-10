@@ -259,12 +259,12 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/chromeos/human_presence_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
@@ -1117,7 +1117,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
   }
   if (url.host_piece() == chrome::kChromeUIEmojiPickerHost) {
-    return &NewWebUI<chromeos::EmojiUI>;
+    return &NewWebUI<ash::EmojiUI>;
   }
   if (url.host_piece() == ash::eche_app::kChromeUIEcheAppHost &&
       base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {

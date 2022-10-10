@@ -35,7 +35,7 @@ source_set("chromeos") {
     "//chrome/browser/ash/power/ml:user_activity_ukm_logger_helpers",
     "//chrome/browser/google",
     "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
-    "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
+    "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
     "//chromeos/ash/components/dbus:vm_applications_apps_proto",
     "//chromeos/ash/components/dbus:vm_disk_management_proto",
     "//chromeos/ash/components/dbus:vm_launch_proto",

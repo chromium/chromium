@@ -2639,6 +2639,10 @@ static_library("ui") {
       "webui/ash/crostini_upgrader/crostini_upgrader_page_handler.h",
       "webui/ash/crostini_upgrader/crostini_upgrader_ui.cc",
       "webui/ash/crostini_upgrader/crostini_upgrader_ui.h",
+      "webui/ash/emoji/emoji_page_handler.cc",
+      "webui/ash/emoji/emoji_page_handler.h",
+      "webui/ash/emoji/emoji_ui.cc",
+      "webui/ash/emoji/emoji_ui.h",
       "webui/chromeos/assistant_optin/assistant_optin_ui.cc",
       "webui/chromeos/assistant_optin/assistant_optin_ui.h",
       "webui/chromeos/assistant_optin/assistant_optin_utils.cc",
@@ -2665,10 +2669,6 @@ static_library("ui") {
       "webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h",
       "webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.cc",
       "webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h",
-      "webui/chromeos/emoji/emoji_page_handler.cc",
-      "webui/chromeos/emoji/emoji_page_handler.h",
-      "webui/chromeos/emoji/emoji_ui.cc",
-      "webui/chromeos/emoji/emoji_ui.h",
       "webui/chromeos/guest_os_installer/guest_os_installer_dialog.cc",
       "webui/chromeos/guest_os_installer/guest_os_installer_dialog.h",
       "webui/chromeos/human_presence_internals_ui.cc",
@@ -3326,7 +3326,7 @@ static_library("ui") {
     public_deps += [
       "//ash/services/multidevice_setup/public/mojom",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
-      "//chrome/browser/ui/webui/chromeos/emoji:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
     ]
     allow_circular_includes_from += [
       "//chrome/browser/ash",

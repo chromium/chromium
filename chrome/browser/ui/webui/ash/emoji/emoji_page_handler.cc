@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_page_handler.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
@@ -10,12 +10,12 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Keep in sync with entry in enums.xml.
 enum class EmojiVariantType {
@@ -40,8 +40,7 @@ void LogInsertEmojiDelay(base::TimeDelta delay) {
 }
 
 void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kImeSystemEmojiPickerClipboard)) {
+  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerClipboard)) {
     auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
         ui::ClipboardBuffer::kCopyPaste, nullptr);
     clipboard->WriteText(base::UTF8ToUTF16(emoji_to_copy));
@@ -151,13 +150,12 @@ void EmojiPageHandler::IsIncognitoTextField(
 
 void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
   std::vector<emoji_picker::mojom::Feature> enabled_features;
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kImeSystemEmojiPickerExtension)) {
+  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerExtension)) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_EXTENSION);
   }
   if (base::FeatureList::IsEnabled(
-          chromeos::features::kImeSystemEmojiPickerSearchExtension)) {
+          features::kImeSystemEmojiPickerSearchExtension)) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_SEARCH_EXTENSION);
   }
@@ -198,4 +196,4 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
