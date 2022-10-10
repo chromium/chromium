@@ -2275,7 +2275,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   histogram_tester.ExpectTotalCount("Ash.DeskTemplate.TimeToLoadTemplate", 1ul);
 }
 
-// Tests launch a template to a new desk and clean up desk.
+// Tests launch a template to a new desk and clean up desk. Number of windows
+// closed should be properly recorded.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   auto* desks_controller = ash::DesksController::Get();
   // Should have 1 default active desk.
@@ -2304,11 +2305,19 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
   loop.Run();
 
   ash::DeskSwitchAnimationWaiter waiter;
+  // Creates a new window.
+  CreateBrowser({});
+  base::HistogramTester histogram_tester;
   DesksClient::Get()->RemoveDesk(
       desk_id, false, base::BindLambdaForTesting([](std::string error) {
         EXPECT_TRUE(error.empty());
       }));
   waiter.Wait();
+  // Record number of windows being closed per source.
+  // NOTE: The template contains an existing browser with 1 tab created by
+  // `BrowserMain()`.
+  histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed.Api", 2,
+                                      1);
   EXPECT_EQ(1u, desks_controller->desks().size());
 }
 

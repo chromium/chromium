@@ -7988,12 +7988,15 @@ TEST_F(DesksCloseAllTest, TestMetricsRecordingWhenCloseAllWindows) {
       // When we wait for the undo toast to expire, `desk_1` should be
       // destroyed.
       WaitForMilliseconds(ToastData::kDefaultToastDuration.InMilliseconds());
-      // Record undo toast expired
+      // Record undo toast expired.
       histogram_tester.ExpectTotalCount("Ash.Desks.CloseAllTotal",
                                         ++undo_toast_expired_count);
-      // Record number of windows being closed
+      // Record number of windows being closed.
       histogram_tester.ExpectUniqueSample("Ash.Desks.NumberOfWindowsClosed", 2,
                                           1);
+      // Record number of windows being closed per source.
+      histogram_tester.ExpectUniqueSample(
+          "Ash.Desks.NumberOfWindowsClosed.Button", 2, 1);
     }
   }
 }

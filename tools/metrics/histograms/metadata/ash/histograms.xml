@@ -1602,6 +1602,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.NumberOfWindowsClosed.{RemovalSource}"
+    units="windows" expires_after="2023-10-03">
+  <owner>aprilzhou@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed and all windows on the desk being
+    closed by {RemovalSource} to record the total number of windows being closed
+    by this operation.
+  </summary>
+  <token key="RemovalSource">
+    <variant name="Api" summary="api"/>
+    <variant name="Button" summary="button"/>
+    <variant name="Keyboard" summary="keyboard"/>
+    <variant name="SaveRecall" summary="save and recall"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
     expires_after="2023-04-23">
   <owner>afakhry@chromium.org</owner>

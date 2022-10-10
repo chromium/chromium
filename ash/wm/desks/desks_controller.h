@@ -457,6 +457,12 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // |interacted_with_this_week_| field for each inactive desk in |desks_|.
   void RecordAndResetNumberOfWeeklyActiveDesks();
 
+  // Report the number of windows being closed when close_all action are
+  // finalized per each desk removal source.
+  void ReportClosedWindowsCountPerSourceHistogram(
+      DesksCreationRemovalSource source,
+      int windows_closed) const;
+
   std::vector<std::unique_ptr<Desk>> desks_;
 
   Desk* active_desk_ = nullptr;
