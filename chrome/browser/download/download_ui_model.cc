@@ -1182,14 +1182,14 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
   } else {
     if (is_download_bubble_v2) {
       bubble_ui_info.AddQuickAction(
+          DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
+          &vector_icons::kOpenInNewIcon);
+      bubble_ui_info.AddQuickAction(
           DownloadCommands::Command::SHOW_IN_FOLDER,
           l10n_util::GetStringUTF16(
               IDS_DOWNLOAD_BUBBLE_SHOW_IN_FOLDER_QUICK_ACTION),
           &vector_icons::kFolderIcon);
-      bubble_ui_info.AddQuickAction(
-          DownloadCommands::Command::OPEN_WHEN_COMPLETE,
-          l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_QUICK_ACTION),
-          &vector_icons::kOpenInNewIcon);
     }
   }
   return bubble_ui_info;

@@ -820,8 +820,8 @@ TEST_F(DownloadItemModelTest, InProgressOrCompletedBubbleUIInfo_V2On) {
     quick_action_commands.push_back(quick_action.command);
   }
   EXPECT_EQ(quick_action_commands,
-            std::vector({DownloadCommands::Command::SHOW_IN_FOLDER,
-                         DownloadCommands::Command::OPEN_WHEN_COMPLETE}));
+            std::vector({DownloadCommands::Command::OPEN_WHEN_COMPLETE,
+                         DownloadCommands::Command::SHOW_IN_FOLDER}));
   EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
 
   Mock::VerifyAndClearExpectations(&item());

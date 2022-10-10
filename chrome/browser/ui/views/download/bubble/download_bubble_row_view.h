@@ -150,9 +150,9 @@ class DownloadBubbleRowView : public views::View,
   // Quick Actions on the main page.
   raw_ptr<views::ImageButton> resume_action_ = nullptr;
   raw_ptr<views::ImageButton> pause_action_ = nullptr;
-  raw_ptr<views::ImageButton> show_in_folder_action_ = nullptr;
-  raw_ptr<views::ImageButton> cancel_action_ = nullptr;
   raw_ptr<views::ImageButton> open_when_complete_action_ = nullptr;
+  raw_ptr<views::ImageButton> cancel_action_ = nullptr;
+  raw_ptr<views::ImageButton> show_in_folder_action_ = nullptr;
 
   // Holder for the main button.
   raw_ptr<views::FlexLayoutView> main_button_holder_ = nullptr;
