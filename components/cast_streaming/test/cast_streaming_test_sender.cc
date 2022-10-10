@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_SENDER_SESSION_TEST_H_
-#define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_SENDER_SESSION_TEST_H_
-
-#include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
+#include "components/cast_streaming/test/cast_streaming_test_sender.h"
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
 #include "components/cast_streaming/public/config_conversions.h"
+#include "components/cast_streaming/test/cast_message_port_sender_impl.h"
 
 namespace cast_streaming {
 
@@ -259,5 +256,3 @@ void CastStreamingTestSender::OnError(
 }
 
 }  // namespace cast_streaming
-
-#endif  // COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_SENDER_SESSION_TEST_H_

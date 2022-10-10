@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/browser/test/cast_message_port_sender_impl.h"
+#include "components/cast_streaming/test/cast_message_port_sender_impl.h"
 
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/values.h"
-#include "components/cast_streaming/browser/message_serialization.h"
+#include "components/cast_streaming/common/message_serialization.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 namespace cast_streaming {

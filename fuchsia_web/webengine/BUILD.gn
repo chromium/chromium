@@ -795,7 +795,7 @@ source_set("cast_streaming_receiver_browsertests") {
     ":browsertest_core",
     ":web_engine_core",
     "//components/cast/message_port",
-    "//components/cast_streaming/browser:test_sender",
+    "//components/cast_streaming/test:test_sender",
     "//content/test:test_support",
     "//fuchsia_web/common/test:test_support",
   ]

@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/platform_message_port.h"
-#include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
+#include "components/cast_streaming/test/cast_streaming_test_sender.h"
 #include "fuchsia_web/cast_streaming/cast_streaming.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/common/test/fit_adapter.h"

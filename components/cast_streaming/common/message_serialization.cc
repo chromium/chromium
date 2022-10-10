@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/browser/message_serialization.h"
+#include "components/cast_streaming/common/message_serialization.h"
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"

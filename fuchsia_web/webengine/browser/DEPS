@@ -62,7 +62,7 @@ specific_include_rules = {
   # Exceptions related to Cast Streaming.
   "cast_streaming_browsertest\.cc" : [
     "+components/cast/message_port",
-    "+components/cast_streaming/browser/test",
+    "+components/cast_streaming/test",
   ],
   "context_impl\.cc" : [
     "+components/cast_streaming/browser/public"

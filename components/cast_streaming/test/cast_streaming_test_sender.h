@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
-#define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
+#ifndef COMPONENTS_CAST_STREAMING_TEST_CAST_STREAMING_TEST_SENDER_H_
+#define COMPONENTS_CAST_STREAMING_TEST_CAST_STREAMING_TEST_SENDER_H_
 
 #include "components/cast/message_port/message_port.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -125,4 +125,4 @@ class CastStreamingTestSender final
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_STREAMING_TEST_SENDER_H_
+#endif  // COMPONENTS_CAST_STREAMING_TEST_CAST_STREAMING_TEST_SENDER_H_

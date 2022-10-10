@@ -44,8 +44,9 @@ source_set("openscreen_platform") {
 # Network service.
 # Incompatible with `:openscreen_platform`.
 source_set("openscreen_platform_using_net_sockets") {
+  testonly = true
   visibility +=
-      [ "//components/cast_streaming/browser:test_sender_using_net_sockets" ]
+      [ "//components/cast_streaming/test:test_sender_using_net_sockets" ]
   if (is_android || is_ios) {
     # Allow broader visibility for platforms with unique generated targets.
     visibility += [ "//components/cast_streaming/browser:*" ]
@@ -75,7 +76,7 @@ source_set("openscreen_platform_without_sockets") {
   # The private target below must directly depend on this target for reasons
   # described at its definition.
   visibility +=
-      [ "//components/cast_streaming/browser:test_sender_without_socket_deps" ]
+      [ "//components/cast_streaming/test:test_sender_without_socket_deps" ]
 
   public = [
     "network_util.h",

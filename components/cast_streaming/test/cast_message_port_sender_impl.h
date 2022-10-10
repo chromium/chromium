@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
-#define COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
+#ifndef COMPONENTS_CAST_STREAMING_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
+#define COMPONENTS_CAST_STREAMING_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -54,4 +54,4 @@ class CastMessagePortSenderImpl final
 
 }  // namespace cast_streaming
 
-#endif  // COMPONENTS_CAST_STREAMING_BROWSER_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_
+#endif  // COMPONENTS_CAST_STREAMING_TEST_CAST_MESSAGE_PORT_SENDER_IMPL_H_

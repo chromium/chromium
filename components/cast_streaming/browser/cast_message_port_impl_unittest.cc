@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
-#include "components/cast_streaming/browser/message_serialization.h"
+#include "components/cast_streaming/common/message_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cast_streaming {

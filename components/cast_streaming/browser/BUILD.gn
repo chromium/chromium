@@ -17,80 +17,17 @@ if (!is_win) {
   # /public folder to only expose publicly needed headers.
   source_set("core") {
     public = [ "cast_message_port_impl.h" ]
-    sources = [
-      "cast_message_port_impl.cc",
-      "message_serialization.cc",
-      "message_serialization.h",
-    ]
+    sources = [ "cast_message_port_impl.cc" ]
     public_deps = [
       "//base",
       "//components/cast/message_port",
       "//third_party/openscreen/src/cast/common:public",
     ]
-    deps = [ "//third_party/openscreen/src/platform:base" ]
-    friend = [
-      ":test_sender_without_socket_deps",
-      ":unit_tests",
-    ]
-  }
-
-  # TODO(crbug.com/1207715): Move to /tests directory.
-  source_set("test_sender") {
-    testonly = true
-    visibility += [ "*" ]
-    public_deps = [ ":test_sender_without_socket_deps" ]
     deps = [
-      # Complete implementation of the platform API used by
-      # :test_sender_without_socket_deps.
-      "//components/openscreen_platform",
-    ]
-  }
-
-  # cast_streaming_shell cannot depend on the Network Service and thus uses
-  # //components/openscreen_platform:openscreen_platform_using_net_sockets.
-  # Because //components/openscreen_platform has a conflicing implementation,
-  # this target, which contains only the needed symbols, is provided.
-  #
-  # TODO(crbug.com/1207715): Move to /tests directory.
-  source_set("test_sender_using_net_sockets") {
-    testonly = true
-    visibility += [ "//fuchsia_web/shell:cast_streaming_shell_exe" ]
-    public_deps = [ ":test_sender_without_socket_deps" ]
-    deps = [
-      # Complete implementation of the platform API used by
-      # :test_sender_without_socket_deps.
-      "//components/openscreen_platform:openscreen_platform_using_net_sockets",
-    ]
-  }
-
-  # TODO(crbug.com/1207715): Move to /tests directory.
-  source_set("test_sender_without_socket_deps") {
-    testonly = true
-    public = [
-      "test/cast_message_port_sender_impl.h",
-      "test/cast_streaming_test_sender.h",
-    ]
-    sources = [
-      "test/cast_message_port_sender_impl.cc",
-      "test/cast_streaming_test_sender.cc",
-    ]
-    deps = [
-      ":core",
-      "//components/cast_streaming/public:config_conversions",
-
-      # Partial implementation of the platform API used by
-      # //third_party/openscreen/src/cast/*.
-      "//components/openscreen_platform:openscreen_platform_without_sockets",
-      "//third_party/openscreen/src/cast/streaming:common",
+      "//components/cast_streaming/common:message_serialization",
       "//third_party/openscreen/src/platform:base",
     ]
-    public_deps = [
-      "//base",
-      "//components/cast/message_port",
-      "//net",
-      "//third_party/openscreen/src/cast/common:public",
-      "//third_party/openscreen/src/cast/streaming:sender",
-    ]
+    friend = [ ":unit_tests" ]
   }
 }
 
@@ -192,6 +129,7 @@ source_set("unit_tests") {
       ":core",
       "//components/cast/message_port",
       "//components/cast/message_port:test_message_port_receiver",
+      "//components/cast_streaming/common:message_serialization",
     ]
     sources += [ "cast_message_port_impl_unittest.cc" ]
   }
