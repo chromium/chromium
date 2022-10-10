@@ -135,4 +135,66 @@ suite('CrAutoImgElementTest', () => {
 
         assertEquals(newSrc, img.src, 'src attribute is set to new value');
       });
+
+  test(
+      'setting staticEncode creates a URL with autoSrc and staticEncode as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.staticEncode = true;
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&staticEncode=true`,
+            img.src);
+
+        // Act.
+        img.staticEncode = false;
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
+      });
+
+  test(
+      'setting static-encode creates a URL with autoSrc and staticEncode as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.setAttribute('static-encode', '');
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&staticEncode=true`,
+            img.src);
+
+        // Act.
+        img.removeAttribute('static-encode');
+
+        // Assert.
+        assertEquals(`chrome://image/?${autoSrc}`, img.src);
+      });
+
+  test(
+      'setting multiple attributes creates a URL with all of the params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.setAttribute('static-encode', '');
+        img.isGooglePhotos = true;
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(
+                    autoSrc)}&isGooglePhotos=true&staticEncode=true`,
+            img.src);
+      });
 });

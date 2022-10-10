@@ -96,6 +96,7 @@ export async function renderPromo(promo: Promo):
     if (image) {
       el = new CrAutoImgElement();
       el.autoSrc = image.imageUrl.url;
+      el.staticEncode = true;
       if (image.target) {
         const anchor = createAnchor(image.target);
         if (anchor) {
