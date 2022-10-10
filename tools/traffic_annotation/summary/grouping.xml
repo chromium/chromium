@@ -117,6 +117,9 @@ after discussions on the right group.
       <annotation id="device_activity_client_check_membership"/>
       <annotation id="device_activity_client_check_in"/>
     </sender>
+    <sender name="Enhanced Network TTS">
+      <annotation id="enhanced_network_tts"/>
+    </sender>
   </group>
   <group name="Unsorted" hidden="true">
     <sender name="Unsorted Sender">

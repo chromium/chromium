@@ -30,6 +30,39 @@ BASE_FEATURE(kEnhancedNetworkTtsOverride,
 
 constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
 
+const net::NetworkTrafficAnnotationTag traffic_annotation =
+  net::DefineNetworkTrafficAnnotation("enhanced_network_tts", R"(
+    semantics {
+      sender: "Enhanced Network TTS"
+      description:
+        "This is the middle layer of a text-to-speech engine implemented using the "
+        "chrome.ttsEngine extension api. "
+        "It takes extension api requests from the api to speak a string, sends a "
+        "network request to a network endpoint, and replies with audio samples and "
+        "related metadata. "
+        "It is only used by Select to Speak in Chrome OS."
+      trigger: "Turn on Select-to-speak from settings. "
+        "Use search +s or hold search and click some text to get it to start. "
+        "Accept the dialog about natural voices, and/or go to Select-to-speak to enable them."
+      data: "1. Google API Key."
+            "2. Text piece to be converted to speech."
+            "3. Voice to be used for the speech."
+            "4. Language of the speech."
+            "5. Rate of the speech."
+      destination: GOOGLE_OWNED_SERVICE
+    }
+    policy {
+      cookies_allowed: NO
+      setting: "This feature cannot be disabled in settings."
+      chrome_policy {
+        AudioCaptureAllowed {
+          policy_options {mode: MANDATORY}
+          AudioCaptureAllowed: false
+        }
+      }
+    })"
+  );
+
 EnhancedNetworkTtsImpl::ServerRequest::ServerRequest(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     int start_index,
@@ -146,7 +179,7 @@ EnhancedNetworkTtsImpl::MakeRequestLoader() {
   }
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
-                                          MISSING_TRAFFIC_ANNOTATION);
+                                          traffic_annotation);
 }
 
 void EnhancedNetworkTtsImpl::ProcessNextServerRequest() {
