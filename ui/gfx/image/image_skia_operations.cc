@@ -587,6 +587,32 @@ class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
   const SkColor color_;
   const gfx::ImageSkia image_;
 };
+
+// Image source to create an image with a roundrect clip path.
+class ImageWithRoundRectClipSource : public gfx::CanvasImageSource {
+ public:
+  ImageWithRoundRectClipSource(int radius, const gfx::ImageSkia& image)
+      : gfx::CanvasImageSource(image.size()), radius_(radius), image_(image) {}
+
+  ImageWithRoundRectClipSource(const ImageWithRoundRectClipSource&) = delete;
+  ImageWithRoundRectClipSource& operator=(const ImageWithRoundRectClipSource&) =
+      delete;
+
+  ~ImageWithRoundRectClipSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    canvas->ClipPath(
+        SkPath().addRoundRect(gfx::RectToSkRect(gfx::Rect(image_.size())),
+                              radius_, radius_),
+        true);
+    canvas->DrawImageInt(image_, 0, 0);
+  }
+
+ private:
+  const int radius_;
+  const gfx::ImageSkia image_;
+};
 }  // namespace
 
 // static
@@ -761,5 +787,12 @@ ImageSkia ImageSkiaOperations::CreateImageWithCircleBackground(
   DCHECK_GE(radius * 2, image.height());
   return gfx::CanvasImageSource::MakeImageSkia<ImageWithCircleBackgroundSource>(
       radius, color, image);
+}
+
+ImageSkia ImageSkiaOperations::CreateImageWithRoundRectClip(
+    int radius,
+    const ImageSkia& image) {
+  return gfx::CanvasImageSource::MakeImageSkia<ImageWithRoundRectClipSource>(
+      radius, image);
 }
 }  // namespace gfx

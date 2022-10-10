@@ -119,6 +119,10 @@ class GFX_EXPORT ImageSkiaOperations {
                                                    SkColor color,
                                                    const ImageSkia& image);
 
+  // Creates an image with a roundrect clip path with `radius`.
+  static ImageSkia CreateImageWithRoundRectClip(int radius,
+                                                const ImageSkia& image);
+
  private:
   ImageSkiaOperations();  // Class for scoping only.
 };
