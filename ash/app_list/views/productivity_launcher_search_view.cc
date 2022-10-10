@@ -234,7 +234,7 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
       }
 
       // Fetch the first visible search result view for search box autocomplete.
-      if (!first_result_view && view->GetFirstResultView()) {
+      if (!first_result_view) {
         first_result_view = view->GetFirstResultView();
       }
     }

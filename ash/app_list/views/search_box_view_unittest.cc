@@ -1171,29 +1171,6 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_features_;
 };
 
-TEST_F(SearchBoxViewAppListBubbleTest, AutocompleteAnswerCard) {
-  GetAppListTestHelper()->ShowAppList();
-
-  // Type "he".
-  PressAndReleaseKey(ui::VKEY_H);
-  PressAndReleaseKey(ui::VKEY_E);
-
-  // Simulate "hello" being returned as a search result.
-  AddAnswerCardResult("id", u"hello");
-  AddSearchResult("id", u"world");
-  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
-
-  // The text autocompletes to "hello" and selects "llo".
-  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
-  EXPECT_EQ(view->search_box()->GetText(), u"hello");
-  EXPECT_EQ(view->search_box()->GetSelectedText(), u"llo");
-
-  GetSearchModel()->DeleteAllResults();
-  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
-  EXPECT_EQ(view->search_box()->GetText(), u"he");
-  EXPECT_EQ(view->search_box()->GetSelectedText(), u"");
-}
-
 TEST_F(SearchBoxViewAppListBubbleTest, AutocompleteCategoricalResult) {
   GetAppListTestHelper()->ShowAppList();
 

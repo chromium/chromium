@@ -714,6 +714,12 @@ void SearchBoxView::ProcessAutocomplete(
 
   SearchResult* const first_visible_result = first_result_view->result();
 
+  // Do not autocomplete on answer cards.
+  if (first_visible_result->display_type() ==
+      SearchResultDisplayType::kAnswerCard) {
+    return;
+  }
+
   if (first_result_view->is_default_result() &&
       current_query_ != search_box()->GetText()) {
     // Search box text has been set to the previous selected result. Reset
@@ -1221,8 +1227,9 @@ bool SearchBoxView::HandleGestureEvent(views::Textfield* sender,
 void SearchBoxView::UpdateSearchBoxForSelectedResult(
     SearchResult* selected_result) {
   if (selected_result->result_type() ==
-      AppListSearchResultType::kInternalPrivacyInfo) {
-    // Privacy view should not change the search box text.
+          AppListSearchResultType::kInternalPrivacyInfo ||
+      selected_result->display_type() == SearchResultDisplayType::kAnswerCard) {
+    // Privacy and answer card views should not change the search box text.
     return;
   }
 
