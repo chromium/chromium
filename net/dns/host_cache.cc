@@ -202,6 +202,14 @@ const std::string& GetHostname(
   return *hostname;
 }
 
+absl::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
+  for (const auto& type : kDnsQueryTypes) {
+    if (base::strict_cast<int>(type.first) == dns_query_type)
+      return type.first;
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 // Used in histograms; do not modify existing values.
@@ -883,9 +891,10 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
         entry_dict.FindInt(kDnsQueryTypeKey);
     if (!maybe_dns_query_type.has_value())
       return false;
-    DnsQueryType dns_query_type =
-        static_cast<DnsQueryType>(maybe_dns_query_type.value());
-
+    absl::optional<DnsQueryType> dns_query_type =
+        GetDnsQueryType(maybe_dns_query_type.value());
+    if (!dns_query_type.has_value())
+      return false;
     // HostResolverSource is optional.
     int host_resolver_source =
         entry_dict.FindInt(kHostResolverSourceKey)
@@ -1036,7 +1045,8 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
 
     // Assume an empty endpoints list and an empty aliases if we have an address
     // type and no results.
-    if (IsAddressType(dns_query_type) && !text_records && !hostname_records) {
+    if (IsAddressType(dns_query_type.value()) && !text_records &&
+        !hostname_records) {
       if (!ip_endpoints) {
         ip_endpoints.emplace();
       }
@@ -1044,7 +1054,7 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
         aliases.emplace();
       }
     }
-    Key key(std::move(host), dns_query_type, flags,
+    Key key(std::move(host), dns_query_type.value(), flags,
             static_cast<HostResolverSource>(host_resolver_source),
             network_anonymization_key);
     key.secure = secure;

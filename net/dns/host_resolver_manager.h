@@ -546,9 +546,6 @@ class NET_EXPORT HostResolverManager
       registered_contexts_;
   bool invalidation_in_progress_ = false;
 
-  // Helper for metrics associated with `features::kDnsHttpssvc`.
-  HttpssvcExperimentDomainCache httpssvc_domain_cache_;
-
   // An experimental flag for features::kUseDnsHttpsSvcb.
   HostResolver::HttpsSvcbOptions https_svcb_options_;
 

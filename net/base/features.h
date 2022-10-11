@@ -39,70 +39,9 @@ NET_EXPORT extern const base::FeatureParam<double>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDnsMinTransactionTimeout;
 
-// Enables DNS query-only experiments for HTTPSSVC or INTEGRITY records,
-// depending on feature parameters. Received responses never affect Chrome
-// behavior other than metrics.
-//
-// Not to be confused with `kUseDnsHttpsSvcb` which is querying HTTPS in order
-// to affect Chrome connection behavior.
-NET_EXPORT BASE_DECLARE_FEATURE(kDnsHttpssvc);
-
-// Determine which kind of record should be queried: HTTPSSVC or INTEGRITY. No
-// more than one of these feature parameters should be enabled at once. In the
-// event that both are enabled, |kDnsHttpssvcUseIntegrity| takes priority, and
-// |kDnsHttpssvcUseHttpssvc| will be ignored.
-NET_EXPORT extern const base::FeatureParam<bool> kDnsHttpssvcUseHttpssvc;
-NET_EXPORT extern const base::FeatureParam<bool> kDnsHttpssvcUseIntegrity;
-
-// Enable HTTPSSVC or INTEGRITY to be queried over insecure DNS.
-NET_EXPORT extern const base::FeatureParam<bool>
-    kDnsHttpssvcEnableQueryOverInsecure;
-
-// If we are still waiting for an HTTPSSVC or INTEGRITY query after all the
-// other queries in a DnsTask have completed, we will compute a timeout for the
-// remaining query. The timeout will be the min of:
-//   (a) |kDnsHttpssvcExtraTimeMs.Get()|
-//   (b) |kDnsHttpssvcExtraTimePercent.Get() / 100 * t|, where |t| is the
-//       number of milliseconds since the first query began.
-NET_EXPORT extern const base::FeatureParam<int> kDnsHttpssvcExtraTimeMs;
-NET_EXPORT extern const base::FeatureParam<int> kDnsHttpssvcExtraTimePercent;
-
-// These parameters, respectively, are the list of experimental and control
-// domains for which we will query HTTPSSVC or INTEGRITY records. We expect
-// valid INTEGRITY results for experiment domains. We expect no INTEGRITY
-// results for control domains.
-//
-// The format of both parameters is a comma-separated list of domains.
-// Whitespace around domain names is permitted. Trailing comma is optional.
-//
-// See helper functions:
-// |dns_httpssvc_experiment::GetDnsHttpssvcExperimentDomains| and
-// |dns_httpssvc_experiment::GetDnsHttpssvcControlDomains|.
-NET_EXPORT extern const base::FeatureParam<std::string>
-    kDnsHttpssvcExperimentDomains;
-NET_EXPORT extern const base::FeatureParam<std::string>
-    kDnsHttpssvcControlDomains;
-
-// This param controls how we determine whether a domain is an experimental or
-// control domain. When false, domains must be in |kDnsHttpssvcControlDomains|
-// to be considered a control. When true, we ignore |kDnsHttpssvcControlDomains|
-// and any non-experiment domain (not in |kDnsHttpssvcExperimentDomains|) is
-// considered a control domain.
-NET_EXPORT extern const base::FeatureParam<bool>
-    kDnsHttpssvcControlDomainWildcard;
-
-namespace dns_httpssvc_experiment {
-// Get the value of |kDnsHttpssvcExtraTimeMs|.
-NET_EXPORT base::TimeDelta GetExtraTimeAbsolute();
-}  // namespace dns_httpssvc_experiment
-
 // Enables querying HTTPS DNS records that will affect results from HostResolver
 // and may be used to affect connection behavior. Whether or not those results
 // are used (e.g. to connect via ECH) may be controlled by separate features.
-//
-// Not to be confused with `kDnsHttpssvc` which is for experiment-only queries
-// where received HTTPS results do not affect Chrome behavior and are only used
-// for metrics.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseDnsHttpsSvcb);
 
 // Param to control whether or not HostResolver, when using Secure DNS, will

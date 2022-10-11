@@ -1304,7 +1304,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithExpirations) {
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
 
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
 
   HostCache::EntryStaleness stale;
 
@@ -1396,7 +1396,7 @@ TEST(HostCacheTest, SerializeAndDeserializeWithChanges) {
 
   EXPECT_EQ(0u, restored_cache.last_restore_size());
 
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
   EXPECT_EQ(1u, restored_cache.last_restore_size());
 
   HostCache::EntryStaleness stale;
@@ -1493,7 +1493,7 @@ TEST(HostCacheTest, SerializeAndDeserializeAddresses) {
 
   EXPECT_EQ(0u, restored_cache.last_restore_size());
 
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
 
   HostCache::EntryStaleness stale;
 
@@ -1679,7 +1679,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
 
   ASSERT_EQ(1u, serialized_cache.size());
   ASSERT_EQ(1u, restored_cache.size());
@@ -1710,7 +1710,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
 
   ASSERT_EQ(1u, restored_cache.size());
   HostCache::EntryStaleness stale;
@@ -1782,7 +1782,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   cache.GetList(serialized_cache, false /* include_staleness */,
                 HostCache::SerializationType::kRestorable);
   HostCache restored_cache(kMaxCacheEntries);
-  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
 
   // Check `serialized_cache` can be encoded as JSON. This ensures it has no
   // binary values.
@@ -1836,7 +1836,7 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
 
   HostCache restored_cache(kMaxCacheEntries);
   ASSERT_TRUE(dict->is_list());
-  restored_cache.RestoreFromListValue(dict->GetList());
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(dict->GetList()));
 
   ASSERT_EQ(1u, restored_cache.size());
 
@@ -1878,7 +1878,7 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
 
   HostCache restored_cache(kMaxCacheEntries);
   ASSERT_TRUE(dict->is_list());
-  restored_cache.RestoreFromListValue(dict->GetList());
+  EXPECT_TRUE(restored_cache.RestoreFromListValue(dict->GetList()));
 
   ASSERT_EQ(1u, restored_cache.size());
 
@@ -1894,6 +1894,68 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
   EXPECT_THAT(result->second.ip_endpoints(),
               Pointee(ElementsAreArray(MakeEndpoints({"2000::", "1.2.3.4"}))));
   EXPECT_THAT(result->second.aliases(), Pointee(ElementsAre()));
+}
+
+TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
+  base::TimeDelta ttl = base::Seconds(99);
+  std::string expiration_time_str = base::NumberToString(
+      (base::Time::Now() + ttl).since_origin().InMicroseconds());
+
+  // RestoreFromListValue doesn't support dns_query_type=6 (INTEGRITY).
+  auto dict = base::JSONReader::Read(base::StringPrintf(
+      R"(
+ [ {
+   "addresses": [ "2000::", "1.2.3.4" ],
+   "dns_query_type": 6,
+   "expiration": "%s",
+   "flags": 0,
+   "host_resolver_source": 2,
+   "hostname": "example.com",
+   "network_isolation_key": [  ],
+   "port": 443,
+   "scheme": "https",
+   "secure": false
+} ]
+)",
+      expiration_time_str.c_str()));
+  ASSERT_TRUE(dict);
+
+  HostCache restored_cache(kMaxCacheEntries);
+  ASSERT_TRUE(dict->is_list());
+  EXPECT_FALSE(restored_cache.RestoreFromListValue(dict->GetList()));
+
+  ASSERT_EQ(0u, restored_cache.size());
+}
+
+TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
+  base::TimeDelta ttl = base::Seconds(99);
+  std::string expiration_time_str = base::NumberToString(
+      (base::Time::Now() + ttl).since_origin().InMicroseconds());
+
+  // RestoreFromListValue doesn't support dns_query_type=8 (HTTPS_EXPERIMENTAL).
+  auto dict = base::JSONReader::Read(base::StringPrintf(
+      R"(
+ [ {
+   "addresses": [ "2000::", "1.2.3.4" ],
+   "dns_query_type": 8,
+   "expiration": "%s",
+   "flags": 0,
+   "host_resolver_source": 2,
+   "hostname": "example.com",
+   "network_isolation_key": [  ],
+   "port": 443,
+   "scheme": "https",
+   "secure": false
+} ]
+)",
+      expiration_time_str.c_str()));
+  ASSERT_TRUE(dict);
+
+  HostCache restored_cache(kMaxCacheEntries);
+  ASSERT_TRUE(dict->is_list());
+  EXPECT_FALSE(restored_cache.RestoreFromListValue(dict->GetList()));
+
+  ASSERT_EQ(0u, restored_cache.size());
 }
 
 TEST(HostCacheTest, PersistenceDelegate) {

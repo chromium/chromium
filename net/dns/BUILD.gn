@@ -538,15 +538,6 @@ fuzzer_test("net_dns_https_record_rdata_fuzzer") {
   dict = "//net/data/fuzzer_dictionaries/net_dns_record_fuzzer.dict"
 }
 
-fuzzer_test("net_dns_integrity_record_fuzzer") {
-  sources = [ "integrity_record_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-  ]
-}
-
 fuzzer_test("net_dns_nsswitch_reader_fuzzer") {
   sources = [ "nsswitch_reader_fuzzer.cc" ]
   deps = [

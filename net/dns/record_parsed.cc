@@ -66,9 +66,6 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
     case OptRecordRdata::kType:
       rdata = OptRecordRdata::Create(record.rdata);
       break;
-    case IntegrityRecordRdata::kType:
-      rdata = IntegrityRecordRdata::Create(record.rdata);
-      break;
     case HttpsRecordRdata::kType:
       rdata = HttpsRecordRdata::Parse(record.rdata);
       break;

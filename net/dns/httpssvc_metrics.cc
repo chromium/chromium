@@ -39,38 +39,7 @@ enum HttpssvcDnsRcode TranslateDnsRcodeForHttpssvcExperiment(uint8_t rcode) {
   NOTREACHED();
 }
 
-HttpssvcExperimentDomainCache::HttpssvcExperimentDomainCache() = default;
-HttpssvcExperimentDomainCache::~HttpssvcExperimentDomainCache() = default;
-
-bool HttpssvcExperimentDomainCache::ListContainsDomain(
-    const std::string& domain_list,
-    base::StringPiece domain,
-    absl::optional<base::flat_set<std::string>>& in_out_cached_list) {
-  if (!in_out_cached_list) {
-    in_out_cached_list = base::SplitString(
-        domain_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  }
-  return in_out_cached_list->find(domain) != in_out_cached_list->end();
-}
-
-bool HttpssvcExperimentDomainCache::IsExperimental(base::StringPiece domain) {
-  if (!base::FeatureList::IsEnabled(features::kDnsHttpssvc))
-    return false;
-  return ListContainsDomain(features::kDnsHttpssvcExperimentDomains.Get(),
-                            domain, experimental_list_);
-}
-
-bool HttpssvcExperimentDomainCache::IsControl(base::StringPiece domain) {
-  if (!base::FeatureList::IsEnabled(features::kDnsHttpssvc))
-    return false;
-  if (features::kDnsHttpssvcControlDomainWildcard.Get())
-    return !IsExperimental(domain);
-  return ListContainsDomain(features::kDnsHttpssvcControlDomains.Get(), domain,
-                            control_list_);
-}
-
-HttpssvcMetrics::HttpssvcMetrics(bool secure, bool expect_intact)
-    : secure_(secure), expect_intact_(expect_intact) {}
+HttpssvcMetrics::HttpssvcMetrics(bool secure) : secure_(secure) {}
 
 HttpssvcMetrics::~HttpssvcMetrics() {
   RecordMetrics();
@@ -86,27 +55,6 @@ void HttpssvcMetrics::SaveForAddressQuery(base::TimeDelta resolve_time,
 
 void HttpssvcMetrics::SaveAddressQueryFailure() {
   disqualified_ = true;
-}
-
-void HttpssvcMetrics::SaveForIntegrity(
-    enum HttpssvcDnsRcode rcode_integrity,
-    const std::vector<bool>& condensed_records,
-    base::TimeDelta integrity_resolve_time) {
-  DCHECK(!rcode_integrity_.has_value());
-  rcode_integrity_ = rcode_integrity;
-
-  num_integrity_records_ = condensed_records.size();
-
-  // We only record one "Integrity" sample per INTEGRITY query. In case multiple
-  // matching records are present in the response, we combine their intactness
-  // values with logical AND.
-  const bool intact = !base::Contains(condensed_records, false);
-
-  DCHECK(!is_integrity_intact_.has_value());
-  is_integrity_intact_ = intact;
-
-  DCHECK(!integrity_resolve_time_.has_value());
-  integrity_resolve_time_ = integrity_resolve_time;
 }
 
 void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
@@ -130,18 +78,15 @@ void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
 }
 
 std::string HttpssvcMetrics::BuildMetricName(
-    RecordType type,
     base::StringPiece leaf_name) const {
-  // Build shared pieces of the metric names.
-  CHECK(type == RecordType::kHttps || type == RecordType::kIntegrity);
-  base::StringPiece type_str =
-      type == RecordType::kHttps ? "RecordHttps" : "RecordIntegrity";
+  base::StringPiece type_str = "RecordHttps";
   base::StringPiece secure = secure_ ? "Secure" : "Insecure";
-  base::StringPiece expectation =
-      expect_intact_ ? "ExpectIntact" : "ExpectNoerror";
+  // This part is just a legacy from old experiments but now meaningless.
+  base::StringPiece expectation = "ExpectNoerror";
 
-  // Example INTEGRITY metric name:
-  // Net.DNS.HTTPSSVC.RecordIntegrity.Secure.ExpectIntact.DnsRcode
+  // Example metric name:
+  // Net.DNS.HTTPSSVC.RecordHttps.Secure.ExpectNoerror.DnsRcode
+  // TODO(crbug.com/1366422): Simplify the metric names.
   return base::JoinString(
       {"Net.DNS.HTTPSSVC", type_str, secure, expectation, leaf_name}, ".");
 }
@@ -153,47 +98,18 @@ void HttpssvcMetrics::RecordMetrics() {
   // We really have no metrics to record without an experimental query resolve
   // time and `address_resolve_times_`. If this HttpssvcMetrics is in an
   // inconsistent state, disqualify any metrics from being recorded.
-  if ((!integrity_resolve_time_.has_value() &&
-       !https_resolve_time_.has_value()) ||
-      address_resolve_times_.empty()) {
+  if (!https_resolve_time_.has_value() || address_resolve_times_.empty()) {
     disqualified_ = true;
   }
   if (disqualified_)
     return;
 
-  // Record the metrics that the "ExpectIntact" and "ExpectNoerror" branches
-  // have in common.
-  RecordCommonMetrics();
+  base::UmaHistogramMediumTimes(BuildMetricName("ResolveTimeExperimental"),
+                                *https_resolve_time_);
 
-  if (expect_intact_) {
-    // Record metrics that are unique to the "ExpectIntact" branch.
-    RecordExpectIntactMetrics();
-  } else {
-    // Record metrics that are unique to the "ExpectNoerror" branch.
-    RecordExpectNoerrorMetrics();
-  }
-}
-
-void HttpssvcMetrics::RecordCommonMetrics() {
-  DCHECK(integrity_resolve_time_.has_value() ||
-         https_resolve_time_.has_value());
-  if (integrity_resolve_time_.has_value()) {
-    base::UmaHistogramMediumTimes(
-        BuildMetricName(RecordType::kIntegrity, "ResolveTimeExperimental"),
-        *integrity_resolve_time_);
-  }
-  if (https_resolve_time_.has_value()) {
-    base::UmaHistogramMediumTimes(
-        BuildMetricName(RecordType::kHttps, "ResolveTimeExperimental"),
-        *https_resolve_time_);
-  }
-
-  DCHECK(!address_resolve_times_.empty());
-  // Not specific to INTEGRITY or HTTPS, but for the sake of picking one for the
-  // metric name and only recording the time once, always record the address
-  // resolve times under `kHttps`.
+  // Record the address resolve times.
   const std::string kMetricResolveTimeAddressRecord =
-      BuildMetricName(RecordType::kHttps, "ResolveTimeAddress");
+      BuildMetricName("ResolveTimeAddress");
   for (base::TimeDelta resolve_time_other : address_resolve_times_) {
     base::UmaHistogramMediumTimes(kMetricResolveTimeAddressRecord,
                                   resolve_time_other);
@@ -226,82 +142,25 @@ void HttpssvcMetrics::RecordCommonMetrics() {
   // 200% relative to the A/AAAA resolve time, twice as long.
   constexpr int64_t kMaxRatio = 20;
   constexpr int64_t kPercentScale = 10;
-  if (integrity_resolve_time_.has_value()) {
-    const int64_t resolve_time_percent = base::ClampFloor<int64_t>(
-        *integrity_resolve_time_ / *slowest_address_resolve * 100);
-    base::UmaHistogramExactLinear(
-        BuildMetricName(RecordType::kIntegrity, "ResolveTimeRatio"),
-        resolve_time_percent / kPercentScale, kMaxRatio);
-  }
-  if (https_resolve_time_.has_value()) {
-    const int64_t resolve_time_percent = base::ClampFloor<int64_t>(
-        *https_resolve_time_ / *slowest_address_resolve * 100);
-    base::UmaHistogramExactLinear(
-        BuildMetricName(RecordType::kHttps, "ResolveTimeRatio"),
-        resolve_time_percent / kPercentScale, kMaxRatio);
-  }
+  const int64_t resolve_time_percent = base::ClampFloor<int64_t>(
+      *https_resolve_time_ / *slowest_address_resolve * 100);
+  base::UmaHistogramExactLinear(BuildMetricName("ResolveTimeRatio"),
+                                resolve_time_percent / kPercentScale,
+                                kMaxRatio);
 
   if (num_https_records_ > 0) {
     DCHECK(rcode_https_.has_value());
     if (*rcode_https_ == HttpssvcDnsRcode::kNoError) {
-      base::UmaHistogramBoolean(BuildMetricName(RecordType::kHttps, "Parsable"),
+      base::UmaHistogramBoolean(BuildMetricName("Parsable"),
                                 is_https_parsable_.value_or(false));
     } else {
       // Record boolean indicating whether we received an HTTPS record and
       // an error simultaneously.
-      base::UmaHistogramBoolean(
-          BuildMetricName(RecordType::kHttps, "RecordWithError"), true);
+      base::UmaHistogramBoolean(BuildMetricName("RecordWithError"), true);
     }
   }
-}
 
-void HttpssvcMetrics::RecordExpectIntactMetrics() {
-  // Without an experimental query rcode, we can't make progress on any of these
-  // metrics.
-  DCHECK(rcode_integrity_.has_value() || rcode_https_.has_value());
-
-  // The ExpectIntact variant of the "DnsRcode" metric is only recorded when no
-  // records are received.
-  if (num_integrity_records_ == 0 && rcode_integrity_.has_value()) {
-    base::UmaHistogramEnumeration(
-        BuildMetricName(RecordType::kIntegrity, "DnsRcode"), *rcode_integrity_);
-  }
-  if (num_https_records_ == 0 && rcode_https_.has_value()) {
-    base::UmaHistogramEnumeration(
-        BuildMetricName(RecordType::kHttps, "DnsRcode"), *rcode_https_);
-  }
-
-  if (num_integrity_records_ > 0) {
-    DCHECK(rcode_integrity_.has_value());
-    if (*rcode_integrity_ == HttpssvcDnsRcode::kNoError) {
-      base::UmaHistogramBoolean(
-          BuildMetricName(RecordType::kIntegrity, "Integrity"),
-          is_integrity_intact_.value_or(false));
-    } else {
-      // Record boolean indicating whether we received an INTEGRITY record and
-      // an error simultaneously.
-      base::UmaHistogramBoolean(
-          BuildMetricName(RecordType::kIntegrity, "RecordWithError"), true);
-    }
-  }
-}
-
-void HttpssvcMetrics::RecordExpectNoerrorMetrics() {
-  if (rcode_integrity_.has_value()) {
-    base::UmaHistogramEnumeration(
-        BuildMetricName(RecordType::kIntegrity, "DnsRcode"), *rcode_integrity_);
-  }
-  if (rcode_https_.has_value()) {
-    base::UmaHistogramEnumeration(
-        BuildMetricName(RecordType::kHttps, "DnsRcode"), *rcode_https_);
-  }
-
-  // INTEGRITY only records a simple boolean when an unexpected record is
-  // received because it is extremely unlikely to be an actual INTEGRITY record.
-  if (num_integrity_records_ > 0) {
-    base::UmaHistogramBoolean(
-        BuildMetricName(RecordType::kIntegrity, "RecordReceived"), true);
-  }
+  base::UmaHistogramEnumeration(BuildMetricName("DnsRcode"), *rcode_https_);
 }
 
 }  // namespace net

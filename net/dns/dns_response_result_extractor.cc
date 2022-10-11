@@ -433,70 +433,6 @@ ExtractionError ExtractServiceResults(const DnsResponse& response,
   return ExtractionError::kOk;
 }
 
-ExtractionError ExtractIntegrityResults(const DnsResponse& response,
-                                        HostCache::Entry* out_results) {
-  DCHECK(out_results);
-
-  absl::optional<base::TimeDelta> response_ttl;
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, dns_protocol::kExperimentalTypeIntegrity, &records,
-      &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
-  }
-
-  // Condense results into a list of booleans. We do not cache the results,
-  // but this enables us to write some unit tests.
-  std::vector<bool> condensed_results;
-  for (const auto& record : records) {
-    const IntegrityRecordRdata& rdata = *record->rdata<IntegrityRecordRdata>();
-    condensed_results.push_back(rdata.IsIntact());
-  }
-
-  *out_results = HostCache::Entry(
-      condensed_results.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-      std::move(condensed_results), HostCache::Entry::SOURCE_DNS, response_ttl);
-  DCHECK_EQ(extraction_error, ExtractionError::kOk);
-  return extraction_error;
-}
-
-ExtractionError ExtractExperimentalHttpsResults(const DnsResponse& response,
-                                                HostCache::Entry* out_results) {
-  DCHECK(out_results);
-
-  absl::optional<base::TimeDelta> response_ttl;
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,
-                             &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
-  }
-
-  // Record record compatibility (draft-ietf-dnsop-svcb-https-08#section-8) for
-  // each record.
-  std::vector<bool> record_compatibility;
-  for (const auto& record : records) {
-    const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
-    DCHECK(rdata);
-    record_compatibility.push_back(rdata->IsAlias() ||
-                                   rdata->AsServiceForm()->IsCompatible());
-  }
-
-  *out_results = HostCache::Entry(records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-                                  std::move(record_compatibility),
-                                  HostCache::Entry::SOURCE_DNS, response_ttl);
-  DCHECK_EQ(extraction_error, ExtractionError::kOk);
-  return extraction_error;
-}
-
 const RecordParsed* UnwrapRecordPtr(
     const std::unique_ptr<const RecordParsed>& ptr) {
   return ptr.get();
@@ -667,23 +603,17 @@ DnsResponseResultExtractor::ExtractDnsResults(
       return ExtractPointerResults(*response_, out_results);
     case DnsQueryType::SRV:
       return ExtractServiceResults(*response_, out_results);
-    case DnsQueryType::INTEGRITY:
-      return ExtractIntegrityResults(*response_, out_results);
     case DnsQueryType::HTTPS:
       return ExtractHttpsResults(*response_, original_domain_name, request_port,
                                  out_results);
-    case DnsQueryType::HTTPS_EXPERIMENTAL:
-      return ExtractExperimentalHttpsResults(*response_, out_results);
   }
 }
 
 // static
 HostCache::Entry DnsResponseResultExtractor::CreateEmptyResult(
     DnsQueryType query_type) {
-  if (query_type != DnsQueryType::INTEGRITY &&
-      query_type != DnsQueryType::HTTPS &&
-      query_type != DnsQueryType::HTTPS_EXPERIMENTAL) {
-    // Currently only used for INTEGRITY/HTTPS.
+  if (query_type != DnsQueryType::HTTPS) {
+    // Currently only used for HTTPS.
     NOTIMPLEMENTED();
     return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
   }

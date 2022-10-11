@@ -1085,26 +1085,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         types.Remove(DnsQueryType::HTTPS);
       } else {
         DCHECK(!httpssvc_metrics_);
-        httpssvc_metrics_.emplace(secure_, /*expect_intact=*/false);
+        httpssvc_metrics_.emplace(secure_);
       }
     }
-
-    if (types.Has(DnsQueryType::INTEGRITY) ||
-        types.Has(DnsQueryType::HTTPS_EXPERIMENTAL)) {
-      if (!secure_ && (!features::kDnsHttpssvcEnableQueryOverInsecure.Get() ||
-                       !client_->CanQueryAdditionalTypesViaInsecureDns())) {
-        types.RemoveAll(
-            {DnsQueryType::INTEGRITY, DnsQueryType::HTTPS_EXPERIMENTAL});
-      } else {
-        DCHECK(!httpssvc_metrics_)
-            << "Caller requested multiple experimental types";
-        httpssvc_metrics_.emplace(
-            secure_,
-            /*expect_intact=*/httpssvc_domain_cache_.IsExperimental(
-                GetHostname(host_)));
-      }
-    }
-
     DCHECK(!types.Empty());
     return types;
   }
@@ -1129,9 +1112,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
     for (DnsQueryType remaining_query : query_types) {
-      if (remaining_query == DnsQueryType::HTTPS ||
-          remaining_query == DnsQueryType::HTTPS_EXPERIMENTAL ||
-          remaining_query == DnsQueryType::INTEGRITY) {
+      if (remaining_query == DnsQueryType::HTTPS) {
         // Ignore errors for these types. In most cases treating them normally
         // would only result in fallback to resolution without querying the
         // type. Instead, synthesize empty results.
@@ -1186,17 +1167,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::TimeDelta elapsed_time = tick_clock_->NowTicks() - task_start_time_;
 
       switch (transaction.type) {
-        case DnsQueryType::INTEGRITY:
-          DCHECK(httpssvc_metrics_);
-          httpssvc_metrics_->SaveForIntegrity(HttpssvcDnsRcode::kTimedOut,
-                                              /*condensed_records=*/{},
-                                              elapsed_time);
-          break;
         case DnsQueryType::HTTPS:
           DCHECK(!secure_ ||
                  !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get());
-          [[fallthrough]];
-        case DnsQueryType::HTTPS_EXPERIMENTAL:
           if (httpssvc_metrics_) {
             // Don't record provider ID for timeouts. It is not precisely known
             // at this level which provider is actually to blame for the
@@ -1319,16 +1292,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     if (httpssvc_metrics_) {
-      if (transaction_info.type == DnsQueryType::INTEGRITY) {
-        const std::vector<bool>* experimental_results =
-            results.https_record_compatibility();
-        CHECK(experimental_results);
-        // INTEGRITY queries can time out the normal way (here), or when the
-        // experimental query timer runs out (OnExperimentalQueryTimeout).
-        httpssvc_metrics_->SaveForIntegrity(
-            rcode_for_httpssvc, *experimental_results, elapsed_time);
-      } else if (transaction_info.type == DnsQueryType::HTTPS ||
-                 transaction_info.type == DnsQueryType::HTTPS_EXPERIMENTAL) {
+      if (transaction_info.type == DnsQueryType::HTTPS) {
         const std::vector<bool>* record_compatibility =
             results.https_record_compatibility();
         CHECK(record_compatibility);
@@ -1376,9 +1340,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           results = HostCache::Entry::MergeEntries(
               std::move(results), std::move(saved_results_).value());
           break;
-        case DnsQueryType::INTEGRITY:
         case DnsQueryType::HTTPS:
-        case DnsQueryType::HTTPS_EXPERIMENTAL:
           // No particular importance to order.
           results = HostCache::Entry::MergeEntries(
               std::move(results), std::move(saved_results_).value());
@@ -1633,12 +1595,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         extra_time_percent = 0;
         timeout_min = base::TimeDelta();
       }
-    } else if (AnyOfTypeTransactionsRemain(
-                   {DnsQueryType::INTEGRITY,
-                    DnsQueryType::HTTPS_EXPERIMENTAL})) {
-      DCHECK(base::FeatureList::IsEnabled(features::kDnsHttpssvc));
-      timeout_max = features::dns_httpssvc_experiment::GetExtraTimeAbsolute();
-      extra_time_percent = features::kDnsHttpssvcExtraTimePercent.Get();
     } else {
       // Unhandled supplemental type.
       NOTREACHED();
@@ -1722,7 +1678,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks task_start_time_;
 
-  HttpssvcExperimentDomainCache httpssvc_domain_cache_;
   absl::optional<HttpssvcMetrics> httpssvc_metrics_;
 
   // Timer for task timeout. Generally started after completion of address
@@ -1773,9 +1728,7 @@ struct HostResolverManager::JobKey {
       // is why the following DCHECK restricts the allowable query types.
       DCHECK(Difference(query_types,
                         DnsQueryTypeSet(DnsQueryType::A, DnsQueryType::AAAA,
-                                        DnsQueryType::HTTPS,
-                                        DnsQueryType::HTTPS_EXPERIMENTAL,
-                                        DnsQueryType::INTEGRITY))
+                                        DnsQueryType::HTTPS))
                  .Empty());
     }
     const DnsQueryType query_type_for_key = query_types.Size() == 1
@@ -3706,13 +3659,6 @@ void HostResolverManager::GetEffectiveParametersForRequest(
         url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
     if (base::Contains(kSchemesForHttpsQuery, GetScheme(host)))
       effective_types.Put(DnsQueryType::HTTPS);
-  } else if (base::FeatureList::IsEnabled(features::kDnsHttpssvc) &&
-             (httpssvc_domain_cache_.IsExperimental(GetHostname(host)) ||
-              httpssvc_domain_cache_.IsControl(GetHostname(host)))) {
-    if (features::kDnsHttpssvcUseIntegrity.Get())
-      effective_types.Put(DnsQueryType::INTEGRITY);
-    if (features::kDnsHttpssvcUseHttpssvc.Get())
-      effective_types.Put(DnsQueryType::HTTPS_EXPERIMENTAL);
   }
 
   *out_effective_types = effective_types;

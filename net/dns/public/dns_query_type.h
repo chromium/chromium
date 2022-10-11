@@ -15,17 +15,21 @@ namespace net {
 // DNS query type for HostResolver requests.
 // See:
 // https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-4
+// CAUTION: When adding new entries, remember to update `MAX` and update
+// kDnsQueryTypes below.
 enum class DnsQueryType : uint8_t {
   UNSPECIFIED = 0,
-  A,
-  AAAA,
-  TXT,
-  PTR,
-  SRV,
-  INTEGRITY,
-  HTTPS,
-  HTTPS_EXPERIMENTAL,
-  MAX = HTTPS_EXPERIMENTAL
+  A = 1,
+  AAAA = 2,
+  TXT = 3,
+  PTR = 4,
+  SRV = 5,
+  // 6 was INTEGRITY, used for an experiment (crbug.com/1052476).
+  HTTPS = 7,
+  // 8 was HTTPS_EXPERIMENTAL, used for an experiment (crbug.com/1052476).
+  // When adding new entries, remember to update `MAX` and update kDnsQueryTypes
+  // below.
+  MAX = HTTPS
 };
 
 using DnsQueryTypeSet =
@@ -39,13 +43,7 @@ inline constexpr auto kDnsQueryTypes =
          {DnsQueryType::TXT, "TXT"},
          {DnsQueryType::PTR, "PTR"},
          {DnsQueryType::SRV, "SRV"},
-         {DnsQueryType::INTEGRITY, "INTEGRITY"},
-         {DnsQueryType::HTTPS, "HTTPS"},
-         {DnsQueryType::HTTPS_EXPERIMENTAL, "HTTPS_EXPERIMENTAL"}});
-
-static_assert(std::size(kDnsQueryTypes) ==
-                  static_cast<unsigned>(DnsQueryType::MAX) + 1,
-              "All DnsQueryType values should be in kDnsQueryTypes.");
+         {DnsQueryType::HTTPS, "HTTPS"}});
 
 // `true` iff `dns_query_type` is an address-resulting type, convertible to and
 // from `net::AddressFamily`.

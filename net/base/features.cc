@@ -32,39 +32,6 @@ const base::FeatureParam<base::TimeDelta> kDnsMinTransactionTimeout{
     &kDnsTransactionDynamicTimeouts, "DnsMinTransactionTimeout",
     base::Seconds(12)};
 
-BASE_FEATURE(kDnsHttpssvc, "DnsHttpssvc", base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kDnsHttpssvcUseHttpssvc{
-    &kDnsHttpssvc, "DnsHttpssvcUseHttpssvc", false};
-
-const base::FeatureParam<bool> kDnsHttpssvcUseIntegrity{
-    &kDnsHttpssvc, "DnsHttpssvcUseIntegrity", false};
-
-const base::FeatureParam<bool> kDnsHttpssvcEnableQueryOverInsecure{
-    &kDnsHttpssvc, "DnsHttpssvcEnableQueryOverInsecure", false};
-
-const base::FeatureParam<int> kDnsHttpssvcExtraTimeMs{
-    &kDnsHttpssvc, "DnsHttpssvcExtraTimeMs", 10};
-
-const base::FeatureParam<int> kDnsHttpssvcExtraTimePercent{
-    &kDnsHttpssvc, "DnsHttpssvcExtraTimePercent", 5};
-
-const base::FeatureParam<std::string> kDnsHttpssvcExperimentDomains{
-    &kDnsHttpssvc, "DnsHttpssvcExperimentDomains", ""};
-
-const base::FeatureParam<std::string> kDnsHttpssvcControlDomains{
-    &kDnsHttpssvc, "DnsHttpssvcControlDomains", ""};
-
-const base::FeatureParam<bool> kDnsHttpssvcControlDomainWildcard{
-    &kDnsHttpssvc, "DnsHttpssvcControlDomainWildcard", false};
-
-namespace dns_httpssvc_experiment {
-base::TimeDelta GetExtraTimeAbsolute() {
-  DCHECK(base::FeatureList::IsEnabled(features::kDnsHttpssvc));
-  return base::Milliseconds(kDnsHttpssvcExtraTimeMs.Get());
-}
-}  // namespace dns_httpssvc_experiment
-
 BASE_FEATURE(kUseDnsHttpsSvcb,
              "UseDnsHttpsSvcb",
              base::FEATURE_ENABLED_BY_DEFAULT);
