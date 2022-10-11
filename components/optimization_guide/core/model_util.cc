@@ -81,6 +81,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationChromeStartAndroidV2";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
       return "SegmentationSearchUser";
+    case proto::OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST:
+      return "OmniboxOnDeviceTailSuggest";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

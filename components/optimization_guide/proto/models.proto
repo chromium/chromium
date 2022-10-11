@@ -166,6 +166,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2 = 22;
   // Target for segmentation: Determine users who use search.
   OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER = 23;
+  // Target for Omnibox on device tail suggest.
+  OPTIMIZATION_TARGET_OMNIBOX_ON_DEVICE_TAIL_SUGGEST = 24;
 }
 
 // The model engine versions that can be used to do model inference.
