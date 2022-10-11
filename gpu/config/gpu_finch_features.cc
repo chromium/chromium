@@ -115,7 +115,7 @@ BASE_FEATURE(kLimitAImageReaderMaxSizeToOne,
 // List of devices on which to limit AImageReader max queue size to 1.
 const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
     &kLimitAImageReaderMaxSizeToOne, "LimitAImageReaderMaxSizeToOneBlocklist",
-    "MIBOX"};
+    "MIBOX|*ODROID*"};
 
 // Increase number of buffers and pipeline depth for high frame rate devices.
 BASE_FEATURE(kIncreaseBufferCountForHighFrameRate,
