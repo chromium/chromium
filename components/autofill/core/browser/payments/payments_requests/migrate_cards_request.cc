@@ -42,33 +42,30 @@ std::string MigrateCardsRequest::GetRequestContentType() {
 }
 
 std::string MigrateCardsRequest::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict request_dict;
 
-  request_dict.SetKey("risk_data_encoded",
-                      BuildRiskDictionary(request_details_.risk_data));
+  request_dict.Set("risk_data_encoded",
+                   BuildRiskDictionary(request_details_.risk_data));
 
   const std::string& app_locale = request_details_.app_locale;
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(app_locale));
-  context.SetKey("billable_service",
-                 base::Value(kMigrateCardsBillableServiceNumber));
+  base::Value::Dict context;
+  context.Set("language_code", app_locale);
+  context.Set("billable_service", kMigrateCardsBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
-    context.SetKey("customer_context",
-                   BuildCustomerContextDictionary(
-                       request_details_.billing_customer_number));
+    context.Set("customer_context",
+                BuildCustomerContextDictionary(
+                    request_details_.billing_customer_number));
   }
-  request_dict.SetKey("context", std::move(context));
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  request_dict.SetKey("context_token",
-                      base::Value(request_details_.context_token));
+  request_dict.Set("context_token", request_details_.context_token);
 
-  std::string all_pans_data = std::string();
-  base::Value migrate_cards(base::Value::Type::LIST);
+  std::string all_pans_data;
+  base::Value::List migrate_cards;
   for (size_t index = 0; index < migratable_credit_cards_.size(); ++index) {
     std::string pan_field_name = GetPanFieldName(index);
     // Generate credit card dictionary.
@@ -79,7 +76,7 @@ std::string MigrateCardsRequest::GetRequestContent() {
     all_pans_data += GetAppendPan(migratable_credit_cards_[index].credit_card(),
                                   app_locale, pan_field_name);
   }
-  request_dict.SetKey("local_card", std::move(migrate_cards));
+  request_dict.Set("local_card", std::move(migrate_cards));
 
   std::string json_request;
   base::JSONWriter::Write(request_dict, &json_request);

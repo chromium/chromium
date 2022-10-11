@@ -158,67 +158,59 @@ std::string UnmaskCardRequest::GetRequestContent() {
   // Either non-legacy instrument id or legacy server id must be provided.
   DCHECK(!request_details_.card.server_id().empty() ||
          request_details_.card.instrument_id() != 0);
-  base::Value request_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict request_dict;
   if (!request_details_.card.server_id().empty()) {
-    request_dict.SetKey("credit_card_id",
-                        base::Value(request_details_.card.server_id()));
+    request_dict.Set("credit_card_id", request_details_.card.server_id());
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableUnmaskCardRequestSetInstrumentId) &&
       request_details_.card.instrument_id() != 0) {
-    request_dict.SetKey("instrument_id",
-                        base::Value(base::NumberToString(
-                            request_details_.card.instrument_id())));
+    request_dict.Set(
+        "instrument_id",
+        base::NumberToString(request_details_.card.instrument_id()));
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillAlwaysReturnCloudTokenizedCard)) {
     // See b/140727361.
-    request_dict.SetKey("instrument_token",
-                        base::Value("INSTRUMENT_TOKEN_FOR_TEST"));
+    request_dict.Set("instrument_token", "INSTRUMENT_TOKEN_FOR_TEST");
   }
-  request_dict.SetKey("risk_data_encoded",
-                      BuildRiskDictionary(request_details_.risk_data));
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("billable_service",
-                 base::Value(kUnmaskCardBillableServiceNumber));
+  request_dict.Set("risk_data_encoded",
+                   BuildRiskDictionary(request_details_.risk_data));
+  base::Value::Dict context;
+  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
-    context.SetKey("customer_context",
-                   BuildCustomerContextDictionary(
-                       request_details_.billing_customer_number));
+    context.Set("customer_context",
+                BuildCustomerContextDictionary(
+                    request_details_.billing_customer_number));
   }
-  request_dict.SetKey("context", std::move(context));
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  if (!request_details_.context_token.empty()) {
-    request_dict.SetKey("context_token",
-                        base::Value(request_details_.context_token));
-  }
+  if (!request_details_.context_token.empty())
+    request_dict.Set("context_token", request_details_.context_token);
 
   int value = 0;
   if (base::StringToInt(request_details_.user_response.exp_month, &value))
-    request_dict.SetKey("expiration_month", base::Value(value));
+    request_dict.Set("expiration_month", value);
   if (base::StringToInt(request_details_.user_response.exp_year, &value))
-    request_dict.SetKey("expiration_year", base::Value(value));
+    request_dict.Set("expiration_year", value);
 
-  request_dict.SetKey(
-      "opt_in_fido_auth",
-      base::Value(request_details_.user_response.enable_fido_auth));
+  request_dict.Set("opt_in_fido_auth",
+                   request_details_.user_response.enable_fido_auth);
 
   if (request_details_.selected_challenge_option) {
-    base::Value challenge_option(base::Value::Type::DICTIONARY);
+    base::Value::Dict challenge_option;
     if (request_details_.selected_challenge_option->type ==
         CardUnmaskChallengeOptionType::kCvc) {
-      challenge_option.SetKey(
-          "challenge_id",
-          base::Value(request_details_.selected_challenge_option->id));
-      challenge_option.SetKey("cvc_length",
-                              base::Value(base::NumberToString(
-                                  request_details_.selected_challenge_option
-                                      ->challenge_input_length)));
+      challenge_option.Set("challenge_id",
+                           request_details_.selected_challenge_option->id);
+      challenge_option.Set(
+          "cvc_length",
+          base::NumberToString(request_details_.selected_challenge_option
+                                   ->challenge_input_length));
 
       base::StringPiece cvc_position = "CVC_POSITION_UNKNOWN";
       switch (request_details_.selected_challenge_option->cvc_position) {
@@ -232,9 +224,9 @@ std::string UnmaskCardRequest::GetRequestContent() {
           NOTREACHED();
           break;
       }
-      challenge_option.SetKey("cvc_position", base::Value(cvc_position));
+      challenge_option.Set("cvc_position", cvc_position);
 
-      request_dict.SetKey("cvc_challenge_option", std::move(challenge_option));
+      request_dict.Set("cvc_challenge_option", std::move(challenge_option));
     }
   }
 
@@ -245,24 +237,22 @@ std::string UnmaskCardRequest::GetRequestContent() {
   // At most, only one of these auth methods can be provided.
   DCHECK_LE(is_cvc_auth + is_fido_auth + is_otp_auth, 1);
   if (is_cvc_auth) {
-    request_dict.SetKey("encrypted_cvc", base::Value("__param:s7e_13_cvc"));
+    request_dict.Set("encrypted_cvc", "__param:s7e_13_cvc");
   } else if (is_otp_auth) {
-    request_dict.SetKey("otp", base::Value("__param:s7e_263_otp"));
+    request_dict.Set("otp", "__param:s7e_263_otp");
   } else if (is_fido_auth) {
-    request_dict.SetKey(
-        "fido_assertion_info",
-        std::move(request_details_.fido_assertion_info.value()));
+    request_dict.Set("fido_assertion_info",
+                     std::move(request_details_.fido_assertion_info.value()));
   }
 
   if (request_details_.last_committed_primary_main_frame_origin.has_value()) {
-    base::Value virtual_card_request_info(base::Value::Type::DICTIONARY);
-    virtual_card_request_info.SetKey(
+    base::Value::Dict virtual_card_request_info;
+    virtual_card_request_info.Set(
         "merchant_domain",
-        base::Value(
-            request_details_.last_committed_primary_main_frame_origin.value()
-                .spec()));
-    request_dict.SetKey("virtual_card_request_info",
-                        std::move(virtual_card_request_info));
+        request_details_.last_committed_primary_main_frame_origin.value()
+            .spec());
+    request_dict.Set("virtual_card_request_info",
+                     std::move(virtual_card_request_info));
   }
 
   std::string json_request;

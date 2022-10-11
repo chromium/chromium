@@ -36,17 +36,15 @@ std::string OptChangeRequest::GetRequestContentType() {
 }
 
 std::string OptChangeRequest::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(request_details_.app_locale));
-  context.SetKey("billable_service",
-                 base::Value(kUnmaskCardBillableServiceNumber));
-  request_dict.SetKey("context", std::move(context));
+  base::Value::Dict request_dict;
+  base::Value::Dict context;
+  context.Set("language_code", request_details_.app_locale);
+  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
   std::string reason;
   switch (request_details_.reason) {
@@ -63,23 +61,22 @@ std::string OptChangeRequest::GetRequestContent() {
       NOTREACHED();
       break;
   }
-  request_dict.SetKey("reason", base::Value(reason));
+  request_dict.Set("reason", std::move(reason));
 
   if (request_details_.fido_authenticator_response.has_value()) {
-    base::Value fido_authentication_info(base::Value::Type::DICTIONARY);
+    base::Value::Dict fido_authentication_info;
 
-    fido_authentication_info.SetKey(
+    fido_authentication_info.Set(
         "fido_authenticator_response",
         std::move(request_details_.fido_authenticator_response.value()));
 
     if (!request_details_.card_authorization_token.empty()) {
-      fido_authentication_info.SetKey(
-          "card_authorization_token",
-          base::Value(request_details_.card_authorization_token));
+      fido_authentication_info.Set("card_authorization_token",
+                                   request_details_.card_authorization_token);
     }
 
-    request_dict.SetKey("fido_authentication_info",
-                        std::move(fido_authentication_info));
+    request_dict.Set("fido_authentication_info",
+                     std::move(fido_authentication_info));
   }
 
   std::string request_content;

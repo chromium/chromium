@@ -47,41 +47,38 @@ std::string UploadCardRequest::GetRequestContentType() {
 }
 
 std::string UploadCardRequest::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetKey("encrypted_pan", base::Value("__param:s7e_1_pan"));
+  base::Value::Dict request_dict;
+  request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
   if (!request_details_.cvc.empty())
-    request_dict.SetKey("encrypted_cvc", base::Value("__param:s7e_13_cvc"));
-  request_dict.SetKey("risk_data_encoded",
-                      BuildRiskDictionary(request_details_.risk_data));
+    request_dict.Set("encrypted_cvc", "__param:s7e_13_cvc");
+  request_dict.Set("risk_data_encoded",
+                   BuildRiskDictionary(request_details_.risk_data));
 
   const std::string& app_locale = request_details_.app_locale;
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(app_locale));
-  context.SetKey("billable_service",
-                 base::Value(kUploadCardBillableServiceNumber));
+  base::Value::Dict context;
+  context.Set("language_code", app_locale);
+  context.Set("billable_service", kUploadCardBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
-    context.SetKey("customer_context",
-                   BuildCustomerContextDictionary(
-                       request_details_.billing_customer_number));
+    context.Set("customer_context",
+                BuildCustomerContextDictionary(
+                    request_details_.billing_customer_number));
   }
-  request_dict.SetKey("context", std::move(context));
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
   SetStringIfNotEmpty(request_details_.card, CREDIT_CARD_NAME_FULL, app_locale,
                       "cardholder_name", request_dict);
 
-  base::Value addresses(base::Value::Type::LIST);
+  base::Value::List addresses;
   for (const AutofillProfile& profile : request_details_.profiles) {
     addresses.Append(BuildAddressDictionary(profile, app_locale, true));
   }
-  request_dict.SetKey("address", std::move(addresses));
+  request_dict.Set("address", std::move(addresses));
 
-  request_dict.SetKey("context_token",
-                      base::Value(request_details_.context_token));
+  request_dict.Set("context_token", request_details_.context_token);
 
   int value = 0;
   const std::u16string exp_month = request_details_.card.GetInfo(
@@ -89,13 +86,12 @@ std::string UploadCardRequest::GetRequestContent() {
   const std::u16string exp_year = request_details_.card.GetInfo(
       AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
   if (base::StringToInt(exp_month, &value))
-    request_dict.SetKey("expiration_month", base::Value(value));
+    request_dict.Set("expiration_month", value);
   if (base::StringToInt(exp_year, &value))
-    request_dict.SetKey("expiration_year", base::Value(value));
+    request_dict.Set("expiration_year", value);
 
   if (request_details_.card.HasNonEmptyValidNickname()) {
-    request_dict.SetKey("nickname",
-                        base::Value(request_details_.card.nickname()));
+    request_dict.Set("nickname", request_details_.card.nickname());
   }
 
   SetActiveExperiments(request_details_.active_experiments, request_dict);

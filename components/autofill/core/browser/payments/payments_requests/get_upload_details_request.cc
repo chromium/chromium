@@ -51,24 +51,23 @@ std::string GetUploadDetailsRequest::GetRequestContentType() {
 }
 
 std::string GetUploadDetailsRequest::GetRequestContent() {
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  base::Value context(base::Value::Type::DICTIONARY);
-  context.SetKey("language_code", base::Value(app_locale_));
-  context.SetKey("billable_service", base::Value(billable_service_number_));
+  base::Value::Dict request_dict;
+  base::Value::Dict context;
+  context.Set("language_code", app_locale_);
+  context.Set("billable_service", billable_service_number_);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSendingBcnInGetUploadDetails) &&
       billing_customer_number_ != 0) {
-    context.SetKey("customer_context",
-                   BuildCustomerContextDictionary(billing_customer_number_));
+    context.Set("customer_context",
+                BuildCustomerContextDictionary(billing_customer_number_));
   }
-  request_dict.SetKey("context", std::move(context));
+  request_dict.Set("context", std::move(context));
 
-  base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-  chrome_user_context.SetKey("full_sync_enabled",
-                             base::Value(full_sync_enabled_));
-  request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
+  base::Value::Dict chrome_user_context;
+  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  base::Value addresses(base::Value::Type::LIST);
+  base::Value::List addresses;
   for (const AutofillProfile& profile : addresses_) {
     // These addresses are used by Payments to (1) accurately determine the
     // user's country in order to show the correct legal documents and (2) to
@@ -79,39 +78,35 @@ std::string GetUploadDetailsRequest::GetRequestContent() {
     // useful for these purposes.
     addresses.Append(BuildAddressDictionary(profile, app_locale_, false));
   }
-  request_dict.SetKey("address", std::move(addresses));
+  request_dict.Set("address", std::move(addresses));
 
   // It's possible we may not have found name/address/CVC in the checkout
   // flow. The detected_values_ bitmask tells Payments what *was* found, and
   // Payments will decide if the provided data is enough to offer upload save.
-  request_dict.SetKey("detected_values", base::Value(detected_values_));
+  request_dict.Set("detected_values", detected_values_);
 
   SetActiveExperiments(active_experiments_, request_dict);
 
   switch (upload_card_source_) {
     case PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("UNKNOWN_UPLOAD_CARD_SOURCE"));
+      request_dict.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
     case PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("UPSTREAM_CHECKOUT_FLOW"));
+      request_dict.Set("upload_card_source", "UPSTREAM_CHECKOUT_FLOW");
       break;
     case PaymentsClient::UploadCardSource::UPSTREAM_SETTINGS_PAGE:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("UPSTREAM_SETTINGS_PAGE"));
+      request_dict.Set("upload_card_source", "UPSTREAM_SETTINGS_PAGE");
       break;
     case PaymentsClient::UploadCardSource::UPSTREAM_CARD_OCR:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("UPSTREAM_CARD_OCR"));
+      request_dict.Set("upload_card_source", "UPSTREAM_CARD_OCR");
       break;
     case PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("LOCAL_CARD_MIGRATION_CHECKOUT_FLOW"));
+      request_dict.Set("upload_card_source",
+                       "LOCAL_CARD_MIGRATION_CHECKOUT_FLOW");
       break;
     case PaymentsClient::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE:
-      request_dict.SetKey("upload_card_source",
-                          base::Value("LOCAL_CARD_MIGRATION_SETTINGS_PAGE"));
+      request_dict.Set("upload_card_source",
+                       "LOCAL_CARD_MIGRATION_SETTINGS_PAGE");
       break;
     default:
       NOTREACHED();

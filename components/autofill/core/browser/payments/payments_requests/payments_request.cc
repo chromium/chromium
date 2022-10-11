@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
+#include <utility>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -13,68 +15,66 @@ namespace autofill::payments {
 
 PaymentsRequest::~PaymentsRequest() = default;
 
-base::Value PaymentsRequest::BuildRiskDictionary(
+base::Value::Dict PaymentsRequest::BuildRiskDictionary(
     const std::string& encoded_risk_data) {
-  base::Value risk_data(base::Value::Type::DICTIONARY);
+  base::Value::Dict risk_data;
 #if BUILDFLAG(IS_IOS)
   // Browser fingerprinting is not available on iOS. Instead, we generate
   // RiskAdvisoryData.
-  risk_data.SetKey("message_type", base::Value("RISK_ADVISORY_DATA"));
-  risk_data.SetKey("encoding_type", base::Value("BASE_64_URL"));
+  risk_data.Set("message_type", "RISK_ADVISORY_DATA");
+  risk_data.Set("encoding_type", "BASE_64_URL");
 #else
-  risk_data.SetKey("message_type",
-                   base::Value("BROWSER_NATIVE_FINGERPRINTING"));
-  risk_data.SetKey("encoding_type", base::Value("BASE_64"));
+  risk_data.Set("message_type", "BROWSER_NATIVE_FINGERPRINTING");
+  risk_data.Set("encoding_type", "BASE_64");
 #endif
 
-  risk_data.SetKey("value", base::Value(encoded_risk_data));
+  risk_data.Set("value", encoded_risk_data);
 
   return risk_data;
 }
 
-base::Value PaymentsRequest::BuildCustomerContextDictionary(
+base::Value::Dict PaymentsRequest::BuildCustomerContextDictionary(
     int64_t external_customer_id) {
-  base::Value customer_context(base::Value::Type::DICTIONARY);
-  customer_context.SetKey(
-      "external_customer_id",
-      base::Value(base::NumberToString(external_customer_id)));
+  base::Value::Dict customer_context;
+  customer_context.Set("external_customer_id",
+                       base::NumberToString(external_customer_id));
   return customer_context;
 }
 
 void PaymentsRequest::SetActiveExperiments(
     const std::vector<const char*>& active_experiments,
-    base::Value& request_dict) {
+    base::Value::Dict& request_dict) {
   if (active_experiments.empty())
     return;
 
-  base::Value active_chrome_experiments(base::Value::Type::LIST);
-  for (const char* it : active_experiments)
-    active_chrome_experiments.Append(it);
+  base::Value::List active_chrome_experiments;
+  for (const char* experiment : active_experiments)
+    active_chrome_experiments.Append(experiment);
 
-  request_dict.SetKey("active_chrome_experiments",
-                      std::move(active_chrome_experiments));
+  request_dict.Set("active_chrome_experiments",
+                   std::move(active_chrome_experiments));
 }
 
-base::Value PaymentsRequest::BuildAddressDictionary(
+base::Value::Dict PaymentsRequest::BuildAddressDictionary(
     const AutofillProfile& profile,
     const std::string& app_locale,
     bool include_non_location_data) {
-  base::Value postal_address(base::Value::Type::DICTIONARY);
+  base::Value::Dict postal_address;
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, NAME_FULL, app_locale,
                         PaymentsClient::kRecipientName, postal_address);
   }
 
-  base::Value address_lines(base::Value::Type::LIST);
+  base::Value::List address_lines;
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE1, app_locale,
                          address_lines);
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE2, app_locale,
                          address_lines);
   AppendStringIfNotEmpty(profile, ADDRESS_HOME_LINE3, app_locale,
                          address_lines);
-  if (!address_lines.GetList().empty())
-    postal_address.SetKey("address_line", std::move(address_lines));
+  if (!address_lines.empty())
+    postal_address.Set("address_line", std::move(address_lines));
 
   SetStringIfNotEmpty(profile, ADDRESS_HOME_CITY, app_locale, "locality_name",
                       postal_address);
@@ -86,10 +86,10 @@ base::Value PaymentsRequest::BuildAddressDictionary(
   // Use GetRawInfo to get a country code instead of the country name:
   const std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!country_code.empty())
-    postal_address.SetKey("country_name_code", base::Value(country_code));
+    postal_address.Set("country_name_code", country_code);
 
-  base::Value address(base::Value::Type::DICTIONARY);
-  address.SetKey("postal_address", std::move(postal_address));
+  base::Value::Dict address;
+  address.Set("postal_address", std::move(postal_address));
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, PHONE_HOME_WHOLE_NUMBER, app_locale,
@@ -99,12 +99,12 @@ base::Value PaymentsRequest::BuildAddressDictionary(
   return address;
 }
 
-base::Value PaymentsRequest::BuildCreditCardDictionary(
+base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
     const CreditCard& credit_card,
     const std::string& app_locale,
     const std::string& pan_field_name) {
-  base::Value card(base::Value::Type::DICTIONARY);
-  card.SetKey("unique_id", base::Value(credit_card.guid()));
+  base::Value::Dict card;
+  card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
       credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
@@ -112,36 +112,38 @@ base::Value PaymentsRequest::BuildCreditCardDictionary(
       AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
   int value = 0;
   if (base::StringToInt(exp_month, &value))
-    card.SetKey("expiration_month", base::Value(value));
+    card.Set("expiration_month", value);
   if (base::StringToInt(exp_year, &value))
-    card.SetKey("expiration_year", base::Value(value));
+    card.Set("expiration_year", value);
   SetStringIfNotEmpty(credit_card, CREDIT_CARD_NAME_FULL, app_locale,
                       "cardholder_name", card);
 
   if (credit_card.HasNonEmptyValidNickname())
-    card.SetKey("nickname", base::Value(credit_card.nickname()));
+    card.Set("nickname", credit_card.nickname());
 
-  card.SetKey("encrypted_pan", base::Value("__param:" + pan_field_name));
+  card.Set("encrypted_pan", "__param:" + pan_field_name);
   return card;
 }
 
+// static
 void PaymentsRequest::AppendStringIfNotEmpty(const AutofillProfile& profile,
                                              const ServerFieldType& type,
                                              const std::string& app_locale,
-                                             base::Value& list) {
-  const std::u16string value = profile.GetInfo(type, app_locale);
+                                             base::Value::List& list) {
+  std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     list.Append(value);
 }
 
+// static
 void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
                                           const ServerFieldType& type,
                                           const std::string& app_locale,
                                           const std::string& path,
-                                          base::Value& dictionary) {
-  const std::u16string value = profile.GetInfo(AutofillType(type), app_locale);
+                                          base::Value::Dict& dictionary) {
+  std::u16string value = profile.GetInfo(AutofillType(type), app_locale);
   if (!value.empty())
-    dictionary.SetKey(path, base::Value(value));
+    dictionary.Set(path, std::move(value));
 }
 
 }  // namespace autofill::payments

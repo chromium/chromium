@@ -49,11 +49,11 @@ class UpdateVirtualCardEnrollmentRequest : public PaymentsRequest {
 
   // Modifies the base::Value that |request_dict| points to by setting all of
   // the fields needed for an Enroll request.
-  void BuildEnrollRequestDictionary(base::Value* request_dict);
+  void BuildEnrollRequestDictionary(base::Value::Dict* request_dict);
 
   // Modifies the base::Value that |request_dict| points to by setting all of
   // the fields needed for an Unenroll request.
-  void BuildUnenrollRequestDictionary(base::Value* request_dict);
+  void BuildUnenrollRequestDictionary(base::Value::Dict* request_dict);
 
   PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails request_details_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback_;
