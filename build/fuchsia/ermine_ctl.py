@@ -63,7 +63,8 @@ class ErmineCtl:
       True if the tool exists, False if not.
     """
     if not self._ermine_exists_check:
-      self._ermine_exists = self.target.RunCommand([self._TOOL, '--help']) == 0
+      self._ermine_exists = self.target.RunCommand([self._TOOL, '--help'],
+                                                   silent=True) == 0
       self._ermine_exists_check = True
       logging.debug('erminectl exists: %s',
                     ('true' if self._ermine_exists else 'false'))

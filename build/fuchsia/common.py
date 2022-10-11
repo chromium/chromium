@@ -6,11 +6,9 @@ import logging
 import os
 import platform
 import shutil
-import signal
 import socket
 import subprocess
 import sys
-import threading
 
 DIR_SOURCE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
@@ -111,12 +109,11 @@ def RunGnSdkFunction(script, function):
   return SubprocessCallWithTimeout(function_cmd)
 
 
-def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
+def SubprocessCallWithTimeout(command, timeout_secs=None):
   """Helper function for running a command.
 
   Args:
     command: The command to run.
-    silent: If true, stdout and stderr of the command will not be printed.
     timeout_secs: Maximum amount of time allowed for the command to finish.
 
   Returns:
@@ -124,38 +121,16 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
     an exception if the subprocess times out.
   """
 
-  if silent:
-    devnull = open(os.devnull, 'w')
-    process = subprocess.Popen(command,
-                               stdout=devnull,
-                               stderr=devnull,
-                               text=True)
-  else:
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               text=True)
-  timeout_timer = None
-  if timeout_secs:
+  process = None
+  try:
+    process = subprocess.run(command,
+                             capture_output=True,
+                             timeout=timeout_secs,
+                             encoding='utf-8')
+  except subprocess.TimeoutExpired as te:
+    raise TimeoutError(str(te))
 
-    def interrupt_process():
-      process.send_signal(signal.SIGKILL)
-
-    timeout_timer = threading.Timer(timeout_secs, interrupt_process)
-
-    # Ensure that keyboard interrupts are handled properly (crbug/1198113).
-    timeout_timer.daemon = True
-
-    timeout_timer.start()
-
-  out, err = process.communicate()
-  if timeout_timer:
-    timeout_timer.cancel()
-
-  if process.returncode == -9:
-    raise TimeoutError('Timeout when executing \"%s\".' % ' '.join(command))
-
-  return process.returncode, out, err
+  return process.returncode, process.stdout, process.stderr
 
 
 def IsRunningUnattended():

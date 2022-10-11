@@ -18,8 +18,7 @@ import ermine_ctl
 import ffx_session
 
 from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
-                   GetHostToolPathFromPlatform, RunGnSdkFunction, \
-                   SubprocessCallWithTimeout
+                   GetHostToolPathFromPlatform, RunGnSdkFunction
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))

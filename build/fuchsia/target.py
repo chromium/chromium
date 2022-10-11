@@ -174,9 +174,7 @@ class Target(object):
 
     Returns the exit code of the command.
     """
-    logging.debug('running \'%s\'.', ' '.join(command))
-    return self.GetCommandRunner().RunCommand(command, silent,
-                                              timeout_secs=timeout_secs)
+    return self.GetCommandRunner().RunCommand(command, silent, timeout_secs)
 
   def EnsureIsolatedPathsExist(self, for_package, for_realms):
     """Ensures that the package's isolated /data and /tmp exist."""
@@ -356,7 +354,7 @@ class Target(object):
         logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
-             _GetPackageUri(package_name), '>/dev/null'],
+             _GetPackageUri(package_name)],
             timeout_secs=_INSTALL_TIMEOUT_SECS)
         if return_code != 0:
           raise Exception(

@@ -5,7 +5,6 @@
 import logging
 import os
 import subprocess
-import threading
 
 from common import SubprocessCallWithTimeout
 
@@ -47,22 +46,43 @@ class CommandRunner(object):
       cmd_prefix += ['-p', str(self._port)]
     return cmd_prefix
 
-  def RunCommand(self, command, silent, timeout_secs=None):
+  def RunCommand(self, command, silent=False, timeout_secs=None):
     """Executes an SSH command on the remote host and blocks until completion.
 
     command: A list of strings containing the command and its arguments.
-    silent: If true, suppresses all output from 'ssh'.
+    silent: Suppresses all logging in case of success or failure.
     timeout_secs: If set, limits the amount of time that |command| may run.
                   Commands which exceed the timeout are killed.
 
     Returns the exit code from the remote command."""
 
     ssh_command = self._GetSshCommandLinePrefix() + command
-    logging.debug(ssh_command)
     _SSH_LOGGER.debug('ssh exec: ' + ' '.join(ssh_command))
-    retval, _, _ = SubprocessCallWithTimeout(ssh_command, silent, timeout_secs)
-    return retval
+    retval, stdout, stderr = SubprocessCallWithTimeout(ssh_command,
+                                                       timeout_secs)
+    if silent:
+      return retval
 
+    stripped_stdout = stdout.strip()
+    stripped_stderr = stderr.strip()
+    if retval:
+      _SSH_LOGGER.error('"%s" failed with exit code %d%s%s',
+                        ' '.join(ssh_command),
+                        retval,
+                        (' and stdout: "%s"' % stripped_stdout) \
+                          if stripped_stdout else '',
+                        (' and stderr: "%s"' % stripped_stderr) \
+                          if stripped_stderr else '',
+                        )
+    elif stripped_stdout or stripped_stderr:
+      _SSH_LOGGER.debug('succeeded with%s%s',
+                        (' stdout: "%s"' % stripped_stdout) \
+                          if stripped_stdout else '',
+                        (' stderr: "%s"' % stripped_stderr) \
+                          if stripped_stderr else '',
+                        )
+
+    return retval
 
   def RunCommandPiped(self, command, stdout, stderr, ssh_args = None, **kwargs):
     """Executes an SSH command on the remote host and returns a process object
@@ -85,7 +105,6 @@ class CommandRunner(object):
       ssh_args = []
 
     ssh_command = self._GetSshCommandLinePrefix() + ssh_args + ['--'] + command
-    logging.debug(ssh_command)
     _SSH_LOGGER.debug(' '.join(ssh_command))
     return subprocess.Popen(ssh_command, stdout=stdout, stderr=stderr, **kwargs)
 

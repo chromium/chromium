@@ -195,7 +195,7 @@ class ManagedPkgRepo(PkgRepo):
     })
 
     return_code = self._target.RunCommand(
-        ['pkgctl', 'rule', 'replace', 'json', "'{}'".format(rule)], silent)
+        ['pkgctl', 'rule', 'replace', 'json', "'{}'".format(rule)])
     if not silent and return_code != 0:
       raise Exception(
           'Error code {} when running pkgctl rule replace with {}'.format(
