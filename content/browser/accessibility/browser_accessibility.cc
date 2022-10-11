@@ -1204,8 +1204,7 @@ BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(
   DCHECK(manager_->GetNode(GetId()))
       << "No node for id: " << GetId() << "   " << node()->id() << "  "
       << node()->data().id;
-  return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(), GetId(),
-                                                offset, affinity);
+  return ui::AXNodePosition::CreateTextPosition(*node(), offset, affinity);
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetNSWindow() {

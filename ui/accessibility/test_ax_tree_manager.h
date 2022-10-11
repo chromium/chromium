@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -64,6 +65,20 @@ class TestAXTreeManager : public AXTreeManager {
                const AXNodeData& node10 = AXNodeData(),
                const AXNodeData& node11 = AXNodeData(),
                const AXNodeData& node12 = AXNodeData());
+
+  // Create an AXPosition instance, a simple wrapper around
+  // AXNodePosition::CreateTextPosition.
+  AXNodePosition::AXPositionInstance CreateTextPosition(
+      const AXNode& anchor,
+      int text_offset,
+      ax::mojom::TextAffinity affinity) const;
+
+  // Create AXPosition instance for the given |anchor_id| belonging to the
+  // current tree.
+  AXNodePosition::AXPositionInstance CreateTextPosition(
+      const AXNodeID& anchor_id,
+      int text_offset,
+      ax::mojom::TextAffinity affinity) const;
 
   // AXTreeManager implementation.
   AXNode* GetNodeFromTree(const AXTreeID& tree_id,

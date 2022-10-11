@@ -154,8 +154,7 @@ AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
   if (node_->IsLeaf()) {
-    return ui::AXNodePosition::CreateTextPosition(
-        GetTreeData().tree_id, node_->id(), offset, affinity);
+    return AXNodePosition::CreateTextPosition(*node_, offset, affinity);
   }
   return AXNodePosition::CreateTreePosition(*tree_, *node_, offset);
 }
@@ -163,8 +162,7 @@ AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreatePositionAt(
 AXNodePosition::AXPositionInstance TestAXNodeWrapper::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  return ui::AXNodePosition::CreateTextPosition(GetTreeData().tree_id,
-                                                node_->id(), offset, affinity);
+  return AXNodePosition::CreateTextPosition(*node_, offset, affinity);
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {

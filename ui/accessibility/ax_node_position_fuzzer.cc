@@ -112,8 +112,7 @@ TestPositionType AXNodePositionFuzzerGenerator::CreateNewPosition(
               ? child_index_or_text_offset % anchor->GetTextContentLengthUTF16()
               : 0;
       return ui::AXNodePosition::CreateTextPosition(
-          tree_->GetAXTreeID(), anchor_id, child_index_or_text_offset,
-          affinity);
+          *anchor, child_index_or_text_offset, affinity);
       case ui::AXPositionKind::NULL_POSITION:
         NOTREACHED();
         return ui::AXNodePosition::CreateNullPosition();

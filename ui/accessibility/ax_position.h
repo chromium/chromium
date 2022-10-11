@@ -286,6 +286,17 @@ class AXPosition {
     return new_position;
   }
 
+  static AXPositionInstance CreateTextPosition(
+      const AXNode& anchor,
+      int text_offset,
+      ax::mojom::TextAffinity affinity) {
+    DCHECK(anchor.tree());
+    DCHECK_NE(anchor.tree()->GetAXTreeID(), AXTreeIDUnknown());
+    DCHECK_NE(anchor.id(), kInvalidAXNodeID);
+    return CreateTextPosition(anchor.tree()->GetAXTreeID(), anchor.id(),
+                              text_offset, affinity);
+  }
+
   virtual ~AXPosition() = default;
 
   // Implemented based on the copy and swap idiom.
@@ -1430,8 +1441,8 @@ class AXPosition {
           // `AXNode::kEmbeddedObjectCharacterLengthUTF16`. If the invalid
           // position was already at the start of the node, we set it to 0.
           AXPositionInstance valid_position = CreateTextPosition(
-              position->tree_id(), empty_object_node->id(), /* text_offset */ 0,
-              ax::mojom::TextAffinity::kDownstream);
+              *empty_object_node,
+              /* text_offset */ 0, ax::mojom::TextAffinity::kDownstream);
           if (position->text_offset() > 0)
             return valid_position->CreatePositionAtEndOfAnchor();
           return std::move(valid_position);
@@ -2281,7 +2292,7 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         return CreateTreePositionAtStartOfAnchor(*GetAnchor());
       case AXPositionKind::TEXT_POSITION:
-        return CreateTextPosition(tree_id_, anchor_id_, 0 /* text_offset */,
+        return CreateTextPosition(*GetAnchor(), 0 /* text_offset */,
                                   ax::mojom::TextAffinity::kDownstream);
     }
   }
@@ -2295,7 +2306,7 @@ class AXPosition {
         return CreateTreePositionAtEndOfAnchor(*GetAnchor());
       }
       case AXPositionKind::TEXT_POSITION:
-        return CreateTextPosition(tree_id_, anchor_id_, MaxTextOffset(),
+        return CreateTextPosition(*GetAnchor(), MaxTextOffset(),
                                   ax::mojom::TextAffinity::kDownstream);
     }
   }
@@ -2383,16 +2394,10 @@ class AXPosition {
     if (child_index < 0 || child_index >= AnchorChildCount())
       return CreateNullPosition();
 
-    AXTreeID tree_id = AXTreeIDUnknown();
-    AXNodeID child_id = kInvalidAXNodeID;
     const AXNode* child_anchor =
         GetAnchor()->GetChildAtIndexCrossingTreeBoundary(child_index);
     if (!child_anchor)
       return CreateNullPosition();
-    tree_id = child_anchor->tree()->GetAXTreeID();
-    child_id = child_anchor->id();
-    DCHECK_NE(tree_id, AXTreeIDUnknown());
-    DCHECK_NE(child_id, kInvalidAXNodeID);
 
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
@@ -2401,7 +2406,7 @@ class AXPosition {
       case AXPositionKind::TREE_POSITION:
         return CreateTreePositionAtStartOfAnchor(*child_anchor);
       case AXPositionKind::TEXT_POSITION:
-        return CreateTextPosition(tree_id, child_id, 0 /* text_offset */,
+        return CreateTextPosition(*child_anchor, 0 /* text_offset */,
                                   ax::mojom::TextAffinity::kDownstream);
     }
 
@@ -2619,10 +2624,8 @@ class AXPosition {
         // because our "AtEndOfLine" predicate takes into account trailing line
         // breaks, which would create false positives.
 
-        const AXTreeID& parent_tree_id = parent_anchor->tree()->GetAXTreeID();
-        const AXNodeID& parent_anchor_id = parent_anchor->id();
-        AXPositionInstance parent_position = CreateTextPosition(
-            parent_tree_id, parent_anchor_id, parent_offset, parent_affinity);
+        AXPositionInstance parent_position =
+            CreateTextPosition(*parent_anchor, parent_offset, parent_affinity);
         if (AtEndOfAnchor() && !parent_position->AtStartOfAnchor() &&
             !parent_position->AtEndOfAnchor() &&
             parent_position->AtStartOfLine()) {
@@ -4045,7 +4048,7 @@ class AXPosition {
       return nullptr;
 
     AXPositionInstance position =
-        CreateTextPosition(tree_id_, ancestor_node->id(), 0 /* text_offset */,
+        CreateTextPosition(*ancestor_node, 0 /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
     if (position->IsInUnignoredEmptyObject())
       return ancestor_node;
