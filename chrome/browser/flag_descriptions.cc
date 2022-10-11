@@ -761,11 +761,6 @@ const char kDarkLightModeKMeansColorDescription[] =
     "Enables the alternate K Means color algorithm for extracting color from "
     "user wallpaper to mix into system UI for dark light mode";
 
-const char kDarkLightTestName[] = "Dark/light mode of system UI";
-const char kDarkLightTestDescription[] =
-    "Enables the dark/light mode of system UI, which includes shelf, launcher, "
-    "system tray etc.";
-
 extern const char kDeviceForceScheduledRebootName[] =
     "Enable DeviceScheduledReboot policy for all sessions.";
 extern const char kDeviceForceScheduledRebootDescription[] =

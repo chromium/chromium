@@ -414,9 +414,6 @@ extern const char kChromeWhatsNewInMainMenuNewBadgeDescription[];
 extern const char kDarkLightModeKMeansColorName[];
 extern const char kDarkLightModeKMeansColorDescription[];
 
-extern const char kDarkLightTestName[];
-extern const char kDarkLightTestDescription[];
-
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 
