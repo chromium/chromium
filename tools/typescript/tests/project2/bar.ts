@@ -12,9 +12,9 @@ import {bar} from 'chrome://some-other-source/legacy_file.js';
 import {num} from 'chrome://some-other-source/foo.js';
 
 function doNothing(): void {
-  console.log(foo());
-  console.log(bar());
-  console.log(baz());
+  console.info(foo());
+  console.info(bar());
+  console.info(baz());
 }
 
 doNothing();

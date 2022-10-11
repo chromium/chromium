@@ -5,7 +5,7 @@
 import {hello} from './include.js';
 
 function sayHello(): void {
-  console.log(hello());
+  console.info(hello());
 }
 
 sayHello();
