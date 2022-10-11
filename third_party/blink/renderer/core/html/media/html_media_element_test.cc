@@ -77,6 +77,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
   MOCK_METHOD0(OnTimeUpdate, void());
   MOCK_CONST_METHOD0(Seekable, WebTimeRanges());
+  MOCK_METHOD0(OnFrozen, void());
   MOCK_CONST_METHOD0(HasAudio, bool());
   MOCK_CONST_METHOD0(HasVideo, bool());
   MOCK_CONST_METHOD0(Duration, double());
@@ -850,22 +851,33 @@ TEST_P(HTMLMediaElementTest, DomInteractive) {
   EXPECT_FALSE(Media()->GetDocument().GetTiming().DomInteractive().is_null());
 }
 
-TEST_P(HTMLMediaElementTest, ContextPaused) {
+TEST_P(HTMLMediaElementTest, ContextFrozen) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   Media()->Play();
 
   test::RunPendingTasks();
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
+  // First, set frozen but with auto resume.
+  EXPECT_CALL((*MockMediaPlayer()), OnFrozen());
   EXPECT_FALSE(Media()->paused());
   GetExecutionContext()->SetLifecycleState(
       mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
   EXPECT_TRUE(Media()->paused());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Now, if we set back to running the media should auto resume.
   GetExecutionContext()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   EXPECT_FALSE(Media()->paused());
+
+  // Then set to frozen without auto resume.
+  EXPECT_CALL((*MockMediaPlayer()), OnFrozen());
   GetExecutionContext()->SetLifecycleState(mojom::FrameLifecycleState::kFrozen);
   EXPECT_TRUE(Media()->paused());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Now, the media should stay paused.
   GetExecutionContext()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
   EXPECT_TRUE(Media()->paused());

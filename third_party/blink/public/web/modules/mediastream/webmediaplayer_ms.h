@@ -122,6 +122,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetPreload(WebMediaPlayer::Preload preload) override;
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
+  void OnFrozen() override;
 
   // Methods for painting.
   void Paint(cc::PaintCanvas* canvas,

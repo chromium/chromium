@@ -179,6 +179,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
 
+  void OnFrozen() override;
+
   // paint() the current video frame into |canvas|. This is used to support
   // various APIs and functionalities, including but not limited to: <canvas>,
   // ImageBitmap, printing and capturing capabilities.

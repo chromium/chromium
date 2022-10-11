@@ -3948,8 +3948,10 @@ void HTMLMediaElement::ContextLifecycleStateChanged(
   if (state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia && playing_) {
     paused_by_context_paused_ = true;
     pause();
+    GetWebMediaPlayer()->OnFrozen();
   } else if (state == mojom::FrameLifecycleState::kFrozen && playing_) {
     pause();
+    GetWebMediaPlayer()->OnFrozen();
   } else if (state == mojom::FrameLifecycleState::kRunning &&
              paused_by_context_paused_) {
     paused_by_context_paused_ = false;

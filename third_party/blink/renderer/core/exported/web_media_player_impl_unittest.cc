@@ -36,6 +36,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_log.h"
+#include "media/base/media_observer.h"
 #include "media/base/media_switches.h"
 #include "media/base/memory_dump_provider_proxy.h"
 #include "media/base/mock_audio_renderer_sink.h"
@@ -123,6 +124,20 @@ MATCHER_P2(PlaybackRateChanged, old_rate_string, new_rate_string, "") {
                                   std::string(old_rate_string) + " to " +
                                   std::string(new_rate_string));
 }
+
+class MockMediaObserver : public media::MediaObserver,
+                          public base::SupportsWeakPtr<MockMediaObserver> {
+ public:
+  MOCK_METHOD1(OnBecameDominantVisibleContent, void(bool));
+  MOCK_METHOD1(OnMetadataChanged, void(const media::PipelineMetadata&));
+  MOCK_METHOD1(OnRemotePlaybackDisabled, void(bool));
+  MOCK_METHOD0(OnHlsManifestDetected, void());
+  MOCK_METHOD0(OnPlaying, void());
+  MOCK_METHOD0(OnPaused, void());
+  MOCK_METHOD0(OnFrozen, void());
+  MOCK_METHOD1(OnDataSourceInitialized, void(const GURL&));
+  MOCK_METHOD1(SetClient, void(media::MediaObserverClient*));
+};
 
 class MockWebMediaPlayerClient : public WebMediaPlayerClient {
  public:
@@ -445,8 +460,8 @@ class WebMediaPlayerImplTest
         media_thread_.task_runner(), media_thread_.task_runner(),
         base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
                             base::Unretained(this)),
-        nullptr, media::RequestRoutingTokenCallback(), nullptr, false, false,
-        provider.Unbind(),
+        nullptr, media::RequestRoutingTokenCallback(),
+        mock_observer_.AsWeakPtr(), false, false, provider.Unbind(),
         base::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                        base::Unretained(this)),
         viz::TestContextProvider::Create(),
@@ -896,6 +911,9 @@ class WebMediaPlayerImplTest
 
   // default decoder factory for WMPI
   std::unique_ptr<media::DecoderFactory> decoder_factory_;
+
+  // The WebMediaPlayerImpl's media observer.
+  NiceMock<MockMediaObserver> mock_observer_;
 
   // The WebMediaPlayerImpl instance under test.
   std::unique_ptr<WebMediaPlayerImpl> wmpi_;
@@ -1992,6 +2010,12 @@ TEST_F(WebMediaPlayerImplTest, VideoLockedWhenPausedWhenHidden) {
   EXPECT_FALSE(IsVideoLockedWhenPausedWhenHidden());
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+}
+
+TEST_F(WebMediaPlayerImplTest, NotifiesObserverWhenFrozen) {
+  InitializeWebMediaPlayerImpl();
+  EXPECT_CALL(mock_observer_, OnFrozen());
+  wmpi_->OnFrozen();
 }
 
 TEST_F(WebMediaPlayerImplTest, BackgroundIdlePauseTimerDependsOnAudio) {

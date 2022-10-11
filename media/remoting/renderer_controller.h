@@ -65,6 +65,7 @@ class RendererController final : public mojom::RemotingSource,
   void OnRemotePlaybackDisabled(bool disabled) override;
   void OnPlaying() override;
   void OnPaused() override;
+  void OnFrozen() override;
   void OnDataSourceInitialized(const GURL& url_after_redirects) override;
   void OnHlsManifestDetected() override;
   void SetClient(MediaObserverClient* client) override;

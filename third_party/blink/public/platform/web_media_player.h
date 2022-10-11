@@ -180,6 +180,12 @@ class WebMediaPlayer {
   virtual WebTimeRanges Buffered() const = 0;
   virtual WebTimeRanges Seekable() const = 0;
 
+  // Called when the backing media element and the page it is attached to is
+  // frozen, meaning that the page is no longer being rendered but nothing has
+  // yet been deconstructed. This may occur in several cases, such as bfcache
+  // for instant backwards and forwards navigation.
+  virtual void OnFrozen() = 0;
+
   // Attempts to switch the audio output device.
   virtual bool SetSinkId(const WebString& sing_id,
                          WebSetSinkIdCompleteCallback) = 0;

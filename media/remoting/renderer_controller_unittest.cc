@@ -394,6 +394,24 @@ TEST_F(RendererControllerTest, SetClientNullptr) {
   ExpectInLocalRendering();
 }
 
+TEST_F(RendererControllerTest, OnFrozen) {
+  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
+                                        GetDefaultSinkMetadata(true));
+  ExpectInDelayedStart();
+  DelayedStartEnds();
+  RunUntilIdle();
+  ExpectInRemoting();
+
+  // Pausing needs to occur before freezing can be enabled.
+  controller_->OnPaused();
+  ExpectInRemoting();
+
+  // Freezing should kick rendering back to local.
+  controller_->OnFrozen();
+  RunUntilIdle();
+  ExpectInLocalRendering();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(RendererControllerTest, RemotePlaybackHlsCompatibility) {
   controller_ = FakeRemoterFactory::CreateController(true);

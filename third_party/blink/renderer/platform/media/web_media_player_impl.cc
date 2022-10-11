@@ -1036,6 +1036,17 @@ void WebMediaPlayerImpl::Pause() {
   UpdatePlayState();
 }
 
+void WebMediaPlayerImpl::OnFrozen() {
+  DVLOG(1) << __func__;
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // We should already be paused before we are frozen.
+  DCHECK(paused_);
+
+  if (observer_)
+    observer_->OnFrozen();
+}
+
 void WebMediaPlayerImpl::Seek(double seconds) {
   DVLOG(1) << __func__ << "(" << seconds << "s)";
   DCHECK(main_task_runner_->BelongsToCurrentThread());
