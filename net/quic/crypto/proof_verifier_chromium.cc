@@ -18,7 +18,7 @@
 #include "crypto/signature_verifier.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -412,7 +412,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
             cert_verify_result.public_key_hashes, cert_.get(),
             cert_verify_result.verified_cert.get(),
             TransportSecurityState::ENABLE_PIN_REPORTS,
-            proof_verifier_->network_isolation_key_,
+            proof_verifier_->network_anonymization_key_,
             &verify_details_->pinning_failure_log);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
@@ -537,7 +537,7 @@ int ProofVerifierChromium::Job::CheckCTCompliance() {
           cert_verify_result.scts,
           TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           cert_verify_result.policy_compliance,
-          proof_verifier_->network_isolation_key_);
+          proof_verifier_->network_anonymization_key_);
 
   if (sct_auditing_delegate_) {
     sct_auditing_delegate_->MaybeEnqueueReport(
@@ -568,7 +568,7 @@ ProofVerifierChromium::ProofVerifierChromium(
       transport_security_state_(transport_security_state),
       sct_auditing_delegate_(sct_auditing_delegate),
       hostnames_to_allow_unknown_roots_(hostnames_to_allow_unknown_roots),
-      network_isolation_key_(network_anonymization_key) {
+      network_anonymization_key_(network_anonymization_key) {
   DCHECK(cert_verifier_);
   DCHECK(ct_policy_enforcer_);
   DCHECK(transport_security_state_);

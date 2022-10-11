@@ -15,7 +15,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_and_ct_verifier.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
@@ -139,7 +139,7 @@ const quic::QuicTransportVersion kTestTransportVersion =
 }  // namespace
 
 // A mock ReportSenderInterface that just remembers the latest report
-// URI and its NetworkIsolationKey.
+// URI and its NetworkAnonymizationKey.
 class MockCertificateReportSender
     : public TransportSecurityState::ReportSenderInterface {
  public:
@@ -150,21 +150,21 @@ class MockCertificateReportSender
       const GURL& report_uri,
       base::StringPiece content_type,
       base::StringPiece report,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       base::OnceCallback<void()> success_callback,
       base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
     latest_report_uri_ = report_uri;
-    latest_network_isolation_key_ = network_isolation_key;
+    latest_network_anonymization_key_ = network_anonymization_key;
   }
 
   const GURL& latest_report_uri() { return latest_report_uri_; }
-  const NetworkIsolationKey& latest_network_isolation_key() {
-    return latest_network_isolation_key_;
+  const NetworkAnonymizationKey& latest_network_anonymization_key() {
+    return latest_network_anonymization_key_;
   }
 
  private:
   GURL latest_report_uri_;
-  NetworkIsolationKey latest_network_isolation_key_;
+  NetworkAnonymizationKey latest_network_anonymization_key_;
 };
 
 class ProofVerifierChromiumTest : public ::testing::Test {
@@ -722,8 +722,7 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
 
   EXPECT_EQ(report_uri, report_sender.latest_report_uri());
   EXPECT_EQ(network_anonymization_key,
-            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                report_sender.latest_network_isolation_key()));
+            report_sender.latest_network_anonymization_key());
 }
 
 // Test that when CT is required (in this case, by the delegate), the

@@ -140,7 +140,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
       proxy_resolution_service_(context.proxy_resolution_service),
       ssl_config_service_(context.ssl_config_service),
       http_auth_cache_(
-          params.key_auth_cache_server_entries_by_network_isolation_key),
+          params.key_auth_cache_server_entries_by_network_anonymization_key),
       ssl_client_session_cache_(SSLClientSessionCache::Config()),
       ssl_client_context_(context.ssl_config_service,
                           context.cert_verifier,

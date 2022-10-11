@@ -956,9 +956,9 @@ IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
     const ReportingEndpoint& endpoint) const {
   // V0 endpoint groups do not support credentials.
   if (!endpoint.group_key.reporting_source.has_value()) {
-    // TODO: What to do here?
-    return IsolationInfo::CreatePartial(
-        IsolationInfo::RequestType::kOther,
+    // TODO(crbug/1372769): Remove this and have a better way to get an correct
+    // IsolationInfo here.
+    return IsolationInfo::DoNotUseCreatePartialFromNak(
         endpoint.group_key.network_anonymization_key);
   }
   const auto it =

@@ -15,7 +15,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,7 +36,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     uint32_t options,
     int frame_tree_node_id,
     const network::ResourceRequest& resource_request,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
@@ -50,7 +50,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     RecursivePrefetchTokenGenerator recursive_prefetch_token_generator)
     : frame_tree_node_id_(frame_tree_node_id),
       resource_request_(resource_request),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       network_loader_factory_(std::move(network_loader_factory)),
       forwarding_client_(std::move(client)),
       url_loader_throttles_getter_(url_loader_throttles_getter),
@@ -159,8 +159,9 @@ void PrefetchURLLoader::OnReceiveResponse(
             frame_tree_node_id_, resource_request_, std::move(response),
             std::move(body), loader_.Unbind(), client_receiver_.Unbind(),
             network_loader_factory_, url_loader_throttles_getter_, this,
-            network_isolation_key_, signed_exchange_prefetch_metric_recorder_,
-            accept_langs_, keep_entry_for_prefetch_cache);
+            network_anonymization_key_,
+            signed_exchange_prefetch_metric_recorder_, accept_langs_,
+            keep_entry_for_prefetch_cache);
     return;
   }
 
@@ -169,7 +170,7 @@ void PrefetchURLLoader::OnReceiveResponse(
   // token. The renderer will propagate this token to recursive prefetches
   // coming from this response, in the form of preload headers. This token is
   // later used by the PrefetchURLLoaderService to recover the correct
-  // NetworkIsolationKey to use when fetching the request. In the Signed
+  // NetworkAnonymizationKey to use when fetching the request. In the Signed
   // Exchange case, we do this after redirects from the outer response, because
   // we redirect back here for the inner response.
   if (resource_request_.load_flags & net::LOAD_RESTRICTED_PREFETCH) {

@@ -152,13 +152,13 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   }
 }
 
-// Checks the correct NetworkIsolationKey is used for host resolution in the
-// case an H2 proxy is in use. In the non-H2 proxy case, the NetworkIsolationKey
-// makes little difference, but in the H2 case, it affects which requests use
-// the same session. Unlike other tests, this test creates a
-// ProxyResolvingClientSocket instead of using the factory class, because it
-// uses SpdySessionDependencies to create a NetworkSession configured to test
-// H2.
+// Checks the correct NetworkAnonymizationKey is used for host resolution in the
+// case an H2 proxy is in use. In the non-H2 proxy case, the
+// NetworkAnonymizationKey makes little difference, but in the H2 case, it
+// affects which requests use the same session. Unlike other tests, this test
+// creates a ProxyResolvingClientSocket instead of using the factory class,
+// because it uses SpdySessionDependencies to create a NetworkSession configured
+// to test H2.
 TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
   // Don't bother running this test in the SSL case - it's complicated enough
   // without it, and testing HTTPS on top of H2 provides minimal value, since

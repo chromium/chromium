@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
@@ -250,9 +250,9 @@ void PrefetchProxyOriginProber::StartDNSResolution(
     const GURL& url,
     OnProbeResultCallback callback,
     bool also_do_tls_connect) {
-  net::NetworkIsolationKey nik =
+  net::NetworkAnonymizationKey nak =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url))
-          .network_isolation_key();
+          .network_anonymization_key();
 
   network::mojom::ResolveHostParametersPtr resolve_host_parameters =
       network::mojom::ResolveHostParameters::New();
@@ -271,7 +271,7 @@ void PrefetchProxyOriginProber::StartDNSResolution(
   profile_->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair::FromURL(url)),
-      nik, std::move(resolve_host_parameters), std::move(client_remote));
+      nak, std::move(resolve_host_parameters), std::move(client_remote));
 }
 
 void PrefetchProxyOriginProber::OnDNSResolved(

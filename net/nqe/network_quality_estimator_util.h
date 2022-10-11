@@ -14,7 +14,7 @@ namespace net {
 
 class HostPortPair;
 class HostResolver;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class URLRequest;
 
 namespace nqe::internal {
@@ -39,7 +39,7 @@ NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request,
 NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
     HostResolver* host_resolver,
     const HostPortPair& host_port_pair,
-    const NetworkIsolationKey& network_isolation_key);
+    const NetworkAnonymizationKey& network_isolation_key);
 
 }  // namespace nqe::internal
 

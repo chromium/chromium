@@ -162,7 +162,7 @@ NearbyDependenciesProvider::GetWebRtcDependencies() {
 
   // Create socket manager.
   GetNetworkContext()->CreateP2PSocketManager(
-      net::NetworkIsolationKey::CreateTransient(),
+      net::NetworkAnonymizationKey::CreateTransient(),
       std::move(socket_manager_client.remote),
       std::move(trusted_socket_manager.receiver),
       std::move(socket_manager.receiver));

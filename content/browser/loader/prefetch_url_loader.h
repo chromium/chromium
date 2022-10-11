@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -50,10 +50,10 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
       base::OnceCallback<base::UnguessableToken(
           const network::ResourceRequest&)>;
 
-  // |network_isolation_key| must be the NetworkIsolationKey that will be used
-  // for the request (either matching |resource_request.trusted_params|'s
-  // IsolationInfo, if trusted_params| is non-null, or bound to
-  // |network_loader_factory|, otherwise).
+  // |network_anonymization_key| must be the NetworkAnonymizationKey that will
+  // be used for the request (either matching
+  // |resource_request.trusted_params|'s IsolationInfo, if trusted_params| is
+  // non-null, or bound to |network_loader_factory|, otherwise).
   //
   // |url_loader_throttles_getter| may be used when a prefetch handler needs to
   // additionally create a request (e.g. for fetching certificate if the
@@ -63,7 +63,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
       uint32_t options,
       int frame_tree_node_id,
       const network::ResourceRequest& resource_request,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
@@ -129,7 +129,7 @@ class PrefetchURLLoader : public network::mojom::URLLoader,
 
   network::mojom::URLResponseHeadPtr response_;
 
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 

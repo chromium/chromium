@@ -102,6 +102,7 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext {
   }
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
+  net::NetworkAnonymizationKey GetNetworkAnonymizationKey() const;
   const base::UnguessableToken& GetReportingSource() const;
 
   StoragePartition* GetStoragePartition() const;

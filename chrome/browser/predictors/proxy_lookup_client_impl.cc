@@ -19,7 +19,7 @@ namespace predictors {
 
 ProxyLookupClientImpl::ProxyLookupClientImpl(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     ProxyLookupCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {

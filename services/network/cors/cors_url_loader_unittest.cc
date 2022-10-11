@@ -1972,7 +1972,7 @@ TEST_F(CorsURLLoaderTest, TrustedParamsWithUntrustedFactoryFailsBeforeCORS) {
 }
 
 // Test that when a request has LOAD_RESTRICTED_PREFETCH and a
-// NetworkIsolationKey, CorsURLLoaderFactory does not reject the request.
+// NetworkAnonymizationKey, CorsURLLoaderFactory does not reject the request.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
 
@@ -1991,7 +1991,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
   request.trusted_params = ResourceRequest::TrustedParams();
 
-  // Fill up the `trusted_params` NetworkIsolationKey member.
+  // Fill up the `trusted_params` NetworkAnonymizationKey member.
   url::Origin request_origin = url::Origin::Create(request.url);
   request.trusted_params->isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, request_origin, request_origin,
@@ -2014,7 +2014,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
 }
 
 // Test that when a request has LOAD_RESTRICTED_PREFETCH but no
-// NetworkIsolationKey, CorsURLLoaderFactory rejects the request. This is
+// NetworkAnonymizationKey, CorsURLLoaderFactory rejects the request. This is
 // because the LOAD_RESTRICTED_PREFETCH flag must only appear on requests that
 // make use of their TrustedParams' `isolation_info`.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {

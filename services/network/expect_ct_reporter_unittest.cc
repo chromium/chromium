@@ -19,7 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/test/cert_test_util.h"
@@ -52,7 +52,7 @@ class TestCertificateReportSender : public net::ReportSender {
       const GURL& report_uri,
       base::StringPiece content_type,
       base::StringPiece serialized_report,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       base::OnceCallback<void()> success_callback,
       base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
     sent_report_count_++;
@@ -60,7 +60,7 @@ class TestCertificateReportSender : public net::ReportSender {
     latest_serialized_report_.assign(serialized_report.data(),
                                      serialized_report.size());
     latest_content_type_.assign(content_type.data(), content_type.size());
-    latest_network_isolation_key_ = network_isolation_key;
+    latest_network_anonymization_key_ = network_anonymization_key;
     if (!report_callback_.is_null()) {
       EXPECT_EQ(expected_report_uri_, latest_report_uri_);
       std::move(report_callback_).Run();
@@ -79,8 +79,8 @@ class TestCertificateReportSender : public net::ReportSender {
     return latest_serialized_report_;
   }
 
-  const net::NetworkIsolationKey latest_network_isolation_key() const {
-    return latest_network_isolation_key_;
+  const net::NetworkAnonymizationKey latest_network_anonymization_key() const {
+    return latest_network_anonymization_key_;
   }
 
   // Can be called to wait for a single report, which is expected to be sent to
@@ -102,7 +102,7 @@ class TestCertificateReportSender : public net::ReportSender {
   GURL latest_report_uri_;
   std::string latest_content_type_;
   std::string latest_serialized_report_;
-  net::NetworkIsolationKey latest_network_isolation_key_;
+  net::NetworkAnonymizationKey latest_network_anonymization_key_;
   base::OnceClosure report_callback_;
   GURL expected_report_uri_;
 };
@@ -353,7 +353,7 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
     reporter->OnExpectCTFailed(
         host_port, report_uri, expiration, ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
     run_loop.Run();
   }
 
@@ -443,7 +443,7 @@ class ExpectCTReporterTest : public ::testing::Test {
     reporter->OnExpectCTFailed(
         net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
         ssl_info.cert.get(), ssl_info.unverified_cert.get(),
-        ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
+        ssl_info.signed_certificate_timestamps, net::NetworkAnonymizationKey());
     // A CORS preflight request should be sent before the actual report.
     cors_run_loop.Run();
     sender->WaitForReport(report_uri);
@@ -483,13 +483,13 @@ class ExpectCTReporterTest : public ::testing::Test {
 
     const GURL fail_report_uri = test_server().GetURL(fail_path);
     const GURL successful_report_uri = test_server().GetURL(successful_path);
-    const net::NetworkIsolationKey network_isolation_key =
-        net::NetworkIsolationKey::CreateTransient();
+    const net::NetworkAnonymizationKey network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateTransient();
 
     reporter->OnExpectCTFailed(
         host_port, fail_report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-        network_isolation_key);
+        network_anonymization_key);
     bad_cors_run_loop.Run();
     // The CORS preflight response may not even have been received yet, so
     // these expectations are mostly aspirational.
@@ -504,10 +504,11 @@ class ExpectCTReporterTest : public ::testing::Test {
     reporter->OnExpectCTFailed(
         host_port, successful_report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-        network_isolation_key);
+        network_anonymization_key);
     sender->WaitForReport(successful_report_uri);
     EXPECT_EQ(successful_report_uri, sender->latest_report_uri());
-    EXPECT_EQ(network_isolation_key, sender->latest_network_isolation_key());
+    EXPECT_EQ(network_anonymization_key,
+              sender->latest_network_anonymization_key());
     EXPECT_EQ(1, sender->sent_report_count());
   }
 
@@ -549,7 +550,7 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
     reporter.OnExpectCTFailed(
         host_port, report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
     EXPECT_TRUE(sender->latest_report_uri().is_empty());
     EXPECT_TRUE(sender->latest_serialized_report().empty());
   }
@@ -565,7 +566,7 @@ TEST_F(ExpectCTReporterTest, FeatureDisabled) {
     reporter.OnExpectCTFailed(
         host_port, report_uri, base::Time(), ssl_info.cert.get(),
         ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
     sender->WaitForReport(report_uri);
     EXPECT_EQ(report_uri, sender->latest_report_uri());
     EXPECT_EQ(1, sender->sent_report_count());
@@ -586,7 +587,7 @@ TEST_F(ExpectCTReporterTest, EmptyReportURI) {
   reporter.OnExpectCTFailed(net::HostPortPair(), GURL(), base::Time(), nullptr,
                             nullptr,
                             net::SignedCertificateTimestampAndStatusList(),
-                            net::NetworkIsolationKey());
+                            net::NetworkAnonymizationKey());
   EXPECT_TRUE(sender->latest_report_uri().is_empty());
   EXPECT_TRUE(sender->latest_serialized_report().empty());
 }
@@ -697,7 +698,7 @@ TEST_F(ExpectCTReporterTest, SendReport) {
   reporter.OnExpectCTFailed(
       net::HostPortPair::FromURL(report_uri), report_uri, expiration,
       ssl_info.cert.get(), ssl_info.unverified_cert.get(),
-      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
+      ssl_info.signed_certificate_timestamps, net::NetworkAnonymizationKey());
 
   // A CORS preflight request should be sent before the actual report.
   cors_run_loop.Run();
@@ -757,16 +758,16 @@ TEST_F(ExpectCTReporterTest, SendReportSuccessCallback) {
   reporter.OnExpectCTFailed(
       net::HostPortPair::FromURL(report_uri), report_uri, expiration,
       ssl_info.cert.get(), ssl_info.unverified_cert.get(),
-      ssl_info.signed_certificate_timestamps, net::NetworkIsolationKey());
+      ssl_info.signed_certificate_timestamps, net::NetworkAnonymizationKey());
 
   // Wait to check that the success callback is run.
   run_loop.Run();
 }
 
-// Test that report preflight requests use the correct NetworkIsolationKey.
+// Test that report preflight requests use the correct NetworkAnonymizationKey.
 TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateTransient();
 
   const std::string report_path = "/report";
   std::map<std::string, std::string> cors_headers = kGoodCorsHeaders;
@@ -798,8 +799,8 @@ TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
   base::RunLoop before_url_request_run_loop;
   network_delegate.set_on_before_url_request_callback(
       base::BindLambdaForTesting([&](net::URLRequest* request) {
-        EXPECT_EQ(network_isolation_key,
-                  request->isolation_info().network_isolation_key());
+        EXPECT_EQ(network_anonymization_key,
+                  request->isolation_info().network_anonymization_key());
         before_url_request_run_loop.Quit();
       }));
 
@@ -807,7 +808,7 @@ TEST_F(ExpectCTReporterTest, PreflightUsesNetworkIsolationKey) {
   reporter.OnExpectCTFailed(
       net::HostPortPair::FromURL(report_uri), report_uri, base::Time::Now(),
       ssl_info.cert.get(), ssl_info.unverified_cert.get(),
-      ssl_info.signed_certificate_timestamps, network_isolation_key);
+      ssl_info.signed_certificate_timestamps, network_anonymization_key);
 
   // Make sure the OnBeforeURLRequestCallback is hit.
   before_url_request_run_loop.Run();

@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -81,14 +81,14 @@ DnsLookupResult BlockingDnsLookup(
     mojom::NetworkContext* network_context,
     const net::HostPortPair& host_port_pair,
     network::mojom::ResolveHostParametersPtr params,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   DnsLookupClient dns_lookup_client(client.InitWithNewPipeAndPassReceiver());
   // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
   // DNS resource record query.
   network_context->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
-      network_isolation_key, std::move(params), std::move(client));
+      network_anonymization_key, std::move(params), std::move(client));
   return dns_lookup_client.WaitForResult();
 }
 

@@ -9,7 +9,7 @@
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/do_nothing_ct_verifier.h"

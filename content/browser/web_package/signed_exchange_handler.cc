@@ -86,7 +86,7 @@ using VerifyCallback = base::OnceCallback<
 
 void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
                 const GURL& url,
-                const net::NetworkIsolationKey& network_isolation_key,
+                const net::NetworkAnonymizationKey& network_anonymization_key,
                 const std::string& ocsp_result,
                 const std::string& sct_list,
                 int frame_tree_node_id,
@@ -109,7 +109,7 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
   }
 
   network_context->VerifyCertForSignedExchange(
-      certificate, url, network_isolation_key, ocsp_result, sct_list,
+      certificate, url, network_anonymization_key, ocsp_result, sct_list,
       std::move(wrapped_callback));
 }
 
@@ -173,7 +173,7 @@ SignedExchangeHandler::SignedExchangeHandler(
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     const absl::optional<net::IsolationInfo> outer_request_isolation_info,
     int load_flags,
     const net::IPEndPoint& remote_endpoint,
@@ -187,7 +187,7 @@ SignedExchangeHandler::SignedExchangeHandler(
       source_(std::move(body)),
       cert_fetcher_factory_(std::move(cert_fetcher_factory)),
       devtools_proxy_(std::move(devtools_proxy)),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       outer_request_isolation_info_(std::move(outer_request_isolation_info)),
       load_flags_(load_flags),
       remote_endpoint_(remote_endpoint),
@@ -531,8 +531,9 @@ void SignedExchangeHandler::OnCertReceived(
   //   property, or
   const std::string& stapled_ocsp_response = unverified_cert_chain_->ocsp();
 
-  VerifyCert(certificate, url, network_isolation_key_, stapled_ocsp_response,
-             sct_list_from_cert_cbor, frame_tree_node_id_,
+  VerifyCert(certificate, url, network_anonymization_key_,
+             stapled_ocsp_response, sct_list_from_cert_cbor,
+             frame_tree_node_id_,
              base::BindOnce(&SignedExchangeHandler::OnVerifyCert,
                             weak_factory_.GetWeakPtr()));
 }

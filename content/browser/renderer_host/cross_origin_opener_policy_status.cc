@@ -192,7 +192,7 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
 void CrossOriginOpenerPolicyStatus::EnforceCOOP(
     const network::CrossOriginOpenerPolicy& response_coop,
     const url::Origin& response_origin,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   // COOP only applies to top level browsing contexts.
   if (!frame_tree_node_->IsMainFrame())
     return;
@@ -222,7 +222,7 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
 
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
       storage_partition, response_url, response_referrer_url, response_coop,
-      navigation_request_reporting_source, network_isolation_key);
+      navigation_request_reporting_source, network_anonymization_key);
   CrossOriginOpenerPolicyReporter* previous_reporter =
       use_current_document_coop_reporter_
           ? frame_tree_node_->current_frame_host()

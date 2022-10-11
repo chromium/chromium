@@ -1899,7 +1899,6 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
 
   IsolationInfo isolation_info = cache()->GetIsolationInfoForEndpoint(endpoint);
   EXPECT_TRUE(isolation_info.IsEqualForTesting(kIsolationInfo_));
-
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
   EXPECT_EQ(kEndpoint1_, endpoint.info.url);

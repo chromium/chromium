@@ -85,9 +85,7 @@ void ServiceWorkerHost::CreateWebTransportConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
-          net::NetworkAnonymizationKey::
-              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                  GetNetworkIsolationKey())),
+          GetNetworkAnonymizationKey()),
       std::move(receiver));
 }
 
@@ -120,6 +118,12 @@ net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // top-level browsing context, which shouldn't be use for ServiceWorkers used
   // in iframes.
   return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+      version_->key().origin());
+}
+
+net::NetworkAnonymizationKey ServiceWorkerHost::GetNetworkAnonymizationKey()
+    const {
+  return net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
       version_->key().origin());
 }
 

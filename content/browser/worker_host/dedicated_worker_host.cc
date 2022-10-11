@@ -429,7 +429,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
       storage_partition->GetWeakPtr(), final_response_url,
       coep.reporting_endpoint, coep.report_only_reporting_endpoint,
-      reporting_source_, isolation_info_.network_isolation_key());
+      reporting_source_, isolation_info_.network_anonymization_key());
   // TODO(crbug.com/1197041): Bind the receiver of ReportingObserver to the
   // worker in the renderer process.
 

@@ -62,9 +62,10 @@ class NET_EXPORT_PRIVATE HttpAuthController
   //       If |target| is PROXY, then |auth_url| should have no hierarchical
   //       part since that is meaningless.
   //
-   // * |network_anonymization_key| specifies the NetworkAnonymizationKey
-  //       associated with the resource load. Depending on settings, credentials may
-  //       be scoped to a single NetworkAnonymizationKey.
+  // * |network_anonymization_key| specifies the NetworkAnonymizationKey
+  // associated with
+  //       the resource load. Depending on settings, credentials may be scoped
+  //       to a single NetworkAnonymizationKey.
   //
   // * |http_auth_cache| specifies the credentials cache to use. During
   //       authentication if explicit (user-provided) credentials are used and

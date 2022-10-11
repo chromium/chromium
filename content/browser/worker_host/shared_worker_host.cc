@@ -280,10 +280,7 @@ void SharedWorkerHost::Start(
             .reporting_endpoint,
         worker_client_security_state_->cross_origin_embedder_policy
             .report_only_reporting_endpoint,
-        GetReportingSource(),
-        net::NetworkAnonymizationKey::
-            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                GetNetworkIsolationKey()));
+        GetReportingSource(), GetNetworkAnonymizationKey());
   }
 
   auto options = blink::mojom::WorkerOptions::New(
@@ -505,13 +502,10 @@ void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const url::Origin origin = url::Origin::Create(instance().url());
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<WebTransportConnectorImpl>(
-          GetProcessHost()->GetID(), /*frame=*/nullptr, origin,
-          net::NetworkAnonymizationKey::
-              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                  GetNetworkIsolationKey())),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WebTransportConnectorImpl>(
+                                  GetProcessHost()->GetID(), /*frame=*/nullptr,
+                                  origin, GetNetworkAnonymizationKey()),
+                              std::move(receiver));
 }
 
 void SharedWorkerHost::BindCacheStorage(
@@ -655,6 +649,15 @@ net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
   // top-level browsing context, which shouldn't be use for SharedWorkers used
   // in iframes.
   return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+      GetStorageKey().origin());
+}
+
+net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
+    const {
+  // TODO(https://crbug.com/1147281): This is the NetworkAnonymizationKey of a
+  // top-level browsing context, which shouldn't be use for SharedWorkers used
+  // in iframes.
+  return net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
       GetStorageKey().origin());
 }
 

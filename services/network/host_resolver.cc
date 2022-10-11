@@ -99,7 +99,7 @@ HostResolver::~HostResolver() {
 
 void HostResolver::ResolveHost(
     mojom::HostResolverHostPtr host,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
 #if !BUILDFLAG(ENABLE_MDNS)
@@ -115,7 +115,7 @@ void HostResolver::ResolveHost(
                                         : host->get_scheme_host_port().host());
 
   auto request = std::make_unique<ResolveHostRequest>(
-      internal_resolver_, std::move(host), network_isolation_key,
+      internal_resolver_, std::move(host), network_anonymization_key,
       ConvertOptionalParameters(optional_parameters), net_log_);
 
   mojo::PendingReceiver<mojom::ResolveHostHandle> control_handle_receiver;

@@ -5637,12 +5637,11 @@ TEST_F(SpdyNetworkTransactionTest,
        HTTP11RequiredRetryWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
-  const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
-      kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
-      NetworkAnonymizationKey()};
+  const NetworkIsolationKey kNetworkIsolationKeys[] = {
+      kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5660,12 +5659,14 @@ TEST_F(SpdyNetworkTransactionTest,
   // For each server, set up and tear down a QUIC session cleanly, and check
   // that stats have been added to HttpServerProperties using the correct
   // NetworkAnonymizationKey.
-  for (size_t i = 0; i < std::size(kNetworkAnonymizationKeys); ++i) {
+  for (size_t i = 0; i < std::size(kNetworkIsolationKeys); ++i) {
     SCOPED_TRACE(i);
 
     request_.method = "GET";
-    request_.network_isolation_key = kNetworkAnonymizationKeys[i];
-    request_.network_anonymization_key = kNetworkAnonymizationKeys[i];
+    request_.network_isolation_key = kNetworkIsolationKeys[i];
+    request_.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            kNetworkIsolationKeys[i]);
 
     // First socket: HTTP/2 request rejected with HTTP_1_1_REQUIRED.
     SpdyTestUtil spdy_util;
@@ -5709,7 +5710,9 @@ TEST_F(SpdyNetworkTransactionTest,
     HttpServerProperties* http_server_properties =
         helper.session()->spdy_session_pool()->http_server_properties();
     EXPECT_FALSE(http_server_properties->RequiresHTTP11(
-        url::SchemeHostPort(request_.url), kNetworkAnonymizationKeys[i]));
+        url::SchemeHostPort(request_.url),
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            kNetworkIsolationKeys[i])));
 
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, helper.session());
 
@@ -5732,15 +5735,19 @@ TEST_F(SpdyNetworkTransactionTest,
     ASSERT_THAT(ReadTransaction(&trans, &response_data), IsOk());
     EXPECT_EQ("hello", response_data);
 
-    for (size_t j = 0; j < std::size(kNetworkAnonymizationKeys); ++j) {
-      // NetworkAnonymizationKeys up to kNetworkAnonymizationKeys[j] are known
+    for (size_t j = 0; j < std::size(kNetworkIsolationKeys); ++j) {
+      // NetworkAnonymizationKeys up to kNetworkIsolationKeys[j] are known
       // to require HTTP/1.1, others are not.
       if (j <= i) {
         EXPECT_TRUE(http_server_properties->RequiresHTTP11(
-            url::SchemeHostPort(request_.url), kNetworkAnonymizationKeys[j]));
+            url::SchemeHostPort(request_.url),
+            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+                kNetworkIsolationKeys[j])));
       } else {
         EXPECT_FALSE(http_server_properties->RequiresHTTP11(
-            url::SchemeHostPort(request_.url), kNetworkAnonymizationKeys[j]));
+            url::SchemeHostPort(request_.url),
+            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+                kNetworkIsolationKeys[j])));
       }
     }
   }
@@ -5846,10 +5853,14 @@ TEST_F(SpdyNetworkTransactionTest,
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   const NetworkAnonymizationKey kNetworkAnonymizationKeys[] = {
       kNetworkAnonymizationKey1, kNetworkAnonymizationKey2,
       NetworkAnonymizationKey()};
+  const NetworkIsolationKey kNetworkIsolationKeys[] = {
+      kNetworkIsolationKey1, kNetworkIsolationKey2, NetworkIsolationKey()};
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5932,7 +5943,7 @@ TEST_F(SpdyNetworkTransactionTest,
     EXPECT_FALSE(http_server_properties->RequiresHTTP11(
         proxy_scheme_host_port, kNetworkAnonymizationKeys[i]));
 
-    request_.network_isolation_key = kNetworkAnonymizationKeys[i];
+    request_.network_isolation_key = kNetworkIsolationKeys[i];
     request_.network_anonymization_key = kNetworkAnonymizationKeys[i];
     HttpNetworkTransaction trans(DEFAULT_PRIORITY, helper.session());
     TestCompletionCallback callback;
@@ -6714,7 +6725,7 @@ class SpdyNetworkTransactionPushUrlTest
     request_.url = GURL(GetParam().url_to_fetch);
     // Set a NetworkAnonymizationKey for the |expect_ct_error| case, to make
     // sure NetworkAnonymizationKeys are respected.
-    request_.network_isolation_key = NetworkAnonymizationKey::CreateTransient();
+    request_.network_isolation_key = NetworkIsolationKey::CreateTransient();
     request_.network_anonymization_key =
         NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
             request_.network_isolation_key);
@@ -6991,7 +7002,7 @@ TEST_F(SpdyNetworkTransactionTest,
   // Try again, this time with an empty NetworkAnonymizationKey, matching the
   // SpdySession's. This request should successfully get the pushed stream.
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, helper.session());
-  push_request.network_isolation_key = NetworkAnonymizationKey();
+  push_request.network_isolation_key = NetworkIsolationKey();
   push_request.network_anonymization_key = NetworkAnonymizationKey();
   TestCompletionCallback callback2;
   rv = trans1.Start(&push_request, callback2.callback(), log_);

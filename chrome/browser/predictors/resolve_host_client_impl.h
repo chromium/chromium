@@ -17,7 +17,7 @@
 class GURL;
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -36,10 +36,11 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
  public:
   // Starts the host resolution for |url|. |callback| is called when the host is
   // resolved or when an error occurs.
-  ResolveHostClientImpl(const GURL& url,
-                        const net::NetworkIsolationKey& network_isolation_key,
-                        ResolveHostCallback callback,
-                        network::mojom::NetworkContext* network_context);
+  ResolveHostClientImpl(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_isolation_key,
+      ResolveHostCallback callback,
+      network::mojom::NetworkContext* network_context);
 
   ResolveHostClientImpl(const ResolveHostClientImpl&) = delete;
   ResolveHostClientImpl& operator=(const ResolveHostClientImpl&) = delete;

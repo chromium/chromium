@@ -19,7 +19,7 @@
 #include "url/origin.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 struct RedirectInfo;
 }
 
@@ -62,12 +62,12 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   // Called when the request is redirected. Call FollowRedirect to continue
   // processing the request.
   //
-  // |network_isolation_key| is the NetworkIsolationKey associated with the
-  // request that was redirected, not the one that will be used if the redirect
-  // is followed.
+  // |network_anonymization_key| is the NetworkAnonymizationKey associated with
+  // the request that was redirected, not the one that will be used if the
+  // redirect is followed.
   virtual void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       network::mojom::URLResponseHeadPtr response) = 0;
 
   // Called when the request receives its response. No further calls will be
@@ -92,7 +92,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
-      net::NetworkIsolationKey network_isolation_key,
+      net::NetworkAnonymizationKey network_anonymization_key,
       absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) = 0;
 

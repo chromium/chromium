@@ -15,7 +15,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 
@@ -29,7 +29,7 @@ class MojoHostResolverImpl::Job {
   Job(MojoHostResolverImpl* resolver_service,
       net::HostResolver* resolver,
       const std::string& hostname,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool is_ex,
       const net::NetLogWithSource& net_log,
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
@@ -67,14 +67,15 @@ MojoHostResolverImpl::~MojoHostResolverImpl() {
 
 void MojoHostResolverImpl::Resolve(
     const std::string& hostname,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     bool is_ex,
     mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
         client) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  pending_jobs_.emplace_front(this, resolver_, hostname, network_isolation_key,
-                              is_ex, net_log_, std::move(client));
+  pending_jobs_.emplace_front(this, resolver_, hostname,
+                              network_anonymization_key, is_ex, net_log_,
+                              std::move(client));
   auto job = pending_jobs_.begin();
   job->set_iter(job);
   job->Start();
@@ -89,7 +90,7 @@ MojoHostResolverImpl::Job::Job(
     MojoHostResolverImpl* resolver_service,
     net::HostResolver* resolver,
     const std::string& hostname,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     bool is_ex,
     const net::NetLogWithSource& net_log,
     mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
@@ -103,12 +104,9 @@ MojoHostResolverImpl::Job::Job(
   net::HostResolver::ResolveHostParameters parameters;
   if (!is_ex)
     parameters.dns_query_type = net::DnsQueryType::A;
-  request_ = resolver->CreateRequest(
-      net::HostPortPair(hostname_, 0),
-      net::NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              network_isolation_key),
-      net_log, parameters);
+  request_ =
+      resolver->CreateRequest(net::HostPortPair(hostname_, 0),
+                              network_anonymization_key, net_log, parameters);
 }
 
 void MojoHostResolverImpl::Job::Start() {

@@ -11,7 +11,7 @@
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -100,11 +100,11 @@ void DnsProbeRunner::RunProbe(base::OnceClosure callback) {
 
   // Intentionally using a HostPortPair not to trigger HTTPS DNS resource
   // record query.
-  // Use transient NIKs - don't want cached responses anyways, so no benefit
+  // Use transient NAKs - don't want cached responses anyways, so no benefit
   // from sharing a cache, beyond multiple probes not evicting anything.
   host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                                   net::HostPortPair(kKnownGoodHostname, 443)),
-                              net::NetworkIsolationKey::CreateTransient(),
+                              net::NetworkAnonymizationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(

@@ -77,7 +77,7 @@ SignedExchangeLoader::SignedExchangeLoader(
     std::unique_ptr<SignedExchangeReporter> reporter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     int frame_tree_node_id,
     scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
     const std::string& accept_langs,
@@ -133,7 +133,7 @@ SignedExchangeLoader::SignedExchangeLoader(
             std::move(outer_response_body)),
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                        weak_factory_.GetWeakPtr()),
-        std::move(cert_fetcher_factory), network_isolation_key,
+        std::move(cert_fetcher_factory), network_anonymization_key,
         outer_request_.trusted_params
             ? absl::make_optional(outer_request_.trusted_params->isolation_info)
             : absl::nullopt,

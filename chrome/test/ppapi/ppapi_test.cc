@@ -141,7 +141,7 @@ PPAPITestBase::InfoBarObserver::GetInfoBarManager() {
 }
 
 PPAPITestBase::PPAPITestBase() {
-  // These are needed to test that the right NetworkIsolationKey is used.
+  // These are needed to test that the right NetworkAnonymizationKey is used.
   scoped_feature_list_.InitWithFeatures(
       // enabled_features
       {net::features::kSplitHostCacheByNetworkIsolationKey,

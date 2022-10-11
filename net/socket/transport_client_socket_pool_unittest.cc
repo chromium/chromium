@@ -1678,9 +1678,8 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
   }
 }
 
-TEST_F(TransportClientSocketPoolTest, NetworkIsolationKey) {
+TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const NetworkAnonymizationKey kNetworkAnonymizationKey(
       kSite, kSite, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";
@@ -1714,13 +1713,12 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKey) {
 
   ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kNetworkIsolationKey,
+  EXPECT_EQ(kNetworkAnonymizationKey,
             session_deps_.host_resolver->request_network_anonymization_key(1));
 }
 
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const NetworkAnonymizationKey kNetworkAnonymizationKey(
       kSite, kSite, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";
@@ -1756,20 +1754,18 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
 
   ASSERT_EQ(1u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kNetworkIsolationKey,
+  EXPECT_EQ(kNetworkAnonymizationKey,
             session_deps_.host_resolver->request_network_anonymization_key(1));
 }
 
 // Test that, in the case of an HTTP proxy, the same transient
-// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
-// input NIK.
+// NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
+// of input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(
       kSite1, kSite1, /*is_cross_site=*/false);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(
       kSite2, kSite2, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";
@@ -1836,15 +1832,13 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
 }
 
 // Test that, in the case of an HTTPS proxy, the same transient
-// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
-// input NIK.
+// NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
+// of input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(
       kSite1, kSite1, /*is_cross_site=*/false);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(
       kSite2, kSite2, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";
@@ -1910,17 +1904,15 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
             session_deps_.host_resolver->request_network_anonymization_key(2));
 }
 
-// Test that, in the case of a SOCKS5 proxy, the passed in NetworkIsolationKey
-// is used for the destination DNS lookup, and the same transient
-// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
-// input NIK.
+// Test that, in the case of a SOCKS5 proxy, the passed in
+// NetworkAnonymizationKey is used for the destination DNS lookup, and the same
+// transient NetworkAnonymizationKey is reused for resolving the proxy's host,
+// regardless of input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(
       kSite1, kSite1, /*is_cross_site=*/false);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(
       kSite2, kSite2, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";
@@ -2002,23 +1994,21 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
   session_deps_.host_resolver->ResolveNow(2);
   ASSERT_EQ(4u, session_deps_.host_resolver->last_id());
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(3));
-  EXPECT_EQ(kNetworkIsolationKey1,
+  EXPECT_EQ(kNetworkAnonymizationKey1,
             session_deps_.host_resolver->request_network_anonymization_key(3));
   EXPECT_EQ(kHost, session_deps_.host_resolver->request_host(4));
-  EXPECT_EQ(kNetworkIsolationKey2,
+  EXPECT_EQ(kNetworkAnonymizationKey2,
             session_deps_.host_resolver->request_network_anonymization_key(4));
 }
 
 // Test that, in the case of a SOCKS5 proxy, the same transient
-// NetworkIsolationKey is reused for resolving the proxy's host, regardless of
-// input NIK.
+// NetworkAnonymizationKey is reused for resolving the proxy's host, regardless
+// of input NIK.
 TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(
       kSite1, kSite1, /*is_cross_site=*/false);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(
       kSite2, kSite2, /*is_cross_site=*/false);
   const char kHost[] = "bar.test";

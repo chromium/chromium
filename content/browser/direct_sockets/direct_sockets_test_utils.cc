@@ -30,7 +30,7 @@ MockHostResolver::~MockHostResolver() = default;
 
 void MockHostResolver::ResolveHost(
     network::mojom::HostResolverHostPtr host,
-    const ::net::NetworkIsolationKey& network_isolation_key,
+    const ::net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     ::mojo::PendingRemote<network::mojom::ResolveHostClient>
         pending_response_client) {
@@ -40,18 +40,12 @@ void MockHostResolver::ResolveHost(
   internal_request_ =
       host->is_host_port_pair()
           ? internal_resolver_->CreateRequest(
-                host->get_host_port_pair(),
-                net::NetworkAnonymizationKey::
-                    CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                        network_isolation_key),
+                host->get_host_port_pair(), network_anonymization_key,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 absl::nullopt)
           : internal_resolver_->CreateRequest(
-                host->get_scheme_host_port(),
-                net::NetworkAnonymizationKey::
-                    CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                        network_isolation_key),
+                host->get_scheme_host_port(), network_anonymization_key,
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 absl::nullopt);

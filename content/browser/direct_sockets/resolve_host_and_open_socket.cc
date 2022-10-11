@@ -100,7 +100,7 @@ void ResolveHostAndOpenSocket::Start() {
   resolver_->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair(options_->remote_hostname, options_->remote_port)),
-      net::NetworkIsolationKey::CreateTransient(), std::move(parameters),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),

@@ -20,7 +20,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -162,7 +162,7 @@ void DnsLatencyRoutine::AttemptNextResolution() {
   // exists.
   host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                                   net::HostPortPair(hostname, kHttpPort)),
-                              net::NetworkIsolationKey::CreateTransient(),
+                              net::NetworkAnonymizationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(

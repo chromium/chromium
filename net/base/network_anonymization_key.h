@@ -101,46 +101,29 @@ class NET_EXPORT NetworkAnonymizationKey {
                     other.is_cross_site_, other.nonce_);
   }
 
-  // This is a temporary method to allow for an iterative transition from using
-  // the NetworkIsolationKey to using the NetworkAnonymizationKey to partition
-  // the network state. When the two keys are not configured to use the same
-  // scheme the results of this conversion are inaccurate.
-
-  // TODO(@brgoldstein): Remove this method once key conversion is complete and
-  // before partitioning experiments are enabled.
-  operator NetworkIsolationKey() const {
-    if (!top_frame_site_) {
-      return NetworkIsolationKey();
-    }
-    if (!frame_site_) {
-      return NetworkIsolationKey(
-          top_frame_site_.value(), top_frame_site_.value(),
-          nonce_.has_value() ? &nonce_.value() : nullptr);
-    }
-    return NetworkIsolationKey(top_frame_site_.value(), frame_site_.value(),
-                               nonce_.has_value() ? &nonce_.value() : nullptr);
-  }
-
-  // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
-  // possible because a NetworkIsolationKey must always be more granular than a
-  // NetworkAnonymizationKey.
+  // Creates a NetworkAnonymizationKey from a NetworkAnonymizationKey. This is
+  // possible because a NetworkAnonymizationKey must always be more granular
+  // than a NetworkAnonymizationKey.
   static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
       const net::NetworkIsolationKey& network_isolation_key);
 
-  // TODO(https://crbug.com/1343856): Remove once migration to
-  // NetworkAnonymizationKey is complete.
+  // TODO(crbug/1372769)
+  // Intended for temporary use in locations that should be using main frame and
+  // frame origin, but are currently only using frame origin, because the
+  // creating object may be shared across main frame objects. Having a special
+  // constructor for these methods makes it easier to keep track of locating
+  // callsites that need to have their NetworkAnonymizationKey filled in.
+  static NetworkAnonymizationKey ToDoUseTopFrameOriginAsWell(
+      const url::Origin& incorrectly_used_frame_origin) {
+    net::SchemefulSite incorrectly_used_frame_site =
+        net::SchemefulSite(incorrectly_used_frame_origin);
+    return NetworkAnonymizationKey(incorrectly_used_frame_site,
+                                   incorrectly_used_frame_site);
+  }
 
-  // This is a temporary converter to create NetworkAnonymizationKeys from
-  // NetworkIsolationKeys while we switch the two classes. All call sites of
-  // this method are temporary and will be removed before network state
-  // partitioning experiments are enabled.
-  static NetworkAnonymizationKey
-  CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-      const net::NetworkIsolationKey& network_isolation_key);
-
-  // Creates a transient non-empty NetworkIsolationKey by creating an opaque
-  // origin. This prevents the NetworkIsolationKey from sharing data with other
-  // NetworkIsolationKeys.
+  // Creates a transient non-empty NetworkAnonymizationKey by creating an opaque
+  // origin. This prevents the NetworkAnonymizationKey from sharing data with
+  // other NetworkAnonymizationKey.
   static NetworkAnonymizationKey CreateTransient();
 
   // Returns the string representation of the key.

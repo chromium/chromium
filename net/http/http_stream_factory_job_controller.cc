@@ -164,7 +164,11 @@ HttpStreamFactory::JobController::JobController(
                                           url::kWsScheme) ||
          base::EqualsCaseInsensitiveASCII(request_info_.url.scheme_piece(),
                                           url::kWssScheme));
-  DCHECK(request_info.IsConsistent());
+  // Preconnects do not require a NetworkIsolationKey so we don't require it to
+  // be set consistently with the NetworkAnonymizationKey here.
+  if (!is_preconnect) {
+    DCHECK(request_info.IsConsistent());
+  }
 
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB_CONTROLLER, [&] {
     return NetLogJobControllerParams(request_info, is_preconnect);

@@ -20,7 +20,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
@@ -100,7 +100,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const absl::optional<net::IsolationInfo> outer_request_isolation_info,
       int load_flags,
       const net::IPEndPoint& remote_endpoint,
@@ -191,7 +191,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   // `cert_fetcher_` borrows reference from `devtools_proxy_`, so it needs to be
   // declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   absl::optional<net::IsolationInfo> outer_request_isolation_info_;
   const int load_flags_ = 0;
   const net::IPEndPoint remote_endpoint_;

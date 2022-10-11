@@ -142,7 +142,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
   }
 
  private:
-  using EndpointBackoffKey = std::pair<NetworkIsolationKey, GURL>;
+  using EndpointBackoffKey = std::pair<NetworkAnonymizationKey, GURL>;
 
   const raw_ptr<const ReportingPolicy> policy_;
   const raw_ptr<const base::TickClock> tick_clock_;

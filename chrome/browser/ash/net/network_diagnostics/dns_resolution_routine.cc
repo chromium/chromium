@@ -16,7 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -105,7 +105,7 @@ void DnsResolutionRoutine::AttemptResolution() {
   // exists.
   host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                                   net::HostPortPair(kHostname, kHttpPort)),
-                              net::NetworkIsolationKey::CreateTransient(),
+                              net::NetworkAnonymizationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
   // The host resolver is part of the network service, which may be run inside

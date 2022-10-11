@@ -25,7 +25,7 @@
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
@@ -923,25 +923,25 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
       const X509Certificate* served_certificate_chain,
       const SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const NetworkIsolationKey& network_isolation_key) override {
+      const NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
   }
 
   int num_failures() const { return num_failures_; }
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
   int num_failures_ = 0;
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
 };
 
 }  // namespace
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobSendsNetworkIsolationKeyWhenProcessingExpectCTHeader) {
+       TestHttpJobSendsNetworkAnonymizationKeyWhenProcessingExpectCTHeader) {
   SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
   ssl_socket_data.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
@@ -978,8 +978,8 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   EXPECT_THAT(delegate.request_status(), IsOk());
 
   ASSERT_EQ(1, reporter.num_failures());
-  EXPECT_EQ(isolation_info.network_isolation_key(),
-            reporter.network_isolation_key());
+  EXPECT_EQ(isolation_info.network_anonymization_key(),
+            reporter.network_anonymization_key());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {

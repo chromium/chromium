@@ -217,7 +217,7 @@ TEST_F(ThroughputAnalyzerTest,
                                       NetworkAnonymizationKey(), absl::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
-    // kNetworkIsolationKey.
+    // kNetworkAnonymizationKey.
     mock_host_resolver->rules()->ClearRules();
     mock_host_resolver->rules()->AddRule(kUrl.host(), "127.0.0.1");
     mock_host_resolver->LoadIntoCache(HostPortPair::FromURL(kUrl),

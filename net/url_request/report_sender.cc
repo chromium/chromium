@@ -56,12 +56,13 @@ ReportSender::ReportSender(URLRequestContext* request_context,
 
 ReportSender::~ReportSender() = default;
 
-void ReportSender::Send(const GURL& report_uri,
-                        base::StringPiece content_type,
-                        base::StringPiece report,
-                        const NetworkIsolationKey& network_isolation_key,
-                        SuccessCallback success_callback,
-                        ErrorCallback error_callback) {
+void ReportSender::Send(
+    const GURL& report_uri,
+    base::StringPiece content_type,
+    base::StringPiece report,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    SuccessCallback success_callback,
+    ErrorCallback error_callback) {
   DCHECK(!content_type.empty());
   std::unique_ptr<URLRequest> url_request = request_context_->CreateRequest(
       report_uri, DEFAULT_PRIORITY, this, traffic_annotation_);
@@ -70,8 +71,8 @@ void ReportSender::Send(const GURL& report_uri,
                                                     std::move(error_callback)));
   url_request->SetLoadFlags(kLoadFlags);
   url_request->set_allow_credentials(false);
-  url_request->set_isolation_info(IsolationInfo::CreatePartial(
-      IsolationInfo::RequestType::kOther, network_isolation_key));
+  url_request->set_isolation_info_from_network_anonymization_key(
+      network_anonymization_key);
 
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader(HttpRequestHeaders::kContentType, content_type);

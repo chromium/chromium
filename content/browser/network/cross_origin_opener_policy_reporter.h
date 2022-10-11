@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "url/gurl.h"
@@ -39,7 +39,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
       const GURL& context_referrer_url,
       const network::CrossOriginOpenerPolicy& coop,
       const base::UnguessableToken& reporting_source,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   ~CrossOriginOpenerPolicyReporter();
   CrossOriginOpenerPolicyReporter(const CrossOriginOpenerPolicyReporter&) =
       delete;
@@ -89,7 +89,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
   const GURL context_url_;
   const std::string context_referrer_url_;
   const network::CrossOriginOpenerPolicy coop_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   mojo::UniqueReceiverSet<network::mojom::CrossOriginOpenerPolicyReporter>
       receiver_set_;

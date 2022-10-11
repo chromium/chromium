@@ -777,11 +777,8 @@ int MockHostResolverBase::LoadIntoCache(
   if (!IsValidDNSDomain(endpoint.GetHostnameWithoutBrackets()))
     return ERR_NAME_NOT_RESOLVED;
 
-  RequestImpl request(endpoint,
-                      net::NetworkAnonymizationKey::
-                          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                              network_anonymization_key),
-                      optional_parameters, AsWeakPtr());
+  RequestImpl request(endpoint, network_anonymization_key, optional_parameters,
+                      AsWeakPtr());
   return DoSynchronousResolution(request);
 }
 
