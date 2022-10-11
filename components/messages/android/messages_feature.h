@@ -66,10 +66,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
 // new Stacking Animation.
 BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 
-// Feature that controls whether "sync error" prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidSyncError);
-
 // Feature that controls whether "update password" prompt uses Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidUpdatePassword);

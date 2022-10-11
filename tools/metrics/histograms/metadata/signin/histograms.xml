@@ -1128,18 +1128,14 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SyncError{PromptUI}{SyncErrorReason}"
+<histogram name="Signin.SyncErrorMessage{SyncErrorReason}"
     enum="SyncErrorPromptUIAction" expires_after="2023-09-12">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
-    Records various UI and user action events related to the sync error
-    {PromptUI}. Android only.
+    Records various UI and user action events related to the sync error message.
+    Android only.
   </summary>
-  <token key="PromptUI">
-    <variant name="InfoBar" summary="infobar ui"/>
-    <variant name="Message" summary="message ui"/>
-  </token>
   <token key="SyncErrorReason">
     <variant name=".AuthError" summary="Auth error."/>
     <variant name=".ClientOutOfDate" summary="Client out of date."/>

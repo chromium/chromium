@@ -191,11 +191,6 @@ public class SyncErrorPromptUtils {
         SharedPreferencesManager.getInstance().removeKey(SYNC_ERROR_PROMPT_SHOWN_AT_TIME);
     }
 
-    public static boolean isMessageUiEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SYNC_ERROR);
-    }
-
     public static String getSyncErrorPromptUiHistogramSuffix(@SyncErrorPromptType int type) {
         assert type != SyncErrorPromptType.NOT_SHOWN;
         switch (type) {

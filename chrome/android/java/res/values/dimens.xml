@@ -28,9 +28,6 @@ found in the LICENSE file.
     <!-- Text size of descriptive controls on an infobar. -->
     <dimen name="infobar_descriptive_text_size">14sp</dimen>
 
-    <!-- Dimension applied to SyncErrorInfoBar icon. -->
-    <dimen name="sync_error_infobar_icon_size">48dp</dimen>
-
     <!-- Dimensions for compact translate infobar. -->
     <dimen name="infobar_translate_fade_edge_length">18dp</dimen>
 

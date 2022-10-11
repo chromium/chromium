@@ -699,7 +699,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/infobar/SubPanelListener.java",
   "java/src/org/chromium/chrome/browser/infobar/SurveyInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/SurveyInfoBarDelegate.java",
-  "java/src/org/chromium/chrome/browser/infobar/SyncErrorInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/TextViewEllipsizerSafe.java",
   "java/src/org/chromium/chrome/browser/infobar/TranslateCompactInfoBar.java",
   "java/src/org/chromium/chrome/browser/infobar/UpdatePasswordInfoBar.java",

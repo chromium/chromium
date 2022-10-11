@@ -104,10 +104,6 @@ BASE_FEATURE(kMessagesForAndroidStackingAnimation,
              "MessagesForAndroidStackingAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidSyncError,
-             "MessagesForAndroidSyncError",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidUpdatePassword,
              "MessagesForAndroidUpdatePassword",
              base::FEATURE_ENABLED_BY_DEFAULT);

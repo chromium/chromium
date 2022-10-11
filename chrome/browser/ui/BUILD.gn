@@ -802,8 +802,6 @@ static_library("ui") {
       "android/infobars/simple_confirm_infobar_builder.cc",
       "android/infobars/survey_infobar.cc",
       "android/infobars/survey_infobar.h",
-      "android/infobars/sync_error_infobar.cc",
-      "android/infobars/sync_error_infobar.h",
       "android/infobars/translate_compact_infobar.cc",
       "android/infobars/translate_compact_infobar.h",
       "android/infobars/update_password_infobar.cc",

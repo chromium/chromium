@@ -4058,7 +4058,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/infobar/SafetyTipInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/SavePasswordInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/SurveyInfoBar.java",
-    "java/src/org/chromium/chrome/browser/infobar/SyncErrorInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/TranslateCompactInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/UpdatePasswordInfoBar.java",
     "java/src/org/chromium/chrome/browser/init/NativeStartupBridge.java",
