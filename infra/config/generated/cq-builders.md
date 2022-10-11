@@ -43,6 +43,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [fuchsia_x64](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia_x64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia_x64""))
 
+* [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator""))
+
 * [lacros-amd64-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""lacros-amd64-generic-rel""))
 
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""lacros-arm-generic-rel""))
@@ -506,9 +508,6 @@ as required builders.
 
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0
-
-* [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator""))
-  * Experiment percentage: 1.0
 
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0

@@ -321,10 +321,7 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
-    # TODO(bpastene): Add this back to CQ after outage is over.
-    tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
+    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
