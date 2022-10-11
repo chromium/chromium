@@ -25,6 +25,9 @@ class BASE_EXPORT BatteryLevelProvider {
   enum class BatteryLevelUnit {
     // Milliwatt-hour. This is desired as it is more precise.
     kMWh,
+    // Milliampere-hour. Used when the capacity in ampere-hour is available but
+    // not the voltage to convert to milliwatt-hour. Prefer mWh if available.
+    kMAh,
     // Relative occurs when Windows returns imprecise battery counters.
     kRelative,
   };

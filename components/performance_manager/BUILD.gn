@@ -244,6 +244,20 @@ static_library("performance_manager") {
       "//third_party/leveldatabase",
     ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
+    ]
+
+    sources += [
+      "power/battery_level_provider_chromeos.cc",
+      "power/battery_level_provider_chromeos.h",
+      "power/dbus_power_manager_sampling_event_source.cc",
+      "power/dbus_power_manager_sampling_event_source.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -336,6 +350,15 @@ source_set("unit_tests") {
       # TODO(crbug.com/1225070): Consider using this policy on Android.
       "graph/policies/bfcache_policy_unittest.cc",
     ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
+    ]
+
+    sources += [ "power/battery_level_provider_chromeos_unittest.cc" ]
   }
 }
 
