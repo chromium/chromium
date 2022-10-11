@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
-#include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_constants.h"
@@ -92,7 +91,14 @@ std::u16string PartialTranslateBubbleModelImpl::GetSourceText() const {
 
 void PartialTranslateBubbleModelImpl::SetTargetText(
     const std::u16string& text) {
-  target_text_ = text;
+  // Note: Some languages have syntactic differences in use of ellipses.
+  // Luxembourgish uses a leading space and is the only one of these languages
+  // supported by Translate in Chrome. Given this, specific localization is not
+  // handled, but could be in the future if more languages are included.
+  if (source_text_truncated_)
+    target_text_ = text + u"…";
+  else
+    target_text_ = text;
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetTargetText() const {
@@ -160,7 +166,14 @@ std::string PartialTranslateBubbleModelImpl::GetTargetLanguageCode() const {
 void PartialTranslateBubbleModelImpl::Translate(
     content::WebContents* web_contents) {
   PartialTranslateRequest request;
-  request.selection_text = GetSourceText();
+  // If the selected text was truncated, strip the trailing ellipses before
+  // sending for translation.
+  std::u16string source_text = GetSourceText();
+  if (source_text_truncated_)
+    request.selection_text = source_text.substr(0, source_text.size() - 1);
+  else
+    request.selection_text = source_text;
+
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
   if (source_language_code != translate::kUnknownLanguageCode) {
@@ -194,6 +207,11 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
   translate_manager->ShowTranslateUI(GetTargetLanguageCode(), true);
 }
 
+void PartialTranslateBubbleModelImpl::SetSourceTextTruncated(
+    bool is_truncated) {
+  source_text_truncated_ = is_truncated;
+}
+
 void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     const PartialTranslateRequest& request,
     const PartialTranslateResponse& response) {
@@ -206,7 +224,6 @@ void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
   } else {
     SetSourceLanguage(response.source_language);
     SetTargetLanguage(response.target_language);
-    SetSourceText(request.selection_text);
     SetTargetText(response.translated_text);
     SetViewState(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     error_type_ = translate::TranslateErrors::NONE;

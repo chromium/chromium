@@ -166,6 +166,12 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   void TranslateFullPage(content::WebContents* web_contents) override {}
 
+  void SetSourceTextTruncated(bool is_truncated) override {
+    source_text_truncated_ = is_truncated;
+  }
+
+  bool GetSourceTextTruncatedForTest() { return source_text_truncated_; }
+
   void NotifyTranslated() {
     for (PartialTranslateBubbleModel::Observer& obs : observers_) {
       obs.OnPartialTranslateComplete();
@@ -176,6 +182,7 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   translate::TranslateErrors error_;
 
  private:
+  bool source_text_truncated_;
   base::ObserverList<PartialTranslateBubbleModel::Observer> observers_;
 };
 
@@ -350,4 +357,44 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateError) {
       controller_->GetPartialTranslateBubble()->GetWidget()->IsVisible());
   EXPECT_EQ(fake_partial_translate_bubble_model_->GetViewState(),
             PartialTranslateBubbleModel::ViewState::VIEW_STATE_ERROR);
+}
+
+TEST_F(TranslateBubbleControllerTest, PartialTranslateSourceTextTruncatedTrue) {
+  // Generate a string strictly larger than the text selection character limit.
+  std::u16string string_to_truncate(
+      translate::kDesktopPartialTranslateTextSelectionMaxCharacters.Get() + 1,
+      '*');
+  // Check that source_text_truncated_ is properly set for a new bubble.
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", string_to_truncate);
+  // Wait for bubble creation to complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
+
+  // Check that source_text_truncated_ is properly set for an existing bubble.
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", string_to_truncate);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(
+      fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
+}
+
+TEST_F(TranslateBubbleControllerTest,
+       PartialTranslateSourceTextTruncatedFalse) {
+  // Check that source_text_truncated_ is properly set for a new bubble for a
+  // string under the text selection character limit.
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  // Wait for bubble creation to complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
+
+  // Check that source_text_truncated_ is properly set for an existing bubble.
+  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+                                     "fr", "en", std::u16string());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
 }

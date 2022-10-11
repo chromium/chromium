@@ -106,6 +106,9 @@ class PartialTranslateBubbleModel : public TranslateLanguageListModel {
   // Closes the Partial Translate bubble, then immediately opens the Full Page
   // Translate bubble and starts a translation.
   virtual void TranslateFullPage(content::WebContents* web_contents) = 0;
+
+  // Set whether the selected text is truncated.
+  virtual void SetSourceTextTruncated(bool is_truncated) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_MODEL_H_
