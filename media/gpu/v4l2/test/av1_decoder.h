@@ -7,10 +7,6 @@
 
 #include "media/gpu/v4l2/test/video_decoder.h"
 
-// TODO(b/234019411): Move this include to v4l2_stateless_decoder.cc
-// once the bug is fixed.
-#include <linux/media/av1-ctrls.h>
-
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -30,6 +26,8 @@
 #ifndef V4L2_AV1_RESTORATION_TILESIZE_MAX
 #define V4L2_AV1_RESTORATION_TILESIZE_MAX 256
 #endif
+
+struct v4l2_ctrl_av1_frame;
 
 namespace media {
 namespace v4l2_test {
