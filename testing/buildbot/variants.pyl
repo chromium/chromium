@@ -218,6 +218,8 @@
     ],
     'identifier': 'iPad Pro (12.9-inch) (3rd generation) 16.0',
     'mixins': [
+      # TODO(crbug.com/1373622): ci_only due to test pool issues.
+      'ci_only',
       'ios_runtime_cache_16_0',
     ],
   },
