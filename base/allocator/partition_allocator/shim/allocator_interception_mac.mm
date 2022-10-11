@@ -24,6 +24,7 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <new>
 
 #include "base/allocator/buildflags.h"
@@ -601,6 +602,10 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
   if (zone->version >= 6 && functions->free_definite_size) {
     zone->free_definite_size = functions->free_definite_size;
   }
+
+  // Cap the version to the max supported to ensure malloc doesn't try to call
+  // functions that weren't replaced.
+  zone->version = std::min(zone->version, 12U);
 
   // Restore protection if it was active.
   if (reprotection_start) {
