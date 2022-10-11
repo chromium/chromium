@@ -486,6 +486,8 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     const shadowElevation = this.getElement_('#shadowElevation');
     const separator = this.getElement_('#separator');
     const container = this.getElement_('#scrollContainer');
+    container.classList.toggle('scrolling', container.scrollTop > 0);
+    container.classList.toggle('scrolling-before', container.scrollTop == 0);
     shadowElevation.classList.toggle(
         'scrolling-elevation', container.scrollTop > 0);
     shadowShield.classList.toggle(

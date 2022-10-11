@@ -172,16 +172,24 @@
     padding-inline-start: 24px;
   }
 
+  .scrolling-before {
+    padding: 24px 40px 0 40px;
+    top: 68px;
+  }
+
+  .scrolling {
+    padding: 0 40px;
+    top: 92px;
+  }
+
   #scrollContainer {
     height: 424px;
     left: 0;
     margin-bottom: 20px;
     margin-inline-end: 4px;
     overflow: auto;
-    padding: 0 40px;
     position: absolute;
     right: 0;
-    top: 92px;
   }
 
   #shadowElevation {
@@ -228,7 +236,7 @@
   </div>
   <div id="shadowElevation"></div>
   <div id="content">
-    <div id="scrollContainer" on-scroll="onContainerScroll_">
+    <div id="scrollContainer" class='scrolling-before' on-scroll="onContainerScroll_">
       <!-- Attach files -->
       <div id="attachFiles">
         <div id="attachFilesLabelContainer">
