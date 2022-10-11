@@ -6110,7 +6110,7 @@ class CacheTransparencyNavigationBrowserTest : public ContentBrowserTest {
     pervasive_payload_url_ = embedded_test_server()->GetURL(kPervasivePayload);
     std::string pervasive_payloads_params = base::StrCat(
         {"1,", pervasive_payload_url_.spec(),
-         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"});
+         ",2478392C652868C0AAF0316A28284610DBDACF02D66A00B39F3BA75D887F4829"});
 
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kNetworkServiceInProcess, {}},

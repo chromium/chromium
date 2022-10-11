@@ -6826,7 +6826,7 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
     base::FieldTrialParams params;
     params["pervasive-payloads"] = base::StrCat(
         {"1,", pervasive_payload_url_.spec(),
-         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3,",
+         ",3790EEB37E2A761CFD3B274CCF45CE5AB86A34DF11E28FB7ED4D82AFBBC13BEB,",
          redirect_url.spec(),
          // This is actually the checksum for /cacheable.js, the target of the
          // redirect, which shouldn't be considered a candidate for cache
