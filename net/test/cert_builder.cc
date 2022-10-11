@@ -838,6 +838,18 @@ scoped_refptr<X509Certificate> CertBuilder::GetX509CertificateChain() {
                                            std::move(intermediates));
 }
 
+scoped_refptr<X509Certificate> CertBuilder::GetX509CertificateFullChain() {
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  // Add intermediates and the self-signed root.
+  for (CertBuilder* cert = issuer_; cert; cert = cert->issuer_) {
+    intermediates.push_back(cert->DupCertBuffer());
+    if (cert == cert->issuer_)
+      break;
+  }
+  return X509Certificate::CreateFromBuffer(DupCertBuffer(),
+                                           std::move(intermediates));
+}
+
 std::string CertBuilder::GetDER() {
   return std::string(x509_util::CryptoBufferAsStringPiece(GetCertBuffer()));
 }

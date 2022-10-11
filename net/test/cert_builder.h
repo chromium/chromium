@@ -267,6 +267,10 @@ class CertBuilder {
   // intermediate certificates (not including the self-signed root).
   scoped_refptr<X509Certificate> GetX509CertificateChain();
 
+  // Returns an X509Certificate for the generated certificate, including
+  // intermediate certificates and the self-signed root.
+  scoped_refptr<X509Certificate> GetX509CertificateFullChain();
+
   // Returns a copy of the certificate's DER.
   std::string GetDER();
 
