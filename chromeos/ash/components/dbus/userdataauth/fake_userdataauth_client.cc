@@ -1231,6 +1231,16 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
   }
   auth_session.authenticated = true;
 
+  const auto [_, was_inserted] =
+      users_.insert({auth_session.account, UserCryptohomeState()});
+
+  if (!was_inserted) {
+    LOG(ERROR) << "User already exists: " << auth_session.account.account_id();
+    reply.set_error(::user_data_auth::CryptohomeErrorCode::
+                        CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY);
+    return;
+  }
+
   reply.set_sanitized_username(GetStubSanitizedUsername(account));
 }
 
