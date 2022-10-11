@@ -189,6 +189,14 @@ p {
   font-weight: bold;
 }
 
+#block-reason-show-details-link, #block-reason-hide-details-link {
+  display: none;
+}
+
+#block-reason-container {
+  margin-top: 16px;
+}
+
 #block-reason {
   align-items: center;
   background-color: var(--callout-bg-color);
@@ -198,7 +206,6 @@ p {
   justify-content: flex-start;
   padding: 16px;
   max-width: 276px;
-  margin-top: 16px;
 }
 
 #block-reason-header {
@@ -295,6 +302,23 @@ button:focus-visible {
 
   #main-message {
     margin-top: 32px;
+  }
+
+  #block-reason-show-details-link {
+    color: var(--primary-button-fill-color);
+    display: block;
+    margin-top: 0;
+  }
+
+  #block-reason-hide-details-link {
+    color: var(--primary-button-fill-color);
+    display: none;
+    margin-top: 0;
+    margin-bottom: 14px;
+  }
+
+  #block-reason {
+    display: none;
   }
 
   #custodians-information {

@@ -114,6 +114,19 @@ function initialize() {
   $('feedback').hidden = true;
   $('details-button-container').hidden = true;
 
+  // Set up handlers for displaying/hiding the details.
+  $('block-reason-show-details-link').onclick = function(event) {
+    $('block-reason-show-details-link').style.display = 'none';
+    $('block-reason-hide-details-link').style.display = 'block';
+    $('block-reason').style.display = 'flex';
+  };
+
+  $('block-reason-hide-details-link').onclick = function(event) {
+    $('block-reason-show-details-link').style.display = 'block';
+    $('block-reason-hide-details-link').style.display = 'none';
+    $('block-reason').style.display = 'none';
+  };
+
   // Focus the top-level div for screen readers.
   $('frame-blocked').focus();
 }
