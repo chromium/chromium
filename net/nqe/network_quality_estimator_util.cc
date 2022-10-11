@@ -25,18 +25,14 @@ namespace {
 
 bool IsPrivateHost(HostResolver* host_resolver,
                    const HostPortPair& host_port_pair,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const NetworkAnonymizationKey& network_anonymization_key,
                    NetLogWithSource net_log) {
   // Try resolving |host_port_pair.host()| synchronously.
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      host_resolver->CreateRequest(
-          host_port_pair,
-          net::NetworkAnonymizationKey::
-              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                  network_isolation_key),
-          net_log, parameters);
+      host_resolver->CreateRequest(host_port_pair, network_anonymization_key,
+                                   net_log, parameters);
 
   int rv = request->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(rv, ERR_IO_PENDING);
@@ -59,17 +55,18 @@ namespace internal {
 
 bool IsRequestForPrivateHost(const URLRequest& request,
                              NetLogWithSource net_log) {
-  // Using the request's NetworkIsolationKey isn't necessary for privacy
+  // Using the request's NetworkAnonymizationKey isn't necessary for privacy
   // reasons, but is needed to maximize the chances of a cache hit.
   return IsPrivateHost(
       request.context()->host_resolver(), HostPortPair::FromURL(request.url()),
-      request.isolation_info().network_isolation_key(), net_log);
+      request.isolation_info().network_anonymization_key(), net_log);
 }
 
-bool IsPrivateHostForTesting(HostResolver* host_resolver,
-                             const HostPortPair& host_port_pair,
-                             const NetworkIsolationKey& network_isolation_key) {
-  return IsPrivateHost(host_resolver, host_port_pair, network_isolation_key,
+bool IsPrivateHostForTesting(
+    HostResolver* host_resolver,
+    const HostPortPair& host_port_pair,
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return IsPrivateHost(host_resolver, host_port_pair, network_anonymization_key,
                        NetLogWithSource());
 }
 

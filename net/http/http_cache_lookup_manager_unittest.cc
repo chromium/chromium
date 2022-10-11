@@ -36,9 +36,8 @@ class MockServerPushHelper : public ServerPushDelegate::ServerPushHelper {
   const GURL& GetURL() const override { return request_url_; }
 
   NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
-    return NetworkAnonymizationKey::
-        CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-            network_isolation_key_);
+    return NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+        network_isolation_key_);
   }
 
   void set_network_isolation_key(

@@ -72,7 +72,7 @@ class SearchEnginePreconnectorBrowserTest
 
   void OnPreresolveFinished(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       bool success) override {
     const GURL origin = url.DeprecatedGetOriginAsURL();
     if (!base::Contains(preresolve_counts_, origin)) {

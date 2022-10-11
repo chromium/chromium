@@ -168,11 +168,6 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::RequestStreamInternal(
 void HttpStreamFactory::PreconnectStreams(int num_streams,
                                           HttpRequestInfo& request_info) {
   DCHECK(request_info.url.is_valid());
-  request_info.network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          request_info.network_isolation_key);
-
-  DCHECK(request_info.IsConsistent());
 
   auto job_controller = std::make_unique<JobController>(
       this, nullptr, session_, job_factory_.get(), request_info,

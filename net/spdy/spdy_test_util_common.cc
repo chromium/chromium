@@ -370,8 +370,8 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.disable_idle_sockets_close_on_memory_pressure =
       session_deps->disable_idle_sockets_close_on_memory_pressure;
   params.enable_early_data = session_deps->enable_early_data;
-  params.key_auth_cache_server_entries_by_network_isolation_key =
-      session_deps->key_auth_cache_server_entries_by_network_isolation_key;
+  params.key_auth_cache_server_entries_by_network_anonymization_key =
+      session_deps->key_auth_cache_server_entries_by_network_anonymization_key;
   params.enable_priority_update = session_deps->enable_priority_update;
   params.spdy_go_away_on_ip_change = session_deps->go_away_on_ip_change;
   params.ignore_ip_address_changes = session_deps->ignore_ip_address_changes;

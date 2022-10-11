@@ -14,7 +14,7 @@
 class GURL;
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }
 
 namespace network {
@@ -33,10 +33,11 @@ class ProxyLookupClientImpl : public network::mojom::ProxyLookupClient {
  public:
   // Starts the proxy lookup for |url|. |callback| is called when the proxy
   // lookup is completed or when an error occurs.
-  ProxyLookupClientImpl(const GURL& url,
-                        const net::NetworkIsolationKey& network_isolation_key,
-                        ProxyLookupCallback callback,
-                        network::mojom::NetworkContext* network_context);
+  ProxyLookupClientImpl(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_isolation_key,
+      ProxyLookupCallback callback,
+      network::mojom::NetworkContext* network_context);
 
   ProxyLookupClientImpl(const ProxyLookupClientImpl&) = delete;
   ProxyLookupClientImpl& operator=(const ProxyLookupClientImpl&) = delete;

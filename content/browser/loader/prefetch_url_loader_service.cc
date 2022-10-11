@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -132,7 +132,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     // The renderer has marked this prefetch as restricted, meaning it is a
     // cross-origin prefetch intended for top-leve navigation reuse. We must
     // verify that the request meets the necessary security requirements, and
-    // populate |resource_request|'s NetworkIsolationKey appropriately.
+    // populate |resource_request|'s NetworkAnonymizationKey appropriately.
     EnsureCrossOriginFactory();
     DCHECK(current_context.cross_origin_factory);
 
@@ -149,7 +149,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
     resource_request.site_for_cookies = net::SiteForCookies();
 
     // Use the trusted cross-origin prefetch loader factory, and set the
-    // request's NetworkIsolationKey suitable for the cross-origin prefetch.
+    // request's NetworkAnonymizationKey suitable for the cross-origin prefetch.
     network_loader_factory_to_use = current_context.cross_origin_factory;
     url::Origin destination_origin = url::Origin::Create(resource_request.url);
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();
@@ -207,8 +207,9 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
       request_id, options, current_context.frame_tree_node_id, resource_request,
       resource_request.trusted_params
           ? resource_request.trusted_params->isolation_info
-                .network_isolation_key()
-          : current_context.render_frame_host->GetNetworkIsolationKey(),
+                .network_anonymization_key()
+          : current_context.render_frame_host->GetIsolationInfoForSubresources()
+                .network_anonymization_key(),
       std::move(client), traffic_annotation,
       std::move(network_loader_factory_to_use),
       base::BindRepeating(&PrefetchURLLoaderService::CreateURLLoaderThrottles,
@@ -226,7 +227,7 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
 PrefetchURLLoaderService::~PrefetchURLLoaderService() = default;
 
 // This method is used to determine whether it is safe to set the
-// NetworkIsolationKey of a cross-origin prefetch request coming from the
+// NetworkAnonymizationKey of a cross-origin prefetch request coming from the
 // renderer, so that it can be cached correctly.
 bool PrefetchURLLoaderService::IsValidCrossOriginPrefetch(
     const network::ResourceRequest& resource_request) {
@@ -238,8 +239,8 @@ bool PrefetchURLLoaderService::IsValidCrossOriginPrefetch(
   }
 
   // The request is expected to be cross-origin. Same-origin prefetches do not
-  // need a special NetworkIsolationKey, and therefore must not be marked for
-  // restricted use.
+  // need a special NetworkAnonymizationKey, and therefore must not be marked
+  // for restricted use.
   DCHECK(resource_request.request_initiator.has_value());  // Checked above.
   if (resource_request.request_initiator->IsSameOriginWith(
           resource_request.url)) {
@@ -324,7 +325,7 @@ base::UnguessableToken PrefetchURLLoaderService::GenerateRecursivePrefetchToken(
     const network::ResourceRequest& request) {
   // If the relevant frame has gone away before this method is called
   // asynchronously, we cannot generate and store a
-  // {token, NetworkIsolationKey} pair in the frame's
+  // {token, NetworkAnonymizationKey} pair in the frame's
   // |prefetch_network_isolation_keys| map, so we'll create and return a dummy
   // token that will not get used.
   if (!current_context)

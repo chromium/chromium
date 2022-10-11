@@ -35,13 +35,13 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   // Intentionally pass host only (no scheme or non-zero port) to only get a
   // basic resolution for the hostname itself.
   net::HostPortPair host_port_pair(params->hostname, 0);
-  url::Origin origin = extension_->origin();
+  net::SchemefulSite site = net::SchemefulSite(extension_->origin());
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                         std::move(host_port_pair)),
-                    net::NetworkIsolationKey(origin, origin), nullptr,
+                    net::NetworkAnonymizationKey(site, site), nullptr,
                     receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &DnsResolveFunction::OnComplete, base::Unretained(this),

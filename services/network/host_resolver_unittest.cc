@@ -243,7 +243,7 @@ TEST_F(HostResolverTest, Sync) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.test", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -276,7 +276,7 @@ TEST_F(HostResolverTest, Async) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.test", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
 
@@ -312,7 +312,7 @@ TEST_F(HostResolverTest, DnsQueryType) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -338,7 +338,7 @@ TEST_F(HostResolverTest, InitialPriority) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("priority.test", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -389,7 +389,8 @@ TEST_F(HostResolverTest, Source) {
   any_parameters->source = net::HostResolverSource::ANY;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(any_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(any_parameters),
                        std::move(pending_any_client));
 
   base::RunLoop system_run_loop;
@@ -400,7 +401,8 @@ TEST_F(HostResolverTest, Source) {
   system_parameters->source = net::HostResolverSource::SYSTEM;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(system_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(system_parameters),
                        std::move(pending_system_client));
 
   base::RunLoop dns_run_loop;
@@ -411,7 +413,8 @@ TEST_F(HostResolverTest, Source) {
   dns_parameters->source = net::HostResolverSource::DNS;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(dns_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(dns_parameters),
                        std::move(pending_dns_client));
 
   any_run_loop.Run();
@@ -437,7 +440,8 @@ TEST_F(HostResolverTest, Source) {
   mdns_parameters->source = net::HostResolverSource::MULTICAST_DNS;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(mdns_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(mdns_parameters),
                        std::move(pending_mdns_client));
 
   mdns_run_loop.Run();
@@ -493,7 +497,7 @@ TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
       url::SchemeHostPort("https", kWithoutHttpsDomain, 443);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
                            without_https_scheme_host_port),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_without_https_client));
 
   base::RunLoop with_https_run_loop;
@@ -504,7 +508,7 @@ TEST_F(HostResolverTest, GetEndpointResultsWithMetadata) {
       url::SchemeHostPort("https", kWithHttpsDomain, 443);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewSchemeHostPort(
                            with_https_scheme_host_port),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_with_https_client));
 
   without_https_run_loop.Run();
@@ -555,7 +559,8 @@ TEST_F(HostResolverTest, SeparateCacheBySource) {
   system_parameters->source = net::HostResolverSource::SYSTEM;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(system_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(system_parameters),
                        std::move(pending_system_client_ptr));
   system_run_loop.Run();
   ASSERT_EQ(net::OK, system_client.result_error());
@@ -579,7 +584,8 @@ TEST_F(HostResolverTest, SeparateCacheBySource) {
   cached_parameters->source = net::HostResolverSource::SYSTEM;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(cached_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(cached_parameters),
                        std::move(pending_cached_client));
 
   base::RunLoop uncached_run_loop;
@@ -591,7 +597,7 @@ TEST_F(HostResolverTest, SeparateCacheBySource) {
   uncached_parameters->source = net::HostResolverSource::ANY;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(uncached_parameters),
                        std::move(pending_uncached_client));
 
@@ -622,7 +628,7 @@ TEST_F(HostResolverTest, CacheDisabled) {
   TestResolveHostClient client(&pending_client, &run_loop);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_client));
   run_loop.Run();
   ASSERT_EQ(net::OK, client.result_error());
@@ -645,7 +651,8 @@ TEST_F(HostResolverTest, CacheDisabled) {
       mojom::ResolveHostParameters::CacheUsage::ALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(cached_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(cached_parameters),
                        std::move(pending_cached_client));
   cached_run_loop.Run();
 
@@ -664,7 +671,7 @@ TEST_F(HostResolverTest, CacheDisabled) {
       mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(uncached_parameters),
                        std::move(pending_uncached_client));
   uncached_run_loop.Run();
@@ -688,7 +695,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
   TestResolveHostClient client(&pending_client, &run_loop);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_client));
   run_loop.Run();
   ASSERT_EQ(net::OK, client.result_error());
@@ -717,7 +724,8 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
       mojom::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(cached_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(cached_parameters),
                        std::move(pending_cached_client));
   cached_run_loop.Run();
 
@@ -738,7 +746,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
       mojom::ResolveHostParameters::CacheUsage::ALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(uncached_parameters),
                        std::move(pending_uncached_client));
   uncached_run_loop.Run();
@@ -764,7 +772,7 @@ TEST_F(HostResolverTest, CacheDisabled_ErrorResults) {
   TestResolveHostClient client(&pending_client, &run_loop);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_client));
   run_loop.Run();
   ASSERT_EQ(net::OK, client.result_error());
@@ -784,7 +792,8 @@ TEST_F(HostResolverTest, CacheDisabled_ErrorResults) {
       mojom::ResolveHostParameters::CacheUsage::ALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(), std::move(cached_parameters),
+                       net::NetworkAnonymizationKey(),
+                       std::move(cached_parameters),
                        std::move(pending_cached_client));
   cached_run_loop.Run();
   EXPECT_EQ(net::OK, cached_client.result_error());
@@ -799,7 +808,7 @@ TEST_F(HostResolverTest, CacheDisabled_ErrorResults) {
       mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair(kDomain, 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(uncached_parameters),
                        std::move(pending_uncached_client));
   uncached_run_loop.Run();
@@ -824,7 +833,7 @@ TEST_F(HostResolverTest, IncludeCanonicalName) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -853,7 +862,7 @@ TEST_F(HostResolverTest, LoopbackOnly) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -880,7 +889,7 @@ TEST_F(HostResolverTest, HandlesSecureDnsPolicyParameter) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("secure.test", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -910,7 +919,7 @@ TEST_F(HostResolverTest, Failure_Sync) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -940,7 +949,7 @@ TEST_F(HostResolverTest, Failure_Async) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
 
@@ -956,9 +965,10 @@ TEST_F(HostResolverTest, Failure_Async) {
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }
 
-TEST_F(HostResolverTest, NetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+TEST_F(HostResolverTest, NetworkAnonymizationKey) {
+  const net::SchemefulSite kSite =
+      net::SchemefulSite(GURL("https://foo.test/"));
+  const net::NetworkAnonymizationKey kNetworkIsolationKey(kSite, kSite);
 
   auto inner_resolver = std::make_unique<net::MockHostResolver>();
   inner_resolver->rules()->AddRule("nik.test", "1.2.3.4");
@@ -1002,7 +1012,7 @@ TEST_F(HostResolverTest, NoOptionalParameters) {
   // when using a real HostResolver.
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_response_client));
   run_loop.Run();
 
@@ -1030,7 +1040,7 @@ TEST_F(HostResolverTest, NoControlHandle) {
   // when using a real HostResolver.
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -1062,7 +1072,7 @@ TEST_F(HostResolverTest, CloseControlHandle) {
   // when using a real HostResolver.
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   control_handle.reset();
@@ -1096,7 +1106,7 @@ TEST_F(HostResolverTest, Cancellation) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   bool control_handle_closed = false;
@@ -1133,7 +1143,7 @@ TEST_F(HostResolverTest, Cancellation_SubsequentRequest) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
 
@@ -1152,7 +1162,7 @@ TEST_F(HostResolverTest, Cancellation_SubsequentRequest) {
   TestResolveHostClient response_client2(&pending_response_client2, &run_loop2);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_response_client2));
   run_loop2.Run();
 
@@ -1185,7 +1195,7 @@ TEST_F(HostResolverTest, DestroyResolver) {
 
   resolver->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                             net::HostPortPair("localhost", 80)),
-                        net::NetworkIsolationKey(),
+                        net::NetworkAnonymizationKey(),
                         std::move(optional_parameters),
                         std::move(pending_response_client));
   bool control_handle_closed = false;
@@ -1224,7 +1234,7 @@ TEST_F(HostResolverTest, CloseClient) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   bool control_handle_closed = false;
@@ -1255,7 +1265,7 @@ TEST_F(HostResolverTest, CloseClient_SubsequentRequest) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_response_client));
 
   response_client.CloseReceiver();
@@ -1273,7 +1283,7 @@ TEST_F(HostResolverTest, CloseClient_SubsequentRequest) {
   TestResolveHostClient response_client2(&pending_response_client2, &run_loop2);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_response_client2));
   run_loop2.Run();
 
@@ -1313,7 +1323,7 @@ TEST_F(HostResolverTest, Binding) {
   resolver_remote->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair("localhost", 160)),
-      net::NetworkIsolationKey(), std::move(optional_parameters),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
       std::move(pending_response_client));
   run_loop.Run();
 
@@ -1354,7 +1364,7 @@ TEST_F(HostResolverTest, CloseBinding) {
   resolver_remote->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair("localhost", 160)),
-      net::NetworkIsolationKey(), std::move(optional_parameters),
+      net::NetworkAnonymizationKey(), std::move(optional_parameters),
       std::move(pending_response_client));
   bool control_handle_closed = false;
   auto connection_error_callback =
@@ -1395,7 +1405,8 @@ TEST_F(HostResolverTest, CloseBinding_SubsequentRequest) {
   resolver_remote->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair("localhost", 160)),
-      net::NetworkIsolationKey(), nullptr, std::move(pending_response_client));
+      net::NetworkAnonymizationKey(), nullptr,
+      std::move(pending_response_client));
 
   resolver_remote.reset();
   run_loop.RunUntilIdle();
@@ -1415,7 +1426,7 @@ TEST_F(HostResolverTest, CloseBinding_SubsequentRequest) {
   TestResolveHostClient response_client2(&pending_response_client2, &run_loop2);
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), nullptr,
+                       net::NetworkAnonymizationKey(), nullptr,
                        std::move(pending_response_client2));
   run_loop2.Run();
 
@@ -1444,7 +1455,7 @@ TEST_F(HostResolverTest, IsSpeculative) {
   // when using a real HostResolver.
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("localhost", 80)),
-                       net::NetworkIsolationKey(), std::move(parameters),
+                       net::NetworkAnonymizationKey(), std::move(parameters),
                        std::move(pending_response_client));
   run_loop.Run();
 
@@ -1493,7 +1504,7 @@ TEST_F(HostResolverTest, TextResults) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -1536,7 +1547,7 @@ TEST_F(HostResolverTest, HostResults) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -1576,7 +1587,7 @@ TEST_F(HostResolverTest, RespectsDisablingAdditionalQueryTypes) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
   run_loop.Run();
@@ -1775,7 +1786,7 @@ TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
 
   resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                            net::HostPortPair("example.com", 160)),
-                       net::NetworkIsolationKey(),
+                       net::NetworkAnonymizationKey(),
                        std::move(optional_parameters),
                        std::move(pending_response_client));
 

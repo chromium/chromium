@@ -24,7 +24,7 @@ namespace predictors {
 
 ResolveHostClientImpl::ResolveHostClientImpl(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     ResolveHostCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {

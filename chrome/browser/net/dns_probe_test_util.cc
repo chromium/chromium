@@ -9,7 +9,7 @@
 
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "net/base/ip_address.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,11 +64,11 @@ FakeHostResolver::~FakeHostResolver() = default;
 
 void FakeHostResolver::ResolveHost(
     network::mojom::HostResolverHostPtr host,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<network::mojom::ResolveHostClient>
         pending_response_client) {
-  EXPECT_TRUE(network_isolation_key.IsTransient());
+  EXPECT_TRUE(network_anonymization_key.IsTransient());
 
   const SingleResult& cur_result = result_list_[next_result_];
   if (next_result_ + 1 < result_list_.size())
@@ -96,10 +96,10 @@ HangingHostResolver::~HangingHostResolver() = default;
 
 void HangingHostResolver::ResolveHost(
     network::mojom::HostResolverHostPtr host,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<network::mojom::ResolveHostClient> response_client) {
-  EXPECT_TRUE(network_isolation_key.IsTransient());
+  EXPECT_TRUE(network_anonymization_key.IsTransient());
 
   // Intentionally do not call response_client->OnComplete, but hang onto the
   // |response_client| since destroying that also causes the mojo

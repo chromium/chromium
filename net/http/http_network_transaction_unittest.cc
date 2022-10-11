@@ -4579,7 +4579,8 @@ TEST_F(HttpNetworkTransactionTest,
       NetLogWithSource::Make(NetLogSourceType::NONE);
 
   session_deps_.net_log = NetLog::Get();
-  session_deps_.key_auth_cache_server_entries_by_network_isolation_key = true;
+  session_deps_.key_auth_cache_server_entries_by_network_anonymization_key =
+      true;
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   MockWrite data_writes[] = {
@@ -4839,7 +4840,8 @@ TEST_F(HttpNetworkTransactionTest,
   NetLogWithSource net_log_with_source =
       NetLogWithSource::Make(NetLogSourceType::NONE);
   session_deps_.net_log = NetLog::Get();
-  session_deps_.key_auth_cache_server_entries_by_network_isolation_key = true;
+  session_deps_.key_auth_cache_server_entries_by_network_anonymization_key =
+      true;
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   MockWrite data_writes[] = {
@@ -23256,13 +23258,13 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
 
   SSLSocketDataProvider ssl_data1(ASYNC, OK);
   ssl_data1.expected_host_and_port = HostPortPair("foo.test", 443);
-  ssl_data1.expected_network_isolation_key = kNetworkIsolationKey1;
+  ssl_data1.expected_network_anonymization_key = kNetworkAnonymizationKey1;
   SSLSocketDataProvider ssl_data2(ASYNC, OK);
   ssl_data2.expected_host_and_port = HostPortPair("foo.test", 443);
-  ssl_data2.expected_network_isolation_key = kNetworkAnonymizationKey2;
+  ssl_data2.expected_network_anonymization_key = kNetworkAnonymizationKey2;
   SSLSocketDataProvider ssl_data3(ASYNC, OK);
   ssl_data3.expected_host_and_port = HostPortPair("foo.test", 443);
-  ssl_data3.expected_network_isolation_key = kNetworkIsolationKey1;
+  ssl_data3.expected_network_anonymization_key = kNetworkAnonymizationKey1;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data1);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data2);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data3);
@@ -23390,13 +23392,13 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
 
   SSLSocketDataProvider ssl_proxy1(ASYNC, OK);
   ssl_proxy1.expected_host_and_port = HostPortPair("myproxy", 70);
-  ssl_proxy1.expected_network_isolation_key = kNetworkIsolationKey1;
+  ssl_proxy1.expected_network_anonymization_key = kNetworkAnonymizationKey1;
   SSLSocketDataProvider ssl_origin1(ASYNC, OK);
   ssl_origin1.expected_host_and_port = HostPortPair("foo.test", 443);
-  ssl_origin1.expected_network_isolation_key = kNetworkIsolationKey1;
+  ssl_origin1.expected_network_anonymization_key = kNetworkAnonymizationKey1;
   SSLSocketDataProvider ssl_proxy2(ASYNC, OK);
   ssl_proxy2.expected_host_and_port = HostPortPair("myproxy", 70);
-  ssl_proxy2.expected_network_isolation_key = kNetworkIsolationKey2;
+  ssl_proxy2.expected_network_anonymization_key = kNetworkAnonymizationKey2;
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_proxy1);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_origin1);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_proxy2);

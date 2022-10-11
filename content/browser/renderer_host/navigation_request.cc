@@ -1839,7 +1839,7 @@ NavigationRequest::NavigationRequest(
           frame_tree_node_->current_frame_host()->GetStoragePartition();
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, true,
-          GetIsolationInfo().network_isolation_key());
+          GetIsolationInfo().network_anonymization_key());
     }
   }
 
@@ -2360,9 +2360,10 @@ void NavigationRequest::BeginNavigationImpl() {
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+      const net::SchemefulSite site = net::SchemefulSite(origin);
       coop_status_.EnforceCOOP(
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
-          origin, net::NetworkIsolationKey(origin, origin));
+          origin, net::NetworkAnonymizationKey(site, site));
 
       // Select an appropriate RenderFrameHost.
       render_frame_host_ =
@@ -2723,7 +2724,7 @@ void NavigationRequest::CreateCoepReporter(
       policies.cross_origin_embedder_policy.reporting_endpoint,
       policies.cross_origin_embedder_policy.report_only_reporting_endpoint,
       render_frame_host_->GetFrameToken().value(),
-      isolation_info_for_subresources_.network_isolation_key());
+      isolation_info_for_subresources_.network_anonymization_key());
 }
 
 std::unique_ptr<CrossOriginEmbedderPolicyReporter>
@@ -2737,7 +2738,7 @@ ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
 
 void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     network::mojom::URLResponseHeadPtr response_head) {
   ScopedCrashKeys crash_keys(*this);
 
@@ -2847,7 +2848,7 @@ void NavigationRequest::OnRequestRedirected(
   const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
   coop_status_.EnforceCOOP(
       response()->parsed_headers->cross_origin_opener_policy, origin,
-      network_isolation_key);
+      network_anonymization_key);
 
   const absl::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
@@ -3551,7 +3552,7 @@ void NavigationRequest::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     blink::NavigationDownloadPolicy download_policy,
-    net::NetworkIsolationKey network_isolation_key,
+    net::NetworkAnonymizationKey network_anonymization_key,
     absl::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   ScopedCrashKeys crash_keys(*this);
@@ -3632,7 +3633,7 @@ void NavigationRequest::OnResponseStarted(
         GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
             policies.sandbox_flags);
     coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
-                             network_isolation_key);
+                             network_anonymization_key);
   }
 
   // The navigation may have encountered a header that requests isolation for
@@ -4133,7 +4134,7 @@ void NavigationRequest::OnRequestFailedInternal(
 
   coop_status_.EnforceCOOP(
       policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
-      url::Origin(), net::NetworkIsolationKey::CreateTransient());
+      url::Origin(), net::NetworkAnonymizationKey::CreateTransient());
 
   RenderFrameHostImpl* render_frame_host = nullptr;
   switch (ComputeErrorPageProcess(status.error_code)) {

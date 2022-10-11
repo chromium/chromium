@@ -85,7 +85,7 @@ class CONTENT_EXPORT PrefetchedSignedExchangeCache
       const PrefetchedSignedExchangeCacheEntry& main_exchange,
       const base::Time& now,
       int frame_tree_node_id,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   EntryMap exchanges_;
 

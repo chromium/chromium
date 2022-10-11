@@ -120,7 +120,7 @@ class LoadingPredictor : public KeyedService,
   void PreconnectURLIfAllowed(
       const GURL& url,
       bool allow_credentials,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
  private:
   // Stores the information necessary to keep track of the active navigations.

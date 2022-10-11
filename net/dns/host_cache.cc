@@ -810,8 +810,9 @@ void HostCache::GetList(base::Value::List& entry_list,
     if (serialization_type == SerializationType::kRestorable) {
       // Don't save entries associated with ephemeral NetworkAnonymizationKeys.
       if (!key.network_anonymization_key.ToValue(
-              &network_anonymization_key_value))
+              &network_anonymization_key_value)) {
         continue;
+      }
     } else {
       // ToValue() fails for transient NIKs, since they should never be
       // serialized to disk in a restorable format, so use ToDebugString() when

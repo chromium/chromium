@@ -356,8 +356,8 @@ class NET_EXPORT URLRequestContext final {
   // request. Only used on Android.
   bool check_cleartext_permitted_ = false;
 
-  // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
-  // a request when true.
+  // Triggers a DCHECK if a NetworkAnonymizationKey/IsolationInfo is not
+  // provided to a request when true.
   bool require_network_isolation_key_ = false;
 
   handles::NetworkHandle bound_network_;

@@ -320,7 +320,7 @@ void NetInternalsMessageHandler::OnResolveHost(const base::Value::List& list) {
   mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver;
   GetNetworkContext()->ResolveHost(
       network::mojom::HostResolverHost::NewSchemeHostPort(scheme_host_port),
-      net::NetworkIsolationKey(),
+      net::NetworkAnonymizationKey(),
       /*optional_parameters=*/nullptr, receiver.InitWithNewPipeAndPassRemote());
 
   auto callback = base::BindOnce(&NetInternalsMessageHandler::OnResolveHostDone,
@@ -390,13 +390,12 @@ void NetInternalsMessageHandler::OnExpectCTQuery(
   const std::string* domain = list[1].GetIfString();
   DCHECK(callback_id && domain);
 
-  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
+  net::SchemefulSite site = net::SchemefulSite(GURL("https://" + *domain));
+
   AllowJavascript();
 
   GetNetworkContext()->GetExpectCTState(
-      *domain,
-      net::NetworkIsolationKey(origin /* top_frame_site */,
-                               origin /* frame_site */),
+      *domain, net::NetworkAnonymizationKey(site, site),
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
                      weak_factory_.GetWeakPtr(), *callback_id));
 }
@@ -415,14 +414,12 @@ void NetInternalsMessageHandler::OnExpectCTAdd(const base::Value::List& list) {
   absl::optional<bool> enforce = list[2].GetIfBool();
   DCHECK(report_uri_str && enforce);
 
-  url::Origin origin = url::Origin::Create(GURL("https://" + *domain));
+  net::SchemefulSite site = net::SchemefulSite(GURL("https://" + *domain));
 
   base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddExpectCT(
       *domain, expiry, *enforce, GURL(*report_uri_str),
-      net::NetworkIsolationKey(origin /* top_frame_site */,
-                               origin /* frame_site */),
-      base::DoNothing());
+      net::NetworkAnonymizationKey(site, site), base::DoNothing());
 }
 
 void NetInternalsMessageHandler::OnExpectCTTestReport(

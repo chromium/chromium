@@ -2274,7 +2274,7 @@ const char kAuthAndroidNegotiateAccountType[] =
 const char kAllowCrossOriginAuthPrompt[] = "auth.allow_cross_origin_prompt";
 
 // Boolean that specifies whether cached (server) auth credentials are separated
-// by NetworkIsolationKey.
+// by NetworkAnonymizationKey.
 const char kGloballyScopeHTTPAuthCacheEnabled[] =
     "auth.globally_scoped_http_auth_cache_enabled";
 

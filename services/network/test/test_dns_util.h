@@ -39,7 +39,7 @@ DnsLookupResult BlockingDnsLookup(
     mojom::NetworkContext* network_context,
     const net::HostPortPair& host_port_pair,
     network::mojom::ResolveHostParametersPtr params,
-    const net::NetworkIsolationKey& network_isolation_key);
+    const net::NetworkAnonymizationKey& network_anonymization_key);
 
 }  // namespace network
 

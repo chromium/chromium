@@ -33,12 +33,12 @@ namespace {
 // Preconnects can be received from the renderer before commit messages, so
 // need to use the key from the pending navigation, and not the committed
 // navigation, unlike other consumers. This does mean on navigating away from a
-// site, preconnect is more likely to incorrectly use the NetworkIsolationKey of
-// the previous commit.
-net::NetworkIsolationKey GetPendingNetworkIsolationKey(
+// site, preconnect is more likely to incorrectly use the
+// NetworkAnonymizationKey of the previous commit.
+net::NetworkAnonymizationKey GetPendingNetworkAnonymizationKey(
     content::RenderFrameHost* render_frame_host) {
   return render_frame_host->GetPendingIsolationInfoForSubresources()
-      .network_isolation_key();
+      .network_anonymization_key();
 }
 
 const int kDefaultPort = 80;
@@ -84,7 +84,8 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
-    // TODO(https://crbug.com/997049): Pass in a non-empty NetworkIsolationKey.
+    // TODO(https://crbug.com/997049): Pass in a non-empty
+    // NetworkAnonymizationKey.
     // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger
     // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
@@ -92,7 +93,7 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
         ->GetNetworkContext()
         ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                           std::move(host_port_pair)),
-                      GetPendingNetworkIsolationKey(render_frame_host),
+                      GetPendingNetworkAnonymizationKey(render_frame_host),
                       std::move(resolve_host_parameters),
                       receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(base::BindOnce(
@@ -166,14 +167,14 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const GURL& url,
   if (!render_frame_host)
     return;
 
-  net::NetworkIsolationKey network_isolation_key =
+  net::NetworkAnonymizationKey network_anonymization_key =
       render_frame_host->GetPendingIsolationInfoForSubresources()
-          .network_isolation_key();
+          .network_anonymization_key();
 
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
       ->PreconnectSockets(/*num_streams=*/1, url, allow_credentials,
-                          network_isolation_key);
+                          network_anonymization_key);
 }
 
 }  // namespace network_hints

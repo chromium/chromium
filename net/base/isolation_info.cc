@@ -205,6 +205,48 @@ IsolationInfo IsolationInfo::CreatePartial(
                        absl::nullopt /* party_context */);
 }
 
+IsolationInfo IsolationInfo::DoNotUseCreatePartialFromNak(
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  if (!network_anonymization_key.IsFullyPopulated()) {
+    return IsolationInfo();
+  }
+
+  url::Origin top_frame_origin =
+      network_anonymization_key.GetTopFrameSite()->site_as_origin_;
+
+  absl::optional<url::Origin> frame_origin;
+  if (NetworkAnonymizationKey::IsFrameSiteEnabled() &&
+      network_anonymization_key.GetFrameSite().has_value()) {
+    // If frame site is set on the network anonymization key, use it to set the
+    // frame origin on the isolation info.
+    frame_origin = network_anonymization_key.GetFrameSite()->site_as_origin_;
+  } else if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
+             network_anonymization_key.GetIsCrossSite().value()) {
+    // If frame site is not set on the network anonymization key but we know
+    // that it is cross site to the top level site, create an empty origin to
+    // use as the frame origin for the isolation info. This should be cross site
+    // with the top level origin.
+    frame_origin = url::Origin();
+  } else {
+    // If frame sit is not set on the network anonymization key and we don't
+    // know that it's cross site to the top level site, use the top frame site
+    // to set the frame origin.
+    frame_origin = top_frame_origin;
+  }
+
+  const base::UnguessableToken* nonce =
+      network_anonymization_key.GetNonce()
+          ? &network_anonymization_key.GetNonce().value()
+          : nullptr;
+
+  auto isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, top_frame_origin,
+      frame_origin.value(), SiteForCookies(),
+      /*party_context=*/absl::nullopt, nonce);
+  // TODO(crbug/1343856): DCHECK isolation info is fully populated.
+  return isolation_info;
+}
+
 absl::optional<IsolationInfo> IsolationInfo::CreateIfConsistent(
     RequestType request_type,
     const absl::optional<url::Origin>& top_frame_origin,

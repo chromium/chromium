@@ -13,7 +13,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/source_location.mojom.h"
@@ -111,13 +111,13 @@ CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
     const GURL& context_referrer_url,
     const network::CrossOriginOpenerPolicy& coop,
     const base::UnguessableToken& reporting_source,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : storage_partition_(storage_partition),
       reporting_source_(reporting_source),
       context_url_(context_url),
       context_referrer_url_(SanitizedURL(context_referrer_url)),
       coop_(coop),
-      network_isolation_key_(network_isolation_key) {
+      network_anonymization_key_(network_anonymization_key) {
   DCHECK(!reporting_source_.is_empty());
 }
 
@@ -278,8 +278,8 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   }
 
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
-      absl::nullopt, std::move(body));
+      "coop", endpoint, context_url_, reporting_source_,
+      network_anonymization_key_, absl::nullopt, std::move(body));
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
@@ -291,7 +291,8 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
   body.Set(kEffectivePolicy,
            ToString(is_report_only ? coop_.report_only_value : coop_.value));
   storage_partition_->GetNetworkContext()->QueueReport(
-      "coop", endpoint, context_url_, reporting_source_, network_isolation_key_,
+      "coop", endpoint, context_url_, reporting_source_,
+      network_anonymization_key_,
       /*user_agent=*/absl::nullopt, std::move(body));
 }
 

@@ -37,7 +37,6 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
-class NetworkIsolationKey;
 
 namespace android_webview {
 

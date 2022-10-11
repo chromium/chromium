@@ -47,7 +47,7 @@ class MockDedicatedWorker
             ->GetStoragePartition()
             ->GetWeakPtr(),
         GURL(), absl::nullopt, absl::nullopt, base::UnguessableToken::Create(),
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<DedicatedWorkerHostFactoryImpl>(

@@ -624,9 +624,9 @@ TEST_F(ReportingUploaderTest, DontCacheResponse) {
 // Create two requests with the same NetworkAnonymizationKey, and one request
 // with a different one, and make sure only the requests with the same
 // NetworkAnonymizationKey share a socket.
-TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
+TEST_F(ReportingUploaderTest, RespectsNetworkAnonymizationKey) {
   // While features::kPartitionConnectionsByNetworkIsolationKey is not needed
-  // for reporting code to respect NetworkIsolationKeys, this test works by
+  // for reporting code to respect NetworkAnonymizationKey, this test works by
   // ensuring that Reporting's NetworkAnonymizationKey makes it to the socket
   // pool layer and is respected there, so this test needs to enable
   // kPartitionConnectionsByNetworkIsolationKey.
@@ -637,8 +637,8 @@ TEST_F(ReportingUploaderTest, RespectsNetworkIsolationKey) {
   const SchemefulSite kSite1 = SchemefulSite(kOrigin);
   const SchemefulSite kSite2(GURL("https://origin2/"));
   ASSERT_NE(kSite1, kSite2);
-  const NetworkAnonymizationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const IsolationInfo kIsolationInfo1 = IsolationInfo::CreatePartial(
       IsolationInfo::RequestType::kOther, kNetworkIsolationKey1);
   const IsolationInfo kIsolationInfo2 = IsolationInfo::CreatePartial(

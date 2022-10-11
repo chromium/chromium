@@ -395,9 +395,9 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(host_resolver().has_pending_requests());
 
-  // The DNS lookup should be pending, and be using the same NetworkIsolationKey
-  // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
-  // the wpad quick check, if it succeeds.
+  // The DNS lookup should be pending, and be using the same
+  // NetworkAnonymizationKey as the PacFileFetcher, so wpad fetches can reuse
+  // the DNS lookup result from the wpad quick check, if it succeeds.
   ASSERT_EQ(1u, host_resolver().last_id());
   EXPECT_EQ(fetcher_.isolation_info().network_anonymization_key(),
             host_resolver().request_network_anonymization_key(1));
@@ -419,9 +419,9 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(host_resolver().has_pending_requests());
 
-  // The DNS lookup should be pending, and be using the same NetworkIsolationKey
-  // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
-  // the wpad quick check, if it succeeds.
+  // The DNS lookup should be pending, and be using the same
+  // NetworkAnonymizationKey as the PacFileFetcher, so wpad fetches can reuse
+  // the DNS lookup result from the wpad quick check, if it succeeds.
   ASSERT_EQ(1u, host_resolver().last_id());
   EXPECT_EQ(fetcher_.isolation_info().network_anonymization_key(),
             host_resolver().request_network_anonymization_key(1));

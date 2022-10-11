@@ -576,7 +576,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 }
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       DontPersistNelPoliciesWithTransientNetworkIsolationKeys) {
+       DontPersistNelPoliciesWithTransientNetworkAnonymizationKeys) {
   CreateStore();
   InitializeStore();
 
@@ -615,7 +615,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 }
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       NelPoliciesRestoredWithNetworkIsolationKeysDisabled) {
+       NelPoliciesRestoredWithNetworkAnonymizationKeysDisabled) {
   CreateStore();
   InitializeStore();
 
@@ -1478,7 +1478,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 }
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       DontPersistReportingEndpointsWithTransientNetworkIsolationKeys) {
+       DontPersistReportingEndpointsWithTransientNetworkAnonymizationKeys) {
   CreateStore();
   InitializeStore();
 
@@ -1517,8 +1517,9 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
   ASSERT_EQ(0u, endpoints.size());
 }
 
-TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       DontPersistReportingEndpointGroupsWithTransientNetworkIsolationKeys) {
+TEST_F(
+    SQLitePersistentReportingAndNelStoreTest,
+    DontPersistReportingEndpointGroupsWithTransientNetworkAnonymizationKeys) {
   CreateStore();
   InitializeStore();
 
@@ -1560,7 +1561,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 }
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       ReportingEndpointsRestoredWithNetworkIsolationKeysDisabled) {
+       ReportingEndpointsRestoredWithNetworkAnonymizationKeysDisabled) {
   CreateStore();
   InitializeStore();
 
@@ -1615,7 +1616,7 @@ TEST_F(SQLitePersistentReportingAndNelStoreTest,
 }
 
 TEST_F(SQLitePersistentReportingAndNelStoreTest,
-       ReportingEndpointGroupsRestoredWithNetworkIsolationKeysDisabled) {
+       ReportingEndpointGroupsRestoredWithNetworkAnonymizationKeysDisabled) {
   CreateStore();
   InitializeStore();
 

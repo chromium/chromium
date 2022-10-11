@@ -18,7 +18,7 @@
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -141,8 +141,9 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
           false /* should_redirect_to_fallback */, nullptr /* devtools_proxy */,
           nullptr /* reporter */, nullptr /* url_loader_factory */,
           SignedExchangeLoader::URLLoaderThrottlesGetter(),
-          net::NetworkIsolationKey(), FrameTreeNode::kFrameTreeNodeInvalidId,
-          nullptr /* metric_recorder */, std::string() /* accept_langs */,
+          net::NetworkAnonymizationKey(),
+          FrameTreeNode::kFrameTreeNodeInvalidId, nullptr /* metric_recorder */,
+          std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);
 
   EXPECT_CALL(mock_loader, PauseReadingBodyFromNet());

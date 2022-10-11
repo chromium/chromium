@@ -143,6 +143,11 @@ class NET_EXPORT IsolationInfo {
       RequestType request_type,
       const net::NetworkIsolationKey& network_isolation_key);
 
+  // TODO(crbug/1372769): Remove this and create a safer way to ensure NIKs
+  // created from NAKs aren't used by accident.
+  static IsolationInfo DoNotUseCreatePartialFromNak(
+      const net::NetworkAnonymizationKey& network_anonymization_key);
+
   // Returns nullopt if the arguments are not consistent. Otherwise, returns a
   // fully populated IsolationInfo. Any IsolationInfo that can be created by
   // the other construction methods, including the 0-argument constructor, is

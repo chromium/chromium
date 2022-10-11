@@ -36,7 +36,7 @@ void CachedNavigationURLLoader::OnResponseStarted() {
       /*url_loader_client_endpoints=*/nullptr, std::move(cached_response_head_),
       /*response_body=*/mojo::ScopedDataPipeConsumerHandle(), global_id,
       /*is_download=*/false, blink::NavigationDownloadPolicy(),
-      request_info_->isolation_info.network_isolation_key(), absl::nullopt,
+      request_info_->isolation_info.network_anonymization_key(), absl::nullopt,
       /*early_hints=*/{});
 }
 CachedNavigationURLLoader::~CachedNavigationURLLoader() {}

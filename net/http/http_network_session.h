@@ -165,7 +165,7 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // If true, idle sockets won't be closed when memory pressure happens.
   bool disable_idle_sockets_close_on_memory_pressure = false;
 
-  bool key_auth_cache_server_entries_by_network_isolation_key = false;
+  bool key_auth_cache_server_entries_by_network_anonymization_key = false;
 
   // If true, enable sending PRIORITY_UPDATE frames until SETTINGS frame
   // arrives.  After SETTINGS frame arrives, do not send PRIORITY_UPDATE

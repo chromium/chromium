@@ -32,7 +32,7 @@ SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
     URLLoaderThrottlesGetter loader_throttles_getter,
     network::mojom::URLLoaderClient* forwarding_client,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_isolation_key,
     scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
     const std::string& accept_langs,
     bool keep_entry_for_prefetch_cache)

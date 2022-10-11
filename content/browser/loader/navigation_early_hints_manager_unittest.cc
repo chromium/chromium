@@ -39,16 +39,17 @@ const char kPreloadPath[] = "https://a.test/script.js";
 const std::string kPreloadBody = "/*empty*/";
 
 struct PreconnectRequest {
-  PreconnectRequest(const GURL& url,
-                    bool allow_credentials,
-                    const net::NetworkIsolationKey& network_isolation_key)
+  PreconnectRequest(
+      const GURL& url,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key)
       : url(url),
         allow_credentials(allow_credentials),
-        network_isolation_key(network_isolation_key) {}
+        network_anonymization_key(network_anonymization_key) {}
 
   GURL const url;
   bool const allow_credentials;
-  net::NetworkIsolationKey const network_isolation_key;
+  net::NetworkAnonymizationKey const network_anonymization_key;
 };
 
 class FakeNetworkContext : public network::TestNetworkContext {
@@ -60,9 +61,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
       uint32_t num_streams,
       const GURL& url,
       bool allow_credentials,
-      const net::NetworkIsolationKey& network_isolation_key) override {
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
     preconnect_requests_.emplace_back(url, allow_credentials,
-                                      network_isolation_key);
+                                      network_anonymization_key);
   }
 
   std::vector<PreconnectRequest>& preconnect_requests() {
@@ -82,7 +83,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
     url::Origin origin = url::Origin::Create(GURL(kNavigationPath));
     auto isolation_info = net::IsolationInfo::CreateForInternalRequest(origin);
 
-    network_isolation_key_ = isolation_info.network_isolation_key();
+    network_anonymization_key_ = isolation_info.network_anonymization_key();
 
     mojo::Remote<network::mojom::URLLoaderFactory> remote;
     loader_factory_.Clone(remote.BindNewPipeAndPassReceiver());
@@ -112,8 +113,8 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
 
   FakeNetworkContext& fake_network_context() { return *fake_network_context_; }
 
-  net::NetworkIsolationKey& network_isolation_key() {
-    return network_isolation_key_;
+  net::NetworkAnonymizationKey& network_anonymization_key() {
+    return network_anonymization_key_;
   }
 
   network::mojom::URLResponseHeadPtr CreatePreloadResponseHead() {
@@ -164,7 +165,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   network::TestURLLoaderFactory loader_factory_;
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 };
 
 TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {
@@ -285,7 +286,7 @@ TEST_F(NavigationEarlyHintsManagerTest, SinglePreconnect) {
   ASSERT_EQ(requests.size(), 1UL);
   EXPECT_EQ(requests[0].url, preconnect_url);
   EXPECT_TRUE(requests[0].allow_credentials);
-  EXPECT_EQ(requests[0].network_isolation_key, network_isolation_key());
+  EXPECT_EQ(requests[0].network_anonymization_key, network_anonymization_key());
 }
 
 TEST_F(NavigationEarlyHintsManagerTest, MultiplePreconnects) {
@@ -328,15 +329,15 @@ TEST_F(NavigationEarlyHintsManagerTest, MultiplePreconnects) {
 
   EXPECT_EQ(requests[0].url, preconnect_url1);
   EXPECT_TRUE(requests[0].allow_credentials);
-  EXPECT_EQ(requests[0].network_isolation_key, network_isolation_key());
+  EXPECT_EQ(requests[0].network_anonymization_key, network_anonymization_key());
 
   EXPECT_EQ(requests[1].url, preconnect_url1);
   EXPECT_FALSE(requests[1].allow_credentials);
-  EXPECT_EQ(requests[1].network_isolation_key, network_isolation_key());
+  EXPECT_EQ(requests[1].network_anonymization_key, network_anonymization_key());
 
   EXPECT_EQ(requests[2].url, preconnect_url2);
   EXPECT_FALSE(requests[2].allow_credentials);
-  EXPECT_EQ(requests[2].network_isolation_key, network_isolation_key());
+  EXPECT_EQ(requests[2].network_anonymization_key, network_anonymization_key());
 }
 
 TEST_F(NavigationEarlyHintsManagerTest, InvalidPreconnectLink) {

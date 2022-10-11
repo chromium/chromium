@@ -135,7 +135,7 @@ void HttpsLatencyRoutine::HostResolver::Run(const GURL& url) {
   // DNS resource record query.
   host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
                                   net::HostPortPair::FromURL(url)),
-                              net::NetworkIsolationKey::CreateTransient(),
+                              net::NetworkAnonymizationKey::CreateTransient(),
                               std::move(parameters),
                               receiver_.BindNewPipeAndPassRemote());
 }

@@ -119,10 +119,10 @@ void AnchorElementPreloader::OnPointerDown(const GURL& target) {
       content::PreloadingTriggeringOutcome::kTriggeredButOutcomeUnknown);
 
   net::SchemefulSite schemeful_site(target);
-  net::NetworkIsolationKey network_isolation_key(schemeful_site,
-                                                 schemeful_site);
+  net::NetworkAnonymizationKey network_anonymization_key(schemeful_site,
+                                                         schemeful_site);
   loading_predictor->PreconnectURLIfAllowed(target, /*allow_credentials=*/true,
-                                            network_isolation_key);
+                                            network_anonymization_key);
 }
 
 void AnchorElementPreloader::RecordUmaPreloadedTriggered(

@@ -260,9 +260,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void set_site_for_cookies(const SiteForCookies& site_for_cookies);
 
   // Sets IsolationInfo for the request, which affects whether SameSite cookies
-  // are sent, what NetworkIsolationKey is used for cached resources, and how
-  // that behavior changes when following redirects. This may only be changed
-  // before Start() is called.
+  // are sent, what NetworkAnonymizationKey is used for cached resources, and
+  // how that behavior changes when following redirects. This may only be
+  // changed before Start() is called.
   //
   // TODO(https://crbug.com/1060631): This isn't actually used yet for SameSite
   // cookies. Update consumers and fix that.

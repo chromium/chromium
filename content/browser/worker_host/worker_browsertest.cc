@@ -952,14 +952,15 @@ IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
 
     GURL worker_url = embedded_test_server()->GetURL("/workers/worker.js");
 
-    // Preconnect a socket with the NetworkIsolationKey of the main frame.
+    // Preconnect a socket with the NetworkAnonymizationKey of the main frame.
     shell()
         ->web_contents()
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(), true,
-                            main_rfh->GetNetworkIsolationKey());
+                            main_rfh->GetIsolationInfoForSubresources()
+                                .network_anonymization_key());
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());

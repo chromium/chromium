@@ -33,7 +33,7 @@
 
 namespace net {
 
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 
 namespace {
 
