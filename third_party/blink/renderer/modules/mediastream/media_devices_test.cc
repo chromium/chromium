@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+using base::HistogramTester;
 using blink::mojom::blink::MediaDeviceInfoPtr;
 using ::testing::_;
 
@@ -47,6 +49,9 @@ const char kFakeCommonGroupId2[] = "fake_group 2";
 const char kFakeVideoInputGroupId2[] = "fake_video_input_group 2";
 const char kFakeAudioOutputDeviceId1[] = "fake_audio_output 1";
 const char kFakeAudioOutputDeviceId2[] = "fake_audio_output 2";
+
+constexpr char kEnumerateDevicesLatencyHistogram[] =
+    "WebRTC.EnumerateDevices.Latency";
 
 String MaxLengthCaptureHandle() {
   String maxHandle = "0123456789abcdef";  // 16 characters.
@@ -360,6 +365,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
 
 TEST_F(MediaDevicesTest, EnumerateDevices) {
   V8TestingScope scope;
+  HistogramTester histogram_tester;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
       &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
@@ -370,6 +376,8 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
   EXPECT_TRUE(devices_enumerated());
   EXPECT_EQ(7u, device_infos().size());
+
+  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
 
   // Audio input device with matched output ID.
   Member<MediaDeviceInfo> device = device_infos()[0];
@@ -435,6 +443,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;
+  HistogramTester histogram_tester;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
       &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
@@ -453,6 +462,8 @@ TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   ASSERT_FALSE(promise.IsEmpty());
   EXPECT_TRUE(dispatcher_host_connection_error());
   EXPECT_FALSE(devices_enumerated());
+
+  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
 }
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {

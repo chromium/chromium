@@ -1241,6 +1241,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.EnumerateDevices.Latency" units="ms"
+    expires_after="2023-10-11">
+  <owner>toprice@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Measures the time between a page calling enumerateDevices() and the returned
+    promise resolving (either successfully or with an error), intended for
+    monitoring for latency regressions in the wild. Note a call which never
+    resolves won't be counted in this metric.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.ICE.TcpSocketWriteErrorCode" enum="SocketErrorCode"
     expires_after="M77">
   <owner>zhihuang@chromium.org</owner>

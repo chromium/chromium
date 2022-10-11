@@ -162,7 +162,12 @@ class MODULES_EXPORT MediaDevices final
   HeapVector<Member<Event>> scheduled_events_;
   HeapMojoRemote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
   HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
-  HeapHashSet<Member<ScriptPromiseResolver>> requests_;
+
+  struct RequestMetadata {
+    base::TimeTicks start_time;
+  };
+  HeapHashMap<Member<ScriptPromiseResolver>, RequestMetadata>
+      enumerate_device_requests_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // 1. When produceCropId() is first called for an Element, it has no crop-ID
