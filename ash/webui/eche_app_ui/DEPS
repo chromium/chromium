@@ -3,5 +3,6 @@ include_rules = [
   "+ash/services/device_sync/public/cpp",
   "+components/keyed_service/core/keyed_service.h",
   "+crypto/random.h",
+  "+third_party/blink/public/common/web_preferences",
   "+third_party/boringssl/src/include",
 ]
