@@ -16,6 +16,8 @@ js_type_check("closure_compile") {
 # Group for type checking.
 js_library("service_worker") {
   sources = [
+    "big_file/sw.js",
+    "big_file/test.js",
     "copy_entry/sw.js",
     "copy_entry/test.js",
     "create_file/sw.js",
