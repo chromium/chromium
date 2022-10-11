@@ -717,12 +717,6 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                              PolicyMap* policies) {
   if (policy.has_device_reporting()) {
     const em::DeviceReportingProto& container(policy.device_reporting());
-    if (container.has_enable_granular_reporting()) {
-      policies->Set(key::kEnableDeviceGranularReporting, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.enable_granular_reporting()),
-                    nullptr);
-    }
     if (container.has_report_version_info()) {
       policies->Set(key::kReportDeviceVersionInfo, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,

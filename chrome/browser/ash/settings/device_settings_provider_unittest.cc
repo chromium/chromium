@@ -92,7 +92,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void SetReportingSettings(bool enable_reporting, int frequency) {
     em::DeviceReportingProto* proto =
         device_policy_->payload().mutable_device_reporting();
-    proto->set_enable_granular_reporting(enable_reporting);
     proto->set_report_version_info(enable_reporting);
     proto->set_report_activity_times(enable_reporting);
     proto->set_report_audio_status(enable_reporting);
@@ -179,7 +178,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   void VerifyReportingSettings(bool expected_enable_state,
                                int expected_frequency) {
     const char* reporting_settings[] = {
-        kEnableDeviceGranularReporting,
         kReportDeviceVersionInfo,
         kReportDeviceActivityTimes,
         kReportDeviceAudioStatus,

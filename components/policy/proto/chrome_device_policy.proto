@@ -165,9 +165,11 @@ message DeviceReportingProto {
   // chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.cc.
   optional int64 device_status_frequency = 9 [default = 10800000];
 
+  // Obsolete: This policy is not supported by the client starting with M-106.
   // This is a internal flag that will be used to control whether enable
   // granular device reporting is enabled
-  optional bool enable_granular_reporting = 32 [default = true];
+  optional bool enable_granular_reporting = 32
+      [default = true, deprecated = true];
 
   // Network telemetry policies.
   optional int64 report_network_telemetry_collection_rate_ms = 33

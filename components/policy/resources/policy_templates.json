@@ -11635,8 +11635,9 @@
       'owners': ['cros-reporting-team@google.com', 'tylergarrett@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:96-'],
+      'supported_on': ['chrome_os:96-105'],
       'supported_chrome_os_management': ['google_cloud'],
+      'deprecated': True,
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -11656,7 +11657,7 @@
       'id': 901,
       'caption': '''Enable granular reporting controls''',
       'tags': ['admin-sharing'],
-      'desc': '''Setting the policy to enabled or leaving it unset allows for the device to recieve granular reporting controls.
+      'desc': '''This policy is deprecated. Setting the policy to enabled or leaving it unset allows for the device to recieve granular reporting controls.
       Setting the policy to Disabled means enrolled devices won't receive granular reporting controls.''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
