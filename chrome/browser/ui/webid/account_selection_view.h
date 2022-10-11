@@ -53,17 +53,21 @@ class AccountSelectionView {
   // IDP-specific information, including user accounts, is stored in
   // `idps_for_display`. `sign_in_mode` represents whether this is an auto sign
   // in flow. After user interaction either OnAccountSelected() or OnDismiss()
-  // gets invoked.
+  // gets invoked. If `iframe_url_for_display` is not absl::nullopt, it is the
+  // iframe within the relying party that needs to be displayed in the prompt.
   virtual void Show(
       const std::string& rp_for_display,
+      const absl::optional<std::string>& iframe_url_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       Account::SignInMode sign_in_mode) = 0;
 
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  virtual void ShowFailureDialog(const std::string& rp_for_display,
-                                 const std::string& idp_for_display) = 0;
+  virtual void ShowFailureDialog(
+      const std::string& rp_for_display,
+      const std::string& idp_for_display,
+      const absl::optional<std::string>& iframe_url_for_display) = 0;
 
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;

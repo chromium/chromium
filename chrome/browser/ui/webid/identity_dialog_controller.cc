@@ -25,6 +25,7 @@ int IdentityDialogController::GetBrandIconIdealSize() {
 void IdentityDialogController::ShowAccountsDialog(
     content::WebContents* rp_web_contents,
     const std::string& rp_for_display,
+    const absl::optional<std::string>& iframe_url_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
     AccountSelectionCallback on_selected,
@@ -34,20 +35,23 @@ void IdentityDialogController::ShowAccountsDialog(
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(rp_for_display, identity_provider_data, sign_in_mode);
+  account_view_->Show(rp_for_display, iframe_url_for_display,
+                      identity_provider_data, sign_in_mode);
 }
 
 void IdentityDialogController::ShowFailureDialog(
     content::WebContents* rp_web_contents,
     const std::string& rp_for_display,
     const std::string& idp_for_display,
+    const absl::optional<std::string>& iframe_url_for_display,
     DismissCallback dismiss_callback) {
   const GURL rp_url = rp_web_contents->GetLastCommittedURL();
   rp_web_contents_ = rp_web_contents;
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->ShowFailureDialog(rp_for_display, idp_for_display);
+  account_view_->ShowFailureDialog(rp_for_display, idp_for_display,
+                                   iframe_url_for_display);
 }
 
 void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,

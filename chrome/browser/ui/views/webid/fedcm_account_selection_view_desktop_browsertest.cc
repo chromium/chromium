@@ -30,7 +30,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     std::vector<content::IdentityRequestAccount> accounts = {
         {"id", "email", "name", "given_name", GURL::EmptyGURL()}};
     account_selection_view()->Show(
-        "rp-example.com",
+        "rp-example.com", absl::nullopt,
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientIdData(GURL::EmptyGURL(), GURL::EmptyGURL())}},
         Account::SignInMode::kExplicit);

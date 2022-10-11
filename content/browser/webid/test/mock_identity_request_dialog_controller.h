@@ -23,18 +23,20 @@ class MockIdentityRequestDialogController
   MockIdentityRequestDialogController& operator=(
       const MockIdentityRequestDialogController&) = delete;
 
-  MOCK_METHOD6(ShowAccountsDialog,
+  MOCK_METHOD7(ShowAccountsDialog,
                void(WebContents*,
                     const std::string&,
+                    const absl::optional<std::string>&,
                     const std::vector<content::IdentityProviderData>&,
                     IdentityRequestAccount::SignInMode,
                     AccountSelectionCallback,
                     DismissCallback));
   MOCK_METHOD0(DestructorCalled, void());
-  MOCK_METHOD4(ShowFailureDialog,
+  MOCK_METHOD5(ShowFailureDialog,
                void(WebContents*,
                     const std::string&,
                     const std::string&,
+                    const absl::optional<std::string>&,
                     DismissCallback));
 };
 

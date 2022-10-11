@@ -356,11 +356,23 @@ int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
              : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
 }
 
+void SetTitleHeaderProperties(views::Label* label) {
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetAllowCharacterBreak(true);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true));
+}
+
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::u16string& rp_for_display,
     const absl::optional<std::u16string>& idp_title,
+    const absl::optional<std::u16string>& iframe_url_for_display,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Observer* observer)
@@ -390,21 +402,27 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
   DCHECK(
       idp_title.has_value() ||
       base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders));
+  std::u16string rp_in_title = iframe_url_for_display.value_or(rp_for_display);
   accessible_title_ =
       idp_title.has_value()
           ? l10n_util::GetStringFUTF16(
-                IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT, rp_for_display,
+                IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT, rp_in_title,
                 idp_title.value())
           : l10n_util::GetStringFUTF16(
                 IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
-                rp_for_display);
+                rp_in_title);
   SetAccessibleTitle(accessible_title_);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kTopBottomPadding));
-  header_view_ = AddChildView(CreateHeaderView(
-      accessible_title_, /*has_idp_icon=*/idp_title.has_value()));
+
+  if (iframe_url_for_display.has_value()) {
+    subtitle_ = absl::make_optional<std::u16string>(l10n_util::GetStringFUTF16(
+        IDS_ACCOUNT_SELECTION_SHEET_SUBTITLE, rp_for_display));
+  }
+  header_view_ =
+      AddChildView(CreateHeaderView(/*has_idp_icon=*/idp_title.has_value()));
 }
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
@@ -416,7 +434,7 @@ void AccountSelectionBubbleView::ShowAccountPicker(
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
   DCHECK(idp_data_list.size() == 1u || !header_icon_view_);
-  UpdateHeader(idp_data_list[0].idp_metadata_, accessible_title_,
+  UpdateHeader(idp_data_list[0].idp_metadata_, accessible_title_, subtitle_,
                show_back_button);
 
   RemoveNonHeaderChildViews();
@@ -441,7 +459,8 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
     const IdentityProviderDisplayData& idp_data) {
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
-  UpdateHeader(idp_data.idp_metadata_, title, /*show_back_button=*/false);
+  UpdateHeader(idp_data.idp_metadata_, title, /*subtitle=*/u"",
+               /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
@@ -471,7 +490,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
   std::u16string title =
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT,
                                  rp_for_display, idp_data.idp_etld_plus_one_);
-  UpdateHeader(idp_data.idp_metadata_, title, true);
+  UpdateHeader(idp_data.idp_metadata_, title, subtitle_, true);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
@@ -538,7 +557,6 @@ gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
-    const std::u16string& title,
     bool has_idp_icon) {
   auto header = std::make_unique<views::View>();
   // Do not use a top margin as it has already been set in the bubble.
@@ -580,24 +598,33 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
-      title, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      accessible_title_, views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_PRIMARY));
-  title_label_->SetMultiLine(true);
-  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label_->SetAllowCharacterBreak(true);
-  title_label_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width =*/true));
-
+  SetTitleHeaderProperties(title_label_);
   // Add the close button.
   std::unique_ptr<views::Button> close_button =
       views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
           &Observer::OnCloseButtonClicked, base::Unretained(observer_)));
   close_button->SetVisible(true);
   header->AddChildView(std::move(close_button));
-  return header;
+  if (!subtitle_.has_value())
+    return header;
+
+  auto header_with_subtitle = std::make_unique<views::View>();
+  header_with_subtitle->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  header_with_subtitle->AddChildView(std::move(header));
+  subtitle_label_ =
+      header_with_subtitle->AddChildView(std::make_unique<views::Label>(
+          *subtitle_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+  SetTitleHeaderProperties(subtitle_label_);
+  int leftPadding = kLeftRightPadding;
+  if (has_idp_icon)
+    leftPadding += kDesiredAvatarSize;
+  subtitle_label_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, leftPadding, kTopBottomPadding, kLeftRightPadding)));
+  return header_with_subtitle;
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountChooser(
@@ -806,7 +833,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
 
 void AccountSelectionBubbleView::UpdateHeader(
     const content::IdentityProviderMetadata& idp_metadata,
-    const std::u16string title,
+    const std::u16string& title,
+    const absl::optional<std::u16string>& subtitle,
     bool show_back_button) {
   back_button_->SetVisible(show_back_button);
   if (header_icon_view_) {
@@ -816,6 +844,10 @@ void AccountSelectionBubbleView::UpdateHeader(
       ConfigureIdpBrandImageView(header_icon_view_, idp_metadata);
   }
   title_label_->SetText(title);
+  if (subtitle_label_) {
+    DCHECK(subtitle.has_value());
+    subtitle_label_->SetText(*subtitle);
+  }
 }
 
 void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
