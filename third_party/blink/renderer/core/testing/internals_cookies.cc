@@ -26,14 +26,12 @@ InternalCookie* CookieMojomToInternalCookie(
     case net::CookieSameSite::NO_RESTRICTION:
       result->setSameSite(V8InternalCookieSameSite::Enum::kNone);
       break;
+    case net::CookieSameSite::UNSPECIFIED:
     case net::CookieSameSite::LAX_MODE:
       result->setSameSite(V8InternalCookieSameSite::Enum::kLax);
       break;
     case net::CookieSameSite::STRICT_MODE:
       result->setSameSite(V8InternalCookieSameSite::Enum::kStrict);
-      break;
-    case net::CookieSameSite::UNSPECIFIED:
-      // SameSite is omitted if unspecified.
       break;
   }
   return result;
