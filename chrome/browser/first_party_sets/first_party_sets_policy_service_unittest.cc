@@ -23,6 +23,12 @@
 
 using ::testing::_;
 
+MATCHER_P(CarryingConfig, config, "") {
+  if (arg.is_null())
+    return false;
+  return ExplainMatchResult(testing::Eq(config), arg->config, result_listener);
+}
+
 namespace first_party_sets {
 
 class MockFirstPartySetsAccessDelegate
@@ -49,6 +55,8 @@ class DefaultFirstPartySetsPolicyServiceTest : public testing::Test {
     mock_delegate_receiver_.Bind(
         mock_delegate_remote_.BindNewPipeAndPassReceiver());
   }
+
+  content::BrowserTaskEnvironment& env() { return env_; }
 
  protected:
   testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
@@ -140,12 +148,25 @@ class FirstPartySetsPolicyServiceTest
   void SetUp() override {
     DefaultFirstPartySetsPolicyServiceTest::SetUp();
 
+    content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting({});
+
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+
     service_ = FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
         profile_manager_->CreateTestingProfile("TestProfile"));
     ASSERT_NE(service_, nullptr);
+
+    // We can't avoid eagerly initializing the service, due to
+    // indirection/caching in the factory infrastructure. So we wait for the
+    // initialization to complete, and then reset the instance so that we can
+    // call InitForTesting and inject different configs.
+    base::RunLoop run_loop;
+    service_->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    service_->ResetForTesting();
+
     service_->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
   }
 
@@ -175,43 +196,53 @@ TEST_F(FirstPartySetsPolicyServiceTest,
                                      absl::nullopt);
   net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
 
-  service()->OnProfileConfigReady(false, test_config.Clone());
-
-  // Ensure NotifyReady is called with the config.
-  base::RunLoop loop;
-  network::mojom::FirstPartySetsReadyEventPtr actual;
-  EXPECT_CALL(mock_delegate, NotifyReady(_))
-      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
-        actual = std::move(ptr);
-        loop.Quit();
+  service()->InitForTesting(
+      [&](PrefService* prefs,
+          base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(test_config.Clone());
       });
-  loop.Run();
 
-  EXPECT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->config, test_config);
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(test_config))))
+      .Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
        OnFirstPartySetsEnabledChanged_Default_WithConfig) {
-  service()->SetConfigForTesting(net::FirstPartySetsContextConfig());
+  service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
 
   EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(0);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
        OnFirstPartySetsEnabledChanged_Default_WithoutConfig) {
   EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(0);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
        OnFirstPartySetsEnabledChanged_Disables_WithConfig) {
-  service()->SetConfigForTesting(net::FirstPartySetsContextConfig());
+  service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
   service()->OnFirstPartySetsEnabledChanged(false);
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
@@ -220,6 +251,8 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
@@ -229,14 +262,21 @@ TEST_F(FirstPartySetsPolicyServiceTest,
                                      absl::nullopt);
   net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
 
-  service()->SetConfigForTesting(test_config.Clone());
+  service()->InitForTesting(
+      [&](PrefService* prefs,
+          base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(test_config.Clone());
+      });
   service()->OnFirstPartySetsEnabledChanged(true);
 
   // Ensure access delegate is called with SetEnabled(true) and NotifyReady is
-  // called with the config.
+  // called with the config (during initialization -- not due to SetEnabled).
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
 
-  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(test_config))))
+      .Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
@@ -246,6 +286,8 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   // NotifyReady isn't called since the config isn't ready to be sent.
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+
+  env().RunUntilIdle();
 }
 
 }  // namespace first_party_sets

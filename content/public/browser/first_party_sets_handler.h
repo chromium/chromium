@@ -133,6 +133,10 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // Resets the state on the instance for testing.
   virtual void ResetForTesting() = 0;
 
+  // Allows tests to override the post-initalization global First-Party Sets.
+  virtual void SetGlobalSetsForTesting(
+      net::GlobalFirstPartySets global_sets) = 0;
+
   // Returns all First-Party Sets that are scoped to the entire browser.
   //
   // If initialization is not yet complete, returns nullptr; otherwise, returns

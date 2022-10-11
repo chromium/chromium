@@ -59,15 +59,24 @@ class FirstPartySetsPolicyService
   // KeyedService:
   void Shutdown() override;
 
-  // Triggers changes that occur once the FirstPartySetsContextConfig for the
-  // profile that created this service is retrieved.
+  // Invokes `callback` when the first call to `Init` has fully completed, i.e.
+  // when this instance first receives its config. If this instance has already
+  // received its config, this immediately invokes `callback`.
   //
-  // Only clears site data if First-Party Sets is enabled when this service
-  // is created.
-  //
-  // This method is exposed publicly for testing.
-  void OnProfileConfigReady(bool initially_enabled,
-                            net::FirstPartySetsContextConfig config);
+  // This is intended as a workaround for the inability to use a test-only
+  // factory for FirstPartySetsPolicyService instances in tests, so every
+  // instance calls into the prod logic to eagerly initialize itself. This
+  // method allows tests to wait for that eager initialization to complete, then
+  // reset state, and re-run initialization via `InitForTesting`.
+  void WaitForFirstInitCompleteForTesting(base::OnceClosure callback);
+
+  // Testing-only method that allows injecting different logic to get the
+  // config.
+  void InitForTesting(
+      base::FunctionRef<
+          void(PrefService*,
+               base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
+          get_config);
 
   void ResetForTesting();
 
@@ -76,14 +85,23 @@ class FirstPartySetsPolicyService
     return browser_context_;
   }
 
-  void SetConfigForTesting(net::FirstPartySetsContextConfig config) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    config_ = std::move(config);
-  }
-
  private:
+  // Initialize this instance by getting the config via `get_config` if needed.
+  void Init(base::FunctionRef<
+            void(PrefService*,
+                 base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
+                get_config);
+
   // Sets the `config_` member and provides it to all delegates via NotifyReady.
   void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config);
+
+  // Triggers changes that occur once the FirstPartySetsContextConfig for the
+  // profile that created this service is retrieved.
+  //
+  // Only clears site data if First-Party Sets is enabled when this service
+  // is created.
+  void OnProfileConfigReady(bool initially_enabled,
+                            net::FirstPartySetsContextConfig config);
 
   // The remote delegates associated with the profile that created this
   // service.
@@ -104,6 +122,14 @@ class FirstPartySetsPolicyService
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};
+
+  // Callback used by tests to wait for the ctor's initialization flow to
+  // complete.
+  absl::optional<base::OnceClosure> on_first_init_complete_for_testing_;
+
+  // Keeps track of whether this instance has ever been initialized fully. Must
+  // not be reset in `ResetForTesting`.
+  bool first_initialization_complete_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
