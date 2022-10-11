@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1217,14 +1218,13 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
 }
 
 void PasskeysHandler::OnDeleteComplete(std::string callback_id, bool ok) {
-  if (!ok) {
-    // Windows/Mac failed to delete the passkey. This can happen if API support
-    // is missing but no passkeys will be shown at all in that case so that
-    // should be impossible. It can also happen if the user attempts to delete a
-    // system-created credential. In this case the Javascript will notice that
-    // the credential didn't disappear and will show an error message.
-  }
-
+  base::UmaHistogramBoolean("WebAuthentication.PasskeyManagement.Delete", ok);
+  // The ok parameter is ignored. If it were false, it would mean
+  // Windows/Mac failed to delete the passkey. This can happen if API support
+  // is missing but no passkeys will be shown at all in that case so that
+  // should be impossible. It can also happen if the user attempts to delete a
+  // system-created credential. In this case the Javascript will notice that
+  // the credential didn't disappear and will show an error message.
   DoEnumerate(std::move(callback_id));
 }
 
@@ -1244,9 +1244,9 @@ void PasskeysHandler::HandleEdit(const base::Value::List& args) {
 }
 
 void PasskeysHandler::OnEditComplete(std::string callback_id, bool ok) {
-  if (!ok) {
-    // Windows/Mac failed to edit the passkey.
-  }
+  base::UmaHistogramBoolean("WebAuthentication.PasskeyManagement.Edit", ok);
+  // The ok parameter is ignored. If it were false, it would mean
+  // Windows/Mac failed to edit the passkey.
   DoEnumerate(std::move(callback_id));
 }
 #endif

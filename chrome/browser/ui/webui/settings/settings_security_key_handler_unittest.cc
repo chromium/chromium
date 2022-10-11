@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 #include "chrome/grit/generated_resources.h"
@@ -361,17 +362,27 @@ class TestPasskeysHandler : public PasskeysHandler {
     AllowJavascriptForTesting();
   }
 
+  using PasskeysHandler::HandleDelete;
   using PasskeysHandler::HandleEdit;
 
   std::string SimulateEdit(std::string credential_id,
-                           std::string new_username,
-                           base::OnceCallback<void(bool)> callback) {
+                           std::string new_username) {
     constexpr char kCallbackId[] = "passkeysEdit";
     base::Value::List args;
     args.Append(kCallbackId);
     args.Append(credential_id);
     args.Append(new_username);
     HandleEdit(args);
+    base::RunLoop().RunUntilIdle();
+    return kCallbackId;
+  }
+
+  std::string SimulateDelete(std::string credential_id) {
+    constexpr char kCallbackId[] = "passkeysDelete";
+    base::Value::List args;
+    args.Append(kCallbackId);
+    args.Append(credential_id);
+    HandleDelete(args);
     base::RunLoop().RunUntilIdle();
     return kCallbackId;
   }
@@ -398,6 +409,7 @@ class PasskeysHandlerTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(PasskeysHandlerTest, TestHandleEdit) {
   device::test::TestCallbackReceiver<bool> callback;
+  base::HistogramTester histogram_tester;
   std::vector<uint8_t> credential_id =
       device::fido_parsing_utils::Materialize(kCredentialID);
   std::string credential_id_hex = base::HexEncode(credential_id);
@@ -427,13 +439,44 @@ TEST_F(PasskeysHandlerTest, TestHandleEdit) {
         std::move(callback).Run(std::move(credential_metadata));
         base::RunLoop().RunUntilIdle();
       });
-  handler_->SimulateEdit(credential_id_hex, "new-username",
-                         callback.callback());
+  handler_->SimulateEdit(credential_id_hex, "new-username");
   EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), "passkeysEdit");
   EXPECT_EQ(web_ui_->call_data()[0]->arg2()->GetBool(), true);
   EXPECT_EQ(*web_ui_->call_data()[0]->arg3()->GetList()[0].GetDict().FindString(
                 "userName"),
             "new-username");
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PasskeyManagement.Edit", true, 1);
 }
+
+TEST_F(PasskeysHandlerTest, TestRecordPasskeyDelete) {
+  base::HistogramTester histogram_tester;
+  device::test::TestCallbackReceiver<bool> callback;
+  std::vector<uint8_t> credential_id =
+      device::fido_parsing_utils::Materialize(kCredentialID);
+  std::string credential_id_hex = base::HexEncode(credential_id);
+  EXPECT_CALL(*weak_local_cred_man_,
+              Delete(testing::ElementsAreArray(kCredentialID),
+                     base::test::IsNotNullCallback()))
+      .Times(testing::AtLeast(1))
+      .WillOnce([](auto response, base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+        base::RunLoop().RunUntilIdle();
+      });
+  EXPECT_CALL(*weak_local_cred_man_, Enumerate)
+      .WillOnce(
+          [](base::OnceCallback<void(
+                 absl::optional<std::vector<
+                     device::DiscoverableCredentialMetadata>>)> callback) {
+            std::move(callback).Run(/*credential_metadata=*/{});
+            base::RunLoop().RunUntilIdle();
+          });
+  handler_->SimulateDelete(credential_id_hex);
+  EXPECT_EQ(web_ui_->call_data()[0]->arg1()->GetString(), "passkeysDelete");
+  EXPECT_EQ(web_ui_->call_data()[0]->arg2()->GetBool(), true);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.PasskeyManagement.Delete", true, 1);
+}
+
 #endif
 }  // namespace settings

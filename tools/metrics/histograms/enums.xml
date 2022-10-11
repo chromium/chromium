@@ -102979,6 +102979,13 @@ others/histograms.xml -->
   <int value="4" label="User Icon URL Invalid"/>
 </enum>
 
+<enum name="WebAuthenticationTouchIdCredentialStoreUpdateCredentialStatus">
+  <int value="0" label="UpdateCredential succeeded"/>
+  <int value="1" label="No credentials found"/>
+  <int value="2" label="No credential with matching credential_id"/>
+  <int value="3" label="SecItemUpdate failed"/>
+</enum>
+
 <enum name="WebAuthenticationU2FAttestationPromptResult">
   <int value="0" label="Queried"/>
   <int value="1" label="Allowed"/>

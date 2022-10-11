@@ -242,6 +242,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.PasskeyManagement.Delete" enum="Boolean"
+    expires_after="2023-03-19">
+  <owner>angzhan@google.com</owner>
+  <owner>martinkr@google.com</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records `true` if a user succesfully deletes a passkey and `false` otherwise
+    in chrome://settings/passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.PasskeyManagement.Edit" enum="Boolean"
+    expires_after="2023-03-19">
+  <owner>angzhan@google.com</owner>
+  <owner>martinkr@google.com</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records `true` if a user succesfully edits a passkey and `false` otherwise
+    in chrome://settings/passkeys.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.TouchIdCredentialStore.UpdateCredential"
+    enum="WebAuthenticationTouchIdCredentialStoreUpdateCredentialStatus"
+    expires_after="2023-03-19">
+  <owner>angzhan@google.com</owner>
+  <owner>martinkr@google.com</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <summary>
+    Records the result of each Web Authentication
+    TouchIdCredentialStore.UpdateCredential() API call.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

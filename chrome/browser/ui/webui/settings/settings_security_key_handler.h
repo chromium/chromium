@@ -286,6 +286,9 @@ class PasskeysHandler : public SettingsPageUIHandler {
   void HandleEdit(const base::Value::List& args);
   void OnEditComplete(std::string callback_id, bool edit_ok);
 
+  void HandleDelete(const base::Value::List& args);
+  void OnDeleteComplete(std::string callback_id, bool delete_ok);
+
  private:
   void HandleHasPasskeys(const base::Value::List& args);
   void OnHasPasskeysComplete(std::string callback_id, bool has_passkeys);
@@ -296,9 +299,6 @@ class PasskeysHandler : public SettingsPageUIHandler {
       std::string callback_id,
       absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
           credentials);
-
-  void HandleDelete(const base::Value::List& args);
-  void OnDeleteComplete(std::string callback_id, bool delete_ok);
 
   std::unique_ptr<LocalCredentialManagement> local_cred_man_{nullptr};
 
