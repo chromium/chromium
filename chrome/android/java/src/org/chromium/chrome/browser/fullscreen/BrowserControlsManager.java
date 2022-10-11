@@ -94,7 +94,6 @@ public class BrowserControlsManager
     private int mRendererTopControlsMinHeightOffset;
     private int mRendererBottomControlsMinHeightOffset;
     private float mControlOffsetRatio;
-    private boolean mOffsetsChanged;
     private ActivityTabTabObserver mActiveTabObserver;
 
     private final ObserverList<BrowserControlsStateProvider.Observer> mControlsObservers =
