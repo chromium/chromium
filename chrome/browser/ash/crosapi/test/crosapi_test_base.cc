@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,4 @@ void CrosapiTestBase::SetUp() {
   ASSERT_TRUE(AshCrosapiTestEnv::GetInstance()->IsValid());
 }
 
-mojo::Remote<mojom::Crosapi>& CrosapiTestBase::GetCrosapiRemote() {
-  return AshCrosapiTestEnv::GetInstance()->GetCrosapiRemote();
-}
 }  // namespace crosapi
