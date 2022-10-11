@@ -21,19 +21,6 @@
 
 namespace base::test {
 
-// A reference to a base::Feature and field trial params that should be force
-// enabled and overwritten for test purposes.
-struct FeatureRefAndParams {
-  FeatureRefAndParams(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND,
-                      const FieldTrialParams& params);
-  ~FeatureRefAndParams();
-
-  FeatureRefAndParams(const FeatureRefAndParams& other);
-
-  const Feature& feature;
-  const FieldTrialParams params;
-};
-
 // A lightweight wrapper for a reference to a base::Feature. Allows lists of
 // features to be enabled/disabled to be easily passed without actually copying
 // the underlying base::Feature. Actual C++ references do not work well for this
@@ -82,8 +69,17 @@ class ScopedFeatureList final {
 
   // TODO(https://crbug.com/1370851): Temporary "alias" to allow incremental
   // migration.
-  struct FeatureAndParams : public ::base::test::FeatureRefAndParams {
-    using ::base::test::FeatureRefAndParams::FeatureRefAndParams;
+  // A reference to a base::Feature and field trial params that should be force
+  // enabled and overwritten for test purposes.
+  struct FeatureAndParams {
+    FeatureAndParams(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                     const FieldTrialParams& params);
+    ~FeatureAndParams();
+
+    FeatureAndParams(const FeatureAndParams& other);
+
+    const Feature& feature;
+    const FieldTrialParams params;
   };
 
   // Constructs the instance in a non-initialized state.
@@ -212,6 +208,8 @@ class ScopedFeatureList final {
   std::string original_params_;
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
 };
+
+using FeatureRefAndParams = ScopedFeatureList::FeatureAndParams;
 
 }  // namespace base::test
 

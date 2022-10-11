@@ -287,14 +287,15 @@ std::string CreateCommandLineArgumentFromFeatureList(
 
 }  // namespace
 
-FeatureRefAndParams::FeatureRefAndParams(const Feature& feature,
-                                         const FieldTrialParams& params)
+ScopedFeatureList::FeatureAndParams::FeatureAndParams(
+    const Feature& feature,
+    const FieldTrialParams& params)
     : feature(feature), params(params) {}
 
-FeatureRefAndParams::~FeatureRefAndParams() = default;
+ScopedFeatureList::FeatureAndParams::~FeatureAndParams() = default;
 
-FeatureRefAndParams::FeatureRefAndParams(const FeatureRefAndParams& other) =
-    default;
+ScopedFeatureList::FeatureAndParams::FeatureAndParams(
+    const FeatureAndParams& other) = default;
 
 ScopedFeatureList::ScopedFeatureList() = default;
 
