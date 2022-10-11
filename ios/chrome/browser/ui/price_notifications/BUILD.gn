@@ -31,6 +31,7 @@ source_set("price_notifications_ui") {
     ":constants",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",

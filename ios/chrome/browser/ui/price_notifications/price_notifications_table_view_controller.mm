@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -88,8 +89,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Loads the TableViewItems into self.tableViewModel.
 - (void)loadItems {
-  NSMutableArray<TableViewItem*>* trackableArray = [NSMutableArray array];
-  NSMutableArray<TableViewItem*>* trackedArray = [NSMutableArray array];
+  NSMutableArray<PriceNotificationsTableViewItem*>* trackableArray =
+      [NSMutableArray array];
+  NSMutableArray<PriceNotificationsTableViewItem*>* trackedArray =
+      [NSMutableArray array];
   // TODO(crbug.com/1373071) Once the PriceNotificationsMediator has been
   // created, the mediator will be called to populate the `trackableArray` and
   // `trackedArray` objects.
@@ -101,7 +104,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 // Adds `items` to self.tableViewModel for the section designated by
 // `sectionID`.
-- (void)loadItemsFromArray:(NSArray<TableViewItem*>*)items
+- (void)loadItemsFromArray:(NSArray<PriceNotificationsTableViewItem*>*)items
                  toSection:(SectionIdentifier)sectionID {
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:sectionID];
@@ -114,7 +117,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   [model setHeader:[self createHeaderForSectionIndex:sectionID isEmpty:NO]
       forSectionWithIdentifier:sectionID];
-  for (TableViewItem* item in items) {
+  for (PriceNotificationsTableViewItem* item in items) {
     [model addItem:item toSectionWithIdentifier:sectionID];
   }
 }
