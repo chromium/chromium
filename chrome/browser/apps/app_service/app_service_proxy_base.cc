@@ -91,6 +91,7 @@ AppServiceProxyBase::InnerIconLoader::LoadIconFromIconKey(
 
   auto* publisher = host_->GetPublisher(app_type);
   if (!publisher) {
+    LOG(WARNING) << "No publisher for requested icon";
     std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;
   }

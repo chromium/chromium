@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 
 namespace apps {
 
@@ -295,8 +296,11 @@ void AppRegistryCache::ReinitializeForTesting() {
   deltas_pending_.clear();
   in_progress_initialized_app_types_.clear();
 
-  // We can't clear initialized_app_types_ here as observers may expect each
-  // type to be initialized only once.
+  // On most platforms, we can't clear initialized_app_types_ here as observers
+  // expect each type to be initialized only once.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  initialized_app_types_.clear();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void AppRegistryCache::OnAppTypeInitialized() {

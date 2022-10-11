@@ -72,6 +72,7 @@ void AppServiceProxyLacros::ReinitializeForTesting(Profile* profile) {
   // after full profile initialization to ensure the App Service implementation
   // has all of profile state it needs.
   crosapi_receiver_.reset();
+  remote_crosapi_app_service_proxy_ = nullptr;
   profile_ = profile;
   is_using_testing_profile_ = true;
   app_registry_cache_.ReinitializeForTesting();  // IN-TEST
