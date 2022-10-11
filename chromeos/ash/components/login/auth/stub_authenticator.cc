@@ -4,11 +4,13 @@
 
 #include "chromeos/ash/components/login/auth/stub_authenticator.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 
 namespace ash {
 
@@ -208,6 +210,19 @@ UserContext StubAuthenticator::ExpectedUserContextWithTransformedKey() const {
       expected_user_context_.GetAccountId().GetUserEmail() + kUserIdHashSuffix);
   user_context.GetKey()->Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                                    "some-salt");
+  if (features::IsUseAuthFactorsEnabled()) {
+    cryptohome::AuthFactorsSet factors;
+    factors.Put(cryptohome::AuthFactorType::kPassword);
+    factors.Put(cryptohome::AuthFactorType::kPin);
+    cryptohome::AuthFactorRef ref(
+        cryptohome::AuthFactorType::kPassword,
+        cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel});
+    cryptohome::AuthFactor password(ref,
+                                    cryptohome::AuthFactorCommonMetadata());
+    user_context.SetAuthFactorsConfiguration(
+        AuthFactorsConfiguration{{password}, factors});
+    user_context.SetAuthSessionId("someauthsessionid");
+  }
   return user_context;
 }
 
