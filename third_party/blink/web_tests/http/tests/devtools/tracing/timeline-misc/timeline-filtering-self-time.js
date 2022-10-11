@@ -84,7 +84,7 @@
     }
   ];
 
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.BottomUp);
   const view = tabbedPane.visibleView;

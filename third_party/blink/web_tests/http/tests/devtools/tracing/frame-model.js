@@ -1892,8 +1892,9 @@
 
   for (var testName in testData) {
     var data = testData[testName];
-    var performanceModel = PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(data));
+    var performanceModel = await PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(data));
     TestRunner.addResult('Test: ' + testName);
+
     for (var frame of performanceModel.frameModel().getFrames()) {
       TestRunner.addResult(Timeline.TimelineUIUtils.frameDuration(frame).textContent);
       PerformanceTestRunner.dumpFrame(frame);

@@ -144,7 +144,7 @@
     }
   ];
 
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   var events = PerformanceTestRunner.mainTrackEvents();
   events.filter(e => e.name === 'JSFrame').forEach(e => {
     TestRunner.addResult(

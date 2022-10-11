@@ -498,7 +498,7 @@
     }
   ];
 
-  PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   PerformanceTestRunner.mainTrackEvents()
       .filter(function(e) {
         return e.duration;

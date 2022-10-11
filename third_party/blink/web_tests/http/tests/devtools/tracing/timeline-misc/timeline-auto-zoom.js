@@ -151,7 +151,7 @@
     }
   ];
 
-  UI.panels.timeline.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
+  UI.panels.timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
 
   var overview = UI.panels.timeline.overviewPane;
   var startTime = overview.windowStartTime;

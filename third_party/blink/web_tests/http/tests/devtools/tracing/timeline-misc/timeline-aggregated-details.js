@@ -560,7 +560,7 @@
   ];
 
   var timeline = UI.panels.timeline;
-  timeline.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
+  timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   var groupByEnum = Timeline.AggregatedTimelineTreeView.GroupBy;
   for (var grouping of Object.values(groupByEnum)) {

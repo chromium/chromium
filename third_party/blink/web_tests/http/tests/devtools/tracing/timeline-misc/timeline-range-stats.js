@@ -106,7 +106,7 @@
     },
   ];
 
-  var timelineModel = PerformanceTestRunner.createPerformanceModelWithEvents(testData).timelineModel();
+  await PerformanceTestRunner.createPerformanceModelWithEvents(testData).timelineModel();
   for (var startTime = 100000; startTime <= 109000; startTime += 1000) {
     for (var endTime = startTime + 1000; endTime <= 109000; endTime += 1000) {
       dumpStats(

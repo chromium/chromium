@@ -216,7 +216,7 @@
 
   Root.Runtime.experiments.enableForTest('ignoreListJSFramesOnTimeline');
   const dataProvider = new Timeline.TimelineFlameChartDataProvider();
-  dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
+  dataProvider.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   TestRunner.addResult('\nIgnore listed url: lib_script.js');
   Bindings.ignoreListManager.ignoreListURL('lib_script.js');

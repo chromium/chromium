@@ -7,10 +7,10 @@
   await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
-  function processTraceEvents(title, traceEvents) {
+  async function processTraceEvents(title, traceEvents) {
     TestRunner.addResult('\n\n' + title);
     const timeline = UI.panels.timeline;
-    timeline.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
+    timeline.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(traceEvents));
     const flamechart = timeline.flameChart.mainFlameChart;
 
     TestRunner.addResult(`Entries:`);
@@ -25,7 +25,7 @@
       TestRunner.addResult(`${marker.startTime()} ${marker.startOffset} ${marker.style.title}`);
   }
 
-  processTraceEvents("Only main frame", [
+  await processTraceEvents("Only main frame", [
     {
       'args': {'name': 'CrBrowserMain'},
       'cat': 'metadata',
@@ -62,7 +62,7 @@
     {"pid":17850,"tid":775,"ts":101200,"ph":"R","cat":"loading,rail,devtools.timeline","name":"firstContentfulPaint","args":{"frame":"853DD8D6CA3B85CA78375EF189B779F6","data":{}},"tts":606750},
   ]);
 
-  processTraceEvents("Multiple frames", [
+  await processTraceEvents("Multiple frames", [
     {
       'args': {'name': 'CrBrowserMain'},
       'cat': 'metadata',
@@ -118,7 +118,7 @@
     {"pid":17852,"tid":775,"ts":101700,"ph":"R","cat":"loading,rail,devtools.timeline","name":"largestContentfulPaint::Candidate","args":{"frame":"5D83B01045AD652BE04EA9A444221149","data":{"nodeId":120,"candidateIndex":2,"type":"image","size":2000,"isMainFrame":false}},"tts":606800},
   ]);
 
- processTraceEvents("LCP invalidation 1", [
+  await processTraceEvents("LCP invalidation 1", [
     {
       'args': {'name': 'CrBrowserMain'},
       'cat': 'metadata',
@@ -159,7 +159,7 @@
     {"pid":17850,"tid":775,"ts":101900,"ph":"R","cat":"loading,rail,devtools.timeline","name":"largestContentfulPaint::Invalidate","args":{"frame":"853DD8D6CA3B85CA78375EF189B779F6","data":{"candidateIndex":4,"isMainFrame":true}},"tts":606800},
   ]);
 
-  processTraceEvents("LCP invalidation 2", [
+  await processTraceEvents("LCP invalidation 2", [
     {
       'args': {'name': 'CrBrowserMain'},
       'cat': 'metadata',

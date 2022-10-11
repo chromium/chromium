@@ -199,7 +199,7 @@
   ];
 
   var timeline = UI.panels.timeline;
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   timeline.setModel(model);
   var flameChartView = timeline.flameChart;
   var searchConfig = new UI.SearchableView.SearchConfig('Paint', false, false);

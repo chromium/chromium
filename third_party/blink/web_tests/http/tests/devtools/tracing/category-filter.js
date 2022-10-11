@@ -92,7 +92,7 @@
     {'name': 'foooooo', 'ts': 1099999, 'ph': 'E', 'tid': mainThread, 'pid': pid, 'cat': 'toplevel', 'args': {}}
   ];
 
-  const model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  const model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
   const view = new Timeline.EventsTimelineTreeView(null);
   view.setModel(model, PerformanceTestRunner.mainTrack());
   view.updateContents(Timeline.TimelineSelection.fromRange(

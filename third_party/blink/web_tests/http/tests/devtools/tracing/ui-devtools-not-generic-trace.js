@@ -50,7 +50,7 @@
   ];
 
   const timeline = UI.panels.timeline;
-  const model = PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  const model = await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   timeline.setModel(model);
 
   TestRunner.addResult(`isGenericTrace: ${model.timelineModel().isGenericTrace()}\n`);
