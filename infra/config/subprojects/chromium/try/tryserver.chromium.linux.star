@@ -699,7 +699,7 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
-        experiment_percentage = 5,
+        experiment_percentage = 25,
     ),
     experiments = {
         "remove_src_checkout_experiment": 100,

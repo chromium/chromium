@@ -516,7 +516,7 @@ as required builders.
   * Experiment percentage: 5.0
 
 * [linux-rel-inverse-fyi](https://ci.chromium.org/p/chromium/builders/try/linux-rel-inverse-fyi) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-inverse-fyi"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-inverse-fyi""))
-  * Experiment percentage: 5.0
+  * Experiment percentage: 25.0
 
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-ml""))
   * Experiment percentage: 5.0
