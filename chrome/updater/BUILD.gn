@@ -366,6 +366,7 @@ if (is_win || is_mac || is_linux) {
         "linux/setup/setup.h",
         "linux/update_service_internal_proxy.cc",
         "linux/update_service_proxy.cc",
+        "linux/update_service_proxy.h",
         "prefs_linux.cc",
         "setup_linux.cc",
         "update_usage_stats_task_linux.cc",
