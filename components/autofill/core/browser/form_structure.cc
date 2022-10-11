@@ -851,34 +851,32 @@ void FormStructure::RetrieveFromCache(
     if (!cached_field)
       continue;
 
-    if (!only_server_and_autofill_state) {
-      // Transfer attributes of the cached AutofillField to the newly created
-      // AutofillField.
-      for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
-        PatternSource s = static_cast<PatternSource>(i);
-        field->set_heuristic_type(s, cached_field->heuristic_type(s));
-      }
-      field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
-      field->section = cached_field->section;
-      field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
-    }
     if (should_keep_cached_value) {
+      // During form parsing (as in "assigning field types to fields")
+      // |should_keep_cached_value| is true to preserve the |value|
+      // (which represents the initial value found at page load).
       field->is_autofilled = cached_field->is_autofilled;
-    }
-    if (field->form_control_type != "select-one") {
-      if (should_keep_cached_value) {
+      if (field->form_control_type != "select-one") {
         field->value = cached_field->value;
         value_from_dynamic_change_form_ = true;
-      } else if (field->value == cached_field->value &&
-                 (field->server_type() != ADDRESS_HOME_COUNTRY &&
-                  field->server_type() != ADDRESS_HOME_STATE)) {
+      }
+    } else {
+      // Here |should_keep_cached_value| is false, meaning that we are in the
+      // phase of importing a submitted form.
+      bool same_value_as_on_page_load = field->value == cached_field->value;
+      bool field_is_neither_state_nor_country =
+          field->server_type() != ADDRESS_HOME_COUNTRY &&
+          field->server_type() != ADDRESS_HOME_STATE;
+      if (field->form_control_type != "select-one" &&
+          same_value_as_on_page_load && field_is_neither_state_nor_country) {
         // From the perspective of learning user data, text fields containing
         // default values are equivalent to empty fields.
-        // Since a website can prefill country and state values basedw on
-        // GeoIp, the mechanism is deactivated for state and country fields.
+        // Since a website can prefill country and state values based on
+        // GeoIp, we want to hold on to these values. All others are cleared.
         field->value = std::u16string();
       }
     }
+
     field->set_server_predictions(cached_field->server_predictions());
     field->set_previously_autofilled(cached_field->previously_autofilled());
 
@@ -893,6 +891,18 @@ void FormStructure::RetrieveFromCache(
             features::kAutofillRetrieveOverallPredictionsFromCache) &&
         field->server_type() != NO_SERVER_DATA) {
       field->SetTypeTo(cached_field->Type());
+    }
+
+    if (!only_server_and_autofill_state) {
+      // Transfer attributes of the cached AutofillField to the newly created
+      // AutofillField.
+      for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
+        PatternSource s = static_cast<PatternSource>(i);
+        field->set_heuristic_type(s, cached_field->heuristic_type(s));
+      }
+      field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
+      field->section = cached_field->section;
+      field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
     }
   }
 
