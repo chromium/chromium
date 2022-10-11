@@ -225,17 +225,6 @@ static unsigned ReadUint32(const uint8_t* data, bool is_big_endian) {
   return (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
 }
 
-static const uint8_t* ReadPointerOffset(const uint8_t* data,
-                                        const uint8_t* start,
-                                        const uint8_t* end,
-                                        bool is_big_endian) {
-  unsigned max_offset = base::checked_cast<unsigned>(end - start);
-  unsigned offset = ReadUint32(data, is_big_endian);
-  if (offset > max_offset)
-    return nullptr;
-  return start + offset;
-}
-
 static float ReadUnsignedRational(const uint8_t* data, bool is_big_endian) {
   unsigned nom = ReadUint32(data, is_big_endian);
   unsigned denom = ReadUint32(data + 4, is_big_endian);
@@ -326,6 +315,8 @@ static void ReadExifDirectory(const uint8_t* dir_start,
   if (data_end - dir_start < 2)
     return;
 
+  const unsigned max_offset =
+      base::checked_cast<unsigned>(data_end - data_start);
   unsigned tag_count = ReadUint16(dir_start, is_big_endian);
   const uint8_t* ifd =
       dir_start + 2;  // Skip over the uint16 that was just read.
@@ -343,10 +334,12 @@ static void ReadExifDirectory(const uint8_t* dir_start,
 
     // EXIF stores the value with an offset if it's bigger than 4 bytes, e.g. for rational values.
     if (type == kUnsignedRationalType) {
-      value_ptr =
-          ReadPointerOffset(value_ptr, data_start, data_end, is_big_endian);
+      unsigned offset = ReadUint32(value_ptr, is_big_endian);
+      if (offset > max_offset)
+        continue;
+      value_ptr = data_start + offset;
       // Make sure offset points to a valid location.
-      if (!value_ptr || value_ptr > data_end - 16)
+      if (value_ptr > data_end - 16)
         continue;
     }
 
@@ -403,13 +396,12 @@ static void ReadExifDirectory(const uint8_t* dir_start,
 
       case ExifTags::kExifOffsetTag:
         if (type == kUnsignedLongType && count == 1 && is_root) {
-          const uint8_t* subdir =
-              ReadPointerOffset(value_ptr, data_start, data_end, is_big_endian);
-
-          if (subdir) {
-            ReadExifDirectory(subdir, data_start, data_end, is_big_endian,
-                              metadata, false);
-          }
+          unsigned offset = ReadUint32(value_ptr, is_big_endian);
+          if (offset > max_offset)
+            break;
+          const uint8_t* subdir = data_start + offset;
+          ReadExifDirectory(subdir, data_start, data_end, is_big_endian,
+                            metadata, false);
         }
         break;
     }
