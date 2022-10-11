@@ -47,7 +47,8 @@ class MockPasswordChangeSuccessTracker : public PasswordChangeSuccessTracker {
               OnChangePasswordFlowCompleted,
               (const GURL& url,
                const std::string& username,
-               EndEvent event_type),
+               EndEvent event_type,
+               bool phished),
               (override));
 };
 

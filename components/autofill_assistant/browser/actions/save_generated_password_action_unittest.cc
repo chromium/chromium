@@ -21,6 +21,7 @@ const char kMemoryKeyForGeneratedPassword[] = "memory-key-for-generation";
 const char kOrigin[] = "https://example.com";
 const char kUsername[] = "username";
 const char kGeneratedPassword[] = "mX.12pq";
+const bool kPhished = false;
 }  // namespace
 
 namespace autofill_assistant {
@@ -82,7 +83,8 @@ TEST_F(SaveGeneratedPasswordActionTest, SavedPassword) {
       mock_password_change_success_tracker_,
       OnChangePasswordFlowCompleted(GURL(kOrigin), kUsername,
                                     PasswordChangeSuccessTracker::EndEvent::
-                                        kAutomatedFlowGeneratedPasswordChosen));
+                                        kAutomatedFlowGeneratedPasswordChosen,
+                                    kPhished));
 
   action.ProcessAction(callback_.Get());
 

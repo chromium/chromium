@@ -141,7 +141,8 @@ class PasswordChangeSuccessTrackerImpl
                                     StartEvent new_event_type) override;
   void OnChangePasswordFlowCompleted(const GURL& url,
                                      const std::string& username,
-                                     EndEvent event_type) override;
+                                     EndEvent event_type,
+                                     bool phished) override;
 
   // Add a |PasswordChangeMetricsRecorder| to listen for |OnFlowRecorded()|
   // events. The caller passes ownership to the |PasswordChangeSuccessTracker|.

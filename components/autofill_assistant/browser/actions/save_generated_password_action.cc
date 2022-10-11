@@ -62,7 +62,8 @@ void SaveGeneratedPasswordAction::InternalProcessAction(
       delegate_->GetUserData()->selected_login_->origin,
       delegate_->GetUserData()->selected_login_->username,
       PasswordChangeSuccessTracker::EndEvent::
-          kAutomatedFlowGeneratedPasswordChosen);
+          kAutomatedFlowGeneratedPasswordChosen,
+      /* phished= */ false);
 
   EndAction(ClientStatus(ACTION_APPLIED));
 }

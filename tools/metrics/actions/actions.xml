@@ -25112,6 +25112,37 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PasswordProtection.PasswordUpdated.AutomatedFlowPasswordChosen">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when the automated change password flow completes with a generated
+    password.
+  </description>
+</action>
+
+<action
+    name="PasswordProtection.PasswordUpdated.AutomatedFlowResetLinkRequested">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>Reported when a password-reset link is requested.</description>
+</action>
+
+<action name="PasswordProtection.PasswordUpdated.ManualFlowPasswordChosen">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    Reported when password change/reset flow completes with a user chosen
+    password.
+  </description>
+</action>
+
+<action name="PasswordProtection.PasswordUpdated.Timeout">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>Reported when the password change flow times out.</description>
+</action>
+
 <action name="PasswordProtection.SavedPassword.ChangePasswordButtonClicked">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

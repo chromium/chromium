@@ -7,6 +7,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -23,7 +25,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using base::RecordAction;
 using base::StringPiece;
+using base::UserMetricsAction;
 
 namespace password_manager {
 
@@ -104,6 +108,36 @@ base::Value::Dict CreateFlow(
   return flow;
 }
 
+//  Record a UserAction based on how the user performed the password update.
+void RecordUserActionOnPhishedCredentialforUma(
+    PasswordChangeSuccessTracker::EndEvent event) {
+  switch (event) {
+    // Combine automated flow end events for UMA reporting.
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowGeneratedPasswordChosen:
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowOwnPasswordChosen:
+      RecordAction(UserMetricsAction(
+          "PasswordProtection.PasswordUpdated.AutomatedFlowPasswordChosen"));
+      break;
+    case PasswordChangeSuccessTracker::EndEvent::
+        kAutomatedFlowResetLinkRequested:
+      RecordAction(
+          UserMetricsAction("PasswordProtection.PasswordUpdated."
+                            "AutomatedFlowResetLinkRequested"));
+      break;
+    // Combine manual flow end events for UMA reporting.
+    case PasswordChangeSuccessTracker::EndEvent::
+        kManualFlowGeneratedPasswordChosen:
+    case PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen:
+      RecordAction(UserMetricsAction(
+          "PasswordProtection.PasswordUpdated.ManualFlowPasswordChosen"));
+      break;
+    case PasswordChangeSuccessTracker::EndEvent::kTimeout:
+      RecordAction(
+          UserMetricsAction("PasswordProtection.PasswordUpdated.Timeout"));
+  }
+}
 }  // namespace
 
 PasswordChangeMetricsRecorderUma::~PasswordChangeMetricsRecorderUma() = default;
@@ -309,7 +343,8 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowModified(
 void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
     const GURL& url,
     const std::string& username,
-    EndEvent event_type) {
+    EndEvent event_type,
+    bool phished) {
   // If there are no ongoing change flows, return immediately to avoid disk
   // writes.
   const base::Value::List& read_flows =
@@ -334,6 +369,9 @@ void PasswordChangeSuccessTrackerImpl::OnChangePasswordFlowCompleted(
                     view.GetEntryPoint(),
                     base::Time::Now() - view.GetStartTime());
       flows.erase(flows.begin() + i);
+      if (phished) {
+        RecordUserActionOnPhishedCredentialforUma(event_type);
+      }
       return;
     }
   }

@@ -144,7 +144,8 @@ class PasswordChangeSuccessTracker : public KeyedService {
   // it emits a report about a successful password change.
   virtual void OnChangePasswordFlowCompleted(const GURL& url,
                                              const std::string& username,
-                                             EndEvent event_type) = 0;
+                                             EndEvent event_type,
+                                             bool phished) = 0;
 };
 }  // namespace password_manager
 

@@ -105,6 +105,11 @@ bool FormContainsFieldWithName(const FormData& form,
   return false;
 }
 
+bool IsPhished(const PasswordForm& credentials) {
+  return credentials.password_issues.find(InsecureType::kPhished) !=
+         credentials.password_issues.end();
+}
+
 void LogUsingPossibleUsername(PasswordManagerClient* client,
                               bool is_used,
                               const char* message) {
@@ -325,7 +330,8 @@ void PasswordFormManager::Save() {
                                    kManualFlowOwnPasswordChosen;
   client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event);
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
+      IsPhished(GetPendingCredentials()));
 
   password_save_manager_->Save(observed_form(), *parsed_submitted_form_);
 
@@ -342,7 +348,8 @@ void PasswordFormManager::Update(const PasswordForm& credentials_to_update) {
                                    kManualFlowOwnPasswordChosen;
   client_->GetPasswordChangeSuccessTracker()->OnChangePasswordFlowCompleted(
       parsed_submitted_form_->url,
-      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event);
+      base::UTF16ToUTF8(GetPendingCredentials().username_value), end_event,
+      IsPhished(credentials_to_update));
 
   password_save_manager_->Update(credentials_to_update, observed_form(),
                                  *parsed_submitted_form_);

@@ -1135,8 +1135,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
       *client_.GetPasswordChangeSuccessTracker(),
       OnChangePasswordFlowCompleted(
           submitted_form.url, base::UTF16ToUTF8(saved_match_.username_value),
-          PasswordChangeSuccessTracker::EndEvent::
-              kManualFlowOwnPasswordChosen));
+          PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
+          /* phished= */ false));
 
   form_manager_->Save();
 
@@ -1890,11 +1890,12 @@ TEST_P(PasswordFormManagerTest, Update) {
                                      Pointee(saved_match_another_username)),
                                  saved_match_.password_value))
       .WillOnce(SaveArg<0>(&updated_form));
-  EXPECT_CALL(*client_.GetPasswordChangeSuccessTracker(),
-              OnChangePasswordFlowCompleted(
-                  submitted_form.url, base::UTF16ToUTF8(username),
-                  PasswordChangeSuccessTracker::EndEvent::
-                      kManualFlowOwnPasswordChosen));
+  EXPECT_CALL(
+      *client_.GetPasswordChangeSuccessTracker(),
+      OnChangePasswordFlowCompleted(
+          submitted_form.url, base::UTF16ToUTF8(username),
+          PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
+          /* phished= */ false));
   EXPECT_CALL(client_, UpdateFormManagers());
 
   const base::Time kNow = base::Time::Now();
@@ -2993,8 +2994,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
       *client_.GetPasswordChangeSuccessTracker(),
       OnChangePasswordFlowCompleted(
           submitted_form.url, base::UTF16ToUTF8(saved_match_.username_value),
-          PasswordChangeSuccessTracker::EndEvent::
-              kManualFlowOwnPasswordChosen));
+          PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
+          /* phished= */ false));
   form_manager_->Save();
   std::string expected_signon_realm =
       submitted_form.url.DeprecatedGetOriginAsURL().spec();
@@ -3217,7 +3218,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
       OnChangePasswordFlowCompleted(
           submitted_form_.url, base::UTF16ToUTF8(saved_match_.username_value),
           PasswordChangeSuccessTracker::EndEvent::
-              kManualFlowGeneratedPasswordChosen));
+              kManualFlowGeneratedPasswordChosen,
+          /* phished= */ false));
   EXPECT_CALL(*mock_password_save_manager(),
               Save(FormDataPointeeEqualTo(submitted_form_), _))
       .WillOnce(SaveArg<1>(&updated_form));
@@ -3310,7 +3312,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
         OnChangePasswordFlowCompleted(
             http_auth_form.url, base::UTF16ToUTF8(saved_match_.username_value),
             PasswordChangeSuccessTracker::EndEvent::
-                kManualFlowOwnPasswordChosen));
+                kManualFlowOwnPasswordChosen,
+            /* phished= */ false));
     // Check that the password save manager is invoked.
     EXPECT_CALL(*mock_password_save_manager(), Save(_, http_auth_form));
     form_manager_->Save();
@@ -3336,8 +3339,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, HTTPAuthAlreadySaved) {
       *client_.GetPasswordChangeSuccessTracker(),
       OnChangePasswordFlowCompleted(
           http_auth_form.url, base::UTF16ToUTF8(saved_match_.username_value),
-          PasswordChangeSuccessTracker::EndEvent::
-              kManualFlowOwnPasswordChosen));
+          PasswordChangeSuccessTracker::EndEvent::kManualFlowOwnPasswordChosen,
+          /* phished= */ false));
   // Check that the password save manager is invoked.
   EXPECT_CALL(*mock_password_save_manager(), Save(_, http_auth_form));
   form_manager_->Save();
