@@ -58823,6 +58823,7 @@ from previous Chrome versions.
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
   <int value="-798521418" label="ArcInputOverlayBeta:disabled"/>
+  <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
@@ -60513,6 +60514,7 @@ from previous Chrome versions.
   <int value="245100553" label="PcieBillboardNotification:enabled"/>
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
+  <int value="246451316" label="NotificationInteractionHistory:enabled"/>
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>

@@ -1910,6 +1910,11 @@ const char kDestroySystemProfilesDescription[] =
     "owned by the System Profile. This requires "
     "#destroy-profile-on-browser-close.";
 
+const char kNotificationInteractionHistoryName[] =
+    "Notification Interaction History";
+const char kNotificationInteractionHistoryDescription[] =
+    "Enable recording notification count and interaction.";
+
 const char kNotificationsRevampName[] = "Notifications Revamp";
 const char kNotificationsRevampDescription[] =
     "Enable notification UI revamp and grouped web notifications.";

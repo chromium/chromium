@@ -4763,6 +4763,15 @@
     "expiry_milestone": 112
   },
   {
+    "name": "notification-interaction-history",
+    "owners": [
+      "sideyilmaz",
+      "msramek",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "notification-permission-rationale-dialog",
     "owners": ["shaktisahu", "salg"],
     "expiry_milestone": 110
