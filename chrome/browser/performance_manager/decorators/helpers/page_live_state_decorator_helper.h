@@ -12,6 +12,10 @@
 
 namespace performance_manager {
 
+namespace {
+class ActiveTabObserver;
+}
+
 class PageLiveStateDecoratorHelper
     : public MediaStreamCaptureIndicator::Observer,
       public PerformanceManagerMainThreadObserverDefaultImpl {
@@ -48,6 +52,10 @@ class PageLiveStateDecoratorHelper
   // Additionally, all WebContentsObservers that are still in this list when the
   // destructor of PageLiveStateDecoratorHelper is invoked are destroyed.
   raw_ptr<WebContentsObserver> first_web_contents_observer_ = nullptr;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ActiveTabObserver> active_tab_observer_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

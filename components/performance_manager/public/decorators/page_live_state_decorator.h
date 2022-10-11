@@ -66,6 +66,9 @@ class PageLiveStateDecorator
   static void SetWasDiscarded(content::WebContents* contents,
                               bool was_discarded);
 
+  static void SetIsActiveTab(content::WebContents* contents,
+                             bool is_active_tab);
+
  private:
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
@@ -94,6 +97,7 @@ class PageLiveStateDecorator::Data {
   virtual bool IsCapturingDisplay() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
   virtual bool WasDiscarded() const = 0;
+  virtual bool IsActiveTab() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetOrCreateForPageNode(const PageNode* page_node);
@@ -107,6 +111,7 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsCapturingDisplayForTesting(bool value) = 0;
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
   virtual void SetWasDiscardedForTesting(bool value) = 0;
+  virtual void SetIsActiveTabForTesting(bool value) = 0;
 
  protected:
   base::ObserverList<PageLiveStateObserver> observers_
@@ -132,6 +137,7 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) = 0;
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
   virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
+  virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
 };
 
 }  // namespace performance_manager

@@ -18,6 +18,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/test/base/browser_with_test_window_test.h"
+#endif
+
 namespace performance_manager {
 
 namespace {
@@ -211,5 +215,65 @@ TEST_F(PageLiveStateDecoratorHelperTest, ManyPageNodes) {
   // This deletes remaining WebContentsObservers.
   ResetHelper();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// The behavior tested here isn't yet available on Android
+class PageLiveStateDecoratorHelperTabsTest : public BrowserWithTestWindowTest {
+ private:
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    pm_harness_.SetUp();
+    helper_ = std::make_unique<PageLiveStateDecoratorHelper>();
+  }
+
+  void TearDown() override {
+    helper_.reset();
+    pm_harness_.TearDown();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  PerformanceManagerTestHarnessHelper pm_harness_;
+  std::unique_ptr<PageLiveStateDecoratorHelper> helper_;
+};
+
+TEST_F(PageLiveStateDecoratorHelperTabsTest, IsActiveTab) {
+  // Create a tab, it's associated PageNode should be the active one.
+  AddTab(browser(), GURL("http://foo/1"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+
+  // Create another tab. This immediately makes it the active tab. Note that
+  // `AddTab` inserts in front of the list, so the newly created tab is at index
+  // 0.
+  AddTab(browser(), GURL("http://foo/2"));
+  content::WebContents* other_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  EXPECT_NE(contents, other_contents);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, false);
+  testing::TestPageNodePropertyOnPMSequence(
+      other_contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+
+  // Reactivate the initial tab, the previously active tab is now inactive.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  testing::TestPageNodePropertyOnPMSequence(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+  testing::TestPageNodePropertyOnPMSequence(
+      other_contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, false);
+
+  // Deleting a tab automatically makes another one active.
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+  testing::TestPageNodePropertyOnPMSequence(
+      other_contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab, true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace performance_manager

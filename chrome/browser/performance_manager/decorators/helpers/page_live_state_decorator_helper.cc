@@ -5,13 +5,75 @@
 #include "chrome/browser/performance_manager/decorators/helpers/page_live_state_decorator_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
-namespace performance_manager {
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+namespace performance_manager {
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+// Encapsulates all of the "Active tab" tracking logic, which uses `BrowserList`
+// and is therefore not available on Android. This class keeps track of existing
+// Browsers and their tab strips, and updates PageLiveState data with whether
+// each tab is currently active or not.
+class ActiveTabObserver : public TabStripModelObserver,
+                          public BrowserListObserver {
+ public:
+  ActiveTabObserver() {
+    BrowserList::AddObserver(this);
+    for (auto* browser : *BrowserList::GetInstance()) {
+      AddBrowserTabStripObservation(browser);
+    }
+  }
+
+  ~ActiveTabObserver() override { BrowserList::RemoveObserver(this); }
+
+ private:
+  void AddBrowserTabStripObservation(Browser* browser) {
+    browser->tab_strip_model()->AddObserver(this);
+  }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+      if (selection.old_contents) {
+        PageLiveStateDecorator::SetIsActiveTab(selection.old_contents, false);
+      }
+      if (selection.new_contents) {
+        PageLiveStateDecorator::SetIsActiveTab(selection.new_contents, true);
+      }
+    }
+  }
+
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    AddBrowserTabStripObservation(browser);
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
+    browser->tab_strip_model()->RemoveObserver(this);
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 // Listens to content::WebContentsObserver notifications for a given WebContents
 // and updates the PageLiveStateDecorator accordingly. Destroys itself when the
 // WebContents it observes is destroyed.
@@ -91,6 +153,10 @@ PageLiveStateDecoratorHelper::PageLiveStateDecoratorHelper() {
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->AddObserver(this);
+
+#if !BUILDFLAG(IS_ANDROID)
+  active_tab_observer_ = std::make_unique<ActiveTabObserver>();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 PageLiveStateDecoratorHelper::~PageLiveStateDecoratorHelper() {

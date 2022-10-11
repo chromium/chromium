@@ -39,6 +39,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsCapturingDisplayChanged,
     kOnIsAutoDiscardableChanged,
     kOnWasDiscardedChanged,
+    kOnIsActiveTabChanged,
   };
 
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {
@@ -78,6 +79,10 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
   void OnWasDiscardedChanged(const PageNode* page_node) override {
     latest_function_called_ = ObserverFunction::kOnWasDiscardedChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnIsActiveTabChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnIsActiveTabChanged;
     page_node_passed_ = page_node;
   }
 
@@ -256,6 +261,16 @@ TEST_F(PageLiveStateDecoratorTest, OnWasDiscardedChanged) {
       /*default_state=*/false);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnWasDiscardedChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
+  testing::EndToEndBooleanPropertyTest(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsActiveTab,
+      &PageLiveStateDecorator::SetIsActiveTab,
+      /*default_state=*/false);
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
 }
 
 }  // namespace performance_manager

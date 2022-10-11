@@ -66,6 +66,10 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return was_discarded_;
   }
+  bool IsActiveTab() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_active_tab_;
+  }
 
   void SetIsConnectedToUSBDeviceForTesting(bool value) override {
     set_is_connected_to_usb_device(value);
@@ -93,6 +97,9 @@ class PageLiveStateDataImpl
   }
   void SetWasDiscardedForTesting(bool value) override {
     set_was_discarded(value);
+  }
+  void SetIsActiveTabForTesting(bool value) override {
+    set_is_active_tab(value);
   }
 
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
@@ -168,6 +175,14 @@ class PageLiveStateDataImpl
     for (auto& obs : observers_)
       obs.OnWasDiscardedChanged(page_node_);
   }
+  void set_is_active_tab(bool is_active_tab) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (is_active_tab_ == is_active_tab)
+      return;
+    is_active_tab_ = is_active_tab;
+    for (auto& obs : observers_)
+      obs.OnIsActiveTabChanged(page_node_);
+  }
 
  private:
   // Make the impl our friend so it can access the constructor and any
@@ -189,6 +204,7 @@ class PageLiveStateDataImpl
   bool is_capturing_display_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   const raw_ptr<const PageNode> page_node_;
 };
@@ -276,6 +292,13 @@ void PageLiveStateDecorator::SetWasDiscarded(content::WebContents* contents,
       contents, &PageLiveStateDataImpl::set_was_discarded, was_discarded);
 }
 
+// static
+void PageLiveStateDecorator::SetIsActiveTab(content::WebContents* contents,
+                                            bool is_active_tab) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_is_active_tab, is_active_tab);
+}
+
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
@@ -302,6 +325,7 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
   ret.SetBoolKey("IsCapturingDisplay", data->IsCapturingDisplay());
   ret.SetBoolKey("IsAutoDiscardable", data->IsAutoDiscardable());
   ret.SetBoolKey("WasDiscarded", data->WasDiscarded());
+  ret.SetBoolKey("IsActiveTab", data->IsActiveTab());
 
   return ret;
 }
